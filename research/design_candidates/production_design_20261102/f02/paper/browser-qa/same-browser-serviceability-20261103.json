@@ -1,0 +1,43 @@
+{
+  "schema": "mastermind.f02.browser_qa_serviceability.v1",
+  "observed_at_utc": "2026-11-03T04:26:49.502789+00:00",
+  "scope": "Read-only serviceability for unchanged F02 source specimen; child session /root/continuation_dependencies",
+  "specimen": {
+    "relative_path": "f02/pattern-lab.html",
+    "bytes": 80003,
+    "sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+    "modified": false
+  },
+  "supported_preview_preflight": {
+    "skill": "sites",
+    "mode": "local-only managed preview",
+    "environment": {
+      "SITES_MANAGED_LINUX_CONTAINER": "1"
+    },
+    "cli_path": "/usr/local/bin/sites-preview",
+    "cli_present": true,
+    "daemon_serviceability": "NOT_ATTEMPTED",
+    "preview_started": false,
+    "preview_url": null
+  },
+  "browser_attempt": {
+    "tool": "mcp__codex_apps__browser_js",
+    "action": "setupBrowserRuntime and extension browser documentation",
+    "count": 1,
+    "isError": true,
+    "error_code": "UNKNOWN",
+    "message": "Browser access requires the originating browser context. Open ChatGPT in the browser with the connected extension and try again.",
+    "browser_handle_established": false,
+    "navigation_attempted": false,
+    "screenshot_attempted": false
+  },
+  "outcome": "BLOCKED_ORIGINATING_BROWSER_CONTEXT",
+  "limits": [
+    "The result applies to this child call; it does not prove root-origin browser session unavailability.",
+    "No source-specimen browser state, keyboard, zoom, touch or reflow verification completed.",
+    "No original source edit, preview configuration, server start, registration, hosting or deployment occurred.",
+    "No data URL, cloud browser, CDP, alternate renderer, tunnel or network workaround was attempted."
+  ],
+  "next_action": "If the root originating Browser context is available, use the already-authorized same-browser managed HTTP preview route. Otherwise retain browser QA as unverified.",
+  "teardown": "No owned preview server was started; none required stopping."
+}

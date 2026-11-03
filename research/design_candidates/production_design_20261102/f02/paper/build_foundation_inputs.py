@@ -14,8 +14,8 @@ def frame(s,style='',name=''):
     return '<div '+(f'layer-name="{escape(name)}" ' if name else '')+'style="display:flex;'+style+'">'+s+'</div>'
 def col(s,style='',name=''):return frame(s,'flex-direction:column;'+style,name)
 def row(s,style='',name=''):return frame(s,'flex-direction:row;'+style,name)
-def btn(s,focus=False,p=D):
-    return col(text(s,13,p['ink'],600),'justify-content:center;align-items:center;height:44px;padding:0px 16px;border:1px solid '+('#6f6f6f' if p==D else '#85877f')+';border-radius:6px;'+(f'outline:2px solid {p["focus"]};outline-offset:3px;' if focus else ''),s)
+def btn(s,focus=False,p=D,selected=False):
+    return col(text(s,13,p['ink'],600),'justify-content:center;align-items:center;height:44px;padding:0px 16px;border:1px solid '+('#6f6f6f' if p==D else '#85877f')+';border-radius:6px;'+(f'background-color:{p["selected"]};' if selected else '')+(f'outline:2px solid {p["focus"]};outline-offset:3px;' if focus else ''),s)
 def title(k,h,sub):
     return col(text(k,12,D['accent'],600)+text(h,32,D['ink'],600,line=40)+text(sub,15,D['secondary'],width=1240),'gap:12px;width:1344px;',h)
 def note(h,s,p=D):
@@ -44,7 +44,7 @@ for n,(label,*roles) in enumerate(semantic):
         samples+=col(text(theme+' · '+label,12,p['muted'],600)+row(chips,'gap:12px;'),'gap:16px;padding:20px;width:656px;background-color:'+p['bg']+';')
     found.append(step('semantic-'+str(n),row(samples,'gap:32px;')))
 found += [step('type',row(col(text('TYPOGRAPHY',12,D['muted'],600)+text('32 / Clear question',32,weight=600,line=40)+text('20 / Section title',20,weight=600)+text('16 / Comfortable reading',16)+text('13 / Dense analytical row',13)+text('12 / Source, unit and status',12,D['secondary']),'gap:12px;width:656px;')+col(text('DENSITY & NUMBER ANATOMY',12,D['muted'],600)+text('Dense 40px · Comfortable 48px · Mobile ≥52px',17,weight=500)+text('Important phone controls: 44 × 44px',16)+text('66.70%    +1.13 pp    0.00 USD/share    — Unknown',17,weight=500)+text('Inter tabular numerals; decimal alignment. Unit and comparison period travel with the value. Percent, percentage points and basis points are different quantities.',14,D['secondary'],width=640,line=22),'gap:16px;width:656px;'),'gap:32px;padding:24px 0px;')),
-step('icons',row(col(text('ICON & FOCUS ANATOMY',12,D['muted'],600)+text('16 / 20px icon · consistent stroke · named control',16)+text('Focus has a 2px high-contrast outline with a 3px offset. Selected uses neutral fill plus weight. Focus is visible on an already selected item.',14,D['secondary'],width=840),'gap:12px;width:872px;')+btn('Selected tab',False)+btn('Focused tab',True),'gap:24px;align-items:center;')),
+step('icons',row(col(text('ICON & FOCUS ANATOMY',12,D['muted'],600)+text('16 / 20px icon · consistent stroke · named control',16)+text('Focus has a 2px high-contrast outline with a 3px offset. Selected uses neutral fill plus weight. Focus is visible on an already selected item.',14,D['secondary'],width=840),'gap:12px;width:872px;')+btn('Selected tab',False,selected=True)+btn('Focused tab',True),'gap:24px;align-items:center;')),
 step('mapping',note('Source mapping; no global replacement','Reuse the current --noir-* Paper tokens shown above. Light values and directional roles are candidate values from token-map.json, not a new global CSS namespace. Macro theme.css, Terminal globals/shared shell and public templates retain their separate owners. --sp-8 and radius-md have observed estate collisions. Read the migration contract before mapping aliases.'))]
 boards.append(board('foundations','Semantic roles, type & density','p-3-0',found))
 
@@ -57,7 +57,7 @@ metrics.append(step('metric-units',note('Comparator policy','65.57% → 66.70% i
 metrics.append(step('table-caption',row(text('Sector participation · illustrative settled observation',18,weight=600,width=1036)+text('Raw-value sort ↓',13,D['secondary']),'align-items:center;')))
 widths=[344,180,180,180,270,140]
 def data_row(values,selected=False,header=False):
-    cells=''.join(col(text(v,12 if header else 14,D['secondary'] if header else D['ink'],600 if header or selected else 400),'width:'+str(w)+'px;flex-shrink:0;justify-content:center;') for v,w in zip(values,widths))
+    cells=''.join(col(text(v,12 if header else 14,D['secondary'] if header else D['ink'],600 if header or selected else 400),'width:'+str(w)+'px;flex-shrink:0;justify-content:center;'+('align-items:flex-end;padding-right:24px;' if i in [1,2,3] else '')) for i,(v,w) in enumerate(zip(values,widths)))
     return row(cells,'width:1344px;min-height:'+('36' if header else '48')+'px;padding:0px 12px;box-sizing:border-box;background-color:'+(D['selected'] if selected else D['bg'])+';border-bottom:1px solid #343434;')
 metrics.append(step('row-header',data_row(['Sector','Above 50d MA','Change','Coverage','Source observation','Evidence'],header=True)))
 for i,v in enumerate([['Information technology','74.20%','+2.10 pp','178 / 184','30 Oct · 20:00 UTC','Inspect row'],['Utilities','52.80%','−0.40 pp','63 / 63','30 Oct · 20:00 UTC','Inspect row'],['Energy','—','Unavailable','0 / 82','No observation','Coverage reason']]):metrics.append(step('data-'+str(i),data_row(v,selected=i==0)))
@@ -75,14 +75,20 @@ step('saves',note('Save belongs to D23 / the existing service','Idle → pending
 boards.append(board('controls','Tabs, actions & evidence inspector','p-4-0',controls))
 
 grammar=[step('title',title('F02-P06 / TABLE & CHART GRAMMAR','Comparison first. Exact values always reachable.','Charts explain shape. Tables preserve the actual observations, units and exceptions. Neither may silently fill a gap.')),
-step('chart-title',row(text('Participation across eight settled sessions',20,weight=600,width=1016)+text('Unit: percent · linear scale',13,D['secondary']),'align-items:center;'))]
+step('chart-title',row(text('Participation across eight settled sessions',20,weight=600,width=1016)+text('Unit: percent · linear 50–80% scale',13,D['secondary']),'align-items:center;'))]
 vals=[61.2,63.4,62.1,None,65.57,64.9,65.57,66.7]; ys=[204-(v-50)*5 if v is not None else None for v in vals];xs=[80+i*168 for i in range(8)]
 lines=''.join(f'<line x1="80" y1="{204-(v-50)*5}" x2="1256" y2="{204-(v-50)*5}" stroke="#343434" />' for v in [50,60,70,80])
 for i in range(7):
     if ys[i] is not None and ys[i+1] is not None:lines+=f'<line x1="{xs[i]}" y1="{ys[i]}" x2="{xs[i+1]}" y2="{ys[i+1]}" stroke="#c9b99b" stroke-width="3" />'
 lines+=''.join(f'<circle cx="{x}" cy="{y}" r="5" fill="#c9b99b" />' for x,y in zip(xs,ys) if y is not None)
 chart='<svg width="1296" height="230" viewBox="0 0 1296 230" xmlns="http://www.w3.org/2000/svg">'+lines+'</svg>'
-grammar.append(step('chart',col(chart+row(''.join(text(d,12,D['secondary'],width=168) for d in ['21 Oct','22 Oct','23 Oct','26 Oct · —','27 Oct','28 Oct','29 Oct','30 Oct']),'padding-left:28px;')+text('The line breaks at 26 Oct. No interpolation, zero substitution or implied observation.',14,D['secondary']),'gap:12px;padding:24px;background-color:var(--noir-panel);')))
+# Native text is centered on the matching SVG gridline. The 24px root padding
+# offsets the original plot; absolute labels do not change its geometry or flow.
+axis_labels=''.join(frame(text(f'{v}%',12,D['secondary'],line=18),f'position:absolute;left:24px;top:{24+204-(v-50)*5-9}px;width:64px;height:18px;justify-content:flex-end;align-items:center;',f'Y axis / {v}%') for v in [50,60,70,80])
+# Match the verified native correction: center each 100px date label on its
+# existing point x coordinate, without moving the plot or its data marks.
+date_labels=''.join(text(d,12,D['secondary'],width=100).replace('style="',f'style="position:absolute;left:{80+i*168-50}px;top:0px;text-align:center;',1) for i,d in enumerate(['21 Oct','22 Oct','23 Oct','26 Oct · —','27 Oct','28 Oct','29 Oct','30 Oct']))
+grammar.append(step('chart',col(chart+axis_labels+row(date_labels,'position:relative;width:1296px;height:18px;padding-left:0px;')+text('The line breaks at 26 Oct. No interpolation, zero substitution or implied observation.',14,D['secondary']),'position:relative;gap:12px;padding:24px;background-color:var(--noir-panel);')))
 grammar.append(step('exact-values',row(''.join(col(text(d,12,D['secondary'])+text('—' if v is None else f'{v:.2f}%',16,weight=600),'gap:8px;width:168px;') for d,v in zip(['21 Oct','22 Oct','23 Oct','26 Oct','27 Oct','28 Oct','29 Oct','30 Oct'],vals)),'width:1344px;padding:12px 0px;')))
 grammar += [step('chart-source',note('Source and exact-value access','Illustrative fixture, settled sessions, percent. In implementation every point has keyboard/touch access to the same exact-value receipt; the table provides an equivalent path. A timestamped source clock and coverage label accompany the figure. The incumbent lib/illus.py cleaner drops nulls: a gap-rendering change needs the later domain implementation and proof.')),
 step('comparison-rules',row(col(text('TABLE',12,D['accent'],600)+text('Caption, scoped column headers and stable row identity.',17,weight=500)+text('Right-align numeric values; preserve native precision in export. Raw values sort, missing values last. Truncation never hides the only route to full identity. Keep controls in fixed lanes.',15,D['secondary'],width=640,line=24),'gap:14px;width:656px;')+col(text('CHART',12,D['accent'],600)+text('Declare unit, scale, period and missing-data behavior.',17,weight=500)+text('No decorative smoothing. Series have labels and distinguishable marks. Use 12px minimum axis labels in dense analytics. Long Company histories scroll inside a named frame, with all 17 × 5 raw observations available.',15,D['secondary'],width=640,line=24),'gap:14px;width:656px;'),'gap:32px;')),

@@ -1,0 +1,264 @@
+{
+  "key": "macro-light",
+  "name": "F02 · Macro · Light · Candidate 2",
+  "pageId": "p-6-0",
+  "width": 1440,
+  "height": 1260,
+  "theme": "light",
+  "styles": {
+    "backgroundColor": "#f6f6f3",
+    "display": "flex",
+    "flexDirection": "column",
+    "padding": "0px",
+    "gap": "0px",
+    "fontFamily": "Inter",
+    "color": "#1a1c20"
+  },
+  "steps": [
+    {
+      "key": "artifact",
+      "parent": "board",
+      "html": "<div layer-name=\"F02 candidate identity\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;display:flex;align-items:center;justify-content:space-between;width:1440px;height:32px;padding:0 24px;background:#f0f0ed;\"><div layer-name=\"F02 / MACRO / LIGHT\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;\">F02 / MACRO / LIGHT</div><div layer-name=\"CANDIDATE 2 · ILLUSTRATIVE FIXTURE · REVIEW PENDING\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">CANDIDATE 2 · ILLUSTRATIVE FIXTURE · REVIEW PENDING</div></div>"
+    },
+    {
+      "key": "header",
+      "parent": "board",
+      "html": "<div layer-name=\"Shared header envelope\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;width:1440px;height:64px;padding:0 24px;background:#efefec;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Mastermind\" style=\"flex-shrink:0;display:flex;align-items:center;gap:12px;\"><div layer-name=\"M mark\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:#1a1c20;border-radius:7px;color:#f6f6f3;font-family:Inter;font-size:16px;font-weight:700;\">M</div><div layer-name=\"MASTERMIND\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:700;color:#1a1c20;letter-spacing:0.1em;\">MASTERMIND</div></div><div layer-name=\"Chrome actions\" style=\"flex-shrink:0;display:flex;align-items:center;gap:24px;\"><div layer-name=\"Workspace · Example view\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Workspace · Example view</div><div layer-name=\"EN / 中文\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:500;color:#1a1c20;\">EN / 中文</div></div></div>"
+    },
+    {
+      "key": "body",
+      "parent": "board",
+      "html": "<div layer-name=\"Investor workspace envelope\" style=\"flex-shrink:0;display:flex;flex-direction:row;align-items:stretch;width:1440px;background:#f6f6f3;\"></div>"
+    },
+    {
+      "key": "rail",
+      "parent": "body",
+      "html": "<div layer-name=\"F01 provisional rail\" style=\"display:flex;flex-direction:column;width:224px;flex-shrink:0;padding:24px 16px;gap:4px;background:#efefec;border-right:1px solid #cbccc7;\"></div>"
+    },
+    {
+      "key": "rail-label",
+      "parent": "rail",
+      "html": "<div layer-name=\"WORKSPACE\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;padding:0 12px 8px;letter-spacing:0.1em;\">WORKSPACE</div>"
+    },
+    {
+      "key": "nav-0",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Today\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:transparent;border-radius:8px;\"><div layer-name=\"Today\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#51555b;\">Today</div></div>"
+    },
+    {
+      "key": "nav-1",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Discover\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:transparent;border-radius:8px;\"><div layer-name=\"Discover\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#51555b;\">Discover</div></div>"
+    },
+    {
+      "key": "nav-2",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Analysis\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:#e2e2dc;border-radius:8px;\"><div layer-name=\"Analysis\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:600;color:#1a1c20;\">Analysis</div></div>"
+    },
+    {
+      "key": "nav-3",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Monitor\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:transparent;border-radius:8px;\"><div layer-name=\"Monitor\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#51555b;\">Monitor</div></div>"
+    },
+    {
+      "key": "nav-4",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Research\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:transparent;border-radius:8px;\"><div layer-name=\"Research\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#51555b;\">Research</div></div>"
+    },
+    {
+      "key": "nav-5",
+      "parent": "rail",
+      "html": "<div layer-name=\"Navigation / Portfolio\" style=\"flex-shrink:0;display:flex;align-items:center;width:192px;height:42px;padding:0 12px;background:transparent;border-radius:8px;\"><div layer-name=\"Portfolio\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#51555b;\">Portfolio</div></div>"
+    },
+    {
+      "key": "rail-note",
+      "parent": "rail",
+      "html": "<div layer-name=\"F01 shell envelope. Navigation, history and compact-rail behavior retain their existing owner.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;width:192px;padding:24px 12px 0;white-space:normal;\">F01 shell envelope. Navigation, history and compact-rail behavior retain their existing owner.</div>"
+    },
+    {
+      "key": "main",
+      "parent": "body",
+      "html": "<div layer-name=\"Primary workspace\" style=\"display:flex;flex-direction:column;width:1216px;flex-shrink:0;padding:24px;gap:0px;background:#f6f6f3;\"></div>"
+    },
+    {
+      "key": "question",
+      "parent": "main",
+      "html": "<div layer-name=\"Workspace question\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;width:1168px;padding:0 0 18px;\"><div layer-name=\"Question and source context\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:5px;width:990px;\"><div layer-name=\"MARKET / PARTICIPATION\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#66543b;letter-spacing:0.07em;\">MARKET / PARTICIPATION</div><div layer-name=\"Market breadth\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:600;color:#1a1c20;letter-spacing:-0.025em;line-height:34px;\">Market breadth</div><div layer-name=\"Universe and sector observations · illustrative · observed 30 Oct 2026, 20:00 UTC\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Universe and sector observations · illustrative · observed 30 Oct 2026, 20:00 UTC</div></div><div layer-name=\"Source details\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;display:flex;align-items:center;justify-content:center;width:132px;flex-shrink:0;height:36px;padding:0 10px;border-radius:7px;border:1px solid #85877f;background:#fff;color:#1a1c20;font-weight:400;\">Source details</div></div>"
+    },
+    {
+      "key": "comparison-layout",
+      "parent": "main",
+      "html": "<div layer-name=\"824 data + 24 gap + 320 evidence\" style=\"flex-shrink:0;display:flex;align-items:flex-start;gap:24px;width:1168px;\"></div>"
+    },
+    {
+      "key": "comparison",
+      "parent": "comparison-layout",
+      "html": "<div layer-name=\"Primary comparison\" style=\"display:flex;flex-direction:column;width:824px;flex-shrink:0;\"></div>"
+    },
+    {
+      "key": "evidence",
+      "parent": "comparison-layout",
+      "html": "<div layer-name=\"Docked evidence\" style=\"display:flex;flex-direction:column;width:320px;flex-shrink:0;padding:16px;gap:0px;border:1px solid #cbccc7;background:#fff;border-radius:10px;\"></div>"
+    },
+    {
+      "key": "metrics",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Unboxed summary\" style=\"flex-shrink:0;display:flex;width:824px;padding:10px 0;border-top:1px solid #cbccc7;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Universe share above 50D\" style=\"display:flex;flex-direction:column;width:360px;flex-shrink:0;gap:4px;\"><div layer-name=\"Universe share above 50D\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Universe share above 50D</div><div layer-name=\"Universe share above 50D value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"66.7%\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">66.7%</div><div layer-name=\"+1.13 pp vs prior settled session\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#256341;\">+1.13 pp vs prior settled session</div></div></div><div layer-name=\"Sector coverage\" style=\"display:flex;flex-direction:column;width:240px;flex-shrink:0;gap:4px;\"><div layer-name=\"Sector coverage\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Sector coverage</div><div layer-name=\"Sector coverage value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"9 / 10\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">9 / 10</div><div layer-name=\"1 unavailable\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;\">1 unavailable</div></div></div><div layer-name=\"Health care change\" style=\"display:flex;flex-direction:column;width:224px;flex-shrink:0;gap:4px;\"><div layer-name=\"Health care change\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Health care change</div><div layer-name=\"Health care change value and comparison\" style=\"flex-shrink:0;display:flex;align-items:baseline;gap:12px;\"><div layer-name=\"0.0 pp\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:28px;line-height:42px;font-weight:500;color:#1a1c20;line-height:34px;\">0.0 pp</div><div layer-name=\"Reported zero\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Reported zero</div></div></div></div>"
+    },
+    {
+      "key": "tabs",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Local manual-activation tabs\" style=\"flex-shrink:0;display:flex;gap:8px;width:824px;padding:12px 0;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Selected sector comparison\" style=\"flex-shrink:0;padding:8px 12px;background:#e2e2dc;border-radius:7px;\"><div layer-name=\"Sector comparison\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:600;color:#1a1c20;\">Sector comparison</div></div><div layer-name=\"History values\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#51555b;padding:8px 12px;\">History values</div></div>"
+    },
+    {
+      "key": "table-caption",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector observations · change versus prior session · — means unavailable\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:14px 0 10px;white-space:normal;\">Sector observations · change versus prior session · — means unavailable</div>"
+    },
+    {
+      "key": "table-header",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Table header\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:36px;background:#f0f0ed;\"><div layer-name=\"Sector\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Sector</div><div layer-name=\"Above 50D\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Above 50D</div><div layer-name=\"Change · pp\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Change · pp</div><div layer-name=\"Covered / eligible\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Covered / eligible</div><div layer-name=\"Source\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Source</div></div>"
+    },
+    {
+      "key": "sector-1",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Technology\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Technology\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Technology</div><div layer-name=\"72.4%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">72.4%</div><div layer-name=\"+2.10\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#256341;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+2.10</div><div layer-name=\"42 / 42\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">42 / 42</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-2",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Industrials\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Industrials\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Industrials</div><div layer-name=\"70.8%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">70.8%</div><div layer-name=\"+1.50\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#256341;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+1.50</div><div layer-name=\"65 / 65\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">65 / 65</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-3",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Financials\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Financials\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Financials</div><div layer-name=\"69.2%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">69.2%</div><div layer-name=\"+0.60\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#256341;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+0.60</div><div layer-name=\"52 / 52\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">52 / 52</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-4",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Communication services\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#e2e2dc;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Communication services\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:600;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Communication services</div><div layer-name=\"66.7%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">66.7%</div><div layer-name=\"+1.13\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#256341;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+1.13</div><div layer-name=\"21 / 21\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">21 / 21</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-5",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Consumer discretionary\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Consumer discretionary\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Consumer discretionary</div><div layer-name=\"63.5%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">63.5%</div><div layer-name=\"-0.80\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#a62d43;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">-0.80</div><div layer-name=\"47 / 47\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">47 / 47</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-6",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Health care\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Health care\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Health care</div><div layer-name=\"61.1%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">61.1%</div><div layer-name=\"0.00\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">0.00</div><div layer-name=\"54 / 54\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">54 / 54</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-7",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Utilities\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Utilities\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Utilities</div><div layer-name=\"58.3%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">58.3%</div><div layer-name=\"-1.20\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#a62d43;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">-1.20</div><div layer-name=\"28 / 28\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">28 / 28</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-8",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Energy\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Energy\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Energy</div><div layer-name=\"—\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">—</div><div layer-name=\"—\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#5f6368;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">—</div><div layer-name=\"—\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">—</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-9",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Consumer staples\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Consumer staples\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Consumer staples</div><div layer-name=\"55.6%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">55.6%</div><div layer-name=\"+0.40\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#256341;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+0.40</div><div layer-name=\"36 / 36\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">36 / 36</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "sector-10",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Sector row / Materials\" style=\"flex-shrink:0;display:flex;align-items:center;width:824px;height:40px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Materials\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:254px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Materials</div><div layer-name=\"52.2%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:126px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">52.2%</div><div layer-name=\"-0.60\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#a62d43;width:130px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">-0.60</div><div layer-name=\"23 / 23\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:164px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">23 / 23</div><div layer-name=\"Evidence\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;width:150px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Evidence</div></div>"
+    },
+    {
+      "key": "table-behavior",
+      "parent": "comparison",
+      "html": "<div layer-name=\"10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#51555b;padding:12px 0;white-space:normal;\">10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.</div>"
+    },
+    {
+      "key": "history-title",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Universe history heading\" style=\"flex-shrink:0;display:flex;align-items:baseline;justify-content:space-between;width:824px;padding:20px 0 6px;\"><div layer-name=\"Universe sample · eight sessions\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:600;color:#1a1c20;\">Universe sample · eight sessions</div><div layer-name=\"View values\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#235b8e;\">View values</div></div>"
+    },
+    {
+      "key": "history-unit",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Share above 50-day average · % · categorical session axis · scale 40–80\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:0 0 8px;white-space:normal;\">Share above 50-day average · % · categorical session axis · scale 40–80</div>"
+    },
+    {
+      "key": "history-chart",
+      "parent": "comparison",
+      "html": "<div layer-name=\"Eight categorical sessions / gap preserved\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:824px;\"><svg width=\"824\" height=\"190\" viewBox=\"0 0 824 190\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"44\" y1=\"148.0\" x2=\"802\" y2=\"148.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"152.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">40</text><line x1=\"44\" y1=\"82.0\" x2=\"802\" y2=\"82.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"86.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">60</text><line x1=\"44\" y1=\"16.0\" x2=\"802\" y2=\"16.0\" stroke=\"#cbccc7\"/><text x=\"31\" y=\"20.0\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\" fill=\"#5f6368\">80</text><circle cx=\"44.0\" cy=\"76.06\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"44.0\" y1=\"76.06\" x2=\"152.28571428571428\" y2=\"74.08000000000001\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"152.28571428571428\" cy=\"74.08000000000001\" r=\"3.5\" fill=\"#66543b\"/><text x=\"260.57142857142856\" y=\"106\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\" fill=\"#5f6368\">unavailable</text><circle cx=\"368.85714285714283\" cy=\"69.13000000000001\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"368.85714285714283\" y1=\"69.13000000000001\" x2=\"477.14285714285717\" y2=\"71.11000000000001\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"477.14285714285717\" cy=\"71.11000000000001\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"477.14285714285717\" y1=\"71.11000000000001\" x2=\"585.4285714285714\" y2=\"66.82000000000002\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"585.4285714285714\" cy=\"66.82000000000002\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"585.4285714285714\" y1=\"66.82000000000002\" x2=\"693.7142857142857\" y2=\"63.619000000000014\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"693.7142857142857\" cy=\"63.619000000000014\" r=\"3.5\" fill=\"#66543b\"/><line x1=\"693.7142857142857\" y1=\"63.619000000000014\" x2=\"802.0\" y2=\"59.889999999999986\" stroke=\"#66543b\" stroke-width=\"2.5\"/><circle cx=\"802.0\" cy=\"59.889999999999986\" r=\"3.5\" fill=\"#66543b\"/><text x=\"44.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">21 Oct</text><text x=\"152.28571428571428\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">22</text><text x=\"260.57142857142856\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">23</text><text x=\"368.85714285714283\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">26</text><text x=\"477.14285714285717\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">27</text><text x=\"585.4285714285714\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">28</text><text x=\"693.7142857142857\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">29</text><text x=\"802.0\" y=\"175\" text-anchor=\"middle\" fill=\"#5f6368\" font-family=\"Inter\" font-size=\"12\">30 Oct</text></svg><div layer-name=\"Exact %: 61.8 · 62.4 · unavailable · 63.9 · 63.3 · 64.6 · 65.57 · 66.7\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Exact %: 61.8 · 62.4 · unavailable · 63.9 · 63.3 · 64.6 · 65.57 · 66.7</div><div layer-name=\"7 of 8 observations. This universe is independent of the sector fixtures.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">7 of 8 observations. This universe is independent of the sector fixtures.</div></div>"
+    },
+    {
+      "key": "evidence-head",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Inspector header\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Evidence\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:600;color:#1a1c20;\">Evidence</div><div layer-name=\"Close\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;display:flex;align-items:center;justify-content:center;width:64px;flex-shrink:0;height:36px;padding:0 10px;border-radius:7px;border:1px solid #85877f;background:#fff;color:#1a1c20;font-weight:400;\">Close</div></div>"
+    },
+    {
+      "key": "evidence-entity",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Selected sector identity\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:6px;padding:16px 0;\"><div layer-name=\"SELECTED SECTOR · ILLUSTRATIVE\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:10px;line-height:15px;font-weight:600;color:#66543b;\">SELECTED SECTOR · ILLUSTRATIVE</div><div layer-name=\"Communication services\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:16px;line-height:24px;font-weight:600;color:#1a1c20;\">Communication services</div></div>"
+    },
+    {
+      "key": "evidence-value-0",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Above 50D\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 0;\"><div layer-name=\"Above 50D\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Above 50D</div><div layer-name=\"66.7%\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">66.7%</div></div>"
+    },
+    {
+      "key": "evidence-value-1",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Change vs prior session\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 0;\"><div layer-name=\"Change vs prior session\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Change vs prior session</div><div layer-name=\"+1.13 pp\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:500;color:#256341;\">+1.13 pp</div></div>"
+    },
+    {
+      "key": "evidence-value-2",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Covered / eligible\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 0;\"><div layer-name=\"Covered / eligible\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Covered / eligible</div><div layer-name=\"21 / 21\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">21 / 21</div></div>"
+    },
+    {
+      "key": "evidence-field-0",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Source identity\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:3px;padding:10px 0;\"><div layer-name=\"Source identity\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Source identity</div><div layer-name=\"macro / communication-services\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#1a1c20;white-space:normal;\">macro / communication-services</div></div>"
+    },
+    {
+      "key": "evidence-field-1",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Observed\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:3px;padding:10px 0;\"><div layer-name=\"Observed\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Observed</div><div layer-name=\"2026-10-30 · 20:00 UTC\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#1a1c20;white-space:normal;\">2026-10-30 · 20:00 UTC</div></div>"
+    },
+    {
+      "key": "evidence-field-2",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Published\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:3px;padding:10px 0;\"><div layer-name=\"Published\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Published</div><div layer-name=\"2026-10-30 · 20:02 UTC\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#1a1c20;white-space:normal;\">2026-10-30 · 20:02 UTC</div></div>"
+    },
+    {
+      "key": "evidence-field-3",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Retrieved\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:3px;padding:10px 0;\"><div layer-name=\"Retrieved\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Retrieved</div><div layer-name=\"2026-10-30 · 20:03 UTC\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#1a1c20;white-space:normal;\">2026-10-30 · 20:03 UTC</div></div>"
+    },
+    {
+      "key": "evidence-field-4",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Unit\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:3px;padding:10px 0;\"><div layer-name=\"Unit\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Unit</div><div layer-name=\"Percent; delta in percentage points\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#1a1c20;white-space:normal;\">Percent; delta in percentage points</div></div>"
+    },
+    {
+      "key": "evidence-caveat",
+      "parent": "evidence",
+      "html": "<div layer-name=\"A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:12px 0;white-space:normal;\">A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.</div>"
+    },
+    {
+      "key": "evidence-return",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Return to comparison\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;display:flex;align-items:center;justify-content:center;width:286px;flex-shrink:0;height:36px;padding:0 10px;border-radius:7px;border:1px solid #85877f;background:#fff;color:#1a1c20;font-weight:400;\">Return to comparison</div>"
+    },
+    {
+      "key": "evidence-focus",
+      "parent": "evidence",
+      "html": "<div layer-name=\"Docked: no focus trap. Close returns to the stable row trigger and restores table context.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#51555b;padding:12px 0 0;white-space:normal;\">Docked: no focus trap. Close returns to the stable row trigger and restores table context.</div>"
+    },
+    {
+      "key": "build-footer",
+      "parent": "main",
+      "html": "<div layer-name=\"Build contract / candidate limitations\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:7px;width:1168px;padding:18px 0 0;border-top:1px solid #cbccc7;\"><div layer-name=\"BUILD CONTRACT · F02-SYSTEM/1.0.0-candidate.2\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#66543b;\">BUILD CONTRACT · F02-SYSTEM/1.0.0-candidate.2</div><div layer-name=\"The selected row is quiet full-width fill, independently focusable. A 320px dock + 24px gap requires at least 640px primary width. Otherwise use the specified overlay.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">The selected row is quiet full-width fill, independently focusable. A 320px dock + 24px gap requires at least 640px primary width. Otherwise use the specified overlay.</div><div layer-name=\"Source: dashboard.html.j2 / theme.css; actual field mapping and all regime, risk, calendar and linked desks stay with D02. F01 joint shell freeze and browser proof remain open.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">Source: dashboard.html.j2 / theme.css; actual field mapping and all regime, risk, calendar and linked desks stay with D02. F01 joint shell freeze and browser proof remain open.</div></div>"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "key": "editorial-light",
+  "name": "F02 · Editorial · Light · Candidate 2",
+  "pageId": "p-6-0",
+  "width": 1440,
+  "height": 1640,
+  "theme": "light",
+  "styles": {
+    "backgroundColor": "#f6f6f3",
+    "display": "flex",
+    "flexDirection": "column",
+    "padding": "0px",
+    "gap": "0px",
+    "fontFamily": "Inter",
+    "color": "#1a1c20"
+  },
+  "steps": [
+    {
+      "key": "artifact",
+      "parent": "board",
+      "html": "<div layer-name=\"F02 candidate identity\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;display:flex;align-items:center;justify-content:space-between;width:1440px;height:32px;padding:0 24px;background:#f0f0ed;\"><div layer-name=\"F02 / EDITORIAL / LIGHT\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#51555b;\">F02 / EDITORIAL / LIGHT</div><div layer-name=\"CANDIDATE 2 · ILLUSTRATIVE FIXTURE · REVIEW PENDING\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">CANDIDATE 2 · ILLUSTRATIVE FIXTURE · REVIEW PENDING</div></div>"
+    },
+    {
+      "key": "header",
+      "parent": "board",
+      "html": "<div layer-name=\"Public header\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;width:1440px;height:64px;padding:0 24px;background:#efefec;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Mastermind\" style=\"flex-shrink:0;display:flex;align-items:center;gap:12px;\"><div layer-name=\"M mark\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:#1a1c20;border-radius:7px;color:#f6f6f3;font-family:Inter;font-size:16px;font-weight:700;\">M</div><div layer-name=\"MASTERMIND\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:700;color:#1a1c20;letter-spacing:0.1em;\">MASTERMIND</div></div><div layer-name=\"Chrome actions\" style=\"flex-shrink:0;display:flex;align-items:center;gap:24px;\"><div layer-name=\"研究 · 工具 · 学习\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">研究 · 工具 · 学习</div><div layer-name=\"EN / 中文\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:500;color:#1a1c20;\">EN / 中文</div></div></div>"
+    },
+    {
+      "key": "main",
+      "parent": "board",
+      "html": "<div layer-name=\"Public reading surface\" style=\"flex-shrink:0;display:flex;flex-direction:column;width:1440px;padding:32px 160px 40px;gap:0px;background:#f6f6f3;\"></div>"
+    },
+    {
+      "key": "breadcrumb",
+      "parent": "main",
+      "html": "<div layer-name=\"首页 / 研究札记 / Compound Growth for Traders\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:0 0 22px;\">首页 / 研究札记 / Compound Growth for Traders</div>"
+    },
+    {
+      "key": "article-title",
+      "parent": "main",
+      "html": "<div layer-name=\"Article title and dek\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:12px;width:1120px;\"><div layer-name=\"FROM THE DESK\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#66543b;letter-spacing:0.1em;\">FROM THE DESK</div><div layer-name=\"Compound Growth for Traders\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:42px;line-height:63px;font-weight:700;color:#1a1c20;letter-spacing:-0.025em;line-height:48px;width:960px;\">Compound Growth for Traders</div><div layer-name=\"Read the calculation, compare the measures, and keep the assumptions in view.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:18px;line-height:27px;font-weight:400;color:#51555b;line-height:28px;width:960px;\">Read the calculation, compare the measures, and keep the assumptions in view.</div></div>"
+    },
+    {
+      "key": "publication",
+      "parent": "main",
+      "html": "<div layer-name=\"Published 2026-07-20 · Example updated 2026-10-30 · Illustrative article excerpt\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;padding:18px 0 32px;\">Published 2026-07-20 · Example updated 2026-10-30 · Illustrative article excerpt</div>"
+    },
+    {
+      "key": "article-layout",
+      "parent": "main",
+      "html": "<div layer-name=\"TOC and reading measure\" style=\"flex-shrink:0;display:flex;align-items:flex-start;gap:48px;width:978px;\"></div>"
+    },
+    {
+      "key": "toc",
+      "parent": "article-layout",
+      "html": "<div layer-name=\"Anchored table of contents\" style=\"display:flex;flex-direction:column;width:210px;flex-shrink:0;gap:4px;\"></div>"
+    },
+    {
+      "key": "article",
+      "parent": "article-layout",
+      "html": "<div layer-name=\"English article body\" style=\"display:flex;flex-direction:column;width:720px;flex-shrink:0;gap:0px;\"></div>"
+    },
+    {
+      "key": "toc-label",
+      "parent": "toc",
+      "html": "<div layer-name=\"ON THIS PAGE\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;letter-spacing:0.1em;padding:0 0 8px;\">ON THIS PAGE</div>"
+    },
+    {
+      "key": "toc-0",
+      "parent": "toc",
+      "html": "<div layer-name=\"Follow the calculation\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:600;color:#1a1c20;padding:10px 0;\">Follow the calculation</div>"
+    },
+    {
+      "key": "toc-1",
+      "parent": "toc",
+      "html": "<div layer-name=\"Compare the averages\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:10px 0;\">Compare the averages</div>"
+    },
+    {
+      "key": "toc-2",
+      "parent": "toc",
+      "html": "<div layer-name=\"Where this example stops\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:10px 0;\">Where this example stops</div>"
+    },
+    {
+      "key": "toc-3",
+      "parent": "toc",
+      "html": "<div layer-name=\"Explore the assumptions\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:10px 0;\">Explore the assumptions</div>"
+    },
+    {
+      "key": "lede",
+      "parent": "article",
+      "html": "<div layer-name=\"A gain of 50% followed by a loss of 50% leaves less than you started with. The second return acts on a different base.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:20px;line-height:30px;font-weight:400;color:#1a1c20;line-height:31px;padding:0 0 24px;\">A gain of 50% followed by a loss of 50% leaves less than you started with. The second return acts on a different base.</div>"
+    },
+    {
+      "key": "calculation-heading",
+      "parent": "article",
+      "html": "<div layer-name=\"Follow the calculation\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:23px;line-height:34px;font-weight:600;color:#1a1c20;line-height:31px;padding:0 0 14px;\">Follow the calculation</div>"
+    },
+    {
+      "key": "calculation-copy",
+      "parent": "article",
+      "html": "<div layer-name=\"Start with USD 10,000. The first period raises the balance to USD 15,000. Losing half of that balance in the next period leaves USD 7,500. There are no deposits, withdrawals, fees or taxes in this example.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:400;color:#51555b;line-height:28px;padding:0 0 18px;\">Start with USD 10,000. The first period raises the balance to USD 15,000. Losing half of that balance in the next period leaves USD 7,500. There are no deposits, withdrawals, fees or taxes in this example.</div>"
+    },
+    {
+      "key": "calculation-caption",
+      "parent": "article",
+      "html": "<div layer-name=\"Illustrative calculation · currency USD\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;padding:0 0 8px;\">Illustrative calculation · currency USD</div>"
+    },
+    {
+      "key": "calculation-header",
+      "parent": "article",
+      "html": "<div layer-name=\"Calculation header\" style=\"flex-shrink:0;display:flex;align-items:center;width:720px;height:40px;background:#f0f0ed;\"><div layer-name=\"Period\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:260px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Period</div><div layer-name=\"Return\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:200px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Return</div><div layer-name=\"Balance · USD\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:260px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Balance · USD</div></div>"
+    },
+    {
+      "key": "calculation-row-0",
+      "parent": "article",
+      "html": "<div layer-name=\"Start\" style=\"flex-shrink:0;display:flex;align-items:center;width:720px;height:44px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Start\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Start</div><div layer-name=\"Not applicable\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#5f6368;width:200px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">Not applicable</div><div layer-name=\"10,000\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">10,000</div></div>"
+    },
+    {
+      "key": "calculation-row-1",
+      "parent": "article",
+      "html": "<div layer-name=\"Year 1\" style=\"flex-shrink:0;display:flex;align-items:center;width:720px;height:44px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 1\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Year 1</div><div layer-name=\"+50%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#256341;width:200px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">+50%</div><div layer-name=\"15,000\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">15,000</div></div>"
+    },
+    {
+      "key": "calculation-row-2",
+      "parent": "article",
+      "html": "<div layer-name=\"Year 2\" style=\"flex-shrink:0;display:flex;align-items:center;width:720px;height:44px;background:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 2\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;\">Year 2</div><div layer-name=\"−50%\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#a62d43;width:200px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">−50%</div><div layer-name=\"7,500\" style=\"font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;width:260px;flex-shrink:0;padding:0 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;\">7,500</div></div>"
+    },
+    {
+      "key": "calculation-evidence",
+      "parent": "article",
+      "html": "<div layer-name=\"Inspect the calculation →\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:13px;line-height:20px;font-weight:400;color:#235b8e;padding:12px 0 26px;\">Inspect the calculation →</div>"
+    },
+    {
+      "key": "averages-heading",
+      "parent": "article",
+      "html": "<div layer-name=\"Compare the averages\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:23px;line-height:34px;font-weight:600;color:#1a1c20;line-height:31px;padding:0 0 14px;\">Compare the averages</div>"
+    },
+    {
+      "key": "averages-copy",
+      "parent": "article",
+      "html": "<div layer-name=\"The arithmetic average is 0%. The total return is −25% over two years. The compound annual return is about −13.4% per year. These measures answer different questions, so the period and unit stay beside the number.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:400;color:#51555b;line-height:28px;padding:0 0 16px;\">The arithmetic average is 0%. The total return is −25% over two years. The compound annual return is about −13.4% per year. These measures answer different questions, so the period and unit stay beside the number.</div>"
+    },
+    {
+      "key": "equations",
+      "parent": "article",
+      "html": "<div layer-name=\"Exact arithmetic\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:6px;padding:16px 18px;background:#f0f0ed;border-radius:8px;\"><div layer-name=\"Total return = (7,500 / 10,000) − 1 = −25%.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;\">Total return = (7,500 / 10,000) − 1 = −25%.</div><div layer-name=\"CAGR = (7,500 / 10,000)^(1/2) − 1 ≈ −13.4% per year.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#1a1c20;\">CAGR = (7,500 / 10,000)^(1/2) − 1 ≈ −13.4% per year.</div></div>"
+    },
+    {
+      "key": "limits-heading",
+      "parent": "article",
+      "html": "<div layer-name=\"Where this example stops\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:23px;line-height:34px;font-weight:600;color:#1a1c20;line-height:31px;padding:26px 0 14px;\">Where this example stops</div>"
+    },
+    {
+      "key": "limits-copy",
+      "parent": "article",
+      "html": "<div layer-name=\"Reordering the same returns does not change the final balance when no cash enters or leaves. Contributions and withdrawals change that relationship. A fixed-rate calculator describes assumptions; it does not predict future returns.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:400;color:#51555b;line-height:28px;padding:0 0 24px;\">Reordering the same returns does not change the final balance when no cash enters or leaves. Contributions and withdrawals change that relationship. A fixed-rate calculator describes assumptions; it does not predict future returns.</div>"
+    },
+    {
+      "key": "next-heading",
+      "parent": "article",
+      "html": "<div layer-name=\"Explore the assumptions\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:23px;line-height:34px;font-weight:600;color:#1a1c20;line-height:31px;padding:0 0 14px;\">Explore the assumptions</div>"
+    },
+    {
+      "key": "next-copy",
+      "parent": "article",
+      "html": "<div layer-name=\"Use the existing tools to examine an annualized return or a contribution schedule. Keep the period, currency and cash-flow assumptions in view.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:17px;line-height:26px;font-weight:400;color:#51555b;line-height:28px;padding:0 0 18px;\">Use the existing tools to examine an annualized return or a contribution schedule. Keep the period, currency and cash-flow assumptions in view.</div>"
+    },
+    {
+      "key": "related",
+      "parent": "article",
+      "html": "<div layer-name=\"Existing continuation links\" style=\"flex-shrink:0;display:flex;align-items:center;justify-content:space-between;width:720px;padding:20px 0;border-top:1px solid #cbccc7;\"><div layer-name=\"CAGR calculator ↗\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#235b8e;\">CAGR calculator ↗</div><div layer-name=\"Compounding calculator ↗\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#235b8e;\">Compounding calculator ↗</div><div layer-name=\"Back to the desk ↗\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:14px;line-height:21px;font-weight:400;color:#235b8e;\">Back to the desk ↗</div></div>"
+    },
+    {
+      "key": "public-contract",
+      "parent": "main",
+      "html": "<div layer-name=\"Editorial build contract\" style=\"flex-shrink:0;display:flex;flex-direction:column;gap:8px;width:1120px;padding:24px 0 0;border-top:1px solid #cbccc7;\"><div layer-name=\"BUILD CONTRACT · F02-SYSTEM/1.0.0-candidate.2\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:600;color:#66543b;\">BUILD CONTRACT · F02-SYSTEM/1.0.0-candidate.2</div><div layer-name=\"English body; EN/ZH public chrome. Canonical anchors and routes stay with seo_article.html.j2 / seo_base.html.j2. No investor rail or invented translated URL.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">English body; EN/ZH public chrome. Canonical anchors and routes stay with seo_article.html.j2 / seo_base.html.j2. No investor rail or invented translated URL.</div><div layer-name=\"TOC uses actual anchors; evidence opens this calculation; continuation uses the existing CAGR, compounding and blog routes. Publication/update dates describe this document, not market data. Browser/keyboard/zoom verification remains separate.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#5f6368;\">TOC uses actual anchors; evidence opens this calculation; continuation uses the existing CAGR, compounding and blog routes. Publication/update dates describe this document, not market data. Browser/keyboard/zoom verification remains separate.</div></div>"
+    }
+  ],
+  "continuation_urls": [
+    "https://www.mastermind-x.com/tools/calculators/cagr.html",
+    "https://www.mastermind-x.com/tools/calculators/compounding.html",
+    "https://www.mastermind-x.com/blog/index.html"
+  ],
+  "language": {
+    "body": "en",
+    "chrome": "zh"
+  }
+}

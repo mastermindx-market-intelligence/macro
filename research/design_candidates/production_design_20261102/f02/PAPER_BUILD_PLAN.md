@@ -1,6 +1,6 @@
 # Exact Paper construction and annotation packet
 
-**State:** `NOT_APPLIED_TO_PAPER`. This packet is prepared for the existing qualified Paper workflow. No listed successor page, board or node has been created, and no new Paper ID is asserted. The live read adapter reports `accepted_for_write: false` because its observed and reviewed catalog digests differ. P00 owns that exact adapter qualification; F02 does not bypass it through UI automation, another carrier or adapter modification.
+**Current state:** `PARTIALLY_APPLIED_TO_PAPER`. The updated Mastermind Paper direct app now qualifies the actual0.5.18 catalog under TOOL_SCOPED_CONTRACT_V1. Seven native boards have been constructed and captured; see [paper/README.md](paper/README.md) and [paper/native-progress.json](paper/native-progress.json). The former Studio Direct mismatch below is historical to the prepared packet. Remaining construction, review and F01 joint qualification continue under the same F02 draft.
 
 ## Existing target and custody
 

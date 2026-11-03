@@ -1,7 +1,8 @@
 {
   "schema": "f02.paper.native-progress.v1",
   "status": "IN_PROGRESS",
-  "observed_at": "2026-11-03T04:12:36.042Z",
+  "phase": "CORE_KIT_CONSTRUCTED_AND_VISUALLY_INSPECTED",
+  "observed_at": "2026-11-03T04:31:36.890Z",
   "fileId": "01M312VSDSZFVT45674GDVJVZN",
   "carrier": "Mastermind Paper direct app",
   "procedure_pin": "1225133923333926d990b8bfd30432eec289181e",
@@ -222,12 +223,83 @@
         "4E6-0": "4JN-0",
         "4E7-0": "4JM-0"
       }
+    },
+    {
+      "key": "controls",
+      "id": "4JP-0",
+      "pageId": "p-4-0",
+      "name": "F02 · Tabs, actions & evidence inspector · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "title": "4JQ-0",
+        "tabs": "4JV-0",
+        "actions": "4K6-0",
+        "evidence-shell": "4KH-0",
+        "disclosure": "4KY-0",
+        "keyboard": "4L4-0",
+        "saves": "4L8-0"
+      },
+      "created_at": "2026-11-03T04:15:22.975Z"
+    },
+    {
+      "key": "grammar",
+      "id": "4LC-0",
+      "pageId": "p-5-0",
+      "name": "F02 · Table and chart grammar · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "title": "4LD-0",
+        "chart-title": "4LI-0",
+        "chart": "4LM-0",
+        "exact-values": "4MN-0",
+        "chart-source": "4ND-0",
+        "comparison-rules": "4NH-0",
+        "virtualization": "4NR-0"
+      },
+      "created_at": "2026-11-03T04:22:56.509Z"
+    },
+    {
+      "key": "builder",
+      "id": "4NV-0",
+      "pageId": "p-7-0",
+      "name": "F02 · Builder acceptance & source ownership · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "title": "4NW-0",
+        "owner-0": "4O1-0",
+        "owner-1": "4O7-0",
+        "owner-2": "4OD-0",
+        "owner-3": "4OJ-0",
+        "owner-4": "4OP-0",
+        "owner-5": "4OV-0",
+        "widths": "4P1-0",
+        "acceptance": "4P5-0",
+        "performance": "4P9-0",
+        "review": "4PD-0",
+        "refs": "4PH-0"
+      },
+      "created_at": "2026-11-03T04:27:16.150Z"
     }
   ],
   "operations": [
     {
       "operation_id": "f02-c2-readme-create-20261103-01",
       "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": null,
+      "completed_at": null,
+      "retry_allowed": false,
+      "arguments_sha256": "007eab692b9690761cc24a9c0559c16e25a02fe4039e132d9fc3be76e9f0eb04",
       "arguments": {
         "fileId": "01M312VSDSZFVT45674GDVJVZN",
         "pageId": "p-2-0",
@@ -244,15 +316,6 @@
           "fontFamily": "Inter"
         }
       },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "state": "APPLIED_RESPONSE_OBSERVED",
-      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "after_identity": {
-        "kind": "file-id",
-        "id": "01M312VSDSZFVT45674GDVJVZN"
-      },
-      "retry_allowed": false,
-      "arguments_sha256": "007eab692b9690761cc24a9c0559c16e25a02fe4039e132d9fc3be76e9f0eb04",
       "created_artboard": {
         "id": "47Q-0",
         "name": "F02 · Read me & Build contract · Candidate 2",
@@ -265,22 +328,25 @@
     {
       "operation_id": "f02-c2-readme-title-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "fileId": "01M312VSDSZFVT45674GDVJVZN",
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
+      "started_at": null,
+      "completed_at": null,
       "retry_allowed": false,
       "arguments_sha256": "d7a32910eea733cf6d03b255c24391ddf9d64c6abea058f9f63d8456389d4cd5",
       "html_sha256": "6c67ab24cad394ccc8015dc53b02696ce772ba87599c93434d17e893b77671cc",
       "html_characters": 672,
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "47R-0",
@@ -307,23 +373,24 @@
     {
       "operation_id": "f02-c2-readme-ownership-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:00:01.606Z",
       "completed_at": "2026-11-03T04:00:03.551Z",
       "retry_allowed": false,
       "arguments_sha256": "ac85d71dd4e5e4b4de5a4297cac79e0bf13faa462252fddd95d459dbf06e09b6",
       "html_sha256": "b8f87f385fcfb936ec5190febc740c104394921f24b705e3208b66d548325f16",
       "html_characters": 1002,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "47W-0",
@@ -365,23 +432,24 @@
     {
       "operation_id": "f02-c2-readme-journey-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:00:07.208Z",
       "completed_at": "2026-11-03T04:00:10.559Z",
       "retry_allowed": false,
       "arguments_sha256": "76a6addcd3833271914743a8c91a8ba631510993717c06be1a9a39aa35c76bb5",
       "html_sha256": "29692b41476728d664c765ba1e9f2baaed40c2eca9d1beb186f1a70cc40184d7",
       "html_characters": 451,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "484-0",
@@ -403,23 +471,24 @@
     {
       "operation_id": "f02-c2-readme-scope-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:00:13.718Z",
       "completed_at": "2026-11-03T04:00:19.659Z",
       "retry_allowed": false,
       "arguments_sha256": "2115876507bfaf851ffe5e4214a2efe395ecb24c9a6fad6455f29704030dfccc",
       "html_sha256": "b13ec2a2527045e6e5849b9e66ba8b6028ea0d64b96fa92970335a4dffbc307a",
       "html_characters": 1219,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "488-0",
@@ -461,23 +530,24 @@
     {
       "operation_id": "f02-c2-readme-limitations-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:00:44.703Z",
       "completed_at": "2026-11-03T04:00:56.634Z",
       "retry_allowed": false,
       "arguments_sha256": "50a207987a7c7282968b65e71b6f77e2247774d69ecef3030b20055f96a47995",
       "html_sha256": "4b5ce2f06fe28a23a0ccad726df7d804f510850c7ef66b14ea75bfc34b4adc2a",
       "html_characters": 736,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "48G-0",
@@ -499,23 +569,24 @@
     {
       "operation_id": "f02-c2-readme-source-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:01:05.393Z",
       "completed_at": "2026-11-03T04:01:12.628Z",
       "retry_allowed": false,
       "arguments_sha256": "8a9d6ad15ac87295f373a463b00351a61a1418663558cde843ada0898d2f11f0",
       "html_sha256": "8f4104cae47a87c6d4a1aee282375aa77ec0bec66567044203f1a987fc556ca5",
       "html_characters": 1182,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "48K-0",
@@ -557,23 +628,24 @@
     {
       "operation_id": "f02-c2-readme-construction-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "47Q-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:01:17.242Z",
       "completed_at": "2026-11-03T04:01:19.001Z",
       "retry_allowed": false,
       "arguments_sha256": "07e8b49797e26e9dbc27bae724345e5a8ff7c038785940864c5cdcd336440a19",
       "html_sha256": "56d9c5d04cbfea0fec34f27535fa0ac366e34df3925e521950c98a8027ceaa32",
       "html_characters": 811,
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "48S-0",
@@ -595,6 +667,18 @@
     {
       "operation_id": "f02-c2-readme-fit-20261103-01",
       "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:01:20.440Z",
+      "completed_at": "2026-11-03T04:01:22.812Z",
+      "retry_allowed": false,
+      "arguments_sha256": "12785f8dba86aa101f3175d3e44aca1bb46fc7ca29eb783e9541f52abe6fa797",
       "arguments": {
         "updates": [
           {
@@ -606,22 +690,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-foundations-create-20261103-01",
+      "tool": "create_artboard",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:01:20.440Z",
-      "completed_at": "2026-11-03T04:01:22.812Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:01:47.303Z",
+      "completed_at": "2026-11-03T04:01:48.676Z",
       "retry_allowed": false,
-      "arguments_sha256": "12785f8dba86aa101f3175d3e44aca1bb46fc7ca29eb783e9541f52abe6fa797"
-    },
-    {
-      "operation_id": "f02-c2-foundations-create-20261103-01",
-      "tool": "create_artboard",
+      "arguments_sha256": "7d006288937d96b093d083f312aa94b3fc163600e3d299ea6f5b899fe6b6beee",
       "arguments": {
         "pageId": "p-3-0",
         "name": "F02 · Semantic roles, type & density · Candidate 2",
@@ -637,17 +722,6 @@
           "color": "var(--noir-text-primary)"
         }
       },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "state": "APPLIED_RESPONSE_OBSERVED",
-      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "after_identity": {
-        "kind": "file-id",
-        "id": "01M312VSDSZFVT45674GDVJVZN"
-      },
-      "started_at": "2026-11-03T04:01:47.303Z",
-      "completed_at": "2026-11-03T04:01:48.676Z",
-      "retry_allowed": false,
-      "arguments_sha256": "7d006288937d96b093d083f312aa94b3fc163600e3d299ea6f5b899fe6b6beee",
       "created_artboard": {
         "id": "48W-0",
         "name": "F02 · Semantic roles, type & density · Candidate 2",
@@ -660,23 +734,24 @@
     {
       "operation_id": "f02-c2-foundations-title-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:01:53.229Z",
       "completed_at": "2026-11-03T04:01:59.557Z",
       "retry_allowed": false,
       "arguments_sha256": "12c6bbb8419a3814175670d2d16ea082180694aad1234c85e6b6d5343537522d",
       "html_sha256": "8d734d4fb46f6ac8dd0de9e1f79661c7b1639d5ae53311c2c87b6df8ba5e0ddf",
       "html_characters": 681,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "48X-0",
@@ -703,23 +778,24 @@
     {
       "operation_id": "f02-c2-foundations-semantic-0-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:02:08.046Z",
       "completed_at": "2026-11-03T04:02:15.952Z",
       "retry_allowed": false,
       "arguments_sha256": "4f5717fe6ddec0d2978483da1ff2f9aeca0c17f3d600345f078cfe0279e3eb20",
       "html_sha256": "8093de305ebf603fed8422138b57dc15b950f7da46ef05642816545cf2e58e0b",
       "html_characters": 3953,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "492-0",
@@ -911,23 +987,24 @@
     {
       "operation_id": "f02-c2-foundations-semantic-1-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:03:45.996Z",
       "completed_at": "2026-11-03T04:03:47.416Z",
       "retry_allowed": false,
       "arguments_sha256": "c30bfd460319f2f7e0784dce6ee2da421c2166a778ef5e2bc4b94376c090878c",
       "html_sha256": "0eec226d80d96955fa9b66dd19f6a8622c10c04d1861f29cedfad1d2d3e612b9",
       "html_characters": 4015,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4A4-0",
@@ -1119,23 +1196,24 @@
     {
       "operation_id": "f02-c2-foundations-semantic-2-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:03:49.590Z",
       "completed_at": "2026-11-03T04:03:53.109Z",
       "retry_allowed": false,
       "arguments_sha256": "afde0239a86b5434707dcb84df43caab32ce30851b77ae0188ec18a44cd44665",
       "html_sha256": "a877b4e49debdd3b564e535556d9c2ee3911310de2919ad873a823476890476c",
       "html_characters": 3966,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4B6-0",
@@ -1327,23 +1405,24 @@
     {
       "operation_id": "f02-c2-foundations-semantic-3-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:03:54.388Z",
       "completed_at": "2026-11-03T04:03:55.900Z",
       "retry_allowed": false,
       "arguments_sha256": "3160879a2cfe087fed983dad8451dec1548eecfcc21282c35ef1cafa2f847983",
       "html_sha256": "cd98d1fff8483abc69e20b752151376a585d3883c0d5f5276860c2e012ab0c1b",
       "html_characters": 3906,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4C8-0",
@@ -1535,23 +1614,24 @@
     {
       "operation_id": "f02-c2-foundations-type-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:04:17.328Z",
       "completed_at": "2026-11-03T04:04:25.995Z",
       "retry_allowed": false,
       "arguments_sha256": "904549bcdd6e1b8e6574e4e11f1408cc52511aaa58d1efa20b0690e270aad7b1",
       "html_sha256": "ffe1b8a987953ca4d30fca5fc2f166e76f68199f2ceec0726ad47f246b4ef2e2",
       "html_characters": 1991,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4DA-0",
@@ -1628,23 +1708,24 @@
     {
       "operation_id": "f02-c2-foundations-icons-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:04:32.187Z",
       "completed_at": "2026-11-03T04:04:42.861Z",
       "retry_allowed": false,
       "arguments_sha256": "7d6fb4139648b51153d28f1b8f817c92dff26ed29ec0538885647fedc865f185",
       "html_sha256": "dcf63b31a831c7a8acbf061e2d2e62b71d12ab734829c752e3ec248c0bdde259",
       "html_characters": 1443,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4DP-0",
@@ -1696,23 +1777,24 @@
     {
       "operation_id": "f02-c2-foundations-mapping-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "48W-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:04:45.375Z",
       "completed_at": "2026-11-03T04:04:50.454Z",
       "retry_allowed": false,
       "arguments_sha256": "9a911ebac9d2473633c7d2869cf04e3353abe5906cf1ab87da8a14bc66689403",
       "html_sha256": "8e99f8cc73bea1a036b82b7087ab5f994b87e88a9259777cdad6a52f903f387b",
       "html_characters": 845,
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4DZ-0",
@@ -1734,6 +1816,18 @@
     {
       "operation_id": "f02-c2-foundations-fit-20261103-01",
       "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:04:56.445Z",
+      "completed_at": "2026-11-03T04:04:58.171Z",
+      "retry_allowed": false,
+      "arguments_sha256": "06b2257dd1d2778780cdbd86a1bc7433b8a4b94477089595323fe49fe46b6bba",
       "arguments": {
         "updates": [
           {
@@ -1745,22 +1839,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-foundations-selected-fill-20261103-01",
+      "tool": "update_styles",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:04:56.445Z",
-      "completed_at": "2026-11-03T04:04:58.171Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:06:53.916Z",
+      "completed_at": "2026-11-03T04:07:00.622Z",
       "retry_allowed": false,
-      "arguments_sha256": "06b2257dd1d2778780cdbd86a1bc7433b8a4b94477089595323fe49fe46b6bba"
-    },
-    {
-      "operation_id": "f02-c2-foundations-selected-fill-20261103-01",
-      "tool": "update_styles",
+      "arguments_sha256": "20084382dea07a46a79ac75200360886bded6110664705aa887d16866e87a319",
       "arguments": {
         "updates": [
           {
@@ -1772,22 +1867,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-metrics-create-20261103-01",
+      "tool": "create_artboard",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:06:53.916Z",
-      "completed_at": "2026-11-03T04:07:00.622Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:07:05.367Z",
+      "completed_at": "2026-11-03T04:07:12.369Z",
       "retry_allowed": false,
-      "arguments_sha256": "20084382dea07a46a79ac75200360886bded6110664705aa887d16866e87a319"
-    },
-    {
-      "operation_id": "f02-c2-metrics-create-20261103-01",
-      "tool": "create_artboard",
+      "arguments_sha256": "e7d9c61dcd2143a69df7501dc6ca3d528d22fb1581e4ce7f44ca95f83a1a60b5",
       "arguments": {
         "pageId": "p-4-0",
         "name": "F02 · Metric, change & source receipt · Candidate 2",
@@ -1803,17 +1899,6 @@
           "color": "var(--noir-text-primary)"
         }
       },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "state": "APPLIED_RESPONSE_OBSERVED",
-      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "after_identity": {
-        "kind": "file-id",
-        "id": "01M312VSDSZFVT45674GDVJVZN"
-      },
-      "started_at": "2026-11-03T04:07:05.367Z",
-      "completed_at": "2026-11-03T04:07:12.369Z",
-      "retry_allowed": false,
-      "arguments_sha256": "e7d9c61dcd2143a69df7501dc6ca3d528d22fb1581e4ce7f44ca95f83a1a60b5",
       "created_artboard": {
         "id": "4E3-0",
         "name": "F02 · Metric, change & source receipt · Candidate 2",
@@ -1826,23 +1911,24 @@
     {
       "operation_id": "f02-c2-metrics-title-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:07:13.664Z",
       "completed_at": "2026-11-03T04:07:16.117Z",
       "retry_allowed": false,
       "arguments_sha256": "0a846ea384a5d8f782fd022b635ad8e47b3dc53a1c2cc5e8c0e9a0af34458091",
       "html_sha256": "56f40c1d6394d988d40b96c42ffaa10dc3fe5645d21dd6ec9e22ca19a2592c7c",
       "html_characters": 688,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4E4-0",
@@ -1869,23 +1955,24 @@
     {
       "operation_id": "f02-c2-metrics-metric-trio-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:07:19.168Z",
       "completed_at": "2026-11-03T04:07:20.732Z",
       "retry_allowed": false,
       "arguments_sha256": "8745098fd34bb44f2dd222afb32ee9cfa9dfe78c121e385656e404f8095ca79c",
       "html_sha256": "9ec219749707a29ea11b001389c5e7b7ba7427124d7ea42da3ff12aaac2a22b4",
       "html_characters": 2018,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4E9-0",
@@ -1972,23 +2059,24 @@
     {
       "operation_id": "f02-c2-metrics-metric-units-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:07:23.095Z",
       "completed_at": "2026-11-03T04:07:24.567Z",
       "retry_allowed": false,
       "arguments_sha256": "c533eaa48ede4f39f0a2f36c9691152f717c9f0d1facd4fadc1e4c9df3c5b3d9",
       "html_sha256": "adfb72ac1e4ff062360dbf3822b7892bd0b6707646426a7ce7e9c13337b01df4",
       "html_characters": 696,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4EQ-0",
@@ -2010,23 +2098,24 @@
     {
       "operation_id": "f02-c2-metrics-table-caption-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:07:41.735Z",
       "completed_at": "2026-11-03T04:07:45.966Z",
       "retry_allowed": false,
       "arguments_sha256": "0e91e1548a2212d7d2f08588e8fed7026a0b5228ebb5272b8b9c260104f04983",
       "html_sha256": "92c744a754bc083b344bacd06093197c57ec07bf06ec3a73e9ef9bdaab07c7a5",
       "html_characters": 405,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4EU-0",
@@ -2048,23 +2137,24 @@
     {
       "operation_id": "f02-c2-metrics-row-header-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:07:49.846Z",
       "completed_at": "2026-11-03T04:07:56.643Z",
       "retry_allowed": false,
       "arguments_sha256": "c34a41162db143f2aca4eac03a5a3d61dec8ccd364107e5aff9d67caedf51ac8",
       "html_sha256": "2dc969f88fcc346e363e529c96d1977c384ce4d7641fb63296a240d73c530e7f",
       "html_characters": 1584,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4EY-0",
@@ -2136,23 +2226,24 @@
     {
       "operation_id": "f02-c2-metrics-data-0-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:08:02.603Z",
       "completed_at": "2026-11-03T04:08:09.143Z",
       "retry_allowed": false,
       "arguments_sha256": "8299320f042abcc3a9617de6a67c4fe1db336d923512b367b5d213599596280d",
       "html_sha256": "e7f67ef0db035f6fa30bd91af3f0d0eb76b94663c3719124ad30074f54ea332a",
       "html_characters": 1590,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4FC-0",
@@ -2224,23 +2315,24 @@
     {
       "operation_id": "f02-c2-metrics-data-1-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:08:16.040Z",
       "completed_at": "2026-11-03T04:08:22.297Z",
       "retry_allowed": false,
       "arguments_sha256": "d9c7e891cb650cfe8d04903cf6a47ce2bd1b415853880d01b27f04b9170a4e76",
       "html_sha256": "14ecc04aee35e7a969e22945093e6df2e39b9481da2e39c3b96bf19d0fd4c5ea",
       "html_characters": 1573,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4FQ-0",
@@ -2312,23 +2404,24 @@
     {
       "operation_id": "f02-c2-metrics-data-2-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:08:57.919Z",
       "completed_at": "2026-11-03T04:09:06.284Z",
       "retry_allowed": false,
       "arguments_sha256": "a8af970b7aaa6f8b4498d3f54524e3c23bb195cd2f36c543f155f5e608d13884",
       "html_sha256": "5202737f50034d9885a470df6d7aa861835cad25a37c4f651b0959ebbf3ccf48",
       "html_characters": 1567,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4G4-0",
@@ -2400,23 +2493,24 @@
     {
       "operation_id": "f02-c2-metrics-source-receipt-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:09:08.010Z",
       "completed_at": "2026-11-03T04:09:10.196Z",
       "retry_allowed": false,
       "arguments_sha256": "9972925be694732a119ca6f000fa54b7676e5362e10c3a00145971f0fd1a5441",
       "html_sha256": "8a4af1906c1a0f0613a9036ab24f995ea2a92cde8ff5af847e27d7a0d57da8fe",
       "html_characters": 1768,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4GI-0",
@@ -2493,23 +2587,24 @@
     {
       "operation_id": "f02-c2-metrics-row-behavior-20261103-01",
       "tool": "write_html",
-      "arguments": {
-        "targetNodeId": "4E3-0",
-        "mode": "insert-children"
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
+      "guard_source": "explicit_target_read",
       "started_at": "2026-11-03T04:09:13.550Z",
       "completed_at": "2026-11-03T04:09:19.193Z",
       "retry_allowed": false,
       "arguments_sha256": "7dcb1ebe46d1fdf5d5acb52d86d1a9fa576be95aeb768d0cae7214b6f0689535",
       "html_sha256": "f58a77615ff2ffbc7deea6347e4e8828c4f46cb5bf8a1c6de943e3c3c72d3be3",
       "html_characters": 745,
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
       "created_nodes": [
         {
           "id": "4GX-0",
@@ -2531,6 +2626,18 @@
     {
       "operation_id": "f02-c2-metrics-fit-20261103-01",
       "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:09:20.789Z",
+      "completed_at": "2026-11-03T04:09:22.228Z",
+      "retry_allowed": false,
+      "arguments_sha256": "835e10c5d23f7722213eac2c6a752fb2e9a6f4239a47b9c72fcc0e883198083e",
       "arguments": {
         "updates": [
           {
@@ -2542,22 +2649,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-metrics-numeric-lanes-20261103-01",
+      "tool": "update_styles",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:09:20.789Z",
-      "completed_at": "2026-11-03T04:09:22.228Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:09:56.202Z",
+      "completed_at": "2026-11-03T04:10:01.801Z",
       "retry_allowed": false,
-      "arguments_sha256": "835e10c5d23f7722213eac2c6a752fb2e9a6f4239a47b9c72fcc0e883198083e"
-    },
-    {
-      "operation_id": "f02-c2-metrics-numeric-lanes-20261103-01",
-      "tool": "update_styles",
+      "arguments_sha256": "260767dab3834ffb4ff66d84c8419e308177e6cdd731a42c12725f7f4e1ee043",
       "arguments": {
         "updates": [
           {
@@ -2581,22 +2689,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-metrics-light-duplicate-20261103-01",
+      "tool": "duplicate_nodes",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:09:56.202Z",
-      "completed_at": "2026-11-03T04:10:01.801Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:10:03.823Z",
+      "completed_at": "2026-11-03T04:10:06.741Z",
       "retry_allowed": false,
-      "arguments_sha256": "260767dab3834ffb4ff66d84c8419e308177e6cdd731a42c12725f7f4e1ee043"
-    },
-    {
-      "operation_id": "f02-c2-metrics-light-duplicate-20261103-01",
-      "tool": "duplicate_nodes",
+      "arguments_sha256": "9e7c6c942cd312d01de9f142dc2b68d0738253451061f6a24a4842b4a32b0d36",
       "arguments": {
         "nodes": [
           {
@@ -2604,17 +2713,6 @@
           }
         ]
       },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "state": "APPLIED_RESPONSE_OBSERVED",
-      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
-      "after_identity": {
-        "kind": "file-id",
-        "id": "01M312VSDSZFVT45674GDVJVZN"
-      },
-      "started_at": "2026-11-03T04:10:03.823Z",
-      "completed_at": "2026-11-03T04:10:06.741Z",
-      "retry_allowed": false,
-      "arguments_sha256": "9e7c6c942cd312d01de9f142dc2b68d0738253451061f6a24a4842b4a32b0d36",
       "duplicated_nodes": [
         {
           "sourceId": "4E3-0",
@@ -2728,6 +2826,18 @@
     {
       "operation_id": "f02-c2-metrics-light-colors-20261103-01",
       "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:10:45.046Z",
+      "completed_at": "2026-11-03T04:10:47.312Z",
+      "retry_allowed": false,
+      "arguments_sha256": "ddb2c8898ec566e15c0a31ebdfaaa319bffd4555541e7791db7a9c6394e24419",
       "arguments": {
         "updates": [
           {
@@ -2868,22 +2978,23 @@
             }
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-metrics-light-name-20261103-01",
+      "tool": "rename_nodes",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:10:45.046Z",
-      "completed_at": "2026-11-03T04:10:47.312Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:10:51.686Z",
+      "completed_at": "2026-11-03T04:11:01.463Z",
       "retry_allowed": false,
-      "arguments_sha256": "ddb2c8898ec566e15c0a31ebdfaaa319bffd4555541e7791db7a9c6394e24419"
-    },
-    {
-      "operation_id": "f02-c2-metrics-light-name-20261103-01",
-      "tool": "rename_nodes",
+      "arguments_sha256": "cdf23dccbce04e4475035af88930eb37999255ec81337c8c192c51a156ed2a60",
       "arguments": {
         "updates": [
           {
@@ -2891,28 +3002,1949 @@
             "name": "F02 · Metric, change & source receipt · Light · Candidate 2"
           }
         ]
-      },
-      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      }
+    },
+    {
+      "operation_id": "f02-c2-foundation-phase-finish-20261103-01",
+      "tool": "finish_working_on_nodes",
       "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
       "after_identity": {
         "kind": "file-id",
         "id": "01M312VSDSZFVT45674GDVJVZN"
       },
-      "started_at": "2026-11-03T04:10:51.686Z",
-      "completed_at": "2026-11-03T04:11:01.463Z",
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:14:28.963Z",
+      "completed_at": "2026-11-03T04:14:46.968Z",
       "retry_allowed": false,
-      "arguments_sha256": "cdf23dccbce04e4475035af88930eb37999255ec81337c8c192c51a156ed2a60"
+      "arguments_sha256": "cafe3f98942603fc90a1f2fd636e1fa3342830b306bb2888e37db01344d6234d",
+      "arguments": {
+        "nodeIds": [
+          "47Q-0",
+          "48W-0",
+          "4E3-0",
+          "4H1-0"
+        ]
+      }
+    },
+    {
+      "operation_id": "f02-c2-controls-create-20261103-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:15:09.813Z",
+      "completed_at": "2026-11-03T04:15:22.973Z",
+      "retry_allowed": false,
+      "arguments_sha256": "6b5eda46f232fa1e920365080861ae431027b60b619aaa13dc15bf99cafb9209",
+      "arguments": {
+        "pageId": "p-4-0",
+        "name": "F02 · Tabs, actions & evidence inspector · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "24px",
+          "backgroundColor": "var(--noir-canvas)",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "created_artboard": {
+        "id": "4JP-0",
+        "name": "F02 · Tabs, actions & evidence inspector · Candidate 2",
+        "worldX": 6244,
+        "worldY": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-controls-title-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:15:30.259Z",
+      "completed_at": "2026-11-03T04:15:36.158Z",
+      "retry_allowed": false,
+      "arguments_sha256": "f4815fe98ea8b9cc71b52328241366fe38ec20c07e80e44f25706b1f2b8ce2b1",
+      "html_sha256": "b12c69c8897bebcfac28dbbc52fcfd16c8387b61cbdda0dc12d35bc1ed5a2bf9",
+      "html_characters": 703,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4JQ-0",
+          "name": "A predictable return to the question.",
+          "component": "Frame"
+        },
+        {
+          "id": "4JR-0",
+          "name": "F02-P04 / CONTROL & …",
+          "component": "Text"
+        },
+        {
+          "id": "4JS-0",
+          "name": "A predictable return…",
+          "component": "Text"
+        },
+        {
+          "id": "4JT-0",
+          "name": "Selection, keyboard …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-tabs-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:15:47.112Z",
+      "completed_at": "2026-11-03T04:16:02.062Z",
+      "retry_allowed": false,
+      "arguments_sha256": "2106985bd8245664285726979986eb2a33db8301520e57d50daf95a0bb22534a",
+      "html_sha256": "b096b0a66afed47aa2b4d8e800517f4a9855032936e6b7fd928e9e759656aa4a",
+      "html_characters": 1456,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4JV-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4JW-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4JX-0",
+          "name": "MANUAL-ACTIVATION TA…",
+          "component": "Text"
+        },
+        {
+          "id": "4JY-0",
+          "name": "Arrows / Home / End …",
+          "component": "Text"
+        },
+        {
+          "id": "4JZ-0",
+          "name": "Overview",
+          "component": "Frame"
+        },
+        {
+          "id": "4K0-0",
+          "name": "Overview",
+          "component": "Text"
+        },
+        {
+          "id": "4K1-0",
+          "name": "Table",
+          "component": "Frame"
+        },
+        {
+          "id": "4K2-0",
+          "name": "Table",
+          "component": "Text"
+        },
+        {
+          "id": "4K3-0",
+          "name": "Sources",
+          "component": "Frame"
+        },
+        {
+          "id": "4K4-0",
+          "name": "Sources",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-actions-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:16:10.186Z",
+      "completed_at": "2026-11-03T04:16:45.556Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c686f8f788fa6da1cf246c969c36e8b27a7b1a6131aa47dfed55534638fcf8df",
+      "html_sha256": "459e355539fb91b3fd4742528bf02b0732a2f83f0cb9c5f5be24ced13f428fdb",
+      "html_characters": 1421,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4K6-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4K7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4K8-0",
+          "name": "ACTION HIERARCHY",
+          "component": "Text"
+        },
+        {
+          "id": "4K9-0",
+          "name": "Confirm the domain a…",
+          "component": "Text"
+        },
+        {
+          "id": "4KA-0",
+          "name": "Save view",
+          "component": "Frame"
+        },
+        {
+          "id": "4KB-0",
+          "name": "Save view",
+          "component": "Text"
+        },
+        {
+          "id": "4KC-0",
+          "name": "Source details",
+          "component": "Frame"
+        },
+        {
+          "id": "4KD-0",
+          "name": "Source details",
+          "component": "Text"
+        },
+        {
+          "id": "4KE-0",
+          "name": "More",
+          "component": "Frame"
+        },
+        {
+          "id": "4KF-0",
+          "name": "More",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-evidence-shell-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:19:00.141Z",
+      "completed_at": "2026-11-03T04:19:21.367Z",
+      "retry_allowed": false,
+      "arguments_sha256": "38aeb6857a30f1260a571e3a7a8e796a62724784fef97fac8f3f60684b930128",
+      "html_sha256": "296c211bd9cd63cd878972bfed90b9a3d43502291115ce48c33d19259b8f1f2e",
+      "html_characters": 2573,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4KH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4KI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4KJ-0",
+          "name": "Primary table remain…",
+          "component": "Text"
+        },
+        {
+          "id": "4KK-0",
+          "name": "At 1440px: content 1…",
+          "component": "Text"
+        },
+        {
+          "id": "4KL-0",
+          "name": "Dock only when at le…",
+          "component": "Text"
+        },
+        {
+          "id": "4KM-0",
+          "name": "The dock does not tr…",
+          "component": "Text"
+        },
+        {
+          "id": "4KN-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4KO-0",
+          "name": "Evidence",
+          "component": "Text"
+        },
+        {
+          "id": "4KP-0",
+          "name": "Information technolo…",
+          "component": "Text"
+        },
+        {
+          "id": "4KQ-0",
+          "name": "Participation · 30 O…",
+          "component": "Text"
+        },
+        {
+          "id": "4KR-0",
+          "name": "74.20%",
+          "component": "Text"
+        },
+        {
+          "id": "4KS-0",
+          "name": "178 / 184 covered",
+          "component": "Text"
+        },
+        {
+          "id": "4KT-0",
+          "name": "Partial coverage",
+          "component": "Text"
+        },
+        {
+          "id": "4KU-0",
+          "name": "Missing securities a…",
+          "component": "Text"
+        },
+        {
+          "id": "4KV-0",
+          "name": "Close evidence",
+          "component": "Frame"
+        },
+        {
+          "id": "4KW-0",
+          "name": "Close evidence",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-disclosure-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:19:21.370Z",
+      "completed_at": "2026-11-03T04:20:28.753Z",
+      "retry_allowed": false,
+      "arguments_sha256": "fbdeac0a8e9b2296b2c58fefaa1b7fde5e5fed29e62728b1e6aa2ab88e037f03",
+      "html_sha256": "680946c13f27f7d3138605a9c1a2c1d5a43e077dc892a6ad6ce9994ddf1c50ce",
+      "html_characters": 853,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4KY-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4KZ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4L0-0",
+          "name": "How participation is…",
+          "component": "Text"
+        },
+        {
+          "id": "4L1-0",
+          "name": "Expanded −",
+          "component": "Text"
+        },
+        {
+          "id": "4L2-0",
+          "name": "Numerator: covered s…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-keyboard-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:20:28.755Z",
+      "completed_at": "2026-11-03T04:20:39.857Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8e2061736646df7694a73dc66159dc78acc53b24a7edfa1b1e16b9c2e77d11d7",
+      "html_sha256": "d214b9c9a9d26edcc4c2d97bc6cf3b28e58791721420d412d77dde4e10f66a79",
+      "html_characters": 782,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4L4-0",
+          "name": "Keyboard, touch and route continuity",
+          "component": "Frame"
+        },
+        {
+          "id": "4L5-0",
+          "name": "Keyboard, touch and …",
+          "component": "Text"
+        },
+        {
+          "id": "4L6-0",
+          "name": "Modal: named dialog,…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-saves-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:20:39.859Z",
+      "completed_at": "2026-11-03T04:20:48.872Z",
+      "retry_allowed": false,
+      "arguments_sha256": "4eb75d3f9922ef2a32bb8e759f170048743c04d14a4024edaada02d1d8384470",
+      "html_sha256": "06236ae0b8e8ad7b4ba9a27c6dacb9c1a6bdfdc86f19e84966783815819e58cf",
+      "html_characters": 788,
+      "arguments": {
+        "targetNodeId": "4JP-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4L8-0",
+          "name": "Save belongs to D23 / the existing service",
+          "component": "Frame"
+        },
+        {
+          "id": "4L9-0",
+          "name": "Save belongs to D23 …",
+          "component": "Text"
+        },
+        {
+          "id": "4LA-0",
+          "name": "Idle → pending → sav…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-controls-fit-20261103-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:20:59.363Z",
+      "completed_at": "2026-11-03T04:21:11.380Z",
+      "retry_allowed": false,
+      "arguments_sha256": "853a00cca93a9b3e36ee5dbfc0659c4c385333848f100992d0d214c3f3fbe2a7",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4JP-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "f02-c2-grammar-create-20261103-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:22:33.618Z",
+      "completed_at": "2026-11-03T04:22:56.507Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c17b2f9d6d7c55f5bf36a4e2677013ef33965a384e480c17f7c5f15e32c9fd5c",
+      "arguments": {
+        "pageId": "p-5-0",
+        "name": "F02 · Table and chart grammar · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "24px",
+          "backgroundColor": "var(--noir-canvas)",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "created_artboard": {
+        "id": "4LC-0",
+        "name": "F02 · Table and chart grammar · Candidate 2",
+        "worldX": 2100,
+        "worldY": -2275,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-grammar-title-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:23:06.972Z",
+      "completed_at": "2026-11-03T04:23:14.069Z",
+      "retry_allowed": false,
+      "arguments_sha256": "d5f903936aa14d3faf819d5e12173b21089596ca20da78a1ed287f6dca1e49a6",
+      "html_sha256": "4f6ee1c1c4eb73957460b31ca7435e85ac46d9732cc0e0bedd57f4ee0653234b",
+      "html_characters": 716,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4LD-0",
+          "name": "Comparison first. Exact values always reachable.",
+          "component": "Frame"
+        },
+        {
+          "id": "4LE-0",
+          "name": "F02-P06 / TABLE & CH…",
+          "component": "Text"
+        },
+        {
+          "id": "4LF-0",
+          "name": "Comparison first. Ex…",
+          "component": "Text"
+        },
+        {
+          "id": "4LG-0",
+          "name": "Charts explain shape…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-chart-title-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:23:14.072Z",
+      "completed_at": "2026-11-03T04:23:23.144Z",
+      "retry_allowed": false,
+      "arguments_sha256": "de5e25aeac9b88d3f9b670c525f205b26d4bd88280d0305f44d29c9f79f4f505",
+      "html_sha256": "0ee5a1e4422fb2e01bad7641288860426b73126abf7495e54948a118c83773bb",
+      "html_characters": 412,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4LI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4LJ-0",
+          "name": "Participation across…",
+          "component": "Text"
+        },
+        {
+          "id": "4LK-0",
+          "name": "Unit: percent · line…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-chart-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:23:23.146Z",
+      "completed_at": "2026-11-03T04:23:35.323Z",
+      "retry_allowed": false,
+      "arguments_sha256": "b92ee5ff3f21d92461a2a1e53637f35988bd1b1516bbb94c0ea46d3a1d23da43",
+      "html_sha256": "574b47c080e811cd96052dcada42b20229bb53cd7533c022950873ec469a6f03",
+      "html_characters": 3997,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4LM-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4LN-0",
+          "name": "SVG",
+          "component": "SVG"
+        },
+        {
+          "id": "4LO-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LP-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LQ-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LR-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LS-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LT-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LU-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LV-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LW-0",
+          "name": "Line",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LX-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LY-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4LZ-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4M0-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4M1-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4M2-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4M3-0",
+          "name": "Circle",
+          "component": "SVGVisualElement"
+        },
+        {
+          "id": "4MC-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MD-0",
+          "name": "21 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4ME-0",
+          "name": "22 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MF-0",
+          "name": "23 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MG-0",
+          "name": "26 Oct · —",
+          "component": "Text"
+        },
+        {
+          "id": "4MH-0",
+          "name": "27 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MI-0",
+          "name": "28 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MJ-0",
+          "name": "29 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MK-0",
+          "name": "30 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4ML-0",
+          "name": "The line breaks at 2…",
+          "component": "Text"
+        },
+        {
+          "id": "4M4-0",
+          "name": "Y axis / 50%",
+          "component": "Frame"
+        },
+        {
+          "id": "4M5-0",
+          "name": "50%",
+          "component": "Text"
+        },
+        {
+          "id": "4M6-0",
+          "name": "Y axis / 60%",
+          "component": "Frame"
+        },
+        {
+          "id": "4M7-0",
+          "name": "60%",
+          "component": "Text"
+        },
+        {
+          "id": "4M8-0",
+          "name": "Y axis / 70%",
+          "component": "Frame"
+        },
+        {
+          "id": "4M9-0",
+          "name": "70%",
+          "component": "Text"
+        },
+        {
+          "id": "4MA-0",
+          "name": "Y axis / 80%",
+          "component": "Frame"
+        },
+        {
+          "id": "4MB-0",
+          "name": "80%",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-exact-values-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:23:35.326Z",
+      "completed_at": "2026-11-03T04:23:43.869Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8059d330e0e8d2aae93260bb3ced4f5b4e2c39eda84e0fee7f6e72d20a4e1cbc",
+      "html_sha256": "18037275964ae7485ac49ef0bc09828da2a30d75b11e92d38c66728a48f0066c",
+      "html_characters": 2661,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4MN-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MO-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MP-0",
+          "name": "21 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MQ-0",
+          "name": "61.20%",
+          "component": "Text"
+        },
+        {
+          "id": "4MR-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MS-0",
+          "name": "22 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MT-0",
+          "name": "63.40%",
+          "component": "Text"
+        },
+        {
+          "id": "4MU-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MV-0",
+          "name": "23 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MW-0",
+          "name": "62.10%",
+          "component": "Text"
+        },
+        {
+          "id": "4MX-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4MY-0",
+          "name": "26 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4MZ-0",
+          "name": "—",
+          "component": "Text"
+        },
+        {
+          "id": "4N0-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4N1-0",
+          "name": "27 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4N2-0",
+          "name": "65.57%",
+          "component": "Text"
+        },
+        {
+          "id": "4N3-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4N4-0",
+          "name": "28 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4N5-0",
+          "name": "64.90%",
+          "component": "Text"
+        },
+        {
+          "id": "4N6-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4N7-0",
+          "name": "29 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4N8-0",
+          "name": "65.57%",
+          "component": "Text"
+        },
+        {
+          "id": "4N9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4NA-0",
+          "name": "30 Oct",
+          "component": "Text"
+        },
+        {
+          "id": "4NB-0",
+          "name": "66.70%",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-axis-centers-20261103-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:25:26.264Z",
+      "completed_at": "2026-11-03T04:25:38.258Z",
+      "retry_allowed": false,
+      "arguments_sha256": "57ff5a13e31cdc138dbc24104617d1cfb9d3be89095cb9e40fe4d03c5af5d59e",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4MC-0"
+            ],
+            "styles": {
+              "position": "relative",
+              "width": "1296px",
+              "height": "18px",
+              "paddingLeft": "0px"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MD-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "30px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4ME-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "198px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MF-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "366px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MG-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "534px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MH-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "702px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MI-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "870px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MJ-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "1038px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          },
+          {
+            "nodeIds": [
+              "4MK-0"
+            ],
+            "styles": {
+              "position": "absolute",
+              "left": "1206px",
+              "top": "0px",
+              "width": "100px",
+              "textAlign": "center"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "f02-c2-grammar-chart-source-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:25:41.707Z",
+      "completed_at": "2026-11-03T04:25:44.834Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c5ad06813519f90c7574a459fd646f410e340a1ce06629e2cf252f68a0e1b3c8",
+      "html_sha256": "69bf042f0daaebff0034649022898cecbb844d1abead0e5c121756d85455cad6",
+      "html_characters": 828,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4ND-0",
+          "name": "Source and exact-value access",
+          "component": "Frame"
+        },
+        {
+          "id": "4NE-0",
+          "name": "Source and exact-val…",
+          "component": "Text"
+        },
+        {
+          "id": "4NF-0",
+          "name": "Illustrative fixture…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-comparison-rules-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:25:44.837Z",
+      "completed_at": "2026-11-03T04:25:49.595Z",
+      "retry_allowed": false,
+      "arguments_sha256": "3c4722aa865edda4698e80dde7f8b78733edf01602aed06745b21268672bf120",
+      "html_sha256": "11a2ed66c1a2393509e329e6c53d58c1242f3a689e958f39128d500e56837e9a",
+      "html_characters": 1487,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4NH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4NI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4NJ-0",
+          "name": "TABLE",
+          "component": "Text"
+        },
+        {
+          "id": "4NK-0",
+          "name": "Caption, scoped colu…",
+          "component": "Text"
+        },
+        {
+          "id": "4NL-0",
+          "name": "Right-align numeric …",
+          "component": "Text"
+        },
+        {
+          "id": "4NM-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4NN-0",
+          "name": "CHART",
+          "component": "Text"
+        },
+        {
+          "id": "4NO-0",
+          "name": "Declare unit, scale,…",
+          "component": "Text"
+        },
+        {
+          "id": "4NP-0",
+          "name": "No decorative smooth…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-virtualization-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:25:49.599Z",
+      "completed_at": "2026-11-03T04:25:52.458Z",
+      "retry_allowed": false,
+      "arguments_sha256": "a5d06f4860e6838b574c050a4f936be55d7d8c95c2684cf39f1261f03c7ad325",
+      "html_sha256": "485c6ead91b77355ae036c89001bb5d5c1ebdfa3cf29fa3e956ab976ef08d553",
+      "html_characters": 758,
+      "arguments": {
+        "targetNodeId": "4LC-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4NR-0",
+          "name": "Virtualized and narrow data",
+          "component": "Frame"
+        },
+        {
+          "id": "4NS-0",
+          "name": "Virtualized and narr…",
+          "component": "Text"
+        },
+        {
+          "id": "4NT-0",
+          "name": "Retain the real Data…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-grammar-fit-20261103-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:25:57.248Z",
+      "completed_at": "2026-11-03T04:26:02.896Z",
+      "retry_allowed": false,
+      "arguments_sha256": "302f44b0e1db9adddd3803f6a60741cf73c4c3aaa18953d491af622984de9c47",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4LC-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "f02-c2-builder-create-20261103-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:27:11.124Z",
+      "completed_at": "2026-11-03T04:27:16.148Z",
+      "retry_allowed": false,
+      "arguments_sha256": "b75e2371dff8f7f5662f9d4e540aba49aae6a9bc081b262eb4e72bd1b532e78a",
+      "arguments": {
+        "pageId": "p-7-0",
+        "name": "F02 · Builder acceptance & source ownership · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "24px",
+          "backgroundColor": "var(--noir-canvas)",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "created_artboard": {
+        "id": "4NV-0",
+        "name": "F02 · Builder acceptance & source ownership · Candidate 2",
+        "worldX": 40,
+        "worldY": -1430,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-builder-title-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:27:19.915Z",
+      "completed_at": "2026-11-03T04:27:22.214Z",
+      "retry_allowed": false,
+      "arguments_sha256": "f981f6d93ccbaad11f70bf4891e4d01a062393d7b5518ee18f8644b72d025ff5",
+      "html_sha256": "2539035514a80c2bbb88d46a424ba6d786ad09123a8681cd823eb990169afdf2",
+      "html_characters": 690,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4NW-0",
+          "name": "Integrate through the existing owners.",
+          "component": "Frame"
+        },
+        {
+          "id": "4NX-0",
+          "name": "F02-P12 / BUILD CONT…",
+          "component": "Text"
+        },
+        {
+          "id": "4NY-0",
+          "name": "Integrate through th…",
+          "component": "Text"
+        },
+        {
+          "id": "4NZ-0",
+          "name": "This kit specifies s…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-0-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:27:22.218Z",
+      "completed_at": "2026-11-03T04:27:26.319Z",
+      "retry_allowed": false,
+      "arguments_sha256": "3cb510bebc81e0f8610c7e37edb4c887e50234cab18f8c0de5d0c954cb7636f4",
+      "html_sha256": "05fcc354562bb6126d820e8c27545550c49c78e0f02c8536359303d994204649",
+      "html_characters": 708,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4O1-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4O2-0",
+          "name": "Macro",
+          "component": "Text"
+        },
+        {
+          "id": "4O3-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4O4-0",
+          "name": "theme.css · actual c…",
+          "component": "Text"
+        },
+        {
+          "id": "4O5-0",
+          "name": "Source observation +…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-1-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:27:26.322Z",
+      "completed_at": "2026-11-03T04:27:29.283Z",
+      "retry_allowed": false,
+      "arguments_sha256": "1b9c66ad0a4b271cfc09272f0c30bdc07a39a8eb282c9ef17d5ec849834e9bf7",
+      "html_sha256": "9afb7295a68c05e814435e511c9867dba3c7aa5ef6a64368ba9227b46af99b5e",
+      "html_characters": 751,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4O7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4O8-0",
+          "name": "Company / D07",
+          "component": "Text"
+        },
+        {
+          "id": "4O9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OA-0",
+          "name": "CompanyAnalysisWorks…",
+          "component": "Text"
+        },
+        {
+          "id": "4OB-0",
+          "name": "Entity/listing ident…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-2-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:27:29.286Z",
+      "completed_at": "2026-11-03T04:27:30.851Z",
+      "retry_allowed": false,
+      "arguments_sha256": "1f65b450e3a2342f06c2cc1204e15f2d946d4013c6b29c798203de81667bccd9",
+      "html_sha256": "1195293032757528b482ceb871109d1b0d5c5d0bee402757a6f0e927b1e813d3",
+      "html_characters": 757,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4OD-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OE-0",
+          "name": "Options / D08",
+          "component": "Text"
+        },
+        {
+          "id": "4OF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OG-0",
+          "name": "meta.observed_statis…",
+          "component": "Text"
+        },
+        {
+          "id": "4OH-0",
+          "name": "Print window ≠ expir…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-3-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:27:55.987Z",
+      "completed_at": "2026-11-03T04:28:04.943Z",
+      "retry_allowed": false,
+      "arguments_sha256": "62cad3c3170498d664db39e7ffa385d55d9ee2a53b5e9c71d060b47eaffd127f",
+      "html_sha256": "317db19b85d37ea0dcbd7a223e569739cb918746dd734eb5074cb4ff86a819ba",
+      "html_characters": 708,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4OJ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OK-0",
+          "name": "Public editorial",
+          "component": "Text"
+        },
+        {
+          "id": "4OL-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OM-0",
+          "name": "seo_article / seo_ba…",
+          "component": "Text"
+        },
+        {
+          "id": "4ON-0",
+          "name": "English article body…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-4-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:28:04.947Z",
+      "completed_at": "2026-11-03T04:28:16.197Z",
+      "retry_allowed": false,
+      "arguments_sha256": "dbeb2284f7982c69652ab0955af4f561f33114502ec0ebecd22aec4b515f69a4",
+      "html_sha256": "74b2aef2cc64afdb97bd8c85718ccd07f737da48305656ceaddb3cc9770318c9",
+      "html_characters": 740,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4OP-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OQ-0",
+          "name": "Save / D23",
+          "component": "Text"
+        },
+        {
+          "id": "4OR-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OS-0",
+          "name": "Existing mutation se…",
+          "component": "Text"
+        },
+        {
+          "id": "4OT-0",
+          "name": "Pending deduplicatio…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-owner-5-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:28:16.201Z",
+      "completed_at": "2026-11-03T04:28:27.294Z",
+      "retry_allowed": false,
+      "arguments_sha256": "9a0d8fa44cb82c842c02c094e522aecd59755a8a4228e54366bf5b5ed8bdd89e",
+      "html_sha256": "ceb83569ba72e60baedf22d9e38b3852063dbdd0645b2a244dbf5c881efba79e",
+      "html_characters": 745,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4OV-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OW-0",
+          "name": "Domain patterns",
+          "component": "Text"
+        },
+        {
+          "id": "4OX-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4OY-0",
+          "name": "Retained verdict / d…",
+          "component": "Text"
+        },
+        {
+          "id": "4OZ-0",
+          "name": "Shared anatomy must …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-widths-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:28:27.298Z",
+      "completed_at": "2026-11-03T04:28:34.567Z",
+      "retry_allowed": false,
+      "arguments_sha256": "b0bb3d82446c05d68a3eb8dd522bf975524a23f8596419c18148b0d7ad324d73",
+      "html_sha256": "47b00e7acc162bbf12676c006a5b1521cdcd6e8db530d33e0639a6ea0d967243",
+      "html_characters": 763,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4P1-0",
+          "name": "Responsive acceptance matrix",
+          "component": "Frame"
+        },
+        {
+          "id": "4P2-0",
+          "name": "Responsive acceptanc…",
+          "component": "Text"
+        },
+        {
+          "id": "4P3-0",
+          "name": "320/390: compact hea…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-acceptance-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:29:10.208Z",
+      "completed_at": "2026-11-03T04:29:18.237Z",
+      "retry_allowed": false,
+      "arguments_sha256": "819a41a1805656043d0e25e2ea07b3f861d47c8f2b58087987888690cde90531",
+      "html_sha256": "3036c5187a0857c42fc37472c3b3fe102b8a689b7011fd8b038921b446f2e1a6",
+      "html_characters": 788,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4P5-0",
+          "name": "Required real-path acceptance",
+          "component": "Frame"
+        },
+        {
+          "id": "4P6-0",
+          "name": "Required real-path a…",
+          "component": "Text"
+        },
+        {
+          "id": "4P7-0",
+          "name": "Normal, unknown, zer…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-performance-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:29:18.240Z",
+      "completed_at": "2026-11-03T04:29:26.806Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8d84b91aaa007805848371e87bb90e208f4c335ebd90eed54b541136d6ed0fab",
+      "html_sha256": "1430951d86f6268e4fe2163e3f726e58f1cc413f3e12c185eaae30e011dea153",
+      "html_characters": 752,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4P9-0",
+          "name": "Targets and migration",
+          "component": "Frame"
+        },
+        {
+          "id": "4PA-0",
+          "name": "Targets and migratio…",
+          "component": "Text"
+        },
+        {
+          "id": "4PB-0",
+          "name": "Future p75 targets: …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-review-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:29:26.810Z",
+      "completed_at": "2026-11-03T04:29:32.796Z",
+      "retry_allowed": false,
+      "arguments_sha256": "79377f251a1370f15f70154b17236bb307c1ee120f7eeea7ff76004d6e676433",
+      "html_sha256": "6343ed0ba3b2f3611363ba0ca3097a00ce1f817d2b260c35b366582e3f67c7f4",
+      "html_characters": 786,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4PD-0",
+          "name": "Review and continuity",
+          "component": "Frame"
+        },
+        {
+          "id": "4PE-0",
+          "name": "Review and continuit…",
+          "component": "Text"
+        },
+        {
+          "id": "4PF-0",
+          "name": "Native Paper constru…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-refs-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T04:29:32.800Z",
+      "completed_at": "2026-11-03T04:29:41.728Z",
+      "retry_allowed": false,
+      "arguments_sha256": "675ca3e95979eeaa279c92bba0dd7b83c505feeff1038aec49d2c492f8ee2812",
+      "html_sha256": "f84812f9f9e4fb0d29bb4ced109d3eff7754dfa8123815bdaf8277c73f7d9e8b",
+      "html_characters": 1013,
+      "arguments": {
+        "targetNodeId": "4NV-0",
+        "mode": "insert-children"
+      },
+      "created_nodes": [
+        {
+          "id": "4PH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4PI-0",
+          "name": "SOURCE PACKAGE / DRA…",
+          "component": "Text"
+        },
+        {
+          "id": "4PJ-0",
+          "name": "SYSTEM_CONTRACT.md ·…",
+          "component": "Text"
+        },
+        {
+          "id": "4PK-0",
+          "name": "CAPABILITY_LEDGER.md…",
+          "component": "Text"
+        },
+        {
+          "id": "4PL-0",
+          "name": "Reviewed source arti…",
+          "component": "Text"
+        },
+        {
+          "id": "4PM-0",
+          "name": "No global CSS fork. …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-builder-fit-20261103-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:29:43.821Z",
+      "completed_at": "2026-11-03T04:29:47.392Z",
+      "retry_allowed": false,
+      "arguments_sha256": "e8ac3c3b38cbef108a5abbf92db595bebc54fbcc33839cd83f0b0de382cc3867",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4NV-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "operation_id": "f02-c2-core-kit-finish-20261103-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T04:30:21.252Z",
+      "completed_at": "2026-11-03T04:30:23.361Z",
+      "retry_allowed": false,
+      "arguments_sha256": "5b906309fc6036496cb79f800c6b8930f46306329657ae5823a76f5d34feae21",
+      "arguments": {
+        "nodeIds": [
+          "47Q-0",
+          "48W-0",
+          "4E3-0",
+          "4H1-0",
+          "4JP-0",
+          "4LC-0",
+          "4NV-0"
+        ]
+      }
     }
   ],
+  "unresolved_effects": [],
   "remaining": [
-    "Controls",
-    "State matrix",
-    "Chart/table grammar",
-    "Four consumer references in two themes",
-    "Mobile and dock specimens",
-    "Builder annotation board",
-    "Independent review"
-  ],
-  "unresolved_effects": []
+    "States",
+    "Four consumers in dark/light",
+    "Mobile and dock",
+    "Independent review",
+    "F01 joint contract",
+    "Real browser and consumer integration qualification"
+  ]
 }
