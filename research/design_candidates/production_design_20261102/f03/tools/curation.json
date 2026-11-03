@@ -1,0 +1,131 @@
+{
+  "status": "recorded_history_claims_not_reference_approval",
+  "observed_on_utc": "2026-11-03",
+  "relationships": [
+    {
+      "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "source_page_id": "p-Q-0",
+      "source_board_id": "61OD-0",
+      "target_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_page_id": "p-F-0",
+      "kind": "recorded_redirect",
+      "evidence": "evidence/redirect-earnings.jsx",
+      "qualification": "Exact URL read from original notice; current candidate approval not established.",
+      "owner": "D07"
+    },
+    {
+      "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "source_page_id": "p-T-0",
+      "source_board_id": "61O3-0",
+      "target_file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "target_page_id": "p-1-0",
+      "kind": "recorded_redirect",
+      "evidence": "evidence/redirect-hub.jsx",
+      "qualification": "Exact URL read from original notice; prior preservation claims are not re-certified.",
+      "owner": "D11"
+    },
+    {
+      "source_file_id": "01M3NRCX55B452A12819WNE1RH",
+      "source_page_id": "p-F-0",
+      "source_board_id": "UYR-0",
+      "target_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page_id": "p-18-0",
+      "kind": "recorded_redirect",
+      "evidence": "evidence/redirect-shell.jsx",
+      "qualification": "Exact URL read from original notice; current shell release is unobserved.",
+      "owner": "F01"
+    },
+    {
+      "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "source_page_id": "p-15-0",
+      "source_board_id": null,
+      "target_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_page_id": "p-Q-0",
+      "kind": "recorded_import_destination",
+      "evidence": "evidence/before-directory.jsx",
+      "qualification": "Existing directory names source p-15 and Terminal p-Q; qualified against exact baseline page identities. Held 1B5H-0 remains held; no new fidelity certification.",
+      "owner": "D07"
+    },
+    {
+      "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "source_page_id": "p-1B-0",
+      "source_board_id": null,
+      "target_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_page_id": "p-F-0",
+      "kind": "recorded_original_archive",
+      "evidence": "evidence/redirect-earnings.jsx",
+      "qualification": "Existing redirect notice identifies this original archive and destination; current fidelity and approval are not re-certified.",
+      "owner": "D07"
+    },
+    {
+      "source_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "source_page_id": "p-1A-0",
+      "source_board_id": null,
+      "target_file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "target_page_id": "p-1-0",
+      "kind": "recorded_original_archive",
+      "evidence": "evidence/redirect-hub.jsx",
+      "qualification": "Existing redirect notice identifies this original archive and destination; current fidelity and approval are not re-certified.",
+      "owner": "D11"
+    }
+  ],
+  "page_notes": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-I-1",
+      "owner": "D11",
+      "statement": "Historical R1–R3 notice names Hub R4 as successor family but supplies no exact URL.",
+      "evidence": "evidence/redirect-hub-early.jsx",
+      "missing": "Exact successor and inherited-condition receipt"
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-7-1",
+      "owner": "D19",
+      "statement": "China vNext historical notice says archived/not for build and names Unified US + China Hub R4; exact successor not established here.",
+      "evidence": "evidence/china-hub-redirect.jsx",
+      "missing": "D19/D11 exact successor and current China contract"
+    },
+    {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-Q-0",
+      "owner": "D07",
+      "statement": "Returns v2 desktop 1B5H-0 remains held. Original directory names source p-15; title links prior board 613W-0. Current hold-release evidence is absent.",
+      "evidence": "evidence/terminal-directory.jsx",
+      "missing": "Hold decision and any qualified successor for 1B5H-0"
+    },
+    {
+      "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "page_id": "p-B-0",
+      "owner": "D03",
+      "statement": "R6 page remains rejected in package. K2S-0 contains earlier critique about oversized card, ambiguous strategy and historical levels, but does not establish why this entire R6 page was rejected.",
+      "evidence": "evidence/prophet-rejected-readme.jsx",
+      "missing": "Actual R6 rejection receipt and exact successor"
+    }
+  ],
+  "assignment_aliases": {
+    "D07": [
+      "Returns Calendar",
+      "Earnings",
+      "Company dossiers"
+    ],
+    "D04": [
+      "Heatmaps",
+      "Participation"
+    ],
+    "D08": [
+      "Options"
+    ],
+    "D11": [
+      "Intelligence Hub",
+      "Refined vase"
+    ],
+    "D17": [
+      "WTI",
+      "Energy"
+    ],
+    "D21": [
+      "Global Market Cycles"
+    ]
+  }
+}

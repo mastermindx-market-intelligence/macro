@@ -1,0 +1,2725 @@
+[
+  {
+    "id": "P00",
+    "slug": "paper-access-prerequisite",
+    "title": "Restore the qualified Paper writing and organization path",
+    "folder": "00 Programme",
+    "target": "No new design file",
+    "dependencies": "existing Paper adapter owner",
+    "partners": "F03",
+    "job": "Resolve the observed tool-schema qualification mismatch through the existing owner, then prove the admitted path can support the intended file/page organization.",
+    "handoff": "handoffs/P00-paper-access-prerequisite.md",
+    "proposed_files": [
+      "No new design file"
+    ],
+    "title_zh": "Paper 访问与写入资格",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/P00-paper-access-prerequisite.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "F01",
+    "slug": "shared-shell",
+    "title": "Shared shell, navigation and investor information architecture",
+    "folder": "01 Foundations",
+    "target": "MM · Shared Shell",
+    "dependencies": "P00 for edits; F02 handshake",
+    "partners": "D01 D06 D23 D25 D26 D27",
+    "job": "Give users one elegant, legible way to move between market workspaces while preserving exact instrument, region, research and return context.",
+    "handoff": "handoffs/F01-shared-shell.md",
+    "proposed_files": [
+      "MM · Shared Shell"
+    ],
+    "title_zh": "共享外壳与导航",
+    "canonical_registry_ids": [
+      "terminal:legacypath",
+      "terminal:dev_workspaces"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-23-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1S-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1R-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-18-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-G-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-F-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F01-shared-shell.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "F02",
+    "slug": "design-system",
+    "title": "Design system and reusable product patterns",
+    "folder": "01 Foundations",
+    "target": "MM · Design System",
+    "dependencies": "P00 for edits; F01 handshake",
+    "partners": "all design sessions",
+    "job": "Reconcile the canonical system into a coherent set of usable components, chart/table conventions and state patterns for the new shell.",
+    "handoff": "handoffs/F02-design-system.md",
+    "proposed_files": [
+      "MM · Design System"
+    ],
+    "title_zh": "设计系统",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1Q-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-7-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "F03",
+    "slug": "paper-organization",
+    "title": "Paper organization, coverage and design integration",
+    "folder": "00 Programme",
+    "target": "MM · Design Programme",
+    "dependencies": "P00 for mutations; F01/F02 contracts",
+    "partners": "all sessions",
+    "job": "Make every current candidate, retained reference, archive and builder contract discoverable without crowding the working files.",
+    "handoff": "handoffs/F03-paper-organization.md",
+    "proposed_files": [
+      "MM · Design Programme"
+    ],
+    "title_zh": "设计目录与整合",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1P-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M5JRN1HWF62YK527NKCY7WD5",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M5JRN1HWF62YK527NKCY7WD5",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-R-0"
+      },
+      {
+        "file_id": "01M5K3WQXMD1QKXM2SBD7VABW1",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5K0V5AGPSDXKA2K1PH1ABNE",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5JV8SY6WP21H72WKK7GJ5R6",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5JS8TNZKQ01SJS4D0S9VQFC",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5HPWFPQ2Z5X79A9H8MJFKK0",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5HPWFPQ2Z5X79A9H8MJFKK0",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-24-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-23-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-22-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-20-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1Z-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1Y-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1X-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1W-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1U-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1T-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1S-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1R-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1Q-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1P-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1N-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1M-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1L-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1K-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1J-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1I-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1H-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1F-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1E-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1B-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-1A-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-18-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-17-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-16-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-15-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-14-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-13-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-H-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-O-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-N-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-10-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-L-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-Y-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-S-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-K-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-Z-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-11-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-X-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-W-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-E-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M5HQ8VMMY87NVDENZAGJNYKM",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5HRAG5659SFE58D3PTA7D0V",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5HDPF3HSZFJJAFMARVQSHZR",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5JKR6H0JNN07BA3YKQDXBNC",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5JKR6H0JNN07BA3YKQDXBNC",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-2-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-4-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-H-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-O-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-N-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-U-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-12-3"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-G-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-F-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-R-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-M-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-10-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-L-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-Y-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-S-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-K-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-Z-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-11-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-X-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-W-0"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-E-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+        "page_id": "p-9-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F03-paper-organization.md",
+    "source_contract": "CONTRACT.md",
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "F03 source directory delivered; Paper organization blocked",
+    "next_action": "Consume P00 qualification and exact target overlap evidence",
+    "aliases": []
+  },
+  {
+    "id": "D01",
+    "slug": "today",
+    "title": "Today and personal market overview",
+    "folder": "10 Workspaces",
+    "target": "MM · Today",
+    "dependencies": "F01 F02",
+    "partners": "D02 D03 D10 D22 D23",
+    "job": "Help a returning investor understand what changed, what matters today and which saved tasks need attention.",
+    "handoff": "handoffs/D01-today.md",
+    "proposed_files": [
+      "MM · Today"
+    ],
+    "title_zh": "今日概览",
+    "canonical_registry_ids": [
+      "terminal:today"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D01-today.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D02",
+    "slug": "macro",
+    "title": "Macro regimes, breadth, risk and market events",
+    "folder": "20 Markets",
+    "target": "MM · Macro & Risk",
+    "dependencies": "F01 F02",
+    "partners": "D01 D10 D15 D19 D21 D25",
+    "job": "Explain the current macro regime, its supporting evidence and what would invalidate it, with clear paths into affected assets.",
+    "handoff": "handoffs/D02-macro.md",
+    "proposed_files": [
+      "MM · Macro Overview",
+      "MM · Macro Systems",
+      "MM · Risk & Events"
+    ],
+    "title_zh": "宏观、风险与事件",
+    "canonical_registry_ids": [
+      "macro:anticipation",
+      "macro:crossasset",
+      "macro:cycle",
+      "macro:demand",
+      "macro:impulse",
+      "macro:macro",
+      "macro:macro_family",
+      "macro:macro_business_activity",
+      "macro:macro_capital_structure",
+      "macro:macro_consumer_payments",
+      "macro:macro_context",
+      "macro:macro_financial_conditions",
+      "macro:macro_growth_real_economy",
+      "macro:macro_housing_real_estate",
+      "macro:macro_inflation_system",
+      "macro:macro_labor_markets",
+      "macro:macro_liquidity_central_banks",
+      "macro:macro_liquidity_regime",
+      "macro:macro_monetary",
+      "macro:macro_monetary_policy",
+      "macro:macro_national_debt_liabilities",
+      "macro:macro_rates_curves",
+      "macro:macro_signals",
+      "macro:macro_trade_flows",
+      "macro:odds",
+      "macro:radar"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-13-1"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D02-macro.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D03",
+    "slug": "us-prophet",
+    "title": "US equities and Prophet opportunities",
+    "folder": "20 Markets",
+    "target": "MM · US Equities & Prophet",
+    "dependencies": "F01 F02",
+    "partners": "D04 D05 D07 D20",
+    "job": "Let users scan US market conditions and compare actionable research candidates without losing readiness, invalidation or evidence semantics.",
+    "handoff": "handoffs/D03-us-prophet.md",
+    "proposed_files": [
+      "MM · US Equities & Prophet"
+    ],
+    "title_zh": "美股与 Prophet",
+    "canonical_registry_ids": [
+      "macro:foresight",
+      "macro:leader_radar",
+      "macro:us_stocks",
+      "macro:us_stocks_lab",
+      "macro:us_stocks_v2",
+      "macro:winner_health"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-3-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D03-us-prophet.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D04",
+    "slug": "discover",
+    "title": "Discovery, confluence and heatmaps",
+    "folder": "10 Workspaces",
+    "target": "MM · Discover & Heatmaps",
+    "dependencies": "F01 F02",
+    "partners": "D03 D05 D07 D13",
+    "job": "Move from a broad market scan to a defensible shortlist through visual comparison, filters and preserved evidence.",
+    "handoff": "handoffs/D04-discover.md",
+    "proposed_files": [
+      "MM · Discover & Heatmaps"
+    ],
+    "title_zh": "发现与热力图",
+    "canonical_registry_ids": [
+      "macro:advanced",
+      "macro:basket_family",
+      "macro:baskets",
+      "macro:confluence_screener",
+      "macro:discovery",
+      "macro:etfs",
+      "macro:movers",
+      "macro:sector_heatmap",
+      "terminal:discover",
+      "terminal:dislocations"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-H-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-O-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-N-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-8-1"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D04-discover.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "Heatmaps",
+      "Participation"
+    ]
+  },
+  {
+    "id": "D05",
+    "slug": "sectors",
+    "title": "Sectors, themes and rotation",
+    "folder": "20 Markets",
+    "target": "MM · Sectors & Rotation",
+    "dependencies": "F01 F02",
+    "partners": "D03 D04 D13 D19 D20",
+    "job": "Explain where leadership and money are rotating, let users investigate a sector/theme, and connect the analysis to exact instruments.",
+    "handoff": "handoffs/D05-sectors.md",
+    "proposed_files": [
+      "MM · Sectors & Rotation"
+    ],
+    "title_zh": "板块与轮动",
+    "canonical_registry_ids": [
+      "macro:allocation",
+      "macro:factors",
+      "macro:rotation_family",
+      "macro:sector_central",
+      "macro:sector_cycles",
+      "macro:sectors_family",
+      "macro:state_of_themes",
+      "macro:subsector_family",
+      "macro:subsector_nasdaq_family",
+      "macro:subsector_rotation",
+      "macro:subsector_russell_family",
+      "macro:subsectors",
+      "macro:theme_tree"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-24-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-Y-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-Z-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-E-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "page_id": "p-1-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D05-sectors.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D06",
+    "slug": "terminal",
+    "title": "Focused Terminal, charts and contextual investigation",
+    "folder": "10 Workspaces",
+    "target": "MM · Terminal & Chart Context",
+    "dependencies": "F01 F02",
+    "partners": "D07 D08 D14 D22",
+    "job": "Preserve the professional chart workspace while making transitions to context, analysis and research coherent with the shared shell.",
+    "handoff": "handoffs/D06-terminal.md",
+    "proposed_files": [
+      "MM · Terminal & Chart Context"
+    ],
+    "title_zh": "终端与图表",
+    "canonical_registry_ids": [
+      "macro:market_structure",
+      "macro:spvector",
+      "macro:stage_analysis",
+      "terminal:dev_chart_bench",
+      "terminal:dev_theater",
+      "terminal:embed_chart",
+      "terminal:scripts",
+      "terminal:terminal",
+      "terminal:x_slug"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-W-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Z-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-G-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D06-terminal.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D07",
+    "slug": "company",
+    "title": "Company intelligence, earnings and expectations",
+    "folder": "30 Research",
+    "target": "MM · Company & Earnings",
+    "dependencies": "F01 F02",
+    "partners": "D03 D06 D09 D12 D13",
+    "job": "Help users form and challenge a company thesis using financials, expectations, results, ownership and source evidence.",
+    "handoff": "handoffs/D07-company.md",
+    "proposed_files": [
+      "MM · Company Intelligence",
+      "MM · Earnings & Expectations"
+    ],
+    "title_zh": "公司、财报与预期",
+    "canonical_registry_ids": [
+      "macro:capital_structure",
+      "macro:financial_lineage",
+      "macro:stock",
+      "macro:stocks_family",
+      "macro:stocks_index",
+      "terminal:analysis"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [
+      "/expectation_surface.html"
+    ],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1B-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-15-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-S-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-M-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-L-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-K-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-F-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-B-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-A-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-9-1"
+      },
+      {
+        "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-7-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D07-company.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "Returns Calendar",
+      "Earnings",
+      "Company dossiers"
+    ]
+  },
+  {
+    "id": "D08",
+    "slug": "options",
+    "title": "Options platform integration",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Integration",
+    "dependencies": "F01 F02; early common contract before slice composition",
+    "partners": "D08A D08B D08C D08D D05 D06 D09 D22 D23",
+    "job": "Own the common Options navigation, view/object contract and final integration across four separately dispatched design slices.",
+    "handoff": "handoffs/D08-options.md",
+    "proposed_files": [
+      "MM · Options Integration"
+    ],
+    "title_zh": "期权平台整合",
+    "canonical_registry_ids": [
+      "macro:gex",
+      "macro:options",
+      "macro:options_screener",
+      "terminal:dev_futures",
+      "terminal:dev_futures_sample",
+      "terminal:options",
+      "terminal:options_futures"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [
+      "/options/equity-replay",
+      "/dev/options-plan"
+    ],
+    "paper_refs": [
+      {
+        "file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "page_id": "p-1-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08-options.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "Options"
+    ]
+  },
+  {
+    "id": "D08A",
+    "slug": "options-overview-flow",
+    "title": "Options Overview and Flow",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Overview & Flow",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08B D09 D23",
+    "job": "Complete the Options scan/desk/flow family and its transitions into investigation.",
+    "handoff": "handoffs/D08A-options-overview-flow.md",
+    "proposed_files": [
+      "MM · Options Overview & Flow"
+    ],
+    "title_zh": "期权概览与资金流",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [
+      "macro:options",
+      "macro:options_screener",
+      "terminal:options"
+    ],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-25-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08A-options-overview-flow.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D08B",
+    "slug": "options-exposure-volatility",
+    "title": "Options Exposure, Volatility and 3D",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Exposure & Volatility",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08A D08C D08D D09",
+    "job": "Complete exposure, volatility and 3D investigation while preserving analytical depth and accessible interpretation.",
+    "handoff": "handoffs/D08B-options-exposure-volatility.md",
+    "proposed_files": [
+      "MM · Options Exposure & Volatility"
+    ],
+    "title_zh": "期权敞口与波动率",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [
+      "macro:gex",
+      "terminal:options"
+    ],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-U-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-D-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08B-options-exposure-volatility.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D08C",
+    "slug": "options-plan-review",
+    "title": "Options Plan, Compare and Review",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Plan & Review",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08B D08D D22 D23",
+    "job": "Complete the structure/scenario/plan/save/watch/review journey with honest persistence and execution boundaries.",
+    "handoff": "handoffs/D08C-options-plan-review.md",
+    "proposed_files": [
+      "MM · Options Plan & Review"
+    ],
+    "title_zh": "期权计划与复盘",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [
+      "terminal:options"
+    ],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-P-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-5-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-4-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08C-options-plan-review.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D08D",
+    "slug": "options-futures-replay",
+    "title": "Options Futures and Equity Replay",
+    "folder": "10 Workspaces",
+    "target": "MM · Futures & Replay",
+    "dependencies": "F01 F02 D08 common contract; route admission tracked separately",
+    "partners": "D08 D06 D08B D08C",
+    "job": "Complete futures/equity replay, temporal identity, entitlement and precise return context.",
+    "handoff": "handoffs/D08D-options-futures-replay.md",
+    "proposed_files": [
+      "MM · Futures & Replay"
+    ],
+    "title_zh": "期货与股票回放",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [
+      "terminal:dev_futures",
+      "terminal:dev_futures_sample",
+      "terminal:options_futures"
+    ],
+    "source_deltas": [
+      "/options/equity-replay"
+    ],
+    "paper_refs": [],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08D-options-futures-replay.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D09",
+    "slug": "flows",
+    "title": "Flows, dark pool and institutional ownership",
+    "folder": "30 Research",
+    "target": "MM · Flows & Ownership",
+    "dependencies": "F01 F02",
+    "partners": "D03 D05 D07 D08",
+    "job": "Help users distinguish reported transactions, inferred flow, position change and institutional holdings with comparable source clocks.",
+    "handoff": "handoffs/D09-flows.md",
+    "proposed_files": [
+      "MM · Flows & Dark Pool",
+      "MM · Funds & Ownership"
+    ],
+    "title_zh": "资金流与机构持仓",
+    "canonical_registry_ids": [
+      "macro:congress_trades",
+      "macro:darkpool",
+      "macro:flow_desk",
+      "macro:flow_leaders",
+      "macro:flow_velocity",
+      "macro:fund_ako",
+      "macro:fund_akre",
+      "macro:fund_altarock",
+      "macro:fund_altimeter",
+      "macro:fund_appaloosa",
+      "macro:fund_aquamarine",
+      "macro:fund_bakerbros",
+      "macro:fund_basswood",
+      "macro:fund_baupost",
+      "macro:fund_berkshire",
+      "macro:fund_casdin",
+      "macro:fund_coatue",
+      "macro:fund_corvex",
+      "macro:fund_d1capital",
+      "macro:fund_dorsey",
+      "macro:fund_dragoneer",
+      "macro:fund_duquesne",
+      "macro:fund_durable",
+      "macro:fund_egerton",
+      "macro:fund_elliott",
+      "macro:fund_engaged",
+      "macro:fund_fairholme",
+      "macro:fund_gates",
+      "macro:fund_giverny",
+      "macro:fund_greenlea",
+      "macro:fund_himalaya",
+      "macro:fund_icahn",
+      "macro:fund_index",
+      "macro:fund_jana",
+      "macro:fund_kimmeridge",
+      "macro:fund_lightstreet",
+      "macro:fund_lonepine",
+      "macro:fund_mudrick",
+      "macro:fund_oaktree",
+      "macro:fund_pabrai",
+      "macro:fund_perceptive",
+      "macro:fund_pershing",
+      "macro:fund_polen",
+      "macro:fund_punchcard",
+      "macro:fund_racapital",
+      "macro:fund_rtw",
+      "macro:fund_sachem",
+      "macro:fund_scion",
+      "macro:fund_soros",
+      "macro:fund_starboard",
+      "macro:fund_tci",
+      "macro:fund_thirdpoint",
+      "macro:fund_tigerglobal",
+      "macro:fund_trian",
+      "macro:fund_valueact",
+      "macro:fund_viking",
+      "macro:fund_whalerock",
+      "macro:intraday_flow",
+      "macro:smart_money"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1W-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-26-1"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D09-flows.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D10",
+    "slug": "news",
+    "title": "News, events and the daily brief",
+    "folder": "30 Research",
+    "target": "MM · News & Briefings",
+    "dependencies": "F01 F02",
+    "partners": "D01 D02 D07 D11 D19",
+    "job": "Make reading and understanding current developments the primary task, with source disagreement and coverage evidence close at hand.",
+    "handoff": "handoffs/D10-news.md",
+    "proposed_files": [
+      "MM · News & Briefings"
+    ],
+    "title_zh": "新闻与简报",
+    "canonical_registry_ids": [
+      "macro:aibrief",
+      "macro:am_edition",
+      "macro:news"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+        "page_id": "p-1-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D10-news.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D11",
+    "slug": "research",
+    "title": "Research library and Intelligence Hub",
+    "folder": "30 Research",
+    "target": "MM · Research & Intelligence Hub",
+    "dependencies": "F01 F02",
+    "partners": "D07 D10 D12 D13 D14 D21",
+    "job": "Let users find, evaluate, read and revisit research across markets without duplicating the same saved object across products.",
+    "handoff": "handoffs/D11-research.md",
+    "proposed_files": [
+      "MM · Intelligence Hub",
+      "MM · Research Library & Reading"
+    ],
+    "title_zh": "研究库与情报中心",
+    "canonical_registry_ids": [
+      "macro:mockup_research_vault",
+      "macro:alt_data",
+      "macro:intelligence_hub",
+      "macro:report_ai_master_plan",
+      "macro:report_bessent_jun24",
+      "macro:report_haven_audition",
+      "macro:report_price_of_duration",
+      "macro:report_relapse_jul8",
+      "macro:report_second_act",
+      "macro:report_warsh_fomc",
+      "macro:reports",
+      "macro:research_family",
+      "macro:research_index",
+      "macro:research_screener",
+      "macro:research_vault",
+      "terminal:research"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1U-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1A-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-X-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-5-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D11-research.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "Intelligence Hub",
+      "Refined vase"
+    ]
+  },
+  {
+    "id": "D12",
+    "slug": "memory",
+    "title": "Market memory, scenarios and strategy evidence",
+    "folder": "30 Research",
+    "target": "MM · Memory & Strategy Evidence",
+    "dependencies": "F01 F02",
+    "partners": "D02 D07 D15 D17 D18 D19 D22",
+    "job": "Support historical comparison and disciplined scenario research while keeping retrospective evidence separate from current actionable claims.",
+    "handoff": "handoffs/D12-memory.md",
+    "proposed_files": [
+      "MM · Market Memory",
+      "MM · Strategy Evidence"
+    ],
+    "title_zh": "市场记忆与策略证据",
+    "canonical_registry_ids": [
+      "macro:calibration",
+      "macro:history",
+      "macro:market_memory",
+      "macro:masterminds",
+      "macro:measurement",
+      "macro:quant_lab",
+      "macro:seasonality",
+      "macro:signal_lab",
+      "macro:stock_seasonality",
+      "macro:strategies",
+      "macro:strategy_credit_carry",
+      "macro:strategy_credit_gate_equity",
+      "macro:strategy_curve_recession",
+      "macro:strategy_dual_momentum",
+      "macro:strategy_duration_timing",
+      "macro:strategy_em_debt_carry",
+      "macro:strategy_equalweight_trend",
+      "macro:strategy_fin_conditions",
+      "macro:strategy_flight_to_quality",
+      "macro:strategy_golden_cross",
+      "macro:strategy_ig_carry",
+      "macro:strategy_lowvol_defensive",
+      "macro:strategy_mm_aggressive",
+      "macro:strategy_mm_conservative",
+      "macro:strategy_mm_moderate",
+      "macro:strategy_momentum_crashguard",
+      "macro:strategy_nasdaq_trend",
+      "macro:strategy_net_liquidity",
+      "macro:strategy_quality_flight",
+      "macro:strategy_sahm_timer",
+      "macro:strategy_semis_trend",
+      "macro:strategy_smallcap_trend",
+      "macro:strategy_vix_term_timer",
+      "macro:strategy_vol_managed_sp",
+      "macro:tech_lab",
+      "macro:us_track_record",
+      "macro:validation_timeline"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-22-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D12-memory.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D13",
+    "slug": "gmi",
+    "title": "GMI and MarketOntology",
+    "folder": "30 Research",
+    "target": "MM · GMI & MarketOntology",
+    "dependencies": "F01 F02; route admission follow-up",
+    "partners": "D04 D05 D07 D11",
+    "job": "Give users a coherent route from theme and industry structure to an issuer, its relationships and the evidence for each membership claim.",
+    "handoff": "handoffs/D13-gmi.md",
+    "proposed_files": [
+      "MM · GMI",
+      "MM · MarketOntology"
+    ],
+    "title_zh": "GMI 与市场本体",
+    "canonical_registry_ids": [
+      "macro:neural_web"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [
+      "/gmi.html",
+      "/gmi-index.html",
+      "/gmi-issuer-mu.html",
+      "/gmi-relationships.html",
+      "/gmi-coverage.html",
+      "/gmi-states.html"
+    ],
+    "paper_refs": [
+      {
+        "file_id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D13-gmi.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D14",
+    "slug": "ai",
+    "title": "Mastermind AI and research assistance",
+    "folder": "10 Workspaces",
+    "target": "MM · Mastermind AI",
+    "dependencies": "F01 F02",
+    "partners": "D06 D07 D11 D13 D23",
+    "job": "Make the research assistant grounded, contextual and recoverable without silently taking investment or account actions.",
+    "handoff": "handoffs/D14-ai.md",
+    "proposed_files": [
+      "MM · Mastermind AI"
+    ],
+    "title_zh": "Mastermind AI",
+    "canonical_registry_ids": [
+      "macro:ai_desk",
+      "macro:chat"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-5-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D14-ai.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D15",
+    "slug": "bonds",
+    "title": "Bonds, credit and cross-asset transmission",
+    "folder": "20 Markets",
+    "target": "MM · Bonds & Transmission",
+    "dependencies": "F01 F02",
+    "partners": "D02 D12 D16",
+    "job": "Explain yield-curve and credit moves, their competing mechanisms and their transmission into other markets.",
+    "handoff": "handoffs/D15-bonds.md",
+    "proposed_files": [
+      "MM · Bonds & Transmission"
+    ],
+    "title_zh": "债券与信用",
+    "canonical_registry_ids": [
+      "macro:mockup_ccw_credit_desk",
+      "macro:bonds",
+      "macro:transmission"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1Y-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1H-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1E-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-O-1"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D15-bonds.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D16",
+    "slug": "forex",
+    "title": "Forex and currency investigation",
+    "folder": "20 Markets",
+    "target": "MM · Forex",
+    "dependencies": "F01 F02",
+    "partners": "D02 D15 D17 D21",
+    "job": "Move from the currency landscape to a pair outlook with transparent drivers, evidence and scenario boundaries.",
+    "handoff": "handoffs/D16-forex.md",
+    "proposed_files": [
+      "MM · Forex"
+    ],
+    "title_zh": "外汇",
+    "canonical_registry_ids": [
+      "macro:forex"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1X-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1F-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-17-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-16-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-N-1"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D16-forex.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D17",
+    "slug": "commodities",
+    "title": "Commodities, energy and related strategies",
+    "folder": "20 Markets",
+    "target": "MM · Commodities & Energy",
+    "dependencies": "F01 F02",
+    "partners": "D02 D12 D15 D16",
+    "job": "Explain commodity supply, demand, inventories and price drivers while retaining access to specialist energy and strategy evidence.",
+    "handoff": "handoffs/D17-commodities.md",
+    "proposed_files": [
+      "MM · Commodities & Energy"
+    ],
+    "title_zh": "商品与能源",
+    "canonical_registry_ids": [
+      "macro:commodities",
+      "macro:commodity_strategies",
+      "macro:ontology",
+      "macro:spr",
+      "macro:strategy_cm_copper_active",
+      "macro:strategy_cm_copper_macro",
+      "macro:strategy_cm_copper_swap",
+      "macro:strategy_cm_gold_active",
+      "macro:strategy_cm_gold_macro",
+      "macro:strategy_cm_gold_swap",
+      "macro:strategy_cm_oil_macro",
+      "macro:strategy_cm_oil_swap",
+      "macro:strategy_cm_silver_active",
+      "macro:strategy_cm_silver_macro",
+      "macro:strategy_cm_silver_swap",
+      "macro:strategy_copper_growth",
+      "macro:strategy_gold_macro",
+      "macro:strategy_oil_trend"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1I-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-L-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D17-commodities.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "WTI",
+      "Energy"
+    ]
+  },
+  {
+    "id": "D18",
+    "slug": "crypto",
+    "title": "Crypto intelligence and strategy evidence",
+    "folder": "20 Markets",
+    "target": "MM · Crypto",
+    "dependencies": "F01 F02",
+    "partners": "D06 D12 D22",
+    "job": "Combine a clear market and instrument investigation experience with the useful risk and strategy evidence in older Crypto work.",
+    "handoff": "handoffs/D18-crypto.md",
+    "proposed_files": [
+      "MM · Crypto"
+    ],
+    "title_zh": "加密资产",
+    "canonical_registry_ids": [
+      "macro:btc_strategy",
+      "macro:crypto",
+      "macro:strategy_btc_trend",
+      "macro:strategy_eth_trend"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-10-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-11-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D18-crypto.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D19",
+    "slug": "china",
+    "title": "China market intelligence",
+    "folder": "20 Markets",
+    "target": "MM · China",
+    "dependencies": "F01 F02",
+    "partners": "D02 D03 D05 D10 D12 D20 D23",
+    "job": "Provide a first-class China workspace with its own market mechanics, source coverage and research journeys, rather than a relabeled US dashboard.",
+    "handoff": "handoffs/D19-china.md",
+    "proposed_files": [
+      "MM · China Overview",
+      "MM · China Research & Policy",
+      "MM · China Sectors & Setups"
+    ],
+    "title_zh": "中国市场",
+    "canonical_registry_ids": [
+      "macro:allocation_china",
+      "macro:basket_china_family",
+      "macro:baskets_china",
+      "macro:baskets_china_ths",
+      "macro:china",
+      "macro:china_allocation",
+      "macro:china_altdata",
+      "macro:china_heatmap",
+      "macro:china_history",
+      "macro:china_intel",
+      "macro:china_lookup",
+      "macro:china_mechanics",
+      "macro:china_news",
+      "macro:china_policy_watch",
+      "macro:china_radar",
+      "macro:china_sector_desk",
+      "macro:china_special_situations",
+      "macro:china_stocks",
+      "macro:china_stocks_lab",
+      "macro:china_strategies",
+      "macro:cn_reversal_sleeve",
+      "macro:narrative_radar",
+      "macro:rotation_china_family",
+      "macro:sector_central_china",
+      "macro:sector_cycles_china",
+      "macro:strategy_cn_credit_margin",
+      "macro:strategy_cn_credit_vol",
+      "macro:strategy_cn_volmanaged",
+      "macro:strategy_cnmm_aggressive",
+      "macro:strategy_cnmm_conservative",
+      "macro:strategy_cnmm_moderate",
+      "macro:subsector_china_family",
+      "macro:subsector_rotation_china",
+      "macro:subsectors_china"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-6-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D19-china.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D20",
+    "slug": "hk-canada",
+    "title": "Hong Kong and Canada",
+    "folder": "20 Markets",
+    "target": "MM · Hong Kong & Canada",
+    "dependencies": "F01 F02; reuse D03 opportunity contract",
+    "partners": "D03 D05 D07 D19 D21",
+    "job": "Preserve local market identities and research depth while sharing genuinely common patterns across Hong Kong and Canada.",
+    "handoff": "handoffs/D20-hk-canada.md",
+    "proposed_files": [
+      "MM · Hong Kong",
+      "MM · Canada"
+    ],
+    "title_zh": "香港与加拿大",
+    "canonical_registry_ids": [
+      "macro:allocation_canada",
+      "macro:allocation_hk",
+      "macro:basket_canada_family",
+      "macro:basket_hk_family",
+      "macro:baskets_canada",
+      "macro:baskets_hk",
+      "macro:canada",
+      "macro:canada_heatmap",
+      "macro:canada_history",
+      "macro:canada_stock",
+      "macro:canada_stocks",
+      "macro:hk",
+      "macro:hk_heatmap",
+      "macro:hk_history",
+      "macro:hk_lookup",
+      "macro:hk_stocks",
+      "macro:hk_stocks_lab"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-2-1"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D20-hk-canada.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D21",
+    "slug": "international",
+    "title": "International surveillance and country cycles",
+    "folder": "20 Markets",
+    "target": "MM · International & Country Cycles",
+    "dependencies": "F01 F02",
+    "partners": "D02 D11 D15 D16 D20",
+    "job": "Help users compare countries, inspect transmission and follow evidence while preserving the distinction between global surveillance and country-cycle tools.",
+    "handoff": "handoffs/D21-international.md",
+    "proposed_files": [
+      "MM · International & Country Cycles"
+    ],
+    "title_zh": "国际市场与国家周期",
+    "canonical_registry_ids": [
+      "macro:basket_intl_family",
+      "macro:baskets_intl",
+      "macro:country_cycles",
+      "macro:euro_area",
+      "macro:india",
+      "macro:intl",
+      "macro:intl_stock",
+      "macro:intl_stocks",
+      "macro:japan",
+      "macro:markets",
+      "macro:south_korea",
+      "macro:united_kingdom"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-W-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-F-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-I-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-G-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D21-international.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": [
+      "Global Market Cycles"
+    ]
+  },
+  {
+    "id": "D22",
+    "slug": "portfolio",
+    "title": "Portfolio and allocation",
+    "folder": "40 Personal",
+    "target": "MM · Portfolio & Allocation",
+    "dependencies": "F01 F02",
+    "partners": "D06 D08 D12 D18 D23 D25",
+    "job": "Help users understand their own exposure and research decisions, with clear separation among actual holdings, paper portfolios and model allocations.",
+    "handoff": "handoffs/D22-portfolio.md",
+    "proposed_files": [
+      "MM · Portfolio & Allocation"
+    ],
+    "title_zh": "组合与配置",
+    "canonical_registry_ids": [
+      "macro:vector",
+      "macro:vector_allocation",
+      "terminal:portfolio"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-14-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-X-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Y-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D22-portfolio.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D23",
+    "slug": "monitor",
+    "title": "Monitor, watchlists, alerts and saved state",
+    "folder": "40 Personal",
+    "target": "MM · Monitor & Watchlists",
+    "dependencies": "F01 F02",
+    "partners": "D01 D07 D08 D11 D14 D22 D25",
+    "job": "Give users reliable monitoring and saved research workflows with explicit mutation, notification and recovery behavior.",
+    "handoff": "handoffs/D23-monitor.md",
+    "proposed_files": [
+      "MM · Monitor & Watchlists"
+    ],
+    "title_zh": "监控、自选与提醒",
+    "canonical_registry_ids": [
+      "macro:alerts",
+      "macro:watchlist",
+      "terminal:alerts",
+      "terminal:monitor"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1T-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D23-monitor.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D24",
+    "slug": "specialist",
+    "title": "Specialist and catalyst intelligence",
+    "folder": "30 Research",
+    "target": "MM · Specialist Intelligence",
+    "dependencies": "F01 F02",
+    "partners": "D07 D10 D11 D13",
+    "job": "Unify common evidence and catalyst patterns across specialist desks while preserving domain-specific semantics and useful depth.",
+    "handoff": "handoffs/D24-specialist.md",
+    "proposed_files": [
+      "MM · BioCatalyst & MedTech",
+      "MM · Government & Policy",
+      "MM · Corporate Special Situations"
+    ],
+    "title_zh": "专业与催化剂情报",
+    "canonical_registry_ids": [
+      "macro:biocatalyst",
+      "macro:finance_intelligence",
+      "macro:fundamental_forensics",
+      "macro:government_revenue",
+      "macro:ipo",
+      "macro:policy_watch",
+      "macro:sanctions_map",
+      "macro:special_situations",
+      "macro:whitehouse"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-20-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1Z-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1N-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1M-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1L-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1K-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1J-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-S-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-K-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D24-specialist.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D25",
+    "slug": "account-help",
+    "title": "Account, onboarding, settings and contextual help",
+    "folder": "40 Personal",
+    "target": "MM · Account & Guide",
+    "dependencies": "F01 F02",
+    "partners": "D02 D06 D22 D23 D26",
+    "job": "Make access, preferences, onboarding and explanation understandable and recoverable without obscuring the research workflow.",
+    "handoff": "handoffs/D25-account-help.md",
+    "proposed_files": [
+      "MM · Account & Guide"
+    ],
+    "title_zh": "账户与帮助",
+    "canonical_registry_ids": [
+      "macro:glossary",
+      "macro:help",
+      "macro:reference",
+      "macro:start",
+      "macro:support",
+      "macro:unsubscribe",
+      "terminal:dev_settings",
+      "terminal:invite",
+      "terminal:login",
+      "terminal:reset_password"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-10-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D25-account-help.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D26",
+    "slug": "public",
+    "title": "Public site, editorial, learning and utilities",
+    "folder": "50 Public",
+    "target": "MM · Public & Learning",
+    "dependencies": "F01 F02 public variant",
+    "partners": "D14 D25",
+    "job": "Give prospective and anonymous users a coherent public experience, accurate product descriptions and clear transitions into beta.",
+    "handoff": "handoffs/D26-public.md",
+    "proposed_files": [
+      "MM · Public & Products",
+      "MM · Editorial & Learning",
+      "MM · Public Utilities"
+    ],
+    "title_zh": "公共网站与学习",
+    "canonical_registry_ids": [
+      "macro:index",
+      "macro:about_research",
+      "macro:about",
+      "macro:blog_family",
+      "macro:blog_index",
+      "macro:coming_soon",
+      "macro:disclaimer",
+      "macro:learn",
+      "macro:learn_family",
+      "macro:learn_index",
+      "macro:methodology",
+      "macro:plans",
+      "macro:privacy",
+      "macro:products_family",
+      "macro:products_index",
+      "macro:products_market_dashboards",
+      "macro:products_market_terminal",
+      "macro:products_mastermind_ai",
+      "macro:terms",
+      "macro:tools_family",
+      "macro:tools_index",
+      "terminal:landing",
+      "terminal:learn"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D26-public.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "D27",
+    "slug": "internal",
+    "title": "Internal Mastermind OS and administration",
+    "folder": "60 Internal",
+    "target": "MM · Internal OS",
+    "dependencies": "F02; F01 boundary contract",
+    "partners": "F03 D25",
+    "job": "Preserve internal executive and administrative workflows as a distinct product, with truthful permission and action-state communication.",
+    "handoff": "handoffs/D27-internal.md",
+    "proposed_files": [
+      "MM · OS Conversations & Daily",
+      "MM · OS Projects & Decisions",
+      "MM · OS Sessions & Access"
+    ],
+    "title_zh": "内部 OS 与管理",
+    "canonical_registry_ids": [
+      "macro:committee",
+      "macro:mastermind",
+      "macro:qa_bottom_sensors",
+      "macro:status",
+      "mastermind:index",
+      "mastermind:agenda",
+      "mastermind:desk",
+      "mastermind:market_view",
+      "mastermind:portfolio_desk",
+      "mastermind:research",
+      "mastermind:self",
+      "terminal:admin"
+    ],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-K-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-J-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-I-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-2-0"
+      }
+    ],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D27-internal.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  },
+  {
+    "id": "QA01",
+    "slug": "re-audit",
+    "title": "Independent integration and production-design re-audit",
+    "folder": "00 Programme",
+    "target": "MM · Review Evidence",
+    "dependencies": "candidate returns; independent reviewers",
+    "partners": "all sessions",
+    "job": "Verify coverage, retained capabilities, cross-product journeys and builder contracts against frozen references before implementation is commissioned.",
+    "handoff": "handoffs/QA01-re-audit.md",
+    "proposed_files": [
+      "MM · Review Evidence"
+    ],
+    "title_zh": "独立复核",
+    "canonical_registry_ids": [],
+    "delegated_registry_ids": [],
+    "source_deltas": [],
+    "paper_refs": [],
+    "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/QA01-re-audit.md",
+    "source_contract": null,
+    "candidate_ref": null,
+    "rig_state": null,
+    "rig_receipt": null,
+    "shell_version": null,
+    "system_version": null,
+    "status": "Candidate and full contract not returned in inspected package",
+    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "aliases": []
+  }
+]

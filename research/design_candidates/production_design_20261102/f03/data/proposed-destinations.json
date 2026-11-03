@@ -1,0 +1,1356 @@
+[
+  {
+    "name": "MM · Shared Shell",
+    "folder": "01 Foundations",
+    "owner": "F01",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-23-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1S-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1R-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-18-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-F-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 74,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Design System",
+    "folder": "01 Foundations",
+    "owner": "F02",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1Q-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "page_id": "p-7-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 67,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Design Programme",
+    "folder": "00 Programme",
+    "owner": "F03",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1P-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-8-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-R-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 14,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Today",
+    "folder": "10 Workspaces",
+    "owner": "D01",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Macro Overview",
+    "folder": "20 Markets",
+    "owner": "D02",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-13-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 3,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Macro Systems",
+    "folder": "20 Markets",
+    "owner": "D02",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Risk & Events",
+    "folder": "20 Markets",
+    "owner": "D02",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 23,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · US Equities & Prophet",
+    "folder": "20 Markets",
+    "owner": "D03",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "page_id": "p-3-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 184,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Discover & Heatmaps",
+    "folder": "10 Workspaces",
+    "owner": "D04",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-H-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-O-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-N-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-8-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 62,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Sectors & Rotation",
+    "folder": "20 Markets",
+    "owner": "D05",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-24-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-Y-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-E-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-9-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 52,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Terminal & Chart Context",
+    "folder": "10 Workspaces",
+    "owner": "D06",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-W-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Z-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-G-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 22,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Company Intelligence",
+    "folder": "30 Research",
+    "owner": "D07",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-S-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-M-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-L-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-K-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-B-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-A-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-9-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 163,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Earnings & Expectations",
+    "folder": "30 Research",
+    "owner": "D07",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-15-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Q-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-F-0"
+      },
+      {
+        "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-7-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 32,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Options Integration",
+    "folder": "10 Workspaces",
+    "owner": "D08",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "page_id": "p-1-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 8,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Options Overview & Flow",
+    "folder": "10 Workspaces",
+    "owner": "D08A",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-25-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 1,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Options Exposure & Volatility",
+    "folder": "10 Workspaces",
+    "owner": "D08B",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-U-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-D-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 43,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Options Plan & Review",
+    "folder": "10 Workspaces",
+    "owner": "D08C",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-P-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-5-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-4-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 106,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Futures & Replay",
+    "folder": "10 Workspaces",
+    "owner": "D08D",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Flows & Dark Pool",
+    "folder": "30 Research",
+    "owner": "D09",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1W-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 2,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Funds & Ownership",
+    "folder": "30 Research",
+    "owner": "D09",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · News & Briefings",
+    "folder": "30 Research",
+    "owner": "D10",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+        "page_id": "p-1-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 58,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Intelligence Hub",
+    "folder": "30 Research",
+    "owner": "D11",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-I-1"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 70,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Research Library & Reading",
+    "folder": "30 Research",
+    "owner": "D11",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1U-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-5-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 36,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Market Memory",
+    "folder": "30 Research",
+    "owner": "D12",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-22-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 8,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Strategy Evidence",
+    "folder": "30 Research",
+    "owner": "D12",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · GMI",
+    "folder": "30 Research",
+    "owner": "D13",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+        "page_id": "p-1-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 20,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · MarketOntology",
+    "folder": "30 Research",
+    "owner": "D13",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 98,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Mastermind AI",
+    "folder": "10 Workspaces",
+    "owner": "D14",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-2-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-7-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "page_id": "p-5-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 64,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Bonds & Transmission",
+    "folder": "20 Markets",
+    "owner": "D15",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1H-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1E-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-O-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 52,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Forex",
+    "folder": "20 Markets",
+    "owner": "D16",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1F-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-17-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-N-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 130,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Commodities & Energy",
+    "folder": "20 Markets",
+    "owner": "D17",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-L-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 41,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Crypto",
+    "folder": "20 Markets",
+    "owner": "D18",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-10-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 8,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · China Overview",
+    "folder": "20 Markets",
+    "owner": "D19",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-6-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 54,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · China Research & Policy",
+    "folder": "20 Markets",
+    "owner": "D19",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · China Sectors & Setups",
+    "folder": "20 Markets",
+    "owner": "D19",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Hong Kong",
+    "folder": "20 Markets",
+    "owner": "D20",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Canada",
+    "folder": "20 Markets",
+    "owner": "D20",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · International & Country Cycles",
+    "folder": "20 Markets",
+    "owner": "D21",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-F-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-I-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-G-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 138,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Portfolio & Allocation",
+    "folder": "40 Personal",
+    "owner": "D22",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-14-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-X-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-Y-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 21,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Monitor & Watchlists",
+    "folder": "40 Personal",
+    "owner": "D23",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1T-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 22,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · BioCatalyst & MedTech",
+    "folder": "30 Research",
+    "owner": "D24",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1M-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1K-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-K-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 40,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Government & Policy",
+    "folder": "30 Research",
+    "owner": "D24",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1N-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1J-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-J-1"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-S-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 50,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Corporate Special Situations",
+    "folder": "30 Research",
+    "owner": "D24",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-20-0"
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1Z-1"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 15,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Account & Guide",
+    "folder": "40 Personal",
+    "owner": "D25",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-10-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-4-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 51,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Public & Products",
+    "folder": "50 Public",
+    "owner": "D26",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Editorial & Learning",
+    "folder": "50 Public",
+    "owner": "D26",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Public Utilities",
+    "folder": "50 Public",
+    "owner": "D26",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · OS Conversations & Daily",
+    "folder": "60 Internal",
+    "owner": "D27",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-1-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-E-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-D-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-C-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-B-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-9-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-8-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-6-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-3-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-2-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 119,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · OS Projects & Decisions",
+    "folder": "60 Internal",
+    "owner": "D27",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-J-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-I-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-5-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-4-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 99,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · OS Sessions & Access",
+    "folder": "60 Internal",
+    "owner": "D27",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-K-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-A-0"
+      },
+      {
+        "file_id": "01M3NRCX55B452A12819WNE1RH",
+        "page_id": "p-7-0"
+      }
+    ],
+    "allocation_gap": false,
+    "existing_artboards": 50,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  },
+  {
+    "name": "MM · Review Evidence",
+    "folder": "00 Programme",
+    "owner": "QA01",
+    "actual_file_id": null,
+    "actual_folder_id": null,
+    "resolution": "PENDING_VERIFIED_REUSE_OR_CREATION",
+    "existing_page_refs": [],
+    "allocation_gap": true,
+    "existing_artboards": 0,
+    "rule": "Qualify existing coherent file for reuse before creating a duplicate; do not copy history into working set."
+  }
+]

@@ -1,0 +1,1599 @@
+{
+  "kind": "pinned_input_identity_and_link_checks_not_visual_or_live_acceptance",
+  "status": "PASS",
+  "check_count": 398,
+  "checks": [
+    {
+      "name": "immutable input README.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input ORGANIZATION_RULES.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input SHARED_SHELL_CONTRACT.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input RE_AUDIT_CHECKLIST.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input templates/PRODUCT_BUILD_CONTRACT.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input paper-files.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input paper-pages.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input paper-actions-proposed.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input paper-artboards.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input route-ownership.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input source-delta.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input session-manifest.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input paper-resources.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input options-slice-map.json",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input PAPER_PAGE_CROSSWALK.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input PAPER_FILE_CENSUS.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input F03-handoff.md",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable input current-registry.json",
+      "result": "PASS"
+    },
+    {
+      "name": "all 36 assignments unique",
+      "result": "PASS"
+    },
+    {
+      "name": "348 exact canonical identities",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:mockup_ccw_credit_desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:mockup_research_vault",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:about_research",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:about",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:advanced",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:ai_desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:aibrief",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:allocation",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:allocation_canada",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:allocation_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:allocation_hk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:alt_data",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:am_edition",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:anticipation",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:basket_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:basket_canada_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:basket_china_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:basket_hk_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:basket_intl_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets_canada",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets_china_ths",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets_hk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:baskets_intl",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:biocatalyst",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:blog_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:blog_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:bonds",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:btc_strategy",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:calibration",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:canada",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:canada_heatmap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:canada_history",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:canada_stock",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:canada_stocks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:capital_structure",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:chat",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_allocation",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_altdata",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_heatmap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_history",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_intel",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_lookup",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_mechanics",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_news",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_policy_watch",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_radar",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_sector_desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_special_situations",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_stocks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_stocks_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:china_strategies",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:cn_reversal_sleeve",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:coming_soon",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:committee",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:commodities",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:commodity_strategies",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:confluence_screener",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:congress_trades",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:country_cycles",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:crossasset",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:crypto",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:cycle",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:darkpool",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:demand",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:disclaimer",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:discovery",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:etfs",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:euro_area",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:factors",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:finance_intelligence",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:financial_lineage",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:flow_desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:flow_leaders",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:flow_velocity",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:foresight",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:forex",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_ako",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_akre",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_altarock",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_altimeter",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_appaloosa",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_aquamarine",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_bakerbros",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_basswood",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_baupost",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_berkshire",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_casdin",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_coatue",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_corvex",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_d1capital",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_dorsey",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_dragoneer",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_duquesne",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_durable",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_egerton",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_elliott",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_engaged",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_fairholme",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_gates",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_giverny",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_greenlea",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_himalaya",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_icahn",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_jana",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_kimmeridge",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_lightstreet",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_lonepine",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_mudrick",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_oaktree",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_pabrai",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_perceptive",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_pershing",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_polen",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_punchcard",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_racapital",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_rtw",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_sachem",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_scion",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_soros",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_starboard",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_tci",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_thirdpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_tigerglobal",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_trian",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_valueact",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_viking",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fund_whalerock",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:fundamental_forensics",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:gex",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:glossary",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:government_revenue",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:help",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:history",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk_heatmap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk_history",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk_lookup",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk_stocks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:hk_stocks_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:impulse",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:india",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:intelligence_hub",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:intl",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:intl_stock",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:intl_stocks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:intraday_flow",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:ipo",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:japan",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:leader_radar",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:learn",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:learn_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:learn_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_business_activity",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_capital_structure",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_consumer_payments",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_context",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_financial_conditions",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_growth_real_economy",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_housing_real_estate",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_inflation_system",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_labor_markets",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_liquidity_central_banks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_liquidity_regime",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_monetary",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_monetary_policy",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_national_debt_liabilities",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_rates_curves",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_signals",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:macro_trade_flows",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:market_memory",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:market_structure",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:markets",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:mastermind",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:masterminds",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:measurement",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:methodology",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:movers",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:narrative_radar",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:neural_web",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:news",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:odds",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:ontology",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:options",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:options_screener",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:plans",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:policy_watch",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:privacy",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:products_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:products_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:products_market_dashboards",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:products_market_terminal",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:products_mastermind_ai",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:qa_bottom_sensors",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:quant_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:radar",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:reference",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_ai_master_plan",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_bessent_jun24",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_haven_audition",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_price_of_duration",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_relapse_jul8",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_second_act",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:report_warsh_fomc",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:reports",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:research_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:research_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:research_screener",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:research_vault",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:rotation_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:rotation_china_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sanctions_map",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:seasonality",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sector_central",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sector_central_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sector_cycles",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sector_cycles_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sector_heatmap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:sectors_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:signal_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:smart_money",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:south_korea",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:special_situations",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:spr",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:spvector",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:stage_analysis",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:start",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:state_of_themes",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:status",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:stock",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:stock_seasonality",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:stocks_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:stocks_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategies",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_btc_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_copper_active",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_copper_macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_copper_swap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_gold_active",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_gold_macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_gold_swap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_oil_macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_oil_swap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_silver_active",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_silver_macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cm_silver_swap",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cn_credit_margin",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cn_credit_vol",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cn_volmanaged",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cnmm_aggressive",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cnmm_conservative",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_cnmm_moderate",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_copper_growth",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_credit_carry",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_credit_gate_equity",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_curve_recession",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_dual_momentum",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_duration_timing",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_em_debt_carry",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_equalweight_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_eth_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_fin_conditions",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_flight_to_quality",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_gold_macro",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_golden_cross",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_ig_carry",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_lowvol_defensive",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_mm_aggressive",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_mm_conservative",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_mm_moderate",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_momentum_crashguard",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_nasdaq_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_net_liquidity",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_oil_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_quality_flight",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_sahm_timer",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_semis_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_smallcap_trend",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_vix_term_timer",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:strategy_vol_managed_sp",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_china_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_nasdaq_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_rotation",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_rotation_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsector_russell_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsectors",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:subsectors_china",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:support",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:tech_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:terms",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:theme_tree",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:tools_family",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:tools_index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:transmission",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:united_kingdom",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:unsubscribe",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:us_stocks",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:us_stocks_lab",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:us_stocks_v2",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:us_track_record",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:validation_timeline",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:vector",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:vector_allocation",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:watchlist",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:whitehouse",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields macro:winner_health",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:index",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:agenda",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:market_view",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:portfolio_desk",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:research",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields mastermind:self",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:landing",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:legacypath",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:admin",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:alerts",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:analysis",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_chart_bench",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_futures",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_futures_sample",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_settings",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_theater",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dev_workspaces",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:discover",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:dislocations",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:embed_chart",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:invite",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:learn",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:login",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:monitor",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:options",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:options_futures",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:portfolio",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:research",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:reset_password",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:scripts",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:terminal",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:today",
+      "result": "PASS"
+    },
+    {
+      "name": "retained canonical fields terminal:x_slug",
+      "result": "PASS"
+    },
+    {
+      "name": "valid route assignments/slices",
+      "result": "PASS"
+    },
+    {
+      "name": "nine deltas have no invented canonical IDs",
+      "result": "PASS"
+    },
+    {
+      "name": "299 original pages and exactly two live observations",
+      "result": "PASS"
+    },
+    {
+      "name": "listed-only null counts are not empty pages",
+      "result": "PASS"
+    },
+    {
+      "name": "2450 exact compound artboard identities",
+      "result": "PASS"
+    },
+    {
+      "name": "artboard names/geometry/custody preserved",
+      "result": "PASS"
+    },
+    {
+      "name": "WTI three ownership exceptions retained",
+      "result": "PASS"
+    },
+    {
+      "name": "all 301 actions truthfully not dispatched",
+      "result": "PASS"
+    },
+    {
+      "name": "51 proposals without fabricated destination IDs",
+      "result": "PASS"
+    },
+    {
+      "name": "no approval fabricated",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-1B-0\u2192p-F-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-1A-0\u2192p-1-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-F-0\u2192p-18-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-15-0\u2192p-Q-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-Q-0\u2192p-F-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-T-0\u2192p-1-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-T-0\u2192p-1-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-1A-0\u2192p-1-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-15-0\u2192p-Q-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-Q-0\u2192p-F-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-1B-0\u2192p-F-0",
+      "result": "PASS"
+    },
+    {
+      "name": "lineage endpoints exist p-F-0\u2192p-18-0",
+      "result": "PASS"
+    },
+    {
+      "name": "full Macro inventory digest",
+      "result": "PASS"
+    },
+    {
+      "name": "member CSV has every tracked path once",
+      "result": "PASS"
+    },
+    {
+      "name": "member CSV full documents exact",
+      "result": "PASS"
+    },
+    {
+      "name": "member CSV included legacy paths exact",
+      "result": "PASS"
+    },
+    {
+      "name": "all seven inventory gaps have assigned design owner and null ID",
+      "result": "PASS"
+    },
+    {
+      "name": "native census explicit 29/7 scope",
+      "result": "PASS"
+    },
+    {
+      "name": "two native source additions remain noncanonical",
+      "result": "PASS"
+    },
+    {
+      "name": "all relative document links resolve",
+      "result": "PASS"
+    }
+  ]
+}

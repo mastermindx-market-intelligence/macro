@@ -1,40 +1,61 @@
-# F03 — Paper organization and design directory
+# F03 — Paper organization, coverage and design integration
 
-Status: **in progress; NOT_APPLIED_TO_PAPER**. This is the F03 subsidiary deliverable under the existing whole-estate charter and production-design package, not a new workstream, route registry, or runtime task system.
+**PARTIAL / BLOCKED_RETURN — source directory and specification delivered; Paper organization NOT_APPLIED.** F03 has not renamed, moved, archived, created or deleted any Paper resource. It has not implemented, merged or deployed product code.
 
-## Commission and source identity
+## Start here
 
-- Chairman assignment: take ownership of F03, complete design organization/specifications, inspect existing site/source/Paper, preserve capability and lineage, persist and review results.
-- Parent charter: `research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md`.
-- Parent package/PR: #10617, immutable `6e1862867193ec6486a22001a0e4fb515da20448`.
-- Governing Mastermind protected master: `c57adacb338fe837c7d585f1e372c64d9b0118ec`; skillpack `mastermind.sol_skillpack.v1`, version `1.0.1`, minimum bootstrap major `1` (compatible).
-- Fresh Macro source read: `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e`.
-- GitHub writer observed: `mastermindx-2`.
-- Owned source branch: `design/f03-paper-directory-20261102-c2`; changed-path scope is this `f03/` directory. The parent audit branch is preserved.
-- Paper carrier: Studio Direct C2 Personal; observation November 3 UTC / November 2 America/Chicago. No Paper mutation dispatched.
+- [Interactive design directory](directory.html): product-first choices, exact reference search, owners, roles, history and contract status.
+- [Text directory](DIRECTORY.md): 36 assignment entries with exact Paper IDs and canonical route responsibilities.
+- [Generated document index](inventory.html): search all 14,025 tracked Macro HTML paths; [complete CSV](data/generated-document-index.csv).
+- [Complete organization/build contract](CONTRACT.md), [operation and preservation specification](OPERATIONS.md), [editable Paper layout and annotation specification](PAPER_LAYOUT_SPEC.md).
+- [Review and verification](REVIEW.md), [continuity / next actions](CONTINUITY.md), [reproduce and verify](REPRODUCE.md).
 
-## Outcome and completion ruler
+Open the extracted package together to use relative links in the HTML files. GitHub's file view shows HTML as source; the Markdown directory works directly in GitHub. This is a review companion, not a deployed production directory.
 
-A builder selects a family and immediately sees its candidate, exact reference links, complete source contract and actual approval evidence (or an explicit missing-evidence state). A designer finds retained predecessors, rejection/hold conditions and successor identity without opening a giant archive. A returning session sees changed targets, ownership exceptions and route/reference gaps from source-bound projections.
+## Completed work
 
-F03 SUCCESS additionally requires supported Paper organization actions applied and verified, full source-to-destination maps, preserved comments/annotations/assets/links and no unowned canonical route or primary page. A source directory alone is PARTIAL, not applied Paper organization.
+| Work | Exact result |
+| --- | --- |
+| Assignment and procedure binding | Read SESSION_INDEX, COMMON_SESSION_BRIEF and exact F03 handoff from package `6e1862867193ec6486a22001a0e4fb515da20448`; protected procedures at `c57adacb338fe837c7d585f1e372c64d9b0118ec` |
+| Source and website inspection | Relevant current source pinned; beta site inspected through connected browser; actual global/market navigation and All Tools behavior observed |
+| Paper anchor inspection | Existing MASTERMIND and Terminal directory screenshots/JSX, baseline identities, Bonds/Crypto live content, redirect and historical-notice exports retained |
+| Assignment directory | 36 entries; 348 unique existing canonical IDs; nine deltas kept separate with null canonical IDs |
+| Original resource preservation | 299 frozen listed pages / 193 expanded / 2,450 boards retained; two live page observations recorded separately |
+| Ownership and history | D13/D17 WTI exceptions preserved; D08 integration/slices explicit; three exact redirect URLs plus recorded Returns import relationship; historical/rejected/held board warnings surfaced |
+| Proposed organization | 51 intended family destinations and 301 source-page action rows; actual destination IDs and all action/admission/readback fields remain unclaimed |
+| Fresh Macro inventory | Existing exporter at `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e`: 14,025 tracked HTML, 14,014 full documents, 13,989 legacy paths, 17 inherited native projections, 290 directory entries, seven unregistered documents, no reported failures |
+| Fresh native-source inventory | Existing generator at the same Macro pin: 29 Terminal `page.tsx` modules at `b79b1e…3713`, seven Mastermind HTML handlers at `c57ada…18ec`; raw generated additions remain observation-only |
+| Complete F03 specification | Product/job journeys, retention ledger, state/copy/interaction/data contracts, layout/annotation instructions, exact source integration boundaries, migration/rollback, acceptance and dependency owners |
+| Independent critique | Closed first-pass source/before-artifact review; eight actionable findings; amended source and second pass. Advisory only, not a formal RIG receipt |
+| Targeted verification | Source-logic probes for exact held-board search, WTI filters, route slices, skip/back state, history links, generated members and evidence truth; identity/link checks recorded separately |
 
-## F03 subsidiary task tree
+### The live drift is not a new census
 
-| Task | Work | Editorial status | Required evidence |
-|---|---|---|---|
-| F03.1 | Resolve pins, scope and exact Paper capability | implementation_complete | Source pins and live qualification observation |
-| F03.2 | Produce linked assignment, page/artboard and source-delta projections | in_progress | 348 unique existing IDs; 9 deltas with no invented IDs; 193 expanded pages; 299 listed-page baseline |
-| F03.3 | Deliver usable directory and complete organization/build contracts | in_progress | Two-choice navigation; exact baseline links; status and lineage separation |
-| F03.4 | Reconcile relevant live drift and stale labels | in_progress | Current exact-target reads, preserved original names and ownership |
-| F03.5 | Apply admitted Paper organization | blocked | P00 qualification plus supported resource operations, overlap checks and readback |
-| F03.6 | Review artifact, fix findings and persist exact return | proposed | Frozen artifact set, independent advisory critique; formal RIG status separately evidenced |
-| F03.7 | Fresh complete generated-document inventory | blocked | Existing registry/export owner's receipt at frozen repository pins; no capped comparison or stale counts |
+MASTERMIND PAGES gained observed page `p-26-1`, **Intraday Flow · R1 · Discovery workspace · DRAFT**, with zero artboards at the explicit read. Existing route `macro:intraday_flow` assigns D09. A separate observed file `01M6FAXA774QT1VRDMAG7DFQ2W`, **Sector Intelligence · R4 · Astra Pro · 2026-11-02**, page `p-1-0`, also had zero artboards. D05 is the proposed family owner, not proven live custody. The baseline remains 29 files / 299 listed pages; these observations are an annex, not a claim that a complete team census is now 30 files / 301 pages.
 
-## Current exact gates
+### Concrete labeling and lineage findings
 
-Live Paper 0.5.18 catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` reports `accepted_for_write=false`, `catalog_compatible=false`; this carrier expects `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`. Folder/move/archive/create-file/resource-rename/page-order operations are currently excluded by the exposed guarded adapter. No edit probe or alternate-carrier bypass is authorized by this observation. P00 owns qualification and supported-operation evidence; the source #1942 merge alone does not prove this carrier was upgraded.
+Bonds `p-1H-0` has live R30/R31/R32 material, an R33 implementation map and CDI boards despite its R18–R25 title. Its proposed correction is a neutral revision-index label, not a blanket R32 rename. Crypto `p-10-0` contains eight R4 boards despite its R3 Current Build title; the proposed label removes unsupported build authority. Both exact label changes remain unapplied.
 
-Live exact-target directory reads succeeded for MASTERMIND PAGES `01M2WGNCX9475G79JRKJTCM08P / p-1P-0` (boards `5G0X-2`, `5G1H-2`, `5G1Z-2`) and Terminal `01M3NSZGE8JWN2EZCSF0DT05RM / p-R-0` (board `1BCX-0`). The MASTERMIND PAGES page list now includes Intraday Flow draft `p-26-1`; preserve it as a dated delta, not a rewritten census.
+The original Earnings, Hub and Investor Shell notices contain exact destination URLs. Those relationships are now visible in the source directory while their original anchors remain retained. The early Hub/China notices name a successor family without an exact destination; those gaps remain specific. Rejected Prophet R6 is preserved; its read-me's earlier critique is not misrepresented as the actual R6 rejection receipt.
 
-F01 shell v1 and F02 system v1 releases have not been observed in the parent package. Current references and names do not establish approval. Native architectural consultations are advisory only, not Fabric admission, formal independent RIG receipts, or implementation acceptance.
+## Exact blockers and next evidence
+
+| Blocked effect / acceptance | Evidence | Next valid receiver and safe action |
+| --- | --- | --- |
+| Paper organization, naming and editable directory composition | `paper-desktop 0.5.18`; live catalog `16e6b93f…fdefd`; `accepted_for_write=false`, `catalog_compatible=false` | P00 / original adapter path establishes installed catalog qualification and supported resource schemas. F03 then re-reads exact target overlap, applies smallest admitted batch and verifies preservation/readback |
+| Foundation-bound composition | F01/F02 frozen releases and receipts not observed | Current valid F01/F02 receiver returns versioned contracts; F03 binds and recomposes affected directory references |
+| Approved candidate + complete contract for each family | Original handoffs are requirements; exact candidate/contract/receipt mappings unreturned | Current valid domain receiver returns frozen reference and contract, retention/lineage evidence and actual review state |
+| Copy/test archival decisions | 106 listed-only pages are not content-qualified for disposal; comments/assets/annotations preservation unknown | F03 and affected custodian compare the exact admitted migration targets; retain originals until checks pass |
+| Rendered directory acceptance | Browser rejected the local data-URL preview under protocol policy; no alternate mechanism used to evade it | Use a supported, authorized preview context in the normal review path and obtain actual responsive/keyboard/locale/zoom captures |
+| Formal reference review | Native advisory critique is not RIG/Fabric/GitHub approval; Fabric capability discovery reported admission/START UNPROBED and supplied no trusted original root/parent binding | Existing review owner binds one lawful review to the frozen source head and actual independent identity; no invented root or alternate review dispatch |
+
+The fresh Macro enumeration and [native-source census](evidence/native-source-inventory.json) close the existing generator’s inventory subgaps: 29 Terminal page modules and seven Mastermind web handlers are now recorded at exact pins. The inherited 17 native projection rows remain a separate historical fact. The separate Mastermind OS feature-view application is outside this scanner. Implementation acceptance still requires route admission/access reconciliation and representative family edge coverage.
+
+## Source and effect custody
+
+This return lives only under `research/design_candidates/production_design_20261102/f03/` on owned branch `design/f03-paper-directory-20261102-c2`, based on the pinned parent audit package. The parent audit source remains intact. Initial recoverable checkpoint commit was `0319d7233f99aeeaefe80d7e75d2ccf5aff42948`. Final source identity is the containing Git commit and its artifact manifest; no self-referential final SHA is fabricated inside files.
+
+No Paper effect is unknown because none was dispatched. Read-only exporter work loaded immutable source through Git and left shared checkout files/git state unchanged. No Slack/email commission, external product session, production build, merge or deployment was performed. This package stays draft/HOLD for review.
+
+F03 SUCCESS remains unavailable until the assigned physical organization is applied and verified with complete identity maps, preserved links/comments/annotations/assets and actual review evidence. A useful source directory is completed progress, not successful Paper organization.
