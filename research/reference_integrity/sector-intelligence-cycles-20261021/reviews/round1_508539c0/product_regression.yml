@@ -1,0 +1,500 @@
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: product_regression
+artifact_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+reviewer:
+  identity: opus-auditor-product-regression-sic-20261021-r1
+  model: claude-opus-5-5
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (23 frozen board exports + design_refs/sector-paper-20261021)
+  - capability ledger (baseline.yml) + 9-row user task manifest
+  first_pass_path: critic_return/first_pass_product_regression.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-10-21T10:13:47Z'
+  verdict: BLOCK
+  findings:
+  - id: PRC-001
+    severity: blocker
+    finding: 'The Brief drops the Act-Now board. Production (prod-desktop-dark-en-central, prod-mobile-light-zh-central)
+      shows five gated lanes: BUY NOW 5 / ALMOST READY 2 / IN FAVOUR - DON''T CHASE 3 / TAKE PROFITS 2 / STAND ASIDE
+      24. It also shows per-row scores and 20d vs market, the ''N more here - sign in'' preview fold, the lanes-only-gated
+      disclaimer and BOTTOMING WATCH (7) with gate chips. None of these appear on boards 12 or 22. They are replaced
+      by ''Three places to investigate'' (3 rows). state_matrix.csv:14 still claims brief/locked is PRODUCED from
+      templates/_us_act_now_board.html.j2:31, but no board draws that state. copy_deck brief section has no lane
+      label strings.'
+    capability: SC-001..SC-007, SC-009..SC-014, SC-021..SC-023, SC-034, SC-091
+    task: task.brief
+    boards:
+    - 12-brief-desktop-light-en
+    - 22-brief-desktop-dark-en
+  - id: PRC-002
+    severity: blocker
+    finding: The Brief has no track record or grader surface and no honest denominator. The production track-record
+      entry point has no home on the Brief.
+    capability: SC-035, SC-089, U04
+    task: task.brief
+    boards:
+    - 12-brief-desktop-light-en
+    - 22-brief-desktop-dark-en
+  - id: PRC-003
+    severity: blocker
+    finding: 'The hazard table invents a target: ''Cycle crosses zero'' at 38/71/89%, all marked MODEL. engine/hazard_score.py
+      scores P(turn within h months) for the open leg direction only, and has no zero-cross target. ''4 of 6 cells
+      use a model fitted on Energy'' is unsupported: coefficients are per direction, not per sector. No current-parity
+      caveat (lineage PARITY_FAILS) and no ''display-only, never a signal'' footnote is visible. copy_deck hazard_label
+      ''Turn hazard (calibrated)'' and hazard_footnote ''isotonic-calibrated ... W4.2 gate'' reuse production text
+      without that caveat.'
+    capability: C19, U14
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  - id: PRC-004
+    severity: blocker
+    finding: The track record invents a metric. It says '27.4% Conditional hit rate - 31 of 113 called turns arrived
+      inside their window', next to '12 calls logged in advance since 1 Jan 2026, 4 resolved, 8 still open'. The
+      two denominators cannot both hold. C23 says no standalone grader exists for turn windows, and the Sector Central
+      grader scores conviction calls against forward returns. 'Scored by the Sector Central grader on turns called
+      before they happened' is therefore false.
+    capability: C23, U04
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  - id: PRC-005
+    severity: blocker
+    finding: The board states 'Tighten risk rather than add.' and shows a 'Protect gains' stance chip. Together
+      with copy_deck stance_act 'Act' (NEW), this turns a descriptive cycle or management state into a trading instruction.
+      Model narrative gains sizing or execution authority, which house law forbids.
+    capability: C15, C17
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  - id: PRC-006
+    severity: blocker
+    finding: Phase age is shown as definite months or weeks ('Late up for 14 months', 'Late up for 19 months', 'month
+      11', 'Week 31 of this leg') with no status qualifier. At this SHA, engine/cycle_phase_age.py measures sessions
+      with status measured/lower_bound/insufficient_history/source_unavailable/unknown_phase/not_logged (forward_log_replay.v2),
+      stamped by engine/sector_cycles.py _stamp_phase_age. cycles_ia.md:155 and :228-230 still say no producer of
+      true phase age exists. That is stale, so U03 was dispositioned wrongly and lower bounds are shown as facts.
+    capability: U03, C16
+    task: task.dossier
+    boards:
+    - 12-brief-desktop-light-en
+    - 14-explore-rotation-desktop-light-en
+    - 16-dossier-desktop-dark-en
+    - 22-brief-desktop-dark-en
+  - id: PRC-007
+    severity: blocker
+    finding: Descriptive rhythm is mixed with hazard semantics. Board 01 shows a 'Leg end PRIOR-led' window on the
+      price chart. Board 16 shows 'Slow cycle, 9 to 14 months MODEL ... Cycle peak window opens in about 6 weeks'.
+      The MODEL badge sits on a periodicity read that no calibrated model produces.
+    capability: C18, C19
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+    - 16-dossier-desktop-dark-en
+  - id: PRC-008
+    severity: blocker
+    finding: 'Boards 01 and 16 draw a third header family: ''Mastermind | Brief Sectors Cycles Research Watches
+      | Search sectors, tickers, notes | EN 中文 | Dark''. Boards 12, 14 and 22 draw a modified site nav with no flags,
+      no Other Assets and no settings gear. Production uses the canonical _site_nav family on both pages. No third
+      header family may be created.'
+    capability: navigation doctrine (CLAUDE.md Navigation source-of-truth)
+    task: task.return
+    boards:
+    - 01-cycles-desktop-dark-en
+    - 16-dossier-desktop-dark-en
+    - 12-brief-desktop-light-en
+    - 14-explore-rotation-desktop-light-en
+    - 22-brief-desktop-dark-en
+  - id: PRC-009
+    severity: blocker
+    finding: The lead-lag STOP and inert sizing (size_mult 1.0) appear on no user-facing surface. Inert sizing is
+      noted only in cycles_ia.md:36/:157, and the lead-lag STOP is absent from every proposal file. Combined with
+      PRC-005, users get no signal that these outputs carry no authority.
+    capability: U14
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  - id: PRC-010
+    severity: major
+    finding: Time Machine has no home. Zero hits in any proposal file.
+    capability: SC-058
+    task: task.brief
+  - id: PRC-011
+    severity: major
+    finding: Forming Narratives (ai_watch) has no home. Zero hits.
+    capability: SC-059, SC-060, SC-061, SC-062
+    task: task.research
+  - id: PRC-012
+    severity: major
+    finding: Desk-watch has no home. Zero hits.
+    capability: SC-046
+    task: task.watches
+  - id: PRC-013
+    severity: major
+    finding: 'Moving and Money surfaces exist only as lens tab names, not drawn: rotation events board, whole-market
+      269-subsector map, money-flow verdict, sector-ETF flow board, heatmap, index leadership. ''heat'' appears
+      twice in copy strings and ''Money'' only in the state matrix.'
+    capability: SC-044, SC-045, SC-049, SC-051, SC-052, SC-053
+    task: task.rotation
+    boards:
+    - 14-explore-rotation-desktop-light-en
+  - id: PRC-014
+    severity: major
+    finding: Confluence and the Explore table capabilities have state or copy rows only. No board shows the confluence
+      grid, filters, sortable columns or exports.
+    capability: SC-054..SC-057, SC-063..SC-078
+    task: task.rotation
+    boards:
+    - 14-explore-rotation-desktop-light-en
+  - id: PRC-015
+    severity: major
+    finding: The hero handoff block ('THIS WEEK'S HANDOFF - Losing the lead / Taking the lead') and the WHAT CHANGED
+      chips are replaced by a single h1 claim and a 'What changed?' link. The week-over-week change read is lost.
+    capability: SC-024, SC-048
+    task: task.brief
+    boards:
+    - 12-brief-desktop-light-en
+    - 22-brief-desktop-dark-en
+  - id: PRC-016
+    severity: major
+    finding: Reco tags and the 11-sector gated conviction board have no drawn home.
+    capability: SC-008, SC-038, SC-040
+    task: task.rotation
+    boards:
+    - 14-explore-rotation-desktop-light-en
+  - id: PRC-017
+    severity: major
+    finding: 'The routing contract has no IA home: legacy view anchors, #theme-*, #read-*, hash fallback and deep-link
+      scroll. The six-tab IA gives no mapping for existing inbound links.'
+    capability: SC-080..SC-086
+    task: task.return
+  - id: PRC-018
+    severity: major
+    finding: The copy deck and boards disagree. (1) The Brief claims '18 reused / 0 NEW', but the boards carry strings
+      missing from the deck ('Three places to investigate', 'Source rank', 'Entry posture', 'Check entry signals',
+      'Go deeper'). (2) The h1 is 6 words against a 4-word budget. (3) Board 01's phase chips 'Early up / Late up
+      / Early down / Late down' do not match the deck's production chips (Topping-late / Trending / Rolling over
+      / Prime entry / Bottoming). (4) quadrant_body 'Up = gaining speed this week' contradicts board 14's 21-session
+      y-axis.
+    capability: C07, copy integrity
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+    - 12-brief-desktop-light-en
+    - 14-explore-rotation-desktop-light-en
+  - id: PRC-019
+    severity: major
+    finding: '''Engine read'' shows analyst-style causal narrative (''crude steadied and refining margins widened'')
+      under ''Narrative from engine epoch E-2026-03''. This presents generated prose as an engine measurement.'
+    capability: C12, C14
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  - id: PRC-020
+    severity: major
+    finding: boards_manifest capabilities_covered claims things the pixels do not show. Board 16 lists C10/C11/C12,
+      but no turn markers, leg timeline or narrative are drawn. Board 12 lists R3A-19/27/92, but those states are
+      not drawn.
+    capability: boards_manifest integrity
+    task: task.dossier
+    boards:
+    - 16-dossier-desktop-dark-en
+    - 12-brief-desktop-light-en
+  - id: PRC-021
+    severity: minor
+    finding: state_matrix.csv mis-maps R3A ids. R3A-19 (auth hydration) is cited for incompatible_generation and
+      invalid_payload, and R3A-30 (fail-soft) for explore/corrected.
+    capability: state_matrix traceability
+    task: task.research
+  - id: PRC-022
+    severity: minor
+    finding: The Abstained card's PRIOR '38% of 41 comparable legs' (up, 3 months) conflicts with board 01's up/3m
+      PRIOR of 33%.
+    capability: C19
+    task: task.cycles
+    boards:
+    - 06-cycles-states-desktop-dark-en
+    - 01-cycles-desktop-dark-en
+  - id: PRC-023
+    severity: minor
+    finding: '''Money rotated in from Utilities on 9 Oct'' is a pair-wise flow attribution that the relative-strength
+      evidence may not support.'
+    capability: C20, C21
+    task: task.cycles
+    boards:
+    - 01-cycles-desktop-dark-en
+  strengths:
+  - Accessible Map/List rotation alternative with keyboard text (board 14)
+  - '''Group strength. A separate stock decision.'' framing; Compare in Prophet without auto-filter'
+  - Honest zero vs missing ('AMKR has no price yet ... shows no data, not zero'); identity-unresolved row
+  - Membership-effective vs source-observed dates; 'Not supplied by the source' for relationships
+  - Recorded vs reconstructed track-record split on dossier states; 'Not a win rate' caption
+  - Overdue now rendered (C18 upgrade); SSR as-of date shown (C24)
+  - Full typed degraded-state set with 'still works', design targets labelled as such
+  - copy_deck EN/ZH parity 213/213 keys, 0 mismatches
+  - 'components.css: no stripe rules (only the law comment at :9); :focus-visible outline 2px kept at :43'
+  user_task_matrix:
+    task.brief:
+      verdict: WORSE
+      reason: no Act-Now lanes, Bottoming Watch, lane counts, paywall fold or track record
+    task.rotation:
+      verdict: EQUIVALENT
+      reason: map + accessible list + inspector + playback are strong; Money/Moving/heatmap/conviction surfaces
+        undrawn; axis copy contradiction
+    task.dossier:
+      verdict: WORSE
+      reason: excellent facts strip/membership dates/zero-vs-missing, but unqualified phase age and MODEL on rhythm
+    task.cycles:
+      verdict: WORSE
+      reason: invented hazard target, invented grader metric, trading instruction, no parity caveat
+    task.stock-prophet:
+      verdict: BETTER
+      reason: dated ETF context, Compare in Prophet, 'group strength never makes a stock an entry'
+    task.research:
+      verdict: UNKNOWN
+      reason: draft-not-saved and read-back strings present; research boards not viewed; language-switch survival
+        unshown
+    task.watches:
+      verdict: UNKNOWN
+      reason: new surface; 'saving a symbol is not an alert' good; watches boards not viewed
+    task.return:
+      verdict: UNKNOWN
+      reason: origin chip + Clear context on board 16; legacy anchors unmapped; theme/language state preservation
+        unshown
+    task.keyboard:
+      verdict: UNKNOWN
+      reason: focus outline kept, keyboard hints on board 01; no journey evidenced
+  production_preferable_for:
+  - 'task.brief: the Act-Now five-lane board, Bottoming Watch, handoff hero, What-changed chips'
+  - The Map / What's Moving / Money & Breadth / Confluence surfaces
+  - Time Machine; Forming Narratives; desk-watch
+  - Cycles hazard and grader honesty (production shows no invented zero-cross target or 113-turn denominator)
+  capabilities_without_home:
+  - SC-001
+  - SC-002
+  - SC-004
+  - SC-005
+  - SC-006
+  - SC-007
+  - SC-008
+  - SC-009
+  - SC-010
+  - SC-011
+  - SC-013
+  - SC-017
+  - SC-020
+  - SC-021
+  - SC-022
+  - SC-023
+  - SC-026
+  - SC-033
+  - SC-034
+  - SC-038
+  - SC-040
+  - SC-041
+  - SC-042
+  - SC-043
+  - SC-045
+  - SC-046
+  - SC-048
+  - SC-049
+  - SC-051
+  - SC-052
+  - SC-053
+  - SC-054
+  - SC-055
+  - SC-056
+  - SC-057
+  - SC-058
+  - SC-059
+  - SC-060
+  - SC-061
+  - SC-062
+  - SC-063
+  - SC-064
+  - SC-066
+  - SC-068
+  - SC-069
+  - SC-070
+  - SC-071
+  - SC-072
+  - SC-073
+  - SC-076
+  - SC-078
+  - SC-080
+  - SC-081
+  - SC-082
+  - SC-083
+  - SC-084
+  - SC-085
+  - SC-086
+  - SC-087
+  - SC-089
+  - SC-091
+  - U01
+  - U03
+  - U06
+  - U12
+  - U13
+  images_viewed:
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/22-brief-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/14-explore-rotation-desktop-light-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/01-cycles-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/06-cycles-states-desktop-dark-en.png
+  - production/prod-desktop-dark-en-central.png
+  - production/prod-mobile-light-zh-central.png
+  - production/prod-desktop-dark-en-cycles.png
+  inputs_opened:
+  - research/reference_integrity/sector-intelligence-cycles-20261021/baseline.yml
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
+  - proposal copy_deck.md, copy_deck.json, cycles_ia.md, cycles_ia.csv, state_matrix.md, state_matrix.csv
+  - design_refs/sector-paper-20261021/components/components.css, specimen.html, COMPONENTS.md
+  - engine/cycle_phase_age.py (1-52, 142-240), engine/sector_cycles.py (grep, 870-873), engine/hazard_score.py (1-40
+    + grep)
+  quarantine_breaches: []
+second_pass:
+  amended_at: 2026-10-21T10:21Z
+  rationale_received: true
+  reviewer_identity: opus-auditor-product-regression-sic-20261021-r1
+  artifact_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+  amendments:
+  - finding: PRC-001
+    action: upheld
+    note: 'proposal.yml:168-191 marks SC-001..SC-008 RETAIN with ''no dedicated R3 board: the production view markup
+      is carried unchanged''. That is not a rebuttal. The author''s own task.brief (:675-679) requires the Act-Now
+      lanes and Bottoming Watch, yet records that the board does not draw them. state_matrix.csv:14 claims brief/locked
+      PRODUCED for a lane fold that no board draws.'
+  - finding: PRC-002
+    action: upheld
+    note: SC-035/SC-089 (:270-274, :436-440) cite the B13 denominator work but point only to 'no dedicated R3 board'.
+      U04 (:598-602) is 'no Paper node'. task.brief (:675) asks the user to reach the track record 'with its honest
+      denominator'. No board draws that denominator, and the only drawn grader is board 01's mislabelled one (PRC-004).
+  - finding: PRC-003
+    action: upheld
+    note: 'The rationale contradicts the pixels. auth.hazard (:739-743) claims ''same cells plus the live parity
+      disclosure (PARITY_FAILS ...)'', and continuity R3C-NO-UNSUPPORTED-INVENTION says ''PARITY_FAILS is disclosed''.
+      Board 01 shows no parity disclosure. It adds a ''Cycle crosses zero'' MODEL row, a target with no producer:
+      grep for zero_cross/crosses_zero in engine/hazard_score.py, sector_cycles.py and cycle_rhythm.py returns 0
+      hits. C19 (:544) itself says historical qualification does not establish current parity.'
+  - finding: PRC-004
+    action: downgraded
+    new_severity: major
+    note: The premise was partly wrong. SC-035 (:273-274) shows ~0.274 is the real Sector Central grader hit rate,
+      so 27.4% (31/113) is a producer number, not an invention. The finding stands as a mislabel. Board 01 calls
+      conviction-call grader rows 'called turns ... inside their window' on Cycles. C23 (:561) says the standalone
+      turn-outcome view is missing, and '12 calls logged in advance' still conflicts with 113. The fix is binding
+      and copy, not producer truth.
+  - finding: PRC-005
+    action: downgraded
+    new_severity: major
+    note: '''Protect gains'' is the producer''s resolved stance: copy_deck.json:156 sources it from templates/stage_analysis.html.j2:1499,
+      and auth.stance-chip (:729-733) and C15 (:527) agree. That half is not inflation. ''Tighten risk rather than
+      add.'' appears in neither copy_deck.json nor specimen.html (grep: 0 hits). It is an unbound instruction sentence
+      and must be removed or bound to a producer string. The stance chip is legitimate, so this is not a blocker.'
+  - finding: PRC-006
+    action: upheld
+    note: U03 (:596) says the interim honesty fix is to show unknown age with 'legitimate unknown boundaries'. Every
+      board instead draws definite ages ('14 months', 'month 11', 'Week 31'). engine/cycle_phase_age.py already
+      emits measured/lower_bound/insufficient_history at this sha. task.dossier (:689) and cycles_ia.md:155 still
+      describe a placeholder-zero world. The boards contradict the author's own interim rule.
+  - finding: PRC-007
+    action: downgraded
+    new_severity: major
+    note: Board 01's 'PRIOR-led' leg-end window may legitimately derive from the up/3m and up/6m PRIOR hazard cells;
+      board note :55 makes it a deliberate state, so that half is uncertain. Board 16's 'Slow cycle, 9 to 14 months
+      MODEL' (note :132 'fast/slow MODEL disagreement') contradicts auth.model-prior (:737), 'descriptive rhythm
+      marked descriptive', and add.cycles-workspace (:656). The remaining conflation is one board's badge.
+  - finding: PRC-008
+    action: upheld
+    note: information_economics.preserved (:770) claims 'canonical nav family only', which is false of boards 01,
+      12, 14, 16 and 22. verdict.yml blocking_findings VTC-002 and SIC-V1-C02 concede that a third header family
+      exists. No rationale binds _site_nav as normative.
+  - finding: PRC-009
+    action: downgraded
+    new_severity: major
+    note: U14 (:648-652) promises to preserve inert sizing and the lead-lag STOP and targets boards 06/07, but board
+      06 carries neither, so the disclosure is still missing. verdict.yml stronger_claims ('sizing stays inert,
+      no lead-lag claim appears') holds for every board except the sentence in PRC-005. With that sentence repaired,
+      absence of the disclosure is a missing methods row, not an authority inflation.
+  - finding: PRC-010
+    action: upheld
+    note: SC-058 (:341-343) is 'carried unchanged' with no board. continuity R3C-TIME-MACHINE is CARRIED_BLOCK and
+      states the home 'has no dedicated R3 board'.
+  - finding: PRC-011
+    action: upheld
+    note: SC-059..SC-062 (:344-355) carry 'no dedicated R3 board' boilerplate. No board, copy string or state row
+      draws Forming Narratives.
+  - finding: PRC-012
+    action: upheld
+    note: SC-046 (:305-307) is assigned to 'Explore → Rotation / Turns' by boilerplate. Board 14 draws Rotation
+      and has no desk-watch.
+  - finding: PRC-013
+    action: upheld
+    note: SC-044..SC-053 (:299-328) are all 'carried unchanged'. The lens tabs on board 14 are labels only, and
+      continuity R3C-HEATMAP-LEGIBILITY is CARRIED_BLOCK with no drawn heatmap.
+  - finding: PRC-014
+    action: upheld
+    note: SC-054..SC-079 (:329-408) are boilerplate RETAIN. SC-066 is correctly BLOCKED_DATA (:365-369), which is
+      good, but no Confluence or Explore table board exists.
+  - finding: PRC-015
+    action: upheld
+    note: SC-024 (:237-239) claims a drawn home on boards 12-15, but those boards replace the handoff hero with
+      a single h1. SC-048 (:311-313) is boilerplate. verdict.yml SIC-V1-C04 and VTC-005 concede the handoff pair
+      is gone.
+  - finding: PRC-016
+    action: upheld
+    note: SC-008 (:189-191), SC-038 (:281-283) and SC-040 (:287-289) are boilerplate RETAIN with no drawn reco tags
+      or gated conviction board.
+  - finding: PRC-017
+    action: downgraded
+    new_severity: minor
+    note: 'SC-080..SC-086 (:409-429) keep the existing router as code at the shell boundary, and C02 reachability
+      (:463) states that /sector_cycles.html keeps resolving. A router needs no board. What remains is an explicit
+      legacy-anchor (#theme-*, #read-*, six-view hash) to new-tab mapping table.'
+  - finding: PRC-018
+    action: upheld
+    note: 'One sub-point is withdrawn. C04 (:470-472) and C07 (:487) intend the v2 phase vocabulary (Early/Late
+      up/down), so board 01''s chips are deliberate, but the deck must then carry those strings. Still upheld: ''0
+      NEW'' versus new board strings, the over-budget h1, and quadrant_body contradicting the 21-session axis. information_economics
+      (:763-765) only partially acknowledges copy drift.'
+  - finding: PRC-019
+    action: downgraded
+    new_severity: minor
+    note: C12 (:507-512) and C14 (:519-523) show that the epoch-stamped, TTL-quarantined bilingual analyst note
+      is an existing production feature carried over. Board 01 keeps its epoch and TTL disclosure. What remains
+      is the label 'Engine read', which suggests a measurement. It should be labelled as narrative.
+  - finding: PRC-020
+    action: upheld
+    note: proposal.yml repeats the board 16 claim for C10 (:498-499), C11 (:503-504) and C12 (:509-510), and the
+      pixels show no turn inspector, leg timeline or analyst note on board 16. The author already flags 'BOARD CLAIM
+      OPEN (sic-p-rev B3)' for C02/C03/C05/C17/C21, which corroborates that coverage claims outrun the boards.
+  - finding: PRC-021
+    action: upheld
+    note: No rationale touches the R3A id mapping in state_matrix.csv.
+  - finding: PRC-022
+    action: upheld
+    note: No rationale addresses it. The values are illustrative, but two boards in one reference disagree on the
+      same PRIOR cell.
+  - finding: PRC-023
+    action: withdrawn
+    note: C20 (:545-548) binds event chips to the producer, and engine/rotation_events.py:6 says 'A ROTATION event
+      pairs the two sides explicitly'. A from/to pair attribution is therefore producer semantics, not an unwarranted
+      inference.
+  verdict: BLOCK
+  user_task_matrix_changes: []
+  rationale_files_opened:
+  - proposal.yml
+  - continuity.yml
+  - verdict.yml
+  - reviews/README.md
+  quarantine_breaches: []

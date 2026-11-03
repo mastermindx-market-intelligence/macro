@@ -1,0 +1,230 @@
+{
+  "schema": "mastermind.prophet_journey_reconciliation.v1",
+  "generated_by": "scripts/prophet_journey_reconcile.py",
+  "inputs": {
+    "page": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/local_actions/page.html",
+      "sha256": "6a34a3b749b189fcd30e5e539a425ddeebbf5186149dcabc00ae31707c884182",
+      "bytes": 964172
+    },
+    "standouts": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/local_actions/standouts.json",
+      "sha256": "4e8e9f8099f58be29eeac38b513bc00afd1d2dea77f509607a44826945c2c3a6",
+      "bytes": 2626712
+    },
+    "index": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/local_actions/index.json",
+      "sha256": "c57fd4b91d099e45973e248eff721059baa48e127c747a5eb7970955941fe34d",
+      "bytes": 11851401
+    },
+    "runtime": {
+      "path": "/private/tmp/claude-501/-Volumes-Mastermind-2-agent-workspaces-claude-14851c4656838a3b-quizzical-nash-0788e4-e8b383ae5709284c/bcc7e91f-2ceb-46d5-b318-324555c2aaa7/scratchpad/journey/local_actions/prophet_live.json",
+      "state": "MISSING"
+    }
+  },
+  "ticker": "XNCR",
+  "locale": "en",
+  "linked_plan_ids": [],
+  "checks": [
+    {
+      "id": "J1",
+      "status": "PASS",
+      "expected": "card present for XNCR in the US board",
+      "observed": {
+        "data_lane": null,
+        "data_stage": "live",
+        "nested_data_mkt": "us"
+      },
+      "where": "#us-standouts .pvcard[data-ticker=T] (templates/_prophet_card.html.j2:608; nested market at :635; templates/_us_board_cards.html.j2:283-285; headings :78, :66)"
+    },
+    {
+      "id": "J2",
+      "status": "FAIL",
+      "expected": "table row present",
+      "observed": "Candidates table captured without selected ticker row",
+      "where": "#us-candidate-pool[data-view=\"table\"] [data-ticker=T] (templates/_us_candidate_pool_rows.html.j2:27; templates/_us_candidate_pool.html.j2:17)"
+    },
+    {
+      "id": "J3",
+      "status": "FAIL",
+      "expected": "grid/table row present",
+      "observed": "Candidates captured without selected ticker row",
+      "where": "#us-candidate-pool[data-view=\"grid\"] [data-ticker=T] (templates/_us_candidate_pool_rows.html.j2:27; templates/_us_candidate_pool.html.j2:13 CSS view switch)"
+    },
+    {
+      "id": "J4",
+      "status": "PASS",
+      "expected": "XNCR present in ['buy', 'candidate_pool']; lane reconciled",
+      "observed": {
+        "found_in": [
+          "buy",
+          "candidate_pool"
+        ],
+        "board_data_lane": null,
+        "payload_lane": "continuation"
+      },
+      "where": "us_standouts.buy / watch / candidate_pool.rows (engine/us_candidate_lanes.py:1007 candidate_pool shape; scripts/build_site.py:5284 / :5658 consumers)"
+    },
+    {
+      "id": "J5",
+      "status": "PASS",
+      "expected": "native-id, kind, asof, entry-status bound",
+      "observed": {
+        "data_native_id": "XNCR",
+        "data_setup_kind": "board",
+        "data_setup_asof": "2026-10-30",
+        "data_entry_status": "buy_now",
+        "payload_entry_status": "buy_now",
+        "asof_match": "standouts.as_of"
+      },
+      "where": "[data-setup-ticker=T] > [data-native-id=T] (templates/_prophet_setup_detail.html.j2:91 wrapper; :27 body; :34 entry-status)"
+    },
+    {
+      "id": "J6",
+      "status": "FAIL",
+      "expected": "displayed selected body",
+      "observed": "no displayed .pv-setup-body for ticker",
+      "where": "selected displayed .pv-setup-body and template.pvs-body-source binding plus rendered source fields"
+    },
+    {
+      "id": "J7",
+      "status": "FAIL",
+      "expected": "selected source and rendered rows",
+      "observed": "source or rendered row missing",
+      "where": "#us-candidate-pool clock, total, selected reasons and digest"
+    },
+    {
+      "id": "J8",
+      "status": "PASS",
+      "expected": "honest non-related plan relation",
+      "observed": "none",
+      "where": "selected .pvs-plan-link[data-pvs-plan-target]; page plan card id and ticker; index plan id, asset and closed flag"
+    },
+    {
+      "id": "J9",
+      "status": "FAIL",
+      "expected": "source-bound clocks remain valid without runtime quote evidence",
+      "observed": {
+        "fails": [
+          "#plv-asof state missing or unsupported"
+        ],
+        "runtime": "not supplied"
+      },
+      "where": "#us-plan-book-asof, .pvs-assessment-clock and #plv-asof against index.source_asof, index.asof, signal_asof and runtime meta quote_asof"
+    },
+    {
+      "id": "J10",
+      "status": "PASS",
+      "expected": "no cross-market hrefs; every data-mkt == US",
+      "observed": {
+        "nodes_walked": 3
+      },
+      "where": "journey nodes: #us-standouts, #us-candidate-pool, [data-setup-ticker=T], #pv-<id> (templates/_prophet_card.html.j2:608 for #pv-<id>)"
+    },
+    {
+      "id": "J11",
+      "status": "FAIL",
+      "expected": "no internal enum tokens in displayed text",
+      "observed": [
+        {
+          "token": "cleared_admission",
+          "snippet": "it is here Original source · cleared_admission Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "sector_cap_overflow",
+          "snippet": "it is here Original source · sector_cap_overflow Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "sector_cap_overflow",
+          "snippet": "it is here Original source · sector_cap_overflow Target and holding period una",
+          "node": "div"
+        },
+        {
+          "token": "ready",
+          "snippet": "cord FLS-BULL-20261029 Status Ready Formation anchor 2026-10-29 S",
+          "node": "div"
+        },
+        {
+          "token": "ready",
+          "snippet": "cord FLS-BULL-20261029 Status Ready Formation anchor 2026-10-29 S",
+          "node": "div"
+        },
+        {
+          "token": "delivering",
+          "snippet": "Watch 78 Ready 271 Entered 0 Delivering 0 Overtime 16 Invalidated 467",
+          "node": "div"
+        },
+        {
+          "token": "entered",
+          "snippet": "s number 0 Watch 78 Ready 271 Entered 0 Delivering 0 Overtime 16 In",
+          "node": "div"
+        },
+        {
+          "token": "invalidated",
+          "snippet": "ed 0 Delivering 0 Overtime 16 Invalidated 467 Resolved outside the unre",
+          "node": "div"
+        },
+        {
+          "token": "overtime",
+          "snippet": "dy 271 Entered 0 Delivering 0 Overtime 16 Invalidated 467 Resolved o",
+          "node": "div"
+        },
+        {
+          "token": "ready",
+          "snippet": "up to this number 0 Watch 78 Ready 271 Entered 0 Delivering 0 Ov",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "0 Overtime 16 Invalidated 467 Resolved outside the unresolved total",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "cells add up to the headline; Resolved sits outside it, because a cl",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "n 2026-10-30Older signal only Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "tionaryLast screen 2026-10-30 Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "resolved",
+          "snippet": "EnergyLast screen 2026-10-30 Resolved Plan details System model pla",
+          "node": "div"
+        },
+        {
+          "token": "watch",
+          "snippet": "below add up to this number 0 Watch 78 Ready 271 Entered 0 Delive",
+          "node": "div"
+        },
+        {
+          "token": "watch",
+          "snippet": "e traded twice appears twice. Watch counts names with a live sign",
+          "node": "div"
+        }
+      ],
+      "where": ".ucp-receipt, .pvs-section, .pv-setup-body and #us-plan-block displayed text; raw codes allowed only inside code.ucp-reason-raw"
+    },
+    {
+      "id": "J12",
+      "status": "PASS",
+      "expected": "alert absent or sources genuinely empty",
+      "observed": {
+        "alerts": [],
+        "index_plans_nonempty": true,
+        "standouts_buy_nonempty": true
+      },
+      "where": ".mx-error[role=alert] (templates/_prophet_card.html.j2:120; :123-124 bilingual 'Tracking unavailable' copy)"
+    }
+  ],
+  "verdict": "FAIL"
+}

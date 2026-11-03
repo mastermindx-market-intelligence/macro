@@ -95,26 +95,67 @@ def test_kinds(model: dict, proof: dict) -> None:
 
 
 @pytest.mark.needs_full_checkout("data")
-def test_edges_state_empty_for_the_unwired_envelope(model: dict) -> None:
+def test_edges_state_present_for_the_committed_envelope(model: dict) -> None:
+    """DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT — the committed v1 envelope is read at display tier."""
     store = json.loads((ROOT / model_module.EDGES_PATH).read_text(encoding="utf-8"))
     assert store["schema"] == "company_intelligence.relationship_edges/v1"
-    assert model["edges_state"] == "empty"
-    assert model["edges"] == []
-    assert model["party_names"] == {}
-    assert model["edge_package"] is None
+    assert model["edges_state"] == "present"
+    assert model["edges"] == store["edges"]
+    assert len(model["edges"]) > 0
+    package = model["edge_package"]
+    assert package is not None
+    assert set(package) == set(store) - {"edges"}
+    assert package["counts"]["edges"] == len(model["edges"])
+    assert package["adoption_state"] == "proposed"
+    assert not any(package["authority"].values()), "display tier: no authority field may be true"
+    parties = {e[side]["issuer_id"] for e in model["edges"] for side in ("from", "to")}
+    assert set(model["party_names"]) == parties
     deck = json.loads((ROOT / model_module.DECK_PATH).read_text(encoding="utf-8"))
     assert model["deck"] == deck
 
 
-def test_read_edges_absent_list_and_envelope(tmp_path: Path) -> None:
+def _envelope(edges: list) -> dict:
+    return {"schema": model_module.EDGES_SCHEMA, "package_id": "pkg:0123456789abcdef",
+            "adoption_state": "proposed", "as_of": "2026-10-21T00:00:00Z",
+            "authority": {"rank": False, "size": False, "gate": False},
+            "counts": {"edges": len(edges), "non_edges": 3,
+                       "edges_by_species": {"supplier_customer": len(edges)}},
+            "edges": edges}
+
+
+def test_read_edges_absent_file(tmp_path: Path) -> None:
+    assert model_module.read_edges(tmp_path / "relationship_edges.json") == ([], "empty", None)
+
+
+def test_read_edges_bare_list(tmp_path: Path) -> None:
     path = tmp_path / "relationship_edges.json"
-    assert model_module.read_edges(path) == ([], "empty")
     path.write_text('[{"edge": "example"}]', encoding="utf-8")
-    assert model_module.read_edges(path) == ([{"edge": "example"}], "present")
-    path.write_text(json.dumps({"schema": "company_intelligence.relationship_edges/v1",
-                                "adoption_state": "proposed",
-                                "edges": [{"edge": "example"}]}), encoding="utf-8")
-    assert model_module.read_edges(path) == ([], "empty")
+    assert model_module.read_edges(path) == ([{"edge": "example"}], "present", None)
+
+
+def test_read_edges_envelope(tmp_path: Path) -> None:
+    edges = [{"edge": i} for i in range(248)]
+    payload = _envelope(edges)
+    path = tmp_path / "relationship_edges.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    got_edges, state, package = model_module.read_edges(path)
+    assert state == "present"
+    assert got_edges == edges and len(got_edges) == 248
+    assert package == {k: v for k, v in payload.items() if k != "edges"}
+    assert set(package) == set(payload) - {"edges"}
+
+
+@pytest.mark.parametrize("junk", [
+    {"edges": [{"edge": "example"}]},                                  # no schema
+    {"schema": "company_intelligence.relationship_edges/v2", "edges": []},  # wrong schema
+    {"schema": "company_intelligence.relationship_edges/v1", "edges": {"a": 1}},  # edges not a list
+    {"schema": "company_intelligence.relationship_edges/v1"},          # no edges key
+    "a string", 42, None,
+])
+def test_read_edges_junk_shape_is_empty_never_raises(tmp_path: Path, junk) -> None:
+    path = tmp_path / "relationship_edges.json"
+    path.write_text(json.dumps(junk), encoding="utf-8")
+    assert model_module.read_edges(path) == ([], "empty", None)
 
 
 @pytest.mark.needs_full_checkout("data")
@@ -127,6 +168,7 @@ def test_edges_state_present_when_file_exists(model: dict, proof: dict,
     patched = build_model(proof, None, repo_root=ROOT)
     assert patched["edges_state"] == "present"
     assert patched["edges"] == [{"edge": "example"}]
+    assert patched["edge_package"] is None
 
 
 @pytest.mark.needs_full_checkout("data")
@@ -143,6 +185,55 @@ def test_micron_issuer(model: dict) -> None:
     assert link["scope"]["counterparty_display_name"] == "NVIDIA"
     # A URL is a pointer, never emitted source text.
     assert link["source"]["url_if_public"].startswith("https://")
+
+
+# ------------------------------------------- display names (DEC:GMI-ISSUER-DISPLAY-NAME-SOURCE)
+@pytest.mark.parametrize("node_or_issuer_id, ticker", [
+    ("co:us:MU", "MU"),
+    ("co:us:BRK-B", "BRK-B"),        # last-dash split used to read "B"
+    ("co:us:BF-B", "BF-B"),
+    ("ISS:US-XNAS-NVDA", "NVDA"),
+    ("ISS:US-XNYS-BRK.B", "BRK.B"),  # ListingKey code is the third field
+    ("co:ca:TECK-B.TO", "TECK-B.TO"),
+])
+def test_ticker_of_keeps_the_class_share_code(node_or_issuer_id: str, ticker: str) -> None:
+    assert model_module._ticker_of(node_or_issuer_id) == ticker
+
+
+@pytest.mark.parametrize("security_name, plain", [
+    ("Micron Technology, Inc. - Common Stock", "Micron Technology"),
+    ("Abbott Laboratories Common Stock", "Abbott Laboratories"),
+    ("Crescent Energy Company Class A Common Stock", "Crescent Energy Company"),
+    ("Noble Corporation plc A Ordinary Shares", "Noble Corporation"),
+    ("B2Gold Corp Common shares (Canada)", "B2Gold Corp"),
+    ("Nokia Corporation Sponsored American Depositary Shares", "Nokia"),
+    ("Shell PLC American Depositary Shares (each representing two (2) Ordinary Shares)",
+     "Shell PLC"),
+    ("D/B/A Sibanye-Stillwater Limited ADS", "Sibanye-Stillwater"),
+    ("Boeing Company (The) Common Stock", "The Boeing Company"),
+    ("United Microelectronics Corporation (NEW) Common Stock", "United Microelectronics"),
+    ("Berkshire Hathaway Inc. New Common Stock", "Berkshire Hathaway"),
+    ("Stratasys, Ltd. - Ordinary Shares", "Stratasys"),
+    ("Trade Desk ADS Inc", "Trade Desk ADS Inc"),  # only an END-anchored tail is cut
+    ("Common Stock", ""),                          # nothing left -> caller falls back
+])
+def test_plain_company_name_strips_the_instrument_tail(security_name: str, plain: str) -> None:
+    assert model_module._plain_company_name(security_name) == plain
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_class_share_node_names_its_own_company() -> None:
+    """co:us:BRK-B is Berkshire (directory BRK.B), never the bare-B listing (Barrick)."""
+    asof = "2026-10-21"
+    brk, source = model_module._display_name(
+        ROOT, model_module._ticker_of("co:us:BRK-B"), asof)
+    assert (brk, source) == ("Berkshire Hathaway", "symbol_directory.security_name")
+    bf, _ = model_module._display_name(ROOT, model_module._ticker_of("ISS:US-XNYS-BF.B"), asof)
+    assert bf.startswith("Brown Forman")
+    bare_b, _ = model_module._display_name(ROOT, "B", asof)
+    assert bare_b != brk
+    # A tail outside the node-id grammar (epoch suffix) is looked up exactly, then falls back.
+    assert model_module._display_name(ROOT, "MU#2", asof) == ("MU#2", "ticker")
 
 
 @pytest.mark.needs_full_checkout("data")
