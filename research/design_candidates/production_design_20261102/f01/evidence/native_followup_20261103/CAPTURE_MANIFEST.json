@@ -1,0 +1,91 @@
+{
+  "schema": "F01.native_followup_capture.v1",
+  "status": "Unqualified bounded three-board repair capture; not final complete set",
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "priorInputCommit": "be157007c4d4a33feb576a43f431eba3db5650ac",
+  "firstReportsFrozenBeforeRepair": {
+    "productCommit": "4dfcfde749d1c8566546224da5e9715de1d2b249",
+    "tasteCommit": "0d558e74ff16912e431772688d9c79f2a71ad44c"
+  },
+  "captureMethod": "Actual same-app get_screenshot scale1 and get_jsx inline-styles; returned JPEG bytes unchanged",
+  "operations": [
+    "F01-20261103-r4-C-table-units.json",
+    "F01-20261103-r4-D-selected-fill.json",
+    "F01-20261103-r4-D-selected-label.json",
+    "F01-20261103-r4-F-task-descriptions.json"
+  ],
+  "originalEffects": "I/grid EFFECT_UNKNOWN and Readme DOCUMENT_CHANGED held without replay; no shared/page effects",
+  "unchangedReviewBoards": {
+    "commit": "be157007c4d4a33feb576a43f431eba3db5650ac",
+    "boards": [
+      "A",
+      "E",
+      "H"
+    ]
+  },
+  "aggregate_definition": "SHA256 of sorted member path + NUL + member SHA256 + newline",
+  "aggregate_sha256": "cc448df630698e66ce8706d79f6ca26307a976967dbda4e7b88a079ef6dc5396",
+  "files": [
+    {
+      "path": "C.jpg",
+      "boardId": "6ZYB-0",
+      "bytes": 142416,
+      "sha256": "fdc42fb5c69891f0b11864ef19aeeced07fc304347e7c7b38099e42aab3f3281",
+      "gitBlobSha1": "b252cf26e95c32083a24eaef236136163de6f8ee",
+      "format": "JPEG",
+      "dimensions": [
+        1280,
+        1180
+      ],
+      "bytesModified": false
+    },
+    {
+      "path": "C.jsx",
+      "boardId": "6ZYB-0",
+      "bytes": 42140,
+      "sha256": "93f2bc32f6e5131eb5417f1de6902d4585c8cb145b6a2b4370db3e6b8ba5e8ee",
+      "gitBlobSha1": "17c3d9a2032651f202d48427457e81a79d9760b8"
+    },
+    {
+      "path": "D.jpg",
+      "boardId": "6ZYC-0",
+      "bytes": 106207,
+      "sha256": "9889b663690d27c9ebd07a1ccfb21d30b2a9fbb6d86e40ec59a6b6c91bb6a3ba",
+      "gitBlobSha1": "7de85b895b11aedb13577c98fccf1f5f6f07b1c7",
+      "format": "JPEG",
+      "dimensions": [
+        1024,
+        960
+      ],
+      "bytesModified": false
+    },
+    {
+      "path": "D.jsx",
+      "boardId": "6ZYC-0",
+      "bytes": 60629,
+      "sha256": "3e34643a2d64be2ff8dac94186bb6e01a584eabf50c34682c0a6c283b9228200",
+      "gitBlobSha1": "8748ca4b07c96ddea4a3aceddeb2dd4fa79c1196"
+    },
+    {
+      "path": "F.jpg",
+      "boardId": "6ZZV-0",
+      "bytes": 38728,
+      "sha256": "9fbfe4fd0f3fef87b9c4682ee182621b6ddca1a8ddf5fe01a58899927fd83a64",
+      "gitBlobSha1": "a3c75e5acf195359ad305a34a7bcd093d071081b",
+      "format": "JPEG",
+      "dimensions": [
+        320,
+        960
+      ],
+      "bytesModified": false
+    },
+    {
+      "path": "F.jsx",
+      "boardId": "6ZZV-0",
+      "bytes": 11540,
+      "sha256": "38efd24e4f7c97387250a5be8cf4b0a6e8d63f03c6f26682ff9f6b8207a33f42",
+      "gitBlobSha1": "5985c4007bb6828667e36fefe0b0a558dc8d257f"
+    }
+  ]
+}
