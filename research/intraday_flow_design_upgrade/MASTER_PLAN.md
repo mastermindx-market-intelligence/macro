@@ -259,3 +259,28 @@ errors and no horizontal overflow. Phone lab CLS is0.00994–0.01105; desktop re
 The original workstream's bounded UI-1 wave and artifact link, plus its single dated
 2026-11-02 handoff, are authored in this same PR and await protected integration.
 CLOSEOUT.md is a pointer to those owners rather than another copied frontier.
+
+
+## P3.3 — R2 recovery interaction parity
+
+Goal: translate reviewed recovery-state design into usable scan behavior, preserving
+the existing Jinja/vanilla-JS architecture, tokens and deterministic model.
+Spec: DESIGN_SPEC.md, R2 section. Parent: P3.2. Editorial state: in_progress.
+Protected procedure pin reused: Mastermind@2e59f43323af25f1b8e00186d7f118d95c56be7c.
+Current Chairman continuation authorizes design and implementation; Draft/HOLD remains.
+Principal retains this tightly coupled design/interaction repair for PRINCIPAL_JUDGMENT
+and LOWER_TOTAL_OVERHEAD; a separate admitted reviewer must judge the final source.
+
+Files: template + paired CSS + rendered HTML; tests/test_intraday_flow_recovery_ux.py;
+existing verify_browser.py and scoped evidence. No new app, feed or publication plane.
+
+- [ ] P3.3.a RED: executed JS contracts fail for query-only clear and correct no-watchlist presentation.
+- [ ] P3.3.b GREEN: implement clearSearch(), emptyScanContent(), missing counts, localized recovery controls.
+- [ ] P3.3.c Verify template/site parity, model preservation, 280 existing regressions and browser matrix.
+- [ ] P3.3.d Align the existing Paper empty-state recovery labels; record exact nodes and readbacks.
+- [ ] P3.3.e Obtain independent source review, capture changed states, push same branch after verification.
+
+Review focus: combined query/theme/setup filters; nonexistent watchlist versus empty
+query results; escaped long Unicode/HTML-like queries; refresh/language keyboard focus;
+small viewport and dark/light contrast. Existing main conflict and shared-navigation
+startup remain distinct dependencies; no merge, rebase, deployment or release-state change here.

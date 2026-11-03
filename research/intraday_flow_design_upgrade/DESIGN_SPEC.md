@@ -143,3 +143,58 @@ Phones retain a stock-overview link inside opened evidence. Identical count text
 is not repeatedly rewritten into the live region; feed help and dealer strength
 are localized, native selects share the focus ring, and untagged names appear only
 in All rather than bypassing a specific theme selection.
+
+
+## R2 — recoverable scan states (principal design decision, 2026-11-03 UTC)
+
+The existing discovery-workspace architecture is retained. This refinement closes
+Paper/implementation gaps rather than introducing another skin or signal engine.
+Compared approaches: a new dashboard composition duplicates accepted work; decorative
+state cards consume the first-screen budget; a compact recovery treatment inside the
+existing scan makes failure legible without displacing the table. Select the latter.
+
+### User-facing behavior
+
+1. An unmatched search retains its theme, setup, sort and grouping context. Provide
+   **Clear search** (query only) and **Reset all filters** (existing full reset).
+   The query is escaped, wraps safely, and is not mistaken for an observed ticker.
+   Clear search returns keyboard focus to the original search input.
+2. A truly missing/empty embedded watchlist is **Watchlist unavailable**, not zero
+   setups and not a filtering result. Show a **Reload page** recovery action; do not
+   imply the ordinary quote refresh can re-download the embedded watchlist. Display
+   an em dash instead of six fabricated zero stage counts, and label the footer
+   **Watchlist unavailable**. No classification or count calculation is changed.
+3. A populated watchlist with no filtered matches is **No matching names**, with
+   one recovery sentence and a compact reminder that no matches is not no setups.
+   Never clear other filters implicitly when only the query is cleared.
+4. Retain a recorded scan during source connection/loading; do not hide already
+   available observations behind a new full-page spinner. Source state and filters
+   remain orthogonal. Existing missing/partial/stale source copy remains truthful.
+
+### Visual and interaction contract
+
+DARK TREATMENT: existing graphite panel, restrained neutral empty-state symbol,
+legible muted supporting text, a single filled action surface and quiet secondary
+button. No rail, glow, or positive-signal color for unavailable data.
+LIGHT TREATMENT: white panel, cool quiet symbol field, existing material shadow and
+neutral separators. Preserve the same content hierarchy without dark-mode glow.
+Use existing theme/spacing/type/radius tokens with canonical fallbacks only. No
+new CSS root or runtime stylesheet. New action targets are at least 44px high;
+mobile actions wrap without horizontal overflow. Visible focus remains complete.
+Keep the existing compact default scan and six setup controls. No additional
+permanent hero, duplicated summary or first-screen vertical cost in normal states.
+
+### Scope and evidence
+
+Allowed: templates/intraday_flow.html.j2, paired intraday-flow.css, generated
+site/intraday_flow.html, scoped Intraday tests, browser proof and this existing plan.
+Keep the 15 protected classifier/coverage/session/leg functions byte-identical.
+No producer, fetch policy, freshness threshold, shared navigation, auth or deployment
+change. Do not retry the platform-denied dark-ZH Paper ticker-row batch.
+
+Verify red-first template/site contracts, actual browser Clear-search versus reset
+behavior in combined filters, missing-watchlist reload presentation, long/hostile
+query escaping, locale/theme parity, focus retention during refresh and zero
+horizontal overflow at 390/1440. Retain the prior 280 tests and 515 browser checks.
+Paper state samples are editable specifications, not implemented interactions or
+independent visual acceptance. Keep original PR10498 Draft/HOLD and release gates.
