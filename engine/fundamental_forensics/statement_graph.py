@@ -106,6 +106,12 @@ _MONTH_DAY_RE = re.compile(
     re.I,
 )
 _YEAR_CELL_RE = re.compile(r"^\d{4}$")
+# Month, week and quarter words anywhere in a bare-year header region: a header
+# that prints them (including an N-months-ended group banner) names its own
+# periods, so the document period end never composes those columns.
+_BARE_YEAR_PERIOD_WORD_RE = re.compile(
+    r"\b(?:" + _MONTH_TOKEN + r"|months?|weeks?|quarters?)\b", re.IGNORECASE
+)
 _FULL_MONTH_TOKEN = (
     "January|February|March|April|May|June|July|August|September|October|November|December"
 )
@@ -795,6 +801,53 @@ def _first_fact_row(rows: list[list[dict[str, Any]]]) -> int | None:
         (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
         None,
     )
+
+
+def _compose_bare_year_row(
+    rows: list[list[dict[str, Any]]], period_end: str
+) -> tuple[list[str], frozenset[int], str] | None:
+    """Compose bare-year columns from the filing's document period end date.
+
+    Some annual statements print only bare years over their columns ("2025
+    2024") and name no month anywhere in the table. When exactly one factless
+    row above the first fact row prints two or more distinct bare years --
+    optionally after one leading whole-cell unit caption -- and the latest of
+    them is the document period end's year, each year takes that date's month
+    and day. Any header row naming a month, week, quarter or N-months group,
+    a second year row, a single year, a repeated year or a month-day that is
+    not a real date in some year returns None, so the caller keeps its
+    refusal. Every composed column must still bind exactly to its own facts'
+    contexts downstream, so a wrong composed date fails closed.
+    """
+    header_limit = _first_fact_row(rows)
+    if header_limit is None:
+        return None
+    try:
+        end = date.fromisoformat(period_end)
+    except ValueError:
+        return None
+    found: tuple[int, list[str]] | None = None
+    for index in range(header_limit):
+        cells = rows[index]
+        if _BARE_YEAR_PERIOD_WORD_RE.search(" ".join(str(cell["text"]) for cell in cells)):
+            return None
+        texts = _header_texts(cells)
+        if texts and _UNIT_CAPTION_RE.match(texts[0]):
+            texts = texts[1:]
+        if len(texts) < 2 or not all(_YEAR_CELL_RE.match(text) for text in texts):
+            continue
+        if found is not None:
+            return None
+        found = (index, texts)
+    if found is None:
+        return None
+    index, years = found
+    if len(set(years)) != len(years) or max(int(year) for year in years) != end.year:
+        return None
+    composed = _composed_year_dates(years, end.month, end.day)
+    if composed is None:
+        return None
+    return composed, frozenset({index}), "composed_bare_year_row"
 
 
 def _glued_header_cell_date(text: str) -> str | None:
@@ -1603,6 +1656,7 @@ def parse_displayed_primary_table(
     *,
     title: str | list[str],
     context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+    period_end: str | None = None,
 ) -> dict[str, Any]:
     """Source-backed composition of one captured primary filing table.
 
@@ -1625,7 +1679,12 @@ def parse_displayed_primary_table(
     June 30" over a year row) carry ``"composed_grouped_duration_year_row"``
     plus each column's own period under ``"columns_periods"``; a glued-date
     header row ("June 302025") composes plain dated columns like the full-date
-    path (both absent on the full-date path).
+    path (both absent on the full-date path). When ``period_end`` (the
+    filing's single document period end date) is given and no other path
+    yields columns, one bare-year row whose latest year is that date's year
+    takes its month and day (``"composed_bare_year_row"``); a header naming
+    any month, week, quarter or N-months group never does. Without
+    ``period_end`` the output is unchanged.
     """
     title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
     if not title_label.strip():
@@ -1658,6 +1717,8 @@ def parse_displayed_primary_table(
             grouped = _compose_grouped_duration_year_row(parser.rows)
         if composed is None and grouped is None:
             glued = _glued_header_columns(parser.rows)
+        if composed is None and grouped is None and glued is None and period_end is not None:
+            composed = _compose_bare_year_row(parser.rows, period_end)
     if composed is not None:
         consumed = composed[1]
     elif grouped is not None:
@@ -1768,6 +1829,42 @@ def resolve_label(labels: Mapping[tuple[str, str], str], concept: str, preferred
 def _undimensioned(context: Mapping[str, Any]) -> bool:
     dims = context.get("dimensions") or []
     return isinstance(dims, list) and len(dims) == 0
+
+
+def _document_date_value(fact: Mapping[str, Any]) -> str | None:
+    """One ISO date from a dei date fact: its ISO value, else one printed date."""
+    for value in (fact.get("normalized_value"), fact.get("raw_value")):
+        if value is None:
+            continue
+        try:
+            return date.fromisoformat(str(value).strip()).isoformat()
+        except ValueError:
+            continue
+    dates = set(_iso_dates_from_text(str(fact.get("raw_value") or "")))
+    return dates.pop() if len(dates) == 1 else None
+
+
+def _document_period_end(
+    facts: list[Mapping[str, Any]], contexts: Mapping[str, Mapping[str, Any]]
+) -> str | None:
+    """The filing's DocumentPeriodEndDate when its undimensioned facts agree.
+
+    Only nonnumeric dei DocumentPeriodEndDate facts in undimensioned contexts
+    count. Two distinct dates, or any value that is not one readable date,
+    return None.
+    """
+    values: set[str | None] = set()
+    for fact in facts:
+        qname = str(fact.get("concept_qname") or "")
+        if not qname.startswith("{http://xbrl.sec.gov/dei/"):
+            continue
+        if not qname.endswith("}DocumentPeriodEndDate") or fact.get("kind") != "nonnumeric":
+            continue
+        context = contexts.get(str(fact.get("context_ref") or ""))
+        if context is None or not _undimensioned(context):
+            continue
+        values.add(_document_date_value(fact))
+    return values.pop() if len(values) == 1 else None
 
 
 def _context_dimension_sets(
@@ -2521,6 +2618,7 @@ def reconstruct_statement(
         html,
         title=title_search,
         context_dimensions=_context_dimension_sets(contexts),
+        period_end=_document_period_end(facts, contexts),
     )
     table_facts: list[dict[str, Any]] = []
     for spec in displayed["rows"]:
