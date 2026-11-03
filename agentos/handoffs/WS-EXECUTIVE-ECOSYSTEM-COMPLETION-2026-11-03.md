@@ -14,7 +14,7 @@ changed:
 - path: agentos/workstreams/WS-EXECUTIVE-ECOSYSTEM-COMPLETION.md
   what: Refresh current wave/workstream next actions, mark A4 in_progress for actual implementation only,
     preserve A0/all canonical identities and archive prior action snapshots with historical custody intact.
-- path: agentos/handoffs/EXECUTIVE-ECOSYSTEM-COMPLETION-2026-11-03.md
+- path: agentos/handoffs/WS-EXECUTIVE-ECOSYSTEM-COMPLETION-2026-11-03.md
   what: Carry current accepted/reviewed task evidence and Root retained source/staging results into a
     canonical dated handoff; preserve original09b/other unknowns and the matched-source normal import/compiler
     frontier.
@@ -446,3 +446,8 @@ A4 is in progress for implementation only; all actual Phase E/H acceptance remai
 The prior current-action snapshots and original workstream body are retained in the
 workstream record as history, including real refusals and uncertain effects. Current
 next actions replace stale historical commands; they do not erase those controls.
+
+The dated handoff uses the existing WS-prefixed naming family so the installed
+`mmtask import` latest_handoff lexical selection and the date/association-based
+compiler both select this November3 record. No suffix, parallel handoff or helper
+change is introduced.
