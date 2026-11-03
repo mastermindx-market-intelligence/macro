@@ -1,0 +1,2918 @@
+{
+  "schema": "f02.paper.native-progress.v1",
+  "status": "IN_PROGRESS",
+  "observed_at": "2026-11-03T04:12:36.042Z",
+  "fileId": "01M312VSDSZFVT45674GDVJVZN",
+  "carrier": "Mastermind Paper direct app",
+  "procedure_pin": "1225133923333926d990b8bfd30432eec289181e",
+  "write_policy": {
+    "server_name": "paper-desktop",
+    "server_version": "0.5.18",
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "accepted_for_write": true,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": true,
+    "catalog_policy": "TOOL_SCOPED_CONTRACT_V1",
+    "full_catalog_known": true,
+    "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "additional_reviewed_catalog_sha256": [
+      "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+      "955e92cd0477027dcc5fe666810e49393f42f453c1c362e64cd0f3b3ab9f10cf",
+      "f3483e001d4f07f5a49144ca52a4f9e14ba046e35546dda05d6cd37c9d2b4728"
+    ],
+    "snapshot_tool_compatible": true,
+    "compatible_write_tools": [
+      "arrange_pages",
+      "create_artboard",
+      "create_file",
+      "create_page",
+      "create_tokens",
+      "duplicate_nodes",
+      "finish_working_on_nodes",
+      "move_nodes",
+      "rename_nodes",
+      "rename_resource",
+      "set_comment_thread_status",
+      "set_text_content",
+      "set_tokens",
+      "update_pages",
+      "update_styles",
+      "write_html"
+    ],
+    "incompatible_write_tools": [],
+    "optional_vendor_inputs_ignored": []
+  },
+  "boards": [
+    {
+      "key": "readme",
+      "id": "47Q-0",
+      "pageId": "p-2-0",
+      "name": "F02 · Read me & Build contract · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "ownership": "47W-0",
+        "journey": "484-0",
+        "scope": "488-0",
+        "limitations": "48G-0",
+        "source": "48K-0",
+        "construction": "48S-0"
+      }
+    },
+    {
+      "key": "foundations",
+      "id": "48W-0",
+      "pageId": "p-3-0",
+      "name": "F02 · Semantic roles, type & density · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "title": "48X-0",
+        "semantic-0": "492-0",
+        "semantic-1": "4A4-0",
+        "semantic-2": "4B6-0",
+        "semantic-3": "4C8-0",
+        "type": "4DA-0",
+        "icons": "4DP-0",
+        "mapping": "4DZ-0"
+      },
+      "created_at": "2026-11-03T04:01:48.676Z"
+    },
+    {
+      "key": "metrics",
+      "id": "4E3-0",
+      "pageId": "p-4-0",
+      "name": "F02 · Metric, change & source receipt · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "title": "4E4-0",
+        "metric-trio": "4E9-0",
+        "metric-units": "4EQ-0",
+        "table-caption": "4EU-0",
+        "row-header": "4EY-0",
+        "data-0": "4FC-0",
+        "data-1": "4FQ-0",
+        "data-2": "4G4-0",
+        "source-receipt": "4GI-0",
+        "row-behavior": "4GX-0"
+      },
+      "created_at": "2026-11-03T04:07:12.370Z"
+    },
+    {
+      "key": "metrics-light",
+      "id": "4H1-0",
+      "pageId": "p-4-0",
+      "name": "F02 · Metric, change & source receipt · Light · Candidate 2",
+      "width": 1440,
+      "theme": "light",
+      "steps": {
+        "title": "4JL-0",
+        "metric-trio": "4J5-0",
+        "metric-units": "4J2-0",
+        "table-caption": "4IZ-0",
+        "row-header": "4IM-0",
+        "data-0": "4I9-0",
+        "data-1": "4HW-0",
+        "data-2": "4HJ-0",
+        "source-receipt": "4H5-0",
+        "row-behavior": "4H2-0"
+      },
+      "clone_source": "4E3-0",
+      "descendantIdMap": {
+        "4E4-0": "4JL-0",
+        "4E9-0": "4J5-0",
+        "4EQ-0": "4J2-0",
+        "4EU-0": "4IZ-0",
+        "4EY-0": "4IM-0",
+        "4FC-0": "4I9-0",
+        "4FQ-0": "4HW-0",
+        "4G4-0": "4HJ-0",
+        "4GI-0": "4H5-0",
+        "4GX-0": "4H2-0",
+        "4GY-0": "4H4-0",
+        "4GZ-0": "4H3-0",
+        "4GJ-0": "4HI-0",
+        "4GK-0": "4HH-0",
+        "4GL-0": "4H7-0",
+        "4GV-0": "4H6-0",
+        "4GM-0": "4HE-0",
+        "4GP-0": "4HB-0",
+        "4GS-0": "4H8-0",
+        "4GT-0": "4HA-0",
+        "4GU-0": "4H9-0",
+        "4GQ-0": "4HD-0",
+        "4GR-0": "4HC-0",
+        "4GN-0": "4HG-0",
+        "4GO-0": "4HF-0",
+        "4G5-0": "4HU-0",
+        "4G7-0": "4HS-0",
+        "4G9-0": "4HQ-0",
+        "4GB-0": "4HO-0",
+        "4GD-0": "4HM-0",
+        "4GF-0": "4HK-0",
+        "4GG-0": "4HL-0",
+        "4GE-0": "4HN-0",
+        "4GC-0": "4HP-0",
+        "4GA-0": "4HR-0",
+        "4G8-0": "4HT-0",
+        "4G6-0": "4HV-0",
+        "4FR-0": "4I7-0",
+        "4FT-0": "4I5-0",
+        "4FV-0": "4I3-0",
+        "4FX-0": "4I1-0",
+        "4FZ-0": "4HZ-0",
+        "4G1-0": "4HX-0",
+        "4G2-0": "4HY-0",
+        "4G0-0": "4I0-0",
+        "4FY-0": "4I2-0",
+        "4FW-0": "4I4-0",
+        "4FU-0": "4I6-0",
+        "4FS-0": "4I8-0",
+        "4FD-0": "4IK-0",
+        "4FF-0": "4II-0",
+        "4FH-0": "4IG-0",
+        "4FJ-0": "4IE-0",
+        "4FL-0": "4IC-0",
+        "4FN-0": "4IA-0",
+        "4FO-0": "4IB-0",
+        "4FM-0": "4ID-0",
+        "4FK-0": "4IF-0",
+        "4FI-0": "4IH-0",
+        "4FG-0": "4IJ-0",
+        "4FE-0": "4IL-0",
+        "4EZ-0": "4IX-0",
+        "4F1-0": "4IV-0",
+        "4F3-0": "4IT-0",
+        "4F5-0": "4IR-0",
+        "4F7-0": "4IP-0",
+        "4F9-0": "4IN-0",
+        "4FA-0": "4IO-0",
+        "4F8-0": "4IQ-0",
+        "4F6-0": "4IS-0",
+        "4F4-0": "4IU-0",
+        "4F2-0": "4IW-0",
+        "4F0-0": "4IY-0",
+        "4EV-0": "4J1-0",
+        "4EW-0": "4J0-0",
+        "4ER-0": "4J4-0",
+        "4ES-0": "4J3-0",
+        "4EA-0": "4JG-0",
+        "4EF-0": "4JB-0",
+        "4EK-0": "4J6-0",
+        "4EL-0": "4JA-0",
+        "4EM-0": "4J9-0",
+        "4EN-0": "4J8-0",
+        "4EO-0": "4J7-0",
+        "4EG-0": "4JF-0",
+        "4EH-0": "4JE-0",
+        "4EI-0": "4JD-0",
+        "4EJ-0": "4JC-0",
+        "4EB-0": "4JK-0",
+        "4EC-0": "4JJ-0",
+        "4ED-0": "4JI-0",
+        "4EE-0": "4JH-0",
+        "4E5-0": "4JO-0",
+        "4E6-0": "4JN-0",
+        "4E7-0": "4JM-0"
+      }
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "f02-c2-readme-create-20261103-01",
+      "tool": "create_artboard",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "pageId": "p-2-0",
+        "name": "F02 · Read me & Build contract · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "28px",
+          "backgroundColor": "var(--noir-canvas)",
+          "color": "var(--noir-text-primary)",
+          "fontFamily": "Inter"
+        }
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "retry_allowed": false,
+      "arguments_sha256": "007eab692b9690761cc24a9c0559c16e25a02fe4039e132d9fc3be76e9f0eb04",
+      "created_artboard": {
+        "id": "47Q-0",
+        "name": "F02 · Read me & Build contract · Candidate 2",
+        "worldX": 800,
+        "worldY": -480,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-readme-title-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "retry_allowed": false,
+      "arguments_sha256": "d7a32910eea733cf6d03b255c24391ddf9d64c6abea058f9f63d8456389d4cd5",
+      "html_sha256": "6c67ab24cad394ccc8015dc53b02696ce772ba87599c93434d17e893b77671cc",
+      "html_characters": 672,
+      "created_nodes": [
+        {
+          "id": "47R-0",
+          "name": "F02 Read me title",
+          "component": "Frame"
+        },
+        {
+          "id": "47S-0",
+          "name": "F02 / SHARED PRODUCT…",
+          "component": "Text"
+        },
+        {
+          "id": "47T-0",
+          "name": "A clear path from ob…",
+          "component": "Text"
+        },
+        {
+          "id": "47U-0",
+          "name": "Compare the data. Un…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-ownership-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:00:01.606Z",
+      "completed_at": "2026-11-03T04:00:03.551Z",
+      "retry_allowed": false,
+      "arguments_sha256": "ac85d71dd4e5e4b4de5a4297cac79e0bf13faa462252fddd95d459dbf06e09b6",
+      "html_sha256": "b8f87f385fcfb936ec5190febc740c104394921f24b705e3208b66d548325f16",
+      "html_characters": 1002,
+      "created_nodes": [
+        {
+          "id": "47W-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "47X-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "47Y-0",
+          "name": "F02-SYSTEM / 1.0.0-c…",
+          "component": "Text"
+        },
+        {
+          "id": "47Z-0",
+          "name": "Shared anatomy, toke…",
+          "component": "Text"
+        },
+        {
+          "id": "480-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "481-0",
+          "name": "Draft for independen…",
+          "component": "Text"
+        },
+        {
+          "id": "482-0",
+          "name": "Native editable cons…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-journey-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:00:07.208Z",
+      "completed_at": "2026-11-03T04:00:10.559Z",
+      "retry_allowed": false,
+      "arguments_sha256": "76a6addcd3833271914743a8c91a8ba631510993717c06be1a9a39aa35c76bb5",
+      "html_sha256": "29692b41476728d664c765ba1e9f2baaed40c2eca9d1beb186f1a70cc40184d7",
+      "html_characters": 451,
+      "created_nodes": [
+        {
+          "id": "484-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "485-0",
+          "name": "THE USER JOURNEY",
+          "component": "Text"
+        },
+        {
+          "id": "486-0",
+          "name": "Question & period → …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-scope-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:00:13.718Z",
+      "completed_at": "2026-11-03T04:00:19.659Z",
+      "retry_allowed": false,
+      "arguments_sha256": "2115876507bfaf851ffe5e4214a2efe395ecb24c9a6fad6455f29704030dfccc",
+      "html_sha256": "b13ec2a2527045e6e5849b9e66ba8b6028ea0d64b96fa92970335a4dffbc307a",
+      "html_characters": 1219,
+      "created_nodes": [
+        {
+          "id": "488-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "489-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "48A-0",
+          "name": "Own the shared behav…",
+          "component": "Text"
+        },
+        {
+          "id": "48B-0",
+          "name": "Read a dense compari…",
+          "component": "Text"
+        },
+        {
+          "id": "48C-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "48D-0",
+          "name": "Preserve domain mean…",
+          "component": "Text"
+        },
+        {
+          "id": "48E-0",
+          "name": "F01 owns navigation …",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-limitations-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:00:44.703Z",
+      "completed_at": "2026-11-03T04:00:56.634Z",
+      "retry_allowed": false,
+      "arguments_sha256": "50a207987a7c7282968b65e71b6f77e2247774d69ecef3030b20055f96a47995",
+      "html_sha256": "4b5ce2f06fe28a23a0ccad726df7d804f510850c7ef66b14ea75bfc34b4adc2a",
+      "html_characters": 736,
+      "created_nodes": [
+        {
+          "id": "48G-0",
+          "name": "Current qualification",
+          "component": "Frame"
+        },
+        {
+          "id": "48H-0",
+          "name": "Current qualificatio…",
+          "component": "Text"
+        },
+        {
+          "id": "48I-0",
+          "name": "Direct Paper constru…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-source-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:01:05.393Z",
+      "completed_at": "2026-11-03T04:01:12.628Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8a9d6ad15ac87295f373a463b00351a61a1418663558cde843ada0898d2f11f0",
+      "html_sha256": "8f4104cae47a87c6d4a1aee282375aa77ec0bec66567044203f1a987fc556ca5",
+      "html_characters": 1182,
+      "created_nodes": [
+        {
+          "id": "48K-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "48L-0",
+          "name": "BUILD FROM THE SOURC…",
+          "component": "Text"
+        },
+        {
+          "id": "48M-0",
+          "name": "github.com/mastermin…",
+          "component": "Text"
+        },
+        {
+          "id": "48N-0",
+          "name": "Reviewed source: d68…",
+          "component": "Text"
+        },
+        {
+          "id": "48O-0",
+          "name": "research/design_cand…",
+          "component": "Text"
+        },
+        {
+          "id": "48P-0",
+          "name": "SYSTEM_CONTRACT.md ·…",
+          "component": "Text"
+        },
+        {
+          "id": "48Q-0",
+          "name": "Capability ledger: 3…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-construction-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "47Q-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:01:17.242Z",
+      "completed_at": "2026-11-03T04:01:19.001Z",
+      "retry_allowed": false,
+      "arguments_sha256": "07e8b49797e26e9dbc27bae724345e5a8ff7c038785940864c5cdcd336440a19",
+      "html_sha256": "56d9c5d04cbfea0fec34f27535fa0ac366e34df3925e521950c98a8027ceaa32",
+      "html_characters": 811,
+      "created_nodes": [
+        {
+          "id": "48S-0",
+          "name": "How to use this file",
+          "component": "Frame"
+        },
+        {
+          "id": "48T-0",
+          "name": "How to use this file",
+          "component": "Text"
+        },
+        {
+          "id": "48U-0",
+          "name": "Start with Foundatio…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-readme-fit-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "47Q-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:01:20.440Z",
+      "completed_at": "2026-11-03T04:01:22.812Z",
+      "retry_allowed": false,
+      "arguments_sha256": "12785f8dba86aa101f3175d3e44aca1bb46fc7ca29eb783e9541f52abe6fa797"
+    },
+    {
+      "operation_id": "f02-c2-foundations-create-20261103-01",
+      "tool": "create_artboard",
+      "arguments": {
+        "pageId": "p-3-0",
+        "name": "F02 · Semantic roles, type & density · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "24px",
+          "backgroundColor": "var(--noir-canvas)",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:01:47.303Z",
+      "completed_at": "2026-11-03T04:01:48.676Z",
+      "retry_allowed": false,
+      "arguments_sha256": "7d006288937d96b093d083f312aa94b3fc163600e3d299ea6f5b899fe6b6beee",
+      "created_artboard": {
+        "id": "48W-0",
+        "name": "F02 · Semantic roles, type & density · Candidate 2",
+        "worldX": 3080,
+        "worldY": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-foundations-title-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:01:53.229Z",
+      "completed_at": "2026-11-03T04:01:59.557Z",
+      "retry_allowed": false,
+      "arguments_sha256": "12c6bbb8419a3814175670d2d16ea082180694aad1234c85e6b6d5343537522d",
+      "html_sha256": "8d734d4fb46f6ac8dd0de9e1f79661c7b1639d5ae53311c2c87b6df8ba5e0ddf",
+      "html_characters": 681,
+      "created_nodes": [
+        {
+          "id": "48X-0",
+          "name": "One system. Clear semantic boundaries.",
+          "component": "Frame"
+        },
+        {
+          "id": "48Y-0",
+          "name": "F02-P02 / FOUNDATION…",
+          "component": "Text"
+        },
+        {
+          "id": "48Z-0",
+          "name": "One system. Clear se…",
+          "component": "Text"
+        },
+        {
+          "id": "490-0",
+          "name": "Neutral surfaces org…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-semantic-0-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:02:08.046Z",
+      "completed_at": "2026-11-03T04:02:15.952Z",
+      "retry_allowed": false,
+      "arguments_sha256": "4f5717fe6ddec0d2978483da1ff2f9aeca0c17f3d600345f078cfe0279e3eb20",
+      "html_sha256": "8093de305ebf603fed8422138b57dc15b950f7da46ef05642816545cf2e58e0b",
+      "html_characters": 3953,
+      "created_nodes": [
+        {
+          "id": "492-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "493-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "494-0",
+          "name": "DARK / NOIR · Canvas…",
+          "component": "Text"
+        },
+        {
+          "id": "495-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "496-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "497-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "498-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "499-0",
+          "name": "bg",
+          "component": "Text"
+        },
+        {
+          "id": "49A-0",
+          "name": "--noir-canvas",
+          "component": "Text"
+        },
+        {
+          "id": "49B-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49C-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "49D-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49E-0",
+          "name": "panel",
+          "component": "Text"
+        },
+        {
+          "id": "49F-0",
+          "name": "--noir-panel",
+          "component": "Text"
+        },
+        {
+          "id": "49G-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49H-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "49I-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49J-0",
+          "name": "raised",
+          "component": "Text"
+        },
+        {
+          "id": "49K-0",
+          "name": "--noir-raised",
+          "component": "Text"
+        },
+        {
+          "id": "49L-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49M-0",
+          "name": "LIGHT / READING · Ca…",
+          "component": "Text"
+        },
+        {
+          "id": "49N-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49O-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49P-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "49Q-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49R-0",
+          "name": "bg",
+          "component": "Text"
+        },
+        {
+          "id": "49S-0",
+          "name": "#f6f6f3",
+          "component": "Text"
+        },
+        {
+          "id": "49T-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49U-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "49V-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49W-0",
+          "name": "panel",
+          "component": "Text"
+        },
+        {
+          "id": "49X-0",
+          "name": "#ffffff",
+          "component": "Text"
+        },
+        {
+          "id": "49Y-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "49Z-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4A0-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4A1-0",
+          "name": "raised",
+          "component": "Text"
+        },
+        {
+          "id": "4A2-0",
+          "name": "#f0f0ed",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-semantic-1-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:03:45.996Z",
+      "completed_at": "2026-11-03T04:03:47.416Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c30bfd460319f2f7e0784dce6ee2da421c2166a778ef5e2bc4b94376c090878c",
+      "html_sha256": "0eec226d80d96955fa9b66dd19f6a8622c10c04d1861f29cedfad1d2d3e612b9",
+      "html_characters": 4015,
+      "created_nodes": [
+        {
+          "id": "4A4-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4A5-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4A6-0",
+          "name": "DARK / NOIR · Primar…",
+          "component": "Text"
+        },
+        {
+          "id": "4A7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4A8-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4A9-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4AA-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AB-0",
+          "name": "ink",
+          "component": "Text"
+        },
+        {
+          "id": "4AC-0",
+          "name": "--noir-text-primary",
+          "component": "Text"
+        },
+        {
+          "id": "4AD-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AE-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4AF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AG-0",
+          "name": "secondary",
+          "component": "Text"
+        },
+        {
+          "id": "4AH-0",
+          "name": "--noir-text-secondar…",
+          "component": "Text"
+        },
+        {
+          "id": "4AI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AJ-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4AK-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AL-0",
+          "name": "muted",
+          "component": "Text"
+        },
+        {
+          "id": "4AM-0",
+          "name": "--noir-text-tertiary",
+          "component": "Text"
+        },
+        {
+          "id": "4AN-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AO-0",
+          "name": "LIGHT / READING · Pr…",
+          "component": "Text"
+        },
+        {
+          "id": "4AP-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AQ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AR-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4AS-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AT-0",
+          "name": "ink",
+          "component": "Text"
+        },
+        {
+          "id": "4AU-0",
+          "name": "#1a1c20",
+          "component": "Text"
+        },
+        {
+          "id": "4AV-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AW-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4AX-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4AY-0",
+          "name": "secondary",
+          "component": "Text"
+        },
+        {
+          "id": "4AZ-0",
+          "name": "#51555b",
+          "component": "Text"
+        },
+        {
+          "id": "4B0-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4B1-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4B2-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4B3-0",
+          "name": "muted",
+          "component": "Text"
+        },
+        {
+          "id": "4B4-0",
+          "name": "#5f6368",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-semantic-2-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:03:49.590Z",
+      "completed_at": "2026-11-03T04:03:53.109Z",
+      "retry_allowed": false,
+      "arguments_sha256": "afde0239a86b5434707dcb84df43caab32ce30851b77ae0188ec18a44cd44665",
+      "html_sha256": "a877b4e49debdd3b564e535556d9c2ee3911310de2919ad873a823476890476c",
+      "html_characters": 3966,
+      "created_nodes": [
+        {
+          "id": "4B6-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4B7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4B8-0",
+          "name": "DARK / NOIR · Select…",
+          "component": "Text"
+        },
+        {
+          "id": "4B9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BA-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BB-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4BC-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BD-0",
+          "name": "selected",
+          "component": "Text"
+        },
+        {
+          "id": "4BE-0",
+          "name": "--noir-selected",
+          "component": "Text"
+        },
+        {
+          "id": "4BF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BG-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4BH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BI-0",
+          "name": "focus",
+          "component": "Text"
+        },
+        {
+          "id": "4BJ-0",
+          "name": "#c4d9f4",
+          "component": "Text"
+        },
+        {
+          "id": "4BK-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BL-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4BM-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BN-0",
+          "name": "accent",
+          "component": "Text"
+        },
+        {
+          "id": "4BO-0",
+          "name": "--noir-champagne",
+          "component": "Text"
+        },
+        {
+          "id": "4BP-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BQ-0",
+          "name": "LIGHT / READING · Se…",
+          "component": "Text"
+        },
+        {
+          "id": "4BR-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BS-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BT-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4BU-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BV-0",
+          "name": "selected",
+          "component": "Text"
+        },
+        {
+          "id": "4BW-0",
+          "name": "#e2e2dc",
+          "component": "Text"
+        },
+        {
+          "id": "4BX-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4BY-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4BZ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4C0-0",
+          "name": "focus",
+          "component": "Text"
+        },
+        {
+          "id": "4C1-0",
+          "name": "#245c91",
+          "component": "Text"
+        },
+        {
+          "id": "4C2-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4C3-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4C4-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4C5-0",
+          "name": "accent",
+          "component": "Text"
+        },
+        {
+          "id": "4C6-0",
+          "name": "#66543b",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-semantic-3-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:03:54.388Z",
+      "completed_at": "2026-11-03T04:03:55.900Z",
+      "retry_allowed": false,
+      "arguments_sha256": "3160879a2cfe087fed983dad8451dec1548eecfcc21282c35ef1cafa2f847983",
+      "html_sha256": "cd98d1fff8483abc69e20b752151376a585d3883c0d5f5276860c2e012ab0c1b",
+      "html_characters": 3906,
+      "created_nodes": [
+        {
+          "id": "4C8-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4C9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CA-0",
+          "name": "DARK / NOIR · Increa…",
+          "component": "Text"
+        },
+        {
+          "id": "4CB-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CC-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CD-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4CE-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CF-0",
+          "name": "up",
+          "component": "Text"
+        },
+        {
+          "id": "4CG-0",
+          "name": "#b0d4b9",
+          "component": "Text"
+        },
+        {
+          "id": "4CH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CI-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4CJ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CK-0",
+          "name": "down",
+          "component": "Text"
+        },
+        {
+          "id": "4CL-0",
+          "name": "#efa6ad",
+          "component": "Text"
+        },
+        {
+          "id": "4CM-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CN-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4CO-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CP-0",
+          "name": "warn",
+          "component": "Text"
+        },
+        {
+          "id": "4CQ-0",
+          "name": "#e9be6a",
+          "component": "Text"
+        },
+        {
+          "id": "4CR-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CS-0",
+          "name": "LIGHT / READING · In…",
+          "component": "Text"
+        },
+        {
+          "id": "4CT-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CU-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CV-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4CW-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4CX-0",
+          "name": "up",
+          "component": "Text"
+        },
+        {
+          "id": "4CY-0",
+          "name": "#256341",
+          "component": "Text"
+        },
+        {
+          "id": "4CZ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4D0-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4D1-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4D2-0",
+          "name": "down",
+          "component": "Text"
+        },
+        {
+          "id": "4D3-0",
+          "name": "#a62d43",
+          "component": "Text"
+        },
+        {
+          "id": "4D4-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4D5-0",
+          "name": "Rectangle",
+          "component": "Rectangle"
+        },
+        {
+          "id": "4D6-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4D7-0",
+          "name": "warn",
+          "component": "Text"
+        },
+        {
+          "id": "4D8-0",
+          "name": "#82550d",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-type-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:04:17.328Z",
+      "completed_at": "2026-11-03T04:04:25.995Z",
+      "retry_allowed": false,
+      "arguments_sha256": "904549bcdd6e1b8e6574e4e11f1408cc52511aaa58d1efa20b0690e270aad7b1",
+      "html_sha256": "ffe1b8a987953ca4d30fca5fc2f166e76f68199f2ceec0726ad47f246b4ef2e2",
+      "html_characters": 1991,
+      "created_nodes": [
+        {
+          "id": "4DA-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4DB-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4DC-0",
+          "name": "TYPOGRAPHY",
+          "component": "Text"
+        },
+        {
+          "id": "4DD-0",
+          "name": "32 / Clear question",
+          "component": "Text"
+        },
+        {
+          "id": "4DE-0",
+          "name": "20 / Section title",
+          "component": "Text"
+        },
+        {
+          "id": "4DF-0",
+          "name": "16 / Comfortable rea…",
+          "component": "Text"
+        },
+        {
+          "id": "4DG-0",
+          "name": "13 / Dense analytica…",
+          "component": "Text"
+        },
+        {
+          "id": "4DH-0",
+          "name": "12 / Source, unit an…",
+          "component": "Text"
+        },
+        {
+          "id": "4DI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4DJ-0",
+          "name": "DENSITY & NUMBER ANA…",
+          "component": "Text"
+        },
+        {
+          "id": "4DK-0",
+          "name": "Dense 40px · Comfort…",
+          "component": "Text"
+        },
+        {
+          "id": "4DL-0",
+          "name": "Important phone cont…",
+          "component": "Text"
+        },
+        {
+          "id": "4DM-0",
+          "name": "66.70% +1.13 pp 0.00…",
+          "component": "Text"
+        },
+        {
+          "id": "4DN-0",
+          "name": "Inter tabular numera…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-icons-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:04:32.187Z",
+      "completed_at": "2026-11-03T04:04:42.861Z",
+      "retry_allowed": false,
+      "arguments_sha256": "7d6fb4139648b51153d28f1b8f817c92dff26ed29ec0538885647fedc865f185",
+      "html_sha256": "dcf63b31a831c7a8acbf061e2d2e62b71d12ab734829c752e3ec248c0bdde259",
+      "html_characters": 1443,
+      "created_nodes": [
+        {
+          "id": "4DP-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4DQ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4DR-0",
+          "name": "ICON & FOCUS ANATOMY",
+          "component": "Text"
+        },
+        {
+          "id": "4DS-0",
+          "name": "16 / 20px icon · con…",
+          "component": "Text"
+        },
+        {
+          "id": "4DT-0",
+          "name": "Focus has a 2px high…",
+          "component": "Text"
+        },
+        {
+          "id": "4DU-0",
+          "name": "Selected tab",
+          "component": "Frame"
+        },
+        {
+          "id": "4DV-0",
+          "name": "Selected tab",
+          "component": "Text"
+        },
+        {
+          "id": "4DW-0",
+          "name": "Focused tab",
+          "component": "Frame"
+        },
+        {
+          "id": "4DX-0",
+          "name": "Focused tab",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-mapping-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "48W-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:04:45.375Z",
+      "completed_at": "2026-11-03T04:04:50.454Z",
+      "retry_allowed": false,
+      "arguments_sha256": "9a911ebac9d2473633c7d2869cf04e3353abe5906cf1ab87da8a14bc66689403",
+      "html_sha256": "8e99f8cc73bea1a036b82b7087ab5f994b87e88a9259777cdad6a52f903f387b",
+      "html_characters": 845,
+      "created_nodes": [
+        {
+          "id": "4DZ-0",
+          "name": "Source mapping; no global replacement",
+          "component": "Frame"
+        },
+        {
+          "id": "4E0-0",
+          "name": "Source mapping; no g…",
+          "component": "Text"
+        },
+        {
+          "id": "4E1-0",
+          "name": "Reuse the current --…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-foundations-fit-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "48W-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:04:56.445Z",
+      "completed_at": "2026-11-03T04:04:58.171Z",
+      "retry_allowed": false,
+      "arguments_sha256": "06b2257dd1d2778780cdbd86a1bc7433b8a4b94477089595323fe49fe46b6bba"
+    },
+    {
+      "operation_id": "f02-c2-foundations-selected-fill-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4DU-0"
+            ],
+            "styles": {
+              "backgroundColor": "var(--noir-selected)"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:06:53.916Z",
+      "completed_at": "2026-11-03T04:07:00.622Z",
+      "retry_allowed": false,
+      "arguments_sha256": "20084382dea07a46a79ac75200360886bded6110664705aa887d16866e87a319"
+    },
+    {
+      "operation_id": "f02-c2-metrics-create-20261103-01",
+      "tool": "create_artboard",
+      "arguments": {
+        "pageId": "p-4-0",
+        "name": "F02 · Metric, change & source receipt · Candidate 2",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "padding": "48px",
+          "gap": "24px",
+          "backgroundColor": "var(--noir-canvas)",
+          "fontFamily": "Inter",
+          "color": "var(--noir-text-primary)"
+        }
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:05.367Z",
+      "completed_at": "2026-11-03T04:07:12.369Z",
+      "retry_allowed": false,
+      "arguments_sha256": "e7d9c61dcd2143a69df7501dc6ca3d528d22fb1581e4ce7f44ca95f83a1a60b5",
+      "created_artboard": {
+        "id": "4E3-0",
+        "name": "F02 · Metric, change & source receipt · Candidate 2",
+        "worldX": 3204,
+        "worldY": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "operation_id": "f02-c2-metrics-title-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:13.664Z",
+      "completed_at": "2026-11-03T04:07:16.117Z",
+      "retry_allowed": false,
+      "arguments_sha256": "0a846ea384a5d8f782fd022b635ad8e47b3dc53a1c2cc5e8c0e9a0af34458091",
+      "html_sha256": "56f40c1d6394d988d40b96c42ffaa10dc3fe5645d21dd6ec9e22ca19a2592c7c",
+      "html_characters": 688,
+      "created_nodes": [
+        {
+          "id": "4E4-0",
+          "name": "The value is only half the fact.",
+          "component": "Frame"
+        },
+        {
+          "id": "4E5-0",
+          "name": "F02-P03 / METRICS & …",
+          "component": "Text"
+        },
+        {
+          "id": "4E6-0",
+          "name": "The value is only ha…",
+          "component": "Text"
+        },
+        {
+          "id": "4E7-0",
+          "name": "Every observation ke…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-metric-trio-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:19.168Z",
+      "completed_at": "2026-11-03T04:07:20.732Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8745098fd34bb44f2dd222afb32ee9cfa9dfe78c121e385656e404f8095ca79c",
+      "html_sha256": "9ec219749707a29ea11b001389c5e7b7ba7427124d7ea42da3ff12aaac2a22b4",
+      "html_characters": 2018,
+      "created_nodes": [
+        {
+          "id": "4E9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EA-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EB-0",
+          "name": "Participation rate",
+          "component": "Text"
+        },
+        {
+          "id": "4EC-0",
+          "name": "66.70%",
+          "component": "Text"
+        },
+        {
+          "id": "4ED-0",
+          "name": "+1.13 pp",
+          "component": "Text"
+        },
+        {
+          "id": "4EE-0",
+          "name": "Prior settled sessio…",
+          "component": "Text"
+        },
+        {
+          "id": "4EF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EG-0",
+          "name": "Earnings per share",
+          "component": "Text"
+        },
+        {
+          "id": "4EH-0",
+          "name": "—",
+          "component": "Text"
+        },
+        {
+          "id": "4EI-0",
+          "name": "Unknown",
+          "component": "Text"
+        },
+        {
+          "id": "4EJ-0",
+          "name": "Not available in thi…",
+          "component": "Text"
+        },
+        {
+          "id": "4EK-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EL-0",
+          "name": "Dividend per share",
+          "component": "Text"
+        },
+        {
+          "id": "4EM-0",
+          "name": "0.00 USD",
+          "component": "Text"
+        },
+        {
+          "id": "4EN-0",
+          "name": "No cash dividend",
+          "component": "Text"
+        },
+        {
+          "id": "4EO-0",
+          "name": "Actual reported zero…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-metric-units-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:23.095Z",
+      "completed_at": "2026-11-03T04:07:24.567Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c533eaa48ede4f39f0a2f36c9691152f717c9f0d1facd4fadc1e4c9df3c5b3d9",
+      "html_sha256": "adfb72ac1e4ff062360dbf3822b7892bd0b6707646426a7ce7e9c13337b01df4",
+      "html_characters": 696,
+      "created_nodes": [
+        {
+          "id": "4EQ-0",
+          "name": "Comparator policy",
+          "component": "Frame"
+        },
+        {
+          "id": "4ER-0",
+          "name": "Comparator policy",
+          "component": "Text"
+        },
+        {
+          "id": "4ES-0",
+          "name": "65.57% → 66.70% is +…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-table-caption-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:41.735Z",
+      "completed_at": "2026-11-03T04:07:45.966Z",
+      "retry_allowed": false,
+      "arguments_sha256": "0e91e1548a2212d7d2f08588e8fed7026a0b5228ebb5272b8b9c260104f04983",
+      "html_sha256": "92c744a754bc083b344bacd06093197c57ec07bf06ec3a73e9ef9bdaab07c7a5",
+      "html_characters": 405,
+      "created_nodes": [
+        {
+          "id": "4EU-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EV-0",
+          "name": "Sector participation…",
+          "component": "Text"
+        },
+        {
+          "id": "4EW-0",
+          "name": "Raw-value sort ↓",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-row-header-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:07:49.846Z",
+      "completed_at": "2026-11-03T04:07:56.643Z",
+      "retry_allowed": false,
+      "arguments_sha256": "c34a41162db143f2aca4eac03a5a3d61dec8ccd364107e5aff9d67caedf51ac8",
+      "html_sha256": "2dc969f88fcc346e363e529c96d1977c384ce4d7641fb63296a240d73c530e7f",
+      "html_characters": 1584,
+      "created_nodes": [
+        {
+          "id": "4EY-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4EZ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4F0-0",
+          "name": "Sector",
+          "component": "Text"
+        },
+        {
+          "id": "4F1-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4F2-0",
+          "name": "Above 50d MA",
+          "component": "Text"
+        },
+        {
+          "id": "4F3-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4F4-0",
+          "name": "Change",
+          "component": "Text"
+        },
+        {
+          "id": "4F5-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4F6-0",
+          "name": "Coverage",
+          "component": "Text"
+        },
+        {
+          "id": "4F7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4F8-0",
+          "name": "Source observation",
+          "component": "Text"
+        },
+        {
+          "id": "4F9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FA-0",
+          "name": "Evidence",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-data-0-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:08:02.603Z",
+      "completed_at": "2026-11-03T04:08:09.143Z",
+      "retry_allowed": false,
+      "arguments_sha256": "8299320f042abcc3a9617de6a67c4fe1db336d923512b367b5d213599596280d",
+      "html_sha256": "e7f67ef0db035f6fa30bd91af3f0d0eb76b94663c3719124ad30074f54ea332a",
+      "html_characters": 1590,
+      "created_nodes": [
+        {
+          "id": "4FC-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FD-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FE-0",
+          "name": "Information technolo…",
+          "component": "Text"
+        },
+        {
+          "id": "4FF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FG-0",
+          "name": "74.20%",
+          "component": "Text"
+        },
+        {
+          "id": "4FH-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FI-0",
+          "name": "+2.10 pp",
+          "component": "Text"
+        },
+        {
+          "id": "4FJ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FK-0",
+          "name": "178 / 184",
+          "component": "Text"
+        },
+        {
+          "id": "4FL-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FM-0",
+          "name": "30 Oct · 20:00 UTC",
+          "component": "Text"
+        },
+        {
+          "id": "4FN-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FO-0",
+          "name": "Inspect row",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-data-1-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:08:16.040Z",
+      "completed_at": "2026-11-03T04:08:22.297Z",
+      "retry_allowed": false,
+      "arguments_sha256": "d9c7e891cb650cfe8d04903cf6a47ce2bd1b415853880d01b27f04b9170a4e76",
+      "html_sha256": "14ecc04aee35e7a969e22945093e6df2e39b9481da2e39c3b96bf19d0fd4c5ea",
+      "html_characters": 1573,
+      "created_nodes": [
+        {
+          "id": "4FQ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FR-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FS-0",
+          "name": "Utilities",
+          "component": "Text"
+        },
+        {
+          "id": "4FT-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FU-0",
+          "name": "52.80%",
+          "component": "Text"
+        },
+        {
+          "id": "4FV-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FW-0",
+          "name": "−0.40 pp",
+          "component": "Text"
+        },
+        {
+          "id": "4FX-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4FY-0",
+          "name": "63 / 63",
+          "component": "Text"
+        },
+        {
+          "id": "4FZ-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4G0-0",
+          "name": "30 Oct · 20:00 UTC",
+          "component": "Text"
+        },
+        {
+          "id": "4G1-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4G2-0",
+          "name": "Inspect row",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-data-2-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:08:57.919Z",
+      "completed_at": "2026-11-03T04:09:06.284Z",
+      "retry_allowed": false,
+      "arguments_sha256": "a8af970b7aaa6f8b4498d3f54524e3c23bb195cd2f36c543f155f5e608d13884",
+      "html_sha256": "5202737f50034d9885a470df6d7aa861835cad25a37c4f651b0959ebbf3ccf48",
+      "html_characters": 1567,
+      "created_nodes": [
+        {
+          "id": "4G4-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4G5-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4G6-0",
+          "name": "Energy",
+          "component": "Text"
+        },
+        {
+          "id": "4G7-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4G8-0",
+          "name": "—",
+          "component": "Text"
+        },
+        {
+          "id": "4G9-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GA-0",
+          "name": "Unavailable",
+          "component": "Text"
+        },
+        {
+          "id": "4GB-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GC-0",
+          "name": "0 / 82",
+          "component": "Text"
+        },
+        {
+          "id": "4GD-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GE-0",
+          "name": "No observation",
+          "component": "Text"
+        },
+        {
+          "id": "4GF-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GG-0",
+          "name": "Coverage reason",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-source-receipt-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:09:08.010Z",
+      "completed_at": "2026-11-03T04:09:10.196Z",
+      "retry_allowed": false,
+      "arguments_sha256": "9972925be694732a119ca6f000fa54b7676e5362e10c3a00145971f0fd1a5441",
+      "html_sha256": "8a4af1906c1a0f0613a9036ab24f995ea2a92cde8ff5af847e27d7a0d57da8fe",
+      "html_characters": 1768,
+      "created_nodes": [
+        {
+          "id": "4GI-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GJ-0",
+          "name": "EVIDENCE / INFORMATI…",
+          "component": "Text"
+        },
+        {
+          "id": "4GK-0",
+          "name": "74.20% above 50-day …",
+          "component": "Text"
+        },
+        {
+          "id": "4GL-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GM-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GN-0",
+          "name": "Observed",
+          "component": "Text"
+        },
+        {
+          "id": "4GO-0",
+          "name": "30 Oct 2026 · 20:00 …",
+          "component": "Text"
+        },
+        {
+          "id": "4GP-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GQ-0",
+          "name": "Published",
+          "component": "Text"
+        },
+        {
+          "id": "4GR-0",
+          "name": "30 Oct 2026 · 20:02 …",
+          "component": "Text"
+        },
+        {
+          "id": "4GS-0",
+          "name": "Frame",
+          "component": "Frame"
+        },
+        {
+          "id": "4GT-0",
+          "name": "Retrieved",
+          "component": "Text"
+        },
+        {
+          "id": "4GU-0",
+          "name": "30 Oct 2026 · 20:03 …",
+          "component": "Text"
+        },
+        {
+          "id": "4GV-0",
+          "name": "178 / 184 securities…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-row-behavior-20261103-01",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "4E3-0",
+        "mode": "insert-children"
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:09:13.550Z",
+      "completed_at": "2026-11-03T04:09:19.193Z",
+      "retry_allowed": false,
+      "arguments_sha256": "7dcb1ebe46d1fdf5d5acb52d86d1a9fa576be95aeb768d0cae7214b6f0689535",
+      "html_sha256": "f58a77615ff2ffbc7deea6347e4e8828c4f46cb5bf8a1c6de943e3c3c72d3be3",
+      "html_characters": 745,
+      "created_nodes": [
+        {
+          "id": "4GX-0",
+          "name": "Evidence and table contract",
+          "component": "Frame"
+        },
+        {
+          "id": "4GY-0",
+          "name": "Evidence and table c…",
+          "component": "Text"
+        },
+        {
+          "id": "4GZ-0",
+          "name": "The evidence trigger…",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-fit-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4E3-0"
+            ],
+            "styles": {
+              "height": "fit-content"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:09:20.789Z",
+      "completed_at": "2026-11-03T04:09:22.228Z",
+      "retry_allowed": false,
+      "arguments_sha256": "835e10c5d23f7722213eac2c6a752fb2e9a6f4239a47b9c72fcc0e883198083e"
+    },
+    {
+      "operation_id": "f02-c2-metrics-numeric-lanes-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4F1-0",
+              "4F3-0",
+              "4F5-0",
+              "4FF-0",
+              "4FH-0",
+              "4FJ-0",
+              "4FT-0",
+              "4FV-0",
+              "4FX-0",
+              "4G7-0",
+              "4G9-0",
+              "4GB-0"
+            ],
+            "styles": {
+              "alignItems": "flex-end",
+              "paddingRight": "24px"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:09:56.202Z",
+      "completed_at": "2026-11-03T04:10:01.801Z",
+      "retry_allowed": false,
+      "arguments_sha256": "260767dab3834ffb4ff66d84c8419e308177e6cdd731a42c12725f7f4e1ee043"
+    },
+    {
+      "operation_id": "f02-c2-metrics-light-duplicate-20261103-01",
+      "tool": "duplicate_nodes",
+      "arguments": {
+        "nodes": [
+          {
+            "id": "4E3-0"
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:10:03.823Z",
+      "completed_at": "2026-11-03T04:10:06.741Z",
+      "retry_allowed": false,
+      "arguments_sha256": "9e7c6c942cd312d01de9f142dc2b68d0738253451061f6a24a4842b4a32b0d36",
+      "duplicated_nodes": [
+        {
+          "sourceId": "4E3-0",
+          "newId": "4H1-0",
+          "name": "F02 · Metric, change & source receipt · Candidate 2",
+          "component": "Frame",
+          "worldX": 4724,
+          "worldY": 0,
+          "x": 4724,
+          "y": 0,
+          "descendantIdMap": {
+            "4E4-0": "4JL-0",
+            "4E9-0": "4J5-0",
+            "4EQ-0": "4J2-0",
+            "4EU-0": "4IZ-0",
+            "4EY-0": "4IM-0",
+            "4FC-0": "4I9-0",
+            "4FQ-0": "4HW-0",
+            "4G4-0": "4HJ-0",
+            "4GI-0": "4H5-0",
+            "4GX-0": "4H2-0",
+            "4GY-0": "4H4-0",
+            "4GZ-0": "4H3-0",
+            "4GJ-0": "4HI-0",
+            "4GK-0": "4HH-0",
+            "4GL-0": "4H7-0",
+            "4GV-0": "4H6-0",
+            "4GM-0": "4HE-0",
+            "4GP-0": "4HB-0",
+            "4GS-0": "4H8-0",
+            "4GT-0": "4HA-0",
+            "4GU-0": "4H9-0",
+            "4GQ-0": "4HD-0",
+            "4GR-0": "4HC-0",
+            "4GN-0": "4HG-0",
+            "4GO-0": "4HF-0",
+            "4G5-0": "4HU-0",
+            "4G7-0": "4HS-0",
+            "4G9-0": "4HQ-0",
+            "4GB-0": "4HO-0",
+            "4GD-0": "4HM-0",
+            "4GF-0": "4HK-0",
+            "4GG-0": "4HL-0",
+            "4GE-0": "4HN-0",
+            "4GC-0": "4HP-0",
+            "4GA-0": "4HR-0",
+            "4G8-0": "4HT-0",
+            "4G6-0": "4HV-0",
+            "4FR-0": "4I7-0",
+            "4FT-0": "4I5-0",
+            "4FV-0": "4I3-0",
+            "4FX-0": "4I1-0",
+            "4FZ-0": "4HZ-0",
+            "4G1-0": "4HX-0",
+            "4G2-0": "4HY-0",
+            "4G0-0": "4I0-0",
+            "4FY-0": "4I2-0",
+            "4FW-0": "4I4-0",
+            "4FU-0": "4I6-0",
+            "4FS-0": "4I8-0",
+            "4FD-0": "4IK-0",
+            "4FF-0": "4II-0",
+            "4FH-0": "4IG-0",
+            "4FJ-0": "4IE-0",
+            "4FL-0": "4IC-0",
+            "4FN-0": "4IA-0",
+            "4FO-0": "4IB-0",
+            "4FM-0": "4ID-0",
+            "4FK-0": "4IF-0",
+            "4FI-0": "4IH-0",
+            "4FG-0": "4IJ-0",
+            "4FE-0": "4IL-0",
+            "4EZ-0": "4IX-0",
+            "4F1-0": "4IV-0",
+            "4F3-0": "4IT-0",
+            "4F5-0": "4IR-0",
+            "4F7-0": "4IP-0",
+            "4F9-0": "4IN-0",
+            "4FA-0": "4IO-0",
+            "4F8-0": "4IQ-0",
+            "4F6-0": "4IS-0",
+            "4F4-0": "4IU-0",
+            "4F2-0": "4IW-0",
+            "4F0-0": "4IY-0",
+            "4EV-0": "4J1-0",
+            "4EW-0": "4J0-0",
+            "4ER-0": "4J4-0",
+            "4ES-0": "4J3-0",
+            "4EA-0": "4JG-0",
+            "4EF-0": "4JB-0",
+            "4EK-0": "4J6-0",
+            "4EL-0": "4JA-0",
+            "4EM-0": "4J9-0",
+            "4EN-0": "4J8-0",
+            "4EO-0": "4J7-0",
+            "4EG-0": "4JF-0",
+            "4EH-0": "4JE-0",
+            "4EI-0": "4JD-0",
+            "4EJ-0": "4JC-0",
+            "4EB-0": "4JK-0",
+            "4EC-0": "4JJ-0",
+            "4ED-0": "4JI-0",
+            "4EE-0": "4JH-0",
+            "4E5-0": "4JO-0",
+            "4E6-0": "4JN-0",
+            "4E7-0": "4JM-0"
+          }
+        }
+      ]
+    },
+    {
+      "operation_id": "f02-c2-metrics-light-colors-20261103-01",
+      "tool": "update_styles",
+      "arguments": {
+        "updates": [
+          {
+            "nodeIds": [
+              "4H1-0"
+            ],
+            "styles": {
+              "backgroundColor": "#f6f6f3"
+            }
+          },
+          {
+            "nodeIds": [
+              "4J2-0",
+              "4H5-0",
+              "4H2-0"
+            ],
+            "styles": {
+              "backgroundColor": "#ffffff"
+            }
+          },
+          {
+            "nodeIds": [
+              "4IM-0",
+              "4HW-0",
+              "4HJ-0"
+            ],
+            "styles": {
+              "backgroundColor": "#f6f6f3",
+              "borderBottomColor": "#cbccc7"
+            }
+          },
+          {
+            "nodeIds": [
+              "4I9-0"
+            ],
+            "styles": {
+              "backgroundColor": "#e2e2dc",
+              "borderBottomColor": "#cbccc7"
+            }
+          },
+          {
+            "nodeIds": [
+              "4H4-0",
+              "4HH-0",
+              "4H9-0",
+              "4HC-0",
+              "4HF-0",
+              "4HL-0",
+              "4HN-0",
+              "4HP-0",
+              "4HR-0",
+              "4HT-0",
+              "4HV-0",
+              "4HY-0",
+              "4I0-0",
+              "4I2-0",
+              "4I4-0",
+              "4I6-0",
+              "4I8-0",
+              "4IB-0",
+              "4ID-0",
+              "4IF-0",
+              "4IH-0",
+              "4IJ-0",
+              "4IL-0",
+              "4J1-0",
+              "4J4-0",
+              "4J9-0",
+              "4J8-0",
+              "4JE-0",
+              "4JJ-0",
+              "4JN-0"
+            ],
+            "styles": {
+              "color": "#1a1c20"
+            }
+          },
+          {
+            "nodeIds": [
+              "4H3-0",
+              "4H6-0",
+              "4IO-0",
+              "4IQ-0",
+              "4IS-0",
+              "4IU-0",
+              "4IW-0",
+              "4IY-0",
+              "4J0-0",
+              "4J3-0",
+              "4JA-0",
+              "4J7-0",
+              "4JF-0",
+              "4JC-0",
+              "4JK-0",
+              "4JH-0",
+              "4JM-0"
+            ],
+            "styles": {
+              "color": "#51555b"
+            }
+          },
+          {
+            "nodeIds": [
+              "4HI-0",
+              "4HA-0",
+              "4HD-0",
+              "4HG-0",
+              "4JD-0"
+            ],
+            "styles": {
+              "color": "#5f6368"
+            }
+          },
+          {
+            "nodeIds": [
+              "4JG-0",
+              "4JB-0",
+              "4J6-0"
+            ],
+            "styles": {
+              "borderTopColor": "#cbccc7"
+            }
+          },
+          {
+            "nodeIds": [
+              "4JI-0"
+            ],
+            "styles": {
+              "color": "#256341"
+            }
+          },
+          {
+            "nodeIds": [
+              "4JO-0"
+            ],
+            "styles": {
+              "color": "#66543b"
+            }
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:10:45.046Z",
+      "completed_at": "2026-11-03T04:10:47.312Z",
+      "retry_allowed": false,
+      "arguments_sha256": "ddb2c8898ec566e15c0a31ebdfaaa319bffd4555541e7791db7a9c6394e24419"
+    },
+    {
+      "operation_id": "f02-c2-metrics-light-name-20261103-01",
+      "tool": "rename_nodes",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "4H1-0",
+            "name": "F02 · Metric, change & source receipt · Light · Candidate 2"
+          }
+        ]
+      },
+      "before_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "after_snapshot": "faa9a7a69216e3e3bc0adaca4c7fa38ad9857d547fa5032edca4d43103ea2b2a",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "started_at": "2026-11-03T04:10:51.686Z",
+      "completed_at": "2026-11-03T04:11:01.463Z",
+      "retry_allowed": false,
+      "arguments_sha256": "cdf23dccbce04e4475035af88930eb37999255ec81337c8c192c51a156ed2a60"
+    }
+  ],
+  "remaining": [
+    "Controls",
+    "State matrix",
+    "Chart/table grammar",
+    "Four consumer references in two themes",
+    "Mobile and dock specimens",
+    "Builder annotation board",
+    "Independent review"
+  ],
+  "unresolved_effects": []
+}
