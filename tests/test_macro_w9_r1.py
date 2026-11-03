@@ -299,14 +299,14 @@ def test_sector_stance_heating():
         "heating": [{"name": "Energy", "name_zh": "能源", "rank": 1}],
         "cooling": [],
     })
-    assert "Watch the heating list — rotation, not chasing." in html
-    assert "关注升温板块——是轮动，不是追涨。" in html
+    assert "Some themes are accelerating; no established hot leader is confirmed." in html
+    assert "部分主题加速，但尚无已确认的持续领涨主题。" in html
 
 
 def test_sector_stance_all_quiet():
     html = _render(sector_heat={"heating": [], "cooling": [{"name": "Utilities", "rank": 11}]})
-    assert "Stand aside — no sector is running hot today." in html
-    assert "暂不行动——今日无板块过热。" in html
+    assert "No hot or accelerating themes in this snapshot; review the weaker groups." in html
+    assert "本期暂无热门或加速主题，可查看走弱群组。" in html
 
 
 def test_sector_stance_unknown():

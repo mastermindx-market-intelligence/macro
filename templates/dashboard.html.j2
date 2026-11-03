@@ -5564,11 +5564,13 @@ body.page-macro .rsx-dlg-footer{
 .sct-badge svg{width:15px;height:15px;display:block;}
 .sct-body{min-width:0;}
 .sct-name{font:700 13px/1.25 var(--font-ui,inherit);color:var(--ink-1,rgba(255,255,255,.92));
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sct-sub{margin-top:2px;font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.44));display:flex;align-items:center;gap:7px;}
+  white-space:normal;overflow-wrap:anywhere;}
+.sct-sub{margin-top:4px;font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.44));display:flex;align-items:center;gap:7px;flex-wrap:wrap;row-gap:2px;}
 .sct-sub .sct-rk{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink-2,rgba(255,255,255,.6));}
-.sct-sub .sct-stance{text-transform:capitalize;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sct-sub .sct-stance{text-transform:capitalize;white-space:normal;overflow-wrap:anywhere;}
 .sct-trace{width:132px;height:30px;display:block;overflow:visible;}
+.sct-trace-na{display:flex;justify-content:center;align-items:center;text-align:center;font:500 10px/1.25 var(--font-ui,inherit);color:var(--ink-3,rgba(255,255,255,.42));}
+.sct-history-note{padding:9px 12px;margin:0 0 14px;border-radius:10px;background:rgba(127,140,160,.07);border:1px solid rgba(127,140,160,.17);font:500 11px/1.5 var(--font-ui,inherit);color:var(--ink-2,rgba(255,255,255,.65));}
 .sct-trace .sct-base{stroke:color-mix(in srgb,var(--ink-3,#8b93a1) 45%,transparent);stroke-width:1;stroke-dasharray:2 3;}
 .sct-trace .sct-ln{fill:none;stroke:var(--sct-c,var(--up,#22d97a));stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 .sct-trace .sct-dot-old{fill:none;stroke:color-mix(in srgb,var(--sct-c,var(--up,#22d97a)) 55%,transparent);stroke-width:1.6;}
@@ -11814,15 +11816,20 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-sector')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-sector');}">
     <div class="mx5-card-title"><span class="l-en">Sector Temperature</span><span class="l-zh">板块温度</span></div>
     {% if sector_heat %}
-    {% set _shv5_hot = (sector_heat.get('heating') or [])[:3] %}
+    {% set _shv5_hot = (sector_heat.get('leaders') or [])[:3] %}
+    {% set _shv5_accel = (sector_heat.get('heating') or [])[:2] %}
     {% set _shv5_cold = (sector_heat.get('cooling') or [])[:3] %}
-    {% set _sh_hot_n = (sector_heat.get('heating') or []) | length %}
+    {% set _sh_hot_n = (sector_heat.get('leaders') or []) | length %}
+    {% set _sh_pos = sector_heat.get('positive_hot') %}
     {% if _sh_hot_n > 0 %}
-      {% set _sh_stance_en = "Watch the heating list — rotation, not chasing." %}
-      {% set _sh_stance_zh = "关注升温板块——是轮动，不是追涨。" %}
+      {% set _sh_stance_en = "Established theme leadership is active — separate from new acceleration." %}
+      {% set _sh_stance_zh = "主题领涨态势持续，需与新近加速区分。" %}
+    {% elif _shv5_accel %}
+      {% set _sh_stance_en = "Some themes are accelerating; no established hot leader is confirmed." %}
+      {% set _sh_stance_zh = "部分主题加速，但尚无已确认的持续领涨主题。" %}
     {% else %}
-      {% set _sh_stance_en = "Stand aside — no sector is running hot today." %}
-      {% set _sh_stance_zh = "暂不行动——今日无板块过热。" %}
+      {% set _sh_stance_en = "No hot or accelerating themes in this snapshot; review the weaker groups." %}
+      {% set _sh_stance_zh = "本期暂无热门或加速主题，可查看走弱群组。" %}
     {% endif %}
     <div class="mx5-card-stance">
       <span class="l-en">{{ _sh_stance_en }}</span>
@@ -11830,13 +11837,34 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% if _shv5_hot %}
     <div class="mx5-sector-row">
-      <div class="mx5-sector-sub-label"><span class="l-en">Hot</span><span class="l-zh">热门</span></div>
+      <div class="mx5-sector-sub-label"><span class="l-en">Leaders</span><span class="l-zh">领涨</span></div>
       <div class="mx5-sector-chips">
         {% for s in _shv5_hot %}
         <span class="mx5-sector-chip hot">
           <span class="l-en">{{ s.get('name','') }}</span>
           <span class="l-zh">{{ s.get('name_zh') or s.get('name','') }}</span>
         </span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if _sh_pos %}
+    <div class="mx5-sector-row">
+      <div class="mx5-sector-sub-label"><span class="l-en">Positive theme rating</span><span class="l-zh">积极主题评级</span></div>
+      <div class="mx5-sector-chips">
+        <span class="mx5-sector-chip hot">
+          <span class="l-en">{{ _sh_pos.get('name','') }} · {{ _sh_pos.get('reco','')|capitalize }}</span>
+          <span class="l-zh">{{ _sh_pos.get('name_zh') or _sh_pos.get('name','') }} · {{ _sh_pos.get('reco','')|capitalize }}</span>
+        </span>
+      </div>
+    </div>
+    {% endif %}
+    {% if _shv5_accel %}
+    <div class="mx5-sector-row">
+      <div class="mx5-sector-sub-label"><span class="l-en">Accelerating</span><span class="l-zh">加速</span></div>
+      <div class="mx5-sector-chips">
+        {% for s in _shv5_accel %}
+        <span class="mx5-sector-chip hot"><span class="l-en">{{ s.get('name','') }}</span><span class="l-zh">{{ s.get('name_zh') or s.get('name','') }}</span></span>
         {% endfor %}
       </div>
     </div>
@@ -11855,13 +11883,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% endif %}
     {# Enlarged hero heat strip (Wave E): taller cells so the sector picture reads at a glance #}
-    {% set _shv5_all = ((sector_heat.get('heating') or []) + (sector_heat.get('cooling') or []))[:10] %}
+    {% set _shv5_all = ((sector_heat.get('leaders') or [])[:5] + (sector_heat.get('heating') or [])[:2] + (sector_heat.get('cooling') or [])[:3]) %}
     {% if _shv5_all %}
     <div class="mx5-sector-heat-divider hero">
       <div class="mx5-sector-heat-label"><span class="l-en">Sector Heat</span><span class="l-zh">板块热图</span></div>
       <div class="mx5-sector-heat-bars">
         {% for s in _shv5_all %}
-        {% set _is_heat = s in (sector_heat.get('heating') or []) %}
+        {% set _is_heat = s in (sector_heat.get('leaders') or []) or s in (sector_heat.get('heating') or []) %}
         {% set _rk = s.get('rank', loop.index) | int %}
         {# bar height: rank 1=52px, ... decay to a 16px floor; color green for hot, red for cold #}
         {% set _bar_h = ([52 - (_rk - 1) * 5, 16] | max) %}
@@ -11870,15 +11898,21 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% set _bar_op = ([0.78 - (_rk-1)*0.07, 0.28]|max) if _is_heat else ([0.7 - (_rk-1)*0.07, 0.22]|max) %}
         {% set _s_name = s.get('name','') %}
         {% set _s_name_zh = s.get('name_zh') or _s_name %}
-        <div class="mx5-sector-heat-col" data-tip-en="{{ _s_name }}{{ ' — heating' if _is_heat else ' — cooling' }}" data-tip-zh="{{ _s_name_zh }}{{ ' — 升温' if _is_heat else ' — 退潮' }}">
+        <div class="mx5-sector-heat-col" data-tip-en="{{ _s_name }}{{ ' — leader' if s in (sector_heat.get('leaders') or []) else (' — accelerating' if _is_heat else ' — weakening') }}" data-tip-zh="{{ _s_name_zh }}{{ ' — 领涨' if s in (sector_heat.get('leaders') or []) else (' — 加速' if _is_heat else ' — 走弱') }}">
           <div class="mx5-sector-heat-bar mx5-shb-{{ 'hot' if _is_heat else 'cool' }}" style="height:{{ _bar_h }}px;opacity:{{ _bar_op }};"></div>
         </div>
         {% endfor %}
       </div>
       <div class="mx5-sector-heat-legend">
-        <span class="heat-up"><span class="l-en">▲ Heating</span><span class="l-zh">▲ 升温</span></span>
-        <span class="heat-dn"><span class="l-en">Cooling ▼</span><span class="l-zh">退潮 ▼</span></span>
+        <span class="heat-up"><span class="l-en">▲ Leaders / accelerating</span><span class="l-zh">▲ 领涨／加速</span></span>
+        <span class="heat-dn"><span class="l-en">Weakening ▼</span><span class="l-zh">走弱 ▼</span></span>
       </div>
+    </div>
+    {% endif %}
+    {% if sector_heat.get('as_of') %}
+    <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.4));margin-top:7px">
+      <span class="l-en">Nightly theme snapshot · {{ sector_heat.as_of }} · no stock entry implied</span>
+      <span class="l-zh">主题夜间快照 · {{ sector_heat.as_of }} · 不代表个股入场信号</span>
     </div>
     {% endif %}
     {# Quiet open affordance (unified face anatomy) #}
@@ -15240,36 +15274,49 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
   </div>
 
-  {# dlg-sector: Full sector heat detail #}
-  {# One rung of the rotation ladder: badge + name/rank + 5-day rank-move trace + delta. #}
+  {# dlg-sector: distinguish established leadership from new velocity and from theme ratings.
+     Five-session comparison requires observed history; missing is NEVER flat/zero. #}
   {% macro _sct_rung(s) %}
-  {%- set _d = (s.get('rank_delta_5d')|int) if (s.get('rank_delta_5d') is not none) else 0 -%}
-  {%- set _dc = 'var(--up,#22d97a)' if _d > 0 else ('var(--down,#ef4444)' if _d < 0 else 'var(--ink-3,rgba(255,255,255,.42))') -%}
-  {%- set _dcl = [[_d, 28]|min, -28]|max -%}
+  {%- set _has5 = s.get('rank_delta_5d') is number -%}
+  {%- set _d = (s.get('rank_delta_5d')|int) if _has5 else none -%}
+  {%- set _dc = 'var(--up,#22d97a)' if _has5 and _d > 0 else ('var(--down,#ef4444)' if _has5 and _d < 0 else 'var(--ink-3,rgba(255,255,255,.42))') -%}
+  {%- set _dcl = [[_d, 28]|min, -28]|max if _has5 else 0 -%}
   {%- set _h = (_dcl / 28.0 * 9.0) -%}
-  {%- set _stance = s.get('label') or s.get('reco') -%}
+  {%- set _stance = s.get('label') -%}
+  {%- set _reco = s.get('reco') -%}
   <div class="sct-rung" style="--sct-c:{{ _dc }}">
     <span class="sct-badge">
-      {%- if _d > 0 -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg>
-      {%- elif _d < 0 -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg>
-      {%- else -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>{%- endif -%}
+      {%- if _has5 and _d > 0 -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V6M6 12l6-6 6 6"/></svg>
+      {%- elif _has5 and _d < 0 -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg>
+      {%- elif _has5 -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+      {%- else -%}<span aria-label="5-session comparison unavailable">?</span>{%- endif -%}
     </span>
     <div class="sct-body">
       <div class="sct-name"><span class="l-en">{{ s.get('name','') }}</span><span class="l-zh">{{ s.get('name_zh') or s.get('name','') }}</span></div>
       <div class="sct-sub">
         {% if s.get('rank') is not none %}<span class="sct-rk">#{{ s.get('rank') }}</span>{% endif %}
         {% if _stance %}<span class="sct-stance"><span class="l-en">{{ _stance }}</span><span class="l-zh">{{ _stance }}</span></span>{% endif %}
+        {% if _reco %}<span class="sct-stance"><span class="l-en">Theme rating: {{ _reco|capitalize }}</span><span class="l-zh">主题评级：{{ _reco|capitalize }}</span></span>{% endif %}
       </div>
     </div>
+    {% if _has5 %}
     <svg class="sct-trace" viewBox="0 0 132 30" fill="none" aria-hidden="true">
       <line class="sct-base" x1="8" y1="15" x2="124" y2="15"/>
       <path class="sct-ln" d="M8 {{ '%.1f'|format(15 + _h) }} L124 {{ '%.1f'|format(15 - _h) }}"/>
       <circle class="sct-dot-old" cx="8" cy="{{ '%.1f'|format(15 + _h) }}" r="2.4"/>
       <circle class="sct-dot-now" cx="124" cy="{{ '%.1f'|format(15 - _h) }}" r="3.4"/>
     </svg>
+    {% else %}
+    <div class="sct-trace sct-trace-na"><span class="l-en">History unavailable</span><span class="l-zh">历史缺失</span></div>
+    {% endif %}
     <div class="sct-delta">
+      {% if _has5 %}
       <span class="sct-delta-v">{{ '+' if _d > 0 }}{{ _d }}</span>
       <span class="sct-delta-k"><span class="l-en">vs 5d</span><span class="l-zh">对比5日</span></span>
+      {% else %}
+      <span class="sct-delta-v">—</span>
+      <span class="sct-delta-k"><span class="l-en">5d n/a</span><span class="l-zh">5日缺失</span></span>
+      {% endif %}
     </div>
   </div>
   {% endmacro %}
@@ -15283,39 +15330,60 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </div>
       <div class="mx5-dlg-body">
         {% if sector_heat %}
-        {% set _dlg_sh_hot = sector_heat.get('heating') or [] %}
+        {% set _dlg_sh_leaders = sector_heat.get('leaders') or [] %}
+        {% set _dlg_sh_heat = sector_heat.get('heating') or [] %}
         {% set _dlg_sh_cold = sector_heat.get('cooling') or [] %}
+        {% set _sh_history = sector_heat.get('history') or {} %}
+        {% set _sh_expected5 = (_sh_history.get('expected_comparison_as_of') or {}).get('5d') %}
+        {% set _sh_observed5 = (_sh_history.get('comparison_as_of') or {}).get('5d') %}
         <div style="margin:-2px 0 16px;font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.5">
-          <span class="l-en">Where money is rotating over the last week. Each trace is a sector&rsquo;s 5-day move up or down the rankings.</span>
-          <span class="l-zh">过去一周资金的轮动方向。每条轨迹为该板块 5 日内的排名升降。</span>
+          <span class="l-en">Established leaders and newly accelerating themes are different signals. These are nightly relative-strength and theme-rating observations, not measured fund flows or stock entry calls.</span>
+          <span class="l-zh">持续领涨与新近加速是不同信号。本页显示夜间相对强弱与主题评级，并非实测资金流或个股入场指令。</span>
         </div>
-        {# Leading lane — rotating in #}
-        {% if _dlg_sh_hot %}
-        <div class="sct-lane lead">
-          <div class="sct-lane-head">
-            <span class="sct-lane-dot"></span>
-            <span class="l-en">Rotating in &mdash; leading</span><span class="l-zh">资金流入 — 领跑</span>
-            <span class="sct-lane-n">{{ _dlg_sh_hot|length }}<span class="l-en"> sectors</span><span class="l-zh"> 个板块</span></span>
-          </div>
-          {% for s in _dlg_sh_hot %}{{ _sct_rung(s) }}{% endfor %}
+        {% if _sh_expected5 and _sh_observed5 != _sh_expected5 %}
+        <div class="sct-history-note" role="status">
+          <span class="l-en">5-session comparison unavailable: the {{ _sh_expected5 }} observation is missing. Current rankings remain valid for {{ sector_heat.as_of }}; missing movement is not zero.</span>
+          <span class="l-zh">5个交易日对比缺失：没有 {{ _sh_expected5 }} 的观测值。当前排名截至 {{ sector_heat.as_of }}，缺失不代表零变化。</span>
         </div>
         {% endif %}
-        {# Lagging lane — losing momentum #}
-        {% if _dlg_sh_cold %}
-        <div class="sct-lane lag">
+        {% if _dlg_sh_leaders %}
+        <div class="sct-lane lead" data-temperature-lane="established">
           <div class="sct-lane-head">
             <span class="sct-lane-dot"></span>
-            <span class="l-en">Losing momentum &mdash; lagging</span><span class="l-zh">动能减弱 — 落后</span>
-            <span class="sct-lane-n">{{ _dlg_sh_cold|length }}<span class="l-en"> sectors</span><span class="l-zh"> 个板块</span></span>
+            <span class="l-en">Established leaders — hot themes</span><span class="l-zh">持续领涨 — 热门主题</span>
+            <span class="sct-lane-n">{{ _dlg_sh_leaders|length }}<span class="l-en"> themes</span><span class="l-zh"> 个主题</span></span>
+          </div>
+          {% for s in _dlg_sh_leaders %}{{ _sct_rung(s) }}{% endfor %}
+        </div>
+        {% endif %}
+        {% if _dlg_sh_heat %}
+        <div class="sct-lane lead" data-temperature-lane="accelerating">
+          <div class="sct-lane-head">
+            <span class="sct-lane-dot"></span>
+            <span class="l-en">Accelerating — recent rank or score improvement</span><span class="l-zh">加速 — 近期排名或评分改善</span>
+            <span class="sct-lane-n">{{ _dlg_sh_heat|length }}<span class="l-en"> themes</span><span class="l-zh"> 个主题</span></span>
+          </div>
+          {% for s in _dlg_sh_heat %}{{ _sct_rung(s) }}{% endfor %}
+        </div>
+        {% endif %}
+        {% if _dlg_sh_cold %}
+        <div class="sct-lane lag" data-temperature-lane="weakening">
+          <div class="sct-lane-head">
+            <span class="sct-lane-dot"></span>
+            <span class="l-en">Weakening or deteriorating</span><span class="l-zh">走弱或恶化</span>
+            <span class="sct-lane-n">{{ _dlg_sh_cold|length }}<span class="l-en"> themes</span><span class="l-zh"> 个主题</span></span>
           </div>
           {% for s in _dlg_sh_cold %}{{ _sct_rung(s) }}{% endfor %}
         </div>
         {% endif %}
+        {% if not _dlg_sh_leaders and not _dlg_sh_heat and not _dlg_sh_cold %}
+        <div class="sct-history-note"><span class="l-en">No classified themes in this source snapshot.</span><span class="l-zh">本期数据暂无已分类主题。</span></div>
+        {% endif %}
         {# What to watch #}
         <div class="mx5-dlg-sep"></div>
         <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.6">
-          <span class="l-en">Rankings update nightly and reflect relative strength, not an absolute call. A rising trace means a sector is climbing the pack; a falling one, slipping. Watch — don&rsquo;t chase a single week&rsquo;s move.</span>
-          <span class="l-zh">排名每晚更新，反映相对强弱而非绝对判断。轨迹向上表示板块排名上升，向下则为下滑。观望为主，勿追单周变动。</span>
+          <span class="l-en">Theme scores and recommendations come from Theme Intelligence. They are separate from Sector Central conviction and individual stock entry checks. A line appears only when the matching five-session observation exists. <a href="sector_central.html">Explore sector intelligence →</a></span>
+          <span class="l-zh">主题评分及评级来自主题情报，与板块信念评分和个股入场检查分开。仅在存在匹配的5个交易日观测值时绘制轨迹。<a href="sector_central.html">查看板块情报 →</a></span>
         </div>
         {% if sector_heat.get('as_of') %}
         <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.3));text-align:right;margin-top:6px"><span class="l-en">As of {{ sector_heat.as_of }}</span><span class="l-zh">数据日期 {{ sector_heat.as_of }}</span></div>
