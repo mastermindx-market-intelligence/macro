@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 217,
+    "opportunity_queue_depth": 218,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 217,
-      "scored": 331,
+      "open": 218,
+      "scored": 332,
       "newest": [
         {
           "id": "radar-earnings-AAOI-2026-11-03",
           "problem_or_desire": "$AAOI: earnings 2026-11-05 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.362938,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-ABNB-2026-11-03",
           "problem_or_desire": "$ABNB: earnings 2026-11-05 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.362938,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-ACAD-2026-11-03",
           "problem_or_desire": "$ACAD: earnings 2026-11-04 after hours",
           "expected_value": 0.5,
-          "score": 0.372035,
+          "score": 0.362938,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 30,
-    "signal_posts": 3,
-    "charts": 181,
+    "total_posts": 26,
+    "signal_posts": 2,
+    "charts": 190,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-11-03"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-03T10:14:09Z",
-  "inputs_hash": "sha256:d948247edcc5bd5b7823648bb2cb35d004f26b03dbe377113877ed753093a984",
+  "produced_at": "2026-11-03T11:05:35Z",
+  "inputs_hash": "sha256:9d7e40a160fa3af467199c346a10b98e761ac403c702ce2f542bf70f5ce24c99",
   "tier": "display"
 }
