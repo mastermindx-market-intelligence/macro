@@ -276,12 +276,22 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 # ---------------------------------------------------------------------------
 
 def test_basket_detail_diff_is_exactly_one_inserted_line():
-    """The branch may change the basket template only by +1/-0 when it owns
-    the aggregator insertion. Later unrelated branches inherit that exact
-    insertion from the integration base. An empty diff is not a missing include;
-    recheck the existing L1 tree/position contract instead. Nonempty diffs
-    still require exactly one insertion and zero deletions. Absent history
-    remains an explicit skip.    """
+    """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
+    be exactly `1\\t0` — one inserted line, zero deleted lines.
+
+    This is the one assertion in this suite that needs *history* rather than
+    working-tree content. The added line and its position are already pinned
+    from the tree by ``test_common_template_has_exactly_one_aggregator_include
+    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
+    in a template frozen by #7669 moved. A checkout that does not carry
+    an integration base cannot evaluate that claim at all: git answers
+    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
+    reports as a template regression that did not happen. Resolve the base
+    first (see ``_integration_base``) and skip honestly when it is absent.
+    Once the contribution is integrated into that base (a main push, or a PR
+    that leaves this template alone), the diff is empty; the claim then applies
+    only if the base itself lacks the include, so skip when the base carries it.
+    """
     base = _integration_base()
     if base is None:
         pytest.skip(
@@ -300,10 +310,31 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
     )
     line = result.stdout.strip()
     if not line:
-        # A later unrelated PR inherits the already-installed aggregator include.
-        # Verify its tree semantics instead of claiming this PR added the line.
-        test_common_template_has_exactly_one_aggregator_include_outside_app()
-        return
+        shown = subprocess.run(
+            ["git", "show", f"{base}:templates/basket_detail.html.j2"],
+            capture_output=True, text=True, cwd=str(REPO_ROOT),
+        )
+        assert shown.returncode == 0, (
+            f"git show {base}:templates/basket_detail.html.j2 failed:\n"
+            f"STDERR={shown.stderr}"
+        )
+        # The same include the sibling L1 test pins: its regex, its target filter.
+        in_base = [
+            m.group(1) for m in _INCLUDE_RE.finditer(shown.stdout)
+            if "basket_intelligence_mounts" in m.group(1)
+        ]
+        if len(in_base) == 1:
+            pytest.skip(
+                f"basket_detail.html.j2 is unchanged vs the integration base "
+                f"{base[:12]} because this branch's aggregator include is already "
+                "integrated into it; the +1/-0 claim applies only before "
+                "integration, and the content half is pinned by "
+                "test_common_template_has_exactly_one_aggregator_include_outside_app"
+            )
+    assert line, (
+        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
+        f"the aggregator include this suite exists to pin is absent from the diff"
+    )
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
     added, deleted = int(parts[0]), int(parts[1])

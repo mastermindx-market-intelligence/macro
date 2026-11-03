@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-11-03T10:56:17+00:00",
+  "generated_at": "2026-11-03T15:17:30+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-10-30",
@@ -422,12 +422,12 @@
       }
     },
     "cn": {
-      "asof_last_row": "2026-11-02",
+      "asof_last_row": "2026-11-03",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
         "graded_n": 35
       },
@@ -505,22 +505,22 @@
       }
     },
     "hk": {
-      "asof_last_row": "2026-11-02",
+      "asof_last_row": "2026-11-03",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
-        "graded_n": 38
+        "graded_n": 39
       },
       "windows": {
         "full": {
           "alerts": {
-            "n": 7,
+            "n": 8,
             "tp": 4,
-            "fp": 3,
-            "hit_rate": 0.571
+            "fp": 4,
+            "hit_rate": 0.5
           },
           "watch_caution": {
             "n": 18,
@@ -542,20 +542,20 @@
               "hit_rate": null
             },
             "rate_shock": {
-              "n": 4,
+              "n": 5,
               "tp": 4,
-              "fp": 0,
-              "hit_rate": null
+              "fp": 1,
+              "hit_rate": 0.8
             }
           },
           "recovery": null
         },
         "y1": {
           "alerts": {
-            "n": 7,
+            "n": 8,
             "tp": 4,
-            "fp": 3,
-            "hit_rate": 0.571
+            "fp": 4,
+            "hit_rate": 0.5
           },
           "watch_caution": {
             "n": 18,
@@ -577,10 +577,10 @@
               "hit_rate": null
             },
             "rate_shock": {
-              "n": 4,
+              "n": 5,
               "tp": 4,
-              "fp": 0,
-              "hit_rate": null
+              "fp": 1,
+              "hit_rate": 0.8
             }
           },
           "recovery": null

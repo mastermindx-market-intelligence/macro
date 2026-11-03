@@ -1,8 +1,8 @@
 {
   "schema": "china_masterminds.latest.v2",
   "n": 3,
-  "built": "2026-11-02 16:22 UTC",
-  "asof": "2026-11-02",
+  "built": "2026-11-03 15:18 UTC",
+  "asof": "2026-11-03",
   "stale_after_min": 1440,
   "cards": [
     {
@@ -11,7 +11,7 @@
       "cagr": 6.96,
       "sharpe": 1.35,
       "maxdd": -6.2,
-      "asof": "2026-11-02",
+      "asof": "2026-11-03",
       "gross_now": 0.57,
       "alloc": [
         {
@@ -34,7 +34,7 @@
       "cagr": 10.06,
       "sharpe": 1.16,
       "maxdd": -12.1,
-      "asof": "2026-11-02",
+      "asof": "2026-11-03",
       "gross_now": 1.05,
       "alloc": [
         {
@@ -57,7 +57,7 @@
       "cagr": 14.13,
       "sharpe": 1.09,
       "maxdd": -22.3,
-      "asof": "2026-11-02",
+      "asof": "2026-11-03",
       "gross_now": 1.79,
       "alloc": [
         {
