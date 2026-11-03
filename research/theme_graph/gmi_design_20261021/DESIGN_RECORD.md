@@ -399,35 +399,68 @@ The generator re-rendered all 60 matrix PNGs: 7 stems × 1440/390 × dark/light 
 7. Keep the S2 phone jump strip, the 57px sticky headers and the hash-preserving chip click. Keep the 371-row gate.
 
 
-## 10. GMI editable makeover — 2026-11-03
+## 10. GMI editable makeover — completed 2026-11-03
 
-Current Chairman assignment: substantially upgrade the UI/UX and GMI theme system in the exact original Paper file. This is a design and visual-acceptance phase, not production implementation.
+Chairman assignment: substantially upgrade the GMI Explorer UI/UX and its theme system in the original Paper file. The complete static design and implementation handoff are delivered. This does not claim a production application deployment.
 
 - Operation: `gmi-paper-makeover-20261103-sol`
 - Paper file: `01M5H6EARN9YHQV17JC6ZG9BRY`
-- New page: [GMI · Noir / Production design](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0)
 - Governing source: Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`
 - Product/data source: Macro `21444bcfd9001654935eb4b43b0005eb5a7eb47b`
-- Root remains the single writer for the new page's targets through native Mastermind Paper. Original reference boards remain intact.
+- Displayed reference snapshot: 31 October 2026; original publication/on-file dates remain separate.
+- Root was the sole Paper writer; independent readers reviewed visuals, data semantics, translation and exported variants.
+- Original 16 reference boards remain intact on the archive page.
 
 ### Outcome and task tree
 
-| Task | Outcome / DONE_WHEN | Dependencies | Evidence / current state |
+| Task | Outcome / DONE_WHEN | Dependencies | Final state / evidence |
 |---|---|---|---|
-| GMI-D1 | Inspect original boards and current product semantics | None | Complete: original 16 boards are predominantly raster references; current source census obtained |
-| GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | 46 tokens created; atlas `9A-0` visually inspected; independent static review passed after two wording corrections |
-| GMI-D3 | Coherent theme-detail/value-chain, index, issuer, relationship and coverage views | D2 | Complete: six desktop journeys in Night and Day; 12 editable boards |
-| GMI-D4 | Dark/light, EN/ZH and 390px mobile designs plus meaningful failure/loading/empty/permission/success states | D3 | In progress: 390px atlas complete; five deep mobile journeys, CJK and system states in progress |
-| GMI-D5 | Actual screenshots reviewed; defects repaired; exact board map, JSX and design handoff saved | D3,D4 | Pending |
+| GMI-D1 | Inspect original boards and current product semantics | None | Complete: original raster reference census and current committed source census |
+| GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | Complete: 48 Paper tokens; native editable desktop and mobile atlas |
+| GMI-D3 | Coherent detail/value-chain, index, issuer, relationship and coverage views | D2 | Complete: six desktop journeys in Noir and Day |
+| GMI-D4 | Theme, locale, mobile and state coverage | D3 | Complete: six mobile journeys in Noir and Day; representative Chinese atlas at both sizes/modes; mobile filter sheet/value-chain lens; nine operational states in both themes |
+| GMI-D5 | Actual captures, repaired defects, board map, native JSX and saved handoff | D3,D4 | Complete: 34 JSX +34 native JPEG exports, manifest hashes, no canvas overlaps, final static review accepted, handoff archive saved |
+
+All design tasks are complete. The remaining implementation/browser/accessibility/deployment work is a separate stage, not an unfinished design claim.
+
+### Final Paper structure
+
+| Page | Boards | Link |
+|---|---:|---|
+| 01 · Desktop · Noir + Day |14| [Open desktop](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0) |
+| 02 · Mobile · Journeys & controls |16| [Open mobile](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-3-0) |
+| 03 · System · Tokens & states |4| [Open system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-4-0) |
+| Archive · 21 Oct references |16 preserved| [Original references](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0) |
+
+Desktop Noir EN: atlas `9A-0`, detail `I4-0`, index `QH-0`, company `YU-0`, relationship `177-0`, coverage `1FK-0`.
+Desktop Day EN: `26V-0`, `2F8-0`, `2KO-0`, `2RB-0`, `2W0-0`, `310-0`.
+Desktop Chinese atlas: `4H1-0` / `4PE-0`.
+
+Mobile Noir EN: atlas `35A-0`, detail `3NX-0`, index `3QZ-0`, company `3U1-0`, relationship `3X3-0`, coverage `405-0`.
+Mobile Day EN: `38N-0`, `4XR-0`, `51O-0`, `559-0`, `58M-0`, `5C5-0`.
+Mobile Chinese atlas: `3BP-0` / `3ER-0`; filter sheet `3HT-0`; value-chain lens `3KV-0`.
+System: foundations `5FQ-0`; Noir states `5FR-0`; Day states `5X8-0`; interaction contracts `5FS-0`.
 
 ### Design decisions and preserved semantics
 
-Use Mastermind Noir foundations with consistent light-mode counterparts. Inter/PingFang SC and mono numerals, restrained information blue, explicit state labels and shapes, no colored container rails. Replace tiny status-square walls with category navigation, readable theme results, and a contextual evidence inspector. Preserve complete index access, optional subthemes and multi-parent taxonomy, coverage/value-chain lenses, issuer explanations, directed relationships, receipts and unknown states.
+Mastermind Noir foundations with an intentional Day counterpart; Inter/PingFang SC with mono numeric detail; restrained blue actions, explicit state text and symbols, no colored container rails. Readable rows, category navigation and an evidence inspector replace tiny status-square walls. Preserve full index access, optional subthemes/multiple parents, coverage/value-chain lenses, issuer explanations, directed relationships and source receipts.
 
-Use the dated current committed snapshot, not the historical October fixture: 371 micros = 68 Core +303 Extended, one reviewed Micron company/link, zero held. Current category allocations differ from round1. Micron's reviewed theme admission and separate graph-use permission remain distinct. Relationships package:248 documented,281 companies read, proposed/unreviewed; selected Cirrus Logic→Apple displays91% of seller revenue FY2026 with original period and rights withheld excerpt state. Snapshot dates stay visible; no live feed or production acceptance is claimed.
+The current source snapshot has 371 micros (68 Core/303 Extended), one reviewed Micron company/link and zero held. Reviewed classification remains separate from graph-use permission. Micron's product/platform example retains Planned. Relationships remain proposed/unreviewed; Cirrus Logic→Apple retains 91% of seller revenue FY2026, 89% FY2025 and87% FY2024. Provisional U.S. and unresolved China denominators, unmeasured accuracy and untracked changes remain explicit. No live-feed, exposure, validation-score or production acceptance is fabricated.
 
-### Verified milestone and next action
+### Final review and corrections
 
-Atlas `9A-0` in page `p-2-0` is editable and uses the new tokens. Actual 1440px screenshot reviewed for spacing, typography, contrast, alignment, clipping and density. Independent review found no layout defect; changed “In the theme graph” to “Taxonomy path” and clarified “Universe:68 Core/303 Extended.” Acceptance is static desktop composition only.
+Root and independent reviews inspected the actual static compositions. All six Day desktop and mobile variants passed; EN mobile visible-text sequences match their Noir counterparts. Representative Chinese desktop/mobile Noir/Day layouts, all system states, filter sheet and value-chain view passed without clipping or remaining layout blockers.
 
-Continue GMI-D3, then D4 and D5 in the same design operation. Do not redo historical reference import, change parent runtime waves, or infer production shipment from the canvas. All canvas effects to this milestone returned APPLIED_RESPONSE_OBSERVED; no unresolved modifying effect.
+Applied corrections include Taxonomy path wording; explicit global Core/Extended scope (Chinese 全库); Planned in mobile theme evidence; fiscal-year chart labels; neutral withheld-excerpt language; No recorded link yet in mobile index; disabled first-page Previous controls; and the exact 371-micro-theme value-chain denominator.
+
+48-token hash: `ac191fd9`. Final finish operation: `gmi-paper-makeover-20261103-sol-finish-all-design-boards`, result `APPLIED_RESPONSE_OBSERVED`. No unresolved modifying effect remains.
+
+### Saved handoff
+
+`GMI-Explorer-Design-Handoff-2026-11-03.zip` — 3,992,532 bytes, SHA-256 `35319072a59e3e61b3bb2f59acf9ab21a77863152b28c18edfb687aa88c8c7d8`.
+
+Contains an offline visual gallery, 34 native JSX snippets with node IDs, 34 unmodified JPEG captures, 48-token JSON/CSS, the full implementation/data/interaction contract, final page inventory and hashed manifest. Relative links, all content hashes and ZIP integrity were verified. Artboard dimensions and coordinates show zero overlaps.
+
+Chinese atlas composition is supplied at both sizes and in both modes; separate Chinese deep-view/state mockups are not included. Their complete language parity is an implementation requirement.
+
+No live product build, merge, deployment, authentication change, qualification promotion, parent runtime-wave update or source-law change was performed. Implementation should use the existing governed navigation, theme/language controller, components, readers and permissions, then obtain ordinary real-path/browser and accessibility evidence.
