@@ -49860,7 +49860,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps for the nuclear research boundary
-        run: pip install pytest jsonschema fastapi httpx pydantic pyyaml
+        run: pip install pytest jsonschema fastapi httpx pydantic pyyaml pandas numpy jinja2 requests
       - name: nuclear research boundary
         run: python -m pytest tests/test_market_ontology_nuclear_theme_research.py tests/test_nuclear_owner_bundle.py tests/test_nuclear_research_codes.py tests/test_nuclear_research_composition.py tests/test_nuclear_research_inputs.py tests/test_nuclear_research_interpretation_scope.py tests/test_nuclear_research_lineage.py tests/test_nuclear_research_publication.py tests/test_nuclear_research_review_gate.py tests/test_nuclear_research_route.py tests/test_nuclear_research_sections.py tests/test_nuclear_research_temporal.py tests/test_nuclear_shell_import_names.py tests/test_uranium_miners_anchor.py -q -p no:cacheprovider
   ric-f0-a10-canonical-calendar:
