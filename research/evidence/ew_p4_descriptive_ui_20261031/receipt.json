@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+  "source_revision": "0603423234187dc3afce0d6365aa8d714be63ff4",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1496,7 +1496,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
+      "sha256": "cf76b5116a47408bf08a80fc9fa96aca4cc7d7b0e2f0ed0df1e28c5904ba2e24",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P5 FU2 recapture commit on the PR branch (1440 width, every degraded state in both themes, per-theme keyboard focus, L4 warning ink); the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p5-fu2-20261101",
-    "pr_parent_of_evidence_commit": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+    "note": "Shots were re-rendered by the Sector Intelligence seat (macro#7646, PR #9917; local Playwright Chromium, the same probe) at source_revision because that branch changes three of the bound render inputs — templates/dashboard.html.j2 (the Sector Prophet context island include under mode == \"stocks\"), templates/sector_central.html.j2 (the Sector Central Paper pivot) and templates/si_workspace.js — so the EW-P5 FU2 shots no longer depicted the tree under test. Band, glance, tokens, fixtures and probe are byte-identical to the FU2 capture; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
+    "pr_parent_of_evidence_commit": "0603423234187dc3afce0d6365aa8d714be63ff4",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
-        "blob_on_pr_branch": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
+        "blob_at_source_revision": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+        "blob_on_pr_branch": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
         "equal": true
       },
       {
@@ -2160,14 +2160,14 @@
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
-        "blob_on_pr_branch": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
+        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
+        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
         "equal": true
       },
       {
         "path": "templates/si_workspace.js",
-        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "equal": true
       },
       {
@@ -2178,8 +2178,8 @@
       },
       {
         "path": "site/si_workspace.js",
-        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "equal": true
       }
     ],
