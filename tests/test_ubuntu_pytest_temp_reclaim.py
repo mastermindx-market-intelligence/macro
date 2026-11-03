@@ -74,8 +74,13 @@ class GeneratedGarbageTests(unittest.TestCase):
             gc.reclaim(self.username, max_dirs=13, tmp_root=str(self.root))
 
     def test_current_process_reference_is_veto(self):
+        proc = self.root / "proc"
+        pid = proc / "1234"
+        pid.mkdir(parents=True)
+        (pid / "cwd").symlink_to(self.old, target_is_directory=True)
+        (pid / "fd").mkdir()
         with self.assertRaisesRegex(gc.Refusal, "live_process_reference"):
-            gc._check_procs([Path(os.getcwd())])
+            gc._check_procs([self.old], proc_root=str(proc))
 
     def test_mount_child_is_veto(self):
         with self.root.joinpath("mountinfo").open("w") as f:
