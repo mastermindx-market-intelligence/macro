@@ -1132,8 +1132,10 @@ datasets:
       Authority is descriptive only: no gate, rank, size, trade or prediction.
       §8.2 envelope on this package (research/theme_graph/gmi_relationships_20261021/
       m2_integration/envelope_print.txt): E4 recall 83/238 = 0.349 [0.291,0.411],
-      E5 precision 49/100 weighted 0.498 [0.390,0.607] (model re-reader, 25 decoys
-      0 accepted; owner review owed) — neither 0.80 target met nor ratified.
+      E5 precision 67/100 = 0.67 [0.573,0.754], weighted 0.662 [0.560,0.765]
+      (owner review by a blind non-authoring Opus reviewer, 25 decoys 0 accepted;
+      m2_precision_owner/precision_report.json; supersedes the glm re-read 49/100
+      weighted 0.498) — neither 0.80 target met nor ratified.
       Measured on integ head 8a1fee67; superseded and never served: 603c3551.
 
   - dataset_id: company_intelligence.relationship_edges
