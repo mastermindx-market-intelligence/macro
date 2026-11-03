@@ -51,12 +51,12 @@ The source pin and served dates differ. A November2 committed artifact, an Octob
 - Assignment/common/index/shell/checklist: Macro **6e1862867193ec6486a22001a0e4fb515da20448**.
 - Protected procedure: Mastermind/master **b2326bbe30e9988d26199f5e774a482b9c09068a**, Skillpack1.0.1, bootstrap major1 compatible.
 - Current bounded source/data census: Macro **fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9**.
-- F01: [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), candidate **34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985**.
-- F02: [Draft #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), refreshed handshake **21ec752c56222eb747d51950b29892d463c4398b**; component/system baseline candidate.2 at c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82.
-- F03: [Draft #10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631), **39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d**.
+- F01: [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), refreshed candidate **b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5**.
+- F02: [Draft #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), refreshed native checkpoint **f7c25c4b9870cff260c2a4b998be18d6c04d36d0**; handshake concurrence remains recorded, with component/system baseline candidate.2 at c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82.
+- F03: [Draft #10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631), refreshed directory evidence **d9e78dc6512bcc7c79de540fe8d69746801b93c7**.
 - Existing Macro Signals [Draft #10485](https://github.com/mastermindx-market-intelligence/macro/pull/10485) remains with its incumbent owner.
 
-F02 has recorded concurrence with F01's candidate geometry. It explicitly does not establish F01 acceptance of all clarifications, a released joint foundation, independent approval or implementation permission. Final D02 composed Paper layouts remain held.
+F02 has recorded candidate concurrence, but the refreshed F01/F02 source still differs on the 600 versus 768 gutter boundary and 400 versus 440 modal width, with fractional cutoffs also unaccepted. The measured docking rule agrees. Neither side establishes a released joint foundation, independent approval or implementation permission. F01 and F02 each report one exact unresolved native write; F02's prepared repairs and first-pass BLOCK findings remain open. The [bounded dependency refresh](EVIDENCE_AND_DEPENDENCIES.md#8-bounded-foundation-refresh-before-handoff) records the exact sources and next owner actions. Final D02 composed Paper layouts remain held.
 
 ## Exact existing Paper references
 
@@ -64,7 +64,7 @@ F02 has recorded concurrence with F01's candidate geometry. It explicitly does n
 - [Pullback underway](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0): US9TH-0 and China9WB-0 inspected.
 - [Breadth Command Center](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-13-1):5J97-1, 5JUZ-1 and5K8V-1 inspected.
 - [Popup family directory](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-5-0) and [programme handoff](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-2-0) retain their exact identities.
-- [Shared shell p-23-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0) remains F01; [F02 Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) remains F02.
+- [Shared shell p-23-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0) remains a retained F01 reference. The refreshed F01 source reports its new [candidate p-27-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0); those new boards were not visually inspected by D02. [F02 Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) remains F02.
 
 These links identify existing editable references. They are not new D02 after-designs or approved revisions. The capture manifest explicitly distinguishes source observations from final-reference evidence.
 

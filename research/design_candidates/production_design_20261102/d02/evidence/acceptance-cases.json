@@ -460,8 +460,8 @@
     {
       "id": "PE01",
       "area": "Real content widths",
-      "fixture": "320,390,768,1024,1280,1440,1600 plus fractional breakpoint edges",
-      "expected": "Measure actual shell content C and local chrome; dock only when released rule permits",
+      "fixture": "320,390,700,768,1024,1280,1440,1600 plus fractional breakpoint edges; 400/440 modal proposals",
+      "expected": "Resolve the F01/F02 600/768 gutter cutoff and 400/440 modal delta; measure actual shell content C and local chrome; dock only when released rule permits",
       "owner": "F01-F02/D02",
       "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
     },

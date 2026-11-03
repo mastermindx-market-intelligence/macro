@@ -73,7 +73,7 @@ These are discriminating acceptance requirements for later authorized implementa
 | AC03 — Chart alternatives | Keyboard-only/screen reader on path, rates and cone | Same value/target/date/qualification in summary and data view; no hover-only warning | D02/F02 |
 | AC04 — Reduced motion | Reduced-motion/forced-color settings | No decorative draw/pulse requirement; selected state/focus/meaning preserved | F02 |
 | AC05 — Chinese financial semantics | Long labels; price direction versus health/risk/positioning | Signs/text/legends consistent; language does not invert unrelated semantics | F02/D02/D19 |
-| PE01 — Real content widths | 320, 390, 768, 1024, 1280, 1440, 1600 plus fractional breakpoint edges | Measure actual shell content C and local chrome; dock only when released rule permits | F01-F02/D02 |
+| PE01 — Real content widths | 320, 390, 700, 768, 1024, 1280, 1440, 1600 plus fractional breakpoint edges; 400/440 modal proposals | Resolve the F01/F02 600/768 gutter cutoff and 400/440 modal delta; measure actual shell content C and local chrome; dock only when released rule permits | F01-F02/D02 |
 | PE02 — Lazy mounting | Initial overview then one selected Command section/inspector | No eager all-route/all-matrix/hidden-chart loads; no duplicate listeners/subscriptions | Builder |
 | PE03 — Output integrity | Nonfatal builder exception returning0 | Missing/stale output detected by artifact/readback check; no successful-publication claim | Builder |
 | PE04 — Performance | Accepted deployed release, mobile/desktop p75 | LCP≤2.5s, INP≤200ms, CLS≤0.1; actual measurements recorded separately | Release/QA01 |

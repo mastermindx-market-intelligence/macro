@@ -103,10 +103,31 @@
       "name": "internal_document_links_resolve",
       "passed": true,
       "detail": []
+    },
+    {
+      "name": "foundation_refresh_exact_seven_source_bindings",
+      "passed": true,
+      "detail": "Exact immutable source receipts; source reports do not claim D02 native visual verification."
+    },
+    {
+      "name": "foundation_deltas_not_jointly_accepted",
+      "passed": true,
+      "detail": "700 - 2*16 = 668; 700 - 2*20 = 660; 440 - 400 = 40."
+    },
+    {
+      "name": "foundation_effects_and_capture_qualification_preserved",
+      "passed": true,
+      "detail": "Unresolved original operations remain with their owners; D02 capture identity unchanged."
+    },
+    {
+      "name": "PE01_refresh_keeps_65_unexecuted_cases",
+      "passed": true,
+      "detail": "Only the discriminating width fixture changed; no future test was reported as executed."
     }
   ],
-  "passed": 19,
-  "total": 19,
+  "passed": 23,
+  "total": 23,
   "failures": [],
-  "scope": "D02 source packet structure, counts, references and captured/source integrity only; no production or browser interaction certification."
+  "scope": "D02 source packet structure, counts, references and captured/source integrity only; no production or browser interaction certification.",
+  "dependency_refresh_at_utc": "2026-11-03 07:20:57 UTC"
 }

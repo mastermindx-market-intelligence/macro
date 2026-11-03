@@ -1,24 +1,30 @@
 {
-  "observed_at_utc": "2026-11-03 07:08:14 UTC",
+  "observed_at_utc": "2026-11-03 07:20:57 UTC",
   "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
   "procedure_pin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
   "source_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
   "f01": {
     "pr": 10645,
-    "pin": "34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985",
-    "status": "IN_PROGRESS_CANDIDATE_NOT_RELEASED"
+    "pin": "b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5",
+    "status": "PARTIAL_CANDIDATE_UNRELEASED_NATIVE_EFFECT_UNKNOWN",
+    "previous_pin": "34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985",
+    "paper_candidate": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0",
+    "unresolved_operation_id": "F01-20261103-c4-state-8-v1"
   },
   "f02": {
     "pr": 10630,
-    "pin": "21ec752c56222eb747d51950b29892d463c4398b",
+    "pin": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
     "system_base": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
-    "status": "CONCURRENCE_RECORDED_JOINT_QUALIFICATION_OPEN"
+    "status": "CONCURRENCE_RECORDED_NATIVE_PAUSED_REPAIRS_UNAPPLIED_FIRST_REVIEW_BLOCK",
+    "previous_pin": "21ec752c56222eb747d51950b29892d463c4398b",
+    "unresolved_operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
   },
   "f03": {
     "pr": 10631,
-    "pin": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d",
+    "pin": "d9e78dc6512bcc7c79de540fe8d69746801b93c7",
     "inventory_pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
-    "status": "PARTIAL"
+    "status": "PARTIAL_NATIVE_DIRECTORY_CONTINUATION_OBSERVED_IN_OWNER_SOURCE",
+    "previous_pin": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d"
   },
   "macro_signals": {
     "pr": 10485,
@@ -36,5 +42,78 @@
   },
   "joint_contract_verified": false,
   "paper_writes": 0,
-  "production_code_changes": 0
+  "production_code_changes": 0,
+  "previous_observed_at_utc": "2026-11-03 07:08:14 UTC",
+  "unresolved_geometry": [
+    {
+      "concern": "gutter_change",
+      "f01": "16 each below768;20 from768 to1199;24 at>=1200",
+      "f02": "16 each at<=600;20 at>600 and<1200;24 at>=1200",
+      "example_700": {
+        "f01_content": 668,
+        "f02_content": 660
+      }
+    },
+    {
+      "concern": "modal_width",
+      "f01": "up to400 with viewport-aware inset",
+      "f02": "440 at represented768/1024;full viewport at<=600"
+    },
+    {
+      "concern": "fractional_cutoffs",
+      "f01": "861–1199 integer middle range",
+      "f02": ">860–<1200 continuous proposal, not yet accepted"
+    }
+  ],
+  "source_reads": [
+    {
+      "path": "research/design_candidates/production_design_20261102/f01/README.md",
+      "git_blob_sha": "7f6542a3b870f0106cb4c3220097bd3b41726079",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5/research/design_candidates/production_design_20261102/f01/README.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "git_blob_sha": "2151f2738d402215f57f21e78b8bd8c1f807a3cb",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md",
+      "git_blob_sha": "58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/paper/CURRENT_DESIGN_AUTHORITY.md",
+      "git_blob_sha": "54c5c0852cdb107411cdd60f4ddb9e08a4857974",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/paper/CURRENT_DESIGN_AUTHORITY.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/paper/NATIVE_PENDING_WORK.md",
+      "git_blob_sha": "56a59fbf2e525949c1172f6e4dab60099400b824",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/paper/NATIVE_PENDING_WORK.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f03/README.md",
+      "git_blob_sha": "63dfb55a3df31d0b6a9472e0bb0434a791722519",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d9e78dc6512bcc7c79de540fe8d69746801b93c7/research/design_candidates/production_design_20261102/f03/README.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f03/CONTINUITY.md",
+      "git_blob_sha": "18e91b806d1705513265ffc15004d00457e2a1b1",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/d9e78dc6512bcc7c79de540fe8d69746801b93c7/research/design_candidates/production_design_20261102/f03/CONTINUITY.md",
+      "read": "FULL_TEXT",
+      "evidence_class": "OWNER_SOURCE_REPORT_NOT_D02_NATIVE_VISUAL_VERIFICATION"
+    }
+  ]
 }
