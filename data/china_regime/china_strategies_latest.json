@@ -1,12 +1,12 @@
 {
   "n": 4,
-  "built": "2026-11-01 14:14 UTC",
+  "built": "2026-11-02 16:22 UTC",
   "cards": [
     {
       "key": "income_vector",
       "name": "China Income Vector",
-      "cagr": 7.63,
-      "sharpe": 0.93,
+      "cagr": 7.56,
+      "sharpe": 0.92,
       "maxdd": -17.2,
       "experimental": false
     },
@@ -21,7 +21,7 @@
     {
       "key": "cn_volmanaged",
       "name": "Volatility-Managed CSI 300",
-      "cagr": 6.1,
+      "cagr": 6.11,
       "sharpe": 0.52,
       "maxdd": -31.1,
       "experimental": true

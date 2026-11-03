@@ -36,17 +36,26 @@
   {
    "index": "IWM",
    "metric": "ihm_macd_hist_depth_pctile",
-   "depth_pctile": 13.8,
+   "depth_pctile": 64.9,
    "reason": "washout_turn",
    "washout_turn": true,
+   "extreme": true
+  },
+  {
+   "index": "MAG7",
+   "metric": "ihm_macd_hist_depth_pctile",
+   "depth_pctile": 9.4,
+   "reason": "low_depth",
+   "washout_turn": false,
    "extreme": true
   }
  ],
  "ihm_hits": [
-  "IWM"
+  "IWM",
+  "MAG7"
  ],
- "message_en": "Capitulation-zone reading — historically two-sided. Growth scare 93 (extreme) alongside a depth extreme: IWM washout-turn (IHM). A washout can precede a bounce about as often as a further leg down.",
- "message_zh": "资本投降区读数——历史上双向。成长恐慌 93（极端），同时出现深度极值：IWM 动量拐点洗盘（IHM）。洗盘之后反弹与再下跌概率相当。",
+ "message_en": "Capitulation-zone reading — historically two-sided. Growth scare 93 (extreme) alongside a depth extreme: IWM washout-turn (IHM); MAG7 momentum-washed (IHM p9). A washout can precede a bounce about as often as a further leg down.",
+ "message_zh": "资本投降区读数——历史上双向。成长恐慌 93（极端），同时出现深度极值：IWM 动量拐点洗盘（IHM）；MAG7 动量深跌（IHM p9）。洗盘之后反弹与再下跌概率相当。",
  "authority": {
   "tier": "display",
   "horizon_role": "context",
