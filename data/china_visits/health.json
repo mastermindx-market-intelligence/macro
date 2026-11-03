@@ -1,11 +1,11 @@
 {
- "status": "upstream_degraded",
- "detail": "derived over a same-run china_filings TRANSPORT degradation (szse: Response ended prematurely) \u2014 this run contributes no absence evidence",
- "last_attempt_utc": "2026-11-02T15:37:15.163243+00:00",
- "last_success_utc": "2026-10-29T19:09:19.874302+00:00",
+ "status": "ok",
+ "detail": "2586 candidate row(s) this run",
+ "last_attempt_utc": "2026-11-03T14:29:11.696157+00:00",
+ "last_success_utc": "2026-11-03T14:29:11.696157+00:00",
  "candidate_accounting": {
-  "eligible": 2530,
-  "represented_downstream": 2530,
+  "eligible": 2586,
+  "represented_downstream": 2586,
   "typed_exclusions": 0,
   "exclusions_by_type": {},
   "coverage_exceptions": {
