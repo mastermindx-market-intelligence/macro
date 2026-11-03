@@ -529,11 +529,31 @@ def _parse_outcomes(report: dict):
     return None
 
 
+def _dir_ledger_rows(directory) -> list:
+    """The fetch-ledger rows of ONE judging dir (empty when it has none)."""
+    ledger_path = Path(directory) / "fetch_ledger.jsonl"
+    if not ledger_path.is_file():
+        return []
+    return [
+        json.loads(line)
+        for line in ledger_path.read_bytes().decode("utf-8").splitlines()
+        if line.strip()
+    ]
+
+
 def e3_sources(package: dict, leaves: dict, judging_dirs: list,
-               inputs_dir=None, ledger_rows=None, materialize_reports=None) -> dict:
+               inputs_dir=None, ledger_rows=None, materialize_reports=None,
+               ledger_rows_by_dir=None) -> dict:
     """Source processing per §8.2 vocabulary: collected, parsed, partial,
     rejected, unavailable, pending.  M1-pinned issuers (no ledger row, a
-    coverage row with documents) are counted as collected (M1 pinned)."""
+    coverage row with documents) are counted as collected (M1 pinned).
+
+    Parse outcomes are dir-level counters, so each judging dir's outcomes
+    attach to the domain of the issuers in THAT dir's own fetch ledger
+    (``ledger_rows_by_dir[dir]``, else read from ``<dir>/fetch_ledger.jsonl``).
+    A dir whose issuers span several domains (the mixed pilot slice) or
+    none cannot be split by issuer and lands in OTHER; the per-dir choice
+    is returned as ``parse_attribution``."""
     domain_of = domain_map(leaves)
     dom = domain_of_fn(domain_of)
     files_read: list = []
@@ -596,20 +616,23 @@ def e3_sources(package: dict, leaves: dict, judging_dirs: list,
 
     parse_by_domain = {d: None for d in DOMAINS}
     parse_by_domain["OTHER"] = None
+    parse_attribution: dict = {}
     for directory, report in sorted(materialize_reports.items()):
         outcomes = _parse_outcomes(report)
         if outcomes is None:
             continue
-        # attach to the domain of the first ledger issuer seen anywhere; a
-        # judging dir is leaf/slice-scoped, so its rows share one domain
-        dir_dom = None
-        for row in ledger_rows:
-            candidate = dom(row.get("issuer_id"))
-            if candidate in DOMAINS:
-                dir_dom = candidate
-                break
-        if dir_dom is None:
-            dir_dom = "OTHER"
+        # attach to the domain of THIS dir's own ledger issuers — never a
+        # row from another dir (the pre-fix scan of the global row list
+        # credited every dir to the first dir's domain, so D2 read ABSENT)
+        if ledger_rows_by_dir is not None and directory in ledger_rows_by_dir:
+            dir_rows = ledger_rows_by_dir[directory]
+        else:
+            dir_rows = _dir_ledger_rows(directory)
+        dir_domains = {
+            dom(row.get("issuer_id")) for row in dir_rows
+        } & set(DOMAINS)
+        dir_dom = next(iter(dir_domains)) if len(dir_domains) == 1 else "OTHER"
+        parse_attribution[str(directory)] = dir_dom
         merged = dict(parse_by_domain[dir_dom] or {})
         for key, value in outcomes.items():
             merged[key] = merged.get(key, 0) + value
@@ -634,6 +657,7 @@ def e3_sources(package: dict, leaves: dict, judging_dirs: list,
         ],
         "judging_state": judging_state,
         "per_domain": per_domain,
+        "parse_attribution": dict(sorted(parse_attribution.items())),
         "files_read": files_read,
     }
 
