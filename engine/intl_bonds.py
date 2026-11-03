@@ -156,14 +156,45 @@ def _observed_at(raw: pd.Series | None, endpoint: pd.Timestamp) -> pd.Timestamp 
     return known.index[-1] if not known.empty else None
 
 
+def _frame_observed_at(frame: pd.DataFrame, column: str,
+                       endpoint: pd.Timestamp) -> pd.Timestamp | None:
+    """Read the input owner's same-read receipt, never a filled feature date."""
+    from engine import yield_momentum as origin_owner
+
+    if column not in frame:
+        return None
+    tail = origin_owner._finite(frame[column]).iloc[-origin_owner.TURN_LOOKBACK:]
+    if (not isinstance(tail.index, pd.DatetimeIndex) or not tail.index.is_unique
+            or tail.index.hasnans or tail.index.tz is not None):
+        return None
+    if not tail.index.is_monotonic_increasing:
+        return None
+    try:
+        dates, status, receipt = origin_owner._origin(
+            tail, column, frame.attrs.get(origin_owner.ORIGIN_ATTR))
+    except (TypeError, ValueError, KeyError, IndexError):
+        return None  # Optional incompatible provenance must not discard the yield.
+    if (dates is None or status != "matched_captured_alignment"
+            or receipt.get("source_basis") != "captured_source_rows"
+            or receipt.get("source_id") != _FRAME_TO_FRED.get(column)):
+        return None
+    selected = tail.loc[tail.index <= endpoint].dropna()
+    if selected.empty:
+        return None
+    observed = dates[tail.index.get_loc(selected.index[-1])]
+    return pd.Timestamp(observed) if observed is not None else None
+
+
 def _source_observation(spec: dict, field: str, raw: pd.Series | None,
-                        aligned: pd.Series | None) -> dict | None:
+                        aligned: pd.Series | None, frame: pd.DataFrame) -> dict | None:
     """Display-only receipt from the same series/config already used by the owner."""
     if aligned is None or aligned.dropna().empty:
         return None
-    observed = _observed_at(raw, aligned.dropna().index[-1])
     key = spec.get(field)
     src = spec["src"]
+    endpoint = aligned.dropna().index[-1]
+    observed = (_frame_observed_at(frame, key, endpoint) if src == "frame"
+                else _observed_at(raw, endpoint))
     try:
         cfg = config.load().get("sovereign") or {}
     except (KeyError, TypeError, ValueError, OSError):
@@ -172,7 +203,7 @@ def _source_observation(spec: dict, field: str, raw: pd.Series | None,
     if src in {"frame", "fred"}:
         provider_en = provider_zh = "FRED"
         series_id = _FRAME_TO_FRED.get(key) if src == "frame" else key
-        if series_id:
+        if series_id and (src != "frame" or observed is not None):
             source_url = f"https://fred.stlouisfed.org/series/{series_id}"
     elif src == "ecb":
         provider_en, provider_zh = "ECB", "欧洲央行"
@@ -199,6 +230,7 @@ def _source_observation(spec: dict, field: str, raw: pd.Series | None,
     return {"label_en": labels[field][0], "label_zh": labels[field][1],
             "provider_en": provider_en, "provider_zh": provider_zh,
             "series_id": series_id, "source_url": source_url,
+            "observation_qualified": observed is not None,
             "observed_as_of": observed.date().isoformat() if observed is not None else None}
 
 
@@ -214,8 +246,9 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
 
     lvl = float(y10.dropna().iloc[-1])
     last_ts = y10.dropna().index[-1]
-    observed = _observed_at(raw_y10, last_ts)
-    stale = observed is None or (idx[-1] - observed).days > STALE_DAYS.get(spec["cadence"], 30)
+    observed = (_frame_observed_at(f, spec["y10"], last_ts) if spec["src"] == "frame"
+                else _observed_at(raw_y10, last_ts))
+    stale = observed is not None and (idx[-1] - observed).days > STALE_DAYS.get(spec["cadence"], 30)
 
     # slope: prefer 10y-2y, else 10y-short(3m). carry the label so the UI is honest.
     slope, slope_basis = None, None
@@ -231,7 +264,7 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
         used.append(("short", raw_short, short))
     if real is not None and not real.dropna().empty:
         used.append(("real", raw_real, real))
-    sources = [_source_observation(spec, field, raw, aligned) for field, raw, aligned in used]
+    sources = [_source_observation(spec, field, raw, aligned, f) for field, raw, aligned in used]
 
     chg = _chg_bp(y10)
     diff = (lvl - us_y10_last) * 100.0 if us_y10_last is not None else None
@@ -240,6 +273,7 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
     return {
         "code": spec["code"], "en": spec["en"], "zh": spec["zh"], "ccy": spec["ccy"],
         "cadence": spec["cadence"], "stale": stale, "gdp_w": spec["gdp_w"],
+        "observation_qualified": observed is not None,
         "observed_as_of": observed.date().isoformat() if observed is not None else None,
         "sources": [source for source in sources if source is not None],
         "y10": _r(lvl), "y2": _r(float(y2.dropna().iloc[-1])) if y2 is not None and not y2.dropna().empty else None,

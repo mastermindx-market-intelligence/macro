@@ -722,7 +722,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
       {% for r in intl.countries %}
       {% set ss = SST.get(r.slope_state, (C.muted, r.slope_state or '—', r.slope_state or '—')) %}
       <tr>
-        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.stale %}<span class="stale-tag">{{ t('stale','过期') }}{{ lens('Observation older than its source freshness window', '观测数据已超过该来源的时效窗口') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
+        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.observation_qualified is defined and not r.observation_qualified %}<br><span class="note">{{ t('Observation date unavailable', '观测日期未知') }}</span>{% elif r.stale %}<span class="stale-tag">{{ t('stale','过期') }}{{ lens('Observation older than its source freshness window', '观测数据已超过该来源的时效窗口') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
         <td><b>{{ '%.2f'|format(r.y10) }}%</b></td>
         <td>{{ ('%.2f'|format(r.real_10y) ~ '%') if r.real_10y is not none else '—' }}</td>
         <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}{% if r.slope is not none %}pp <span class="faint">{{ t('10y−2y', '10年−2年') if r.slope_basis == '2s10s' else t('10y−3m', '10年−3月') if r.slope_basis == '10y-3m' else '' }}</span>{% endif %}</td>
@@ -1308,7 +1308,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% for r in intl.countries %}
       {% set ss = SST.get(r.slope_state, (C.muted, r.slope_state or '—', r.slope_state or '—')) %}
       <tr>
-        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.stale %}<span class="stale-tag" data-tip-en="Observation older than its source freshness window" data-tip-zh="观测数据已超过该来源的时效窗口">{{ t('stale','过期') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
+        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.observation_qualified is defined and not r.observation_qualified %}<br><span class="note">{{ t('Observation date unavailable', '观测日期未知') }}</span>{% elif r.stale %}<span class="stale-tag" data-tip-en="Observation older than its source freshness window" data-tip-zh="观测数据已超过该来源的时效窗口">{{ t('stale','过期') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
         <td><b>{{ '%.2f'|format(r.y10) }}%</b></td>
         <td>{{ ('%.2f'|format(r.real_10y) ~ '%') if r.real_10y is not none else '—' }}</td>
         <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}{% if r.slope is not none %}pp <span class="faint">{{ t('10y−2y', '10年−2年') if r.slope_basis == '2s10s' else t('10y−3m', '10年−3月') if r.slope_basis == '10y-3m' else '' }}</span>{% endif %}</td>
@@ -1341,7 +1341,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
         {% if r.sources|default([]) %}
         <ul>
           {% for source in r.sources %}
-          <li>{{ t(source.label_en, source.label_zh) }} · {% if source.source_url %}<a href="{{ source.source_url }}" target="_blank" rel="noopener noreferrer">{{ t(source.provider_en, source.provider_zh) }}</a>{% else %}{{ t('Source link unavailable', '来源链接不可用') }}{% endif %} · {{ t('Observed', '观测日期') }} {{ source.observed_as_of or t('Observation date unavailable', '观测日期未知') }}</li>
+          <li>{{ t(source.label_en, source.label_zh) }} · {% if source.source_url %}<a href="{{ source.source_url }}" target="_blank" rel="noopener noreferrer">{{ t(source.provider_en, source.provider_zh) }}</a>{% else %}{{ t('Source link unavailable', '来源链接不可用') }}{% endif %} · {% if source.observed_as_of %}{{ t('Observed', '观测日期') }} {{ source.observed_as_of }}{% else %}{{ t('Observation date unavailable', '观测日期未知') }}{% endif %}</li>
           {% endfor %}
         </ul>
         {% else %}<p>{{ t('Source observations unavailable.', '来源观测信息不可用。') }}</p>{% endif %}

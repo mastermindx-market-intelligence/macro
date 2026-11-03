@@ -6,7 +6,11 @@
       "anonymous"
     ],
     "force_states": [
-      "sovereign_sources_expanded"
+      "sovereign_sources_expanded",
+      "frame-receipt-final-row",
+      "frame-receipt-final-sources",
+      "frame-missing-final-row",
+      "frame-missing-final-sources"
     ],
     "locales": [
       "en",
@@ -37,11 +41,19 @@
       "engine/intl_bonds.py": "1d6289649850b2809cf6ac5fa1ece9f0760da26855f3d00e26c93dd5bb8e36ef",
       "templates/bonds.html.j2": "36436021eb5e630e791e1b5edde37d23c3a3144410ba61caba4f9875375d06e7",
       "tests/test_bonds_glance_copy.py": "ff7f9c2c76b0a89ec88b03f1cff5d171622227f0c07f60472ce52f7aa740da15"
+    },
+    "frame_source_repair_sha256": {
+      "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+      "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+      "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
     }
   },
   "tool": {
     "module_ref": "research/market_os/evidence/bonds-sovereign-depth-20261103/capture_depth.py",
-    "module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b",
+    "module_sha256": [
+      "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b",
+      "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc"
+    ],
     "version": "1.0.0"
   },
   "selection": {
@@ -58,7 +70,8 @@
     "access": "ephemeral anonymous local fixture; no credentials/account mutation",
     "gauge": "Prior16 accepted gauge cells reused; not repeated or reclassified as this depth proof",
     "fonts": "Exact6 tracked Inter files; hashes in source evidence. Requests fulfilled locally, font-ready before capture.",
-    "scoped_repair": "new40px effective targets only; accepted source/provenance/gauge evidence reused"
+    "scoped_repair": "new40px effective targets only; accepted source/provenance/gauge evidence reused",
+    "frame_provenance": "Frame-based date/source claims in original rest/expanded cells superseded; reuse only their JP/material/40px geometry. Current frame receipt and missing-receipt force states below qualify changed content only."
   },
   "outcome": "captured",
   "pages": [
@@ -362,6 +375,198 @@
           "viewport_height": 844,
           "viewport_width": 390,
           "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 272422,
+          "captured": true,
+          "file": "frame-source/frame-receipt-final-1440-dark-en-row.png",
+          "force_state": "frame-receipt-final-row",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "c1b95f5347e710cb17724af1fe8369520ea9ee8493c0d0ed50174df2f3039b7b",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 142387,
+          "captured": true,
+          "file": "frame-source/frame-receipt-final-1440-dark-en-sources.png",
+          "force_state": "frame-receipt-final-sources",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "25c254648389357243344255307f0044bebed7c2a205fc35e61121c5dd0df0b3",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 143751,
+          "captured": true,
+          "file": "frame-source/frame-receipt-final-390-light-zh-row.png",
+          "force_state": "frame-receipt-final-row",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "a33a33556278ceb57d1e7fd85344d27a8757a06d87fed8264758589e2783270e",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 89500,
+          "captured": true,
+          "file": "frame-source/frame-receipt-final-390-light-zh-sources.png",
+          "force_state": "frame-receipt-final-sources",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "b53ea39f7dd9b909aa6752d80443159b77b19245a7883278dca22dfa2b907236",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 272385,
+          "captured": true,
+          "file": "frame-source/frame-missing-final-1440-dark-en-row.png",
+          "force_state": "frame-missing-final-row",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "c18388ae77c98051878ec693c0eb923bef30f5da2b1d05454a91ed65238d1c08",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 153389,
+          "captured": true,
+          "file": "frame-source/frame-missing-final-1440-dark-en-sources.png",
+          "force_state": "frame-missing-final-sources",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "e8a813c1437f689c19cd68cb4b6956295563c83735e7c9d1c21c10674ea46df1",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 142091,
+          "captured": true,
+          "file": "frame-source/frame-missing-final-390-light-zh-row.png",
+          "force_state": "frame-missing-final-row",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "c5f3ae4eb91661463cc61041ecd008aab5c467fed03a7dbdafbfe2c70722585a",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 99042,
+          "captured": true,
+          "file": "frame-source/frame-missing-final-390-light-zh-sources.png",
+          "force_state": "frame-missing-final-sources",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "2d44434d21b6b9d3306dc403e9f222f6048f3c8854309eb043dbbbf3e2be994a",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "dc5931fa69862e03672eae4588667e09c5afbb17e5f8c9650068d40032e795bc",
+          "capture_source_sha256": {
+            "engine/intl_bonds.py": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+            "templates/bonds.html.j2": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+            "tests/test_bonds_glance_copy.py": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72"
+          },
+          "scope": "changed frame-clock receipt content only"
         }
       ],
       "gaps": [
@@ -375,6 +580,6 @@
   ],
   "totals": {
     "pages": 1,
-    "states": 16
+    "states": 24
   }
 }
