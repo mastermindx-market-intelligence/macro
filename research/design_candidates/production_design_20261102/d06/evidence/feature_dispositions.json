@@ -1,0 +1,741 @@
+{
+  "artifact": "D06 feature dispositions; proposed design decisions pending independent review",
+  "source_pins": {
+    "terminal": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "macro": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9"
+  },
+  "existing_counts": {
+    "RETAIN": 40,
+    "IMPROVE": 35,
+    "RELOCATE": 0,
+    "REMOVE": 0,
+    "BLOCKED_DATA": 0
+  },
+  "existing": [
+    {
+      "id": "TC01",
+      "capability": "Focused chart-first workspace",
+      "disposition": "IMPROVE",
+      "decision": "TerminalShell; retain chart ownership and focused composition after F01.",
+      "owner": "F01/D06",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC02",
+      "capability": "Existing Brain singleton",
+      "disposition": "RETAIN",
+      "decision": "One existing Brain; D14 owns context/action behavior.",
+      "owner": "D14",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/chrome/AppShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC03",
+      "capability": "Canonical symbol and initial preload identity",
+      "disposition": "IMPROVE",
+      "decision": "Preserve symbol precedence; make pending versus committed listing explicit.",
+      "owner": "D07/Terminal identity",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/terminal/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC04",
+      "capability": "Temporary deep links versus saved workspace",
+      "disposition": "RETAIN",
+      "decision": "Explicit symbol skips mm.ws restore and persistence; ordinary entry restores.",
+      "owner": "Terminal workspace",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC05",
+      "capability": "Nine chart types",
+      "disposition": "RETAIN",
+      "decision": "All exact registry IDs; no generic candles-only redesign.",
+      "owner": "Chart owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC06",
+      "capability": "Nineteen gated timeframes and favorites",
+      "disposition": "IMPROVE",
+      "decision": "Keep all functional phone intervals, actual server/market reasons and 3D startup rules.",
+      "owner": "Chart/data owners",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/startTf.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC07",
+      "capability": "1D/5D/1M/3M/6M/YTD/1Y/5Y/All ranges and Go to date",
+      "disposition": "RETAIN",
+      "decision": "Keep chart range/date controls reachable in compact layouts.",
+      "owner": "Chart owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/ChartPanel.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC08",
+      "capability": "2D/3D listed-session phase",
+      "disposition": "RETAIN",
+      "decision": "Use published session_anchor; no invented global IPO phase from truncated bars.",
+      "owner": "Ingest/chart",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/ingest/session_anchor.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC09",
+      "capability": "Regular/extended/24h session modes",
+      "disposition": "RETAIN",
+      "decision": "Respect region/provider/operator support and source evidence.",
+      "owner": "Intraday owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/intraday/route.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC10",
+      "capability": "99 canonical drawing tools",
+      "disposition": "RETAIN",
+      "decision": "Keep registry, point grammar, anchors and capabilities; full list below.",
+      "owner": "Drawing owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/drawingTools.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC11",
+      "capability": "Cursor, keep-active, magnet, lock/hide/delete, recent/starred drawing controls",
+      "disposition": "RETAIN",
+      "decision": "Phone recent-nine and desktop starred store remain distinct; preserve drawing styles.",
+      "owner": "Drawing owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/drawingTaxonomy.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC12",
+      "capability": "Keyboard and command palette",
+      "disposition": "IMPROVE",
+      "decision": "Retain exact bindings; fix advertised rectangle shortcut and text/IME/modal parity.",
+      "owner": "Chart/palette",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/commandPalette/catalog.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC13",
+      "capability": "29 classic indicator IDs and settings",
+      "disposition": "RETAIN",
+      "decision": "Keep overlay/subpane semantics, hidden state and parameters; _lab remains internal.",
+      "owner": "Indicator owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/indicators.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC14",
+      "capability": "Five suites and 31 module references",
+      "disposition": "RETAIN",
+      "decision": "Preserve tiers/defaults/settings; eager metadata, lazy computation.",
+      "owner": "Suite owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/suites/meta.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC15",
+      "capability": "Comparisons and MTF controls",
+      "disposition": "RETAIN",
+      "decision": "Retain symbol/config/normalization owner and reachable controls.",
+      "owner": "Terminal workspace",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC16",
+      "capability": "1/2/4 pane split and active-pane behavior",
+      "disposition": "RETAIN",
+      "decision": "Existing pane graph/arrangement; no second chart for context toggles.",
+      "owner": "Terminal workspace",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/layoutConfig.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC17",
+      "capability": "Calendar crosshair/window linking A/B/C",
+      "disposition": "RETAIN",
+      "decision": "Same-TF only; do not link symbol/TF or raw logical indices.",
+      "owner": "paneSync owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/paneSync.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC18",
+      "capability": "Replay and historical context",
+      "disposition": "RETAIN",
+      "decision": "Preserve single-chart validity, historical cutoff and no drawing mutations.",
+      "owner": "Chart owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/ChartPanel.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC19",
+      "capability": "Day Trade Mode and separate snapshot",
+      "disposition": "RETAIN",
+      "decision": "Keep DTM state and shortcuts outside general layout replacement.",
+      "owner": "Terminal workspace",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC20",
+      "capability": "Detect and timeframe-specific auto drawings",
+      "disposition": "RETAIN",
+      "decision": "Transient auto drawings distinct from shared human drawings.",
+      "owner": "ChartPane owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/ChartPane.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC21",
+      "capability": "Table/research workspace modes",
+      "disposition": "RETAIN",
+      "decision": "Preserve destination ownership; chart context not forced into excluded mode.",
+      "owner": "Terminal workspace",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC22",
+      "capability": "Watchlists, reorder, flags, notes and column sizing",
+      "disposition": "RETAIN",
+      "decision": "Existing owner-scoped state; unknown inventory must not trigger empty seeding.",
+      "owner": "D23/Terminal watchlist",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC23",
+      "capability": "Feature-flagged ticker news rail",
+      "disposition": "RETAIN",
+      "decision": "Keep actual flag/data owner; no invented always-on source.",
+      "owner": "News/Terminal",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/terminal/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC24",
+      "capability": "Layout create/save/load and revision outcomes",
+      "disposition": "IMPROVE",
+      "decision": "Keep exact layoutConfig fields, legacy no-claim behavior, conflict/uncertain states.",
+      "owner": "Layout API owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/layoutConfig.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC25",
+      "capability": "Resizable rail, focus/maximize and scroll",
+      "disposition": "IMPROVE",
+      "decision": "Source clamp300\u2013520, frame-coalesced resize, retained logical range; keyboard alternative.",
+      "owner": "Chart/F01",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/ChartPanel.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC26",
+      "capability": "Chart Context reader, bar stepping, disclosures",
+      "disposition": "IMPROVE",
+      "decision": "Reuse Paper 1K9F-0/1KNZ-0; preserve exact bar stepping, Latest reset, re-enable, layer switches, candle settings, Useful/Unclear feedback and Hide reader; explicit local selection/time basis.",
+      "owner": "D06/reader",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/VisualIntelligencePanel.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC27",
+      "capability": "Data-origin/adjustment/quality detail",
+      "disposition": "IMPROVE",
+      "decision": "Preserve known/unknown/refused/partial; no verified badge from descriptive evidence.",
+      "owner": "Data provenance",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/dataOrigin.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC28",
+      "capability": "Regular and fast quote polling",
+      "disposition": "RETAIN",
+      "decision": "6s regular, eligible1s fast; no invented WebSocket; keep hidden-tab/null rules.",
+      "owner": "Quote owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC29",
+      "capability": "Current calendar and historical exclusion",
+      "disposition": "IMPROVE",
+      "decision": "Fund clock visible; calendar withheld in replay/history; honest unavailable/retry.",
+      "owner": "Fund/reader",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/visualIntelligence.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC30",
+      "capability": "Intelligence Summary/Oracle/Research/Activity and focus",
+      "disposition": "IMPROVE",
+      "decision": "Reuse existing Paper panes; preserve chart return and separate source readouts.",
+      "owner": "D06/D07",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/OracleDash.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC31",
+      "capability": "15 financial/research panes and analyst alias",
+      "disposition": "RETAIN",
+      "decision": "finPages import-free leaf; analyst\u2192forecast; retired mastermind pane not revived.",
+      "owner": "D07/Terminal",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/finPages.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC32",
+      "capability": "Oracle signal history, filters, metrics and curve",
+      "disposition": "IMPROVE",
+      "decision": "Keep full history, known_ts, era/window/cost/validation caveats; no probability fiction.",
+      "owner": "Signal/backtest owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/OracleDash.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC33",
+      "capability": "Research conviction, technical/sector context and full research",
+      "disposition": "IMPROVE",
+      "decision": "Separate dated research, [-1,1] technical score and 0\u2013100 conviction; no silent BUY upgrade.",
+      "owner": "D07/research",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/ingest/pull_macro_intel.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC34",
+      "capability": "Market risk inside Intelligence",
+      "disposition": "IMPROVE",
+      "decision": "Separate market clock and qualification from stock's historical metrics.",
+      "owner": "Risk owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/marketRisk.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC35",
+      "capability": "Safe origin return and embed close",
+      "disposition": "IMPROVE",
+      "decision": "Preserve originNav exact href/trusted parent; viewport restoration remains separate gap.",
+      "owner": "F01/D07/D08/D22",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/originNav.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC36",
+      "capability": "Theme, language and settings",
+      "disposition": "RETAIN",
+      "decision": "Use existing preferences; F02 released semantic mapping; no second persistence system.",
+      "owner": "F02/settings",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC37",
+      "capability": "Guest, paid and account-switch boundaries",
+      "disposition": "IMPROVE",
+      "decision": "Retain server entitlement and UUID epochs; distinguish denied, expiry, unavailable.",
+      "owner": "D25/auth owners",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/terminal/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC38",
+      "capability": "Image download and clipboard snapshot",
+      "disposition": "RETAIN",
+      "decision": "Keep existing keyboard/control paths and visible copy failure recovery.",
+      "owner": "Chart capture",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/ChartPanel.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "TC39",
+      "capability": "Private evidence review capture",
+      "disposition": "RETAIN",
+      "decision": "Local-only scene-bound capture, optional annotations off, before/after/painted evidence.",
+      "owner": "Capture owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/chartCapture.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "PU01",
+      "capability": "Public PNG upload and share URL",
+      "disposition": "IMPROVE",
+      "decision": "Keep static share,4MiBPNG validation/rate limit; explicit pending/uncertain/clipboard outcomes.",
+      "owner": "D26/D25/snapshot",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/snapshot/route.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "PU02",
+      "capability": "Anonymous /x/<slug> rendering",
+      "disposition": "IMPROVE",
+      "decision": "Keep PNG and exact slug grammar; current missing/network conflation needs honest unavailable copy.",
+      "owner": "D26/D25",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/x/[slug]/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "EM01",
+      "capability": "Anonymous compact daily chart",
+      "disposition": "IMPROVE",
+      "decision": "No AppShell/Pine/auth store; expose real final-bar asOf and source states.",
+      "owner": "Embed owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/embed/chartData.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "EM02",
+      "capability": "Embed parser and visual variants",
+      "disposition": "RETAIN",
+      "decision": "symbol/theme/lang/transparent/range/hdr/clean/fs semantics and narrow symbol grammar.",
+      "owner": "Embed owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/embed/chart/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "EM03",
+      "capability": "Embed CTA/native fullscreen/scoped framing",
+      "disposition": "IMPROVE",
+      "decision": "Keep exact CSP ancestors; meaningful browser fallback; don't imply restored range/bar.",
+      "owner": "Embed/F01",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/EmbedChart.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC01",
+      "capability": "Owner-only scripts list and locked flagship",
+      "disposition": "RETAIN",
+      "decision": "Signed-in editor; read/run versus paid save boundary; list503 is not empty.",
+      "owner": "Scripts/D25",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/(shell)/scripts/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC02",
+      "capability": "Script editor and synthetic diagnostic",
+      "disposition": "IMPROVE",
+      "decision": "Preserve worker budget/supersession; label130syntheticbars, not backtest.",
+      "owner": "Pine owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/PineEditor.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC03",
+      "capability": "Paid save with exact timestamp CAS",
+      "disposition": "IMPROVE",
+      "decision": "Matching owner/ID/stamp receipt; newer buffer stays dirty; conflict/uncertain recovery.",
+      "owner": "Scripts API",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/scripts/save/route.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC04",
+      "capability": "Dirty buffer and navigation guard",
+      "disposition": "RETAIN",
+      "decision": "Keep mounted same-owner buffer and explicit save/discard/cancel; preserve /scripts?id history/dirty-switch guard. Cross-navigation auth recovery requires a supported handoff.",
+      "owner": "Pine owner",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/PineEditor.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC05",
+      "capability": "Owner delete",
+      "disposition": "RETAIN",
+      "decision": "No paid gate added; explicit target and uncertain-outcome list reconciliation.",
+      "owner": "Scripts API",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/scripts/delete/route.ts",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SC06",
+      "capability": "Add saved script to chart",
+      "disposition": "IMPROVE",
+      "decision": "Preserve one-shot addScript resolution; explain dirty free-tier blocked save; context extension pending.",
+      "owner": "Scripts/Terminal",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/PineEditor.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC01",
+      "capability": "Market Structure overview and changes/watch band",
+      "disposition": "IMPROVE",
+      "decision": "Keep context-only state/changes; source-level clocks instead of global freshness.",
+      "owner": "Macro producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/market_structure.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC02",
+      "capability": "Dealer exposure, flip and history",
+      "disposition": "IMPROVE",
+      "decision": "Keep units/coverage/history; null gaps not zero; latest flip separate from locked week.",
+      "owner": "Macro producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_market_structure.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC03",
+      "capability": "VC and CTA modeled flows",
+      "disposition": "RETAIN",
+      "decision": "Separate dollar-scaled VC and dimensionless CTA; no combined positioning score.",
+      "owner": "Macro model owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/systematic_flows.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC04",
+      "capability": "Stock-picker correlation/dispersion history",
+      "disposition": "IMPROVE",
+      "decision": "Keep index units and percentile provenance; reconcile504vs500 threshold window.",
+      "owner": "Macro producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/market_structure.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC05",
+      "capability": "Realized volatility and VIX curve",
+      "disposition": "RETAIN",
+      "decision": "Annualized fraction\u2192percent; curve M6\u2212M1 points; partial blocks stand alone.",
+      "owner": "Macro producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_market_structure.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC06",
+      "capability": "Friday-locked weekly implied bands",
+      "disposition": "IMPROVE",
+      "decision": "Preserve model/term-structure assumption; no invented2sigma fallback.",
+      "owner": "Macro producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/market_structure.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "MC07",
+      "capability": "Three independent Market historical range selectors",
+      "disposition": "RETAIN",
+      "decision": "Exact observation presets/local keys and live status; All means embedded\u2264500rows.",
+      "owner": "Macro UI",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/market_structure.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA01",
+      "capability": "Stage screener filters/sort/tags/export",
+      "disposition": "IMPROVE",
+      "decision": "Keep all controls and600row cap; CSV needs units/provenance.",
+      "owner": "Stage owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA02",
+      "capability": "Stage local watchlist",
+      "disposition": "RETAIN",
+      "decision": "Preserve sga_watch; never silently merge into Terminal account watchlist.",
+      "owner": "Stage/D23",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA03",
+      "capability": "Expanded stage sketch",
+      "disposition": "IMPROVE",
+      "decision": "Keep explicit idealized illustration; no historical-candle claim.",
+      "owner": "Stage owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA04",
+      "capability": "Weekly/default and daily Stage board",
+      "disposition": "IMPROVE",
+      "decision": "Both currently weekly-native classification; disclose cadence without inventing daily model.",
+      "owner": "Stage producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/stage_analysis.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA05",
+      "capability": "Industry ranks/heatmaps/earnings heatmap/flows",
+      "disposition": "RETAIN",
+      "decision": "Keep score/count modes and industry/sub-industry grain.",
+      "owner": "Stage owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA06",
+      "capability": "Earnings calls/season/comparison/reader",
+      "disposition": "IMPROVE",
+      "decision": "Keep filters and summary drawer; no full-transcript claim or LLM ranking authority.",
+      "owner": "Earnings owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/earnings_qual.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA07",
+      "capability": "Alt-data sources and qualifiers",
+      "disposition": "RETAIN",
+      "decision": "Google/Reddit/Wikipedia/TikTok clocks; seed/current distinction.",
+      "owner": "Alt-data owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA08",
+      "capability": "Research search/snippets/model badges/full-note links",
+      "disposition": "RETAIN",
+      "decision": "Keep240card cap and reachable source link; snippet isn't full report.",
+      "owner": "Research owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA09",
+      "capability": "Stage population, stale/unknown/retired provenance",
+      "disposition": "IMPROVE",
+      "decision": "Keep tri-valued currentness and target-week/source-tape; fix retry/publication ambiguity.",
+      "owner": "Stage producer",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/stage_analysis.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SA10",
+      "capability": "Six Stage hash tabs and regional access",
+      "disposition": "RETAIN",
+      "decision": "US enabled; other regional controls explain lack of coverage; combined-index rules.",
+      "owner": "Stage/F03",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/stage_analysis.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SP01",
+      "capability": "Mechanical allocation and risk legs",
+      "disposition": "IMPROVE",
+      "decision": "Keep confirmation/redeployment/minhold rules; missing data not casually zero-risk.",
+      "owner": "D12/quant owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/equity_alloc.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SP02",
+      "capability": "Three-panel strategy/ranges/growth/drawdown",
+      "disposition": "RETAIN",
+      "decision": "Keep1Y/5Y/10Y/All,5Ydefault,linkedaxes,allocationmarkers,loggrowth.",
+      "owner": "S&P UI owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_spvector.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SP03",
+      "capability": "Historical scorecard and after-tax scenario",
+      "disposition": "IMPROVE",
+      "decision": "Retain next-bar3bps/carry/window/tax qualifiers; verify evidence before validation claims.",
+      "owner": "D12/quant owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/validation.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SP04",
+      "capability": "Advisory shadow overlay and forward log",
+      "disposition": "IMPROVE",
+      "decision": "Resolve shadow/log-only versus active/live copy; no new sizing authority.",
+      "owner": "D12/overlay owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_spvector.py",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "SP05",
+      "capability": "Method/source explanations and as-of",
+      "disposition": "IMPROVE",
+      "decision": "Separate SPY session, macro leg clock and generation; validation assertions need evidence.",
+      "owner": "D12/market-source owner",
+      "source": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/spvector.html.j2",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "DV01",
+      "capability": "Chart engine bench",
+      "disposition": "RETAIN",
+      "decision": "Developer-only; production requires explicit NEXT_PUBLIC_CHART_BENCH=1; keep out of nav.",
+      "owner": "Chart engineer/F03",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/dev/chart-bench/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "DV02",
+      "capability": "Conductor theater",
+      "disposition": "RETAIN",
+      "decision": "Production notFound; synthetic data, reduced-motion/narrow harness; no live proof.",
+      "owner": "Chart engineer/F03",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/dev/theater/page.tsx",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "PA01",
+      "capability": "Original top-edge Refraction material",
+      "disposition": "RETAIN",
+      "decision": "Reuse original restrained edge only; rejected full-pane variants remain history.",
+      "owner": "D06/F02",
+      "source": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Z-0",
+      "reviewer_decision": "not reviewed; RIG draft"
+    }
+  ],
+  "proposals": [
+    {
+      "id": "NP01",
+      "capability": "Exact incoming interval/selected-bar URL acknowledgement",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Terminal navigation + D07/D08; current generic parser absent. Keep honest symbol-only entry.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "NP02",
+      "capability": "Exact origin row/scroll/selection restoration",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Origin owner + F01; accepted href exists, viewport handoff unproven.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "NP03",
+      "capability": "Restorable public share, expiry and revocation",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Snapshot/D25/D26 metadata lifecycle; current PNG-only interim.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "NP04",
+      "capability": "Broader embed listing grammar and full-chart context restore",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Embed/data/identity owners; require actual coverage and accepted navigation contract.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "NP05",
+      "capability": "Universal listing/currency/time/adjustment attestation",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Data producer/identity owners; base envelopes and descriptive intraday evidence do not supply it.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "NP06",
+      "capability": "Actual Stage historical candle drilldown or full transcript retrieval",
+      "disposition": "BLOCKED_DATA",
+      "dependency": "Stage/chart/earnings owners; retain labeled sketch and existing summary until a real source contract exists.",
+      "existing_feature": false,
+      "reviewer_decision": "not reviewed; RIG draft"
+    }
+  ]
+}
