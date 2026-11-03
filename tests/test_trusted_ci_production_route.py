@@ -21,10 +21,11 @@ def test_hosted_first_keeps_exact_main_owned_executor_as_pc_opt_in() -> None:
     jobs = workflow("ci.yml")["jobs"]
     trusted = jobs["trusted-ci"]
 
-    assert trusted == {
+    expected = {
         "name": "trusted-ci",
         "needs": "ci-plan",
         "if": (
+            "!cancelled() && needs.ci-plan.result == 'success' && "
             "needs.ci-plan.outputs.has_work == 'true' && "
             "needs.ci-plan.outputs.same_repository == 'true' && "
             "vars.CI_EXECUTION_ROUTE == 'pc'"
@@ -33,16 +34,20 @@ def test_hosted_first_keeps_exact_main_owned_executor_as_pc_opt_in() -> None:
             "mastermindx-market-intelligence/macro/.github/workflows/"
             "trusted-ci-executor.yml@main"
         ),
-        "with": {
+        "permissions": {"contents": "read", "pull-requests": "read"},
+    }
+    # Foundation installs the optional callee first; only the exact bridge
+    # may hand off verified plan outputs once protected support is installed.
+    if "with" in trusted:
+        expected["with"] = {
             "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
             "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
             "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
             "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
             "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
             "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
-        },
-        "permissions": {"contents": "read", "pull-requests": "read"},
-    }
+        }
+    assert trusted == expected
     assert "secrets" not in trusted
 
 

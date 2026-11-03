@@ -3441,7 +3441,7 @@ def _read_admitted_run(repo, token, admitted, repository_id):
 
 
 def prepare_shared_checkpoint(repo, read_token, number, *, repository_id,
-                              protected_controller_sha, current_run_id, current_run_attempt):
+                              protected_controller_sha, current_run_id, current_run_attempt, age_snapshot=None):
     """Construct replacement coverage from complete authenticated original state.
 
     No caller-supplied record list, elapsed time or PR closure can retire a slot.
@@ -3458,7 +3458,7 @@ def prepare_shared_checkpoint(repo, read_token, number, *, repository_id,
             or len({c["id"] for c in comments}) != len(comments)):
         raise ValueError("no complete original comment coverage")
     records, demands = pr_admission_history(repo, read_token, number, comments,
-        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha,age_snapshot=age_snapshot)
     active = indexed_active_ci_runs(repo, read_token)
     if active is None:
         raise ValueError("active original-run census unavailable")
@@ -3480,7 +3480,7 @@ def prepare_shared_checkpoint(repo, read_token, number, *, repository_id,
 
 
 def shared_proof_workload(repo: str, token: str, *, repository_id: int,
-                          protected_controller_sha: str) -> SharedProofWorkload:
+                          protected_controller_sha: str, age_snapshot=None) -> SharedProofWorkload:
     """Load the incumbent label/PR record inventory and immutable receipts.
 
     Closed PRs retain their association. Missing index records, unreadable/expired
@@ -3488,19 +3488,22 @@ def shared_proof_workload(repo: str, token: str, *, repository_id: int,
     This function is read-only; even terminal observation never removes a label.
     """
     inventory = shared_admission_inventory(repo, token)
-    if inventory.mode != "shared" or not inventory.complete:
+    if inventory.mode != "shared" or not inventory.complete or inventory.indexing is not None:
         return SharedProofWorkload(False)
     runs = indexed_active_ci_runs(repo, token)
     if runs is None:
         return SharedProofWorkload(False)
     records = []
     try:
+        if age_snapshot is None:
+            age_snapshot,_=read_age_frontier(repo,token,repository_id=repository_id,protected_controller_sha=protected_controller_sha,inventory=inventory)
         for issue in inventory.issues:
             comments = fetch_issue_comments(repo, issue["number"], token, strict=True)
             if comments is None:
                 return SharedProofWorkload(False, tuple(runs))
             current, _demands = pr_admission_history(repo, token, issue["number"], comments,
-                repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+                repository_id=repository_id, protected_controller_sha=protected_controller_sha,age_snapshot=age_snapshot,
+                allow_empty=issue["number"] in dict(age_snapshot.covered_comments))
             records.extend(current)
         records = proof_admission.merge_records(records)
         if inventory.launch and not any(
@@ -3698,7 +3701,8 @@ def _shared_controller_authority(repo, token, *, repository_id, protected_contro
 
 
 def reserve_shared_admission(repo, read_token, write_token, demand, *, repository_id,
-                             protected_controller_sha, current_run_id, current_run_attempt):
+                             protected_controller_sha, current_run_id, current_run_attempt,
+                             decision=None):
     """Prepare one exact synthetic-merge proof in the incumbent serialized lane.
 
     Both authored and stale-base demand use the actual current merge object. A
@@ -3709,6 +3713,8 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
     The launch register is persisted BEFORE that upload; an ambiguous write is
     retained, never cleared or retried here. Fair eligibility is a caller duty.
     """
+    if decision is not None:
+        decision["capacity"] = {"evaluated": False}
     context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
                    current_run_id=current_run_id, current_run_attempt=current_run_attempt)
     if not _shared_controller_authority(repo, read_token, **context):
@@ -3722,7 +3728,8 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
         if (any(a.generation == demand.demand_id or
                 (a.pr_number == demand.pr_number and not a.settled) for a in workload.admissions)
                 or not proof_admission.capacity(workload.runs, workload.admissions,
-                    census_complete=workload.complete, records_complete=workload.complete)):
+                    census_complete=workload.complete, records_complete=workload.complete,
+                    decision=decision["capacity"] if decision is not None else None)):
             return AdmissionDispatchResult("held", detail="shared capacity or outstanding generation")
         root = f"{GITHUB_API}/repos/{repo}"
         register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
@@ -3907,7 +3914,7 @@ def finalize_shared_admission(repo, read_token, write_token, reference, *, repos
 def dispatch_admitted_pr_proof(
     repo: str, read_token: str, write_token: str, reference: dict[str, Any], *,
     repository_id: int, protected_controller_sha: str,
-    current_run_id: str, current_run_attempt: int,
+    current_run_id: str, current_run_attempt: int, decision=None,
 ) -> AdmissionDispatchResult:
     """Execute one already reserved, artifact-authenticated original dispatch.
 
@@ -3918,6 +3925,8 @@ def dispatch_admitted_pr_proof(
     returned run ID still needs an immutable post-dispatch receipt before the
     singleton pointer can be cleared. No successful check is created here.
     """
+    if decision is not None:
+        decision["capacity_recheck"] = {"evaluated": False}
     context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
                    current_run_id=current_run_id, current_run_attempt=current_run_attempt)
     if (not _shared_controller_authority(repo, read_token, **context)
@@ -3939,7 +3948,8 @@ def dispatch_admitted_pr_proof(
                                      protected_controller_sha=protected_controller_sha)
     if not proof_admission.reserved_dispatch_allowed(
             workload.runs, workload.admissions, admitted,
-            census_complete=workload.complete, records_complete=workload.complete):
+            census_complete=workload.complete, records_complete=workload.complete,
+            decision=decision["capacity_recheck"] if decision is not None else None):
         return AdmissionDispatchResult("held", admitted, "reserved workload no longer fits true cap8")
     encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
     register_url = f"{GITHUB_API}/repos/{repo}/labels/{encoded}"
@@ -4061,7 +4071,52 @@ def admission_index_writer(comment):
     return False
 
 
-def pr_admission_history(repo, token, number, comments, *, repository_id, protected_controller_sha, reference_catalog=None, allow_empty=False):
+def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
+                      inventory=None, comments_by_pr=None):
+    """Existing PR indexes supply historical age only; closed anchors persist."""
+    inventory=inventory or shared_admission_inventory(repo,token)
+    if not inventory.complete or inventory.indexing is not None:
+        raise ValueError('age inventory incomplete or original index unsettled')
+    comments=dict(comments_by_pr or {})
+    for issue in inventory.issues:
+        number=issue['number']
+        if number not in comments:
+            comments[number]=fetch_issue_comments(repo,number,token,strict=True)
+    entries=[]
+    for number,rows in comments.items():
+        if rows is None:raise ValueError('age comments incomplete')
+        for c in rows:
+            if not isinstance(c,dict):raise ValueError('age comment row malformed')
+            body=c.get('body')
+            if not isinstance(body,str) or not body.startswith(DEMAND_COMMENT_PREFIX):continue
+            if not admission_index_writer(c):continue
+            if len(body)>4096:raise ValueError('age index oversized')
+            reference=json.loads(body[len(DEMAND_COMMENT_PREFIX):],object_pairs_hook=proof_admission._unique_object)
+            entries.append((number,c.get('id'),reference))
+    cache={};controls={protected_controller_sha}
+    def load(reference):
+        if not isinstance(reference,dict):raise ValueError('age reference malformed')
+        control=reference.get('controller_sha')
+        if not isinstance(control,str) or not re.fullmatch('[0-9a-f]{40}',control):raise ValueError('age control missing')
+        if control not in controls:
+            status,row=_request('GET',f'{GITHUB_API}/repos/{repo}/compare/{control}...{protected_controller_sha}?per_page=1',token)
+            if (status!=200 or not isinstance(row,dict) or row.get('status') not in {'ahead','identical'}
+                    or (row.get('base_commit') or {}).get('sha')!=control
+                    or (row.get('merge_base_commit') or {}).get('sha')!=control):
+                raise ValueError('age controller is not protected ancestry')
+            controls.add(control)
+        key=json.dumps(reference,sort_keys=True)
+        if key not in cache:
+            cache[key]=proof_admission.authenticate_age_snapshot(**_receipt_context_from_ref(repo,token,reference,
+                repository_id=repository_id,protected_controller_sha=control))
+        return cache[key]
+    snapshot=proof_admission.fold_age_snapshots(entries,load)
+    observed={n:c for n,c in snapshot.covered_comments if n in comments}
+    for number,comment_id,_ in entries:observed[number]=max(observed.get(number,0),comment_id)
+    return snapshot,observed
+
+
+def pr_admission_history(repo, token, number, comments, *, repository_id, protected_controller_sha, reference_catalog=None, allow_empty=False, age_snapshot=None):
     """Read bounded original records after authenticated complete PR coverage.
 
     Old artifacts below a verified checkpoint need not be reopened. No expired or
@@ -4075,6 +4130,7 @@ def pr_admission_history(repo, token, number, comments, *, repository_id, protec
                 CHECKPOINT_COMMENT_PREFIX: "checkpoint"}
     entries = []
     seen = set()
+    age_coverage=dict(age_snapshot.covered_comments) if age_snapshot is not None else {}
     for comment in comments:
         if not isinstance(comment, dict):
             raise ValueError("malformed PR comment")
@@ -4091,6 +4147,8 @@ def pr_admission_history(repo, token, number, comments, *, repository_id, protec
             raise ValueError("malformed original admission index")
         seen.add(comment_id)
         prefix, kind = matching[0]
+        if kind == "demands" and comment_id <= age_coverage.get(number,0):
+            continue  # authenticated age coverage NEVER covers admission records
         reference = json.loads(body[len(prefix):], object_pairs_hook=proof_admission._unique_object)
         entries.append((comment_id, (kind, reference)))
     controls = {protected_controller_sha}
@@ -4124,6 +4182,8 @@ def pr_admission_history(repo, token, number, comments, *, repository_id, protec
         checkpoint = proof_admission.select_checkpoint(checkpoints, number)
     records = list(checkpoint.admissions + checkpoint.settled) if checkpoint else []
     demands = list(checkpoint.demands) if checkpoint else []
+    if age_snapshot is not None:
+        demands.extend(d for d in age_snapshot.demands if d.pr_number == number)
     uncovered = proof_admission.references_after_checkpoint(entries, checkpoint)
     for _comment_id, (kind, reference) in sorted(uncovered):
         if kind == "checkpoint":
@@ -4157,6 +4217,7 @@ class SharedAdmissionInventory:
     issues: tuple[dict[str, Any], ...] = ()
     launch: tuple[int, str] | None = None
     launch_started: bool = False
+    indexing: tuple[int, int, int, int] | None = None
 
 
 def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventory:
@@ -4179,7 +4240,11 @@ def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventor
             return SharedAdmissionInventory("legacy", False)
         launch = None
         launch_started = False
-        if description != "a2 idle":
+        indexing = None
+        index_match=re.fullmatch(r"a2 b=([1-9][0-9]*) p=([1-9][0-9]*) i=([0123]) t=([0-9]+) s=indexing",str(description))
+        if index_match:
+            indexing=tuple(int(v) for v in index_match.groups())
+        elif description != "a2 idle":
             match = re.fullmatch(r"a2 p=([1-9][0-9]*) g=([0-9a-f]{12}) s=(prepared|started|completing)", str(description))
             if not match:
                 return SharedAdmissionInventory("unknown", False)
@@ -4205,15 +4270,16 @@ def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventor
                 break
         else:
             return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
-        if launch and launch[0] not in issues:
-            status, issue = _request("GET", f"{GITHUB_API}/repos/{repo}/issues/{launch[0]}", token)
+        owner=launch[0] if launch else indexing[1] if indexing else None
+        if owner is not None and owner not in issues:
+            status, issue = _request("GET", f"{GITHUB_API}/repos/{repo}/issues/{owner}", token)
             if (status != 200 or not isinstance(issue, dict)
-                    or type(issue.get("number")) is not int or issue["number"] != launch[0]
+                    or type(issue.get("number")) is not int or issue["number"] != owner
                     or issue.get("state") not in {"open", "closed"}
                     or not isinstance(issue.get("pull_request"), dict)):
                 return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
-            issues[launch[0]] = issue
-        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started)
+            issues[owner] = issue
+        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started, indexing)
     except RateLimited:
         raise
     except Exception:

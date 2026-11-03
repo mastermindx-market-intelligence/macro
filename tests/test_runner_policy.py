@@ -398,7 +398,7 @@ def test_pull_request_target_is_never_registerable(tmp_path: Path) -> None:
 def test_trusted_ci_authority_is_the_only_allowed_pull_request_target(
     tmp_path: Path,
 ) -> None:
-    """The live controller is allowed; a second pull_request_target file is not."""
+    """Governed controllers pass; cloning one into another PRT file does not."""
     root, registry, workflows = fixture_tree(tmp_path)
     result = run_guard(root, registry, workflows)
     assert result.returncode == 0, result.stdout + result.stderr
@@ -1354,3 +1354,151 @@ def test_the_render_reservation_never_silently_claims_a_routable_slot() -> None:
                 f"pc-render claims label {label!r} that no host carries; declare it "
                 "in missing_labels so the reservation cannot read as live capacity"
             )
+
+
+# Governed admission is a protected workflow composition, not a general PRT or
+# caller-input exemption. These mutations exercise each new acceptance boundary.
+def _admission_policy_module():
+    from scripts import check_runner_policy
+    return check_runner_policy
+
+
+@pytest.mark.parametrize('stage', ['foundation', 'bridge', 'cutover'])
+def test_admission_policy_accepts_only_governed_staged_source(tmp_path, stage):
+    policy = _admission_policy_module()
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / 'ci.yml'
+    document = yaml.safe_load(path.read_text())
+    if stage != 'foundation':
+        document['jobs']['trusted-ci']['with'] = dict(policy.ADMITTED_CALL_BINDINGS)
+    if stage == 'cutover':
+        document.get('on', document.get(True)).pop('pull_request')
+    path.write_text(yaml.safe_dump(document, sort_keys=False))
+    assert policy.evaluate(root, registry, workflows) == []
+
+
+@pytest.mark.parametrize('field,value', [
+    ('uses', 'mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@candidate'),
+    ('if', 'true'), ('secrets', 'inherit'),
+    ('permissions', {'contents':'write','pull-requests':'read'}),
+    ('with', {'admitted_head':'${{ inputs.subject_head_sha }}'}),
+    ('with', {}),
+])
+def test_admission_caller_never_relaxes_exact_pc_call(field, value):
+    policy = _admission_policy_module()
+    ci = yaml.safe_load((WORKFLOWS/'ci.yml').read_text())
+    ci['jobs']['trusted-ci'][field] = value
+    assert not policy._trusted_call_is_exact(ci['jobs']['trusted-ci'])
+
+
+@pytest.mark.parametrize('mutation', ['missing-resolver-dependency','resolver-guard','candidate-control',
+    'persist-token','raw-resolver-input','forged-same-repository','forged-head-output','missing-merge-parent-check'])
+def test_admission_caller_requires_authenticated_output_graph(mutation):
+    policy = _admission_policy_module()
+    ci = yaml.safe_load((WORKFLOWS/'ci.yml').read_text())
+    resolver=ci['jobs']['ci-admission']; plan=ci['jobs']['ci-plan']
+    if mutation=='missing-resolver-dependency': plan['needs']=[]
+    elif mutation=='resolver-guard': resolver['if']='false'
+    elif mutation=='candidate-control': resolver['steps'][0]['with']['ref']='${{ github.event.pull_request.head.sha }}'
+    elif mutation=='persist-token': resolver['steps'][0]['with']['persist-credentials']=True
+    elif mutation=='raw-resolver-input': resolver['outputs']['subject_head']='${{ inputs.subject_head_sha }}'
+    elif mutation=='forged-same-repository': plan['outputs']['same_repository']='true'
+    elif mutation=='forged-head-output': plan['outputs']['subject_head_sha']='${{ github.sha }}'
+    else:
+        identity=policy._step_with_id(plan,'identity')
+        identity['run']=identity['run'].replace('"$subject_head_sha" != "$ADMITTED_HEAD"','false')
+    assert not policy._admitted_caller_graph_exact(ci)
+
+
+@pytest.mark.parametrize('mutation', ['candidate-ref','persist-token','new-job','global-env','cancel-active',
+    'per-pr-group','missing-ready','skip-prepared','foreign-read-token','foreign-check-token',
+    'untrusted-command','reordered-upload','extra-upload','wrong-trigger','overwrite-receipt',
+    'job-container','job-service'])
+def test_shared_controller_wake_cannot_execute_candidate_or_skip_reservation(mutation):
+    policy = _admission_policy_module()
+    doc=yaml.safe_load((WORKFLOWS/'merge-on-green.yml').read_text())
+    job=doc['jobs']['sweep']; steps=job['steps']
+    if mutation=='candidate-ref': steps[0]['with']['ref']='${{ github.event.pull_request.head.sha }}'
+    elif mutation=='persist-token': steps[0]['with']['persist-credentials']=True
+    elif mutation=='new-job': doc['jobs']['candidate']={'runs-on':'ubuntu-latest','steps':[{'run':'echo untrusted'}]}
+    elif mutation=='global-env': doc['env']={'PATH':'${{ github.event.pull_request.title }}'}
+    elif mutation=='cancel-active': job['concurrency']['cancel-in-progress']=True
+    elif mutation=='per-pr-group': job['concurrency']['group']='per-pr-${{ github.event.pull_request.number }}'
+    elif mutation=='missing-ready': steps[5]['if']=steps[5]['if'].replace("steps.admission_prepare.outputs.ready == 'true'",'true')
+    elif mutation=='skip-prepared': steps[8]['if']='true'
+    elif mutation=='foreign-read-token': steps[3]['env']['READ_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
+    elif mutation=='foreign-check-token': steps[2]['env']['CHECKS_TOKEN']='${{ secrets.ADMIN_GH_TOKEN }}'
+    elif mutation=='untrusted-command': steps[8]['run']='python3 scripts/${{ github.event.pull_request.title }}'
+    elif mutation=='reordered-upload': steps[6],steps[8]=steps[8],steps[6]
+    elif mutation=='extra-upload': steps.append({'uses':'actions/upload-artifact@v4'})
+    elif mutation=='wrong-trigger': doc.get('on',doc.get(True))['pull_request_target']['branches']=['*']
+    elif mutation=='job-container': job['container']='untrusted/image:latest'
+    elif mutation=='job-service': job['services']={'untrusted':{'image':'untrusted/image:latest'}}
+    else: steps[6]['with']['overwrite']=True
+    assert policy._shared_admission_controller_r2_findings('.github/workflows/merge-on-green.yml',doc)
+
+
+@pytest.mark.parametrize('declaration', [
+    {'type':'string','required':True,'default':''},
+    {'type':'string','required':0,'default':''},
+    {'type':'boolean','required':False,'default':''},
+    {'type':'string','required':False,'default':'forged'},
+    {'type':'string','required':False},
+])
+def test_admitted_executor_inputs_are_only_optional_empty_strings(tmp_path,declaration):
+    policy=_admission_policy_module()
+    root,registry,workflows=fixture_tree(tmp_path)
+    path=workflows/'trusted-ci-executor.yml';doc=yaml.safe_load(path.read_text())
+    doc.get('on',doc.get(True))['workflow_call']['inputs']['admitted_head']=declaration
+    path.write_text(yaml.safe_dump(doc,sort_keys=False))
+    findings=policy.evaluate(root,registry,workflows)
+    assert any(f.rule=='R13' and 'optional verified-output' in f.message for f in findings)
+
+
+@pytest.mark.parametrize('mutation', ['caller-definition','fork-read','ordered-parents','attempt',
+    'input-substitution','ref-substitution','candidate-control','capsule-digest','late-capsule'])
+def test_admitted_executor_preserves_fresh_source_and_capsule_binding(mutation):
+    policy=_admission_policy_module()
+    doc=yaml.safe_load((WORKFLOWS/'trusted-ci-executor.yml').read_text())
+    jobs=doc['jobs']; gate=policy._step_with_id(jobs['trust-gate'],'admit')
+    plan=jobs['plan']; reread=policy._step_with_id(plan,'admitted-ref')
+    if mutation=='caller-definition':gate['run']=gate['run'].replace('test "$CALLER_WORKFLOW_SHA" = "$CALLER_SHA"','true')
+    elif mutation=='fork-read':reread['run']=reread['run'].replace('value["repo"]["id"] == repository_id','True')
+    elif mutation=='ordered-parents':reread['run']=reread['run'].replace('== [base, head]','== [head, base]')
+    elif mutation=='attempt':reread['run']=reread['run'].replace('"GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",','"GITHUB_RUN_ID",')
+    elif mutation=='input-substitution':reread['env']['CALLER_SHA']='${{ inputs.admitted_head }}'
+    elif mutation=='ref-substitution':policy._step_with_id(plan,'ref')['env']['ADMITTED_HEAD']='${{ inputs.admitted_head }}'
+    elif mutation=='candidate-control':plan['steps'][0]['with']['ref']='${{ inputs.admitted_head }}'
+    else:
+        steps=jobs['trusted-pack']['steps']
+        verify=next(s for s in steps if s.get('name')=='verify control bundle before any candidate execution')
+        if mutation=='capsule-digest':verify['env']['EXPECTED_CONTROL_DIGEST']='${{ inputs.digest }}'
+        else:steps.remove(verify);steps.append(verify)
+    assert not policy._admitted_executor_graph_exact(doc)
+
+
+@pytest.mark.parametrize("workflow,job_id,step_id", [
+    ("ci.yml", "ci-admission", "resolve"),
+    ("ci.yml", "ci-plan", "identity"),
+    ("trusted-ci-executor.yml", "trust-gate", "admit"),
+    ("trusted-ci-executor.yml", "plan", "admitted-ref"),
+    ("trusted-ci-executor.yml", "trusted-pack", "verify control bundle before any candidate execution"),
+    ("trusted-ci-executor.yml", "legacy-hosted-pack", "verify control bundle before any candidate execution"),
+])
+@pytest.mark.parametrize("mutation", ["container", "job-ignore-failure", "step-ignore-failure",
+    "job-defaults", "step-shell", "step-directory"])
+def test_admission_full_policy_rejects_execution_modifier(tmp_path, workflow, job_id, step_id, mutation):
+    policy = _admission_policy_module()
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / workflow
+    doc = yaml.safe_load(path.read_text())
+    job = doc["jobs"][job_id]
+    step = next(s for s in job["steps"] if s.get("id", s.get("name")) == step_id)
+    if mutation == "container": job["container"] = "untrusted/image:latest"
+    elif mutation == "job-ignore-failure": job["continue-on-error"] = True
+    elif mutation == "step-ignore-failure": step["continue-on-error"] = True
+    elif mutation == "job-defaults": job["defaults"] = {"run": {"shell": "bash {0} || true"}}
+    elif mutation == "step-shell": step["shell"] = "bash {0} || true"
+    else: step["working-directory"] = "untrusted"
+    path.write_text(yaml.safe_dump(doc, sort_keys=False))
+    assert policy.evaluate(root, registry, workflows), (workflow, job_id, mutation)

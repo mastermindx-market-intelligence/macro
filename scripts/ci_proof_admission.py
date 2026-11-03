@@ -63,7 +63,8 @@ def _admission_valid(a):
     )
 
 
-def capacity(runs, admissions, *, census_complete, records_complete, legacy_reservations=0):
+def capacity(runs, admissions, *, census_complete, records_complete, legacy_reservations=0,
+             decision=None):
     """Conservative free slots, never a permission to dispatch without custody.
 
     Inputs must be authenticated by the caller. Completeness includes all active
@@ -72,6 +73,13 @@ def capacity(runs, admissions, *, census_complete, records_complete, legacy_rese
     settled flag means exact terminal original-run/attempt evidence was validated;
     elapsed time or a closed/superseded PR is never settlement.
     """
+    # Optional observation only: never recompute or grant capacity from this data.
+    # Production callers already bound the inventory; do not truncate identities.
+    if decision is not None:
+        decision.clear()
+        decision.update(evaluated=True, cap=CAP, census_complete=census_complete is True,
+                        records_complete=records_complete is True, validated=False,
+                        free_slots=0)
     if (census_complete is not True or records_complete is not True
             or type(legacy_reservations) is not int or legacy_reservations < 0):
         return 0
@@ -88,6 +96,7 @@ def capacity(runs, admissions, *, census_complete, records_complete, legacy_rese
         identities[r.run_id] = identity
         if r.role == "pr_head" and r.status in ACTIVE_STATUSES:
             active_ids.add(r.run_id)
+    indexed_active_ids = set(active_ids) if decision is not None else None
     generations = {}
     bound_ids = {}
     unindexed = set()
@@ -108,7 +117,17 @@ def capacity(runs, admissions, *, census_complete, records_complete, legacy_rese
                 unindexed.add(a.generation)
             else:
                 active_ids.add(a.run_id)
-    return max(0, CAP - len(active_ids) - len(unindexed) - legacy_reservations)
+    free_slots = max(0, CAP - len(active_ids) - len(unindexed) - legacy_reservations)
+    if decision is not None:
+        decision.update(validated=True, free_slots=free_slots,
+                        counted_run_ids=sorted(active_ids),
+                        indexed_active_run_ids=sorted(indexed_active_ids),
+                        bound_floor_run_ids=sorted(active_ids - indexed_active_ids),
+                        unindexed_generations=sorted(unindexed),
+                        counted_run_count=len(active_ids),
+                        unindexed_count=len(unindexed), legacy_reservations=legacy_reservations,
+                        used_slots=len(active_ids) + len(unindexed) + legacy_reservations)
+    return free_slots
 
 
 def _demand_time(demand):
@@ -299,29 +318,83 @@ def authenticate_receipt(**context):
     return result
 
 
-def authenticate_demands(**context):
-    """Authenticate bounded changed-demand records from the same controller.
+@dataclass(frozen=True)
+class AgeSnapshot:
+    demands: tuple[Demand, ...]
+    # Exact per-PR comment coverage, not a global time or a transitive ref list.
+    covered_comments: tuple[tuple[int, int], ...] = ()
+    version: int = 1
 
-    This artifact authenticates records indexed on existing PRs; it is not a
-    launch reservation or a queue. The complete PR discovery remains authoritative.
-    """
+
+def authenticate_age_snapshot(**context):
     from dataclasses import fields
     data = _controller_receipt_data(**context, member_limit=262144)
-    if (set(data) != {'schema', 'repository_id', 'controller_run_id', 'controller_run_attempt', 'demands'}
-            or data['schema'] != 'mastermind.ci-proof-demands.v1'
-            or not isinstance(data['demands'], list) or len(data['demands']) > 1000
-            or context['artifact'].get('name') != (
-                f"ci-proof-demands-{context['controller_run_id']}-{context['controller_attempt']}")):
+    version={'mastermind.ci-proof-demands.v1':1,'mastermind.ci-proof-demands.v2':2}.get(data.get('schema'))
+    expected={'schema','repository_id','controller_run_id','controller_run_attempt','demands'}
+    if version==2:expected.add('covered_comments')
+    if (version is None or set(data)!=expected or not isinstance(data['demands'],list)
+            or len(data['demands'])>1000 or context['artifact'].get('name') !=
+            f"ci-proof-demands-{context['controller_run_id']}-{context['controller_attempt']}"):
         raise ValueError('demand receipt schema/identity mismatch')
-    result = []
+    result=[]
     for row in data['demands']:
-        if not isinstance(row, dict) or set(row) != {f.name for f in fields(Demand)}:
+        if not isinstance(row,dict) or set(row)!={f.name for f in fields(Demand)}:
             raise ValueError('malformed demand record')
         result.append(Demand(**row))
-    ordered = ordered_demands(result)
-    if len(ordered) != len(result):
-        raise ValueError('duplicate demand record')
-    return ordered
+    ordered=ordered_demands(result)
+    if len(ordered)!=len(result):raise ValueError('duplicate demand record')
+    coverage=[]
+    if version==2:
+        if len({d.pr_number for d in ordered})!=len(ordered):raise ValueError('multiple snapshot ages for one PR')
+        rows=data['covered_comments']
+        if not isinstance(rows,list) or len(rows)>1000:raise ValueError('age coverage exceeds existing bound')
+        for row in rows:
+            if (not isinstance(row,dict) or set(row)!={'pr_number','through_comment_id'}
+                    or not _positive(row['pr_number']) or not _positive(row['through_comment_id'])):
+                raise ValueError('invalid age coverage')
+            coverage.append((row['pr_number'],row['through_comment_id']))
+        if len(dict(coverage))!=len(coverage):raise ValueError('duplicate age coverage scope')
+    return AgeSnapshot(tuple(ordered),tuple(sorted(coverage)),version)
+
+
+def authenticate_demands(**context):
+    """v1 changed rows retain their meaning; v2 adds explicit age-only coverage."""
+    return list(authenticate_age_snapshot(**context).demands)
+
+
+def fold_age_snapshots(entries, load):
+    """Authenticate coverage before skipping originals; no newest-wins rule.
+
+    Each entry is a server PR/comment identity and an untrusted locator. Numeric
+    cutoff law is the incumbent per-PR checkpoint convention. Requiring EVERY
+    covered cutoff below this snapshot's original index rejects self/future and
+    cyclic coverage conservatively, even across differently ordered PR pages.
+    """
+    seen=set();coverage={};demands=[];selected=None
+    for number,comment_id,reference in sorted(entries,key=lambda e:e[1],reverse=True):
+        if not _positive(number) or not _positive(comment_id) or comment_id in seen:
+            raise ValueError('invalid original age index identity')
+        seen.add(comment_id)
+        if comment_id<=coverage.get(number,0):continue
+        snapshot=load(reference)
+        if not isinstance(snapshot,AgeSnapshot):raise ValueError('unauthenticated age snapshot')
+        if snapshot.version==2:
+            if selected is not None:raise ValueError('conflicting uncovered age successors')
+            if any(cutoff>=comment_id for _,cutoff in snapshot.covered_comments):
+                raise ValueError('age snapshot covers itself or a future index')
+            selected=comment_id
+            coverage.update(snapshot.covered_comments)
+        demands.extend(snapshot.demands)
+    # Every unserved generation must keep its original PR/age/purpose. Head
+    # versions may differ; pending_demand_for_pr binds the observed current head.
+    generations={}
+    for d in demands:
+        _demand_time(d)
+        identity=(d.pr_number,d.requested_at,d.purpose)
+        if d.demand_id in generations and generations[d.demand_id]!=identity:
+            raise ValueError('age generation identity changed')
+        generations[d.demand_id]=identity
+    return AgeSnapshot(tuple(demands),tuple(sorted(coverage.items())),2 if selected else 1)
 
 
 def merge_records(records):
@@ -348,7 +421,8 @@ def merge_records(records):
     return list(result.values())
 
 
-def reserved_dispatch_allowed(runs, records, reserved, *, census_complete, records_complete):
+def reserved_dispatch_allowed(runs, records, reserved, *, census_complete, records_complete,
+                              decision=None):
     """Revalidate capacity immediately before spending an existing reservation.
 
     The caller supplies the authenticated complete inventory, including this exact
@@ -356,6 +430,10 @@ def reserved_dispatch_allowed(runs, records, reserved, *, census_complete, recor
     slot. This catches legacy/out-of-band arrivals since preparation without
     dropping another generation or relaunching an already bound original.
     """
+    if decision is not None:
+        decision.clear()
+        decision.update(evaluated=True, allowed=False, reservation_validated=False,
+                        capacity={"evaluated": False})
     if (not _admission_valid(reserved) or reserved.run_id is not None
             or reserved.run_attempt != 1 or reserved.settled):
         return False
@@ -366,8 +444,15 @@ def reserved_dispatch_allowed(runs, records, reserved, *, census_complete, recor
     if reserved not in merged:
         return False
     other = [a for a in merged if a.generation != reserved.generation]
-    return capacity(runs, other, census_complete=census_complete,
-                    records_complete=records_complete) > 0
+    if decision is not None:
+        decision.update(reservation_validated=True, reserved_generation=reserved.generation,
+                        capacity_excludes_reserved_generation=True)
+    allowed = capacity(runs, other, census_complete=census_complete,
+                       records_complete=records_complete,
+                       decision=decision["capacity"] if decision is not None else None) > 0
+    if decision is not None:
+        decision["allowed"] = allowed
+    return allowed
 
 
 def pending_demand_for_pr(records, admissions, pr_number, current_head):

@@ -5,7 +5,8 @@ The planner, stable pack anchors, semantic gate, ordinary PR packs, forks, fence
 and merge controller default to GitHub-hosted Linux/x64. Exact same-repository PR
 execution may call the protected-main trusted executor only through the explicit
 CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runner
-group or supply executor identity. Existing production self-hosted lanes are left
+group or supply executor identity. Admitted proofs use only verified outputs
+through the protected caller/resolver graph. Existing production self-hosted lanes are left
 untouched.
 
 It also owns the label-DECLARATION boundary (rules R11/R12/R15): every literal
@@ -103,10 +104,10 @@ OPTIONS_INTEL_BROAD_LABELS = (
     "render-heavy",
 )
 SAME_REPO_PR = (
-    "github.event.pull_request.head.repo.full_name == github.repository"
+    "needs.ci-plan.outputs.same_repository == 'true'"
 )
 FORK_PR = (
-    "github.event.pull_request.head.repo.full_name != github.repository"
+    "needs.ci-plan.outputs.same_repository != 'true'"
 )
 PC_ROUTE = "vars.CI_EXECUTION_ROUTE == 'pc'"
 HOSTED_ROUTE = "vars.CI_EXECUTION_ROUTE != 'pc'"
@@ -114,6 +115,7 @@ TRUSTED_CALL_JOB = {
     "name": "trusted-ci",
     "needs": "ci-plan",
     "if": (
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR + " && " + PC_ROUTE
     ),
     "uses": TRUSTED_EXECUTOR_CALL,
@@ -250,15 +252,312 @@ def reaches_trust_gate(jobs: dict, job_id: str, seen: set[str] | None = None) ->
     return any(reaches_trust_gate(jobs, name, seen) for name in needs_names(job))
 
 
-def _authority_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
-    """R2: pull_request_target is forbidden except the trusted-base controller.
+# Six verified outputs are accepted only from the exact protected caller graph.
+# Empty inputs preserve native/legacy calls; arbitrary candidate identity is not
+# a second supported interface. Runtime receipt authentication remains mandatory.
+ADMITTED_CALL_BINDINGS = {
+    "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
+    "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
+    "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
+    "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
+    "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
+    "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
+}
 
-    ``ci-authority.yml`` may use ``pull_request_target`` only while it remains a
-    default-branch controller that never materializes candidate code. Any other
-    file, or this file after losing those pins, is still R2. That is not a
-    general allowlist: a second ``pull_request_target`` workflow, or this one
-    checking out the PR head, still fails the same rule.
+
+def _trusted_call_is_exact(job: dict) -> bool:
+    return job == TRUSTED_CALL_JOB or job == {
+        **TRUSTED_CALL_JOB, "with": ADMITTED_CALL_BINDINGS,
+    }
+
+
+def _step_with_id(job: dict, identifier: str) -> dict:
+    if not isinstance(job, dict):
+        return {}
+    steps = [s for s in job.get("steps", []) if isinstance(s, dict) and s.get("id") == identifier]
+    return steps[0] if len(steps) == 1 else {}
+
+
+def _admitted_execution_context_exact(document: dict, job_ids: tuple[str, ...]) -> bool:
+    """Reject ungoverned execution modifiers before trusting identity plumbing.
+
+    This is a structural source check, not a proof of arbitrary shell code. The
+    telemetry upload is the sole existing ignored failure, after pack execution;
+    it cannot suppress a resolver, source read, capsule check or pack verdict.
     """
+    if any(key in document for key in ("env", "defaults")):
+        return False
+    jobs = document.get("jobs") or {}
+    for job_id in job_ids:
+        job = jobs.get(job_id)
+        if not isinstance(job, dict) or any(key in job for key in (
+            "container", "services", "continue-on-error", "defaults", "environment",
+            "uses", "secrets", "with",
+        )):
+            return False
+        expected_env = ({"CONTROL_ROOT": "${{ github.workspace }}",
+                         "MASTERMIND_TRUSTED_CI_REPO_ROOT": "${{ github.workspace }}"}
+                        if job_id == "ci-plan" else None)
+        if job.get("env") != expected_env:
+            return False
+        if job_id not in {"trusted-pack", "legacy-hosted-pack"} and "strategy" in job:
+            return False
+        for step in job.get("steps", []):
+            if not isinstance(step, dict) or "working-directory" in step:
+                return False
+            if step.get("shell") not in (None, "bash"):
+                return False
+            if "continue-on-error" in step:
+                telemetry = (job_id == "trusted-pack"
+                    and step.get("name") == "publish non-authoritative execution timing"
+                    and step.get("uses") == "actions/upload-artifact@v4"
+                    and "run" not in step and step["continue-on-error"] is True)
+                if not telemetry:
+                    return False
+    return True
+
+
+def _admitted_caller_graph_exact(document: dict) -> bool:
+    """The role/source handoff comes from authenticated protected code, not input."""
+    if not _admitted_execution_context_exact(document, ("ci-admission", "ci-plan")):
+        return False
+    jobs = document.get("jobs") or {}
+    resolver = jobs.get("ci-admission") or {}
+    plan = jobs.get("ci-plan") or {}
+    identity = _step_with_id(plan, "identity")
+    checkout = [s for s in resolver.get("steps", []) if s.get("uses") == "actions/checkout@v4"]
+    resolve = _step_with_id(resolver, "resolve")
+    output_names = {"tested_commit", "subject_head", "base", "same_repository", "pr_number",
+                    "head_repository_id", "admission_generation"}
+    outputs = plan.get("outputs") or {}
+    identity_env = identity.get("env") or {}
+    identity_lines = {line.strip() for line in str(identity.get("run", "")).splitlines()}
+    return (
+        resolver.get("runs-on") == HOSTED
+        and resolver.get("if") == "github.event_name == 'workflow_dispatch' && inputs.proof_role != ''"
+        and resolver.get("permissions") == {"contents": "read", "actions": "read", "pull-requests": "read"}
+        and len(resolver.get("steps", [])) == 2 and len(checkout) == 1
+        and checkout[0].get("with") == {"ref": "${{ github.workflow_sha }}", "filter": "blob:none",
+            "sparse-checkout": "scripts", "persist-credentials": False}
+        and "if" not in checkout[0] and "if" not in resolve
+        and resolve.get("run") == "python3 -I scripts/resolve_ci_pr_admission.py"
+        and resolve.get("env") == {"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
+            "GITHUB_WORKFLOW_SHA": "${{ github.workflow_sha }}", "CI_PR_ADMISSION_INPUTS": "${{ toJSON(inputs) }}"}
+        and resolver.get("outputs") == {k: "${{ steps.resolve.outputs." + k + " }}" for k in output_names}
+        and plan.get("needs") == ["ci-admission"]
+        and plan.get("if") == "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"
+        and outputs.get("same_repository") == "${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}"
+        and outputs.get("admitted_pr") == "${{ needs.ci-admission.outputs.pr_number }}"
+        and outputs.get("admitted_repository_id") == "${{ needs.ci-admission.outputs.head_repository_id }}"
+        and all(outputs.get(k) == "${{ steps.identity.outputs." + k + " }}" for k in
+            ("tested_tree_sha", "subject_head_sha", "tested_base_sha", "semantic_role", "admission_generation"))
+        and all(identity_env.get(k) == v for k,v in {
+            "ADMISSION_GENERATION": "${{ needs.ci-admission.outputs.admission_generation }}",
+            "ADMITTED_MERGE": "${{ needs.ci-admission.outputs.tested_commit }}",
+            "ADMITTED_BASE": "${{ needs.ci-admission.outputs.base }}",
+            "ADMITTED_HEAD": "${{ needs.ci-admission.outputs.subject_head }}"}.items())
+        and {
+            'if [ -n "$ADMISSION_GENERATION" ]; then',
+            'read -r merge_sha tested_base_sha subject_head_sha extra < <(git rev-list --parents -n 1 "$tested_tree_sha")',
+            'if [ "$merge_sha" != "$ADMITTED_MERGE" ] || [ "$tested_base_sha" != "$ADMITTED_BASE" ] || [ "$subject_head_sha" != "$ADMITTED_HEAD" ] || [ -n "${extra:-}" ]; then',
+            'echo "admission_generation=$ADMISSION_GENERATION"',
+        } <= identity_lines
+    )
+
+
+def _shared_admission_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
+    """Narrow trusted-base wake exception: no PR code, raw input or new executor."""
+    bad = [Finding("R2", f"{relative}: shared admission controller boundary drifted")]
+    raw = document.get("on", document.get(True, {}))
+    jobs = document.get("jobs") or {}
+    if (not isinstance(raw, dict) or set(jobs) != {"sweep"}
+            or set(raw) != {"pull_request_target", "workflow_run", "schedule", "workflow_dispatch"}
+            or raw["pull_request_target"] != {"types": ["opened", "synchronize", "reopened"], "branches": ["main"]}
+            or raw["workflow_run"] != {"workflows": ["ci", "fences", "integration-baseline"], "types": ["completed"]}
+            or raw["schedule"] != [{"cron": "*/10 * * * *"}] or raw["workflow_dispatch"] is not None
+            or any(k in document for k in ("env", "defaults"))
+            or document.get("permissions") != {"checks": "write", "actions": "write", "contents": "write", "pull-requests": "write", "issues": "write"}):
+        return bad
+    job = jobs["sweep"]
+    if (not isinstance(job, dict) or job.get("runs-on") != HOSTED
+            or any(k in job for k in ("uses", "secrets", "env", "permissions", "defaults", "strategy"))
+            or job.get("timeout-minutes") != 15
+            or set(job) - {"name", "if", "concurrency", "runs-on", "timeout-minutes", "steps"}):
+        return bad
+    expected_group = (
+        "merge-on-green-${{ github.event_name == 'workflow_run' && github.event.workflow_run.name == 'fences' && "
+        "github.event.workflow_run.head_branch == 'main' && 'skip-ci-ignored' || github.event_name != 'workflow_run' && 'sweep' || "
+        "github.event.workflow_run.name == 'ci' && 'sweep' || github.event.workflow_run.conclusion == 'failure' && "
+        "format('mark-{0}', github.event.workflow_run.head_sha) || github.event.workflow_run.conclusion == 'success' && "
+        "'sweep' || 'lease-reconcile' }}"
+    )
+    if job.get("concurrency") != {"group": expected_group, "cancel-in-progress": False}:
+        return bad
+    steps = job.get("steps") or []
+    if len(steps) != 12 or any(not isinstance(s, dict) for s in steps):
+        return bad
+    checkout = steps[0]
+    if set(checkout) != {"uses", "with"} or checkout.get("uses") != "actions/checkout@v4":
+        return bad
+    options = dict(checkout.get("with") or {})
+    paths = options.pop("sparse-checkout", "")
+    if (options != {"ref": "${{ github.workflow_sha }}", "persist-credentials": False,
+                   "filter": "blob:none", "sparse-checkout-cone-mode": False}
+            or set(str(paths).split()) != {"scripts/merge_on_green.py", "scripts/ci_proof_admission.py",
+                "scripts/ci_admission_stages.py", "scripts/ci_semantic_proof.py", "scripts/ci_authority_paths.py",
+                "scripts/gh_path_filter.py", "scripts/run_ci_pack.py", ".github/ci/legacy-jobs.yml", ".github/workflows"}):
+        return bad
+    # Only fixed, isolated protected stage entrypoints carry credentials. PR event
+    # values are never interpolated into a shell or used as a checkout ref.
+    common = {"GH_REPO": "${{ github.repository }}", "READ_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
+        "MERGE_TOKEN": "${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}",
+        "CI_ADMISSION_STAGE_DIR": "${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}"}
+    wake = "github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci' || github.event.workflow_run.conclusion == 'success'"
+    calls = {
+        2: ("complete", wake, {"CHECKS_TOKEN": "${{ secrets.GITHUB_TOKEN }}", "TRIGGER_RUN_ID": "${{ github.event.workflow_run.id }}", "TRIGGER_RUN_ATTEMPT": "${{ github.event.workflow_run.run_attempt }}"}),
+        3: ("prepare", "!cancelled() && (" + wake + ")", {}),
+        5: ("reserve", "!cancelled() && steps.admission_prepare.outcome == 'success' && steps.admission_prepare.outputs.ready == 'true' && (steps.admission_prepare.outputs.changed != 'true' || steps.admission_demands.outcome == 'success')", {"ARTIFACT_ID": "${{ steps.admission_demands.outputs.artifact-id }}"}),
+        8: ("dispatch", "steps.admission_prepared.outcome == 'success' && steps.admission_checkpoint.outcome == 'success'", {"ARTIFACT_ID": "${{ steps.admission_prepared.outputs.artifact-id }}", "CHECKPOINT_ARTIFACT_ID": "${{ steps.admission_checkpoint.outputs.artifact-id }}"}),
+        10: ("finalize", "steps.admission_bound.outcome == 'success'", {"ARTIFACT_ID": "${{ steps.admission_bound.outputs.artifact-id }}"}),
+    }
+    for index,(stage,guard,extra) in calls.items():
+        step=steps[index]
+        if (step.get("run") != "python3 -I scripts/ci_admission_stages.py " + stage
+                or step.get("env") != {**common, **extra} or step.get("if") != guard
+                or set(step) - {"name", "id", "if", "env", "run"}):
+            return bad
+    uploads = {
+        4: ("demands", "steps.admission_prepare.outputs.changed == 'true'", "ci-proof-demands-${{ github.run_id }}-${{ github.run_attempt }}"),
+        6: ("prepared", "steps.admission_reserve.outputs.prepared == 'true'", "ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.generation }}-prepared"),
+        7: ("checkpoint", "steps.admission_reserve.outputs.prepared == 'true'", "ci-proof-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.pr_number }}"),
+        9: ("bound", "steps.admission_dispatch.outputs.bound == 'true'", "ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_dispatch.outputs.generation }}-bound"),
+    }
+    for index,(kind,guard,name) in uploads.items():
+        step=steps[index]
+        if (set(step) != {"name", "id", "if", "uses", "with"}
+                or step.get("id") != "admission_" + kind or step.get("if") != guard
+                or step.get("uses") != "actions/upload-artifact@v4"
+                or step.get("with") != {"name": name,
+                    "path": common["CI_ADMISSION_STAGE_DIR"] + "/" + kind + "/ci-proof-admission.json",
+                    "if-no-files-found": "error", "retention-days": 90, "overwrite": False}):
+            return bad
+    if any(steps[i].get("id") != identifier for i,identifier in
+           ((3,"admission_prepare"),(5,"admission_reserve"),(8,"admission_dispatch"))):
+        return bad
+    sweep=steps[11]
+    if (set(sweep) != {"name", "if", "env", "run"}
+            or sweep.get("run") != "python3 scripts/merge_on_green.py" or sweep.get("if") != "${{ !cancelled() }}"
+            or sweep.get("env") != {**common, "TRIGGER_HEAD_SHA": "${{ github.event.workflow_run.head_sha }}",
+                "TRIGGER_CONCLUSION": "${{ github.event.workflow_run.conclusion }}", "CURRENT_RUN_ID": "${{ github.run_id }}"}):
+        return bad
+    install=steps[1]
+    if set(install) != {"name", "run"} or install.get("run") != (
+        'if python3 -c "import yaml" 2>/dev/null; then\n'
+        '  echo "pyyaml already importable on ${RUNNER_NAME:-this runner}"\n  exit 0\nfi\n'
+        'python3 -m pip install --quiet --disable-pip-version-check pyyaml \\\n'
+        '  || python3 -m pip install --quiet --disable-pip-version-check --user pyyaml \\\n'
+        '  || python3 -m pip install --quiet --disable-pip-version-check \\\n'
+        '       --break-system-packages pyyaml\npython3 -c "import yaml"\n'
+    ):
+        return bad
+    return []
+
+
+def _admitted_executor_graph_exact(document: dict) -> bool:
+    """Typed handoff is authority only behind the framework caller/source checks."""
+    if not _admitted_execution_context_exact(document,
+            ("trust-gate", "plan", "trusted-pack", "legacy-hosted-pack")):
+        return False
+    jobs=document.get("jobs") or {}
+    gate=_step_with_id(jobs.get("trust-gate") or {},"admit")
+    plan=jobs.get("plan") or {}
+    reread=_step_with_id(plan,"admitted-ref")
+    ref=_step_with_id(plan,"ref")
+    lines={line.strip() for line in str(gate.get("run","")).splitlines()}
+    fresh_lines={line.strip() for line in str(reread.get("run","")).splitlines()}
+    required = {
+        'test -z "$ADMITTED_MERGE$ADMITTED_HEAD$ADMITTED_BASE$ADMITTED_PR$ADMITTED_REPOSITORY_ID$ADMISSION_GENERATION" || exit 1',
+        'elif [ "$CALLER_WORKFLOW_REF" = "$REPOSITORY/.github/workflows/ci.yml@refs/heads/main" ]; then',
+        '[[ "$CALLER_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]] && test "$CALLER_WORKFLOW_SHA" = "$CALLER_SHA" || exit 1',
+        'for sha in "$ADMITTED_MERGE" "$ADMITTED_HEAD" "$ADMITTED_BASE"; do [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1; done',
+        '[[ "$ADMISSION_GENERATION" =~ ^[0-9a-f]{12}$ ]] || exit 1',
+        '[[ "$ADMITTED_PR" =~ ^[1-9][0-9]*$ && "$ADMITTED_REPOSITORY_ID" =~ ^[1-9][0-9]*$ ]] || exit 1',
+    }
+    fresh_required = {
+        'require(os.environ["EVENT_NAME"] == "workflow_dispatch")',
+        'require(os.environ["CALLER_REF"] == repo + "/.github/workflows/ci.yml@refs/heads/main")',
+        'require(os.environ["CALLER_WORKFLOW_SHA"] == os.environ["CALLER_SHA"])',
+        'require(os.environ["TRUSTED_REF"] == "refs/heads/main")',
+        'for key in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "ADMITTED_PR", "ADMITTED_REPOSITORY_ID"):',
+        'require(re.fullmatch(r"[1-9][0-9]*", os.environ[key]))',
+        'require(re.fullmatch(r"[0-9a-f]{12}", os.environ["ADMISSION_GENERATION"]))',
+        'require(type(value["repo"].get("id")) is int and value["repo"]["id"] == repository_id)',
+        'require(value["repo"].get("full_name") == repo)',
+        'require(pr["head"].get("sha") == head and pr["base"].get("ref") == "main")',
+        'require([item.get("sha") if isinstance(item, dict) else None for item in commit["parents"]] == [base, head])',
+    }
+    expected_read_env = {
+        "GITHUB_TOKEN": "${{ github.token }}", "EVENT_NAME": "${{ github.event_name }}",
+        "REPOSITORY": "${{ github.repository }}", "TRUSTED_REF": "${{ github.ref }}",
+        "CALLER_REF": "${{ github.workflow_ref }}", "CALLER_WORKFLOW_SHA": "${{ github.workflow_sha }}",
+        "CALLER_SHA": "${{ github.sha }}",
+        **{k.upper(): "${{ inputs."+k+" }}" for k in ADMITTED_CALL_BINDINGS},
+    }
+    expected_ref_env = {
+        "MODE": "${{ needs.trust-gate.outputs.mode }}",
+        "LEGACY_TESTED": "${{ steps.legacy-ref.outputs.tested_sha }}",
+        "LEGACY_BASE": "${{ steps.legacy-ref.outputs.base_sha }}",
+        "LEGACY_HEAD": "${{ steps.legacy-ref.outputs.head_sha }}",
+        "LEGACY_HEAD_REF": "${{ steps.legacy-ref.outputs.head_ref }}",
+        "ADMITTED_TESTED": "${{ steps.admitted-ref.outputs.tested_commit }}",
+        "ADMITTED_BASE": "${{ steps.admitted-ref.outputs.base }}",
+        "ADMITTED_HEAD": "${{ steps.admitted-ref.outputs.subject_head }}",
+        "ADMITTED_SAME_REPOSITORY": "${{ steps.admitted-ref.outputs.same_repository }}",
+        "ADMISSION_GENERATION": "${{ steps.admitted-ref.outputs.admission_generation }}",
+    }
+    plan_steps=plan.get("steps",[])
+    checkouts=[s for s in plan_steps if str(s.get("uses","")).startswith("actions/checkout@")]
+    if (len(checkouts)!=2 or checkouts[0].get("with",{}).get("ref") != "${{ needs.trust-gate.outputs.control_sha }}"
+            or checkouts[1].get("with",{}).get("ref") != "${{ steps.ref.outputs.tested_sha }}"
+            or any(c.get("with",{}).get("persist-credentials") is not False for c in checkouts)):
+        return False
+    plan_step=_step_with_id(plan,"plan")
+    plan_run=str(plan_step.get("run", ""))
+    if (not required <= lines or not fresh_required <= fresh_lines
+            or reread.get("if") != "needs.trust-gate.outputs.mode == 'admitted'"
+            or reread.get("env") != expected_read_env or ref.get("env") != expected_ref_env
+            or 'test "$ADMITTED_SAME_REPOSITORY" = true || {' not in str(ref.get("run",""))
+            or plan.get("outputs",{}).get("admission_generation") != "${{ steps.ref.outputs.admission_generation }}"
+            or plan.get("outputs",{}).get("control_bundle_sha256") != "${{ steps.bundle.outputs.sha256 }}"
+            or plan_step.get("env",{}).get("ADMISSION_GENERATION") != "${{ steps.ref.outputs.admission_generation }}"
+            or '--admission-generation "$ADMISSION_GENERATION"' not in plan_run
+            or '--event "${{ github.event_name }}"' not in plan_run):
+        return False
+    # A caller-controlled artifact name cannot substitute the protected capsule.
+    # Keep the digest readback ahead of candidate materialization in both routes.
+    for job_id in ("trusted-pack","legacy-hosted-pack"):
+        steps=(jobs.get(job_id) or {}).get("steps",[])
+        checks=[(i,s) for i,s in enumerate(steps) if s.get("name")=="verify control bundle before any candidate execution"]
+        materialize=[i for i,s in enumerate(steps) if s.get("name") in {"materialize exact candidate with negotiated incremental fetch", "checkout the immutable PR candidate"}]
+        if len(checks)!=1 or len(materialize)!=1:
+            return False
+        i,verify=checks[0]
+        if (verify.get("env") != {"EXPECTED_CONTROL_DIGEST":"${{ needs.plan.outputs.control_bundle_sha256 }}"}
+                or 'digest != expected' not in str(verify.get("run",""))
+                or any(i >= j for j in materialize)):
+            return False
+    return True
+
+
+def _authority_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
+    """R2 admits only the two governed trusted-base control jobs.
+
+    ci-authority retains its existing exact checkout contract. The incumbent
+    merge controller has a separate complete stage/token/serialization contract;
+    neither exception permits a cloned filename or candidate-code checkout.
+    """
+    if relative == ".github/workflows/merge-on-green.yml":
+        return _shared_admission_controller_r2_findings(relative, document)
     if relative != TRUSTED_PULL_REQUEST_TARGET:
         return [Finding("R2", f"{relative}: pull_request_target is forbidden")]
 
@@ -780,12 +1079,13 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                     if not (
                         relative == ".github/workflows/ci.yml"
                         and str(job_id) == "trusted-ci"
-                        and job == TRUSTED_CALL_JOB
+                        and _trusted_call_is_exact(job)
+                        and _admitted_caller_graph_exact(document)
                     ):
                         findings.append(
                             Finding(
                                 "R3",
-                                f"{relative}:{job_id} may not delegate on pull_request except through the exact no-input protected-main trusted-CI call",
+                                f"{relative}:{job_id} may not delegate on pull_request except through the exact governed protected-main trusted-CI call",
                             )
                         )
                 elif job.get("runs-on") != HOSTED:
@@ -905,7 +1205,13 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trigger_inputs_are_exact = (
             isinstance(trigger_config, dict)
             and isinstance(trigger_config.get("workflow_call"), dict)
-            and (trigger_config["workflow_call"].get("inputs") or {}) == {}
+            and set(trigger_config["workflow_call"].get("inputs") or {}) == set(ADMITTED_CALL_BINDINGS)
+            and all({k: value for k,value in declaration.items() if k != "description"}
+                    == {"type": "string", "required": False, "default": ""}
+                    and declaration.get("required") is False
+                    for declaration in trigger_config["workflow_call"]["inputs"].values()
+                    if isinstance(declaration, dict))
+            and all(isinstance(v, dict) for v in trigger_config["workflow_call"]["inputs"].values())
             and set(trigger_config["workflow_call"].get("outputs") or {}) == call_outputs
             and isinstance(trigger_config.get("workflow_dispatch"), dict)
             and set((trigger_config["workflow_dispatch"].get("inputs") or {}))
@@ -937,6 +1243,9 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
             "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
+            "CALLER_WORKFLOW_SHA": "${{ github.workflow_sha }}",
+            "CALLER_SHA": "${{ github.sha }}",
+            **{k.upper(): "${{ inputs." + k + " || '' }}" for k in ADMITTED_CALL_BINDINGS},
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -983,7 +1292,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         if triggers(trusted_document) != {"workflow_call", "workflow_dispatch"}:
             findings.append(Finding("R13", "P3B-B executor triggers must stay call-capable and dispatch-provable"))
         if not trigger_inputs_are_exact:
-            findings.append(Finding("R13", "P3B-B reusable call must accept no caller-supplied identity"))
+            findings.append(Finding("R13", "P3B-B reusable inputs must be exactly six optional verified-output fields"))
         if (
             trust_gate.get("runs-on") != HOSTED
             or gate_step.get("id") != "admit"
@@ -993,6 +1302,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or plan_job.get("runs-on") != HOSTED
             or plan_job.get("needs") != "trust-gate"
             or not plan_is_main_controlled
+            or not _admitted_executor_graph_exact(trusted_document)
         ):
             findings.append(Finding("R13", "P3B-B hosted trust and main-owned planner boundary drifted"))
         if (
@@ -1172,8 +1482,8 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"
             and (ci_pack.get("strategy") or {}).get("fail-fast") is False
         )
-        if trusted_call != TRUSTED_CALL_JOB:
-            findings.append(Finding("R13", "P3B-B ci.yml lost its exact protected-main no-input executor call"))
+        if not (_trusted_call_is_exact(trusted_call) and _admitted_caller_graph_exact(ci_document)):
+            findings.append(Finding("R13", "P3B-B ci.yml lost its governed protected-main executor call"))
         if not (
             ci_pack_contract_is_exact
             and heavyweight_hosted_default

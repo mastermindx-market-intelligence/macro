@@ -31,3 +31,57 @@ No active cancellation, replay, fictional reservation, new queue/controller, cap
 Trust: protected controller author/records, immutable workflow definition, exact ordered merge parents, originalrun/attempt, source-only job tokens and a separate trusted check writer. A user-modified PR workflow or privileged manual dispatch is not cryptographically prevented by this patch alone: actual execution controls must be verified, bypasses remain accounted and close admission. Do not claim an unenforceable universal ceiling.
 
 Validation must exercise workflow entrypoint mappings, not only a helper model. Positive7+0 admission and negative8/7+1, unknown state, status transitions, indexed dedupe, PR close, late head, lost response, forged binding, wrong workflow, rerun attempt and incomplete evidence are required.
+
+## Bounded discovery and original demand age — P9.T9.S6
+
+The original 875-PR discriminator executes the real preparation and budget code
+with synthetic provider responses. The prospective bridge stops after 185 PRs,
+759 core requests used and 241 remaining, before publishing a census or selecting
+work. The inactive foundation makes no admission effects. The current implementation
+therefore preserves safety but does not establish usable admission at that scale.
+The complete live population read on November 3 at 13:57 UTC contained 871 open
+main-targeting PRs, 600 Drafts and 110 armed non-Draft PRs. These are discovery
+counts, not a claim that those PRs are eligible or need refresh.
+
+Prepare bounded bulk reads through the same job token and GitHub origin. Require
+complete connections, explicit errors and authoritative identities. Current PR
+base fields must never stand in for the base actually tested by an original run.
+Existing proof validation and exact freshness remain required for refreshes.
+GraphQL point batching does not waive REST or GraphQL secondary content limits.
+See the official [REST limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
+and [GraphQL limits](https://docs.github.com/en/graphql/overview/rate-limits-and-query-limits-for-the-graphql-api).
+
+Use one authenticated reference to the existing immutable demand batch on an
+existing PR, with a retained existing-label association, to preserve historical
+request ages. The batch is not an eligibility census, capacity lease, executable
+queue or dispatch authority. Complete fresh PR discovery remains authoritative;
+per-PR admission and settlement records remain unchanged. An age-only anchor
+counts zero proof slots and survives PR closure while it protects unserved ages.
+Before retiring or replacing an anchor, authenticate its successor and prove
+conservation of every still-open unserved generation, purpose and original age,
+including qualified head transitions. Missing or expired records are unresolved,
+not permission to invent a younger request.
+
+Legacy v1 demand artifacts contain changed rows, not complete snapshots. A
+prospective v2 age snapshot must explicitly bind its covered predecessors and
+prove conservation before publication. Readers may omit only that authenticated
+coverage; newest-wins replacement is forbidden. Coverage itself must remain
+bounded through the existing checkpoint model. Self/future references,
+conflicting successors and uncovered later demands cannot be silently discarded.
+
+The existing singleton register may distinguish the one original anchor-comment
+publication intent from a launch reservation. Record intent before the POST and
+reconcile its exact positive readback. A lost response plus an absent comment is
+UNKNOWN, not permission to POST again; clientMutationId supplies correlation,
+not assumed idempotency. Completion and cleanup must preserve this custody.
+No separate cursor, queue, registry, token source, quota increase or capacity
+exemption is introduced.
+
+Qualification must exercise real stage wiring: complete authored discovery,
+the observed mixed population shape, closed anchors, changed heads, forged or
+incomplete responses, interrupted publication, original response loss, budget
+exhaustion, conservation on replacement and capacity accounting. A successful
+875-authored fixture does not qualify 875 armed refreshes needing distinct
+original proof reads. That mixed-case read bound stays explicit until separately
+demonstrated. Preparation and synthetic tests do not activate the bridge or
+satisfy the natural refresh and downstream publication acceptance above.
