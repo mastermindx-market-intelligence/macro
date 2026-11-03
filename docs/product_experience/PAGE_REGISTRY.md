@@ -130,6 +130,14 @@ label exists. Missing, incomplete, or ambiguous headings fail publication rather
 than inventing a translation. Historical inventories without those directory
 entries require no heading read. Label extraction changes no membership or group.
 
+Calculator directory titles come from explicitly authored `title` and `title_zh`
+fields in the existing `content/seo/calculators.yml`, read at the same immutable
+inventory revision. Only concrete calculator paths already admitted as members of
+`macro:tools_family` receive these directory entries. Metadata adds no route or
+family membership and cannot bypass existing exclusions. Existing directory names
+retain precedence. Missing metadata or missing `title_zh` preserves historical
+output; malformed explicit bilingual metadata fails publication before replacement.
+
 ### `payload_tier`, precisely
 
 Every macro `*.html` **shell** has been anonymous since 2026-08-04

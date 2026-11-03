@@ -796,3 +796,47 @@ def test_cli_refuses_partial_gmi_heading_before_replacing_output(tmp_path, inven
     assert done.returncode != 0
     assert "bilingual" in done.stderr
     assert output.read_text() == "previous complete projection\n"
+
+
+@pytest.mark.parametrize("translation", [None, "复合年增长率计算器", ""])
+def test_cli_binds_calculator_titles_to_inventory_and_preserves_historical_output(
+        tmp_path, inventory_fixture, translation):
+    fx = inventory_fixture
+    fx.registry["pages"].append(fixture_registry_row(
+        "/tools/<id>.html", kind="family", page_id="macro:tools_family"))
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+    _write(fx.repo, "site/tools/calculators/cagr.html", FIXTURE_DOCUMENT.format(stem="cagr"))
+    metadata = [{"slug": "cagr", "title": "CAGR Calculator"}]
+    if translation is not None:
+        metadata[0]["title_zh"] = translation
+    _write(fx.repo, "content/seo/calculators.yml", json.dumps(metadata, ensure_ascii=False))
+    tip = _commit(fx.repo, "source-owned calculator metadata")
+    _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+    # Uncommitted metadata cannot supply publication titles for the bound revision.
+    _write(fx.repo, "content/seo/calculators.yml", "malformed working tree metadata")
+    historical, output = run_exporter(tmp_path, fx)
+    assert historical.returncode == 0, historical.stderr
+    assert json.loads(output.read_text()) == expected_projection(fx, fx.pin)
+    output.write_text("previous complete projection\n")
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    if translation == "":
+        assert done.returncode != 0
+        assert "canonical calculator metadata" in done.stderr
+        assert output.read_text() == "previous complete projection\n"
+        return
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    baseline = expected_projection(fx, tip)
+    baseline["sources"]["inventory"] = tip
+    for key in baseline:
+        if key != "directory":
+            assert result[key] == baseline[key], key
+    additions = [entry for entry in result["directory"] if entry not in baseline["directory"]]
+    if translation is None:
+        assert additions == []
+    else:
+        assert len(additions) == 1
+        assert additions[0]["href"] == "/tools/calculators/cagr.html"
+        assert additions[0]["title"] == {"en": "CAGR Calculator", "zh": translation}
