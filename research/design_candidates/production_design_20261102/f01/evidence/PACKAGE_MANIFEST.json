@@ -3,18 +3,19 @@
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
   "kind": "Cumulative persistence inventory, not a final repaired-native review freeze",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; do not interpret a moving branch name as the receipt",
-  "parent_before_package": "be157007c4d4a33feb576a43f431eba3db5650ac",
-  "files_excluding_self": 101,
-  "total_member_bytes": 4628107,
+  "parent_before_package": "4dfcfde749d1c8566546224da5e9715de1d2b249",
+  "files_excluding_self": 103,
+  "total_member_bytes": 4650310,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "e4faa885329333ebf0ac0260c87bdb2e5277e97623776de91134604d09aad7e5",
+  "aggregate_sha256": "865345a509b05b54d6647d7b90d4aaa46e140d4ea572bb7d280cf8556624bde1",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
     "artifact_only_input": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
     "first_pass_reports_before_rationale": "09742de176f553bb30e89a0ade95643d76416c30",
     "six_board_input": "be157007c4d4a33feb576a43f431eba3db5650ac",
-    "six_board_product_first_pass_sha256": "d790d1bdd0844ccccbf6b9cdaafe9ba3d4cf9235d652b5d90b4a0a0c2d6a881e"
+    "six_board_product_first_pass_sha256": "d790d1bdd0844ccccbf6b9cdaafe9ba3d4cf9235d652b5d90b4a0a0c2d6a881e",
+    "six_board_taste_first_pass_sha256": "6199dc781403d93da9cc30bebc75c1afef99ca227260820ce5ac78103a24d121"
   },
   "files": [
     {
@@ -97,9 +98,9 @@
     },
     {
       "path": "evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md",
-      "bytes": 11362,
-      "sha256": "fdb33fe05a4ea45081800a24c28c8cf3826fd0a8e280e60c9dbccd0aeb648216",
-      "gitBlobSha1": "8f60abed6f96b55f409a4a6d5ed864e8503fb45a"
+      "bytes": 11454,
+      "sha256": "81356c43b3007f444117d0604abb56a1d81f13c3604b0045d55715df62ed3cfe",
+      "gitBlobSha1": "6c836ec85c3abba52e297cf507aea2d0ea20312d"
     },
     {
       "path": "evidence/CAPTURE_CONTEXT.json",
@@ -538,6 +539,18 @@
       "bytes": 20143,
       "sha256": "d790d1bdd0844ccccbf6b9cdaafe9ba3d4cf9235d652b5d90b4a0a0c2d6a881e",
       "gitBlobSha1": "b2ee586c9d43c0def78c1adf7d9828c1dd3a92ac"
+    },
+    {
+      "path": "evidence/review/REVISION_REVIEW_SEQUENCE.json",
+      "bytes": 1608,
+      "sha256": "768b5d53a66ac894dcc184d72b0b6a4f025c5253cbe540b57b9516a3e986e002",
+      "gitBlobSha1": "f764808aa9acd7ca073ec1608370abe40a9d003d"
+    },
+    {
+      "path": "evidence/review/REVISION_TASTE_FIRST_PASS.md",
+      "bytes": 20503,
+      "sha256": "6199dc781403d93da9cc30bebc75c1afef99ca227260820ce5ac78103a24d121",
+      "gitBlobSha1": "428222c6570e7416f604a0d52b10524b36e2fca6"
     },
     {
       "path": "evidence/review/SOURCE_REVIEW_BE157.json",

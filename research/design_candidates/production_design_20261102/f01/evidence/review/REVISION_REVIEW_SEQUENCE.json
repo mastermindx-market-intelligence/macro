@@ -1,0 +1,27 @@
+{
+  "schema": "F01.native_revision_review_sequence.v1",
+  "kind": "Isolated native reasoning advisories; not formal RIG or design acceptance",
+  "inputCommit": "be157007c4d4a33feb576a43f431eba3db5650ac",
+  "inputDirectory": "evidence/native_revision_20261103",
+  "aggregateSha256": "8465612640379507ac49a88fa6d3b3618736d7f8c586db45b4682b9905d584bc",
+  "neutralBriefSha256": "90ad8125abdd24d1ebe51cc3cdffca67b75c2fdd9604d2a494cc9ae6e6ce7c98",
+  "method": "Two fork_turns=none advisers received only neutral brief, capture manifest and six JPEG/JSX pairs. Each reports viewing all six and verifying twelve hashes. No author rationale before first report. Root retains all writes.",
+  "reports": [
+    {
+      "role": "product",
+      "agent": "/root/f01_revision_product",
+      "path": "REVISION_PRODUCT_FIRST_PASS.md",
+      "sha256": "d790d1bdd0844ccccbf6b9cdaafe9ba3d4cf9235d652b5d90b4a0a0c2d6a881e",
+      "firstSourceCommit": "4dfcfde749d1c8566546224da5e9715de1d2b249"
+    },
+    {
+      "role": "visual/taste",
+      "agent": "/root/f01_revision_taste",
+      "path": "REVISION_TASTE_FIRST_PASS.md",
+      "sha256": "6199dc781403d93da9cc30bebc75c1afef99ca227260820ce5ac78103a24d121",
+      "firstSourceCommit": "The enclosing immutable commit binds this first report"
+    }
+  ],
+  "result": "Narrow revisions recommended; three common P2 concerns and one Taste P3. No P0/P1 established by frozen captures. Behavior and broader coverage remain missing proof.",
+  "authorDisposition": "Not part of either frozen first report; any repair adjudication or reviewer amendment is a separate later artifact."
+}
