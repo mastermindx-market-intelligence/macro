@@ -318,3 +318,18 @@ def test_us_spr_gapped_trade_history_does_not_claim_one_year(monkeypatch):
     vm = _spr_vm(monkeypatch, [400000] * 53, {"crude_exports": exports})
     assert vm["exports_mbd"] == 5.0 and vm["trade_basis"] is False
     assert "available-history avg" in _render_spr_context(vm)
+
+
+
+def test_us_spr_available_history_extrema_and_zero_are_truthful(monkeypatch):
+    import re
+    partial = _render_spr_context(_spr_vm(monkeypatch, [283000.0]))
+    assert "Peak in available history" in partial and "已有历史峰值" in partial
+    assert "Low in available history" in partial and "已有历史低点" in partial
+    assert "All-time peak" not in partial and "Record low" not in partial
+    assert '<b class="">0 M</b>' in partial
+    assert not re.search(r'<b class="(?:up|down)">[+−]?0 M</b>', partial)
+    assert "+0 M" not in partial and "−0 M" not in partial
+    full = _render_spr_context(_spr_vm(monkeypatch, [400000 - 1000 * i for i in range(60)]))
+    assert '<b class="down">−59 M</b>' in full
+    assert '<b class="">0 M</b>' in full

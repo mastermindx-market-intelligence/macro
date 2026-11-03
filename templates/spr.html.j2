@@ -158,10 +158,10 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
     </div>
     <div class="card">
       <h2>{{ t('Strategic context', '战略背景') }}</h2>
-      <div class="sigline"><span class="l">{{ t('All-time peak','历史峰值') }}</span><span class="r"><b>{{ mb(us.peak_mb) }} M</b> <span class="faint">{{ us.peak_date }}</span></span></div>
-      <div class="sigline"><span class="l">{{ t('Below peak','低于峰值') }}</span><span class="r"><b class="down">−{{ mb(us.below_peak_mb) }} M</b></span></div>
-      <div class="sigline"><span class="l">{{ t('Record low','历史低点') }}</span><span class="r"><b>{{ mb(us.low_mb) }} M</b> <span class="faint">{{ us.low_date }}</span></span></div>
-      <div class="sigline"><span class="l">{{ t('Above low','高于低点') }}</span><span class="r"><b class="up">+{{ mb(us.above_low_mb) }} M</b></span></div>
+      <div class="sigline"><span class="l">{{ t('Peak in available history','已有历史峰值') }}</span><span class="r"><b>{{ mb(us.peak_mb) }} M</b> <span class="faint">{{ us.peak_date }}</span></span></div>
+      <div class="sigline"><span class="l">{{ t('Below peak','低于峰值') }}</span><span class="r"><b class="{{ 'down' if us.below_peak_mb else '' }}">{{ '−' if us.below_peak_mb else '' }}{{ mb(us.below_peak_mb) }} M</b></span></div>
+      <div class="sigline"><span class="l">{{ t('Low in available history','已有历史低点') }}</span><span class="r"><b>{{ mb(us.low_mb) }} M</b> <span class="faint">{{ us.low_date }}</span></span></div>
+      <div class="sigline"><span class="l">{{ t('Above low','高于低点') }}</span><span class="r"><b class="{{ 'up' if us.above_low_mb else '' }}">{{ '+' if us.above_low_mb else '' }}{{ mb(us.above_low_mb) }} M</b></span></div>
       {% if us.import_cover_days is not none %}<div class="sigline"><span class="l">{{ t('Days of net-import cover','净进口可供天数') }}</span><span class="r"><b>{{ us.import_cover_days|round|int }}</b> <span class="faint">{{ t('SPR ÷ 52-week mean of net crude imports (EIA weekly)','战略储备 ÷ 原油净进口52周均值（EIA 每周）') if us.trade_basis else t('SPR ÷ available-history mean of net crude imports (EIA weekly)','战略储备 ÷ 原油净进口已有历史均值（EIA 每周）') }}</span></span></div>{% endif %}
       {% if us.imports_mbd is not none or us.exports_mbd is not none or us.net_imports_mbd is not none %}
       <div class="sigline"><span class="l">{{ t('US crude trade','美国原油贸易') }}</span><span class="r">{% if us.imports_mbd is not none %}<b>{{ us.imports_mbd }}</b> {{ t('imp','进') }}{% endif %}{% if us.exports_mbd is not none %}{% if us.imports_mbd is not none %} / {% endif %}<b>{{ us.exports_mbd }}</b> {{ t('exp','出') }}{% endif %}{% if us.net_imports_mbd is not none %}{% if us.imports_mbd is not none or us.exports_mbd is not none %} · {% endif %}<b>{{ us.net_imports_mbd }}</b> {{ t('net','净') }}{% endif %} <span class="faint">{{ t('Mb/d · 1y avg','百万桶/日 · 1年均') if us.trade_basis else t('Mb/d · available-history avg','百万桶/日 · 已有历史均值') }}</span></span></div>
