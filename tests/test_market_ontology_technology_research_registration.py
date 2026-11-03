@@ -246,10 +246,17 @@ def test_compose_matches_the_base_providers_dossier(monkeypatch):
     assert via_adapter["source_version_vector"] == via_base["source_version_vector"]
 
 
+def _block_shared_shell(monkeypatch) -> None:
+    """The pre-#7870 carrier state: neither shell module imports."""
+    monkeypatch.setitem(sys.modules, reg._SHELL_REGISTRY_MODULE, None)
+    monkeypatch.setitem(sys.modules, reg._SHELL_SIBLING_MODULE, None)
+
+
 def test_compose_without_the_shared_contract_still_identifies(monkeypatch):
-    # Real seam: engine.theme_graph.curation_assertion is absent on this base,
-    # so the business section is the typed refusal — and the shell identity
+    # Blocked seam: with engine.theme_graph.curation_assertion not importable,
+    # the business section is the typed refusal — and the shell identity
     # checks still hold on the payload.
+    base._block_shared_contract(monkeypatch)
     payload = reg.compose(QUERY, _bundle())
     assert payload["schema"] == reg.PROFILE_ID
     assert payload["definition_version"] == reg.DEFINITION_VERSION
@@ -915,11 +922,25 @@ def test_shell_modules_import_is_lazy_only():
     )
 
 
-def test_shared_shell_unavailable_on_carrier_base():
+def test_shared_shell_unavailable_on_carrier_base(monkeypatch):
+    # #7870 is on this tree: the three shell symbols resolve.
+    present = reg._load_shared_shell()
+    assert present is not None
+    assert [symbol.__name__ for symbol in present] == [
+        "VerticalRegistration", "OwnerBundle", "ResearchQuery",
+    ]
+    # Without either shell module (the pre-#7870 carrier base) it is None.
+    _block_shared_shell(monkeypatch)
     assert reg._load_shared_shell() is None
 
 
-def test_registration_attempt_is_typed_unavailable_on_carrier_base():
+def test_registration_attempt_is_typed_unavailable_on_carrier_base(monkeypatch):
+    # Present shell: the company_profile hold, before construction.
+    with pytest.raises(TechnologyRegistrationRefusal) as held:
+        reg.registration_entry_or_refusal()
+    assert held.value.code == "vertical_registration_held:company_profile"
+    # Absent shell: typed unavailable.
+    _block_shared_shell(monkeypatch)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.registration_entry_or_refusal()
     assert excinfo.value.code == "shared_shell_unavailable"
@@ -1113,9 +1134,9 @@ class _Post7870VerticalRegistration:
 def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
     """Publish the #7870 ``VerticalRegistration`` signature as the shell registry.
 
-    The registry module is absent on this carrier base; the signature double
-    above stands in for it (removed with the monkeypatch), so the hold stays
-    pinned without importing #7870 source.
+    The signature double above stands in for the real registry (removed with
+    the monkeypatch), so the hold stays pinned to the #7870 signature even if
+    the real class later changes.
     """
     monkeypatch.setitem(
         sys.modules,
@@ -1128,12 +1149,13 @@ def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
 def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
     """Both arms of the #7870 registration pin.
 
-    Absent shell (this carrier, and origin/main until the registry lands):
+    Absent shell (the registry module blocked in ``sys.modules``):
     ``shared_shell_unavailable``, unchanged. Injected #7870 registry: the
     company_profile facts are held before construction, so the call raises
     ``vertical_registration_held:company_profile`` rather than the
     constructor ``TypeError`` the 11-field kwargs still provoke on that class.
     """
+    monkeypatch.setitem(sys.modules, reg._SHELL_REGISTRY_MODULE, None)
     with pytest.raises(TechnologyRegistrationRefusal) as absent:
         reg.registration_entry_or_refusal()
     assert absent.value.code == "shared_shell_unavailable"

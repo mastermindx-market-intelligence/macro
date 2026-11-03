@@ -4,12 +4,12 @@ Every provider here is EXPLICITLY SYNTHETIC: no real issuer, product, filing or
 vendor text appears anywhere; source ids, dates and digests are fabricated. The
 management_outlook_comparison.v1 unit is built concurrently, so only its SEALED
 OUTPUT SHAPE is fixture-built here — its internals are never mocked. The shared
-``theme_graph.curation_assertion.v1`` contract is not on the carrier base
-(macro#7870@45eb37bb); ``SYNTHETIC_CURATION_CONTRACT`` is a test-only stand-in
-that lets the composer's downstream logic run, while
-``test_shared_assertion_roundtrip_through_pinned_contract`` (strict xfail)
-exercises the REAL contract for real and will surface as XPASS the moment it
-lands.
+``theme_graph.curation_assertion.v1`` contract (macro#7870) is present;
+``SYNTHETIC_CURATION_CONTRACT`` is a test-only stand-in that lets the
+composer's downstream logic run over Technology-shaped payloads, while
+``test_shared_assertion_roundtrip_through_pinned_contract`` exercises the REAL
+contract on a conformant fixture. Tests of the absent-contract refusal block
+the module in ``sys.modules``.
 """
 from __future__ import annotations
 
@@ -31,6 +31,9 @@ from engine.market_ontology.technology_economic_change import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = REPO_ROOT / "engine" / "market_ontology" / "technology_economic_change.py"
+CONFORMANT_ASSERTION_PATH = (
+    REPO_ROOT / "tests" / "fixtures" / "technology_economic_change" / "conformant_assertion.json"
+)
 
 # --- synthetic identifiers (no real-world data) ------------------------------------
 
@@ -343,24 +346,10 @@ SYNTHETIC_CURATION_CONTRACT = types.SimpleNamespace(
     decode_assertion=lambda value: dict(value) if isinstance(value, dict) else None,
     source_ref_for=lambda payload: f"{payload['source']['owner']}/{payload['source']['object_id']}",
 )
-# KNOWN LIMITATION (recorded here, T5-owned, deliberately NOT fixed in T8A-X1):
-# beyond authority, the fixture assertion built by _assertion() is still far
-# from conformant with the real contract. Draft202012Validator.iter_errors on
-# _assertion(predicate="product_workload_role", seed="pinned-roundtrip")
-# returns 49 errors (jsonschema 4.10.3; schema blob ff3928f0, identical at
-# refs/grok/pr/7870 and the xfail pin 45eb37bb) in 11 sections: source,
-# observation, scope, subject, review, correction, object, temporal,
-# limitations, predicate, statement_mode. schema, curation_revision and
-# authority contribute none. Consequence, stated
-# plainly: the strict xfail
-# test_shared_assertion_roundtrip_through_pinned_contract keeps xfailing
-# GREEN instead of XPASSing the day the real module lands. It stays green
-# until both the validator refusal and decode_assertion's string requirement
-# are closed: validate_assertion raises schema_violation (first error
-# additionalProperties 'superseded_by'), and the test passes that dict to
-# decode_assertion, which requires a string and raises not_a_string for a
-# dict. It is not yet a working early warning for the shared contract's
-# arrival.
+# The synthetic stand-in is not the real contract: _assertion() builds a
+# Technology-shaped payload that the real validate_assertion refuses. The
+# real-contract roundtrip uses tests/fixtures/technology_economic_change/
+# conformant_assertion.json (test_shared_assertion_roundtrip_through_pinned_contract).
 
 
 def test_synthetic_stand_in_speaks_the_real_five_flag_can_star_vocabulary():
@@ -440,8 +429,8 @@ def test_lazy_import_literal_equals_shared_contract_module():
     The loader keeps a string literal so CI scope can resolve the target. Nothing
     else may carry a divergent copy of that path: if the constant moves and the
     literal does not, the loader keeps importing the old name and stays
-    ``shared_contract_unavailable``. The strict xfail hardcodes the same literal,
-    so it is included here and would not catch that drift on its own.
+    ``shared_contract_unavailable``. ``_real_curation_module`` hardcodes the same
+    literal, so it is included here and would not catch that drift on its own.
     """
     module_tree = ast.parse(MODULE_PATH.read_text(encoding="utf-8"))
     assigned = _assigned_string_constant(module_tree, "SHARED_CONTRACT_MODULE")
@@ -453,12 +442,35 @@ def test_lazy_import_literal_equals_shared_contract_module():
     assert set(_shared_contract_module_path_literals(test_tree)) == {assigned}
 
 
-def test_shared_contract_unavailable_on_carrier_base():
+def _block_shared_contract(monkeypatch) -> None:
+    """The pre-#7870 carrier state: the shared module does not import."""
+    monkeypatch.setitem(sys.modules, tech.SHARED_CONTRACT_MODULE, None)
+
+
+def _real_curation_module():
+    return importlib.import_module("engine.theme_graph.curation_assertion")
+
+
+def test_shared_contract_unavailable_on_carrier_base(monkeypatch):
+    # #7870 is on this tree: the loader returns the real module.
+    assert tech._load_shared_curation_contract() is _real_curation_module()
+    # Without it (the pre-#7870 carrier base) the loader is typed unavailable.
+    _block_shared_contract(monkeypatch)
     assert tech._load_shared_curation_contract() is None
 
 
-def test_business_refused_when_shared_contract_unavailable():
-    dossier = _compose()  # real seam: the module is absent on this base
+def test_business_refused_when_shared_contract_unavailable(monkeypatch):
+    # Present contract: the synthetic stand-in assertions are not valid
+    # #7870 assertions, so all three are counted invalid and none renders.
+    present = _compose()
+    assert "rows" in present["business"]
+    assert present["business"]["rows"] == []
+    assert present["counter_observations"] == []
+    assert present["coverage"]["assertion_counts_available"] is True
+    assert present["coverage"]["counts"]["invalid_assertions"] == 3
+    # Absent contract: the typed refusal, with every assertion count unknown.
+    _block_shared_contract(monkeypatch)
+    dossier = _compose()
     business = dossier["business"]
     assert business["refused"] is True
     assert business["reason_code"] == "shared_contract_unavailable"
@@ -469,17 +481,17 @@ def test_business_refused_when_shared_contract_unavailable():
         assert dossier["coverage"]["counts"][key] is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="shared theme_graph.curation_assertion.v1 not on carrier base; pinned to macro#7870@45eb37bb",
-)
 def test_shared_assertion_roundtrip_through_pinned_contract():
-    module = importlib.import_module("engine.theme_graph.curation_assertion")
-    payload = _assertion(predicate="product_workload_role", seed="pinned-roundtrip")
+    module = _real_curation_module()
+    payload = json.loads(CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
     validated = module.validate_assertion(payload)
     revision = module.curation_revision(validated)
     assert re.fullmatch(r"gmirca_[0-9a-f]{32}", revision)
-    assert module.decode_assertion(validated) is not None
+    assert validated["curation_revision"] == revision
+    encoded = module.encode_assertion(validated)
+    decoded = module.decode_assertion(encoded)
+    assert decoded is not None
+    assert decoded["curation_revision"] == revision
     assert isinstance(module.source_ref_for(validated), str)
 
 
@@ -527,7 +539,8 @@ def test_minimum_content_happy_path(monkeypatch):
     tech.validate_dossier(dossier)  # already ran inside compose; holds standalone too
 
 
-def test_minimum_content_refusal_state_names_typed_refusals():
+def test_minimum_content_refusal_state_names_typed_refusals(monkeypatch):
+    _block_shared_contract(monkeypatch)
     dossier = _compose()
     assert dossier["comparison"]["admission"] == "admitted"
     assert dossier["comparison"]["primary_limitation"]["text"]
