@@ -18530,6 +18530,8 @@ jobs:
       - "engine/earnings_release/__init__.py"
       - "engine/fundamental_forensics/__init__.py"
       - "site/basketdata/foresight_cascade.json"
+      # Closure edge from this PR: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which this PR adds (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28032,6 +28034,8 @@ jobs:
       - "tests/test_biocatalyst_activation.py"
       - "tests/test_biocatalyst_worker.py"
       - "tests/test_clinicaltrials_biocatalyst.py"
+      # Closure edge from this PR: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which this PR adds (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     # Full B1 collector → private evidence → public-generation worker replay.
     # Twelve minutes preserves measured headroom without hiding a slow worker
     # behind the former twenty-minute all-suite timeout.
@@ -37732,6 +37736,8 @@ jobs:
       - tests/test_earnings_economic_production_join.py
       - tests/test_earnings_private_store.py
       - tests/test_earnings_economic_closure_membership.py
+      # Closure edge from this PR: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which this PR adds (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
