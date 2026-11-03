@@ -1,0 +1,859 @@
+{
+  "schema": "f02.native-current-verification.v1",
+  "status": "INCOMPLETE_WRITES_PAUSED_EFFECT_UNRESOLVED",
+  "observed_at": "2026-11-03T06:54:39.243708+00:00",
+  "checkpoint": {
+    "path": "paper/writer-continuation-progress.json",
+    "sha256": "ffecbc138f3c18e0a78f432ccd2b75bf0668fb0401586e5513ebb82adac49427",
+    "observed_at": "2026-11-03T06:47:30.139Z"
+  },
+  "counts": {
+    "expected_boards": 32,
+    "observed_boards": 22,
+    "full_file_pairs": 20,
+    "partial_boards": 2,
+    "dispatches": 435,
+    "confirmed_applied": 434,
+    "unresolved": 1,
+    "originals_retained": 67,
+    "shared_tokens_retained": 20,
+    "unresolved_bindings": 50
+  },
+  "expected_board_keys": [
+    "builder",
+    "company-dark",
+    "company-dividend-overlay-320",
+    "company-eps-overlay-320",
+    "company-fy2025-eps-evidence-390",
+    "company-light",
+    "controls",
+    "controls-variants",
+    "density-40-52-comparison",
+    "editorial-calculation-evidence-390",
+    "editorial-dark",
+    "editorial-light",
+    "editorial-reading-390",
+    "fault-compositions",
+    "foundations",
+    "grammar",
+    "macro-dark",
+    "macro-dark-en-390",
+    "macro-docked-1280",
+    "macro-light",
+    "macro-light-zh-390",
+    "macro-zh-evidence-return-390",
+    "metrics",
+    "metrics-light",
+    "options-dark",
+    "options-full-row-evidence-320",
+    "options-light",
+    "readme",
+    "states-matrix",
+    "width-1024-overlay",
+    "width-1600-docked",
+    "width-768-overlay"
+  ],
+  "observed_board_keys": [
+    "builder",
+    "company-dark",
+    "company-dividend-overlay-320",
+    "company-eps-overlay-320",
+    "company-light",
+    "controls",
+    "controls-variants",
+    "editorial-dark",
+    "editorial-light",
+    "foundations",
+    "grammar",
+    "macro-dark",
+    "macro-dark-en-390",
+    "macro-light",
+    "macro-light-zh-390",
+    "metrics",
+    "metrics-light",
+    "options-dark",
+    "options-full-row-evidence-320",
+    "options-light",
+    "readme",
+    "states-matrix"
+  ],
+  "missing_board_keys": [
+    "macro-docked-1280",
+    "macro-zh-evidence-return-390",
+    "width-768-overlay",
+    "width-1024-overlay",
+    "width-1600-docked",
+    "fault-compositions",
+    "company-fy2025-eps-evidence-390",
+    "editorial-calculation-evidence-390",
+    "editorial-reading-390",
+    "density-40-52-comparison"
+  ],
+  "operation_states": {
+    "APPLIED_RESPONSE_OBSERVED": 434,
+    "TRANSPORT_ERROR_EFFECT_UNRESOLVED": 1
+  },
+  "unresolved_operations": [
+    "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
+  ],
+  "boards": [
+    {
+      "key": "readme",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-9-0",
+      "board_id": "47Q-0",
+      "screenshot": {
+        "path": "paper/screenshots/readme.jpg",
+        "bytes": 201085,
+        "sha256": "61d26af18c526796fddc7ba771606617957049da6cb400ce0c56fd1fe47d6a5e"
+      },
+      "jsx": {
+        "path": "paper/exports/readme.jsx",
+        "bytes": 10070,
+        "sha256": "85043df763af391ee304daf457ba923bfca8818645ec160bc8f36e960fd72549"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "foundations",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-3-0",
+      "board_id": "48W-0",
+      "screenshot": {
+        "path": "paper/screenshots/foundations.jpg",
+        "bytes": 192159,
+        "sha256": "0bb2b3c342ac41498d9b83c2ddf5ce11478c74e1d5efe46040c9d7df8d66cfb2"
+      },
+      "jsx": {
+        "path": "paper/exports/foundations.jsx",
+        "bytes": 40116,
+        "sha256": "b3d35049d3987b165982fb2df1a426acbec73dc55d01612df7c7cc25ad444cba"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "metrics",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4E3-0",
+      "screenshot": {
+        "path": "paper/screenshots/metrics.jpg",
+        "bytes": 165157,
+        "sha256": "1ba30a89ce2d209df6e499176b360ebcfd18974eabfd928ecb35a9f1e690bed5"
+      },
+      "jsx": {
+        "path": "paper/exports/metrics.jsx",
+        "bytes": 23155,
+        "sha256": "1594f31d77b2369c5a0a4e8698ef30f71b4902a8cea638ed6c2a5c3592ee9a0f"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "metrics-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4H1-0",
+      "screenshot": {
+        "path": "paper/screenshots/metrics-light.jpg",
+        "bytes": 166033,
+        "sha256": "63261335f6440efb67458235c4913fb0e98077c969df1c68e3bff677aae48c34"
+      },
+      "jsx": {
+        "path": "paper/exports/metrics-light.jsx",
+        "bytes": 22131,
+        "sha256": "33416deaefe7da8ca2f3a390a8e29e96ed00a439213fa5d861548e424fc94fbb"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "controls",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "4JP-0",
+      "screenshot": {
+        "path": "paper/screenshots/controls.jpg",
+        "bytes": 181197,
+        "sha256": "97618b7422ae285fe0157fd445c4758798bcf203502913291e0982c713a65a2d"
+      },
+      "jsx": {
+        "path": "paper/exports/controls.jsx",
+        "bytes": 14425,
+        "sha256": "4a6c3555dbf4c45540a993ac1b99f0d5c14e5c03366dda3852e55a00397417bb"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "grammar",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "4LC-0",
+      "screenshot": {
+        "path": "paper/screenshots/grammar.jpg",
+        "bytes": 173910,
+        "sha256": "27a94b8c11bad3b4c434028bc0bc4516db7a6d9855a94313485ebfcf861fccaa"
+      },
+      "jsx": {
+        "path": "paper/exports/grammar.jsx",
+        "bytes": 18712,
+        "sha256": "efc816a8c2fa9b60c111fda175a65fc0a3a7860da5756975970e99a2c0c40102"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "builder",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-7-0",
+      "board_id": "4NV-0",
+      "screenshot": {
+        "path": "paper/screenshots/builder.jpg",
+        "bytes": 246023,
+        "sha256": "21b47ca4452b73f17efda4d63e70a31c0bd3f436a1989e6fa2babbab0dc4b2b2"
+      },
+      "jsx": {
+        "path": "paper/exports/builder.jsx",
+        "bytes": 15126,
+        "sha256": "b710df3e82b362985e417c1d7e440f41b0a97a3f79e38822c7b0050a29a89a0b"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "macro-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "4PO-0",
+      "screenshot": {
+        "path": "paper/screenshots/macro-dark.jpg",
+        "bytes": 205715,
+        "sha256": "a9cab7a131a1af95e6ac7b808327809ca9079022341cb6dbc8510e690581fd9a"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-dark.jsx",
+        "bytes": 63009,
+        "sha256": "8c2d2be4ba878f988d781608916971db6733620be9e534d88c5e5bd4321e4fd0"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "macro-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "4YD-0",
+      "screenshot": {
+        "path": "paper/screenshots/macro-light.jpg",
+        "bytes": 208151,
+        "sha256": "8de668ab42ecf90cf9055ead4e92e9016a54eda95301becb617d835d56cc2d5d"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-light.jsx",
+        "bytes": 61248,
+        "sha256": "091fea8dbbd076ad175e79e1cc047aa890f3c762e243cd88319ec6eaac7876de"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "company-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "56L-0",
+      "screenshot": {
+        "path": "paper/screenshots/company-dark.jpg",
+        "bytes": 191656,
+        "sha256": "bcfaf974ab141d9b16da65aac130fb10f32be2c1d1c04f09d1aa0fb78d974040"
+      },
+      "jsx": {
+        "path": "paper/exports/company-dark.jsx",
+        "bytes": 76617,
+        "sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "company-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "5HV-0",
+      "screenshot": {
+        "path": "paper/screenshots/company-light.jpg",
+        "bytes": 194328,
+        "sha256": "e677807d3feffe9316288c71feeae2f4b3095dd8876130b13e87452b8df01da2"
+      },
+      "jsx": {
+        "path": "paper/exports/company-light.jsx",
+        "bytes": 74384,
+        "sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "options-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "5VE-0",
+      "screenshot": {
+        "path": "paper/screenshots/options-dark.jpg",
+        "bytes": 220444,
+        "sha256": "df5bee5998d445af9f8c85859597d7daf49afc9e5a1cabd094838b1a2ca37bc4"
+      },
+      "jsx": {
+        "path": "paper/exports/options-dark.jsx",
+        "bytes": 99102,
+        "sha256": "4cb1347341d355496493b2f5e9a7090508f66ca12adbc04d1de6aef5b1ca2d3f"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "options-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "67V-0",
+      "screenshot": {
+        "path": "paper/screenshots/options-light.jpg",
+        "bytes": 223362,
+        "sha256": "f81d78ca1f9160a25cc6fdc66ee23bb5e1cc79dc085b6aecc4079b4bea2b1462"
+      },
+      "jsx": {
+        "path": "paper/exports/options-light.jsx",
+        "bytes": 95969,
+        "sha256": "e8f72c63296dae227798fccc85c45d5f4da272dabddf37ac6d7d083db0bb13b3"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "editorial-dark",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "6JX-0",
+      "screenshot": {
+        "path": "paper/screenshots/editorial-dark.jpg",
+        "bytes": 225047,
+        "sha256": "ea73e13bdbb05e25c9afce679e30e12c9d62a1a8633be04892a869c190ae9e88"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-dark.jsx",
+        "bytes": 23250,
+        "sha256": "83f99b054efe81ee5d4e0f36c879e9e8168bd951d981896a52b2d3e4b2eeb916"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "editorial-light",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-6-0",
+      "board_id": "6NG-0",
+      "screenshot": {
+        "path": "paper/screenshots/editorial-light.jpg",
+        "bytes": 225971,
+        "sha256": "b077a2b15ec585da3e5426985c3bdfef4e07953169f742e254ed2e8f0d0f5fb3"
+      },
+      "jsx": {
+        "path": "paper/exports/editorial-light.jsx",
+        "bytes": 22601,
+        "sha256": "e3f809b3996bd5943426ecc719830f9d4749b201b3c2268605adfabd2eac1ba3"
+      },
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "states-matrix",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "6Q3-0",
+      "screenshot": null,
+      "jsx": null,
+      "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record"
+    },
+    {
+      "key": "company-eps-overlay-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "70C-0",
+      "screenshot": {
+        "path": "paper/screenshots/company-eps-overlay-320.jpg",
+        "bytes": 91071,
+        "sha256": "1087387fe9a2a527d19ea94b9eff026a703a62e8ac2e0a38c7467b340e6ca113"
+      },
+      "jsx": {
+        "path": "paper/exports/company-eps-overlay-320.jsx",
+        "bytes": 16761,
+        "sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd"
+      },
+      "latest_writer_capture": {
+        "key": "company-eps-overlay-320",
+        "boardKey": "company-eps-overlay-320",
+        "boardId": "70C-0",
+        "nodeId": "70C-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_EPS_UNKNOWN_OVERLAY",
+        "captured_at": "2026-11-03T05:40:01.310Z",
+        "operations_through": 316,
+        "source_input": {
+          "key": "company-eps-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-eps-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-eps-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "1087387fe9a2a527d19ea94b9eff026a703a62e8ac2e0a38c7467b340e6ca113",
+        "jsx_sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd",
+        "screenshot_bytes": 91071,
+        "verdict": "PASS: full 320px overlay preserves identity, five annual periods, unknown-versus-zero distinction, clocks, unit and source limitation; close/return targets and focus outline fit; native board height follows content without clipping."
+      },
+      "latest_scoped_capture": {
+        "key": "company-eps-overlay-320",
+        "boardKey": "company-eps-overlay-320",
+        "boardId": "70C-0",
+        "nodeId": "70C-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_EPS_UNKNOWN_OVERLAY",
+        "captured_at": "2026-11-03T05:40:01.310Z",
+        "operations_through": 316,
+        "source_input": {
+          "key": "company-eps-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-eps-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-eps-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "1087387fe9a2a527d19ea94b9eff026a703a62e8ac2e0a38c7467b340e6ca113",
+        "jsx_sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd",
+        "screenshot_bytes": 91071,
+        "verdict": "PASS: full 320px overlay preserves identity, five annual periods, unknown-versus-zero distinction, clocks, unit and source limitation; close/return targets and focus outline fit; native board height follows content without clipping."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED"
+    },
+    {
+      "key": "company-dividend-overlay-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "72T-0",
+      "screenshot": {
+        "path": "paper/screenshots/company-dividend-overlay-320.jpg",
+        "bytes": 95755,
+        "sha256": "5c44a755cf4ed242b842caf75af10fad68a322a8be10aca0c9bf81ee00233e83"
+      },
+      "jsx": {
+        "path": "paper/exports/company-dividend-overlay-320.jsx",
+        "bytes": 16799,
+        "sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd"
+      },
+      "latest_writer_capture": {
+        "key": "company-dividend-overlay-320",
+        "boardKey": "company-dividend-overlay-320",
+        "boardId": "72T-0",
+        "nodeId": "72T-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_DIVIDEND_ZERO_OVERLAY",
+        "captured_at": "2026-11-03T05:41:34.662Z",
+        "operations_through": 320,
+        "source_input": {
+          "key": "company-dividend-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-dividend-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-dividend-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "5c44a755cf4ed242b842caf75af10fad68a322a8be10aca0c9bf81ee00233e83",
+        "jsx_sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd",
+        "screenshot_bytes": 95755,
+        "verdict": "PASS: reported zero, all five 0.00 periods, absolute zero change and undefined percentage comparison are distinct from unknown EPS; full source identity and units wrap cleanly, 44px close/return fit, and clone retains the reviewed anatomy."
+      },
+      "latest_scoped_capture": {
+        "key": "company-dividend-overlay-320",
+        "boardKey": "company-dividend-overlay-320",
+        "boardId": "72T-0",
+        "nodeId": "72T-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_DIVIDEND_ZERO_OVERLAY",
+        "captured_at": "2026-11-03T05:41:34.662Z",
+        "operations_through": 320,
+        "source_input": {
+          "key": "company-dividend-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-dividend-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-dividend-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "5c44a755cf4ed242b842caf75af10fad68a322a8be10aca0c9bf81ee00233e83",
+        "jsx_sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd",
+        "screenshot_bytes": 95755,
+        "verdict": "PASS: reported zero, all five 0.00 periods, absolute zero change and undefined percentage comparison are distinct from unknown EPS; full source identity and units wrap cleanly, 44px close/return fit, and clone retains the reviewed anatomy."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED"
+    },
+    {
+      "key": "options-full-row-evidence-320",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "74P-0",
+      "screenshot": {
+        "path": "paper/screenshots/options-full-row-evidence-320.jpg",
+        "bytes": 94372,
+        "sha256": "584df181a9c266c646d37d6690985349a219c09d5e3dd99db769debfd08056ab"
+      },
+      "jsx": {
+        "path": "paper/exports/options-full-row-evidence-320.jsx",
+        "bytes": 19339,
+        "sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672"
+      },
+      "latest_writer_capture": {
+        "key": "options-full-row-evidence-320",
+        "boardKey": "options-full-row-evidence-320",
+        "boardId": "74P-0",
+        "nodeId": "74P-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_OPTIONS_FULL_ROW_320",
+        "captured_at": "2026-11-03T05:47:10.669Z",
+        "operations_through": 336,
+        "source_input": {
+          "key": "options-full-row-evidence-320",
+          "path": "f02/paper/core-supplement-inputs.json",
+          "sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/options-full-row-evidence-320.jpg",
+        "jsx": "f02/paper/exports/options-full-row-evidence-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "584df181a9c266c646d37d6690985349a219c09d5e3dd99db769debfd08056ab",
+        "jsx_sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672",
+        "screenshot_bytes": 94372,
+        "verdict": "PASS: complete twelve-field record, source identity, separate clocks and estimated-side caveat remain legible; 44px close/return and focus treatment fit; outside-product build contract is distinct; fit-content leaves no clipping or blank tail."
+      },
+      "latest_scoped_capture": {
+        "key": "options-full-row-evidence-320",
+        "boardKey": "options-full-row-evidence-320",
+        "boardId": "74P-0",
+        "nodeId": "74P-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_OPTIONS_FULL_ROW_320",
+        "captured_at": "2026-11-03T05:47:10.669Z",
+        "operations_through": 336,
+        "source_input": {
+          "key": "options-full-row-evidence-320",
+          "path": "f02/paper/core-supplement-inputs.json",
+          "sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/options-full-row-evidence-320.jpg",
+        "jsx": "f02/paper/exports/options-full-row-evidence-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "584df181a9c266c646d37d6690985349a219c09d5e3dd99db769debfd08056ab",
+        "jsx_sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672",
+        "screenshot_bytes": 94372,
+        "verdict": "PASS: complete twelve-field record, source identity, separate clocks and estimated-side caveat remain legible; 44px close/return and focus treatment fit; outside-product build contract is distinct; fit-content leaves no clipping or blank tail."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED"
+    },
+    {
+      "key": "controls-variants",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-4-0",
+      "board_id": "771-0",
+      "screenshot": {
+        "path": "paper/screenshots/controls-variants.jpg",
+        "bytes": 252535,
+        "sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2"
+      },
+      "jsx": {
+        "path": "paper/exports/controls-variants.jsx",
+        "bytes": 43401,
+        "sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f"
+      },
+      "latest_writer_capture": {
+        "key": "controls-variants",
+        "boardKey": "controls-variants",
+        "boardId": "771-0",
+        "nodeId": "771-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_ACTION_DISCLOSURE_ACCESS_VARIANTS_REPAIRED",
+        "captured_at": "2026-11-03T06:08:52.309Z",
+        "operations_through": 384,
+        "source_input": {
+          "key": "controls-variants",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+          "sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+          "pageId": "p-4-0",
+          "overrides": [
+            {
+              "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+              "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7"
+            },
+            {
+              "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+              "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+            }
+          ]
+        },
+        "screenshot": "f02/paper/screenshots/controls-variants.jpg",
+        "jsx": "f02/paper/exports/controls-variants.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2",
+        "jsx_sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f",
+        "screenshot_bytes": 252535,
+        "verdict": "PASS: final board retains action hierarchy, dark/light access comparisons and all disclosure states;320px specimen and adjacent contract fit, repaired icons/copy remain legible, and the full fit-content board contains every section without clipping."
+      },
+      "latest_scoped_capture": {
+        "key": "controls-variants",
+        "boardKey": "controls-variants",
+        "boardId": "771-0",
+        "nodeId": "771-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_ACTION_DISCLOSURE_ACCESS_VARIANTS_REPAIRED",
+        "captured_at": "2026-11-03T06:08:52.309Z",
+        "operations_through": 384,
+        "source_input": {
+          "key": "controls-variants",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+          "sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+          "pageId": "p-4-0",
+          "overrides": [
+            {
+              "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+              "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7"
+            },
+            {
+              "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+              "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+            }
+          ]
+        },
+        "screenshot": "f02/paper/screenshots/controls-variants.jpg",
+        "jsx": "f02/paper/exports/controls-variants.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2",
+        "jsx_sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f",
+        "screenshot_bytes": 252535,
+        "verdict": "PASS: final board retains action hierarchy, dark/light access comparisons and all disclosure states;320px specimen and adjacent contract fit, repaired icons/copy remain legible, and the full fit-content board contains every section without clipping."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED"
+    },
+    {
+      "key": "macro-dark-en-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7CM-0",
+      "screenshot": {
+        "path": "paper/screenshots/macro-dark-en-390.jpg",
+        "bytes": 103001,
+        "sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-dark-en-390.jsx",
+        "bytes": 46413,
+        "sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd"
+      },
+      "latest_writer_capture": {
+        "key": "macro-dark-en-390",
+        "boardKey": "macro-dark-en-390",
+        "boardId": "7CM-0",
+        "nodeId": "7CM-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_MACRO_EN390",
+        "captured_at": "2026-11-03T06:17:53.463Z",
+        "operations_through": 410,
+        "source_input": {
+          "key": "macro-dark-en-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-dark-en-390.jpg",
+        "jsx": "f02/paper/exports/macro-dark-en-390.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634",
+        "jsx_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "screenshot_bytes": 103001,
+        "verdict": "PASS: ten-row primary comparison, selected/focused evidence action and missing-last ordering are clear; seven native history observations retain the missing-session gap, explicit40–80 scale and exact-values action; full390px board fits without global overflow."
+      },
+      "latest_scoped_capture": {
+        "key": "macro-dark-en-390",
+        "boardKey": "macro-dark-en-390",
+        "boardId": "7CM-0",
+        "nodeId": "7CM-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_MACRO_EN390",
+        "captured_at": "2026-11-03T06:17:53.463Z",
+        "operations_through": 410,
+        "source_input": {
+          "key": "macro-dark-en-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-dark-en-390.jpg",
+        "jsx": "f02/paper/exports/macro-dark-en-390.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634",
+        "jsx_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "screenshot_bytes": 103001,
+        "verdict": "PASS: ten-row primary comparison, selected/focused evidence action and missing-last ordering are clear; seven native history observations retain the missing-session gap, explicit40–80 scale and exact-values action; full390px board fits without global overflow."
+      },
+      "writer_status": "CONSTRUCTION_COMPLETE_NUMERIC_ALIGNMENT_REPAIR_PENDING"
+    },
+    {
+      "key": "macro-light-zh-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7IS-0",
+      "screenshot": null,
+      "jsx": null,
+      "latest_writer_capture": null,
+      "latest_scoped_capture": {
+        "key": "macro-light-zh-390--in-progress",
+        "boardKey": "macro-light-zh-390",
+        "boardId": "7IS-0",
+        "nodeId": "7IS-0",
+        "stepKey": null,
+        "capture_state": "IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED",
+        "captured_at": "2026-11-03T06:40:32.467Z",
+        "operations_through": 435,
+        "source_input": {
+          "key": "macro-light-zh-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
+        "jsx": "f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9",
+        "jsx_sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c",
+        "screenshot_bytes": 69446,
+        "verdict": "PASS_PARTIAL_ONLY: ten Chinese comparison rows and seven-point gap chart fit cleanly; complete key/clock footer and implementation note are absent, with one transport outcome unresolved. No completion or browser behavior claim."
+      },
+      "writer_status": "IN_PROGRESS_WRITES_PAUSED"
+    }
+  ],
+  "retention": {
+    "path": "paper/native-final-retention.json",
+    "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+    "counts": {
+      "originals_expected": 67,
+      "originals_present": 67,
+      "originals_in_expected_file_and_page": 67,
+      "canonical_originals": 48,
+      "supporting_originals": 19,
+      "name_changes": 0,
+      "dispatch_records": 435,
+      "applied_response_observed": 434,
+      "uncertain": 1,
+      "original_targets": 0,
+      "scope_violations": 0
+    },
+    "token_hash": "356191c3",
+    "scope": "Identity/location/name/token readback and recorded target audit; no reference approval"
+  },
+  "source_validation_refs": [
+    {
+      "path": "paper/repairs/fixture-coherence-v1/arithmetic-validation.json",
+      "sha256": "e98c0c07b53d56293dd1841dc459df65f1eeb438b84482c764536a9e062729b2",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/fixture-coherence-v1/independent-source-validation.json",
+      "sha256": "7c672a6dcc594ba030891ada2a577e8ec03f6766e4a70f0bc2ca1664cf3ce204",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/observation-identity-clocks-v1/validation.json",
+      "sha256": "e1510e7d9f0dd2d82ec94910798e2f512acea650269e447d095fc4cbf5878f39",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/numeric-alignment-after-v3-inputs.validation.json",
+      "sha256": "0a0d438e620dc9e82df3a4af68c7e4180f35c4e74e3307dba04d6a798b7f9d8e",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/numeric-alignment-390-v1/validation.json",
+      "sha256": "e1fd3966157ccc952e5e96fc82ff065a8aaa9ebaf4f135109021d0036e85c596",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/review-repair-readonly-preflight.json",
+      "sha256": "20b06111fb6611d0b0549a9595b6f86f41b065d3e9c74ba3649c341c37b84ce8",
+      "scope": "Source/guard verification; native application is separately recorded"
+    },
+    {
+      "path": "paper/repairs/company-annual-growth-v2/company-row-validation.v2.json",
+      "sha256": "db2a6c1cf8930333b50d4afaad17206733f3405024bd5226ff761424d2c31592",
+      "scope": "Prepared45 annual comparisons; not native application"
+    }
+  ],
+  "review_reports_preserved": {
+    "product-native-first-pass.md": "a5d3bbfdb1a77eedb45a6c91a9c9a7fffedd4858babba53fe12d9eb2498f6b43",
+    "taste-native-first-pass.md": "981f6774fba5af4218c50d6ec2eaa879a6c1119feea9729aaaad7f7e0e5e0d92",
+    "product-native-rationale-pass.md": "ec344300bd2e7c6a3bc05fa5b8bd77563bff6338f6528fdb3868ad9ac4041975",
+    "taste-native-rationale-pass.md": "8398d4840713f25823d8155d8d5678869c0c444d893102656ec39bcc4ac6acd0"
+  },
+  "review_status": {
+    "native_product_first_pass": "BLOCK",
+    "native_taste_first_pass": "BLOCK",
+    "rationale_changed_verdicts": false,
+    "complete_repaired_native_freeze": false,
+    "complete_repaired_set_reviews": false,
+    "formal_rig": "draft"
+  },
+  "freeze_preflight": {
+    "path": "paper/native-freeze-preflight-paused.json",
+    "sha256": "4a8053db6ec4e1d8dba24c3bdd653bb668f95efed5637b4a59ff40a2084d9247",
+    "exit_code": 2,
+    "ready_to_package": false,
+    "freeze_created": false,
+    "errors": 186,
+    "note": "20 full byte pairs are observed captures; only5 current writer final-capture receipts pass this strict in-progress preflight. Missing metadata/steps/repairs are not promoted to final acceptance."
+  },
+  "remaining_gates": [
+    "Original-request terminal/canonical reconciliation through existing Paper/P00 owner",
+    "Complete32-board construction, repairs, appends, final Read me and exact bindings",
+    "Independent repaired-set product/taste review after immutable freeze",
+    "F01 detailed cutoff/transition acceptance and joint reviewed release",
+    "Actual browser keyboard/touch/focus/400% behavior on a permitted reachable path",
+    "Domain producer/identity/access/full-capability and D23 save-readback acceptance",
+    "Actual formal RIG admission and designated authority verdict"
+  ],
+  "not_claimed": [
+    "Native repair application from preparation alone",
+    "Browser/runtime or production proof",
+    "Domain original requalification",
+    "Product implementation, merge, Ready transition or deployment"
+  ]
+}

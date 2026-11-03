@@ -1,10 +1,12 @@
 {
   "schema": "f02.native-board-index.v1",
-  "generated_at": "2026-11-03T06:10:41.874013+00:00",
-  "source_runtime": "f02_writer_runtime.json",
-  "runtime_sha256": "2d24aa6b186eec5273cf329648d62f03995543adc93c736d522865e17cfa95ab",
-  "operation_count": 385,
-  "unresolved_operations": [],
+  "generated_at": "2026-11-03T06:53:40.367282+00:00",
+  "source_checkpoint": "paper/writer-continuation-progress.json",
+  "checkpoint_sha256": "ffecbc138f3c18e0a78f432ccd2b75bf0668fb0401586e5513ebb82adac49427",
+  "operation_count": 435,
+  "unresolved_operations": [
+    "f02-c2-macro-light-zh-390-chart-footer-20261103-01"
+  ],
   "boards": [
     {
       "key": "readme",
@@ -34,6 +36,8 @@
         "sha256": "85043df763af391ee304daf457ba923bfca8818645ec160bc8f36e960fd72549"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -66,6 +70,8 @@
         "sha256": "b3d35049d3987b165982fb2df1a426acbec73dc55d01612df7c7cc25ad444cba"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -100,6 +106,8 @@
         "sha256": "1594f31d77b2369c5a0a4e8698ef30f71b4902a8cea638ed6c2a5c3592ee9a0f"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -134,6 +142,8 @@
         "sha256": "33416deaefe7da8ca2f3a390a8e29e96ed00a439213fa5d861548e424fc94fbb"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -165,6 +175,8 @@
         "sha256": "4a6c3555dbf4c45540a993ac1b99f0d5c14e5c03366dda3852e55a00397417bb"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -196,6 +208,8 @@
         "sha256": "efc816a8c2fa9b60c111fda175a65fc0a3a7860da5756975970e99a2c0c40102"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -232,6 +246,8 @@
         "sha256": "b710df3e82b362985e417c1d7e440f41b0a97a3f79e38822c7b0050a29a89a0b"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -305,6 +321,8 @@
         "sha256": "8c2d2be4ba878f988d781608916971db6733620be9e534d88c5e5bd4321e4fd0"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -378,6 +396,8 @@
         "sha256": "091fea8dbbd076ad175e79e1cc047aa890f3c762e243cd88319ec6eaac7876de"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -433,6 +453,8 @@
         "sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -488,6 +510,8 @@
         "sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -546,6 +570,8 @@
         "sha256": "4cb1347341d355496493b2f5e9a7090508f66ca12adbc04d1de6aef5b1ca2d3f"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -604,6 +630,8 @@
         "sha256": "e8f72c63296dae227798fccc85c45d5f4da272dabddf37ac6d7d083db0bb13b3"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -660,6 +688,8 @@
         "sha256": "83f99b054efe81ee5d4e0f36c879e9e8168bd951d981896a52b2d3e4b2eeb916"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -716,6 +746,8 @@
         "sha256": "e3f809b3996bd5943426ecc719830f9d4749b201b3c2268605adfabd2eac1ba3"
       },
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -772,6 +804,8 @@
       "screenshot": null,
       "jsx": null,
       "latest_writer_capture": null,
+      "latest_scoped_capture": null,
+      "writer_status": "BASE_CANDIDATE_OR_IN_PROGRESS; see pending-work record",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -839,6 +873,30 @@
         "screenshot_bytes": 91071,
         "verdict": "PASS: full 320px overlay preserves identity, five annual periods, unknown-versus-zero distinction, clocks, unit and source limitation; close/return targets and focus outline fit; native board height follows content without clipping."
       },
+      "latest_scoped_capture": {
+        "key": "company-eps-overlay-320",
+        "boardKey": "company-eps-overlay-320",
+        "boardId": "70C-0",
+        "nodeId": "70C-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_EPS_UNKNOWN_OVERLAY",
+        "captured_at": "2026-11-03T05:40:01.310Z",
+        "operations_through": 316,
+        "source_input": {
+          "key": "company-eps-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-eps-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-eps-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "1087387fe9a2a527d19ea94b9eff026a703a62e8ac2e0a38c7467b340e6ca113",
+        "jsx_sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd",
+        "screenshot_bytes": 91071,
+        "verdict": "PASS: full 320px overlay preserves identity, five annual periods, unknown-versus-zero distinction, clocks, unit and source limitation; close/return targets and focus outline fit; native board height follows content without clipping."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -906,6 +964,30 @@
         "screenshot_bytes": 95755,
         "verdict": "PASS: reported zero, all five 0.00 periods, absolute zero change and undefined percentage comparison are distinct from unknown EPS; full source identity and units wrap cleanly, 44px close/return fit, and clone retains the reviewed anatomy."
       },
+      "latest_scoped_capture": {
+        "key": "company-dividend-overlay-320",
+        "boardKey": "company-dividend-overlay-320",
+        "boardId": "72T-0",
+        "nodeId": "72T-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_DIVIDEND_ZERO_OVERLAY",
+        "captured_at": "2026-11-03T05:41:34.662Z",
+        "operations_through": 320,
+        "source_input": {
+          "key": "company-dividend-overlay-320",
+          "path": "f02/paper/mobile-inputs/mobile-state-boards.json",
+          "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/company-dividend-overlay-320.jpg",
+        "jsx": "f02/paper/exports/company-dividend-overlay-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "5c44a755cf4ed242b842caf75af10fad68a322a8be10aca0c9bf81ee00233e83",
+        "jsx_sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd",
+        "screenshot_bytes": 95755,
+        "verdict": "PASS: reported zero, all five 0.00 periods, absolute zero change and undefined percentage comparison are distinct from unknown EPS; full source identity and units wrap cleanly, 44px close/return fit, and clone retains the reviewed anatomy."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -964,6 +1046,30 @@
         "screenshot_bytes": 94372,
         "verdict": "PASS: complete twelve-field record, source identity, separate clocks and estimated-side caveat remain legible; 44px close/return and focus treatment fit; outside-product build contract is distinct; fit-content leaves no clipping or blank tail."
       },
+      "latest_scoped_capture": {
+        "key": "options-full-row-evidence-320",
+        "boardKey": "options-full-row-evidence-320",
+        "boardId": "74P-0",
+        "nodeId": "74P-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_OPTIONS_FULL_ROW_320",
+        "captured_at": "2026-11-03T05:47:10.669Z",
+        "operations_through": 336,
+        "source_input": {
+          "key": "options-full-row-evidence-320",
+          "path": "f02/paper/core-supplement-inputs.json",
+          "sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/options-full-row-evidence-320.jpg",
+        "jsx": "f02/paper/exports/options-full-row-evidence-320.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "584df181a9c266c646d37d6690985349a219c09d5e3dd99db769debfd08056ab",
+        "jsx_sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672",
+        "screenshot_bytes": 94372,
+        "verdict": "PASS: complete twelve-field record, source identity, separate clocks and estimated-side caveat remain legible; 44px close/return and focus treatment fit; outside-product build contract is distinct; fit-content leaves no clipping or blank tail."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     },
     {
@@ -1060,6 +1166,194 @@
         "screenshot_bytes": 252535,
         "verdict": "PASS: final board retains action hierarchy, dark/light access comparisons and all disclosure states;320px specimen and adjacent contract fit, repaired icons/copy remain legible, and the full fit-content board contains every section without clipping."
       },
+      "latest_scoped_capture": {
+        "key": "controls-variants",
+        "boardKey": "controls-variants",
+        "boardId": "771-0",
+        "nodeId": "771-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_ACTION_DISCLOSURE_ACCESS_VARIANTS_REPAIRED",
+        "captured_at": "2026-11-03T06:08:52.309Z",
+        "operations_through": 384,
+        "source_input": {
+          "key": "controls-variants",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+          "sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+          "pageId": "p-4-0",
+          "overrides": [
+            {
+              "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+              "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7"
+            },
+            {
+              "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+              "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+            }
+          ]
+        },
+        "screenshot": "f02/paper/screenshots/controls-variants.jpg",
+        "jsx": "f02/paper/exports/controls-variants.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2",
+        "jsx_sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f",
+        "screenshot_bytes": 252535,
+        "verdict": "PASS: final board retains action hierarchy, dark/light access comparisons and all disclosure states;320px specimen and adjacent contract fit, repaired icons/copy remain legible, and the full fit-content board contains every section without clipping."
+      },
+      "writer_status": "COMPLETE_NATIVE_DESIGN_REVIEWED",
+      "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
+    },
+    {
+      "key": "macro-dark-en-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7CM-0",
+      "name": "F02 · Macro comparison · EN · Dark · 390",
+      "width": 390,
+      "theme": "dark",
+      "page_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "step_ids": {
+        "artifact": "7CN-0",
+        "app-header": "7CQ-0",
+        "body": "7CY-0",
+        "title": "7D0-0",
+        "metric": "7D8-0",
+        "section-toolbar": "7DF-0",
+        "scroll-cue": "7DK-0",
+        "table": "7DN-0",
+        "sector-0": "7DY-0",
+        "sector-1": "7EB-0",
+        "sector-2": "7EO-0",
+        "sector-3": "7F1-0",
+        "sector-4": "7FE-0",
+        "sector-5": "7FR-0",
+        "sector-6": "7G4-0",
+        "sector-8": "7GH-0",
+        "sector-9": "7GU-0",
+        "sector-7": "7H7-0",
+        "post-table": "7HK-0",
+        "chart-heading": "7HN-0",
+        "chart": "7HR-0",
+        "chart-footer": "7IH-0",
+        "build-note": "7IN-0"
+      },
+      "screenshot": {
+        "path": "paper/screenshots/macro-dark-en-390.jpg",
+        "bytes": 103001,
+        "sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634"
+      },
+      "jsx": {
+        "path": "paper/exports/macro-dark-en-390.jsx",
+        "bytes": 46413,
+        "sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd"
+      },
+      "latest_writer_capture": {
+        "key": "macro-dark-en-390",
+        "boardKey": "macro-dark-en-390",
+        "boardId": "7CM-0",
+        "nodeId": "7CM-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_MACRO_EN390",
+        "captured_at": "2026-11-03T06:17:53.463Z",
+        "operations_through": 410,
+        "source_input": {
+          "key": "macro-dark-en-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-dark-en-390.jpg",
+        "jsx": "f02/paper/exports/macro-dark-en-390.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634",
+        "jsx_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "screenshot_bytes": 103001,
+        "verdict": "PASS: ten-row primary comparison, selected/focused evidence action and missing-last ordering are clear; seven native history observations retain the missing-session gap, explicit40–80 scale and exact-values action; full390px board fits without global overflow."
+      },
+      "latest_scoped_capture": {
+        "key": "macro-dark-en-390",
+        "boardKey": "macro-dark-en-390",
+        "boardId": "7CM-0",
+        "nodeId": "7CM-0",
+        "stepKey": null,
+        "capture_state": "COMPLETE_MACRO_EN390",
+        "captured_at": "2026-11-03T06:17:53.463Z",
+        "operations_through": 410,
+        "source_input": {
+          "key": "macro-dark-en-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-dark-en-390.jpg",
+        "jsx": "f02/paper/exports/macro-dark-en-390.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634",
+        "jsx_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+        "screenshot_bytes": 103001,
+        "verdict": "PASS: ten-row primary comparison, selected/focused evidence action and missing-last ordering are clear; seven native history observations retain the missing-session gap, explicit40–80 scale and exact-values action; full390px board fits without global overflow."
+      },
+      "writer_status": "CONSTRUCTION_COMPLETE_NUMERIC_ALIGNMENT_REPAIR_PENDING",
+      "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
+    },
+    {
+      "key": "macro-light-zh-390",
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-5-0",
+      "board_id": "7IS-0",
+      "name": "F02 · Macro comparison · 中文 · Light · 390",
+      "width": 390,
+      "theme": "light",
+      "page_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0",
+      "step_ids": {
+        "artifact": "7IT-0",
+        "app-header": "7IW-0",
+        "body": "7J4-0",
+        "title": "7J6-0",
+        "metric": "7JE-0",
+        "section-toolbar": "7JL-0",
+        "scroll-cue": "7JQ-0",
+        "table": "7JT-0",
+        "sector-0": "7K4-0",
+        "sector-1": "7KH-0",
+        "sector-2": "7KU-0",
+        "sector-3": "7L7-0",
+        "sector-4": "7LK-0",
+        "sector-5": "7LX-0",
+        "sector-6": "7MA-0",
+        "sector-8": "7MN-0",
+        "sector-9": "7N0-0",
+        "sector-7": "7ND-0",
+        "post-table": "7NQ-0",
+        "chart-heading": "7NT-0",
+        "chart": "7NX-0"
+      },
+      "screenshot": null,
+      "jsx": null,
+      "latest_writer_capture": null,
+      "latest_scoped_capture": {
+        "key": "macro-light-zh-390--in-progress",
+        "boardKey": "macro-light-zh-390",
+        "boardId": "7IS-0",
+        "nodeId": "7IS-0",
+        "stepKey": null,
+        "capture_state": "IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED",
+        "captured_at": "2026-11-03T06:40:32.467Z",
+        "operations_through": 435,
+        "source_input": {
+          "key": "macro-light-zh-390",
+          "path": "f02/paper/repairs/fixture-coherence-v1/effective-spaced/mobile-state-boards.json",
+          "sha256": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+          "pageId": "p-5-0"
+        },
+        "screenshot": "f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
+        "jsx": "f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+        "mime_type": "image/jpeg",
+        "screenshot_sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9",
+        "jsx_sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c",
+        "screenshot_bytes": 69446,
+        "verdict": "PASS_PARTIAL_ONLY: ten Chinese comparison rows and seven-point gap chart fit cleanly; complete key/clock footer and implementation note are absent, with one transport outcome unresolved. No completion or browser behavior claim."
+      },
+      "writer_status": "IN_PROGRESS_WRITES_PAUSED",
       "qualification": "NATIVE_DESIGN_ONLY; runtime and reference approval are separate"
     }
   ],

@@ -1,0 +1,956 @@
+{
+  "schema": "f02.native-freeze-preflight.v1",
+  "observed_at_utc": "2026-11-03T06:53:40.585030Z",
+  "mode": "DRY_RUN",
+  "ready_to_package": false,
+  "freeze_created": false,
+  "partial_output_directory": null,
+  "expected_board_count": 32,
+  "writer_board_count": 22,
+  "final_capture_receipts": 5,
+  "selected_optional_captures": 0,
+  "source_file_count": 122,
+  "final_receipts": {
+    "retention": {
+      "status": "SUPPLIED",
+      "path": "paper/native-final-retention.json",
+      "receipt_status": "READBACK_COMPLETE_WRITES_PAUSED"
+    },
+    "verification": {
+      "status": "NOT_SUPPLIED",
+      "path": null
+    }
+  },
+  "errors": [
+    {
+      "code": "DIRECTORY_NOT_FINAL",
+      "path": "paper/readme-completion-inputs.json",
+      "message": "regenerate directory input from the final 32 observed boards"
+    },
+    {
+      "code": "UNRESOLVED_OPERATIONS",
+      "path": "paper/writer-continuation-progress.json",
+      "message": "unresolved_effects must be an explicit empty list"
+    },
+    {
+      "code": "UNRESOLVED_OPERATIONS",
+      "path": "paper/native-board-index.json",
+      "message": "unresolved_operations must be empty"
+    },
+    {
+      "code": "UNRESOLVED_OPERATION",
+      "path": "paper/writer-continuation-progress.json",
+      "message": "f02-c2-macro-light-zh-390-chart-footer-20261103-01: TRANSPORT_ERROR_EFFECT_UNRESOLVED"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "company-fy2025-eps-evidence-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "density-40-52-comparison"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "editorial-calculation-evidence-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "editorial-reading-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "macro-docked-1280"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "width-1024-overlay"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "width-1600-docked"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "writer",
+      "message": "width-768-overlay"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "company-fy2025-eps-evidence-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "density-40-52-comparison"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "editorial-calculation-evidence-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "editorial-reading-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "macro-docked-1280"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "width-1024-overlay"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "width-1600-docked"
+    },
+    {
+      "code": "EXPECTED_BOARD_MISSING",
+      "path": "registry",
+      "message": "width-768-overlay"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "builder / 4NV-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "company-dark / 56L-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "company-light / 5HV-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "controls / 4JP-0",
+      "message": "supplement-hover-heading, supplement-hover-row"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "controls / 4JP-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "editorial-dark / 6JX-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "editorial-light / 6NG-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "foundations / 48W-0",
+      "message": "core-icon-direction, core-icon-evidence, core-icon-heading, core-icon-recovery, core-icon-reuse-contract, core-icon-sizes"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "foundations / 48W-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "grammar / 4LC-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "macro-dark / 4PO-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "macro-light / 4YD-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "macro-light-zh-390 / 7IS-0",
+      "message": "build-note, chart-footer"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-image",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-export",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "macro-light-zh-390 / 7IS-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "metrics / 4E3-0",
+      "message": "core-metric-bps, core-metric-exceptions-heading, core-metric-unknown-age"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "metrics / 4E3-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "metrics-light / 4H1-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "options-dark / 5VE-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "options-light / 67V-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "readme / 47Q-0",
+      "message": "directory-p-3-0, directory-p-4-0, directory-p-5-0, directory-p-6-0, directory-p-7-0"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "readme / 47Q-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "EXPECTED_STEPS_MISSING",
+      "path": "states-matrix / 6Q3-0",
+      "message": "supplement-access-service-unavailable, supplement-source-unavailable, supplement-unavailable-contract"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-image",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "ARTIFACT_RECEIPT_MISSING",
+      "path": "final-native-export",
+      "message": "expected path, bytes and SHA256"
+    },
+    {
+      "code": "FINAL_CAPTURE_RECEIPT_MISSING",
+      "path": "states-matrix / 6Q3-0",
+      "message": "writer must record a complete full-board capture"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDINGS",
+      "path": "paper/native-role-bindings.json",
+      "message": "all portable board/step/export bindings must resolve"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "SectionHeader",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "SectionHeader / narrow English and Chinese title wrapping",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "SectionHeader / narrow English and Chinese title wrapping",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "SectionHeader / missing observation period header",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "MetricValue",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "MetricValue / dated value retained through stale/partial/write status",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "MetricValue / dated value retained through stale/partial/write status",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "MetricValue / dated value retained through stale/partial/write status",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "ChangeValue",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "ChangeValue / basis points",
+      "message": "metrics"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "ChangeValue / basis points",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "ChangeValue / basis points",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "ChangeValue / non-comparable definition and mixed-currency baseline",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "FreshnessReceipt",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "FreshnessReceipt / stale while useful observations remain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "FreshnessReceipt / stale while useful observations remain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "FreshnessReceipt / unknown source age with known retrieval",
+      "message": "metrics"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "FreshnessReceipt / unknown source age with known retrieval",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "FreshnessReceipt / unknown source age with known retrieval",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "DataRow",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "DataRow / narrow complete-row evidence and stable identity",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "TableFrame",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "TableFrame / narrow comparison with overflow cue and adjacent evidence",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "TableFrame / narrow comparison with overflow cue and adjacent evidence",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "TableFrame / composed empty / unavailable / retained-error table",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "ChartFrame",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "ChartFrame / unavailable chart series in its full frame",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "Tabs",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Tabs / default, hover, selected and keyboard focus",
+      "message": "controls"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "Tabs / default, hover, selected and keyboard focus",
+      "message": "controls"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Tabs / default, hover, selected and keyboard focus",
+      "message": "controls"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Tabs / busy versus empty active panel",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "EvidenceTrigger",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "foundations"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "foundations"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "foundations"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "EvidenceTrigger / icon plus visible action and 44px target",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceTrigger / return matches the originating row",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "EvidenceInspector",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / wide dock with values, three clocks, limitation and close",
+      "message": "macro-docked-1280"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "EvidenceInspector / Chinese comparison → evidence → return",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "EvidenceInspector / Chinese comparison → evidence → return",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / Chinese comparison → evidence → return",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / 768/1024 overlay and 1600 dock content classes",
+      "message": "width-768-overlay"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / 768/1024 overlay and 1600 dock content classes",
+      "message": "width-1024-overlay"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / 768/1024 overlay and 1600 dock content classes",
+      "message": "width-1600-docked"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "EvidenceInspector / source-unavailable inspector with retained entity summary",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "StatePanel",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "StatePanel / loading, empty, partial, stale, read error and unsupported",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "StatePanel / loading, empty, partial, stale, read error and unsupported",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "StatePanel / guest, denied, expired, first use, corrected and loaded",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "StatePanel / guest, denied, expired, first use, corrected and loaded",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "StatePanel / source unavailable versus entitlement service unavailable",
+      "message": "states-matrix"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "StatePanel / source unavailable versus entitlement service unavailable",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "StatePanel / source unavailable versus entitlement service unavailable",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "StatePanel / orthogonal combined states with useful values",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "StatePanel / orthogonal combined states with useful values",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "StatePanel / unknown age",
+      "message": "metrics"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "StatePanel / unknown age",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "StatePanel / unknown age",
+      "message": "metrics"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "StatePanel / no publication yet / coverage not quantified",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "Callout",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Callout / narrow source limitation",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "Action",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Action / pending primary disables repeat action, reading remains available",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Action / pending primary disables repeat action, reading remains available",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Action / read recovery and uncertain-write reconciliation",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Action / read recovery and uncertain-write reconciliation",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Action / 44px labeled close and return",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "SaveFeedback",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "SaveFeedback / pending, saved, confirmed failure and uncertain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "SaveFeedback / pending, saved, confirmed failure and uncertain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "SaveFeedback / confirmed save preserves the same stale and partial read snapshot",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "SaveFeedback / confirmed save preserves the same stale and partial read snapshot",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "SaveFeedback / confirmed save preserves the same stale and partial read snapshot",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "SaveFeedback / expiry after dispatch retains data and becomes uncertain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "SaveFeedback / expiry after dispatch retains data and becomes uncertain",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "TierGate",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "TierGate / guest and expired recovery where the host permits public reading",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "TierGate / guest and expired recovery where the host permits public reading",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_PROJECTION_STATUS",
+      "path": "Icon",
+      "message": "BOUND_TO_OBSERVED_CANDIDATE_IDS"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Icon / evidence, direction and recovery anatomy",
+      "message": "foundations"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "Icon / evidence, direction and recovery anatomy",
+      "message": "foundations"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Icon / evidence, direction and recovery anatomy",
+      "message": "foundations"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Icon / optical sizes and labeled targets",
+      "message": "foundations"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "Icon / optical sizes and labeled targets",
+      "message": "foundations"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Icon / optical sizes and labeled targets",
+      "message": "foundations"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Icon / unknown direction suppresses invented mark",
+      "message": "foundations"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "Icon / unknown direction suppresses invented mark",
+      "message": "foundations"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Icon / unknown direction suppresses invented mark",
+      "message": "foundations"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Icon / source owner and accessible-name contract",
+      "message": "foundations"
+    },
+    {
+      "code": "STALE_ROLE_STEP",
+      "path": "Icon / source owner and accessible-name contract",
+      "message": "foundations"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Icon / source owner and accessible-name contract",
+      "message": "foundations"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Theme parity",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Theme parity",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Independent semantics",
+      "message": "states-matrix"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Independent semantics",
+      "message": "states-matrix"
+    },
+    {
+      "code": "UNRESOLVED_PORTABLE_BINDING",
+      "path": "Width classes",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_EXPORT_MISMATCH",
+      "path": "Width classes",
+      "message": "macro-light-zh-390"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Width classes",
+      "message": "width-768-overlay"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Width classes",
+      "message": "width-1024-overlay"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Width classes",
+      "message": "macro-docked-1280"
+    },
+    {
+      "code": "ROLE_BOARD_MISSING",
+      "path": "Width classes",
+      "message": "width-1600-docked"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M2WGNCX9475G79JRKJTCM08P', 'p-1Q-0', '5FE2-2')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M2WGNCX9475G79JRKJTCM08P', 'p-1Q-0', '5FGO-2')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M2WGNCX9475G79JRKJTCM08P', 'p-1Q-0', '5FLR-2')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M2WGNCX9475G79JRKJTCM08P', 'p-1Q-0', '5FPP-2')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M2WGNCX9475G79JRKJTCM08P', 'p-1Q-0', '5FSH-2')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '25V-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '25Z-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '26C-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '26J-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '27I-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '28D-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '29H-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2A7-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "macro-docked-1280"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "width-1024-overlay"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "width-1600-docked"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2BK-0')",
+      "message": "width-768-overlay"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2M3-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2NG-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2O6-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-4-0', '2PH-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-5-0', '2S4-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-5-0', '2UE-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-5-0', '336-0')",
+      "message": "macro-zh-evidence-return-390"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-5-0', '35W-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "STALE_PREDECESSOR_COMPANION",
+      "path": "('01M312VSDSZFVT45674GDVJVZN', 'p-5-0', '39G-0')",
+      "message": "fault-compositions"
+    },
+    {
+      "code": "RETENTION_UNRESOLVED",
+      "path": "paper/native-final-retention.json",
+      "message": "missing originals and uncertain operations must be empty"
+    },
+    {
+      "code": "FINAL_RECEIPT_MISSING",
+      "path": "paper/native-final-verification.json",
+      "message": "--require-final-receipts was selected"
+    }
+  ]
+}

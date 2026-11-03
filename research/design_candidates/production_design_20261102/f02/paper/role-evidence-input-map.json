@@ -1,0 +1,5024 @@
+{
+  "schema": "f02.paper.role-evidence-input-map.v1",
+  "created_utc": "2026-11-03T05:25:09.923461+00:00",
+  "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "scope": "Operational author-informed contract-to-input map. Local preparation and source consistency only; no Paper/browser writes or native admission by this map.",
+  "evidence_boundary": "Prepared HTML/SVG inputs can become editable native evidence only after actual IDs, screenshots and exports are read back and reviewed. No runtime, F01 release, production implementation or formal RIG pass is inferred.",
+  "source_files": [
+    {
+      "path": "SYSTEM_CONTRACT.md",
+      "sha256": "08b8c08aa091cbd62ccec3084c146d72ddc4d3e12c398d33b6584f91b9aa6b5e"
+    },
+    {
+      "path": "SOURCE_AND_DATA_CONTRACT.md",
+      "sha256": "8d1df5dfe30583053bda0bed07ffa7957ff3595e210d340e2072363fc619f5a5"
+    },
+    {
+      "path": "INTERACTION_STATES.md",
+      "sha256": "7641bee4800d494669e732df8e53435682639e79934f7459890e36a4230cc7ad"
+    },
+    {
+      "path": "paper/ASSIGNMENT_COMPLETENESS_20261103.md",
+      "sha256": "4addf658851625442c091782ffb62ac316ca358fd6305d6d9d640fb40bcceeb8"
+    },
+    {
+      "path": "paper-retention-ledger.json",
+      "sha256": "b63ac08c9a5529e8b29f06e6a66dd0c413db8425bb01ece3fbd3a9831b18446a"
+    },
+    {
+      "path": "pattern-lab.html",
+      "sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4"
+    },
+    {
+      "path": "fixtures/company-history.json",
+      "sha256": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6"
+    },
+    {
+      "path": "paper/role-evidence-source-receipts.json",
+      "sha256": "efc379801ad6f8476b77322a4bae9929fd119a62e99474fa12bf8083a5ccf6f3"
+    }
+  ],
+  "input_packets": [
+    {
+      "path": "paper/foundation-inputs/boards.json",
+      "sha256": "ac628bc5745099539e7186f1e35428b964e83a36c24c498fc1605caa6dc92c38",
+      "boards": 6,
+      "append_targets": 0
+    },
+    {
+      "path": "paper/consumer-inputs/consumer-boards.json",
+      "sha256": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+      "boards": 8,
+      "append_targets": 0
+    },
+    {
+      "path": "paper/mobile-inputs/mobile-state-boards.json",
+      "sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+      "boards": 6,
+      "append_targets": 0
+    },
+    {
+      "path": "paper/mobile-inputs/supplemental-boards.json",
+      "sha256": "aa5bb0dc6880bcc8fe50ce1b7c16fe6ad6945b6d962bf7bb921376456616bf50",
+      "boards": 4,
+      "append_targets": 2
+    },
+    {
+      "path": "paper/core-supplement-inputs.json",
+      "sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+      "boards": 2,
+      "append_targets": 2
+    },
+    {
+      "path": "paper/fault-composition-inputs.json",
+      "sha256": "9b9adf4aac8e3fb0dfc2f1dae2eb0426196c0546b59302d336897ee09b29ab19",
+      "boards": 1,
+      "append_targets": 0
+    }
+  ],
+  "status_vocabulary": {
+    "INPUT_SPECIMEN_PRESENT": "Concrete editable HTML/SVG construction input exists at the exact keys; native application/review is not asserted.",
+    "ANNOTATION_ONLY": "Behavior/source note exists; does not qualify a component variant.",
+    "CONTRACT_ONLY_OR_INCOMPLETE_VARIANT": "Specified behavior has no complete matching editable composition in this input set.",
+    "RETAINED_UNQUALIFIED": "Existing domain/source reference is intentionally retained; no new concrete F02 example or qualification claimed."
+  },
+  "native_binding_contract": {
+    "native_board_id": null,
+    "native_step_ids": null,
+    "instructions": [
+      "Parent binds actual returned IDs; never derive IDs from names or keys.",
+      "Read back final subtree/JSX, screenshots and measured geometry at the exact native checkpoint.",
+      "If a clone or corrective patch changes markup/geometry/data, retain its provenance and map the actual affected node IDs.",
+      "Prepared page IDs are source routing intent; readme may have moved. Bind actual native page membership from the final readback.",
+      "A screenshot, an HTML input, an annotation and executable integration are separate evidence classes."
+    ]
+  },
+  "summary": {
+    "contract_roles": 21,
+    "roles_with_prepared_editable_examples": 17,
+    "retained_unqualified_roles": [
+      "VirtualizedDataInspector",
+      "CountLadder",
+      "LifecycleRail",
+      "DecisionRow / VerdictHero"
+    ],
+    "retained_role_count": 4,
+    "important_contract_only_or_incomplete_variants": 0,
+    "mandatory_roles_without_new_complete_editable_example": [
+      "VirtualizedDataInspector",
+      "CountLadder",
+      "LifecycleRail",
+      "DecisionRow / VerdictHero"
+    ],
+    "all_roles_native_qualified": false
+  },
+  "fault_composition_summary": {
+    "requested_portable_variant_gaps_prepared": 7,
+    "board_key": "fault-compositions",
+    "groups": 25,
+    "extra_acceptance": "Matched stale + partial + owner-confirmed saved fixture preserves the same read snapshot and caveats.",
+    "original_core_packet_unchanged": true,
+    "scope": "Prepared concrete design variants only; no new native, source-authority or runtime qualification."
+  },
+  "roles": [
+    {
+      "role": "SectionHeader",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Heading; optional question/dek; one source/date receipt; local action slot",
+      "contract_meaningful_example": "Sector comparison, annual statements, article section",
+      "required_exception_treatment": "Missing period is stated; title wraps; action does not displace the question",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "SectionHeader"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "2. Visual hierarchy and archetypes"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "T3",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/workspaces/AnalysisWorkspace.tsx#L204-L237"
+        },
+        {
+          "key": "T6",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/options/OptionsStatisticsView.tsx"
+        },
+        {
+          "key": "E3",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/seo_article.html.j2"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "25V-0",
+          "name": "MX/Section Header",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "analytical heading, period/source and local action",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Editable heading, source scope/date and separate local action.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "reading section and publication",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "editorial-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "article-title",
+                "publication",
+                "calculation-heading",
+                "averages-heading",
+                "limits-heading"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "article-title": null,
+                "publication": null,
+                "calculation-heading": null,
+                "averages-heading": null,
+                "limits-heading": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "editorial-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "article-title",
+                "publication",
+                "calculation-heading",
+                "averages-heading",
+                "limits-heading"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "article-title": null,
+                "publication": null,
+                "calculation-heading": null,
+                "averages-heading": null,
+                "limits-heading": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Public reading hierarchy and publication/update distinction.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "narrow English and Chinese title wrapping",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark-en-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "title"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "title": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light-zh-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "title"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "title": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "390px localized title and question hierarchy.",
+          "still_unverified": "CJK glyph quality, long-label stress and real browser reflow remain unverified."
+        },
+        {
+          "variant": "missing observation period header",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "missing-period-headers"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "missing-period-headers": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Complete EXM header in both themes retains the question, currency, explicit missing source period, separate retrieval and source action.",
+          "still_unverified": "Illustrative missing-period input, not a change to normal Company fixture dates; real host source mapping remains unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "MetricValue",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Label; number or typed absence; unit/currency; observation period; optional comparison",
+      "contract_meaningful_example": "66.7%; USD 48bn; diluted EPS unavailable",
+      "required_exception_treatment": "Missing = dash plus reason; zero remains 0; stale retains original date; no invented trend",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "MetricValue"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "4.1 Numeric and unit rules"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Copy and recovery matrix"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "T11",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/finFormat.ts#L28-L177"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "25Z-0",
+          "name": "MX/Metric Tile",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree + screenshot",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "finite percent, typed absence and reported zero",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "metric-trio",
+                "metric-units"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "metric-trio": null,
+                "metric-units": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "66.70%, EPS unknown and dividend 0.00 USD remain visibly different.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "company field-specific absence and zero",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-7",
+                "statement-row-8",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-7": null,
+                "statement-row-8": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-7",
+                "statement-row-8",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-7": null,
+                "statement-row-8": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-eps-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "value",
+                "period-2026",
+                "comparison",
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "value": null,
+                "period-2026": null,
+                "comparison": null,
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dividend-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "value",
+                "comparison",
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "value": null,
+                "comparison": null,
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Five-period EPS absence and reported-zero dividend with an absolute zero change and undefined percentage growth.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "dated value retained through stale/partial/write status",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-dark-value",
+                "combined-dark-status",
+                "combined-dark-action",
+                "combined-light-value",
+                "combined-light-status",
+                "combined-light-action"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-dark-value": null,
+                "combined-dark-status": null,
+                "combined-dark-action": null,
+                "combined-light-value": null,
+                "combined-light-status": null,
+                "combined-light-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-confirmed-saved"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-confirmed-saved": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "A concrete 66.7% observation remains present beside distinct read and write states, including the matched owner-confirmed saved fixture.",
+          "still_unverified": "Real request-generation identity, account context and state transitions remain owner integration requirements."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "ChangeValue",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Sign; finite amount; `%`, `pp`, `bps` or currency; baseline period/method",
+      "contract_meaningful_example": "65.57% → 66.70% = +1.13 pp",
+      "required_exception_treatment": "Noncomparable baseline produces a labeled unavailable comparison, not 0%; no mixed currencies",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "ChangeValue"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "4.1 Numeric and unit rules"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4.2 Chart grammar"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "T11",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/finFormat.ts#L28-L177"
+        }
+      ],
+      "predecessors": [],
+      "variants": [
+        {
+          "variant": "signed pp with declared prior-session baseline",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "metric-trio",
+                "metric-units",
+                "data-0",
+                "data-1"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "metric-trio": null,
+                "metric-units": null,
+                "data-0": null,
+                "data-1": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "metrics",
+                "sector-4"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "metrics": null,
+                "sector-4": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "metrics",
+                "sector-4"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "metrics": null,
+                "sector-4": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Positive and negative signed percentage-point changes and explicit comparator.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "relative percent and absolute currency zero",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-1",
+                "statement-row-8",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-1": null,
+                "statement-row-8": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-1",
+                "statement-row-8",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-1": null,
+                "statement-row-8": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "editorial-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "calculation-row-1",
+                "calculation-row-2",
+                "equations"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "calculation-row-1": null,
+                "calculation-row-2": null,
+                "equations": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "editorial-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "calculation-row-1",
+                "calculation-row-2",
+                "equations"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "calculation-row-1": null,
+                "calculation-row-2": null,
+                "equations": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Relative percentage changes and currency-per-share zero are labeled independently.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "basis points",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-metric-bps"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-metric-bps": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "65.57% → 66.70% is +1.13 pp or +113 bps, in both themes.",
+          "still_unverified": "A unit-conversion fixture, not a new published statistic or production formatter."
+        },
+        {
+          "variant": "unavailable comparison from missing/zero baseline",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-eps-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "comparison",
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "comparison": null,
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dividend-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "comparison",
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "comparison": null,
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Unknown EPS comparison and undefined percentage growth from zero.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "non-comparable definition and mixed-currency baseline",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "withheld-comparisons"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "withheld-comparisons": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Two concrete comparisons retain original values/periods/units but withhold the change: different definitions without restatement, and USD/EUR without authorized FX.",
+          "still_unverified": "These are explicitly counterfactual portable input states. The actual changed-filing definition or currency-mismatch source witness remains a consumer integration requirement."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "FreshnessReceipt",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Source observation; source publication where material; retrieval separately; domain stale policy",
+      "contract_meaningful_example": "Options transport connected / market closed / source 30 Oct",
+      "required_exception_treatment": "Unknown source age stays unknown; fresh network response cannot erase a stale source",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "FreshnessReceipt"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "4.2 Time and freshness rules"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Independent state axes"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "T7",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/flowStream.ts#L48-L160"
+        },
+        {
+          "key": "T12",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/flowFreshness.ts"
+        },
+        {
+          "key": "M4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.js#L5825-L6295"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "272-0",
+          "name": "MX/Freshness",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "observation, publication and retrieval separately",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "source-receipt"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "source-receipt": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "clocks"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "clocks": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "evidence-field-1",
+                "evidence-field-2",
+                "evidence-field-3"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "evidence-field-1": null,
+                "evidence-field-2": null,
+                "evidence-field-3": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "evidence-field-1",
+                "evidence-field-2",
+                "evidence-field-3"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "evidence-field-1": null,
+                "evidence-field-2": null,
+                "evidence-field-3": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Three individually labeled clocks, including ET print observation versus UTC publication/retrieval.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "transport, market session and snapshot separately",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "transport-receipt",
+                "question",
+                "expiry-heading"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "transport-receipt": null,
+                "question": null,
+                "expiry-heading": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "transport-receipt",
+                "question",
+                "expiry-heading"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "transport-receipt": null,
+                "question": null,
+                "expiry-heading": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Connected transport, closed market session and original snapshot/window do not collapse into a live label.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "stale while useful observations remain",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-3",
+                "combined-dark-value",
+                "combined-dark-status",
+                "combined-light-value",
+                "combined-light-status"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-3": null,
+                "combined-dark-value": null,
+                "combined-dark-status": null,
+                "combined-light-value": null,
+                "combined-light-status": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Original observation date remains beside retained value and stale/partial copy.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "unknown source age with known retrieval",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-metric-unknown-age"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-metric-unknown-age": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Source observation/publication absence is explicit; a retrieval timestamp does not assert freshness.",
+          "still_unverified": "Separate missing-clock state fixture; it does not replace dates on existing Macro consumer rows."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "DataRow",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Stable row key; label/identity; aligned values; row-specific evidence trigger",
+      "contract_meaningful_example": "Sector row, financial line, option print",
+      "required_exception_treatment": "Unknown cell retains unit/context; action labeled for row; mobile complete-row path stays reachable",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "DataRow"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5.1 Table, chart and overlay behavior"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4.1 Density and truncation"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "T6",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/options/OptionsStatisticsView.tsx"
+        },
+        {
+          "key": "T11",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/finFormat.ts#L28-L177"
+        },
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "26J-0",
+          "name": "MX/Data Row",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "27I-0",
+          "name": "MX/Data Row · Mobile",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "sector rows and selection",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "sector-1",
+                "sector-2",
+                "sector-3",
+                "sector-4",
+                "sector-5",
+                "sector-6",
+                "sector-7",
+                "sector-8",
+                "sector-9",
+                "sector-10"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-1": null,
+                "sector-2": null,
+                "sector-3": null,
+                "sector-4": null,
+                "sector-5": null,
+                "sector-6": null,
+                "sector-7": null,
+                "sector-8": null,
+                "sector-9": null,
+                "sector-10": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "sector-1",
+                "sector-2",
+                "sector-3",
+                "sector-4",
+                "sector-5",
+                "sector-6",
+                "sector-7",
+                "sector-8",
+                "sector-9",
+                "sector-10"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-1": null,
+                "sector-2": null,
+                "sector-3": null,
+                "sector-4": null,
+                "sector-5": null,
+                "sector-6": null,
+                "sector-7": null,
+                "sector-8": null,
+                "sector-9": null,
+                "sector-10": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "All ten sector identities, aligned values, typed absence, coverage and row evidence.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "five-period Company metrics",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-1",
+                "statement-row-2",
+                "statement-row-3",
+                "statement-row-4",
+                "statement-row-5",
+                "statement-row-6",
+                "statement-row-7",
+                "statement-row-8",
+                "statement-row-9"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-1": null,
+                "statement-row-2": null,
+                "statement-row-3": null,
+                "statement-row-4": null,
+                "statement-row-5": null,
+                "statement-row-6": null,
+                "statement-row-7": null,
+                "statement-row-8": null,
+                "statement-row-9": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-1",
+                "statement-row-2",
+                "statement-row-3",
+                "statement-row-4",
+                "statement-row-5",
+                "statement-row-6",
+                "statement-row-7",
+                "statement-row-8",
+                "statement-row-9"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-1": null,
+                "statement-row-2": null,
+                "statement-row-3": null,
+                "statement-row-4": null,
+                "statement-row-5": null,
+                "statement-row-6": null,
+                "statement-row-7": null,
+                "statement-row-8": null,
+                "statement-row-9": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "All nine financial metrics and five annual columns, including missing EPS and zero dividends.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "complete Options print fields",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "print-01",
+                "print-02",
+                "print-03",
+                "print-04",
+                "print-05",
+                "print-06",
+                "print-07",
+                "print-08",
+                "print-09",
+                "print-10",
+                "print-11",
+                "print-12"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "print-01": null,
+                "print-02": null,
+                "print-03": null,
+                "print-04": null,
+                "print-05": null,
+                "print-06": null,
+                "print-07": null,
+                "print-08": null,
+                "print-09": null,
+                "print-10": null,
+                "print-11": null,
+                "print-12": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "print-01",
+                "print-02",
+                "print-03",
+                "print-04",
+                "print-05",
+                "print-06",
+                "print-07",
+                "print-08",
+                "print-09",
+                "print-10",
+                "print-11",
+                "print-12"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "print-01": null,
+                "print-02": null,
+                "print-03": null,
+                "print-04": null,
+                "print-05": null,
+                "print-06": null,
+                "print-07": null,
+                "print-08": null,
+                "print-09": null,
+                "print-10": null,
+                "print-11": null,
+                "print-12": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Twelve prints with twelve explicit fields.",
+          "still_unverified": "No real data, sorting, filtering, producer schema or export scope is qualified."
+        },
+        {
+          "variant": "narrow complete-row evidence and stable identity",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "entity",
+                "contract-fields",
+                "print-fields",
+                "context-fields",
+                "source-identity",
+                "clocks",
+                "return-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "entity": null,
+                "contract-fields": null,
+                "print-fields": null,
+                "context-fields": null,
+                "source-identity": null,
+                "clocks": null,
+                "return-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-zh-evidence-return-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "entity",
+                "source-identity",
+                "returned-selected-row"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "entity": null,
+                "source-identity": null,
+                "returned-selected-row": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Full first Options row at 320px and matched Chinese Macro evidence/return row.",
+          "still_unverified": "Source-row identity is specified; actual trigger restoration after filtering/reordering remains a browser requirement."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "TableFrame",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Caption; scoped headers; local scroll; sort/filter state; count/coverage; evidence path",
+      "contract_meaningful_example": "Twelve-column options tape",
+      "required_exception_treatment": "Empty distinguishes no matches from publisher unavailable; error retains prior rows; sort places missing values explicitly",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "TableFrame"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5.1 Table, chart and overlay behavior"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4.1 Density and truncation"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "T6",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/options/OptionsStatisticsView.tsx"
+        },
+        {
+          "key": "T13",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/dataInspector.ts"
+        },
+        {
+          "key": "T15",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/dataInspector/DataInspector.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2O6-0",
+          "name": "MX/Table Frame",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "caption, headers, local controls, scope and evidence",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "table-caption",
+                "table-header",
+                "table-behavior"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "table-caption": null,
+                "table-header": null,
+                "table-behavior": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "table-caption",
+                "table-header",
+                "table-behavior"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "table-caption": null,
+                "table-header": null,
+                "table-behavior": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-caption",
+                "statement-header",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-caption": null,
+                "statement-header": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-caption",
+                "statement-header",
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-caption": null,
+                "statement-header": null,
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "filters",
+                "tape-caption",
+                "tape-header",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "filters": null,
+                "tape-caption": null,
+                "tape-header": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "filters",
+                "tape-caption",
+                "tape-header",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "filters": null,
+                "tape-caption": null,
+                "tape-header": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Dense comparison geometry and declared field/count/coverage scope; numeric alignment and source column.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "narrow comparison with overflow cue and adjacent evidence",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark-en-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "section-toolbar",
+                "scroll-cue",
+                "table",
+                "sector-3",
+                "post-table"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "section-toolbar": null,
+                "scroll-cue": null,
+                "table": null,
+                "sector-3": null,
+                "post-table": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light-zh-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "section-toolbar",
+                "scroll-cue",
+                "table",
+                "sector-3",
+                "post-table"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "section-toolbar": null,
+                "scroll-cue": null,
+                "table": null,
+                "sector-3": null,
+                "post-table": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Local-width frame, visible overflow instruction and first-column row evidence target.",
+          "still_unverified": "Paper does not demonstrate scrolling, sticky behavior, semantic headers, aria-sort, or whole-page reflow."
+        },
+        {
+          "variant": "reading calculation table",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "editorial-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "calculation-caption",
+                "calculation-header",
+                "calculation-row-0",
+                "calculation-row-1",
+                "calculation-row-2",
+                "calculation-evidence"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "calculation-caption": null,
+                "calculation-header": null,
+                "calculation-row-0": null,
+                "calculation-row-1": null,
+                "calculation-row-2": null,
+                "calculation-evidence": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "editorial-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "calculation-caption",
+                "calculation-header",
+                "calculation-row-0",
+                "calculation-row-1",
+                "calculation-row-2",
+                "calculation-evidence"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "calculation-caption": null,
+                "calculation-header": null,
+                "calculation-row-0": null,
+                "calculation-row-1": null,
+                "calculation-row-2": null,
+                "calculation-evidence": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Readable calculation rows and explicit evidence path inside article measure.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "composed empty / unavailable / retained-error table",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "empty-table-context",
+                "empty-table-state",
+                "unavailable-table-context",
+                "unavailable-table-state",
+                "retained-table-context",
+                "retained-operating-income",
+                "retained-pretax-income",
+                "retained-net-income",
+                "retained-table-error"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "empty-table-context": null,
+                "empty-table-state": null,
+                "unavailable-table-context": null,
+                "unavailable-table-state": null,
+                "retained-table-context": null,
+                "retained-operating-income": null,
+                "retained-pretax-income": null,
+                "retained-net-income": null,
+                "retained-table-error": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Three complete table-frame compositions retain EXM identity, requested periods, filters, scoped count/absence, headers, source clock and recovery. The error frame preserves three exact Company fixture rows.",
+          "still_unverified": "Illustrative response states only; actual semantic headers, filtering, source availability, retry effects and retained-row rendering remain unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "VirtualizedDataInspector",
+      "role_status": "RETAINED_UNQUALIFIED",
+      "required_anatomy": "Existing grid/selection semantics; canonical time keys; mounted active descendant; row indexes/count",
+      "contract_meaningful_example": "Existing Terminal DataInspector",
+      "required_exception_treatment": "Filtering/replay cannot reuse position as identity; preserve keyboard selection and export scope; no replacement in this HTML specimen",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "VirtualizedDataInspector"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5.1 Table, chart and overlay behavior"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "T13",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/dataInspector.ts"
+        },
+        {
+          "key": "T15",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/dataInspector/DataInspector.tsx"
+        }
+      ],
+      "predecessors": [],
+      "variants": [
+        {
+          "variant": "existing virtualized inspector retained",
+          "status": "RETAINED_UNQUALIFIED",
+          "evidence": [
+            {
+              "board_key": "grammar",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "virtualization"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "virtualization": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Annotation records retention requirements only; no new editable virtualized inspector is asserted.",
+          "still_unverified": "Actual incumbent grid, time keys, selection, mounted active descendant and row-limit behavior remain unqualified."
+        }
+      ],
+      "required_qualifiers": [
+        "Bind an exact existing Terminal DataInspector revision and an actual canonical item/time-key dataset; no index-as-identity substitute.",
+        "Exercise sort, prepend, filter and replay while preserving selected record identity, mounted active descendant, row count/index and generation reset.",
+        "Exercise Arrow/Page/Home/End/Shift/Space/Enter/Escape semantics and accurate CSV/replay record scope.",
+        "Qualify the 50,000-row range/export refusal and screen-reader behavior on the actual owner; do not create a second virtualizer."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "ChartFrame",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Title; unit; time/period axis; scale; source/coverage; visible gaps; exact-value path",
+      "contract_meaningful_example": "Eight sessions with Oct 23 missing",
+      "required_exception_treatment": "No line through missing data; unavailable series says why; chart tooltip never the only evidence or values path",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "ChartFrame"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.1 Exact Company fixture scope"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4.2 Chart grammar"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/docs/ILLUSTRATIONS.md"
+        },
+        {
+          "key": "M6",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/lib/illus.py#L48-L75"
+        },
+        {
+          "key": "T13",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/dataInspector.ts"
+        },
+        {
+          "key": "T15",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/dataInspector/DataInspector.tsx"
+        },
+        {
+          "key": "T8",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/optionsObservedStatistics.ts"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2PH-0",
+          "name": "MX/Chart Frame",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "axis/range/gap anatomy with exact values",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "grammar",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "chart-title",
+                "chart",
+                "exact-values",
+                "chart-source"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "chart-title": null,
+                "chart": null,
+                "exact-values": null,
+                "chart-source": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Eight categorical sessions, numeric 50–80% range and a missing 26 Oct point; native labels remain editable.",
+          "still_unverified": "This is a separate anatomy fixture. It is not the 40–80% Macro consumer series with 23 Oct missing (AC-06)."
+        },
+        {
+          "variant": "Macro gap in the consumer context",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "history-title",
+                "history-unit",
+                "history-chart"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "history-title": null,
+                "history-unit": null,
+                "history-chart": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "history-title",
+                "history-unit",
+                "history-chart"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "history-title": null,
+                "history-unit": null,
+                "history-chart": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-dark-en-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "chart-heading",
+                "chart",
+                "chart-footer"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "chart-heading": null,
+                "chart": null,
+                "chart-footer": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Seven of eight observations, 23 Oct gap, declared 40–80% range and categorical session axis.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "Company dense five-series 17-year history",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "history-heading",
+                "history-legend",
+                "history-chart",
+                "statement-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "history-heading": null,
+                "history-legend": null,
+                "history-chart": null,
+                "statement-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "history-heading",
+                "history-legend",
+                "history-chart",
+                "statement-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "history-heading": null,
+                "history-legend": null,
+                "history-chart": null,
+                "statement-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "85 bar marks across 17 fiscal years with five-series numbered legend, USD bn and zero baseline.",
+          "still_unverified": "The complete 17×5 exact-values view is implemented in the supporting HTML fixture; native board shows its entry action and last-five-period statement table, not an opened 85-value inspector."
+        },
+        {
+          "variant": "Options expiry cohort bars",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "expiry-heading",
+                "expiry-summary",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "expiry-heading": null,
+                "expiry-summary": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "expiry-heading",
+                "expiry-summary",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "expiry-heading": null,
+                "expiry-summary": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Two expiry groups totaling the fixture cohort and separate print observation window; side semantics stay independent.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "unavailable chart series in its full frame",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "unavailable-chart-context",
+                "unavailable-chart-state"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "unavailable-chart-context": null,
+                "unavailable-chart-state": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Complete unavailable Revenue-history frame retains EXM, requested FY 2010–2026, USD bn, honest unknown scale/source clock, disabled exact values and coverage recovery. No zero or fabricated data marks are drawn.",
+          "still_unverified": "Fault-state fixture; actual chart data owner, recovery callback and existing engine behavior remain unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "Tabs",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Named tablist; selected state; roving focus; labeled panel; stable panel IDs",
+      "contract_meaningful_example": "Comparison / Chart data",
+      "required_exception_treatment": "Manual activation preserves state; Arrow/Home/End move focus; Enter/Space activate; busy panel is distinct from empty",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "Tabs"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Focus, overlays and input details"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "T3",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/workspaces/AnalysisWorkspace.tsx#L204-L237"
+        },
+        {
+          "key": "T6",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/options/OptionsStatisticsView.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "26C-0",
+          "name": "MX/Tab",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "default, hover, selected and keyboard focus",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "tabs",
+                "supplement-hover-row"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json",
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "tabs": null,
+                "supplement-hover-row": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Four concrete 44px tab states; neutral selection and independent focus outline.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "consumer panel naming and preserved domain entry points",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "tabs"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "tabs": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "tabs"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "tabs": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-tabs"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-tabs": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-tabs"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-tabs": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Comparison/chart/source entry and existing statement families/period modes remain visible.",
+          "still_unverified": "Roving focus, manual activation, panel IDs and the actual owner parser remain unverified."
+        },
+        {
+          "variant": "busy versus empty active panel",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "tabs-comparison",
+                "tabs-loading-panel",
+                "tabs-empty-panel"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "tabs-comparison": null,
+                "tabs-loading-panel": null,
+                "tabs-empty-panel": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "The same EXM/FY 2025–2026/ZZZ context and selected Table tab have concrete active panels. Loading has no count; completed empty reports zero and offers Clear filter.",
+          "still_unverified": "The named panel, selection and state geometry are prepared; actual roving focus, aria-busy, semantic panel identity and activation remain unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "EvidenceTrigger",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Visible action text; optional 24px anatomy icon; context-specific accessible name",
+      "contract_meaningful_example": "“Evidence — Operating margin”",
+      "required_exception_treatment": "Missing citation precision is disclosed; access status not disguised as a broken link",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "EvidenceTrigger"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.js#L5825-L6295"
+        },
+        {
+          "key": "T14",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/fin/EvidenceRail.tsx"
+        },
+        {
+          "key": "T6",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/options/OptionsStatisticsView.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2BK-0",
+          "name": "MX/LENS Evidence",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "visible row-specific evidence actions",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "sector-4"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-4": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "sector-4"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-4": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-7",
+                "statement-row-8"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-7": null,
+                "statement-row-8": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-row-7",
+                "statement-row-8"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-row-7": null,
+                "statement-row-8": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "print-01"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "print-01": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "print-01"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "print-01": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Visible evidence text stays associated with the exact row/field.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "icon plus visible action and 44px target",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "foundations",
+              "source_page_id": "p-3-0",
+              "step_keys": [
+                "core-icon-evidence",
+                "core-icon-sizes"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-icon-evidence": null,
+                "core-icon-sizes": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-dark-en-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "sector-3"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-3": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light-zh-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "sector-3"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "sector-3": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Reused icon anatomy and important phone target geometry; text remains present.",
+          "still_unverified": "Context-specific accessible names, citation precision and touch activation still need browser/source wiring."
+        },
+        {
+          "variant": "return matches the originating row",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-zh-evidence-return-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "return-action",
+                "returned-selected-row"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "return-action": null,
+                "returned-selected-row": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "return-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "return-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Return names match the selected Macro row or exact Options print identity.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "EvidenceInspector",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Source/entity/field; values; units; observation/publication/retrieval; limitation; close/return",
+      "contract_meaningful_example": "Full option row on a phone",
+      "required_exception_treatment": "Overlay traps focus and restores trigger; docked panel does not trap focus; unavailable source retains visible summary and recovery",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "EvidenceInspector"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5.1 Table, chart and overlay behavior"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.2 Independent state and evidence admission"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Focus, overlays and input details"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.js#L5825-L6295"
+        },
+        {
+          "key": "T14",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/fin/EvidenceRail.tsx"
+        },
+        {
+          "key": "T13",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/dataInspector.ts"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2BK-0",
+          "name": "MX/LENS Evidence",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "wide dock with values, three clocks, limitation and close",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "evidence-head",
+                "evidence-entity",
+                "evidence-value-0",
+                "evidence-value-1",
+                "evidence-value-2",
+                "evidence-field-0",
+                "evidence-field-1",
+                "evidence-field-2",
+                "evidence-field-3",
+                "evidence-field-4",
+                "evidence-caveat",
+                "evidence-return"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "evidence-head": null,
+                "evidence-entity": null,
+                "evidence-value-0": null,
+                "evidence-value-1": null,
+                "evidence-value-2": null,
+                "evidence-field-0": null,
+                "evidence-field-1": null,
+                "evidence-field-2": null,
+                "evidence-field-3": null,
+                "evidence-field-4": null,
+                "evidence-caveat": null,
+                "evidence-return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "evidence-head",
+                "evidence-entity",
+                "evidence-value-0",
+                "evidence-value-1",
+                "evidence-value-2",
+                "evidence-field-0",
+                "evidence-field-1",
+                "evidence-field-2",
+                "evidence-field-3",
+                "evidence-field-4",
+                "evidence-caveat",
+                "evidence-return"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "evidence-head": null,
+                "evidence-entity": null,
+                "evidence-value-0": null,
+                "evidence-value-1": null,
+                "evidence-value-2": null,
+                "evidence-field-0": null,
+                "evidence-field-1": null,
+                "evidence-field-2": null,
+                "evidence-field-3": null,
+                "evidence-field-4": null,
+                "evidence-caveat": null,
+                "evidence-return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-docked-1280",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dock-heading",
+                "dock-entity",
+                "dock-value",
+                "dock-source-0",
+                "dock-source-1",
+                "dock-source-2",
+                "dock-source-3",
+                "dock-source-4",
+                "dock-footer"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dock-heading": null,
+                "dock-entity": null,
+                "dock-value": null,
+                "dock-source-0": null,
+                "dock-source-1": null,
+                "dock-source-2": null,
+                "dock-source-3": null,
+                "dock-source-4": null,
+                "dock-footer": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Complete contextual Macro dock and a narrow-desktop dock composition.",
+          "still_unverified": "The dock is specified not to trap focus; actual opening/closing, source fetch and focus return remain unverified."
+        },
+        {
+          "variant": "320px missing and zero Company field inspectors",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-eps-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "header",
+                "title",
+                "value",
+                "period-2022",
+                "period-2023",
+                "period-2024",
+                "period-2025",
+                "period-2026",
+                "comparison",
+                "source-0",
+                "source-1",
+                "source-2",
+                "source-3",
+                "source-4",
+                "source-5",
+                "limitation",
+                "return"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "header": null,
+                "title": null,
+                "value": null,
+                "period-2022": null,
+                "period-2023": null,
+                "period-2024": null,
+                "period-2025": null,
+                "period-2026": null,
+                "comparison": null,
+                "source-0": null,
+                "source-1": null,
+                "source-2": null,
+                "source-3": null,
+                "source-4": null,
+                "source-5": null,
+                "limitation": null,
+                "return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dividend-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "header",
+                "title",
+                "value",
+                "period-2022",
+                "period-2023",
+                "period-2024",
+                "period-2025",
+                "period-2026",
+                "comparison",
+                "source-0",
+                "source-1",
+                "source-2",
+                "source-3",
+                "source-4",
+                "source-5",
+                "limitation",
+                "return"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "header": null,
+                "title": null,
+                "value": null,
+                "period-2022": null,
+                "period-2023": null,
+                "period-2024": null,
+                "period-2025": null,
+                "period-2026": null,
+                "comparison": null,
+                "source-0": null,
+                "source-1": null,
+                "source-2": null,
+                "source-3": null,
+                "source-4": null,
+                "source-5": null,
+                "limitation": null,
+                "return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Complete five-period field evidence at 320px with missing/zero distinction and close/return.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "complete 12-field Options row at 320px",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dialog-header",
+                "entity",
+                "contract-fields",
+                "print-fields",
+                "context-fields",
+                "source-identity",
+                "clocks",
+                "limitation",
+                "return-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dialog-header": null,
+                "entity": null,
+                "contract-fields": null,
+                "print-fields": null,
+                "context-fields": null,
+                "source-identity": null,
+                "clocks": null,
+                "limitation": null,
+                "return-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "All twelve exact print-01 fields, source identity, separate observation/expiry/cohort/publication/retrieval, interpretation limits and 44px close/return.",
+          "still_unverified": "Illustrative fixture, not a real producer receipt or consumer integration proof."
+        },
+        {
+          "variant": "Chinese comparison → evidence → return",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "macro-light-zh-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "metric",
+                "sector-3"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "metric": null,
+                "sector-3": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-zh-evidence-return-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dialog-header",
+                "entity",
+                "values",
+                "value-0",
+                "value-1",
+                "value-2",
+                "baseline",
+                "source-identity",
+                "source-clocks",
+                "units",
+                "coverage-limit",
+                "return-action",
+                "return-state",
+                "returned-selected-row"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dialog-header": null,
+                "entity": null,
+                "values": null,
+                "value-0": null,
+                "value-1": null,
+                "value-2": null,
+                "baseline": null,
+                "source-identity": null,
+                "source-clocks": null,
+                "units": null,
+                "coverage-limit": null,
+                "return-action": null,
+                "return-state": null,
+                "returned-selected-row": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Matched Chinese values, source key, critical limits and same-row return state at 390px.",
+          "still_unverified": "Actual modal trap, backdrop inertness, CJK rendering, scroll return and dock/overlay transitions need browser qualification."
+        },
+        {
+          "variant": "768/1024 overlay and 1600 dock content classes",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "width-768-overlay",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "overlay-header",
+                "overlay-entity",
+                "overlay-values",
+                "overlay-source",
+                "overlay-clocks",
+                "overlay-limit",
+                "overlay-return"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "overlay-header": null,
+                "overlay-entity": null,
+                "overlay-values": null,
+                "overlay-source": null,
+                "overlay-clocks": null,
+                "overlay-limit": null,
+                "overlay-return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "width-1024-overlay",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "overlay-header",
+                "overlay-entity",
+                "overlay-values",
+                "overlay-source",
+                "overlay-clocks",
+                "overlay-limit",
+                "overlay-return"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "overlay-header": null,
+                "overlay-entity": null,
+                "overlay-values": null,
+                "overlay-source": null,
+                "overlay-clocks": null,
+                "overlay-limit": null,
+                "overlay-return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "width-1600-docked",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dock-heading",
+                "dock-entity",
+                "dock-value",
+                "dock-source-0",
+                "dock-source-1",
+                "dock-source-2",
+                "dock-source-3",
+                "dock-source-4",
+                "dock-footer"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dock-heading": null,
+                "dock-entity": null,
+                "dock-value": null,
+                "dock-source-0": null,
+                "dock-source-1": null,
+                "dock-source-2": null,
+                "dock-source-3": null,
+                "dock-source-4": null,
+                "dock-footer": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Prepared content-width classes with concrete comparison and contextual evidence.",
+          "still_unverified": "F01 joint geometry freeze and actual viewport/zoom behavior remain separate gates."
+        },
+        {
+          "variant": "source-unavailable inspector with retained entity summary",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "unavailable-inspector-context",
+                "unavailable-inspector-summary",
+                "unavailable-inspector-source-error",
+                "unavailable-inspector-return"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "unavailable-inspector-context": null,
+                "unavailable-inspector-summary": null,
+                "unavailable-inspector-source-error": null,
+                "unavailable-inspector-return": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "A complete Communication-services inspector retains 66.70%, +1.13 pp, 21/21, baseline, exact source key and original three clocks while unavailable supporting citation detail has typed recovery and close/return.",
+          "still_unverified": "The failed supporting-source read is illustrative. Cached-summary admission, actual source recovery, modal behavior and identity-based return remain consumer/browser requirements."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "StatePanel",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Plain state word; concise affected scope; retained content if available; recovery action",
+      "contract_meaningful_example": "Loading, no matching records, refresh failed",
+      "required_exception_treatment": "Loading never says empty; partial/stale are orthogonal; retry is not a save",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "StatePanel"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "4.3 State axes and required copy"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Copy and recovery matrix"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Component state applicability and specimen coverage"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "T12",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/flowFreshness.ts"
+        },
+        {
+          "key": "T4",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/app/(shell)/options/page.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2A7-0",
+          "name": "MX/State Panel",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree + screenshot",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2M3-0",
+          "name": "MX/State Panel · Mobile",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "loading, empty, partial, stale, read error and unsupported",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-0",
+                "state-1",
+                "state-2",
+                "state-3",
+                "state-4",
+                "state-5"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-0": null,
+                "state-1": null,
+                "state-2": null,
+                "state-3": null,
+                "state-4": null,
+                "state-5": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Six distinct dark/light outcomes with scope, absence/count language and appropriate read recovery.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "guest, denied, expired, first use, corrected and loaded",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-6",
+                "state-7",
+                "state-8",
+                "state-9",
+                "state-14",
+                "state-15"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-6": null,
+                "state-7": null,
+                "state-8": null,
+                "state-9": null,
+                "state-14": null,
+                "state-15": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Named access/availability/provenance states; routine loaded data lacks a permanent success banner.",
+          "still_unverified": "Valid starting choices, actual corrected-source lineage and host access return destinations are source integration requirements."
+        },
+        {
+          "variant": "source unavailable versus entitlement service unavailable",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "supplement-source-unavailable",
+                "supplement-access-service-unavailable"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "supplement-source-unavailable": null,
+                "supplement-access-service-unavailable": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-tier-unavailable-dark",
+                "core-tier-unavailable-dark-actions",
+                "core-tier-unavailable-light",
+                "core-tier-unavailable-light-actions"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-tier-unavailable-dark": null,
+                "core-tier-unavailable-dark-actions": null,
+                "core-tier-unavailable-light": null,
+                "core-tier-unavailable-light-actions": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "No conflation of publisher absence, subscription denial and provider outage.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "orthogonal combined states with useful values",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-dark-value",
+                "combined-dark-status",
+                "combined-dark-action",
+                "combined-light-value",
+                "combined-light-status",
+                "combined-light-action"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-dark-value": null,
+                "combined-dark-status": null,
+                "combined-dark-action": null,
+                "combined-light-value": null,
+                "combined-light-status": null,
+                "combined-light-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Stale+partial+pending and stale+partial+expired-after-send/uncertain are concretely composed.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "unknown age",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "metrics",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-metric-unknown-age"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-metric-unknown-age": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Explicit missing observation/publication clock and known retrieval remain distinct.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "no publication yet / coverage not quantified",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "not-yet-published-state",
+                "unquantified-coverage-state"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "not-yet-published-state": null,
+                "unquantified-coverage-state": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Concrete source/calendar context and last-observation recovery accompany not-published input. A separate coverage fixture retains seven available records, an explicitly unknown eligible total and no computed fraction.",
+          "still_unverified": "Publication status is a declared input, not inferred from a missing network response. Real producer publication/coverage semantics remain unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "Callout",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Short headline; essential consequence; optional action",
+      "contract_meaningful_example": "Deep-period definition changed; illustration assumptions",
+      "required_exception_treatment": "Neutral edge/fill; no colored rail; critical caveat remains outside disclosure",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "Callout"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "2. Visual hierarchy and archetypes"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Copy and recovery matrix"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "4.1 Numeric and unit rules"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        },
+        {
+          "key": "E3",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/seo_article.html.j2"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "29H-0",
+          "name": "MX/Callout",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2NG-0",
+          "name": "MX/Callout · Mobile",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "critical analytical caveat remains visible",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "statement-caveat"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "statement-caveat": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "question",
+                "cohort-caption"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "question": null,
+                "cohort-caption": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "limitation"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Missing-field, undefined-growth and estimated-side limitations remain readable beside their affected answer.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "editorial assumption and limitation",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "editorial-dark",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "limits-heading",
+                "limits-copy",
+                "equations"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "limits-heading": null,
+                "limits-copy": null,
+                "equations": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "editorial-light",
+              "source_page_id": "p-6-0",
+              "step_keys": [
+                "limits-heading",
+                "limits-copy",
+                "equations"
+              ],
+              "input_packets": [
+                "consumer-inputs/consumer-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "limits-heading": null,
+                "limits-copy": null,
+                "equations": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Concise assumption/consequence text within the article, without a status-colored edge.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "narrow source limitation",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "company-eps-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "company-dividend-overlay-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "limitation"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "limitation": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-zh-evidence-return-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "coverage-limit"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "coverage-limit": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Critical caveat remains outside optional disclosure and available at narrow widths.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "DetailDisclosure",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Explicit summary; expanded state; stable content",
+      "contract_meaningful_example": "Source method or extra definitions",
+      "required_exception_treatment": "Keyboard/touch available; no hidden primary result; errors inside retain summary/context",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "DetailDisclosure"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Focus, overlays and input details"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.js#L5825-L6295"
+        },
+        {
+          "key": "M1",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.css"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2GG-0",
+          "name": "MX/Detail Disclosure",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2LX-0",
+          "name": "MX/Detail Disclosure · Mobile",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "collapsed desktop",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-disclosure-collapsed"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-disclosure-collapsed": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Explicit, stable summary and visible Show method affordance.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "expanded desktop",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-disclosure-expanded-summary",
+                "core-disclosure-expanded-body"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-disclosure-expanded-summary": null,
+                "core-disclosure-expanded-body": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Same summary and readable method body; the answer is outside the optional region.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "failed detail read retains summary/context",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-disclosure-error-summary",
+                "core-disclosure-error-copy",
+                "core-disclosure-error-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-disclosure-error-summary": null,
+                "core-disclosure-error-copy": null,
+                "core-disclosure-error-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Error is inside the expanded region with a specific read-only recovery action.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "collapsed, expanded and error at 320px",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-disclosure-mobile-label",
+                "core-disclosure-mobile-collapsed",
+                "core-disclosure-mobile-expanded-summary",
+                "core-disclosure-mobile-expanded-body",
+                "core-disclosure-mobile-error-summary",
+                "core-disclosure-mobile-error-copy",
+                "core-disclosure-mobile-error-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-disclosure-mobile-label": null,
+                "core-disclosure-mobile-collapsed": null,
+                "core-disclosure-mobile-expanded-summary": null,
+                "core-disclosure-mobile-expanded-body": null,
+                "core-disclosure-mobile-error-summary": null,
+                "core-disclosure-mobile-error-copy": null,
+                "core-disclosure-mobile-error-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Long summary wraps; important summary/retry controls meet the proposed 44px geometry.",
+          "still_unverified": "Touch/keyboard toggling, aria-expanded, panel identity, focus, request-cache behavior and actual mobile reflow remain unverified."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "Action",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Label; hierarchy; enabled/disabled/pending; callback owner",
+      "contract_meaningful_example": "Inspect source; retry refresh",
+      "required_exception_treatment": "Pending label explains disabled state; double submission prevented; outcome unknown directs readback",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "Action"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Control/action contracts"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M4",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/theme.js#L5825-L6295"
+        },
+        {
+          "key": "T14",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/fin/EvidenceRail.tsx"
+        },
+        {
+          "key": "T4",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/app/(shell)/options/page.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "28D-0",
+          "name": "MX/Button",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "primary, secondary and quiet hierarchy in both themes",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-action-hierarchy-dark",
+                "core-action-hierarchy-light"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-action-hierarchy-dark": null,
+                "core-action-hierarchy-light": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Calm filled primary, neutral outlined secondary and text-led quiet action with 44px targets.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "pending primary disables repeat action, reading remains available",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-action-disabled"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-action-disabled": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-10"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-10": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Saving label and disabled treatment coexist with an available evidence action.",
+          "still_unverified": "Only the existing write owner may enforce deduplication or confirm result."
+        },
+        {
+          "variant": "read recovery and uncertain-write reconciliation",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-4",
+                "state-12",
+                "state-13"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-4": null,
+                "state-12": null,
+                "state-13": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-tier-unavailable-dark-actions",
+                "core-tier-unavailable-light-actions"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-tier-unavailable-dark-actions": null,
+                "core-tier-unavailable-light-actions": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Read retry, confirmed save failure and unknown save outcome use different named actions.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "44px labeled close and return",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "options-full-row-evidence-320",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dialog-header",
+                "return-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dialog-header": null,
+                "return-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "macro-zh-evidence-return-390",
+              "source_page_id": "p-5-0",
+              "step_keys": [
+                "dialog-header",
+                "return-action"
+              ],
+              "input_packets": [
+                "mobile-inputs/supplemental-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "dialog-header": null,
+                "return-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Visible target geometry and contextual return labels at 320/390px.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "SaveFeedback",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Pending/saved/failed/uncertain; object/request identity where available",
+      "contract_meaningful_example": "Existing D23-owned save UI",
+      "required_exception_treatment": "Saved only after owner confirmation; uncertain cannot offer an unconditional retry; session expiry retains draft/context",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "SaveFeedback"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Independent state axes"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Copy and recovery matrix"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        }
+      ],
+      "source_owner_references": [],
+      "predecessors": [],
+      "variants": [
+        {
+          "variant": "pending, saved, confirmed failure and uncertain",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-10",
+                "state-11",
+                "state-12",
+                "state-13"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-10": null,
+                "state-11": null,
+                "state-12": null,
+                "state-13": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Four separate dark/light states with appropriate action language and retained local-edit intent.",
+          "still_unverified": "The saved object name is a fixture. There is no actual request/object receipt, commit, readback or write."
+        },
+        {
+          "variant": "confirmed save preserves the same stale and partial read snapshot",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-dark-heading",
+                "combined-dark-value",
+                "combined-dark-status"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-dark-heading": null,
+                "combined-dark-value": null,
+                "combined-dark-status": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            },
+            {
+              "board_key": "fault-compositions",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-confirmed-saved"
+              ],
+              "input_packets": [
+                "fault-composition-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-confirmed-saved": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Matched before/after design retains 66.7%, +1.13 pp, 7/8, 30 Oct 20:00 source and both read caveats after an owner-confirmed illustrative saved result.",
+          "still_unverified": "Saved object, request fixture-save-01 and owner readback are explicitly illustrative. No actual write, source update or executed transition is asserted."
+        },
+        {
+          "variant": "expiry after dispatch retains data and becomes uncertain",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "combined-light-value",
+                "combined-light-status",
+                "combined-light-action"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "combined-light-value": null,
+                "combined-light-status": null,
+                "combined-light-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "No assertion that nothing was sent; reconciliation follows sign-in while useful dated observations remain.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "existing-owner contract annotation",
+          "status": "ANNOTATION_ONLY",
+          "evidence": [
+            {
+              "board_key": "controls",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "saves"
+              ],
+              "input_packets": [
+                "foundation-inputs/boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "saves": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Annotation identifies D23/current owner; it is not a mutation demonstration.",
+          "still_unverified": "Bind real endpoint/callback, immutable account subject, request identity, reconciliation and idempotency policy."
+        }
+      ],
+      "required_qualifiers": [
+        "D23/current mutation owner must bind immutable subject, object/request identity, confirmed noncommit versus ambiguity, dedupe/reconciliation and actual readback.",
+        "Verify context preservation on valid sign-in/plan/session recovery; navigation/theme/language remain read-only."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "TierGate",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "Resource/access requirement; allowed content; appropriate existing entry action",
+      "contract_meaningful_example": "Restricted source inside accessible workspace",
+      "required_exception_treatment": "Server enforces access and omits restricted payload; guest, denied, expired and upstream unavailable are separate",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "TierGate"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "2.3 Exact public editorial boundary — newly resolved"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Copy and recovery matrix"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M8",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/tier_preview.css"
+        },
+        {
+          "key": "T4",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/app/(shell)/options/page.tsx"
+        },
+        {
+          "key": "TA1",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/OptionsPaywall.tsx"
+        },
+        {
+          "key": "TA2",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/OptionsServiceUnavailable.tsx"
+        },
+        {
+          "key": "TA3",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/entitlement.ts"
+        },
+        {
+          "key": "TA4",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/optionsAccess.ts"
+        },
+        {
+          "key": "TA5",
+          "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/i18n.tsx"
+        }
+      ],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2RE-0",
+          "name": "MX/Tier Gate",
+          "original_disposition": "IMPROVE",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "resource-specific Options denied in both themes",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-tier-denied-dark-copy",
+                "core-tier-denied-dark-action",
+                "core-tier-denied-light-copy",
+                "core-tier-denied-light-action"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-tier-denied-dark-copy": null,
+                "core-tier-denied-dark-action": null,
+                "core-tier-denied-light-copy": null,
+                "core-tier-denied-light-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Live Options resource, existing access requirement copy, feature description and existing onboarding entry. No paid tape is shown behind the gate.",
+          "still_unverified": "Pinned-source offer copy must be checked by the billing owner before release. Real access is not granted by plan wording."
+        },
+        {
+          "variant": "resource-specific Options provider unavailable",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "controls-variants",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "core-tier-unavailable-dark",
+                "core-tier-unavailable-dark-actions",
+                "core-tier-unavailable-light",
+                "core-tier-unavailable-light-actions"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-tier-unavailable-dark": null,
+                "core-tier-unavailable-dark-actions": null,
+                "core-tier-unavailable-light": null,
+                "core-tier-unavailable-light-actions": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Unavailability is distinct from denial; existing reload and /terminal actions remain available without a billing flow.",
+          "still_unverified": "The actual route is gated before OptionsWorkspaceMount; no entitlement or protected-payload test has been run."
+        },
+        {
+          "variant": "guest and expired recovery where the host permits public reading",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "states-matrix",
+              "source_page_id": "p-4-0",
+              "step_keys": [
+                "state-6",
+                "state-8",
+                "combined-light-status",
+                "combined-light-action"
+              ],
+              "input_packets": [
+                "mobile-inputs/mobile-state-boards.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "state-6": null,
+                "state-8": null,
+                "combined-light-status": null,
+                "combined-light-action": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Host-dependent guest/expiry messages do not override Options route policy.",
+          "still_unverified": "Existing return URL, authentication and payload omission must be bound and exercised by F01/D25/domain owners."
+        }
+      ],
+      "required_qualifiers": [
+        "getLiveOptionsAccess is tri-state; denied returns OptionsPaywall, unavailable returns OptionsServiceUnavailable, allowed mounts the workspace.",
+        "optionsReadAccess uses terminal_live_options feature or the exact existing unlimited exception; paid-tier label alone is insufficient.",
+        "The copied paywall CTA calls onboarding.open(signup,{plan:essential}); unavailable retry reloads and its existing chart link is /terminal. No new plan, URL or entitlement owner is introduced.",
+        "Do not serve paid Options data on denial/uncertainty or revoke unrelated public evidence by transplanting this resource policy."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "Icon",
+      "role_status": "EDITABLE_INPUTS_PREPARED_NATIVE_PROOF_PENDING",
+      "required_anatomy": "24×24 logical grid, currentColor monoline, about 1.8 stroke, optical-size adaptation",
+      "contract_meaningful_example": "Evidence/document, direction and recovery",
+      "required_exception_treatment": "Decorative icons aria-hidden; icon-only controls require names; never infer trading direction from arbitrary geometry",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "Icon"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "3.2 Type, space, radius, motion and icon collisions"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "5. Component integration and preservation contract"
+        },
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4.3 Icon and effect reconciliation"
+        }
+      ],
+      "source_owner_references": [
+        {
+          "key": "M7",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/_icons.html.j2"
+        }
+      ],
+      "predecessors": [],
+      "variants": [
+        {
+          "variant": "evidence, direction and recovery anatomy",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "foundations",
+              "source_page_id": "p-3-0",
+              "step_keys": [
+                "core-icon-evidence",
+                "core-icon-direction",
+                "core-icon-recovery"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-icon-evidence": null,
+                "core-icon-direction": null,
+                "core-icon-recovery": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Native SVG reuses exact existing search, arrow_up and swirl paths; 24 viewBox, 1.8 stroke, currentColor and dark/light labeled anatomy.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "optical sizes and labeled targets",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "foundations",
+              "source_page_id": "p-3-0",
+              "step_keys": [
+                "core-icon-sizes"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-icon-sizes": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "16/20/24px rendered sizes retain the 24-unit path; important controls show 44px target geometry.",
+          "still_unverified": "Optical balance after Paper import, currentColor inheritance in the browser, decorative aria-hidden and forced colors require separate verification."
+        },
+        {
+          "variant": "unknown direction suppresses invented mark",
+          "status": "INPUT_SPECIMEN_PRESENT",
+          "evidence": [
+            {
+              "board_key": "foundations",
+              "source_page_id": "p-3-0",
+              "step_keys": [
+                "core-icon-direction"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-icon-direction": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "Unknown comparison uses text and a reserved blank slot rather than an inferred arrow.",
+          "still_unverified": "Actual source integration, semantic HTML/ARIA, keyboard/touch behavior and browser rendering are not proved by native design."
+        },
+        {
+          "variant": "source owner and accessible-name contract",
+          "status": "ANNOTATION_ONLY",
+          "evidence": [
+            {
+              "board_key": "foundations",
+              "source_page_id": "p-3-0",
+              "step_keys": [
+                "core-icon-reuse-contract"
+              ],
+              "input_packets": [
+                "core-supplement-inputs.json"
+              ],
+              "native_board_id": null,
+              "native_step_ids": {
+                "core-icon-reuse-contract": null
+              },
+              "binding_status": "UNBOUND_BY_THIS_MAP"
+            }
+          ],
+          "native_can_show_after_binding_and_review": "The source/reuse note is an annotation, not proof of browser accessibility.",
+          "still_unverified": "No new React import, icon package or brand asset is established."
+        }
+      ],
+      "required_qualifiers": [],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "CountLadder",
+      "role_status": "RETAINED_UNQUALIFIED",
+      "required_anatomy": "Domain-defined stages, reconciled counts and denominators; active stage",
+      "contract_meaningful_example": "Existing Prophet ladder",
+      "required_exception_treatment": "Domain owner must preserve exhaustive/disjoint partitions; no global total synthesized across stages",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "CountLadder"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Component state applicability and specimen coverage"
+        }
+      ],
+      "source_owner_references": [],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2CM-0",
+          "name": "MX/Count Ladder",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2HH-0",
+          "name": "MX/Count Ladder · Mobile",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "retained desktop/mobile domain ladder",
+          "status": "RETAINED_UNQUALIFIED",
+          "evidence": [],
+          "native_can_show_after_binding_and_review": "Existing canonical reference identity only; no new concrete F02 ladder is asserted.",
+          "still_unverified": "No actual source-bound stage/count dataset or new independent design review."
+        }
+      ],
+      "required_qualifiers": [
+        "Domain owner supplies stage labels, count denominators, inclusion criteria and the actual active stage for one representative source-bound example.",
+        "Prove partitions are disjoint/exhaustive where the domain claims them, reconcile available/missing counts, and do not synthesize a global total across overlapping stages.",
+        "Preserve existing desktop/mobile source lineage and meaningful count drill-down/return.",
+        "Admit independent review of the exact updated native/implementation revision; generic accepted/complete badges do not qualify the ladder."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "LifecycleRail",
+      "role_status": "RETAINED_UNQUALIFIED",
+      "required_anatomy": "Domain transition names, current stage, history/next action as authorized",
+      "contract_meaningful_example": "Existing Prophet lifecycle",
+      "required_exception_treatment": "Not a generic up/down scale; preserve loops, terminal states and pending/uncertain transitions",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "LifecycleRail"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Component state applicability and specimen coverage"
+        }
+      ],
+      "source_owner_references": [],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2E3-0",
+          "name": "MX/Lifecycle Rail",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2IY-0",
+          "name": "MX/Lifecycle Rail · Mobile",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "retained desktop/mobile lifecycle",
+          "status": "RETAINED_UNQUALIFIED",
+          "evidence": [],
+          "native_can_show_after_binding_and_review": "Existing canonical reference identity only; no new concrete F02 lifecycle is asserted.",
+          "still_unverified": "No authorized domain transition, history or pending/uncertain state is newly evidenced."
+        }
+      ],
+      "required_qualifiers": [
+        "Domain owner supplies real transition names, current state, permitted next actions and a meaningful actual transition/return witness.",
+        "Retain loops, terminal states, pending and uncertain transitions; do not remap lifecycle to a generic up/down scale.",
+        "Bind source history and authority; a presentation choice cannot issue or complete a transition.",
+        "Qualify exact desktop/mobile compositions and integration with independent review."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    },
+    {
+      "role": "DecisionRow / VerdictHero",
+      "role_status": "RETAINED_UNQUALIFIED",
+      "required_anatomy": "Existing verdict, evidence and allowed next step; compact/mobile ordering",
+      "contract_meaningful_example": "Existing canonical decision/verdict examples",
+      "required_exception_treatment": "F02 does not write trading commands, confidence or probabilities; preserve domain authority and source lineage",
+      "contract_references": [
+        {
+          "path": "SYSTEM_CONTRACT.md",
+          "section": "4. Component anatomy, variants and failure treatment",
+          "row": "DecisionRow / VerdictHero"
+        },
+        {
+          "path": "SOURCE_AND_DATA_CONTRACT.md",
+          "section": "11.3 Closed-form criteria for the open consumer integration gap"
+        },
+        {
+          "path": "INTERACTION_STATES.md",
+          "section": "Component state applicability and specimen coverage"
+        }
+      ],
+      "source_owner_references": [],
+      "predecessors": [
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "28Y-0",
+          "name": "MX/Decision Row",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2BR-0",
+          "name": "MX/Verdict Hero",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2GM-0",
+          "name": "MX/Verdict Hero · Mobile",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        },
+        {
+          "file_id": "01M312VSDSZFVT45674GDVJVZN",
+          "page_id": "p-4-0",
+          "board_id": "2LB-0",
+          "name": "MX/Decision Row · Mobile",
+          "original_disposition": "RETAIN",
+          "historical_inspection": "identity + component tree",
+          "qualification": "Retained source/reference identity; no current design or domain approval inferred."
+        }
+      ],
+      "variants": [
+        {
+          "variant": "retained decision/verdict desktop/mobile",
+          "status": "RETAINED_UNQUALIFIED",
+          "evidence": [],
+          "native_can_show_after_binding_and_review": "Existing canonical reference identities only; no new verdict example or approval is asserted.",
+          "still_unverified": "No domain verdict, probability, confidence, trading command or authoritative action may be inferred from F02 styling."
+        }
+      ],
+      "required_qualifiers": [
+        "Domain owner supplies a real current verdict, its evidence/source lineage and exactly permitted next steps.",
+        "Preserve distinction between evidence, domain judgment and authorized action; F02 does not create confidence/probability or trading commands.",
+        "Retain compact/mobile order and the source/evidence/return path without hiding critical caveats.",
+        "Review exact updated composition and exercised consumer path independently; preserved reference ID is not qualification."
+      ],
+      "runtime_and_integration_status": "UNVERIFIED_BY_THIS_MAP"
+    }
+  ],
+  "remaining_variant_limits": [],
+  "cross_cutting_evidence": [
+    {
+      "topic": "Four consumer density",
+      "refs": [
+        {
+          "board_key": "macro-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "sector-1",
+            "sector-2",
+            "sector-3",
+            "sector-4",
+            "sector-5",
+            "sector-6",
+            "sector-7",
+            "sector-8",
+            "sector-9",
+            "sector-10"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "sector-1": null,
+            "sector-2": null,
+            "sector-3": null,
+            "sector-4": null,
+            "sector-5": null,
+            "sector-6": null,
+            "sector-7": null,
+            "sector-8": null,
+            "sector-9": null,
+            "sector-10": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "company-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "history-chart",
+            "statement-row-1",
+            "statement-row-2",
+            "statement-row-3",
+            "statement-row-4",
+            "statement-row-5",
+            "statement-row-6",
+            "statement-row-7",
+            "statement-row-8",
+            "statement-row-9"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "history-chart": null,
+            "statement-row-1": null,
+            "statement-row-2": null,
+            "statement-row-3": null,
+            "statement-row-4": null,
+            "statement-row-5": null,
+            "statement-row-6": null,
+            "statement-row-7": null,
+            "statement-row-8": null,
+            "statement-row-9": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "options-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "print-01",
+            "print-02",
+            "print-03",
+            "print-04",
+            "print-05",
+            "print-06",
+            "print-07",
+            "print-08",
+            "print-09",
+            "print-10",
+            "print-11",
+            "print-12"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "print-01": null,
+            "print-02": null,
+            "print-03": null,
+            "print-04": null,
+            "print-05": null,
+            "print-06": null,
+            "print-07": null,
+            "print-08": null,
+            "print-09": null,
+            "print-10": null,
+            "print-11": null,
+            "print-12": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "editorial-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "article-title",
+            "publication",
+            "calculation-caption",
+            "calculation-header",
+            "calculation-row-0",
+            "calculation-row-1",
+            "calculation-row-2",
+            "equations",
+            "limits-copy"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "article-title": null,
+            "publication": null,
+            "calculation-caption": null,
+            "calculation-header": null,
+            "calculation-row-0": null,
+            "calculation-row-1": null,
+            "calculation-row-2": null,
+            "equations": null,
+            "limits-copy": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        }
+      ],
+      "limit": "Density and visible data values only, until native visual readback. Full consumer engines and other capabilities remain with their owners."
+    },
+    {
+      "topic": "Theme parity",
+      "refs": [
+        {
+          "board_key": "foundations",
+          "source_page_id": "p-3-0",
+          "step_keys": [
+            "semantic-0",
+            "semantic-1",
+            "semantic-2",
+            "semantic-3"
+          ],
+          "input_packets": [
+            "foundation-inputs/boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "semantic-0": null,
+            "semantic-1": null,
+            "semantic-2": null,
+            "semantic-3": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "controls-variants",
+          "source_page_id": "p-4-0",
+          "step_keys": [
+            "core-action-hierarchy-dark",
+            "core-action-hierarchy-light"
+          ],
+          "input_packets": [
+            "core-supplement-inputs.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "core-action-hierarchy-dark": null,
+            "core-action-hierarchy-light": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "states-matrix",
+          "source_page_id": "p-4-0",
+          "step_keys": [
+            "state-0",
+            "state-1",
+            "state-2",
+            "state-3",
+            "state-4",
+            "state-5",
+            "state-6",
+            "state-7",
+            "state-8",
+            "state-9",
+            "state-10",
+            "state-11",
+            "state-12",
+            "state-13",
+            "state-14",
+            "state-15"
+          ],
+          "input_packets": [
+            "mobile-inputs/mobile-state-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "state-0": null,
+            "state-1": null,
+            "state-2": null,
+            "state-3": null,
+            "state-4": null,
+            "state-5": null,
+            "state-6": null,
+            "state-7": null,
+            "state-8": null,
+            "state-9": null,
+            "state-10": null,
+            "state-11": null,
+            "state-12": null,
+            "state-13": null,
+            "state-14": null,
+            "state-15": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        }
+      ],
+      "limit": "Clone/theme application, optical review, actual contrast measurements and forced colors require final native/browser evidence."
+    },
+    {
+      "topic": "Independent semantics",
+      "refs": [
+        {
+          "board_key": "states-matrix",
+          "source_page_id": "p-4-0",
+          "step_keys": [
+            "meaning-0",
+            "meaning-1",
+            "meaning-2"
+          ],
+          "input_packets": [
+            "mobile-inputs/mobile-state-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "meaning-0": null,
+            "meaning-1": null,
+            "meaning-2": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "options-full-row-evidence-320",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "limitation"
+          ],
+          "input_packets": [
+            "core-supplement-inputs.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "limitation": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        }
+      ],
+      "limit": "Direction, estimated side, exposure and judgment are distinct. Language preference cannot establish market meaning."
+    },
+    {
+      "topic": "Width classes",
+      "refs": [
+        {
+          "board_key": "options-full-row-evidence-320",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "dialog-header",
+            "entity",
+            "return-action"
+          ],
+          "input_packets": [
+            "core-supplement-inputs.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "dialog-header": null,
+            "entity": null,
+            "return-action": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "macro-light-zh-390",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "title",
+            "metric",
+            "sector-3"
+          ],
+          "input_packets": [
+            "mobile-inputs/mobile-state-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "title": null,
+            "metric": null,
+            "sector-3": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "width-768-overlay",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "scene",
+            "overlay"
+          ],
+          "input_packets": [
+            "mobile-inputs/supplemental-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "scene": null,
+            "overlay": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "width-1024-overlay",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "scene",
+            "overlay"
+          ],
+          "input_packets": [
+            "mobile-inputs/supplemental-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "scene": null,
+            "overlay": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "macro-docked-1280",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "workspace",
+            "split",
+            "dock"
+          ],
+          "input_packets": [
+            "mobile-inputs/mobile-state-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "workspace": null,
+            "split": null,
+            "dock": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "macro-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "body",
+            "comparison-layout"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "body": null,
+            "comparison-layout": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "width-1600-docked",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "workspace",
+            "split",
+            "dock"
+          ],
+          "input_packets": [
+            "mobile-inputs/supplemental-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "workspace": null,
+            "split": null,
+            "dock": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        }
+      ],
+      "limit": "320/390/768/1024/1280/1440/1600 construction inputs are not measured viewport, 400%-zoom, touch or keyboard tests; F01 joint freeze remains open."
+    },
+    {
+      "topic": "AC-06 chart fixture identity",
+      "refs": [
+        {
+          "board_key": "grammar",
+          "source_page_id": "p-5-0",
+          "step_keys": [
+            "chart-title",
+            "chart",
+            "exact-values"
+          ],
+          "input_packets": [
+            "foundation-inputs/boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "chart-title": null,
+            "chart": null,
+            "exact-values": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        },
+        {
+          "board_key": "macro-dark",
+          "source_page_id": "p-6-0",
+          "step_keys": [
+            "history-unit",
+            "history-chart"
+          ],
+          "input_packets": [
+            "consumer-inputs/consumer-boards.json"
+          ],
+          "native_board_id": null,
+          "native_step_ids": {
+            "history-unit": null,
+            "history-chart": null
+          },
+          "binding_status": "UNBOUND_BY_THIS_MAP"
+        }
+      ],
+      "limit": "Anatomy chart: gap 26 Oct, 50–80%. Macro consumer: gap 23 Oct, 40–80%. Keep separate names/source identities or explicitly align through a reviewed data change."
+    }
+  ],
+  "not_proved_by_native_design": [
+    "Live source correctness or schema/producer completeness",
+    "Real entitlement, protected-payload omission, account identity or billing offer validity",
+    "Mutation callback effects, idempotency, request reconciliation and confirmed readback",
+    "Semantic table/grid/dialog/ARIA behavior and assistive-technology support",
+    "Keyboard activation, focus trap/return after sort/filter, touch or horizontal scroll",
+    "400% zoom, viewport reflow, font/CJK loading or forced-color/reduced-motion behavior",
+    "Existing chart/DataInspector performance, virtualization, replay and export scope",
+    "F01 joint foundation release, complete consumer integration, admitted independent RIG review or production deployment"
+  ],
+  "audit_references": {
+    "map_gap": "paper/ASSIGNMENT_COMPLETENESS_20261103.md AC-02",
+    "other_open_gates": "AC-01 and AC-03 through AC-08 must be reconciled against final native checkpoint; this map closes no review gate by itself."
+  }
+}

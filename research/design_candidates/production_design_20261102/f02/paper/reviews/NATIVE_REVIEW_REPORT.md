@@ -1,6 +1,6 @@
 # F02 native review record
 
-**Current phase:** authoring repairs and additional evidence after frozen independent first passes. **Formal RIG:** draft; no approval receipt. The native design is not yet a released shared foundation.
+**Current phase:** PARTIAL; native writes paused after one unresolved transport outcome. **Formal RIG:** draft; no approval receipt. The native design is not a released shared foundation. The stable checkpoint has 22 boards,20 full capture pairs and 434 observed applied responses plus one unresolved dispatch. Existing-board review repairs remain unapplied, and no complete repaired-native freeze or repaired-set critique has been issued.
 
 The closed first-pass artifact set is `245d70bbd3ac773f3074277c771095264b31269d`, 44 members, aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both critics independently verified the set and examined every image. Their original BLOCK reports were preserved unchanged at `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` before author rationale was revealed.
 
@@ -20,3 +20,11 @@ Read [NATIVE_REVIEW_SEQUENCE.md](NATIVE_REVIEW_SEQUENCE.md), [product-native-fir
 | NPRC-008 | Complete failure/state/access design coverage and retain actual owner-confirmed transition requirements. |
 
 Later reports will record their own exact artifact identity. Planned repairs and authored inputs are not counted as observed fixes. Formal admitted reviewer-class receipts, the designated design-authority verdict, F01 joint contract and browser/consumer proof remain independent gates.
+
+## Rationale and current prepared repair evidence
+
+The separate [product rationale pass](product-native-rationale-pass.md) and [taste rationale pass](taste-native-rationale-pass.md), committed at `ef27472069f8c5f86ad4bf7bb02f9cfd810d41d9`, retain both BLOCK verdicts and all original finding IDs. The first reports remain unchanged. A separate [implementation contract audit](implementation-contract-audit.md) was author-informed and source-only; it is not either independent critic's repaired-set verdict.
+
+Participation v3 arithmetic/cohort/source corrections, Company annual-growth v2 and meaningful units,182 existing numeric frames and 66 phone frames are specified and checked in source. The final read-only native preflight matches54 existing Text guards, three charts and both Energy move targets; it confirms bindability, not application. Additional320 evidence and control variants have actual captures. The Chinese390 composition is explicitly partial. See [the exact pending-work record](../NATIVE_PENDING_WORK.md).
+
+The final retention pass confirms all 67 original identities/locations and 20 shared tokens, with zero original targets in the recorded F02 operations. This closes the stated preservation readback need; it does not close domain integration or the unresolved request. The strict32-board freeze preflight refuses the current incomplete state. It preserves the distinction between current-node absence and a terminal operation receipt.

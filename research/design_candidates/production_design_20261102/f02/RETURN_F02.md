@@ -1,66 +1,76 @@
 # F02 ownership return
 
-## Current native continuation
+**Delivery: PARTIAL — native writes paused on one unresolved request.**  
+**System:** `F02-SYSTEM/1.0.0-candidate.2`. **Source/data:** `F02-SOURCE-DATA/1.0.0-candidate.2`.  
+**Formal RIG:** `draft`; no approval receipt. **Carrier:** [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), branch `design/f02-system-v1-20261102-c2`, under programme Draft #10617.
 
-Editable Paper authoring is now applied through the qualified direct app. The checkpoint `0da8c968b6c01f168ea7386d0d1dbbc32140075e` records 19 observed boards and 337 confirmed operations, including three completed 320px evidence views. Further boards, native review repairs, final bindings and repaired-set review are in progress. Read the current [README](README.md), [native index](paper/NATIVE_BOARD_INDEX.md) and [native review record](paper/reviews/NATIVE_REVIEW_REPORT.md). Formal RIG remains draft; F01/runtime/domain integration gates remain open. The initial zero-Paper return below is historical and does not describe current effects.
+## Outcome and exact native state
 
-## Initial source/static return — historical
+The updated Paper app enabled editable construction in the assigned canonical file. The stable checkpoint contains **22 observed F02 boards**, **20 full-board JPEG/JSX pairs**, **435 dispatch records**, **434 confirmed applied responses**, and **one unresolved transport outcome**. The state atlas and Chinese phone composition are partial. Several fully captured boards still require prepared review repairs; a captured screen is not accepted merely because its bytes are saved.
 
-**Delivery:** PARTIAL. **System:** F02-SYSTEM/1.0.0-candidate.2. **Formal RIG:** draft; no approval receipt. **Paper:** NOT_APPLIED_TO_PAPER; zero mutations. **Carrier:** [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), under programme Draft PR #10617.
+The actual [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`, board `47Q-0`, in canonical file `01M312VSDSZFVT45674GDVJVZN`. The [native index](paper/NATIVE_BOARD_INDEX.md) contains every actual board/page ID and artifact link. The [stable writer checkpoint](paper/writer-continuation-progress.json) has SHA256 `ffecbc138f3c18e0a78f432ccd2b75bf0668fb0401586e5513ebb82adac49427`.
 
-## Completed work
+The original 67 boards remain present at their exact expected file/page locations with unchanged names: 48 canonical and19 supporting. All20 original shared token names/values match content hash `356191c3`. The recorded435-operation scope audit finds zero original targets and zero scope violations. [The live retention receipt](paper/native-final-retention.json) has SHA256 `acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa`. This is identity/location/token preservation, not a new approval of those references or a complete descendant visual audit.
 
-The immutable assignment, common session brief and F02 handoff were read at `6e1862867193ec6486a22001a0e4fb515da20448`. Current protected procedures were read at Mastermind `c57adacb338fe837c7d585f1e372c64d9b0118ec`. Source inspection used Macro `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` and Terminal `b79b1e136290978ff7675087de979bb1b42b3713`; those are evidence pins, not claims about the served release.
+## Completed assignment work
 
-Served Today→Macro, Company Overview→Financials/Statements, Options tape, public blog and the compound-growth article were inspected. Before screenshots are committed. The recorded live Macro geometry has a 224px expanded rail at the observed 1571px viewport.
+The launch read the complete common package and exact F02 handoff at immutable Macro `6e1862867193ec6486a22001a0e4fb515da20448`. Relevant protected procedures were refreshed; the continuation recorded Mastermind `1225133923333926d990b8bfd30432eec289181e` and a bounded `b4a5a8925c6c1412dac67ba296cf65ee81c4d4c8` check. Main source inspection used Macro `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` and Terminal `b79b1e136290978ff7675087de979bb1b42b3713`. These are evidence pins, not asserted served-release identities.
 
-All 67 assigned Paper board identities have individual dispositions and recorded inspection depth:48 boards in the canonical eight-page system and19 in the two assigned supporting pages. Component/foundation/pattern/starter trees and 20 live color tokens were read; three canonical metric/state/pattern screenshots received direct visual inspection. This is not a claim that all 67 boards received a complete visual audit. No board was moved, deleted, archived or relabeled approved.
+Served Today→Macro, Company Overview→Financials/Statements, Options tape, the public blog and actual compound-growth article were inspected. Seven production/Paper-before images remain preserved. The live Macro host measurement at the observed 1571px viewport was 224px navigation and1347px content host, with no global horizontal overflow at that width. All assigned Paper identities, current component/pattern trees and 20 tokens were read; per-original inspection depth remains explicit.
 
-The shared design/specification package contains:
-
-- A 21-role component system, typography/density, icon/focus/selection, tables/charts, evidence, state/access/action and locale contracts.
-- Exact source ownership and data/clock/unit/currency/identity boundaries, 18 proposed semantic token mappings, source collisions, scoped migration, acceptance and rollback.
-- A 36-capability ledger: 16 RETAIN and 20 IMPROVE; no removals or relocations. The 67-board ledger has 25 RETAIN and 42 IMPROVE. These are proposed dispositions, not reviewer approval.
-- A standalone HTML source reference and four contextual consumer designs, in light/dark: Macro, Company, Options and public editorial. The 13 SVG and 11 PNG files include 390px Macro, 320px Company evidence, 16 individual states and two meaningful combined states. Chinese vector source is supplied without a rendered-font claim.
-- A typed illustrative Company fixture with 17 fiscal years, five income series, 85 plotted values, five recent statement periods and nine metric rows.
-- A 12-item Paper construction packet with exact existing target pages, ready Read me copy and adjacent builder notes. Successor Paper IDs remain uncreated.
-
-## Review and repair
-
-Candidate 1 was frozen at `6ee221069deba909b0f1eceee53869d4f4569ac9`. Both independent native critics returned BLOCK before receiving author rationale. Their original reports are unchanged and persisted at `71c5e0c7a59a15bf7dced5459083d3f23ea71c1f`; separate rationale passes preserve their findings.
-
-Candidate 2 is frozen at `1253a647d193e1eacd1eb6f523a7a031529d2150`, with 53 reviewed artifacts and set SHA256 `6c1f8ba6937c620a306644764d69d7adef5672d27f6c512a080dcb35063f9ca3`. The aggregate is SHA256 of the UTF-8 concatenation of sorted relative path, NUL, lowercase file SHA256 and newline for every manifest entry. The manifest itself is excluded.
-
-The repair separates read/access/save state; preserves stale/partial warnings across saving; records exact evidence identity and separate Options observation/expiry context; resolves retained evidence triggers after rerender and requests nearest visibility; preserves English article language metadata; labels absolute dividend change; moves Macro/Options tables before secondary charts; restores Company historical depth; strengthens row legibility/selection; and replaces implementation-oriented state copy with clear outcomes. Architecture consultation additionally caught and closed incorrect editorial overview mapping, source details exposing loaded fixture values in unavailable states, an unsupported near-ask label, inaccurate sort restoration copy, and English instrumentation metadata.
-
-The narrow follow-up is frozen at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, 55 members, set SHA256 `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`. It fixes Options density-token wiring and places the mobile scroll cue before the first row. All prior source/review freezes remain unchanged.
-
-Exact independent repair dispositions and remaining critical tasks are in `reviews/REVIEW_REPORT.md` and each unmodified critic report. Native reviews are advisory and are not admitted Opus RIG receipts or a design-authority verdict. The final Product Critic verdict is BLOCK for PRC-007 and critical runtime/integration qualification; its concrete source/static defects are resolved. The final Taste Critic verdict is PASS_WITH_CONDITIONS; no VTC visual finding remains open. Their narrow follow-ups are bound to the final 55-member set above.
-
-## Scoped verification
-
-JavaScript syntax, 13 SVG parses and 92 recalculated flat-color contrast pairs pass their scoped checks; the minimum tested text ratio is 4.651:1. The drawing generator reports zero off-canvas text. Root and the sheet author visually inspected the revised static compositions.
-
-The reproducible pure-model check covers 480 state combinations and 3,360 write/access transitions without changing availability, freshness or coverage; 59 distinct evidence records; four overview entry points; and 96 observation-admission combinations. An additional architect probe covered 1,920 admission decisions and independently reconciled the Company series, raw values, growth and margin arithmetic. These are source checks, not browser, focus, scrolling, input, service or accessibility certification.
-
-The static first data-row baselines are Options 394px, Macro desktop 440px, Company 578px and 390px Macro 398px. They are authored coordinates, not measured browser performance or same-viewport production comparison results.
-
-## Blocking dependencies and minimum resumption evidence
-
-| Owner | Exact remaining gate | Evidence needed to resume / close |
+| Required output | Completed artifact and substantive content | Remaining limit |
 | --- | --- | --- |
-| P00 | Paper writer catalog qualification is false on paper-desktop 0.5.18. Observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` differs from reviewed `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`. | Original-owner qualification and an admitted write/readback path; F02 then constructs and reads back editable boards and useful in-Paper annotations. No alternate-carrier bypass. |
-| F01 + F02 | No versioned, frozen joint shell/system artifact was supplied or located in the bounded search. | Agreed rail/header/local-navigation/inspector slots, responsive/public/focused-chart boundaries, preference/navigation semantics and exact shared artifact identity. |
-| F02 + QA01 | Candidate could not be reached through the connected browser at loopback; inline data URL was rejected by the HTTP/HTTPS-only policy. | An authorized reachable HTTP/HTTPS preview; real keyboard/touch, retained/removed-row focus, local/global overflow, dock/overlay, 400% zoom, reduced-motion/forced-color and CJK font checks. |
-| Existing review owner + QA01 | Executive Fabric roots read initially returned `backend_unavailable`; the closeout rechecks returned `INVALID_ARGUMENT` for both declared roots request shapes. No review admission/execution binding was established. | Actual admitted independent Opus reviewer-class receipts and the designated authority verdict, bound to the final editable artifact/export/source set. |
-| D02, D07, D08, D23, D25, D26 and relevant source owners | Full domain preservation, actual producer/entitlement and saved-state integrations remain unverified. | The conjunctive witnesses in SOURCE_AND_DATA_CONTRACT §11: actual routes/entity/history/filters/exports/recovery/virtualization/clock/readback evidence. No synthetic slice qualifies these paths. |
+| Product description and normal journey | [System contract](SYSTEM_CONTRACT.md): question/period→comparison→limitations→exact evidence→context-preserving return→owner-confirmed action; four consumer jobs | No measured usability improvement claimed |
+| Feature and Paper ledger | [36 capabilities](CAPABILITY_LEDGER.md):16 RETAIN,20 IMPROVE; [67 Paper originals](PAPER_RETENTION_LEDGER.md):25 RETAIN,42 IMPROVE; zero removal/relocation | Complete domain workflow reachability remains domain acceptance |
+| Editable references | Core kit; all four consumer desktop slices in dark/light;320px evidence; control/access variants; English390 and partial Chinese390; actual screenshots/JSX |22 of32 planned boards exist; known repairs, ten boards and final appends remain |
+| Interaction/state contract | [Actual copy and state axes](INTERACTION_STATES.md): loading/empty/partial/stale/error, denied/expired/unavailable access, pending/failed/uncertain writes; keyboard/touch/focus/scroll, exact URL/identity and return rules | Native design and source contracts do not execute those interactions |
+| Backend/data/structure instructions | [Source/data contract](SOURCE_AND_DATA_CONTRACT.md): actual source owners, producers/schemas, entity/listing keys, units/currency, observation/publication/retrieval, refresh/cache, null/zero and write/readback | Named producer/access/domain and D23 confirmation gates remain |
+| Builder plan | Scoped reuse, real component/template owners, token collision mapping, performance targets, compatibility, sequence, acceptance and rollback | No product imports/endpoints or production implementation added |
+| In-Paper and durable handoff | Actual Read me page; adjacent build instructions; durable contracts, source repair packets, actual ID maps, review lineage and exact pending-work list | Final Paper source links/directory cannot be refreshed while writes remain paused |
 
-P00's writer catalog was rechecked at 02:39:19–02:39:24 UTC on 2026-11-03 and remained unqualified. The exact canonical component-page observation at 02:02:00–02:02:04 UTC retained 25 boards / 850 nodes. Executive Fabric observations were recorded at 02:00:58 UTC and again at 02:39:19–02:39:52 UTC; the final two valid roots request shapes each returned INVALID_ARGUMENT without an explanation. See evidence/closeout-gates.json. These are bounded observations, not claims that every possible service or submission path is unavailable.
+The 21-role kit distinguishes17 portable shared anatomies from four retained domain-specific roles: VirtualizedDataInspector, CountLadder, LifecycleRail and DecisionRow/VerdictHero. It specifies financial numbers versus code typography, explicit `%`/`pp`/`bps`, unknown versus zero, price direction versus health/side,40/52px density,44px important mobile controls, local overflow, missing chart values, exact evidence identity and neutral grouping without decorative colored rails.
 
-Sector and Prophet's actual inherited authority conditions, including measured-data, source-access, heatmap, rebake, landing-adoption and independent-review requirements, remain in `CONTINUITY_AND_GATES.md`. Rejected full-pane Refraction treatment remains rejected; no generic animated edge was promoted.
+## Native additions and prepared corrections
 
-## Persistence and scope
+The continuation constructed Company unknown-EPS320 (`70C-0`), actual-zero-dividend320 (`72T-0`), complete Options-print320 (`74P-0`), controls/disclosure/access variants (`771-0`) and the English dark390 comparison (`7CM-0`). The Chinese light390 board (`7IS-0`) has21 of23 confirmed groups, with readable CJK labels, all ten comparison rows and the missing-session chart. Both390 tables still have prepared numeric-frame refinements.
 
-The branch is `design/f02-system-v1-20261102-c2`. Candidate source/static artifacts and frozen reviews are durable Git commits. The draft was rebased in scope through an append-only two-parent integration onto supported `main`, preserving the original frozen ancestor; no force push or CI-policy change occurred. All changed paths are confined to this F02 directory and the F02 return-ledger row.
+The source repair package is concrete and independently checked. Participation v3 starts from raw counts, preserves distinct cohorts and true unavailable values, and computes rather than guesses rounded rates/deltas. Universe709/1063 and prior697/1063 produce66.70%,65.57% and+1.13pp; the Communication services row has its own118/177 and116/177 identity. Energy remains unavailable with0/82 coverage and sorts last. Historical charts have seven known observations and an explicit23 October gap.
 
-No product implementation, account/server write, Paper mutation, merge, un-draft or deployment occurred. CI observations and exact remote readback are recorded separately; a pending or inactive-context check is not reported as a green release.
+Company annual-growth v2 preserves all 45 recent annual values per theme and the 17-year, five-series history. It uses supplied FY2021 baselines for the six applicable FY2022 comparisons, preserves genuinely missing comparisons for the other three metrics, keeps reported zero dividends, and specifies52px rows/12px meaningful units. The original blanket prior-unavailable proposal was superseded before native application.
+
+Prepared corrections also include the exact desktop Macro observation key, correct Company fault-context fiscal/publication/retrieval clocks,182 existing numeric frames,66 phone numeric frames, complete fault contexts, source icon variants, narrow historical EPS/editorial evidence, complete narrow editorial reading, equal-data density comparison and768/1024/1280/1600 width studies. Their precedence and precise unapplied scope are in [NATIVE_PENDING_WORK.md](paper/NATIVE_PENDING_WORK.md). A read-only native preflight matched all 54 cumulative leaf guards, three old chart subtrees and both Energy move targets; no existing-board repair was dispatched before the pause.
+
+## F01 coordination
+
+F01 published [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), source head `34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985`, and requested coordination against F02 candidate2. [F02 concurrence](F01_HANDSHAKE_CANDIDATE.md) was committed at `21ec752c56222eb747d51950b29892d463c4398b` and linked from this draft PR. A bounded reread of F01's Terminal source `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` confirms the same integer rail/header geometry.
+
+The recorded candidate uses224/196/72/0px rails,64/56px headers and24/20/16px content gutters. Evidence docks at 320px plus 24px gap only when measured primary content retains at least 640px; therefore usable content must be at least 984px. F02 proposed exhaustive fractional CSS-width ranges and explicit focus behavior when changing overlay/dock modes. F01 acceptance of these detailed clarifications, final slots/preferences/navigation and joint independent qualification remain open. Source concurrence is not a released foundation.
+
+## Independent review and freeze status
+
+| Review stage | Immutable evidence | Actual result |
+| --- | --- | --- |
+| Historical source/static final set | `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`;55 members; aggregate `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324` | Product BLOCK on integration/runtime qualification; Taste PASS_WITH_CONDITIONS; applies only to that historical set |
+| First native freeze | `245d70bbd3ac773f3074277c771095264b31269d`;44 members; aggregate `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b` | Both critics verified all 44 members and inspected all 25 images without rationale or peer report |
+| First native reports | `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` | Product **BLOCK**; Taste **BLOCK** |
+| Separate rationale passes | `ef27472069f8c5f86ad4bf7bb02f9cfd810d41d9` | Both retained their findings; prepared repairs are not observed closure |
+| Complete repaired-native set | Not issued | Strict32-board preflight refuses missing boards/steps, pending bindings and unresolved request; final repaired-set reviews not commissioned |
+
+[The native review record](paper/reviews/NATIVE_REVIEW_REPORT.md) preserves numeric alignment, coherent breadth data/sorting, annual change/unit visibility, precise evidence, narrow/locale/density/input proof, failure/access contexts and integration findings. A separate author-informed architecture audit checked45 annual comparisons,48 breadth calculations, width equations, source identities/clocks and access/write boundaries; it did not replace either independent visual/product critic.
+
+Native advisory critics are not admitted Opus reviewer-class RIG receipts. The [formal review input handoff](paper/FORMAL_REVIEW_INPUT_HANDOFF.md) maps prepared evidence to the canonical route; it invents no reference identity, worker grant or authority verdict.
+
+## Exact blockers and minimum continuation evidence
+
+| Blocked action | Current evidence | Owner and minimum next evidence |
+| --- | --- | --- |
+| Resume Paper edits | Operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, body `7J4-0`, returned `UNAVAILABLE / Connection timed out.`. Fresh same-carrier reads show no footer; last child is chart `7NX-0`. Terminal status remains unresolved. | Existing Paper/P00 carrier owner: original-request terminal receipt or documented canonical reconciliation. Current connected/read-ready state and absent node are insufficient. |
+| Complete native design/review | Ten absent boards, two Chinese groups,14 appends, existing-board corrections, final Read me refresh and 50 current binding gaps | F02 after reconciliation: apply/fresh-read/capture, strict immutable freeze, then independent repaired-set product/taste review |
+| Joint foundation release | Geometry concurrence saved; detailed cutoff/transition acceptance and complete F01 artifact pending | F01/F02: immutable joint versions, actual native references and reviewed condition dispositions |
+| Real keyboard/touch/focus/400% behavior | Original permitted Chrome returned `ERR_DNS_FAIL` for the managed preview; owned preview server/tab were stopped | F02/QA01: permitted reachable render path and actual task evidence; no alternate-carrier workaround claimed |
+| Real consumer/data/access/save qualification | Source contracts and retained capabilities specified, synthetic fixtures clearly labeled | D02, D07, D08, public editorial owner and D23: actual field/clock/access/write-readback and complete route-task acceptance |
+| Formal RIG acceptance | Draft; no admitted dual reviewer-class receipts or authority verdict | Existing review owner/QA01: actual admission and source-bound final design-authority decision |
+
+The stop on canvas writes follows the exact assignment, `paper-design-workflow` and protected reconciliation rules. It is not a request to reauthorize the whole task. No unknown request was retried, no replacement retry ID was minted, and no alternate Paper carrier was used. All available source, preservation, review-preparation and persistence work was continued.
+
+Sector, Prophet and Refraction conditions retain their actual source authority in [CONTINUITY_AND_GATES.md](CONTINUITY_AND_GATES.md). No implementation, merge, Ready/un-draft, enqueue or deployment was performed. The containing immutable Git commit and current draft PR bind this return; later canvas changes require affected captures, bindings and review to be refreshed.

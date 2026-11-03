@@ -1,0 +1,545 @@
+{
+  "schema": "f02.writer-pause-artifact-manifest.v1",
+  "checkpoint": "FINAL_LOCAL_PAUSE_22_BOARDS434_CONFIRMED1UNRESOLVED_RETENTION_COMPLETE",
+  "progress_observed_at": "2026-11-03T06:47:30.139Z",
+  "scope": "Exact current child-writer capture/export set plus changed runtime/progress, journal, bounded repair and readback receipts. Includes earlier completed320/control artifacts so the root can content-addressably deduplicate already persisted files. Original input packets and frozen reviews are not changed. Dependency-agent unapplied390/width source patches are separate.",
+  "uncertain_count": 1,
+  "artifact_count": 107,
+  "artifacts": [
+    {
+      "path": "f02/paper/exports/company-dividend-overlay-320.jsx",
+      "bytes": 16799,
+      "sha256": "c506c622093fbbce09028743c495cdf6fa1a39ad451e38deccbc334259eb78dd"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320--history.jsx",
+      "bytes": 10007,
+      "sha256": "9782d5f35086918e8e2deda2acaa2ee6022c6d309e27f9ebdf3268f77f5c5b96"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320--history3.jsx",
+      "bytes": 7436,
+      "sha256": "d25af711bb7f0a027bace3659825fa515dd0d74bce2d0aa28c202ecdbe887cc8"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320--source.jsx",
+      "bytes": 14120,
+      "sha256": "cde2f6595915307ac92fc20230f5ca17bed9ff8bf93daacaa912ca4adf0f9e2d"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320--source3.jsx",
+      "bytes": 12081,
+      "sha256": "20eec8ac330007c7a06e8098e52045ceab435dcf8f6eb1601d2cd0a4b068ff90"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320--top.jsx",
+      "bytes": 4434,
+      "sha256": "e98d4faca98bf671e312d2614aa4e46132178ce09cbb7369449c4eefbbbb59ae"
+    },
+    {
+      "path": "f02/paper/exports/company-eps-overlay-320.jsx",
+      "bytes": 16761,
+      "sha256": "461273d0dc59c94ba39f2fb3d62d0abc93ced3f5e4c3ce7582030b14eb491ebd"
+    },
+    {
+      "path": "f02/paper/exports/controls--preflight-review-repair.jsx",
+      "bytes": 14425,
+      "sha256": "4a6c3555dbf4c45540a993ac1b99f0d5c14e5c03366dda3852e55a00397417bb"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--access-denied-dark.jsx",
+      "bytes": 3807,
+      "sha256": "465be61f3d6f86d4c243afaeb13c6c3fff84e26880a4b87b34cde7b90e8e3197"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--access-denied.jsx",
+      "bytes": 7611,
+      "sha256": "e99a353cdb17d303a15f5670b979080ae09baeb8b709e838f000605c30c80da4"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--access-service.jsx",
+      "bytes": 5145,
+      "sha256": "5ba2497ec1667ed9315c3747583f82ef829bd0a339ac98f17aac922c8ddcffc9"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--actions-dark.jsx",
+      "bytes": 6519,
+      "sha256": "bcca109d5593d781e6be6bc78dd51a57992b8bed01fd7b2f98b51a0eb6366cc0"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--actions.jsx",
+      "bytes": 12241,
+      "sha256": "40236f2cb6147a750e1c38a5d4f83e30c89c31ee442f788119da8ee853ae29b7"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--before-responsive-layout.jsx",
+      "bytes": 43103,
+      "sha256": "58f86686272228621a4f3346ea79d18a143c0a96fa90bf66764c41447d271c6b"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--detail-error-repaired.jsx",
+      "bytes": 3180,
+      "sha256": "9515b3a8e6ccf7d3ab9cdd614452f703bc1823967a8b589abf926851e0901c8a"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--detail-error.jsx",
+      "bytes": 3146,
+      "sha256": "3a39a904c5c01114456a210ad978ee25496cd1549084e1a91858b9c56b69d72a"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--disclosure-collapsed.jsx",
+      "bytes": 14299,
+      "sha256": "6f1a62402986d3a84e48d6832d96846e2fbd4f66d10a6c605e3245645d1dc8ff"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--disclosure-expanded.jsx",
+      "bytes": 15968,
+      "sha256": "2234af8fa4b27845ad57592b1b9b86781d0aab69261911d9e0cf1a65eee88bb9"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--mobile-collapsed.jsx",
+      "bytes": 1909,
+      "sha256": "20c5f9c2f59d712c8d2f94a43d5a5c50c39bd6570492c1a313ea62275c3c42b1"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--mobile-error.jsx",
+      "bytes": 6617,
+      "sha256": "3b0b64a033f91b3025746b6116ba48d4b2475756ffa3e77cbb24e0239e0ca044"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--mobile-expanded.jsx",
+      "bytes": 3773,
+      "sha256": "2c920e1d884d926f0888638767bcfc926e883c05b01307e8f3d36baa48dff788"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--responsive-layout-fixed.jsx",
+      "bytes": 8510,
+      "sha256": "769e511a7f068be5d6b4386980e265897e5bb9a164c487bf3bddac91aa7fc57b"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants--responsive-layout.jsx",
+      "bytes": 8512,
+      "sha256": "b6ba5a6e8b9efbfabc270817dc91a4dc6d4660d058e310bd7ab8cb5e53c2931f"
+    },
+    {
+      "path": "f02/paper/exports/controls-variants.jsx",
+      "bytes": 43401,
+      "sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f"
+    },
+    {
+      "path": "f02/paper/exports/grammar--preflight-review-repair.jsx",
+      "bytes": 18712,
+      "sha256": "efc816a8c2fa9b60c111fda175a65fc0a3a7860da5756975970e99a2c0c40102"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark--preflight-review-repair.jsx",
+      "bytes": 62577,
+      "sha256": "291afd67ed9993e3d087ee9ae873f6706557b0d11b11c23fd34cae705c8098e6"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390--comparison.jsx",
+      "bytes": 38928,
+      "sha256": "6e0679ddecc58d63664b5f80c4e5c9b43efaa8c569b14699d27241ee332c2e0f"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390--rows3.jsx",
+      "bytes": 18331,
+      "sha256": "8153eb649db5dce3925fccbdb11721870675a4148d2e3e71282604a87c937f56"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390--rows6.jsx",
+      "bytes": 27017,
+      "sha256": "e62cbd9182468d7c15202b5cbd4f26a098471f0fe5364d6372805e820a5c22a2"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390--rows9.jsx",
+      "bytes": 35595,
+      "sha256": "82c4ba1c80d9ccbe1072e7292014a2260ce8c7b1027e6580adb902cb006372a3"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390--top.jsx",
+      "bytes": 5981,
+      "sha256": "c9eaef20b08d2cce7572b64628149e3d13ccc9be9b5359234b33a91719bf5404"
+    },
+    {
+      "path": "f02/paper/exports/macro-dark-en-390.jsx",
+      "bytes": 46413,
+      "sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd"
+    },
+    {
+      "path": "f02/paper/exports/macro-light--preflight-review-repair.jsx",
+      "bytes": 60816,
+      "sha256": "e1f678dffe046ed32446c58444c13d1ca6c85fecec19d69df773b5ecec655d3c"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--comparison.jsx",
+      "bytes": 36728,
+      "sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--in-progress.jsx",
+      "bytes": 41342,
+      "sha256": "adf6f90dea30d3773916cb06ecae4ff8f2794855364cea7813bea14c97343a6c"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--rows3.jsx",
+      "bytes": 17274,
+      "sha256": "7c1afc1a9af9ff2b2198d885fa4454015544f331bc3a6ba254ae5e3ceaa46951"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--rows6.jsx",
+      "bytes": 25467,
+      "sha256": "3f8ba9edb48d36234dace95572d1c940d22d1fb7fce44df129d401298ed245f0"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--rows9.jsx",
+      "bytes": 33591,
+      "sha256": "d79ee9312e82b516129943ed0108762d51ee1e4a47e79c35c0885429d5c0e4b8"
+    },
+    {
+      "path": "f02/paper/exports/macro-light-zh-390--top.jsx",
+      "bytes": 5633,
+      "sha256": "bd5ec18079b44fa39eda7f3fe8755477188b1e8e47542f4d9b4cc15e0f4004ae"
+    },
+    {
+      "path": "f02/paper/exports/metrics--preflight-review-repair.jsx",
+      "bytes": 23155,
+      "sha256": "1594f31d77b2369c5a0a4e8698ef30f71b4902a8cea638ed6c2a5c3592ee9a0f"
+    },
+    {
+      "path": "f02/paper/exports/metrics-light--preflight-review-repair.jsx",
+      "bytes": 22131,
+      "sha256": "33416deaefe7da8ca2f3a390a8e29e96ed00a439213fa5d861548e424fc94fbb"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--all-fields.jsx",
+      "bytes": 12855,
+      "sha256": "cf4b97b4c98288bfdd272ff060924f4a53920c7116ab85caca345ff49f0b2f7b"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--contract-fields.jsx",
+      "bytes": 6657,
+      "sha256": "38c5b09d3097c807c639c2c61a8de2328d7c8e59ef81791c05d2c975bb1eb6d7"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--identity-aligned.jsx",
+      "bytes": 3145,
+      "sha256": "581ce6bf89eb912c06c29c820890d0a27f79ebbb5714e343c1b68462b4f92a25"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--identity.jsx",
+      "bytes": 3123,
+      "sha256": "579427a4bdc911a9698605d1bf7f4d4bf1c1987069b6786fa8589f47137f939f"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--print-fields.jsx",
+      "bytes": 10182,
+      "sha256": "0ac9c08116f92c9c57229b15592f4574f1403a6b21f8d205798c95e0d6c22e42"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320--receipt.jsx",
+      "bytes": 16211,
+      "sha256": "9556c4c7592e4c3ba7b3a6452a467a690eba8d00188c9578a48fa4cfb10acf91"
+    },
+    {
+      "path": "f02/paper/exports/options-full-row-evidence-320.jsx",
+      "bytes": 19339,
+      "sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672"
+    },
+    {
+      "path": "f02/paper/exports/states-matrix--preflight-review-repair.jsx",
+      "bytes": 86355,
+      "sha256": "dd4429e6d67cf4492c692d055b755986e718477856d0a2f7cd451480800cf98c"
+    },
+    {
+      "path": "f02/paper/native-final-retention-read-receipts.json",
+      "bytes": 109103,
+      "sha256": "d114fddacce614bef6633029d1f05103fa793470f208cd0e2974ea64b65b8e75"
+    },
+    {
+      "path": "f02/paper/native-final-retention.json",
+      "bytes": 252875,
+      "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa"
+    },
+    {
+      "path": "f02/paper/repairs/company-zero-clone-native-binding.json",
+      "bytes": 11454,
+      "sha256": "2c82fd242c29082e6a7e9ccbdc4dcd6e662328734645aba45945340f71bed0ee"
+    },
+    {
+      "path": "f02/paper/repairs/company-zero-clone-native-verification.json",
+      "bytes": 3464,
+      "sha256": "1083f956f287d4103cb881aba8e3a6569cea50d7f352fc7574180d0e871b2cb6"
+    },
+    {
+      "path": "f02/paper/repairs/controls-variants-native-repairs.json",
+      "bytes": 4773,
+      "sha256": "6f3176a4f22fcc30b883a1e61e6a9dec26d99bf1511753919a368a62782c8b6f"
+    },
+    {
+      "path": "f02/paper/repairs/macro-en390-native-verification.json",
+      "bytes": 474,
+      "sha256": "6eafd44380c2aafd8bd9a40b41fec94c208f1eb85a132c91ee098364132ee2e6"
+    },
+    {
+      "path": "f02/paper/repairs/options320-header-native-repair.json",
+      "bytes": 2256,
+      "sha256": "6126ca6c585030a0713cabe4163343011a75e06cc8c36914ac7b06829ab94d98"
+    },
+    {
+      "path": "f02/paper/repairs/review-repair-readonly-preflight.json",
+      "bytes": 25765,
+      "sha256": "20b06111fb6611d0b0549a9595b6f86f41b065d3e9c74ba3649c341c37b84ce8"
+    },
+    {
+      "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+      "bytes": 3330,
+      "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+    },
+    {
+      "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+      "bytes": 4147,
+      "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7"
+    },
+    {
+      "path": "f02/paper/repairs/writer-local-error-receipt-hardening.json",
+      "bytes": 1503,
+      "sha256": "6457e4fa224c9833c84bb7b490a9b07fe089fda10ff961eddbbd64a5ec6e05af"
+    },
+    {
+      "path": "f02/paper/repairs/zh390-chart-footer-reconciliation.json",
+      "bytes": 43052,
+      "sha256": "cf10cac6b3dd866738af0ce0c507a69c0ba9a05a0889159d68b380b06dc1d1ca"
+    },
+    {
+      "path": "f02/paper/screenshots/company-dividend-overlay-320.jpg",
+      "bytes": 95755,
+      "sha256": "5c44a755cf4ed242b842caf75af10fad68a322a8be10aca0c9bf81ee00233e83"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320--history.jpg",
+      "bytes": 37086,
+      "sha256": "eac2e1b3724805cace35c5117cbddabaf5fea34b2c64268c6a52ba9f4ac256db"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320--history3.jpg",
+      "bytes": 27384,
+      "sha256": "7c705a56e2cefdf428fb77598429410ad32c37be8555c466794c25965761509d"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320--source.jpg",
+      "bytes": 55551,
+      "sha256": "1961521a04feacb8c87af9d5c9620f5ed835b34ea51a3b5a7c8f6abd0b49051b"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320--source3.jpg",
+      "bytes": 47043,
+      "sha256": "0c84775d03f55bc048b8ccfb6e5f2ead8ec2f358ecd3bc56622460fb42ef0465"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320--top.jpg",
+      "bytes": 20112,
+      "sha256": "b85d67e41d6541d3766dcb01337da457006126f7b546fe78fd4db324c8f55a61"
+    },
+    {
+      "path": "f02/paper/screenshots/company-eps-overlay-320.jpg",
+      "bytes": 91071,
+      "sha256": "1087387fe9a2a527d19ea94b9eff026a703a62e8ac2e0a38c7467b340e6ca113"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--access-denied-dark.jpg",
+      "bytes": 33669,
+      "sha256": "6a11e4ba04fd059b847dd52eb873063c0b3d7fe37a68a77f6551898476eae064"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--access-denied.jpg",
+      "bytes": 67808,
+      "sha256": "bba38b7126cbe7fcd57dc9e52551410b5a7620b8e1c0f10fbeb8596e1321fb68"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--access-service.jpg",
+      "bytes": 42957,
+      "sha256": "ee69e87d73c530461140c3bb1a2ef471f43b74cf06863d209564150278689a96"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--actions-dark.jpg",
+      "bytes": 55004,
+      "sha256": "fe18cc038c7f5875a371bf2a51a9b15205eea49725fd4770e1451205d16d5dc0"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--actions.jpg",
+      "bytes": 88100,
+      "sha256": "f828c8fa796c0f0c82de5657ec6c3e83e370f97852d0816ee61eb82b271aa4ee"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--before-responsive-layout.jpg",
+      "bytes": 236508,
+      "sha256": "7f9ed41abe172223c045765aa09ab2d95d0394c1fb24bdbc38356c33ce8bb920"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--detail-error-repaired.jpg",
+      "bytes": 23237,
+      "sha256": "42aa6ef19f38f91dd1554b0fe7c551b32312cdf9153a382f418a7d75dd3f9002"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--detail-error.jpg",
+      "bytes": 23020,
+      "sha256": "9a6ea0c959e4e8dd8c0034127b131a170dcbf89a3009f5efbf799e960b2acb99"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--disclosure-collapsed.jpg",
+      "bytes": 116379,
+      "sha256": "25cdd66444b568e658f688877f6fb62bdc819f4869afe674e087f4bc621209c6"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--disclosure-expanded.jpg",
+      "bytes": 144798,
+      "sha256": "285396be12496963a203763b5b6396a317a22a4611b1c338bbefe9f017ce226c"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--mobile-collapsed.jpg",
+      "bytes": 8348,
+      "sha256": "fb2396dbd0f7e5b0db6745c89ea2dd0e95fff906d541b02e398714c84b0c6bd8"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--mobile-error.jpg",
+      "bytes": 36328,
+      "sha256": "58443e0360950783d8baf34dce2a407c722b05c6eae4f55d28df86213e31a821"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--mobile-expanded.jpg",
+      "bytes": 24683,
+      "sha256": "5c37d2a1773a8c3b7509ec32e159dc35f23311f3e2ab3f1764bfb96a53bc8d7d"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--responsive-layout-fixed.jpg",
+      "bytes": 84215,
+      "sha256": "7a17730c3b6b578ad3b582c35c6520b0f5360d443e5ea8e5591f838584469c86"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants--responsive-layout.jpg",
+      "bytes": 78459,
+      "sha256": "c916bbc6c5b9bc8bfa124e3881d2f1b48ec37c6b1279cb78707b69ba6f1c20d6"
+    },
+    {
+      "path": "f02/paper/screenshots/controls-variants.jpg",
+      "bytes": 252535,
+      "sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390--comparison.jpg",
+      "bytes": 65203,
+      "sha256": "8bacb4e91479e3f4461077a793f4fe52c7747bdd155213a0ae4040a39762c15e"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390--rows3.jpg",
+      "bytes": 41785,
+      "sha256": "d7b9965042b2cc36459887c4426884c8b7f7855ed9a905fc5948b19ace500f4b"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390--rows6.jpg",
+      "bytes": 52680,
+      "sha256": "2b63913c0f6dff4321a9ea40aa5ebed09ed90a1e68e70aa108123494c0f125c3"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390--rows9.jpg",
+      "bytes": 61333,
+      "sha256": "66b3af444b3e8e82ae655cb5f10b15e0a44a8f113d4c49a0c6ac34657b0cfaa3"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390--top.jpg",
+      "bytes": 22801,
+      "sha256": "44fe077b0447ae71857a48231714846fac281458a35fd3849281b9267dccca51"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-dark-en-390.jpg",
+      "bytes": 103001,
+      "sha256": "c93ff4063e4b5d7e47a5e330ef481be6b0208cd0bcf5ecfd24c72d5a3dac7634"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--comparison.jpg",
+      "bytes": 58267,
+      "sha256": "3af3f8c65901a6f941191ddc35622654323a856e71bfd9cbcc938bc17dd22475"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--in-progress.jpg",
+      "bytes": 69446,
+      "sha256": "563f312cf109a91e992fcd317905ebd8b48d93fd8808c184d4375857e15427e9"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--rows3.jpg",
+      "bytes": 36167,
+      "sha256": "beeb981fdb3e4f13a6e418fa7f9f5530f882ec7d2a8cc5064d459b666e28f44a"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--rows6.jpg",
+      "bytes": 45328,
+      "sha256": "86c5a2b197eefbb058fe5f3a7b5e73be8c8a4d2f71a9330187e679357b9c75a0"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--rows9.jpg",
+      "bytes": 53565,
+      "sha256": "cafa51517a4c81b3a470dd1af81a0cb89ee51b79d7730d45c66b97070a37f5a9"
+    },
+    {
+      "path": "f02/paper/screenshots/macro-light-zh-390--top.jpg",
+      "bytes": 18629,
+      "sha256": "c81798e729c028bc193aa353c476e1372067e77c6b6f8710a08450fb3ae80c51"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--all-fields.jpg",
+      "bytes": 30399,
+      "sha256": "b6287ac56e4e0c66460bc82ad1db674d49d36de1975396a1bad2e90e5e8b40af"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--contract-fields.jpg",
+      "bytes": 19318,
+      "sha256": "858ebe9947574cbd542b964333feb37b48fcda253c0a9340a989ff89eb926d82"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--identity-aligned.jpg",
+      "bytes": 13539,
+      "sha256": "247f8bbd80b9ee10f4be7627183e44d89bf2116752ea46c2e9329b71d4376eb0"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--identity.jpg",
+      "bytes": 13750,
+      "sha256": "2ff8540637d2c4a28aac3514e820aac05cb54c2afaf7606e087e7c40431bf71d"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--print-fields.jpg",
+      "bytes": 25791,
+      "sha256": "eb0001a373ea018866b79c8679bfd5cd81b369c05ce7050f27ae2aa307ef2626"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320--receipt.jpg",
+      "bytes": 51459,
+      "sha256": "639fec6acf6e9526d151ef3985bceb7e6d80c0c3bbd24a19aaff7ecee5ca740d"
+    },
+    {
+      "path": "f02/paper/screenshots/options-full-row-evidence-320.jpg",
+      "bytes": 94372,
+      "sha256": "584df181a9c266c646d37d6690985349a219c09d5e3dd99db769debfd08056ab"
+    },
+    {
+      "path": "f02/paper/writer-continuation-progress.json",
+      "bytes": 1881254,
+      "sha256": "ffecbc138f3c18e0a78f432ccd2b75bf0668fb0401586e5513ebb82adac49427"
+    },
+    {
+      "path": "f02/paper/writer-dispatch-journal.jsonl",
+      "bytes": 670110,
+      "sha256": "bc0d71fc4276b92501ec604162783a3f5fe66adf5d2f020eedbc7c9fe88cef10"
+    },
+    {
+      "path": "f02/paper/writer-pause-handoff-20261103.json",
+      "bytes": 4894,
+      "sha256": "96cf7ae9c14cc5053c3078cd3809e5d443f91a06df078b08d2681000473e7aa8"
+    },
+    {
+      "path": "f02_writer_runtime.json",
+      "bytes": 1977020,
+      "sha256": "9056bc052e948ffa9130fbae0cac05ead209c256456162c5e14ef81b04048822"
+    }
+  ]
+}

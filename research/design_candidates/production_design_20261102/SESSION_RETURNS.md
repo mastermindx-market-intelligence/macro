@@ -8,7 +8,7 @@ Status vocabulary for delivery: NOT_STARTED, IN_PROGRESS, PARTIAL, BLOCKED_RETUR
 | --- | --- | --- | --- | --- | --- |
 | P00 | Restore the qualified Paper writing and organization path | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | F01 | Shared shell, navigation and investor information architecture | NOT_STARTED | — | not submitted | user delivery / assigned session |
-| F02 | Design system and reusable product patterns | PARTIAL — NATIVE_AUTHORING_IN_PROGRESS | [Exact return](f02/RETURN_F02.md); [designs/specs](f02/README.md); [native evidence/review](f02/paper/README.md); editable Paper applied through qualified direct app | draft; no formal approval receipt | F02 native completion/repair review; F01 joint contract; QA01 runtime/admitted review; named domain integration owners |
+| F02 | Design system and reusable product patterns | PARTIAL — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED | [Exact return](f02/RETURN_F02.md); [designs/specs](f02/README.md); [native index](f02/paper/NATIVE_BOARD_INDEX.md);22 observed boards,20 full pairs,434 applied responses +1 unresolved;67 originals/20 tokens retained | draft; both first native critics BLOCK; no formal approval receipt | Existing Paper/P00 owner: terminal reconciliation of exact footer request; F02 remaining native work/review; F01 joint release; QA01 browser/RIG; domain integration owners |
 | F03 | Paper organization, coverage and design integration | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | D01 | Today and personal market overview | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | D02 | Macro regimes, breadth, risk and market events | NOT_STARTED | — | not submitted | user delivery / assigned session |

@@ -1,6 +1,6 @@
 {
   "schema": "f02.native-predecessor-bindings.v1",
-  "generated_at": "2026-11-03T06:10:41.874013+00:00",
+  "generated_at": "2026-11-03T06:53:40.367282+00:00",
   "counts": {
     "IMPROVE": 42,
     "RETAIN": 25
@@ -32,7 +32,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -81,7 +89,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -130,7 +146,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -152,13 +176,21 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -173,9 +205,9 @@
         {
           "board_key": "macro-light-zh-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-zh-evidence-return-390",
@@ -186,7 +218,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -207,7 +247,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -249,7 +297,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -291,7 +347,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -319,7 +383,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -347,7 +419,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.641Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -364,7 +444,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -381,7 +469,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -398,7 +494,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -415,7 +519,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -432,7 +544,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -449,7 +569,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -466,7 +594,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -483,7 +619,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -500,7 +644,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:01.828Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -521,7 +673,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:03.176Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -542,7 +702,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:03.176Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -563,7 +731,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:02.204Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -580,7 +756,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:12.964Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -601,7 +785,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:12.964Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -658,9 +850,9 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-light",
@@ -672,9 +864,9 @@
         {
           "board_key": "macro-light-zh-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -692,7 +884,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -755,7 +955,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -811,7 +1019,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -881,7 +1097,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -944,7 +1168,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1014,7 +1246,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1056,7 +1296,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1073,7 +1321,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1157,7 +1413,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1199,7 +1463,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1263,9 +1535,9 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-docked-1280",
@@ -1284,9 +1556,9 @@
         {
           "board_key": "macro-light-zh-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-zh-evidence-return-390",
@@ -1339,7 +1611,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1356,7 +1636,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1373,7 +1661,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1390,7 +1686,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1411,7 +1715,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1428,7 +1740,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1445,7 +1765,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1462,7 +1790,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1479,7 +1815,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1500,7 +1844,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1542,7 +1894,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1626,7 +1986,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1683,9 +2051,9 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-light",
@@ -1697,9 +2065,9 @@
         {
           "board_key": "macro-light-zh-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "options-dark",
@@ -1717,7 +2085,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1767,9 +2143,9 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-light",
@@ -1794,7 +2170,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1822,7 +2206,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.730Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1850,7 +2242,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1878,7 +2278,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1906,7 +2314,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1934,7 +2350,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1956,13 +2380,21 @@
         {
           "board_key": "macro-dark-en-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7CM-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -1977,9 +2409,9 @@
         {
           "board_key": "macro-light-zh-390",
           "file_id": "01M312VSDSZFVT45674GDVJVZN",
-          "page_id": null,
-          "board_id": null,
-          "status": "PENDING"
+          "page_id": "p-5-0",
+          "board_id": "7IS-0",
+          "status": "OBSERVED_CANDIDATE_COMPANION"
         },
         {
           "board_key": "macro-zh-evidence-return-390",
@@ -1990,7 +2422,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2032,7 +2472,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2074,7 +2522,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:11.277Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2091,7 +2547,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:09.701Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2108,7 +2572,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:09.701Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2125,7 +2597,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:09.701Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2142,7 +2622,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:09.701Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2159,7 +2647,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:09.701Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2180,7 +2676,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:26.557Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2208,7 +2712,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:26.557Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2236,7 +2748,15 @@
         }
       ],
       "scope": "Shared anatomy/contract candidate only; original domain semantics, archetype and authority are retained",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:26.557Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2253,7 +2773,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:26.859Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     },
     {
       "file_id": "01M312VSDSZFVT45674GDVJVZN",
@@ -2270,7 +2798,15 @@
       },
       "candidate_companions": [],
       "scope": "Unchanged original reference; no new approval inferred",
-      "live_retention_receipt": "Final exclusive-writer readback pending; this projection is not that observation"
+      "live_retention_receipt": {
+        "path": "paper/native-final-retention.json",
+        "sha256": "acb521f9b19354b8808fa04e77bc6c49aa2f21c0b4f7cedee0fa55f99d9405fa",
+        "observed_at": "2026-11-03T06:41:26.859Z",
+        "present": true,
+        "location_matches": true,
+        "name_matches": true,
+        "scope": "Identity, location and name readback; not original descendant visual audit or approval"
+      }
     }
   ],
   "boundary": "No deletion, relocation, replacement approval or domain requalification is claimed. IMPROVE is candidate intent; originals remain preserved."

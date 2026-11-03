@@ -35,3 +35,7 @@ After commit `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` preserved both first-pas
 | Taste | taste-native-rationale-pass.md | 2026-11-03T06:02:33+00:00 | `8398d4840713f25823d8155d8d5678869c0c444d893102656ec39bcc4ac6acd0` | BLOCK and NVTC-001–004 unchanged; missing design proof remains missing from the first freeze |
 
 The product supplement clarifies the distinction between native reference completeness and future real-path integration/QA. Both supplements leave all T01–T12 judgments unchanged. A repaired-set review remains to be performed against its own immutable native artifact set.
+
+## Paused construction checkpoint — 2026-11-03
+
+After the frozen first reports and separate rationale passes, the sole writer reached22 observed boards and434 confirmed applied responses. The next Chinese390 footer request returned a transport timeout without terminal receipt; same-carrier reads show it absent, and writes remain paused. Ten prepared boards, existing-board repairs, appends and final source directory remain incomplete. Current retention verifies67 originals and20 tokens. No complete repaired-native freeze or repaired-set critique was issued; both native first-pass BLOCK verdicts remain. First reports and rationale supplement bytes are unchanged. See ../NATIVE_PENDING_WORK.md and ../../RETURN_F02.md for exact scope and owner evidence.

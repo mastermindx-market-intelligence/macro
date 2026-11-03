@@ -1,0 +1,516 @@
+{
+  "schema": "f02.paper.core-role-supplement.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+  "source_icon": {
+    "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/_icons.html.j2",
+    "blob_sha": "0ada914d14ffca25498ed186d681d1a7b7f82697",
+    "names": [
+      "search",
+      "arrow_up",
+      "swirl"
+    ],
+    "path_bytes_reused": true,
+    "stroke": 1.8,
+    "viewBox": "0 0 24 24",
+    "color": "currentColor"
+  },
+  "append_to_existing": [
+    {
+      "target_board_key": "foundations",
+      "target_packet": "foundation-inputs/boards.json",
+      "steps": [
+        {
+          "key": "core-icon-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Use the existing icon anatomy.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Use the existing icon anatomy.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Use the existing icon anatomy.</div><div layer-name=\"24 × 24 viewBox · 1.8 stroke · currentColor · named controls. These are the existing search, arrow_up and swirl paths, not new brand assets.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">24 × 24 viewBox · 1.8 stroke · currentColor · named controls. These are the existing search, arrow_up and swirl paths, not new brand assets.</div></div>",
+          "variant": "Icon/anatomy"
+        },
+        {
+          "key": "core-icon-evidence",
+          "parent": "board",
+          "html": "<div layer-name=\"evidence theme pair\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;align-items:flex-start;\"><div layer-name=\"Dark evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:12px;background-color:var(--noir-canvas);\"><div layer-name=\"Dark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">Dark</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><line x1=\"15.4\" y1=\"15.4\" x2=\"21\" y2=\"21\"/></svg><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Evidence action: visible text names the action; the implementation accessible name also identifies its row.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:596px;\">Evidence action: visible text names the action; the implementation accessible name also identifies its row.</div></div><div layer-name=\"Light evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:12px;background-color:#f6f6f3;\"><div layer-name=\"Light\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">Light</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#1a1c20;\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><line x1=\"15.4\" y1=\"15.4\" x2=\"21\" y2=\"21\"/></svg><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Inspect source</div></div><div layer-name=\"Evidence action: visible text names the action; the implementation accessible name also identifies its row.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:596px;\">Evidence action: visible text names the action; the implementation accessible name also identifies its row.</div></div></div>",
+          "variant": "Icon/evidence",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-icon-recovery",
+          "parent": "board",
+          "html": "<div layer-name=\"recovery theme pair\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;align-items:flex-start;\"><div layer-name=\"Dark recovery\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:12px;background-color:var(--noir-canvas);\"><div layer-name=\"Dark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">Dark</div><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;outline:2px solid #c4d9f4;outline-offset:3px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Retry refresh</div></div><div layer-name=\"Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:596px;\">Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.</div></div><div layer-name=\"Light recovery\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:12px;background-color:#f6f6f3;\"><div layer-name=\"Light\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">Light</div><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;outline:2px solid #245c91;outline-offset:3px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#1a1c20;\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Retry refresh</div></div><div layer-name=\"Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:596px;\">Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.</div></div></div>",
+          "variant": "Icon/recovery",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-icon-direction",
+          "parent": "board",
+          "html": "<div layer-name=\"Direction and absence\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;\"><div layer-name=\"Dark direction\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:8px;background-color:var(--noir-canvas);\"><div layer-name=\"Dark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">Dark</div><div layer-name=\"Known direction\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:12px;height:44px;\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#b0d4b9;\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"12\" y1=\"19.5\" x2=\"12\" y2=\"5\"/><polyline points=\"6,11 12,5 18,11\"/></svg><div layer-name=\"Increase · +1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:26px;font-weight:600;color:#b0d4b9;\">Increase · +1.13 pp</div></div><div layer-name=\"Unknown direction\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:12px;height:44px;\"><div layer-name=\"Reserved 24px icon slot\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:24px;height:24px;\"></div><div layer-name=\"— Change unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:26px;font-weight:500;color:var(--noir-text-primary);\">— Change unavailable</div></div><div layer-name=\"Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:596px;\">Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.</div></div><div layer-name=\"Light direction\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:20px;gap:8px;background-color:#f6f6f3;\"><div layer-name=\"Light\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">Light</div><div layer-name=\"Known direction\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:12px;height:44px;\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#256341;\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"12\" y1=\"19.5\" x2=\"12\" y2=\"5\"/><polyline points=\"6,11 12,5 18,11\"/></svg><div layer-name=\"Increase · +1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:26px;font-weight:600;color:#256341;\">Increase · +1.13 pp</div></div><div layer-name=\"Unknown direction\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:12px;height:44px;\"><div layer-name=\"Reserved 24px icon slot\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:24px;height:24px;\"></div><div layer-name=\"— Change unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:26px;font-weight:500;color:#1a1c20;\">— Change unavailable</div></div><div layer-name=\"Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:596px;\">Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.</div></div></div>",
+          "variant": "Icon/direction",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-icon-sizes",
+          "parent": "board",
+          "html": "<div layer-name=\"Optical sizes with labeled hitboxes\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:24px;\"><div layer-name=\"16px optical sample\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:432px;gap:8px;\"><div layer-name=\"16px rendered mark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">16px rendered mark</div><div layer-name=\"44px labeled target\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:8px;\"><div layer-name=\"44px icon target\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:44px;height:44px;align-items:center;justify-content:center;\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><line x1=\"15.4\" y1=\"15.4\" x2=\"21\" y2=\"21\"/></svg></div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Same 24-unit path; inspect at actual scale.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-tertiary);\">Same 24-unit path; inspect at actual scale.</div></div><div layer-name=\"20px optical sample\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:432px;gap:8px;\"><div layer-name=\"20px rendered mark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">20px rendered mark</div><div layer-name=\"44px labeled target\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:8px;\"><div layer-name=\"44px icon target\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:44px;height:44px;align-items:center;justify-content:center;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><line x1=\"15.4\" y1=\"15.4\" x2=\"21\" y2=\"21\"/></svg></div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Same 24-unit path; inspect at actual scale.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-tertiary);\">Same 24-unit path; inspect at actual scale.</div></div><div layer-name=\"24px optical sample\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:432px;gap:8px;\"><div layer-name=\"24px rendered mark\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">24px rendered mark</div><div layer-name=\"44px labeled target\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:center;gap:8px;\"><div layer-name=\"44px icon target\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:44px;height:44px;align-items:center;justify-content:center;\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"/><line x1=\"15.4\" y1=\"15.4\" x2=\"21\" y2=\"21\"/></svg></div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Same 24-unit path; inspect at actual scale.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-tertiary);\">Same 24-unit path; inspect at actual scale.</div></div></div>",
+          "variant": "Icon/16-20-24-and-44-target"
+        },
+        {
+          "key": "core-icon-reuse-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Icon source and accessibility contract\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:20px 24px;gap:8px;background-color:var(--noir-panel);\"><div layer-name=\"REUSE THE ACTUAL SOURCE OWNER\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-champagne);\">REUSE THE ACTUAL SOURCE OWNER</div><div layer-name=\"Macro: templates/_icons.html.j2 → icon(search), icon(arrow_up), icon(swirl). Existing Terminal inline SVG ownership remains separate.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-secondary);\">Macro: templates/_icons.html.j2 → icon(search), icon(arrow_up), icon(swirl). Existing Terminal inline SVG ownership remains separate.</div><div layer-name=\"In the browser, decorative SVG is aria-hidden and not focusable; the named control owns its accessible label. Preserve currentColor and stroke, then qualify optical size, forced colors and real focus behavior. Paper does not prove those semantics.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">In the browser, decorative SVG is aria-hidden and not focusable; the named control owns its accessible label. Preserve currentColor and stroke, then qualify optical size, forced colors and real focus behavior. Paper does not prove those semantics.</div></div>",
+          "variant": "Icon/source-contract"
+        }
+      ]
+    },
+    {
+      "target_board_key": "metrics",
+      "target_packet": "foundation-inputs/boards.json",
+      "steps": [
+        {
+          "key": "core-metric-exceptions-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Keep the unit and the clock honest.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Keep the unit and the clock honest.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Keep the unit and the clock honest.</div><div layer-name=\"These are portable formatting and missing-clock states. They do not change the observed data or timestamps on any consumer board.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">These are portable formatting and missing-clock states. They do not change the observed data or timestamps on any consumer board.</div></div>",
+          "variant": "MetricValue/portable-exceptions"
+        },
+        {
+          "key": "core-metric-bps",
+          "parent": "board",
+          "html": "<div layer-name=\"Explicit basis points in both themes\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;\"><div layer-name=\"Dark basis-point comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:var(--noir-canvas);\"><div layer-name=\"BASIS-POINT EXPRESSION · SAME COMPARISON\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">BASIS-POINT EXPRESSION · SAME COMPARISON</div><div layer-name=\"+113 bps\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:32px;line-height:40px;font-weight:600;color:#b0d4b9;\">+113 bps</div><div layer-name=\"65.57% → 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:500;color:var(--noir-text-primary);\">65.57% → 66.70%</div><div layer-name=\"+1.13 percentage points × 100 = +113 basis points. This is a unit conversion of the illustrative comparison, not a new published statistic.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;\">+1.13 percentage points × 100 = +113 basis points. This is a unit conversion of the illustrative comparison, not a new published statistic.</div></div><div layer-name=\"Light basis-point comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:#f6f6f3;\"><div layer-name=\"BASIS-POINT EXPRESSION · SAME COMPARISON\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">BASIS-POINT EXPRESSION · SAME COMPARISON</div><div layer-name=\"+113 bps\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:32px;line-height:40px;font-weight:600;color:#256341;\">+113 bps</div><div layer-name=\"65.57% → 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:500;color:#1a1c20;\">65.57% → 66.70%</div><div layer-name=\"+1.13 percentage points × 100 = +113 basis points. This is a unit conversion of the illustrative comparison, not a new published statistic.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;\">+1.13 percentage points × 100 = +113 basis points. This is a unit conversion of the illustrative comparison, not a new published statistic.</div></div></div>",
+          "variant": "ChangeValue/bps",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-metric-unknown-age",
+          "parent": "board",
+          "html": "<div layer-name=\"Unknown age in both themes\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;\"><div layer-name=\"Dark unknown source age\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:var(--noir-canvas);\"><div layer-name=\"MISSING-CLOCK STATE FIXTURE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">MISSING-CLOCK STATE FIXTURE</div><div layer-name=\"Participation · 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:var(--noir-text-primary);\">Participation · 66.70%</div><div layer-name=\"Source age unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Source age unavailable.</div><div layer-name=\"Source observation time was not supplied. Publication time was not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;\">Source observation time was not supplied. Publication time was not supplied.</div><div layer-name=\"Retrieved 30 Oct 2026 · 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-secondary);\">Retrieved 30 Oct 2026 · 20:03 UTC</div><div layer-name=\"A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;\">A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.</div></div><div layer-name=\"Light unknown source age\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:10px;background-color:#f6f6f3;\"><div layer-name=\"MISSING-CLOCK STATE FIXTURE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">MISSING-CLOCK STATE FIXTURE</div><div layer-name=\"Participation · 66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:#1a1c20;\">Participation · 66.70%</div><div layer-name=\"Source age unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:#1a1c20;\">Source age unavailable.</div><div layer-name=\"Source observation time was not supplied. Publication time was not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;\">Source observation time was not supplied. Publication time was not supplied.</div><div layer-name=\"Retrieved 30 Oct 2026 · 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;\">Retrieved 30 Oct 2026 · 20:03 UTC</div><div layer-name=\"A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;\">A completed retrieval cannot establish freshness. Keep the unknown source clock visible beside the value.</div></div></div>",
+          "variant": "FreshnessReceipt/unknown-source-age",
+          "checkpoint_after": true
+        }
+      ]
+    }
+  ],
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_id_binding": "Parent resolves actual board and step IDs before application. No native IDs asserted.",
+  "source_access": {
+    "pin": "b79b1e136290978ff7675087de979bb1b42b3713",
+    "route": "/options",
+    "resource": "Live Options",
+    "results": {
+      "allowed": "OptionsWorkspaceMount",
+      "denied": "OptionsPaywall",
+      "unavailable": "OptionsServiceUnavailable"
+    },
+    "authority": "optionsReadAccess: terminal_live_options feature or exact existing unlimited exception",
+    "source_urls": [
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/app/(shell)/options/page.tsx",
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/OptionsPaywall.tsx",
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/components/OptionsServiceUnavailable.tsx",
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/entitlement.ts",
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/optionsAccess.ts",
+      "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/b79b1e136290978ff7675087de979bb1b42b3713/terminal/lib/i18n.tsx"
+    ],
+    "copy_scope": "Exact relevant English paywall and unavailable copy at the pinned revision; no claim that trial terms are currently valid. Host owner must verify at release."
+  },
+  "boards": [
+    {
+      "key": "controls-variants",
+      "name": "F02 · Actions, disclosure & access variants · Candidate 2",
+      "pageId": "p-4-0",
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "language": "en",
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "1440px",
+        "height": "fit-content",
+        "padding": "48px",
+        "gap": "24px",
+        "backgroundColor": "var(--noir-canvas)",
+        "fontFamily": "Inter",
+        "color": "var(--noir-text-primary)"
+      },
+      "steps": [
+        {
+          "key": "artifact-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Core control variants provenance and heading\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"F02 · CANDIDATE 2 · EDITABLE ROLE VARIANTS\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-secondary);\">F02 · CANDIDATE 2 · EDITABLE ROLE VARIANTS</div><div layer-name=\"Actions, disclosures and access\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:28px;line-height:36px;font-weight:600;color:var(--noir-text-primary);\">Actions, disclosures and access</div><div layer-name=\"Companion to the existing controls board. These source-bound examples preserve the real host owners; native geometry and behavior require their own review.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Companion to the existing controls board. These source-bound examples preserve the real host owners; native geometry and behavior require their own review.</div></div>",
+          "variant": "Controls/provenance-and-directory"
+        },
+        {
+          "key": "core-action-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Give each action a clear priority.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Give each action a clear priority.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Give each action a clear priority.</div><div layer-name=\"Primary confirms the domain action; secondary inspects or supports; quiet opens optional detail. A visual hierarchy does not grant write permission.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Primary confirms the domain action; secondary inspects or supports; quiet opens optional detail. A visual hierarchy does not grant write permission.</div></div>",
+          "variant": "Action/hierarchy"
+        },
+        {
+          "key": "core-action-hierarchy-dark",
+          "parent": "board",
+          "html": "<div layer-name=\"dark action hierarchy\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;padding:20px;gap:24px;background-color:var(--noir-canvas);\"><div layer-name=\"primary action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Primary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);\">Primary</div><div layer-name=\"Save view\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-text-primary);border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Save view\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:var(--noir-canvas);\">Save view</div></div><div layer-name=\"Primary · D23/current owner confirms the write.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:400px;\">Primary · D23/current owner confirms the write.</div></div><div layer-name=\"secondary action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Secondary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);\">Secondary</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Secondary · read evidence without a mutation.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:400px;\">Secondary · read evidence without a mutation.</div></div><div layer-name=\"quiet action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Quiet\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);\">Quiet</div><div layer-name=\"More details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:transparent;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"More details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">More details</div></div><div layer-name=\"Quiet · optional disclosure; no silent save.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:400px;\">Quiet · optional disclosure; no silent save.</div></div></div>",
+          "variant": "Action/dark-primary-secondary-quiet",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-action-hierarchy-light",
+          "parent": "board",
+          "html": "<div layer-name=\"light action hierarchy\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;padding:20px;gap:24px;background-color:#f6f6f3;\"><div layer-name=\"primary action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Primary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;\">Primary</div><div layer-name=\"Save view\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#1a1c20;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Save view\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#f6f6f3;\">Save view</div></div><div layer-name=\"Primary · D23/current owner confirms the write.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:400px;\">Primary · D23/current owner confirms the write.</div></div><div layer-name=\"secondary action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Secondary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;\">Secondary</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Inspect source</div></div><div layer-name=\"Secondary · read evidence without a mutation.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:400px;\">Secondary · read evidence without a mutation.</div></div><div layer-name=\"quiet action\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:416px;gap:12px;\"><div layer-name=\"Quiet\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;\">Quiet</div><div layer-name=\"More details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:transparent;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"More details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">More details</div></div><div layer-name=\"Quiet · optional disclosure; no silent save.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:400px;\">Quiet · optional disclosure; no silent save.</div></div></div>",
+          "variant": "Action/light-primary-secondary-quiet",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-action-disabled",
+          "parent": "board",
+          "html": "<div layer-name=\"Pending primary with reading available\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;align-items:center;gap:24px;padding:16px 0;\"><div layer-name=\"Saving…\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-raised);border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Saving…\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:var(--noir-text-tertiary);\">Saving…</div></div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Inspect source</div></div><div layer-name=\"Pending disables repeat submission. Read and evidence actions remain available. A disabled appearance is not a server lock.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:816px;\">Pending disables repeat submission. Read and evidence actions remain available. A disabled appearance is not a server lock.</div></div>",
+          "variant": "Action/pending-primary"
+        },
+        {
+          "key": "core-disclosure-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Disclose the method without hiding the answer.</div><div layer-name=\"The comparison and its coverage remain outside this optional region. Collapsed, expanded and failed-detail states keep the same explicit summary.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">The comparison and its coverage remain outside this optional region. Collapsed, expanded and failed-detail states keep the same explicit summary.</div></div>",
+          "variant": "DetailDisclosure/states"
+        },
+        {
+          "key": "core-disclosure-collapsed",
+          "parent": "board",
+          "html": "<div layer-name=\"Collapsed method disclosure\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:12px 24px;border-top:1px solid #343434;border-bottom:1px solid #343434;\"><div layer-name=\"Method disclosure summary / collapsed\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1296px;min-height:44px;align-items:center;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);width:1116px;\">How participation is calculated</div><div layer-name=\"Show method +\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-secondary);width:180px;text-align:right;\">Show method +</div></div></div>",
+          "variant": "DetailDisclosure/collapsed-desktop"
+        },
+        {
+          "key": "core-disclosure-expanded",
+          "parent": "board",
+          "html": "<div layer-name=\"Expanded method disclosure\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:20px 24px;gap:12px;border-top:1px solid #343434;border-bottom:1px solid #343434;\"></div>",
+          "variant": "DetailDisclosure/expanded-container"
+        },
+        {
+          "key": "core-disclosure-expanded-summary",
+          "parent": "core-disclosure-expanded",
+          "html": "<div layer-name=\"Method disclosure summary / expanded\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1296px;min-height:44px;align-items:center;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);width:1116px;\">How participation is calculated</div><div layer-name=\"Hide method −\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-secondary);width:180px;text-align:right;\">Hide method −</div></div>",
+          "variant": "DetailDisclosure/expanded-summary"
+        },
+        {
+          "key": "core-disclosure-expanded-body",
+          "parent": "core-disclosure-expanded",
+          "html": "<div layer-name=\"Illustrative method: count covered securities with a valid close above their valid 50-day average. Divide by the covered securities with both observations. Show eligible-population coverage separately; missing securities are not classified as below average.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Illustrative method: count covered securities with a valid close above their valid 50-day average. Divide by the covered securities with both observations. Show eligible-population coverage separately; missing securities are not classified as below average.</div>",
+          "variant": "DetailDisclosure/expanded-body",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-disclosure-error",
+          "parent": "board",
+          "html": "<div layer-name=\"Failed method detail retains summary\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:20px 24px;gap:12px;background-color:var(--noir-panel);\"></div>",
+          "variant": "DetailDisclosure/error-container"
+        },
+        {
+          "key": "core-disclosure-error-summary",
+          "parent": "core-disclosure-error",
+          "html": "<div layer-name=\"Method disclosure summary / expanded\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1296px;min-height:44px;align-items:center;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);width:1116px;\">How participation is calculated</div><div layer-name=\"Hide method −\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-secondary);width:180px;text-align:right;\">Hide method −</div></div>",
+          "variant": "DetailDisclosure/error-summary"
+        },
+        {
+          "key": "core-disclosure-error-copy",
+          "parent": "core-disclosure-error",
+          "html": "<div layer-name=\"Detail error\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1296px;gap:6px;\"><div layer-name=\"Method details could not be loaded.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Method details could not be loaded.</div><div layer-name=\"The comparison remains visible with its original source and coverage. No method has been inferred. Retry only this existing read; do not resend a save.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">The comparison remains visible with its original source and coverage. No method has been inferred. Retry only this existing read; do not resend a save.</div></div>",
+          "variant": "DetailDisclosure/error-copy"
+        },
+        {
+          "key": "core-disclosure-error-action",
+          "parent": "core-disclosure-error",
+          "html": "<div layer-name=\"Retry details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:180px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Retry details</div></div>",
+          "variant": "DetailDisclosure/error-recovery",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-disclosure-mobile",
+          "parent": "board",
+          "html": "<div layer-name=\"320px disclosure companion\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:320px;padding:16px;gap:12px;background-color:#f6f6f3;\"></div>",
+          "variant": "DetailDisclosure/mobile-container"
+        },
+        {
+          "key": "core-disclosure-mobile-label",
+          "parent": "core-disclosure-mobile",
+          "html": "<div layer-name=\"320px / optional method / three states\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#5f6368;width:288px;\">320px / optional method / three states</div>",
+          "variant": "DetailDisclosure/mobile-label"
+        },
+        {
+          "key": "core-disclosure-mobile-collapsed",
+          "parent": "core-disclosure-mobile",
+          "html": "<div layer-name=\"Mobile collapsed\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;padding:12px 0;border-bottom:1px solid #cbccc7;gap:4px;\"><div layer-name=\"COLLAPSED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;\">COLLAPSED</div><div layer-name=\"Mobile summary / collapsed\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:56px;align-items:center;gap:16px;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:20px;font-weight:600;color:#1a1c20;width:208px;\">How participation is calculated</div><div layer-name=\"Show +\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:64px;text-align:right;\">Show +</div></div></div>",
+          "variant": "DetailDisclosure/collapsed-320"
+        },
+        {
+          "key": "core-disclosure-mobile-expanded",
+          "parent": "core-disclosure-mobile",
+          "html": "<div layer-name=\"Mobile expanded\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;padding:12px 0;border-bottom:1px solid #cbccc7;gap:8px;\"></div>",
+          "variant": "DetailDisclosure/expanded-320-container"
+        },
+        {
+          "key": "core-disclosure-mobile-expanded-summary",
+          "parent": "core-disclosure-mobile-expanded",
+          "html": "<div layer-name=\"Mobile expanded header\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:4px;\"><div layer-name=\"EXPANDED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;\">EXPANDED</div><div layer-name=\"Mobile summary / expanded\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:56px;align-items:center;gap:16px;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:20px;font-weight:600;color:#1a1c20;width:208px;\">How participation is calculated</div><div layer-name=\"Hide −\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:64px;text-align:right;\">Hide −</div></div></div>",
+          "variant": "DetailDisclosure/expanded-320-summary"
+        },
+        {
+          "key": "core-disclosure-mobile-expanded-body",
+          "parent": "core-disclosure-mobile-expanded",
+          "html": "<div layer-name=\"Count covered securities above their valid 50-day average. Divide by those with both observations. Show coverage separately; missing is not below average.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:288px;\">Count covered securities above their valid 50-day average. Divide by those with both observations. Show coverage separately; missing is not below average.</div>",
+          "variant": "DetailDisclosure/expanded-320-body"
+        },
+        {
+          "key": "core-disclosure-mobile-error",
+          "parent": "core-disclosure-mobile",
+          "html": "<div layer-name=\"Mobile detail error\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;padding:12px 0;gap:8px;\"></div>",
+          "variant": "DetailDisclosure/error-320-container"
+        },
+        {
+          "key": "core-disclosure-mobile-error-summary",
+          "parent": "core-disclosure-mobile-error",
+          "html": "<div layer-name=\"Mobile error header\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:4px;\"><div layer-name=\"DETAIL ERROR\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;\">DETAIL ERROR</div><div layer-name=\"Mobile summary / expanded\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:56px;align-items:center;gap:16px;\"><div layer-name=\"How participation is calculated\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:20px;font-weight:600;color:#1a1c20;width:208px;\">How participation is calculated</div><div layer-name=\"Hide −\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:64px;text-align:right;\">Hide −</div></div></div>",
+          "variant": "DetailDisclosure/error-320-summary"
+        },
+        {
+          "key": "core-disclosure-mobile-error-copy",
+          "parent": "core-disclosure-mobile-error",
+          "html": "<div layer-name=\"Method unavailable. The comparison keeps its dated source and coverage; no method is inferred.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:288px;\">Method unavailable. The comparison keeps its dated source and coverage; no method is inferred.</div>",
+          "variant": "DetailDisclosure/error-320-copy"
+        },
+        {
+          "key": "core-disclosure-mobile-error-action",
+          "parent": "core-disclosure-mobile-error",
+          "html": "<div layer-name=\"Retry details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#1a1c20;\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Retry details</div></div>",
+          "variant": "DetailDisclosure/error-320-recovery",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-disclosure-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Disclosure behavior and source boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:20px 24px;gap:8px;background-color:var(--noir-panel);\"><div layer-name=\"BROWSER CONTRACT · NOT AN EXECUTED INPUT TEST\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-champagne);\">BROWSER CONTRACT · NOT AN EXECUTED INPUT TEST</div><div layer-name=\"One native disclosure summary controls one identified region. Enter / Space or touch toggles it; aria-expanded and panel identity stay synchronized. Keep focus on the summary, preserve URL/sort/scroll, and never save on open or close. Important controls remain at least 44px.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">One native disclosure summary controls one identified region. Enter / Space or touch toggles it; aria-expanded and panel identity stay synchronized. Keep focus on the summary, preserve URL/sort/scroll, and never save on open or close. Important controls remain at least 44px.</div><div layer-name=\"This is a shared failure treatment, not a new method endpoint. The host owner supplies any existing detail read/retry callback. Source: existing MX/Detail Disclosure references 2GG-0 / 2LX-0 and SOURCE_AND_DATA_CONTRACT.md §5; real browser behavior and host wiring remain unverified.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">This is a shared failure treatment, not a new method endpoint. The host owner supplies any existing detail read/retry callback. Source: existing MX/Detail Disclosure references 2GG-0 / 2LX-0 and SOURCE_AND_DATA_CONTRACT.md §5; real browser behavior and host wiring remain unverified.</div></div>",
+          "variant": "DetailDisclosure/source-contract"
+        },
+        {
+          "key": "core-tier-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Keep the Options access result specific.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Keep the Options access result specific.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Keep the Options access result specific.</div><div layer-name=\"Pinned source: /options renders its access gate before the live workspace. A denial and an unavailable entitlement check require different messages and actions.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Pinned source: /options renders its access gate before the live workspace. A denial and an unavailable entitlement check require different messages and actions.</div></div>",
+          "variant": "TierGate/resource-specific"
+        },
+        {
+          "key": "core-tier-denied-row",
+          "parent": "board",
+          "html": "<div layer-name=\"Options denied / theme pair\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;align-items:flex-start;\"></div>",
+          "variant": "TierGate/denied-pair"
+        },
+        {
+          "key": "core-tier-denied-dark",
+          "parent": "core-tier-denied-row",
+          "html": "<div layer-name=\"Options denied / dark\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:16px;background-color:var(--noir-panel);border:1px solid #343434;border-radius:8px;\"></div>",
+          "variant": "TierGate/denied-dark-container"
+        },
+        {
+          "key": "core-tier-denied-dark-copy",
+          "parent": "core-tier-denied-dark",
+          "html": "<div layer-name=\"Existing Options gate copy\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:12px;\"><div layer-name=\"OPTIONS · ACCESS REQUIRED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">OPTIONS · ACCESS REQUIRED</div><div layer-name=\"Unlock the Options desk\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:var(--noir-text-primary);\">Unlock the Options desk</div><div layer-name=\"Live options flow, chains, exposure (GEX) and unusual activity. Access requires an Essential or Pro plan — sign up to start the free 7-day trial.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:606px;\">Live options flow, chains, exposure (GEX) and unusual activity. Access requires an Essential or Pro plan — sign up to start the free 7-day trial.</div><div layer-name=\"Existing resource description\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:6px;\"><div layer-name=\"Live order-flow tape\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Live order-flow tape</div><div layer-name=\"Option chains &amp; greeks\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Option chains &amp; greeks</div><div layer-name=\"Gamma exposure (GEX)\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Gamma exposure (GEX)</div><div layer-name=\"Unusual &amp; sweep detection\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);\">Unusual &amp; sweep detection</div></div></div>",
+          "variant": "TierGate/denied-dark-resource-and-requirement"
+        },
+        {
+          "key": "core-tier-denied-dark-action",
+          "parent": "core-tier-denied-dark",
+          "html": "<div layer-name=\"Existing onboarding entry\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:10px;\"><div layer-name=\"Start 7-day free trial\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:606px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-text-primary);border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Start 7-day free trial\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:var(--noir-canvas);\">Start 7-day free trial</div></div><div layer-name=\"Essential &amp; Pro · cancel anytime\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);\">Essential &amp; Pro · cancel anytime</div></div>",
+          "variant": "TierGate/denied-dark-existing-action",
+          "source_callback": "onboarding.open('signup', { plan: 'essential' })",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-tier-denied-light",
+          "parent": "core-tier-denied-row",
+          "html": "<div layer-name=\"Options denied / light\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:16px;background-color:#ffffff;border:1px solid #cbccc7;border-radius:8px;\"></div>",
+          "variant": "TierGate/denied-light-container"
+        },
+        {
+          "key": "core-tier-denied-light-copy",
+          "parent": "core-tier-denied-light",
+          "html": "<div layer-name=\"Existing Options gate copy\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:12px;\"><div layer-name=\"OPTIONS · ACCESS REQUIRED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">OPTIONS · ACCESS REQUIRED</div><div layer-name=\"Unlock the Options desk\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:#1a1c20;\">Unlock the Options desk</div><div layer-name=\"Live options flow, chains, exposure (GEX) and unusual activity. Access requires an Essential or Pro plan — sign up to start the free 7-day trial.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:606px;\">Live options flow, chains, exposure (GEX) and unusual activity. Access requires an Essential or Pro plan — sign up to start the free 7-day trial.</div><div layer-name=\"Existing resource description\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:6px;\"><div layer-name=\"Live order-flow tape\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Live order-flow tape</div><div layer-name=\"Option chains &amp; greeks\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Option chains &amp; greeks</div><div layer-name=\"Gamma exposure (GEX)\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Gamma exposure (GEX)</div><div layer-name=\"Unusual &amp; sweep detection\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Unusual &amp; sweep detection</div></div></div>",
+          "variant": "TierGate/denied-light-resource-and-requirement"
+        },
+        {
+          "key": "core-tier-denied-light-action",
+          "parent": "core-tier-denied-light",
+          "html": "<div layer-name=\"Existing onboarding entry\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:606px;gap:10px;\"><div layer-name=\"Start 7-day free trial\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:606px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#1a1c20;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Start 7-day free trial\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#f6f6f3;\">Start 7-day free trial</div></div><div layer-name=\"Essential &amp; Pro · cancel anytime\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;\">Essential &amp; Pro · cancel anytime</div></div>",
+          "variant": "TierGate/denied-light-existing-action",
+          "source_callback": "onboarding.open('signup', { plan: 'essential' })",
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-tier-unavailable-row",
+          "parent": "board",
+          "html": "<div layer-name=\"Options entitlement unavailable / theme pair\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:1344px;gap:32px;align-items:flex-start;\"></div>",
+          "variant": "TierGate/unavailable-pair"
+        },
+        {
+          "key": "core-tier-unavailable-dark",
+          "parent": "core-tier-unavailable-row",
+          "html": "<div layer-name=\"Existing Options outage copy / dark\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:12px;background-color:var(--noir-panel);border:1px solid #343434;border-radius:8px;\"><div layer-name=\"OPTIONS · ACCESS CHECK UNAVAILABLE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:var(--noir-text-tertiary);\">OPTIONS · ACCESS CHECK UNAVAILABLE</div><div layer-name=\"Options is temporarily unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Options is temporarily unavailable</div><div layer-name=\"We couldn&#x27;t verify Options access right now. This does not mean your subscription changed. Please retry.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:606px;\">We couldn&#x27;t verify Options access right now. This does not mean your subscription changed. Please retry.</div></div>",
+          "variant": "TierGate/unavailable-dark-resource"
+        },
+        {
+          "key": "core-tier-unavailable-dark-actions",
+          "parent": "core-tier-unavailable-dark",
+          "html": "<div layer-name=\"Existing read recovery and route\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:606px;gap:16px;\"><div layer-name=\"Try again\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-text-primary);border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Try again\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:var(--noir-canvas);\">Try again</div></div><div layer-name=\"Go to chart\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:transparent;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Go to chart\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Go to chart</div></div></div>",
+          "variant": "TierGate/unavailable-dark-existing-actions",
+          "source_callbacks": [
+            "window.location.reload()",
+            "href=/terminal"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-tier-unavailable-light",
+          "parent": "core-tier-unavailable-row",
+          "html": "<div layer-name=\"Existing Options outage copy / light\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:656px;padding:24px;gap:12px;background-color:#ffffff;border:1px solid #cbccc7;border-radius:8px;\"><div layer-name=\"OPTIONS · ACCESS CHECK UNAVAILABLE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:16px;font-weight:600;color:#5f6368;\">OPTIONS · ACCESS CHECK UNAVAILABLE</div><div layer-name=\"Options is temporarily unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;\">Options is temporarily unavailable</div><div layer-name=\"We couldn&#x27;t verify Options access right now. This does not mean your subscription changed. Please retry.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:606px;\">We couldn&#x27;t verify Options access right now. This does not mean your subscription changed. Please retry.</div></div>",
+          "variant": "TierGate/unavailable-light-resource"
+        },
+        {
+          "key": "core-tier-unavailable-light-actions",
+          "parent": "core-tier-unavailable-light",
+          "html": "<div layer-name=\"Existing read recovery and route\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:606px;gap:16px;\"><div layer-name=\"Try again\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#1a1c20;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Try again\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#f6f6f3;\">Try again</div></div><div layer-name=\"Go to chart\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:transparent;border:0px solid transparent;border-radius:6px;\"><div layer-name=\"Go to chart\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Go to chart</div></div></div>",
+          "variant": "TierGate/unavailable-light-existing-actions",
+          "source_callbacks": [
+            "window.location.reload()",
+            "href=/terminal"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "core-tier-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Pinned Options resource and access owner\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;padding:20px 24px;gap:8px;background-color:var(--noir-panel);\"><div layer-name=\"SOURCE BINDING · NOT AN ACCESS TEST OR CURRENT OFFER VERIFICATION\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-champagne);\">SOURCE BINDING · NOT AN ACCESS TEST OR CURRENT OFFER VERIFICATION</div><div layer-name=\"Source pin b79b1e1: getLiveOptionsAccess returns allowed / denied / unavailable. Denied → OptionsPaywall; unavailable → OptionsServiceUnavailable; only allowed mounts OptionsWorkspaceMount. No tape, zero-result count or paid payload is shown in either gate.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Source pin b79b1e1: getLiveOptionsAccess returns allowed / denied / unavailable. Denied → OptionsPaywall; unavailable → OptionsServiceUnavailable; only allowed mounts OptionsWorkspaceMount. No tape, zero-result count or paid payload is shown in either gate.</div><div layer-name=\"Actual authority: optionsReadAccess requires terminal_live_options or the exact existing unlimited exception. A paid-plan label alone never grants access. Existing paywall copy and onboarding callback are reused as pinned references; the billing owner must verify the offer before release. Outage retry reloads the current route; the existing chart link is /terminal.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Actual authority: optionsReadAccess requires terminal_live_options or the exact existing unlimited exception. A paid-plan label alone never grants access. Existing paywall copy and onboarding callback are reused as pinned references; the billing owner must verify the offer before release. Outage retry reloads the current route; the existing chart link is /terminal.</div><div layer-name=\"This resource boundary does not revoke public evidence on unrelated routes. The generic public-read state specimen is a different host policy. Host auth return context, payload omission and callback effects remain unverified.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">This resource boundary does not revoke public evidence on unrelated routes. The generic public-read state specimen is a different host policy. Host auth return context, payload omission and callback effects remain unverified.</div></div>",
+          "variant": "TierGate/source-contract"
+        }
+      ],
+      "construction_note": "Create a separate fit-content companion artboard. No parent step depends on the original controls board. Original controls receives only its separately prepared hover comparison."
+    },
+    {
+      "key": "options-full-row-evidence-320",
+      "name": "F02 · Options print-01 evidence · 320 · Candidate 2",
+      "pageId": "p-5-0",
+      "width": 320,
+      "height": 1520,
+      "theme": "light",
+      "language": "en",
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "backgroundColor": "#f6f6f3",
+        "overflow": "hidden"
+      },
+      "steps": [
+        {
+          "key": "artifact",
+          "parent": "board",
+          "html": "<div layer-name=\"F02 Options evidence provenance\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:320px;padding:9px 16px;background-color:#f0f0ed;\"><div layer-name=\"F02 · CANDIDATE 2 · ILLUSTRATIVE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:500;color:#51555b;\">F02 · CANDIDATE 2 · ILLUSTRATIVE</div></div>",
+          "variant": "EvidenceInspector/provenance"
+        },
+        {
+          "key": "dialog-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Print evidence / close receives initial focus\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:320px;height:64px;padding:0 16px;gap:16px;background-color:#ffffff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Print evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:196px;\">Print evidence</div><div layer-name=\"Close\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:76px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;outline:2px solid #245c91;outline-offset:3px;\"><div layer-name=\"Close\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Close</div></div></div>",
+          "variant": "EvidenceInspector/close-44",
+          "return_target": "options-0"
+        },
+        {
+          "key": "body",
+          "parent": "board",
+          "html": "<div layer-name=\"Full Options row\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:320px;padding:20px 16px;gap:18px;\"></div>",
+          "variant": "EvidenceInspector/320-body"
+        },
+        {
+          "key": "entity",
+          "parent": "body",
+          "html": "<div layer-name=\"Exact print identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:6px;\"><div layer-name=\"EXM · print-01\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;\">EXM · print-01</div><div layer-name=\"Observed option print\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;\">Observed option print</div><div layer-name=\"Illustrative source · same first tape row\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;\">Illustrative source · same first tape row</div></div>",
+          "variant": "EvidenceInspector/identity"
+        },
+        {
+          "key": "contract-fields",
+          "parent": "body",
+          "html": "<div layer-name=\"Contract identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;\"><div layer-name=\"Instrument\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Instrument\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Instrument</div><div layer-name=\"EXM\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">EXM</div></div><div layer-name=\"Expiry\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Expiry\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Expiry</div><div layer-name=\"2026-11-20\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">2026-11-20</div></div><div layer-name=\"Type\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Type\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Type</div><div layer-name=\"Call\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">Call</div></div><div layer-name=\"Strike\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Strike\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Strike</div><div layer-name=\"120.00 USD\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">120.00 USD</div></div></div>",
+          "variant": "EvidenceInspector/full-row-contract-fields"
+        },
+        {
+          "key": "print-fields",
+          "parent": "body",
+          "html": "<div layer-name=\"Observed print fields\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;\"><div layer-name=\"Time · ET\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Time · ET\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Time · ET</div><div layer-name=\"15:58:42\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">15:58:42</div></div><div layer-name=\"Est. side\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Est. side\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Est. side</div><div layer-name=\"≈ Buy\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">≈ Buy</div></div><div layer-name=\"Premium\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Premium\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Premium</div><div layer-name=\"825,000 USD\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">825,000 USD</div></div><div layer-name=\"Contracts\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Contracts\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Contracts</div><div layer-name=\"1,500\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">1,500</div></div></div>",
+          "variant": "EvidenceInspector/full-row-print-fields"
+        },
+        {
+          "key": "context-fields",
+          "parent": "body",
+          "html": "<div layer-name=\"Classification and flags\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;\"><div layer-name=\"DTE\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"DTE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">DTE</div><div layer-name=\"21 calendar days\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">21 calendar days</div></div><div layer-name=\"Moneyness\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Moneyness\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Moneyness</div><div layer-name=\"ITM\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">ITM</div></div><div layer-name=\"Flags\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;min-height:36px;align-items:center;gap:16px;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Flags\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:500;color:#51555b;width:96px;\">Flags</div><div layer-name=\"Sweep\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:176px;overflow-wrap:anywhere;\">Sweep</div></div></div>",
+          "variant": "EvidenceInspector/full-row-context-fields"
+        },
+        {
+          "key": "source-identity",
+          "parent": "body",
+          "html": "<div layer-name=\"Source field expanded\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:6px;\"><div layer-name=\"Source · illustrative fixture\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;\">Source · illustrative fixture</div><div layer-name=\"f02.fixture.v2/options/EXM/2026-11-20/Call/120.00/2026-10-30/print-01\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:288px;overflow-wrap:anywhere;word-break:break-all;\">f02.fixture.v2/options/EXM/2026-11-20/Call/120.00/2026-10-30/print-01</div></div>",
+          "variant": "EvidenceInspector/full-row-source-field"
+        },
+        {
+          "key": "clocks",
+          "parent": "body",
+          "html": "<div layer-name=\"Three clocks plus distinct cohort window\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:12px;\"><div layer-name=\"Print observation clock\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:2px;\"><div layer-name=\"Observed print\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;\">Observed print</div><div layer-name=\"30 Oct 2026 · 15:58:42 ET\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">30 Oct 2026 · 15:58:42 ET</div><div layer-name=\"America/New_York\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;\">America/New_York</div></div><div layer-name=\"Fixture cohort observation window\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:2px;\"><div layer-name=\"Twelve-print observation window\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;\">Twelve-print observation window</div><div layer-name=\"30 Oct 2026 · 15:47:31–15:58:42 ET\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:288px;\">30 Oct 2026 · 15:47:31–15:58:42 ET</div></div><div layer-name=\"Publication and retrieval separately\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:4px;\"><div layer-name=\"Published · 30 Oct 2026, 20:02 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Published · 30 Oct 2026, 20:02 UTC</div><div layer-name=\"Retrieved · 30 Oct 2026, 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;\">Retrieved · 30 Oct 2026, 20:03 UTC</div></div></div>",
+          "variant": "EvidenceInspector/observation-publication-retrieval"
+        },
+        {
+          "key": "limitation",
+          "parent": "body",
+          "html": "<div layer-name=\"Interpretation and clock limits\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:288px;gap:6px;\"><div layer-name=\"Estimated side is not intent.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:21px;font-weight:600;color:#1a1c20;\">Estimated side is not intent.</div><div layer-name=\"≈ Buy does not identify opening or closing intent, a price forecast or signed exposure.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;width:288px;\">≈ Buy does not identify opening or closing intent, a price forecast or signed exposure.</div><div layer-name=\"Expiry describes the contract. The observed time and cohort window describe prints; they are not expiry clocks or a market-wide total.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;width:288px;\">Expiry describes the contract. The observed time and cohort window describe prints; they are not expiry clocks or a market-wide total.</div></div>",
+          "variant": "EvidenceInspector/critical-limitation"
+        },
+        {
+          "key": "return-action",
+          "parent": "body",
+          "html": "<div layer-name=\"Return to EXM · print-01\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Return to EXM · print-01\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Return to EXM · print-01</div></div>",
+          "variant": "EvidenceInspector/return-44",
+          "return_target": "options-0",
+          "checkpoint_after": true
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Options evidence implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:320px;padding:16px;gap:8px;background-color:#f0f0ed;\"><div layer-name=\"BUILD CONTRACT · OUTSIDE THE PRODUCT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;\">BUILD CONTRACT · OUTSIDE THE PRODUCT</div><div layer-name=\"Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:288px;\">Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.</div><div layer-name=\"All 12 tape fields are preserved. Source key and row match the candidate-2 fixture; no live API, access check, focus test or completed browser path is claimed.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:288px;\">All 12 tape fields are preserved. Source key and row match the candidate-2 fixture; no live API, access check, focus test or completed browser path is claimed.</div></div>",
+          "variant": "EvidenceInspector/integration-contract"
+        }
+      ],
+      "fixture_binding": {
+        "source_file": "../../pattern-lab.html",
+        "source_function": "optionRows[0] and evidenceRecord(options-0)",
+        "consumer_board_keys": [
+          "options-dark",
+          "options-light"
+        ],
+        "consumer_step_key": "print-01",
+        "row_key": "options-0",
+        "print_id": "print-01",
+        "source_identity": "f02.fixture.v2/options/EXM/2026-11-20/Call/120.00/2026-10-30/print-01",
+        "field_count": 12,
+        "field_values": {
+          "Instrument": "EXM",
+          "Time · ET": "15:58:42",
+          "Expiry": "2026-11-20",
+          "Type": "Call",
+          "Strike · USD": "120.00",
+          "Est. side": "≈ Buy",
+          "Premium · USD": "825000",
+          "Contracts": "1500",
+          "DTE": "21",
+          "Moneyness": "ITM",
+          "Flags": "Sweep",
+          "Source": "f02.fixture.v2/options/EXM/2026-11-20/Call/120.00/2026-10-30/print-01"
+        },
+        "observation_date": "2026-10-30",
+        "cohort_window": "15:47:31–15:58:42 America/New_York",
+        "publication": "2026-10-30T20:02:00Z",
+        "retrieval": "2026-10-30T20:03:00Z"
+      }
+    }
+  ]
+}

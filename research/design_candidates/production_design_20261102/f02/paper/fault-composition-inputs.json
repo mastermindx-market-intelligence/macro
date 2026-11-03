@@ -1,0 +1,432 @@
+{
+  "schema": "f02.paper.fault-compositions.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+  "boards": [
+    {
+      "key": "fault-compositions",
+      "name": "F02 · Fault compositions & saved read continuity · Candidate 2",
+      "pageId": "p-4-0",
+      "width": 1440,
+      "height": 900,
+      "theme": "mixed",
+      "language": "en",
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "1440px",
+        "height": "fit-content",
+        "padding": "48px",
+        "gap": "24px",
+        "backgroundColor": "var(--noir-canvas)",
+        "fontFamily": "Inter",
+        "color": "var(--noir-text-primary)"
+      },
+      "steps": [
+        {
+          "key": "artifact-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Fault composition provenance\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;gap:8px;\"><div layer-name=\"F02 · CANDIDATE 2 · PORTABLE FAULT-STATE FIXTURES\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">F02 · CANDIDATE 2 · PORTABLE FAULT-STATE FIXTURES</div><div layer-name=\"Keep the comparison intact when a result is unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:28px;line-height:36px;font-weight:600;color:var(--noir-text-primary);width:1296px;overflow-wrap:anywhere;\">Keep the comparison intact when a result is unavailable.</div><div layer-name=\"Each state below is an explicit illustrative input. Definition/currency and response failures are counterfactual examples, separate from the normal consumer fixtures. No real filing, access decision or save result is asserted.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Each state below is an explicit illustrative input. Definition/currency and response failures are counterfactual examples, separate from the normal consumer fixtures. No real filing, access decision or save result is asserted.</div></div>",
+          "variants": [
+            "Provenance/independent-fault-fixtures"
+          ]
+        },
+        {
+          "key": "missing-period-headers",
+          "parent": "board",
+          "html": "<div layer-name=\"Missing observation period / both themes\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1344px;gap:32px;align-items:flex-start;\"><div layer-name=\"Dark missing period header\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:10px;background-color:var(--noir-canvas);\"><div layer-name=\"EXM · MISSING-PERIOD INPUT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:608px;overflow-wrap:anywhere;\">EXM · MISSING-PERIOD INPUT</div><div layer-name=\"Missing-period section heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:16px;align-items:center;\"><div layer-name=\"Annual financials\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--noir-text-primary);width:446px;overflow-wrap:anywhere;\">Annual financials</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:146px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Inspect source</div></div></div><div layer-name=\"Observation period not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:15px;line-height:22px;font-weight:500;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">Observation period not supplied.</div><div layer-name=\"Statement currency: USD · source period unknown\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;overflow-wrap:anywhere;\">Statement currency: USD · source period unknown</div><div layer-name=\"Retrieved 30 Oct 2026, 20:03 UTC. Retrieval does not identify the observation period.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:608px;overflow-wrap:anywhere;\">Retrieved 30 Oct 2026, 20:03 UTC. Retrieval does not identify the observation period.</div></div><div layer-name=\"Light missing period header\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:10px;background-color:#f6f6f3;\"><div layer-name=\"EXM · MISSING-PERIOD INPUT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:608px;overflow-wrap:anywhere;\">EXM · MISSING-PERIOD INPUT</div><div layer-name=\"Missing-period section heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:16px;align-items:center;\"><div layer-name=\"Annual financials\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:446px;overflow-wrap:anywhere;\">Annual financials</div><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:146px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Inspect source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Inspect source</div></div></div><div layer-name=\"Observation period not supplied.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:15px;line-height:22px;font-weight:500;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Observation period not supplied.</div><div layer-name=\"Statement currency: USD · source period unknown\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Statement currency: USD · source period unknown</div><div layer-name=\"Retrieved 30 Oct 2026, 20:03 UTC. Retrieval does not identify the observation period.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Retrieved 30 Oct 2026, 20:03 UTC. Retrieval does not identify the observation period.</div></div></div>",
+          "variants": [
+            "SectionHeader/missing-period-dark",
+            "SectionHeader/missing-period-light"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "withheld-comparisons",
+          "parent": "board",
+          "html": "<div layer-name=\"Two reasons to withhold a comparison\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1344px;gap:32px;align-items:flex-start;\"><div layer-name=\"Changed definition comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:12px;background-color:var(--noir-panel);\"><div layer-name=\"ILLUSTRATIVE INPUT · DEFINITION CHANGED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:608px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · DEFINITION CHANGED</div><div layer-name=\"EXM · Operating margin\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">EXM · Operating margin</div><div layer-name=\"Two original values\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:24px;\"><div layer-name=\"FY 2025 · all operations\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"FY 2025 · all operations\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:292px;overflow-wrap:anywhere;\">FY 2025 · all operations</div><div layer-name=\"23.3%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:var(--noir-text-primary);width:292px;overflow-wrap:anywhere;\">23.3%</div></div><div layer-name=\"FY 2026 · continuing operations\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"FY 2026 · continuing operations\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:292px;overflow-wrap:anywhere;\">FY 2026 · continuing operations</div><div layer-name=\"24.5%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:var(--noir-text-primary);width:292px;overflow-wrap:anywhere;\">24.5%</div></div></div><div layer-name=\"— Comparison not available\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">— Comparison not available</div><div layer-name=\"The definitions differ. No comparable restatement was supplied; a numerical change would misstate the comparison.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;overflow-wrap:anywhere;\">The definitions differ. No comparable restatement was supplied; a numerical change would misstate the comparison.</div><div layer-name=\"Inspect definitions\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Inspect definitions\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Inspect definitions</div></div></div><div layer-name=\"Mixed currency comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:12px;background-color:#ffffff;\"><div layer-name=\"ILLUSTRATIVE INPUT · CURRENCY MISMATCH\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:608px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · CURRENCY MISMATCH</div><div layer-name=\"EXM · Revenue\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">EXM · Revenue</div><div layer-name=\"Two original values\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:24px;\"><div layer-name=\"FY 2025 · statement currency\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"FY 2025 · statement currency\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">FY 2025 · statement currency</div><div layer-name=\"36.00 USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">36.00 USD bn</div></div><div layer-name=\"FY 2026 · statement currency\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"FY 2026 · statement currency\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">FY 2026 · statement currency</div><div layer-name=\"48.00 EUR bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">48.00 EUR bn</div></div></div><div layer-name=\"— Comparison not available\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">— Comparison not available</div><div layer-name=\"Currencies differ. No authorized conversion rate or common-currency restatement was supplied; no percent change is calculated.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Currencies differ. No authorized conversion rate or common-currency restatement was supplied; no percent change is calculated.</div><div layer-name=\"Inspect currencies\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Inspect currencies\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Inspect currencies</div></div></div></div>",
+          "variants": [
+            "ChangeValue/definition-mismatch",
+            "ChangeValue/currency-mismatch"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "empty-table-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Completed empty query composed table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:#f6f6f3;\"><div layer-name=\"ILLUSTRATIVE INPUT · COMPLETED EMPTY QUERY\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · COMPLETED EMPTY QUERY</div><div layer-name=\"Completed empty query heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"EXM · Annual statement comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:#1a1c20;width:1048px;overflow-wrap:anywhere;\">EXM · Annual statement comparison</div><div layer-name=\"Source details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:224px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Source details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Source details</div></div></div><div layer-name=\"Requested periods: FY 2025–2026 · Display currency: USD · Source observed 30 Oct 2026, 20:00 UTC.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">Requested periods: FY 2025–2026 · Display currency: USD · Source observed 30 Oct 2026, 20:00 UTC.</div><div layer-name=\"Retained table filter\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"Label filter: ZZZ\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#1a1c20;width:960px;overflow-wrap:anywhere;\">Label filter: ZZZ</div><div layer-name=\"0 matches / 9 source metrics\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:500;color:#51555b;width:312px;overflow-wrap:anywhere;\">0 matches / 9 source metrics</div></div><div layer-name=\"Column headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:40px;align-items:center;background-color:#f0f0ed;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:296px;overflow-wrap:anywhere;\">Metric</div></div><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:136px;align-items:flex-end;text-align:right;\">FY 2025</div></div><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:136px;align-items:flex-end;text-align:right;\">FY 2026</div></div><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:196px;align-items:flex-end;text-align:right;\">Change</div></div><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:196px;overflow-wrap:anywhere;\">Unit</div></div><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:192px;overflow-wrap:anywhere;\">Source</div></div></div></div>",
+          "variants": [
+            "TableFrame/empty-container"
+          ]
+        },
+        {
+          "key": "empty-table-state",
+          "parent": "empty-table-context",
+          "html": "<div layer-name=\"No metrics match “ZZZ”.\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1296px;padding:20px 0;gap:12px;\"><div layer-name=\"No metrics match “ZZZ”.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:1296px;overflow-wrap:anywhere;\">No metrics match “ZZZ”.</div><div layer-name=\"The query completed with 0 matching records. The source contains nine metrics; this result does not mean there was no financial activity. The entity, periods and filter remain visible.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">The query completed with 0 matching records. The source contains nine metrics; this result does not mean there was no financial activity. The entity, periods and filter remain visible.</div><div layer-name=\"Clear filter\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Clear filter\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Clear filter</div></div></div>",
+          "variants": [
+            "TableFrame/empty-query-composed"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "unavailable-table-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Source response unavailable composed table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:var(--noir-canvas);\"><div layer-name=\"ILLUSTRATIVE INPUT · SOURCE RESPONSE UNAVAILABLE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · SOURCE RESPONSE UNAVAILABLE</div><div layer-name=\"Source response unavailable heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"EXM · Annual statement comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:1048px;overflow-wrap:anywhere;\">EXM · Annual statement comparison</div><div layer-name=\"Source details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:224px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Source details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Source details</div></div></div><div layer-name=\"Requested periods: FY 2025–2026 · Display currency: USD · Source observation time unavailable · read attempted 30 Oct 2026, 20:03 UTC.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Requested periods: FY 2025–2026 · Display currency: USD · Source observation time unavailable · read attempted 30 Oct 2026, 20:03 UTC.</div><div layer-name=\"Retained table filter\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"Label filter: All metrics\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:var(--noir-text-primary);width:960px;overflow-wrap:anywhere;\">Label filter: All metrics</div><div layer-name=\"Result count unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:500;color:var(--noir-text-secondary);width:312px;overflow-wrap:anywhere;\">Result count unavailable</div></div><div layer-name=\"Column headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:40px;align-items:center;background-color:var(--noir-raised);border-bottom:1px solid #343434;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:296px;overflow-wrap:anywhere;\">Metric</div></div><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:136px;align-items:flex-end;text-align:right;\">FY 2025</div></div><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:136px;align-items:flex-end;text-align:right;\">FY 2026</div></div><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:196px;align-items:flex-end;text-align:right;\">Change</div></div><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:196px;overflow-wrap:anywhere;\">Unit</div></div><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:var(--noir-text-secondary);width:192px;overflow-wrap:anywhere;\">Source</div></div></div></div>",
+          "variants": [
+            "TableFrame/unavailable-container"
+          ]
+        },
+        {
+          "key": "unavailable-table-state",
+          "parent": "unavailable-table-context",
+          "html": "<div layer-name=\"The statement source is unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1296px;padding:20px 0;gap:12px;\"><div layer-name=\"The statement source is unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:var(--noir-text-primary);width:1296px;overflow-wrap:anywhere;\">The statement source is unavailable.</div><div layer-name=\"No response records or result count were supplied. Values remain unavailable; no zero, empty query result or access denial has been inferred. The requested entity and periods are retained.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">No response records or result count were supplied. Values remain unavailable; no zero, empty query result or access denial has been inferred. The requested entity and periods are retained.</div><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">View coverage</div></div></div>",
+          "variants": [
+            "TableFrame/source-unavailable-composed"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "retained-table-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Refresh error / retained rows composed table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:#f6f6f3;\"><div layer-name=\"ILLUSTRATIVE INPUT · REFRESH ERROR / RETAINED ROWS\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · REFRESH ERROR / RETAINED ROWS</div><div layer-name=\"Refresh error / retained rows heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"EXM · Annual statement comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:#1a1c20;width:1048px;overflow-wrap:anywhere;\">EXM · Annual statement comparison</div><div layer-name=\"Source details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:224px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Source details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Source details</div></div></div><div layer-name=\"Requested periods: FY 2025–2026 · Display currency: USD · Original source 30 Oct 2026, 20:00 UTC · last successful retrieval 20:03 UTC.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">Requested periods: FY 2025–2026 · Display currency: USD · Original source 30 Oct 2026, 20:00 UTC · last successful retrieval 20:03 UTC.</div><div layer-name=\"Retained table filter\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"Label filter: income\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#1a1c20;width:960px;overflow-wrap:anywhere;\">Label filter: income</div><div layer-name=\"3 retained matches / 9 source metrics\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:500;color:#51555b;width:312px;overflow-wrap:anywhere;\">3 retained matches / 9 source metrics</div></div><div layer-name=\"Column headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:40px;align-items:center;background-color:#f0f0ed;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:296px;overflow-wrap:anywhere;\">Metric</div></div><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:136px;align-items:flex-end;text-align:right;\">FY 2025</div></div><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:136px;align-items:flex-end;text-align:right;\">FY 2026</div></div><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:196px;align-items:flex-end;text-align:right;\">Change</div></div><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Unit\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:196px;overflow-wrap:anywhere;\">Unit</div></div><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:600;color:#51555b;width:192px;overflow-wrap:anywhere;\">Source</div></div></div></div>",
+          "variants": [
+            "TableFrame/retained-error-container"
+          ]
+        },
+        {
+          "key": "retained-operating-income",
+          "parent": "retained-table-context",
+          "html": "<div layer-name=\"Financial metric row\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:52px;align-items:center;background-color:#ffffff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Operating income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Operating income\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:296px;overflow-wrap:anywhere;\">Operating income</div></div><div layer-name=\"8.39\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"8.39\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">8.39</div></div><div layer-name=\"11.76\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"11.76\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">11.76</div></div><div layer-name=\"+40.2%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"+40.2%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;align-items:flex-end;text-align:right;\">+40.2%</div></div><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;overflow-wrap:anywhere;\">USD bn</div></div><div layer-name=\"Evidence cell\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;align-items:flex-end;padding-right:12px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:140px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Evidence</div></div></div></div>",
+          "variants": [
+            "DataRow/retained-operating-income"
+          ],
+          "source_row": {
+            "fixture": "fixtures/company-history.json",
+            "row_index": 2,
+            "periods": [
+              2025,
+              2026
+            ],
+            "evidence_key": "company-2",
+            "source_identity": "f02.fixture.v2/company/EXM/operating_income/FY2022-FY2026"
+          }
+        },
+        {
+          "key": "retained-pretax-income",
+          "parent": "retained-table-context",
+          "html": "<div layer-name=\"Financial metric row\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:52px;align-items:center;background-color:#ffffff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:296px;overflow-wrap:anywhere;\">Pretax income</div></div><div layer-name=\"7.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"7.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">7.10</div></div><div layer-name=\"10.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"10.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">10.10</div></div><div layer-name=\"+42.3%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"+42.3%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;align-items:flex-end;text-align:right;\">+42.3%</div></div><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;overflow-wrap:anywhere;\">USD bn</div></div><div layer-name=\"Evidence cell\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;align-items:flex-end;padding-right:12px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:140px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Evidence</div></div></div></div>",
+          "variants": [
+            "DataRow/retained-pretax-income"
+          ],
+          "source_row": {
+            "fixture": "fixtures/company-history.json",
+            "row_index": 4,
+            "periods": [
+              2025,
+              2026
+            ],
+            "evidence_key": "company-4",
+            "source_identity": "f02.fixture.v2/company/EXM/pretax_income/FY2022-FY2026"
+          }
+        },
+        {
+          "key": "retained-net-income",
+          "parent": "retained-table-context",
+          "html": "<div layer-name=\"Financial metric row\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:52px;align-items:center;background-color:#ffffff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Net income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:320px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"Net income\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:296px;overflow-wrap:anywhere;\">Net income</div></div><div layer-name=\"6.20\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"6.20\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">6.20</div></div><div layer-name=\"8.90\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:160px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"8.90\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:136px;align-items:flex-end;text-align:right;\">8.90</div></div><div layer-name=\"+43.5%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-end;\"><div layer-name=\"+43.5%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;align-items:flex-end;text-align:right;\">+43.5%</div></div><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:220px;padding:8px 12px;align-items:flex-start;\"><div layer-name=\"USD bn\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:196px;overflow-wrap:anywhere;\">USD bn</div></div><div layer-name=\"Evidence cell\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:216px;align-items:flex-end;padding-right:12px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:140px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Evidence</div></div></div></div>",
+          "variants": [
+            "DataRow/retained-net-income"
+          ],
+          "source_row": {
+            "fixture": "fixtures/company-history.json",
+            "row_index": 5,
+            "periods": [
+              2025,
+              2026
+            ],
+            "evidence_key": "company-5",
+            "source_identity": "f02.fixture.v2/company/EXM/net_income/FY2022-FY2026"
+          }
+        },
+        {
+          "key": "retained-table-error",
+          "parent": "retained-table-context",
+          "html": "<div layer-name=\"Refresh failed. These rows are retained.\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1296px;padding:20px 0;gap:12px;\"><div layer-name=\"Refresh failed. These rows are retained.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:1296px;overflow-wrap:anywhere;\">Refresh failed. These rows are retained.</div><div layer-name=\"The last successful view remains associated with EXM and its original source date. Retry reads the same view; it does not change filters, erase rows or send a save.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">The last successful view remains associated with EXM and its original source date. Retry reads the same view; it does not change filters, erase rows or send a save.</div><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Retry refresh\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Retry refresh</div></div></div>",
+          "variants": [
+            "TableFrame/retained-error-composed"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "unavailable-chart-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Unavailable ChartFrame\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:var(--noir-panel);\"><div layer-name=\"ILLUSTRATIVE INPUT · SERIES UNAVAILABLE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · SERIES UNAVAILABLE</div><div layer-name=\"Unavailable chart heading\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:center;\"><div layer-name=\"EXM · Revenue history\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:1048px;overflow-wrap:anywhere;\">EXM · Revenue history</div><div layer-name=\"Exact values unavailable\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:224px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-raised);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Exact values unavailable\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-tertiary);\">Exact values unavailable</div></div></div><div layer-name=\"Unit: USD bn · requested fiscal years 2010–2026 · scale unavailable until observations are returned\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Unit: USD bn · requested fiscal years 2010–2026 · scale unavailable until observations are returned</div><div layer-name=\"Source observation time unavailable · read attempted 30 Oct 2026, 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Source observation time unavailable · read attempted 30 Oct 2026, 20:03 UTC</div></div>",
+          "variants": [
+            "ChartFrame/unavailable-container"
+          ]
+        },
+        {
+          "key": "unavailable-chart-state",
+          "parent": "unavailable-chart-context",
+          "html": "<div layer-name=\"Unavailable chart with recovery\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1296px;gap:16px;\"><div layer-name=\"Typed unavailable plot region\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1296px;min-height:160px;padding:24px;gap:10px;justify-content:center;background-color:var(--noir-raised);\"><div layer-name=\"Revenue history is unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:19px;line-height:27px;font-weight:600;color:var(--noir-text-primary);width:1248px;overflow-wrap:anywhere;\">Revenue history is unavailable.</div><div layer-name=\"No observations were supplied for this series. Other available statement evidence remains accessible.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1248px;overflow-wrap:anywhere;\">No observations were supplied for this series. Other available statement evidence remains accessible.</div></div><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">View coverage</div></div></div>",
+          "variants": [
+            "ChartFrame/source-unavailable-composed"
+          ],
+          "checkpoint_after": true
+        },
+        {
+          "key": "tabs-comparison",
+          "parent": "board",
+          "html": "<div layer-name=\"Same active tab / loading and completed empty\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1344px;gap:32px;align-items:flex-start;\"></div>",
+          "variants": [
+            "Tabs/availability-comparison"
+          ]
+        },
+        {
+          "key": "tabs-loading-panel",
+          "parent": "tabs-comparison",
+          "html": "<div layer-name=\"Busy tab panel\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:16px;background-color:var(--noir-canvas);\"><div layer-name=\"ILLUSTRATIVE INPUT · LOADING\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:608px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · LOADING</div><div layer-name=\"EXM · FY 2025–2026 · Label filter: ZZZ\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">EXM · FY 2025–2026 · Label filter: ZZZ</div><div layer-name=\"Local tablist\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:8px;\"><div layer-name=\"Overview tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:var(--noir-canvas);border-radius:6px;\"><div layer-name=\"Overview\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:136px;overflow-wrap:anywhere;\">Overview</div></div><div layer-name=\"Table tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:var(--noir-selected);border-radius:6px;\"><div layer-name=\"Table\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:600;color:var(--noir-text-primary);width:136px;overflow-wrap:anywhere;\">Table</div></div><div layer-name=\"Sources tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:var(--noir-canvas);border-radius:6px;\"><div layer-name=\"Sources\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:136px;overflow-wrap:anywhere;\">Sources</div></div></div><div layer-name=\"Selected Table panel\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:608px;gap:10px;\"><div layer-name=\"Annual statement table\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">Annual statement table</div><div layer-name=\"Loading observations.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:608px;overflow-wrap:anywhere;\">Loading observations.</div><div layer-name=\"The request is pending. No result count is available yet.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;overflow-wrap:anywhere;\">The request is pending. No result count is available yet.</div><div layer-name=\"Loading…\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-raised);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Loading…\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-tertiary);\">Loading…</div></div></div><div layer-name=\"Source request: annual statement metrics · observation time not returned\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:608px;overflow-wrap:anywhere;\">Source request: annual statement metrics · observation time not returned</div></div>",
+          "variants": [
+            "Tabs/busy-active-panel"
+          ],
+          "selected_tab": "Table",
+          "requested_context": {
+            "entity": "EXM",
+            "periods": [
+              2025,
+              2026
+            ],
+            "filter": "ZZZ"
+          },
+          "result_count": null,
+          "panel_contract": "One stable labeled Table panel; loading aria-busy is an implementation requirement."
+        },
+        {
+          "key": "tabs-empty-panel",
+          "parent": "tabs-comparison",
+          "html": "<div layer-name=\"Empty tab panel\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:16px;background-color:#f6f6f3;\"><div layer-name=\"ILLUSTRATIVE INPUT · COMPLETED EMPTY\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:608px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · COMPLETED EMPTY</div><div layer-name=\"EXM · FY 2025–2026 · Label filter: ZZZ\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">EXM · FY 2025–2026 · Label filter: ZZZ</div><div layer-name=\"Local tablist\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:8px;\"><div layer-name=\"Overview tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:#f6f6f3;border-radius:6px;\"><div layer-name=\"Overview\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:136px;overflow-wrap:anywhere;\">Overview</div></div><div layer-name=\"Table tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:#e2e2dc;border-radius:6px;\"><div layer-name=\"Table\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:600;color:#1a1c20;width:136px;overflow-wrap:anywhere;\">Table</div></div><div layer-name=\"Sources tab\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:160px;height:44px;padding:0 12px;align-items:center;background-color:#f6f6f3;border-radius:6px;\"><div layer-name=\"Sources\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:136px;overflow-wrap:anywhere;\">Sources</div></div></div><div layer-name=\"Selected Table panel\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:608px;gap:10px;\"><div layer-name=\"Annual statement table\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Annual statement table</div><div layer-name=\"No metrics match “ZZZ”.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">No metrics match “ZZZ”.</div><div layer-name=\"The request completed with 0 matching records. The same filter and requested periods are retained.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">The request completed with 0 matching records. The same filter and requested periods are retained.</div><div layer-name=\"Clear filter\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Clear filter\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Clear filter</div></div></div><div layer-name=\"Source request: annual statement metrics · observation time 30 Oct 2026, 20:00 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Source request: annual statement metrics · observation time 30 Oct 2026, 20:00 UTC</div></div>",
+          "variants": [
+            "Tabs/empty-active-panel"
+          ],
+          "selected_tab": "Table",
+          "requested_context": {
+            "entity": "EXM",
+            "periods": [
+              2025,
+              2026
+            ],
+            "filter": "ZZZ"
+          },
+          "result_count": 0,
+          "checkpoint_after": true
+        },
+        {
+          "key": "unavailable-inspector-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Entity-bound unavailable inspector\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:24px;gap:16px;background-color:#ffffff;\"><div layer-name=\"ILLUSTRATIVE INPUT · SUPPORTING SOURCE UNAVAILABLE\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:608px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · SUPPORTING SOURCE UNAVAILABLE</div><div layer-name=\"Source evidence header\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:24px;align-items:center;\"><div layer-name=\"Source evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:#1a1c20;width:508px;overflow-wrap:anywhere;\">Source evidence</div><div layer-name=\"Close\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:76px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;outline:2px solid #245c91;outline-offset:3px;\"><div layer-name=\"Close\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Close</div></div></div></div>",
+          "variants": [
+            "EvidenceInspector/unavailable-container"
+          ]
+        },
+        {
+          "key": "unavailable-inspector-summary",
+          "parent": "unavailable-inspector-context",
+          "html": "<div layer-name=\"Retained matched source summary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:608px;gap:10px;\"><div layer-name=\"Communication services\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Communication services</div><div layer-name=\"Share above 50D · retained row summary\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#51555b;width:608px;overflow-wrap:anywhere;\">Share above 50D · retained row summary</div><div layer-name=\"Two original values\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:608px;gap:24px;\"><div layer-name=\"Observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"Observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">Observation</div><div layer-name=\"66.70%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">66.70%</div></div><div layer-name=\"Change vs prior session\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:292px;gap:5px;\"><div layer-name=\"Change vs prior session\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:292px;overflow-wrap:anywhere;\">Change vs prior session</div><div layer-name=\"+1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:#1a1c20;width:292px;overflow-wrap:anywhere;\">+1.13 pp</div></div></div><div layer-name=\"Coverage: 21 / 21 securities · baseline 65.57%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:500;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Coverage: 21 / 21 securities · baseline 65.57%</div><div layer-name=\"f02.fixture.v2/macro/sector/communication_services/share_above_50d/2026-10-30\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">f02.fixture.v2/macro/sector/communication_services/share_above_50d/2026-10-30</div><div layer-name=\"Observed 30 Oct 2026, 20:00 UTC · published 20:02 UTC · summary retrieved 20:03 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">Observed 30 Oct 2026, 20:00 UTC · published 20:02 UTC · summary retrieved 20:03 UTC</div></div>",
+          "variants": [
+            "EvidenceInspector/unavailable-retained-summary"
+          ]
+        },
+        {
+          "key": "unavailable-inspector-source-error",
+          "parent": "unavailable-inspector-context",
+          "html": "<div layer-name=\"Unavailable source with typed recovery\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:608px;padding:16px 0;gap:12px;border-top:1px solid #cbccc7;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Supporting source unavailable.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:#1a1c20;width:608px;overflow-wrap:anywhere;\">Supporting source unavailable.</div><div layer-name=\"The matched row summary is retained. Supporting citation detail could not be retrieved; no new evidence or correction has been inferred.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:608px;overflow-wrap:anywhere;\">The matched row summary is retained. Supporting citation detail could not be retrieved; no new evidence or correction has been inferred.</div><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">View coverage</div></div></div>",
+          "variants": [
+            "EvidenceInspector/unavailable-recovery"
+          ]
+        },
+        {
+          "key": "unavailable-inspector-return",
+          "parent": "unavailable-inspector-context",
+          "html": "<div layer-name=\"Return to Communication services\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:608px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Return to Communication services\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Return to Communication services</div></div>",
+          "variants": [
+            "EvidenceInspector/unavailable-return"
+          ],
+          "return_target": "macro-3",
+          "source_identity": "f02.fixture.v2/macro/sector/communication_services/share_above_50d/2026-10-30",
+          "checkpoint_after": true
+        },
+        {
+          "key": "not-yet-published-state",
+          "parent": "board",
+          "html": "<div layer-name=\"No publication yet with calendar and source context\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:#f6f6f3;\"><div layer-name=\"ILLUSTRATIVE INPUT · PUBLICATION STATUS = NOT PUBLISHED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#5f6368;width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · PUBLICATION STATUS = NOT PUBLISHED</div><div layer-name=\"Example universe · Share above 50D\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:#1a1c20;width:1296px;overflow-wrap:anywhere;\">Example universe · Share above 50D</div><div layer-name=\"No observation has been published for 3 Nov 2026.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:1296px;overflow-wrap:anywhere;\">No observation has been published for 3 Nov 2026.</div><div layer-name=\"The requested period is retained. No new value or zero is shown. The last published fixture observation remains dated 30 Oct 2026, 20:00 UTC.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">The requested period is retained. No new value or zero is shown. The last published fixture observation remains dated 30 Oct 2026, 20:00 UTC.</div><div layer-name=\"Requested period: 3 Nov 2026 · current publication: not published · source age is not replaced by the request time\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:400;color:#51555b;width:1296px;overflow-wrap:anywhere;\">Requested period: 3 Nov 2026 · current publication: not published · source age is not replaced by the request time</div><div layer-name=\"Inspect last observation\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:260px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><div layer-name=\"Inspect last observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Inspect last observation</div></div></div>",
+          "variants": [
+            "StatePanel/no-publication-yet"
+          ],
+          "publication_status": "not_published",
+          "requested_period": "2026-11-03",
+          "observation": null,
+          "last_observation_key": "chart:macro:7",
+          "checkpoint_after": true
+        },
+        {
+          "key": "unquantified-coverage-state",
+          "parent": "board",
+          "html": "<div layer-name=\"Known available count with unknown denominator\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:12px;background-color:var(--noir-panel);\"><div layer-name=\"ILLUSTRATIVE INPUT · COVERAGE DENOMINATOR NOT SUPPLIED\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE INPUT · COVERAGE DENOMINATOR NOT SUPPLIED</div><div layer-name=\"Example source batch · Participation readings\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:1296px;overflow-wrap:anywhere;\">Example source batch · Participation readings</div><div layer-name=\"Coverage not quantified.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:var(--noir-text-primary);width:1296px;overflow-wrap:anywhere;\">Coverage not quantified.</div><div layer-name=\"Two original values\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;\"><div layer-name=\"Available observations\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:636px;gap:5px;\"><div layer-name=\"Available observations\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:636px;overflow-wrap:anywhere;\">Available observations</div><div layer-name=\"7\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:var(--noir-text-primary);width:636px;overflow-wrap:anywhere;\">7</div></div><div layer-name=\"Eligible total\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:636px;gap:5px;\"><div layer-name=\"Eligible total\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:636px;overflow-wrap:anywhere;\">Eligible total</div><div layer-name=\"— Not supplied\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:26px;line-height:34px;font-weight:600;color:var(--noir-text-primary);width:636px;overflow-wrap:anywhere;\">— Not supplied</div></div></div><div layer-name=\"Seven records are available. The producer did not supply the eligible total; no fraction, completeness claim or coverage percentage is calculated.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Seven records are available. The producer did not supply the eligible total; no fraction, completeness claim or coverage percentage is calculated.</div><div layer-name=\"Batch observed 30 Oct 2026, 20:00 UTC · retrieved 20:03 UTC · separate coverage-state fixture\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Batch observed 30 Oct 2026, 20:00 UTC · retrieved 20:03 UTC · separate coverage-state fixture</div><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"View coverage\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">View coverage</div></div></div>",
+          "variants": [
+            "StatePanel/coverage-unknown"
+          ],
+          "coverage": {
+            "available": 7,
+            "eligible": null,
+            "status": "unknown"
+          },
+          "checkpoint_after": true
+        },
+        {
+          "key": "combined-confirmed-saved",
+          "parent": "board",
+          "html": "<div layer-name=\"Stale + partial + confirmed saved\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:24px;gap:16px;background-color:var(--noir-panel);\"><div layer-name=\"ILLUSTRATIVE OWNER-CONFIRMED RESULT · SAME READ SNAPSHOT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">ILLUSTRATIVE OWNER-CONFIRMED RESULT · SAME READ SNAPSHOT</div><div layer-name=\"Saved result preserves the read axes\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1296px;gap:24px;align-items:flex-start;\"><div layer-name=\"Same saved read metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:300px;gap:6px;\"><div layer-name=\"Participation\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:21px;font-weight:500;color:var(--noir-text-secondary);width:300px;overflow-wrap:anywhere;\">Participation</div><div layer-name=\"66.7%\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:32px;line-height:40px;font-weight:600;color:var(--noir-text-primary);width:300px;overflow-wrap:anywhere;\">66.7%</div><div layer-name=\"+1.13 pp\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:#b0d4b9;width:300px;overflow-wrap:anywhere;\">+1.13 pp</div></div><div layer-name=\"Same stale and partial read caveats\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:472px;gap:8px;\"><div layer-name=\"Older source: 30 Oct, 20:00 UTC\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:472px;overflow-wrap:anywhere;\">Older source: 30 Oct, 20:00 UTC</div><div layer-name=\"Partial coverage: 7 of 8\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:472px;overflow-wrap:anywhere;\">Partial coverage: 7 of 8</div><div layer-name=\"The expected update has not arrived. One observation is still missing.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:472px;overflow-wrap:anywhere;\">The expected update has not arrived. One observation is still missing.</div></div><div layer-name=\"Owner-confirmed fixture result\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:476px;gap:10px;\"><div layer-name=\"Saved. Breadth comparison is confirmed.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:var(--noir-text-primary);width:476px;overflow-wrap:anywhere;\">Saved. Breadth comparison is confirmed.</div><div layer-name=\"Illustrative owner confirmation and readback · saved object: Breadth comparison · request: fixture-save-01\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:var(--noir-text-secondary);width:476px;overflow-wrap:anywhere;\">Illustrative owner confirmation and readback · saved object: Breadth comparison · request: fixture-save-01</div><div layer-name=\"Open saved view\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:220px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><div layer-name=\"Open saved view\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Open saved view</div></div></div></div></div>",
+          "variants": [
+            "SaveFeedback/confirmed-saved-with-stale-partial",
+            "MetricValue/retained-read-after-save"
+          ],
+          "read_snapshot": {
+            "value": 66.7,
+            "unit": "percent",
+            "change": 1.13,
+            "change_unit": "pp",
+            "available": 7,
+            "eligible": 8,
+            "observed": "2026-10-30T20:00:00Z",
+            "freshness": "stale",
+            "coverage": "partial"
+          },
+          "write_snapshot": {
+            "status": "saved",
+            "object": "Breadth comparison",
+            "request": "fixture-save-01",
+            "confirmation": "illustrative_owner_confirmed_readback"
+          },
+          "matched_input": {
+            "packet": "mobile-inputs/mobile-state-boards.json",
+            "board": "states-matrix",
+            "steps": [
+              "combined-dark-heading",
+              "combined-dark-value",
+              "combined-dark-status"
+            ]
+          },
+          "parent_reported_native_reference": {
+            "pending": "6YA-0",
+            "uncertain": "6YU-0",
+            "scope": "Parent-provided predecessor IDs only; not newly inspected by this generator."
+          },
+          "checkpoint_after": true
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Fault composition implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:20px 24px;gap:8px;background-color:var(--noir-raised);\"><div layer-name=\"BUILD CONTRACT · OUTSIDE THE PRODUCT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-tertiary);width:1296px;overflow-wrap:anywhere;\">BUILD CONTRACT · OUTSIDE THE PRODUCT</div><div layer-name=\"These are portable presentation fixtures, not new domain data, schemas, billing decisions or endpoints. The source-bound retained table rows and Macro summary keep their original values and identities. Counterfactual definition/currency inputs are explicitly separate from the normal Company fixture.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">These are portable presentation fixtures, not new domain data, schemas, billing decisions or endpoints. The source-bound retained table rows and Macro summary keep their original values and identities. Counterfactual definition/currency inputs are explicitly separate from the normal Company fixture.</div><div layer-name=\"Bind filter clearing, coverage inspection, retry reads, evidence return and saved-object opening to the existing host owner. Error does not erase valid retained rows; source unavailability is not access denial; unknown counts and periods do not become zero. A confirmed save changes the write axis only.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Bind filter clearing, coverage inspection, retry reads, evidence return and saved-object opening to the existing host owner. Error does not erase valid retained rows; source unavailability is not access denial; unknown counts and periods do not become zero. A confirmed save changes the write axis only.</div><div layer-name=\"Native application/readback, exact geometry, screenshots, keyboard/ARIA, focus/scroll return, real source integration and actual write readback remain unverified. VirtualizedDataInspector, CountLadder, LifecycleRail and DecisionRow / VerdictHero remain retained and unqualified.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;overflow-wrap:anywhere;\">Native application/readback, exact geometry, screenshots, keyboard/ARIA, focus/scroll return, real source integration and actual write readback remain unverified. VirtualizedDataInspector, CountLadder, LifecycleRail and DecisionRow / VerdictHero remain retained and unqualified.</div></div>",
+          "variants": [
+            "Build/source-and-verification-boundary"
+          ]
+        }
+      ]
+    }
+  ],
+  "append_to_existing": [],
+  "fixture_policy": "Every fault state is an explicit illustrative input. Counterfactual definition/currency/publication/availability states do not overwrite normal consumer facts or establish real domain authority.",
+  "source_references": [
+    {
+      "path": "SYSTEM_CONTRACT.md",
+      "sections": [
+        "4. Component anatomy, variants and failure treatment",
+        "4.1 Density and truncation",
+        "4.2 Chart grammar"
+      ]
+    },
+    {
+      "path": "INTERACTION_STATES.md",
+      "sections": [
+        "Copy and recovery matrix",
+        "Independent state axes",
+        "Control/action contracts"
+      ]
+    },
+    {
+      "path": "SOURCE_AND_DATA_CONTRACT.md",
+      "sections": [
+        "4.1 Numeric and unit rules",
+        "4.2 Time and freshness rules",
+        "5.1 Table, chart and overlay behavior",
+        "11.3 Closed-form criteria for the open consumer integration gap"
+      ]
+    }
+  ],
+  "fixture_bindings": {
+    "retained_table_rows": [
+      {
+        "step": "retained-operating-income",
+        "fixture_row_index": 2,
+        "values": [
+          "Operating income",
+          "8.39",
+          "11.76",
+          "+40.2%",
+          "USD bn",
+          "Evidence"
+        ]
+      },
+      {
+        "step": "retained-pretax-income",
+        "fixture_row_index": 4,
+        "values": [
+          "Pretax income",
+          "7.10",
+          "10.10",
+          "+42.3%",
+          "USD bn",
+          "Evidence"
+        ]
+      },
+      {
+        "step": "retained-net-income",
+        "fixture_row_index": 5,
+        "values": [
+          "Net income",
+          "6.20",
+          "8.90",
+          "+43.5%",
+          "USD bn",
+          "Evidence"
+        ]
+      }
+    ],
+    "retained_macro_source_identity": "f02.fixture.v2/macro/sector/communication_services/share_above_50d/2026-10-30",
+    "counterfactual_definition": {
+      "prior_value": 23.3,
+      "prior_basis": "all operations",
+      "current_value": 24.5,
+      "current_basis": "continuing operations",
+      "unit": "percent",
+      "comparable_restatement": null,
+      "change": null
+    },
+    "counterfactual_currency": {
+      "prior_value": 36.0,
+      "prior_currency": "USD",
+      "current_value": 48.0,
+      "current_currency": "EUR",
+      "scale": "bn",
+      "authorized_fx": null,
+      "change": null
+    }
+  },
+  "unchanged_core_packet": {
+    "path": "core-supplement-inputs.json",
+    "sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83"
+  },
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_binding": "Parent must bind actual native IDs and review actual renders. No native construction is asserted."
+}

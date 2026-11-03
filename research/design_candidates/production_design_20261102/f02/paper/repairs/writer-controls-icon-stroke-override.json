@@ -1,0 +1,22 @@
+{
+  "schema": "f02.writer.controls-icon-stroke-override.v1",
+  "source_packet": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+  "source_packet_sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+  "reason": "Paper imported SVG currentColor as black despite SVG color style; explicit same-role stroke preserves intended contrast and native vector geometry.",
+  "overrides": [
+    {
+      "step_key": "core-disclosure-error-action",
+      "expected_html_sha256": "c0992cba78463cff0ec3e17f6c409b7a806199c8591dcdbc332ee1004170f460",
+      "replacement_html": "<div layer-name=\"Retry details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:180px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:var(--noir-panel);border:1px solid #6f6f6f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--noir-text-primary)\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);\">Retry details</div></div>",
+      "replacement_svg": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--noir-text-primary)\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:var(--noir-text-primary);\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg>",
+      "explicit_stroke_role": "var(--noir-text-primary)"
+    },
+    {
+      "step_key": "core-disclosure-mobile-error-action",
+      "expected_html_sha256": "b2e9fd526bd04159534ce9828f2b696b4db060c0d667bd54280c06aae2216f3f",
+      "replacement_html": "<div layer-name=\"Retry details\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:288px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1a1c20\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#1a1c20;\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg><div layer-name=\"Retry details\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Retry details</div></div>",
+      "replacement_svg": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#1a1c20\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"color:#1a1c20;\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6\"/><polyline points=\"17.1,8.9 20.4,12 23,8.7\"/></svg>",
+      "explicit_stroke_role": "#1a1c20"
+    }
+  ]
+}

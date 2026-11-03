@@ -1,0 +1,34 @@
+{
+  "schema": "f02.writer.controls-spacing-override.v1",
+  "source_packet": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+  "source_packet_sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+  "board_key": "controls-variants",
+  "changes": "Whitespace only: readable word/value and number/unit separators. All non-whitespace bytes unchanged.",
+  "overrides": [
+    {
+      "step_key": "core-disclosure-heading",
+      "expected_html_sha256": "682d0c3dff9ebd7d95443265f9464476f020714aef4a6ad01591eaeb897e29f2",
+      "replacement_html": "<div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:1344px;gap:8px;\"><div layer-name=\"Disclose the method without hiding the answer.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:21px;line-height:30px;font-weight:600;color:var(--noir-text-primary);\">Disclose the method without hiding the answer.</div><div layer-name=\"Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. The summary stays visible in all three states.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. The summary stays visible in all three states.</div></div>",
+      "replacement_html_sha256": "b60fd42851165329c80199add88c98f188faae7752e49d17c578862e188694dd"
+    },
+    {
+      "step_key": "core-disclosure-expanded-body",
+      "expected_html_sha256": "fe3cfdd80e784bf67f7dde5bf384121ee59dca8072e145b5b0f3e0fd73dc6bc1",
+      "replacement_html": "<div layer-name=\"Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Count valid closes above valid 50-day averages; missing securities are not below-average observations.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1296px;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples. Count valid closes above valid 50-day averages; missing securities are not below-average observations.</div>",
+      "replacement_html_sha256": "9cc07aaed0ee2e85b4cd461ecfb07056dcd7923bd6db7d2baf8de2041e1d83d4"
+    },
+    {
+      "step_key": "core-disclosure-mobile-label",
+      "expected_html_sha256": "d73f27c536d0bc9d69f4c76eb7598d7371d4cd970761da68165a57f5f729a1cb",
+      "replacement_html": "<div layer-name=\"320px · Core IT 74.20% · +2.10 pp · coverage 1000/1006\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#5f6368;width:288px;\">320px · Core IT 74.20% · +2.10 pp · coverage 1000/1006</div>",
+      "replacement_html_sha256": "731312e38ba1140dcc36fd0f9d6b1c6efd58c13afea898e9c26bae4800fbb55c"
+    },
+    {
+      "step_key": "core-disclosure-mobile-expanded-body",
+      "expected_html_sha256": "84966f72adf1dcb0785bf25c9fb9eeca2dc709ca489a480905ed7d14249a28bb",
+      "replacement_html": "<div layer-name=\"742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006: six missing, never counted as below average. Component sample, separate from Macro.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:288px;\">742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006: six missing, never counted as below average. Component sample, separate from Macro.</div>",
+      "replacement_html_sha256": "2ceed08041a9e27958ebe20bdbfd23f966906a0ca19cddac8802049a6914e945"
+    }
+  ],
+  "already_applied_heading_text_id": "78I-0"
+}

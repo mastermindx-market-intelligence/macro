@@ -1148,8 +1148,8 @@
     }
   ],
   "continuation": {
-    "status": "NATIVE_AUTHORING_IN_PROGRESS",
-    "progress_receipt": "paper/native-progress.json",
+    "status": "NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED",
+    "progress_receipt": "paper/writer-continuation-progress.json",
     "gates": "paper/CONTINUATION_GATES_20261103.md",
     "carrier": "Mastermind Paper direct app",
     "readme": {
@@ -1157,10 +1157,20 @@
       "page_id": "p-9-0",
       "board_id": "47Q-0",
       "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
-      "observation": "Root reported admitted direct create-page and own-board move applied; final native snapshot binding remains in root continuation."
+      "observation": "Observed new page and own-board move; final source/directory refresh remains unapplied."
     },
-    "final_role_predecessor_mapping": "pending final native snapshots; no mapping inferred",
-    "qualification": "No frozen F01/F02 release, domain-role qualification, consumer integration, browser behavior, formal RIG or product release is claimed."
+    "final_role_predecessor_mapping": "Current mapping uses actual IDs and live original retention; final32-board binding remains incomplete.",
+    "qualification": "No frozen F01/F02 release, domain-role qualification, consumer integration, browser behavior, formal RIG or product release is claimed.",
+    "native_boards_observed": 22,
+    "dispatch_records": 435,
+    "applied_responses_observed": 434,
+    "unresolved_operations": 1,
+    "live_retention_receipt": "paper/native-final-retention.json",
+    "native_role_bindings": "paper/native-role-bindings.json",
+    "native_predecessor_bindings": "paper/native-predecessor-bindings.json",
+    "unresolved_bindings": 50,
+    "pending_work": "paper/NATIVE_PENDING_WORK.md",
+    "f01_candidate_concurrence": "F01_HANDSHAKE_CANDIDATE.md"
   },
   "row_observation_scope": "Initial/source-static baseline. Each row edit_state, action and writer dependency records that historical phase, not the current native candidate authoring state. Original IDs/dispositions remain unchanged; exact successor bindings await final snapshots."
 }

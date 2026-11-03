@@ -1,0 +1,16 @@
+{
+  "schema": "f02.writer-local-error-receipt-hardening.v1",
+  "status": "LOCAL_HELPER_ONLY_NO_PAPER_CALL",
+  "changed_at": "2026-11-03T06:46:01.944Z",
+  "reason": "A structured UNAVAILABLE transport error has no operation state. Preserve an explicit unresolved state and sanitized error code/message in the journal instead of overwriting DISPATCHING with undefined.",
+  "before_fragment": "entry.state=r.state;entry.result=r.result;entry.after_snapshot=r.after?.snapshot_sha256;entry.after_identity=r.after?.identity;entry.completed_at=new Date().toISOString();entry.retry_allowed=r.retry_allowed;",
+  "after_fragment": "entry.state=r.state||((raw.isError||r.error)?\"TRANSPORT_ERROR_EFFECT_UNRESOLVED\":\"UNRECOGNIZED_RESPONSE_EFFECT_UNRESOLVED\");if(!r.state){entry.error_code=r.error_code||\"UNRECOGNIZED_RESPONSE\";entry.error_message=String(r.error||r.message||\"Response had no terminal operation state\").split(\"https:\")[0].split(\"http:\")[0];}entry.result=r.result;entry.after_snapshot=r.after?.snapshot_sha256;entry.after_identity=r.after?.identity;entry.completed_at=new Date().toISOString();entry.retry_allowed=r.retry_allowed??false;",
+  "behavior_preserved": [
+    "No automatic retry",
+    "Unresolved operation still blocks all later mutations",
+    "Exact canonical target and ownership guards unchanged",
+    "No result or endpoint/authdata fabrication"
+  ],
+  "existing_unknown_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+  "existing_unknown_remains": true
+}

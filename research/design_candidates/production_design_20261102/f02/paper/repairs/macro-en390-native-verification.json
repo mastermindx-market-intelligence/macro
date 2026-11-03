@@ -1,0 +1,14 @@
+{
+  "status": "PASS_NATIVE_EXPORT_AND_VISUAL_REVIEW",
+  "board_id": "7CM-0",
+  "ten_rows": true,
+  "energy_last": true,
+  "full_native_row_width": 650,
+  "row_height": 56,
+  "visible_source_targets": 10,
+  "source_target_size": 44,
+  "history_native_points": 7,
+  "source_input_hash": "276572f02660d9b6be25473bdf039b28aea10ad31a1d0813bec6812caf804399",
+  "jsx_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+  "browser_behavior_proven": false
+}

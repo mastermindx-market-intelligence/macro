@@ -1,48 +1,35 @@
-# F02 — Native design system candidate
+# F02 — Shared design system candidate
 
-**System:** `F02-SYSTEM/1.0.0-candidate.2`  
-**Current phase:** `NATIVE_AUTHORING_IN_PROGRESS` — editable Paper construction, review repairs and final evidence binding.  
-**Formal RIG:** `draft`; no approval receipt or released F01/F02 foundation.  
-**Scope:** design and implementation specifications; no product implementation, merge or deployment.
+**Delivery: PARTIAL.** **System:** `F02-SYSTEM/1.0.0-candidate.2`. **Formal RIG:** `draft`.  
+**Current native status:** `NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED`.
 
-[Open the actual Paper Read me & Build contract](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Native board index](paper/NATIVE_BOARD_INDEX.md) · [Native review record](paper/reviews/NATIVE_REVIEW_REPORT.md).
+The updated Paper app enabled substantial native construction: **22 observed F02 boards**, **20 full-board JPEG/JSX pairs**, and **434 confirmed applied operations**. One additional dispatch has an unresolved transport outcome. The state atlas and Chinese390 board remain partial, and captured desktop boards still have prepared review repairs. This is a saved design/specification checkpoint, not a completed foundation or approved release.
 
-The updated direct Paper app is qualified for the canonical file. The persisted checkpoint `0da8c968b6c01f168ea7386d0d1dbbc32140075e` includes 19 observed F02 boards and their completed captures where available: the core kit, all four consumer compositions in both themes, the in-progress state atlas, Company320 unknown/zero receipts and Options320 full-print evidence. Additional narrow/locale/width/state and review repairs are in progress. Actual IDs and operations are in `paper/native-progress.json` and the later `paper/writer-continuation-progress.json`; a completed local phase is not reference approval.
+[Open Paper Read me](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Exact completed work and blockers](RETURN_F02.md) · [Actual native board index](paper/NATIVE_BOARD_INDEX.md).
 
-The exact immutable assignment is `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft PR #10617. The served website, actual Macro/Terminal source and all 67 assigned Paper identities were inspected in the initial phase. The source ownership, data boundaries, migration and acceptance contract remain part of this package.
+The immutable assignment is `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft #10617. The served website, actual source and assigned Paper references were inspected. The package preserves the original product capabilities and distinguishes candidate visual evidence from actual runtime behavior.
 
-## Read in this order
+## Main deliverables
 
-1. [SYSTEM_CONTRACT.md](SYSTEM_CONTRACT.md) — product/job, four consumer patterns, component anatomy/variants, typography, density, chart/table rules, source boundaries, versioning and builder plan.
-2. [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md) — exact current source owners, token collisions, actual read paths/schemas, entity/unit/time/access semantics, migration and rollback.
-3. [INTERACTION_STATES.md](INTERACTION_STATES.md) — copy, independent state axes, control transitions, keyboard/touch/focus/scroll and saved-state outcomes.
-4. [CAPABILITY_LEDGER.md](CAPABILITY_LEDGER.md) and [PAPER_RETENTION_LEDGER.md](PAPER_RETENTION_LEDGER.md) —36 shared/consumer capabilities and every one of67 assigned Paper boards.
-5. [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md) — original construction intent and current native continuation references; actual returned IDs are indexed under paper/.
-6. [VERIFICATION.md](VERIFICATION.md) and [CONTINUITY_AND_GATES.md](CONTINUITY_AND_GATES.md) — completed evidence, exact limits, inherited conditions and named remaining owners.
+| Deliverable | Current artifact |
+| --- | --- |
+| User job,21 shared/domain roles, anatomy, typography, density and chart/table grammar | [SYSTEM_CONTRACT.md](SYSTEM_CONTRACT.md) |
+| Actual source owners, token aliases/collisions, producers, identity, units, clocks, access, migration and rollback | [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md), [token-map.json](token-map.json) |
+| Actual state copy and keyboard/touch/focus/scroll, URL and save contracts | [INTERACTION_STATES.md](INTERACTION_STATES.md) |
+|36 capability dispositions and 67 original Paper dispositions | [Capability ledger](CAPABILITY_LEDGER.md), [Paper ledger](PAPER_RETENTION_LEDGER.md) |
+| Current native evidence and construction precedence | [Paper index](paper/NATIVE_BOARD_INDEX.md), [current authority note](paper/CURRENT_DESIGN_AUTHORITY.md) |
+| F01 interface concurrence with exact versions and width arithmetic | [F01_HANDSHAKE_CANDIDATE.md](F01_HANDSHAKE_CANDIDATE.md) |
+| Review findings, verification limits and inherited conditions | [Native review record](paper/reviews/NATIVE_REVIEW_REPORT.md), [VERIFICATION.md](VERIFICATION.md), [continuity](CONTINUITY_AND_GATES.md) |
+| Exact remaining construction and original-request reconciliation | [NATIVE_PENDING_WORK.md](paper/NATIVE_PENDING_WORK.md) |
 
-## Native design and source authority
+## What is preserved and what remains
 
-- `paper/screenshots/` contains actual Paper JPEG captures. `paper/exports/` contains actual native JSX with returned node IDs. These are distinct from the older generated static plates.
-- `paper/native-role-bindings.json` maps 21 contracted roles to observed design evidence, while retaining the four domain/source roles that require their existing owners and runtime qualification.
-- `paper/native-predecessor-bindings.json` maps all 67 originals to retained references or scoped shared-anatomy companions. Originals are not deleted or silently promoted.
-- `paper/repairs/fixture-coherence-v1/` supplies count-first synthetic participation fixtures and effective construction packets. `f02.fixture.v3/macro` is a design fixture namespace, not a production API.
-- `paper/repairs/company-annual-growth-v2/` preserves raw values and the full history while restoring annual comparison labels and legible units. Applied repair versions and actual replacement IDs will be recorded separately from prepared inputs.
-- The original `pattern-lab.html`, original authoring packets and `sheets/` are historical source/static evidence. Their reviewed bytes remain unchanged. They are not the authority for the repaired native fixtures; see SOURCE_AND_DATA_CONTRACT §12.
+Live readback confirms all **67 original boards** at their expected file/page locations with unchanged names, and all **20 original shared tokens** unchanged at content hash `356191c3`. The recorded F02 operation audit has zero original targets and zero scope violations. The 36-capability ledger has16 RETAIN and 20 IMPROVE; the 67-board ledger has25 RETAIN and42 IMPROVE. No removal or relocation of an original is proposed or performed.
 
-## Independent review
+The Paper request `f02-c2-macro-light-zh-390-chart-footer-20261103-01` returned `UNAVAILABLE / Connection timed out.` without an applied receipt. Same-carrier reads show the footer absent, but cannot establish the original request's terminal state. The assignment, Paper workflow and protected reconciliation procedure forbid treating that absence as retry authority. No edit was replayed or sent through another carrier. The [source investigation](paper/repairs/zh390-timeout-source-reconciliation.md) names the exact existing-owner evidence needed to resume.
 
-The first native freeze is `245d70bbd3ac773f3074277c771095264b31269d`, with 44 members and aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both independent critics verified every member and visually inspected all 25 actual images. Their unchanged first-pass BLOCK reports were preserved at `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` before rationale reveal.
+The first native product and taste critics both returned **BLOCK**. Their unchanged reports and separate rationale passes are preserved. Coherent participation fixtures, Company annual changes/units, numeric frame alignment, source identities/clocks, remaining widths, failure contexts and four consumer companions are prepared; their native application and complete repaired-set review remain open. The strict32-board packager refuses this incomplete checkpoint.
 
-Observable repairs address numeric cell alignment, Macro missing-last sorting, coherent count/rate fixtures, Company annual change visibility and unit size. New native evidence must be frozen and independently reviewed before these findings can be closed. The earlier source/static reports under `reviews/` retain their original artifact scope. Native advisory reports do not supply formal RIG admission or the designated design-authority verdict.
+F01 has published Draft #10645 and requested coordination; F02's candidate concurrence is saved. Final cutoff/transition acceptance and joint release remain open. Actual browser keyboard/touch/focus/400% proof, domain integration, formal RIG admission and authority verdict also remain separate gates. No product implementation, merge, Ready transition or deployment has occurred.
 
-## Preservation and remaining qualification
-
-The capability ledger remains 16 RETAIN +20 IMPROVE across 36 capabilities, with zero removals or relocations. The Paper ledger remains 25 RETAIN +42 IMPROVE across 67 originals. The new Read me page is `p-9-0`, with F02 board `47Q-0`; no original board was moved to create it. Final live retention/token readback is still due at authoring close.
-
-The remaining gates are the F01 joint shell/system freeze, actual consumer/domain integration, permitted browser keyboard/touch/focus/400% proof, and admitted formal review. The existing Chrome could not resolve the managed preview; its owned tab/server were stopped. This is a bounded access observation, not successful runtime verification. The legacy writer mismatch is historical and does not describe the working direct Paper route.
-
-Current source evidence pins remain Macro `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` and Terminal `b79b1e136290978ff7675087de979bb1b42b3713`. Protected Mastermind procedure refreshes and their bounded drift checks are recorded in `paper/CONTINUATION_GATES_20261103.md`. Source pins are evidence identities, not assertions about the served deployment.
-
-## Historical source/static review identity
-
-The previous final source/static set remains `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, 55 members, aggregate `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`; HTML SHA256 `f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4`. Earlier reviews and artifacts remain at their own commits. Later native construction neither rewrites those reports nor inherits their approval.
+Historical HTML/static sheets and their freezes remain intact. They are supporting history, not the current authority for repaired native data or a substitute for completed Paper references.

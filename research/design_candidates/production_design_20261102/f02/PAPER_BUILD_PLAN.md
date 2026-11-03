@@ -1,12 +1,14 @@
 # Exact Paper construction and annotation packet
 
-## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
+## Current continuation status — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED
 
-The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+The accepted **Mastermind Paper direct app** created 22 observed F02 candidate boards in canonical file `01M312VSDSZFVT45674GDVJVZN`. The stable [writer checkpoint](paper/writer-continuation-progress.json) contains 435 dispatch records: **434 applied responses observed and one unresolved transport outcome**. Twenty boards have full capture/export pairs; partial boards and unapplied repairs are distinguished in [the exact pending-work record](paper/NATIVE_PENDING_WORK.md). A full pair is evidence of observed bytes, not completion or approval.
 
-The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+The [Read me page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) and owned board `47Q-0` are actual. The final read-only [retention receipt](paper/native-final-retention.json) confirms all 67 originals at their expected file/page locations with unchanged names, all 20 shared tokens unchanged at hash `356191c3`, and zero original targets in the recorded F02 operations. [Current role and predecessor bindings](paper/NATIVE_BOARD_INDEX.md) use actual IDs;50 bindings remain unresolved because construction/repairs are incomplete.
 
-**Current state:** `NATIVE_AUTHORING_IN_PROGRESS`. The Mastermind Paper direct app qualifies the actual 0.5.18 catalog under `TOOL_SCOPED_CONTRACT_V1`; actual effects/checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json). The Read me page is p-9-0 with board47Q-0 moved there. Counts in earlier checkpoints are historical observations, not the current final total. Remaining construction, mappings, review and F01 joint qualification continue under the same F02 draft.
+The Chinese390 footer request timed out without an applied receipt. Same-carrier reads show it absent, but its terminal outcome is unresolved; no replay or alternate carrier was used. The [source reconciliation](paper/repairs/zh390-timeout-source-reconciliation.md) records the exact action and owner evidence needed. Initial zero-Paper/legacy writer-blocked observations remain historical. F01 candidate concurrence is [recorded](F01_HANDSHAKE_CANDIDATE.md), while joint release, browser behavior, consumer/domain qualification and formal RIG remain open. No product implementation, merge, deployment or reference approval is claimed.
+
+**Current state:** `NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED`. The accepted direct route produced22 observed boards and 434 applied responses before one transport timeout. Use [the exact pending work](paper/NATIVE_PENDING_WORK.md), current source precedence and stable writer checkpoint. The original construction items below preserve earlier preparation; the current strict completion set is32 boards plus scoped appends/repairs. No missing board ID or final acceptance is inferred.
 
 ## Existing target and custody
 
@@ -19,7 +21,7 @@ The proposed organization “01 Foundations / MM · Design System” is a progra
 
 ## Prepared composition set
 
-Packet IDs below are **local work-item labels**, not Paper node identities. Actual created IDs are recorded only after effect/readback in paper/native-progress.json. Final role/predecessor mappings remain pending the final snapshots; the packet labels do not invent those mappings. F01's final shell dimensions must be incorporated before the joint freeze. Static SVG/PNG sheets and the HTML are supporting construction aids, not substitutes for editable native Paper text, frames, shapes and controls.
+Packet IDs below are **local work-item labels**, not Paper node identities. Actual created IDs are recorded after effect/readback in paper/writer-continuation-progress.json and the current native index. Final32-board role/variant qualification remains incomplete; the packet labels do not invent those mappings. F01's final shell dimensions must be incorporated before the joint freeze. Static SVG/PNG sheets and the HTML are supporting construction aids, not substitutes for editable native Paper text, frames, shapes and controls.
 
 | Packet ID | Destination proposal | Editable composition to build | Source material / acceptance |
 | --- | --- | --- | --- |
@@ -45,7 +47,7 @@ Every newly or materially changed composition must remain editable. Avoid raster
 > **Owner:** F02 — shared tokens, components, chart/table/state patterns. F01 owns shell/navigation; domains own meaning; D23 owns saved-state mutations.  
 > **Job:** Compare observations, understand their units and limitations, inspect the evidence, and return to the same context.  
 > **Journey:** Read the question and period → compare the chart/table → distinguish zero, unknown and degraded coverage → inspect the exact row/source → return without losing focus or scroll → act through the existing domain owner and confirm the result.  
-> **Status:** Draft candidate; NATIVE_AUTHORING_IN_PROGRESS through the qualified direct app. The Read me page is p-9-0 and its board is47Q-0. Complete native evidence/mappings and independent review before claiming reference acceptance. Source/static and native artifacts are not production proof.  
+> **Status:** Draft candidate; native writes paused on one unresolved request. The actual Read me page is p-9-0 and its board is47Q-0. This updated source annotation is not yet applied in Paper. Complete native evidence/mappings and independent review before claiming reference acceptance. Source/static and native artifacts are not production proof.  
 > **Shell dependency:** F01 joint contract pending. Observed baseline: expanded rail224px, narrow desktop196px, header64/56px. These values are not a frozen shell release.  
 > **System dependency:** This candidate and its immutable source artifact commit. Do not fork global CSS or use a Paper board name as a source import.  
 > **Current scope:** Metric/change, table/chart, evidence, inspector, state/access/action, density, typography, icons, locale and source mapping. Existing verdict/count/lifecycle/domain charts retain their own semantics.  
@@ -86,11 +88,11 @@ When placed, replace only the actual state and insert real source/PR and Paper l
 
 ## Current route evidence and remaining F01 dependency
 
-**Direct route:** original-owner v20 qualification and actual F02 write/readback are established; native authoring continues. **Historical legacy route:** the initial packet observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on Paper Desktop0.5.18. That mismatch does not describe the current direct route. Unsupported organization operations and any v21/legacy activation remain separate original-owner boundaries.
+**Direct route:** original-owner v20 qualification and actual F02 write/readback are established; native writes are now paused on the later unresolved footer request. **Historical legacy route:** the initial packet observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on Paper Desktop 0.5.18. That mismatch does not describe the current direct route. Unsupported organization operations and any v21/legacy activation remain separate original-owner boundaries.
 
 **F01:** versioned rail/header/local-nav/inspector slots; narrow desktop and compact-rail behavior; public/focused-chart/internal shell boundaries; region/theme/language preference semantics; route/history/overlay rules; exact source/Paper artifact identity. F02 supplies its component minimums and concrete four-consumer stress examples for the joint decision.
 
-These are specific dependencies. Editable application is now in progress; exact coverage, final mapping and qualification remain incomplete. This packet does not call the candidate a frozen foundation or approved reference.
+These are specific dependencies. Editable application has confirmed effects; further writes are paused pending terminal reconciliation. Exact coverage, final mapping and qualification remain incomplete. This packet does not call the candidate a frozen foundation or approved reference.
 
 ## Repair-set construction notes
 

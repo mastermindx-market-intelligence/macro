@@ -1,26 +1,39 @@
-# F02 · Native Paper continuation
+# F02 · Native Paper evidence
 
-**Status: NATIVE_AUTHORING_IN_PROGRESS.** Fifteen new editable boards are now present in the canonical file, including all eight consumer compositions. This is a recoverable construction checkpoint, not a foundation release or final review freeze.
+**Status: PARTIAL — NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED.** The stable checkpoint records 22 observed boards,435 dispatch records,434 applied responses and one unresolved request. Twenty boards have full capture/export pairs. The state atlas and Chinese390 board are partial; several captured boards await review repairs or appends.
 
-[Open 00 · Read me & Build contract](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0). Canonical file `01M312VSDSZFVT45674GDVJVZN`; readme board `47Q-0` moved from Getting Started to the new page `p-9-0`. The pre-existing reference boards and shared tokens are retained.
+Canonical file: `01M312VSDSZFVT45674GDVJVZN`. [Open Read me / Build contract](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0), page `p-9-0`, owned board `47Q-0`. Only this newly created F02 board was moved there; the 67 originals remain at their original locations.
 
-## Complete at this checkpoint
+## Actual candidate boards
 
-| Group | Native board IDs | Captures and editable export |
-|---|---|---|
-| Read me / foundations | 47Q-0 / 48W-0 | screenshots/readme.jpg, foundations.jpg; matching exports/*.jsx |
-| Metrics dark / light | 4E3-0 / 4H1-0 | screenshots/metrics.jpg, metrics-light.jpg; matching JSX |
-| Controls / chart grammar / builder | 4JP-0 / 4LC-0 / 4NV-0 | screenshots/controls.jpg, grammar.jpg, builder.jpg; matching JSX |
-| Macro dark / light | 4PO-0 / 4YD-0 | screenshots/macro-dark.jpg, macro-light.jpg; matching JSX |
-| Company dark / light | 56L-0 / 5HV-0 | screenshots/company-dark.jpg, company-light.jpg; matching JSX |
-| Options dark / light | 5VE-0 / 67V-0 | screenshots/options-dark.jpg, options-light.jpg; matching JSX |
-| Editorial dark / light | 6JX-0 / 6NG-0 | screenshots/editorial-dark.jpg, editorial-light.jpg; matching JSX |
+| Group | Actual native IDs | Status |
+| --- | --- | --- |
+| Read me / foundations |47Q-0 /48W-0 | Captured; final source/directory and icon additions pending |
+| Metrics dark / light |4E3-0 /4H1-0 | Captured; participation corrections and additional semantics pending |
+| Controls / grammar / builder |4JP-0 /4LC-0 /4NV-0 | Captured; scoped appends, grammar repairs and final build notes pending |
+| Macro dark / light |4PO-0 /4YD-0 | Captured; first-pass numeric/data/sort/source repairs unapplied |
+| Company dark / light |56L-0 /5HV-0 | Captured; annual-growth v2 rows/caveats and header alignment unapplied |
+| Options dark / light |5VE-0 /67V-0 | Captured; numeric-frame alignment unapplied |
+| Editorial dark / light |6JX-0 /6NG-0 | Captured; narrow reading/calculation companions absent |
+| State atlas |6Q3-0 | Partial;40 base groups observed,3 append groups and complete capture pending |
+| Company unknown / zero evidence320 |70C-0 /72T-0 | Constructed and captured; native advisory review remains separate |
+| Options complete-row evidence320 |74P-0 | Constructed and captured; observed header correction applied |
+| Control/disclosure/access variants |771-0 | Constructed and captured in both themes; local responsive/SVG repairs applied |
+| Macro EN dark390 |7CM-0 |23 groups and full pair;33 numeric-frame corrections prepared, unapplied |
+| Macro ZH light390 |7IS-0 |21 of23 groups; footer request unresolved, final build note absent;33 numeric-frame corrections prepared |
 
-The actual native captures are JPEG output from Paper. JSX exports retain actual native node IDs. Construction JSON and Python generators are reproducible authoring inputs, not product implementation. `native-progress.json` records the operation responses, exact board/step IDs, catalog and target identity. The snapshot value is a drift guard, not a document revision.
+[The generated board index](NATIVE_BOARD_INDEX.md) gives each observed page URL, current step IDs, captures and JSX hashes. Actual Paper images are JPEGs; native JSX retains observed node IDs. They are design evidence and do not execute browser interactions.
 
-## Remaining work
+## Preservation and current source
 
-Mobile/state/width studies and targeted component variants are being constructed, then the exact native artifact set will be frozen for independent product and taste reviews. The operational completeness audit identifies items to close and must not be provided to blind first-pass critics. Draft PR #10630 remains the persistence surface.
+The [live retention receipt](native-final-retention.json) confirms 67/67 originals in the expected file/page, unchanged names,20/20 tokens matching hash `356191c3`, and zero original-target mutations or scope violations in the435-record audit. Its status is `READBACK_COMPLETE_WRITES_PAUSED`, with the unresolved request carried explicitly. [Read receipts](native-final-retention-read-receipts.json) retain exact intended results and omit unrelated ambient file/connection metadata.
 
-F01 joint freeze, real consumer integration, browser runtime proof and formal RIG admission remain separate gates. The supported managed preview could not resolve in the existing Chrome connection; its owned server and test tab are stopped/closed. See the sanitized browser-qa receipts and CONTINUATION_GATES_20261103.md. Ordinary writes through the qualified direct Paper app work; the legacy carrier mismatch is not a current direct-route blocker.
+Use [CURRENT_DESIGN_AUTHORITY.md](CURRENT_DESIGN_AUTHORITY.md) for construction precedence and [NATIVE_PENDING_WORK.md](NATIVE_PENDING_WORK.md) for the ten absent boards, unapplied repairs/appends, final Read me work and review requirements. Original input packet statuses record preparation history; operation receipts establish actual effects. Do not replay prepared operations automatically.
 
+## Review and the blocking request
+
+The first native freeze is commit `245d70bbd3ac773f3074277c771095264b31269d`,44 members, aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both critics inspected all supplied images and verified all members before seeing rationale. Their first-pass BLOCK reports and separate rationale passes remain unchanged. [The review record](reviews/NATIVE_REVIEW_REPORT.md) separates observed defects from prepared corrections.
+
+The sole writer paused after `f02-c2-macro-light-zh-390-chart-footer-20261103-01` returned a transport timeout. Same-carrier reads show the footer absent but do not prove the original request terminal. See [reconciliation evidence](repairs/zh390-chart-footer-reconciliation.json) and [source findings](repairs/zh390-timeout-source-reconciliation.md). No retry or alternate carrier was used.
+
+The [strict final-freeze tool](FINAL_NATIVE_FREEZE_README.md) derives32 required boards and refuses incomplete captures/steps, unresolved operations and stale bindings. No complete repaired-native freeze or repaired-set critique has been issued. F01 joint release, domain/producer/access/save qualification, actual browser behavior and formal RIG remain separate conditions.

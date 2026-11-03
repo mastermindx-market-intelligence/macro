@@ -1,6 +1,6 @@
 # Native Paper board index
 
-Generated from the exclusive writer’s observed IDs. Design evidence only; reference approval and runtime proof remain separate.
+Generated from the exclusive writer’s observed IDs. Design evidence only; reference approval and runtime proof remain separate. A full capture pair records observed bytes, not completion of pending native repairs or reference acceptance.
 
 | Board | Actual ID | Page | Width | Capture / editable export |
 | --- | --- | --- | --- | --- |
@@ -24,5 +24,7 @@ Generated from the exclusive writer’s observed IDs. Design evidence only; refe
 | company-dividend-overlay-320 | `72T-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 320 | [JPEG](screenshots/company-dividend-overlay-320.jpg) · [JSX](exports/company-dividend-overlay-320.jsx) |
 | options-full-row-evidence-320 | `74P-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 320 | [JPEG](screenshots/options-full-row-evidence-320.jpg) · [JSX](exports/options-full-row-evidence-320.jsx) |
 | controls-variants | `771-0` | [p-4-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-4-0) | 1440 | [JPEG](screenshots/controls-variants.jpg) · [JSX](exports/controls-variants.jsx) |
+| macro-dark-en-390 | `7CM-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | [JPEG](screenshots/macro-dark-en-390.jpg) · [JSX](exports/macro-dark-en-390.jsx) |
+| macro-light-zh-390 | `7IS-0` | [p-5-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | 390 | Final capture pending; [IN_PROGRESS_21_OF23_CONFIRMED_FOOTER_UNRESOLVED JPEG](screenshots/macro-light-zh-390--in-progress.jpg) · [partial JSX](exports/macro-light-zh-390--in-progress.jsx) |
 
-The complete 21-role source-to-native projection is in `native-role-bindings.json`. The 67 retained-original/candidate-companion mapping is in `native-predecessor-bindings.json`. Both distinguish observed native design IDs from still-unqualified behavior and domain roles.
+The 21-role source-to-native projection is in `native-role-bindings.json`; its unresolved count is explicit. The 67 retained-original/candidate-companion mapping is in `native-predecessor-bindings.json`, with the latest live identity/location receipt where observed. Both distinguish actual native IDs from still-unqualified behavior and domain roles. See `NATIVE_PENDING_WORK.md` for unapplied repairs and absent boards.

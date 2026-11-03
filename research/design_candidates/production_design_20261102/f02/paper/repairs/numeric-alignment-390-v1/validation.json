@@ -1,0 +1,64 @@
+{
+  "schema": "f02.paper.numeric-alignment-390-source-validation.v1",
+  "status": "SOURCE_BINDINGS_AND_STYLE_ONLY_DIFF_PASS_NOT_LIVE_VALIDATED",
+  "files": {
+    "native-patch.v1.json": "7dd1c727557f5a6150bfc2b7034b2d579fa03284d1a45a3d31bae69e9ab633d7",
+    "source-overrides.v1.json": "dc1c1c7a3b7bc148642a74908c0791ace9b8482b228ab96718481de96872ff67",
+    "pending-width-source-overrides.v1.json": "abf8f62551f6c08f48cca930fda67a81f9760e047cac7fba4efc059932cff824"
+  },
+  "boards": [
+    {
+      "board_key": "macro-dark-en-390",
+      "board_id": "7CM-0",
+      "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-dark-en-390.jsx",
+      "export_sha256": "a2ca7e6a897c4b6eac3a4c29bb3049f31db6e2757ebe42d0fece91dcccc8d4bd",
+      "numeric_frames": 33,
+      "header_frames": 3,
+      "body_frames": 30,
+      "source_steps": 11
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "board_id": "7IS-0",
+      "export": "/workspace/scratch/55964f568673/f02/paper/exports/macro-light-zh-390--comparison.jsx",
+      "export_sha256": "6da71ea6a681b4a6f0b49fa3f233f019d832c91e9db817f211ed0862fdaecf09",
+      "numeric_frames": 33,
+      "header_frames": 3,
+      "body_frames": 30,
+      "source_steps": 11
+    }
+  ],
+  "checks": {
+    "66_unique_frame_and_text_bindings": true,
+    "all_native_roles_from_APPLIED_createdNodes": true,
+    "actual_export_rows_match_source_values_and_widths": true,
+    "all_66_frames_lack_explicit_end_layout": true,
+    "all_text_nodes_and_64_non_numeric_cells_unchanged": true,
+    "source_deltas_only_selected_style_attribute_bytes": true,
+    "all_existing_padding_widths_row_heights_colors_fonts_and_text_preserved": true,
+    "44_pending_width_steps_cover_132_numeric_cells": true,
+    "all_inputs_and_exports_unchanged": true
+  },
+  "related_pending_return_row_flag": {
+    "board_key": "macro-zh-evidence-return-390",
+    "step_key": "returned-selected-row",
+    "source_packet": "/workspace/scratch/55964f568673/f02/paper/repairs/fixture-coherence-v1/effective-spaced/supplemental-boards.json",
+    "source_packet_sha256": "e65ecfcec783c752651634541d6f9917857e2da42e4686bdae0535cd089aaa2e",
+    "source_step_html_sha256": "660d23a91f04bf9ff94524acd4e49b2c5e86be82157deafe3d238ed0e53e1583",
+    "affected_column_roles": [
+      "rate",
+      "delta_pp",
+      "coverage"
+    ],
+    "expected_visible_values": [
+      "66.7%",
+      "+1.13",
+      "177 / 177"
+    ],
+    "finding": "The same authored numeric-cell structure is present in this pending selected-return row. Flagged for the owner; not included in the requested two-board native patch or four-width source override."
+  },
+  "mismatches": [],
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "applied": false
+}
