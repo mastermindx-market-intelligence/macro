@@ -5461,9 +5461,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_668),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -7108,6 +7108,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
+    Entry Timing W1 exact integration (2026-11-03, PR #10277, CI
+    41594018398, tested base 135e371359aa612f6218ef319fedf42a1535473b):
+    adding the waterfall suite as a step of the existing prophet-lab job
+    increases planning weights on the three probes by exactly three units,
+    without selecting another job or pack. Hosted contract-delta measured:
+
+        templates/index.html          137 jobs, 5,909 -> 5,912 weight
+        scripts/build_free_content.py 137 jobs, 5,924 -> 5,927 weight
+        engine/prophet/plan_book.py   131 jobs, 5,665 -> 5,668 weight
+
+    Fund only the observed +3 for each weight ceiling, not a new job,
+    pack, exclusion, changed selection or runtime allowance. Preserve
+    all existing semantic test coverage and the 10-pack bound.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

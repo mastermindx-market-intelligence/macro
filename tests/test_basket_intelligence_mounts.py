@@ -9,9 +9,9 @@ silent. The entry names no vertical: every string in the section comes from that
 context, which is why these tests read it from the registration rather than
 retyping it.
 
-L1:  The include sits after `<a class="back">` and before `<div id="app">`, exactly
-     once, and is the ONLY line of basket_detail.html.j2 that changes (`git diff
-     --numstat` = `1\\t0`).
+L1:  The include sits after the back link and before the app container,
+     exactly once. The introducing PR adds one line and deletes none; once
+     accepted, descendant PRs must leave the template unchanged.
 L2:  Optional verticals never break the incumbent page — `ignore missing` everywhere.
 L3:  The base render's asset order is preserved: every <script>/<link> present in the
      base stays in the same relative order; theme.js stays LAST. New assets are
@@ -272,22 +272,18 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 
 
 # ---------------------------------------------------------------------------
-# 2 — L1 (diff): the only change to basket_detail.html.j2 is the new include line
+# 2 — L1 (history): introducing PR adds one line; descendants preserve it
 # ---------------------------------------------------------------------------
 
 def test_basket_detail_diff_is_exactly_one_inserted_line():
     """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
     be exactly `1\\t0` — one inserted line, zero deleted lines.
 
-    This is the one assertion in this suite that needs *history* rather than
-    working-tree content. The added line and its position are already pinned
-    from the tree by ``test_common_template_has_exactly_one_aggregator_include
-    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
-    in a template frozen by #7669 moved. A checkout that does not carry
-    an integration base cannot evaluate that claim at all: git answers
-    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
-    reports as a template regression that did not happen. Resolve the base
-    first (see ``_integration_base``) and skip honestly when it is absent.
+    The introducing PR must add exactly one line and delete none. Once the
+    include is present in an accepted integration base, descendant PRs must
+    leave that template unchanged rather than inventing another insertion.
+    The separate tree test still pins the include and its position.
+    A checkout without a resolvable base skips this history-only assertion.
     """
     base = _integration_base()
     if base is None:
@@ -306,9 +302,27 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
         f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
     )
     line = result.stdout.strip()
+    base_template = subprocess.run(
+        ["git", "show", f"{base}:templates/basket_detail.html.j2"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    )
+    assert base_template.returncode == 0, (
+        f"could not read basket_detail.html.j2 at integration base {base}: "
+        f"{base_template.stderr}"
+    )
+    include = '{% include "_basket_intelligence_mounts.html.j2" ignore missing %}'
+    if include in base_template.stdout:
+        # The single-line mount is already accepted upstream. A descendant PR
+        # must preserve the exact template, not reintroduce the same diff.
+        assert not line, (
+            f"basket_detail.html.j2 already has the mount in base {base}, "
+            f"but this PR changes the accepted template: {line!r}"
+        )
+        return
+    # For the original introducing PR, retain the strict +1/-0 invariant.
     assert line, (
-        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
-        f"the aggregator include this suite exists to pin is absent from the diff"
+        f"basket_detail.html.j2 is unchanged vs the pre-mount base {base}: "
+        f"the new aggregator include is absent from the diff"
     )
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
