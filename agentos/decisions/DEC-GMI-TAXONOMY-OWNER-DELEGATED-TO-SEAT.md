@@ -96,6 +96,12 @@ The four renames give English and Chinese names:
 | theme:hbm_packaging | HBM memory stacking & packaging | HBM 存储堆叠与封装 | MEDIUM |
 | theme:nand_enterprise_storage | NAND flash & enterprise SSDs | NAND 闪存与企业级 SSD | LOW |
 
+Executing the theme:hbm_packaging RENAME changes its scope_version, so it is deferred to a
+qualified C01 cutover. That cutover must preserve generation 040b and D2E acceptance and
+re-bind actprop:287edbf7e04b8aba873b7493 (co:us:MU) in the same act. The
+theme:nand_enterprise_storage RENAME stays at LOW confidence: all seven sibling scope notes
+already delimit it as the drive/media segment, and it is EMPTY, so nothing re-binds.
+
 Six KEEPs are LOW-CONFIDENCE. Each is a KEEP today, with a named reason a later,
 populated review might change it:
 - theme:cardiorenal_metabolic_indications: its issuers likely coincide with
