@@ -121,9 +121,13 @@ _GLUED_YEAR_MIN = 1990
 _GLUED_YEAR_MAX = 2100
 # Banner income/cash-flow column groups ("Three Months Ended June 30") each own
 # their own duration; composing one shared end-date row would erase the 3m/6m
-# distinction, so these never route through _compose_year_row_header.
+# distinction, so a banner row made only of these never takes the same-row or
+# the caption/blank-gap year-row composition. A trailing comma ("Three Months
+# Ended March 31,") and a glued "EndedJune 30" print the same banner.
 _GROUP_BANNER_RE = re.compile(
-    r"^(three|six|nine|twelve) months ended (" + _FULL_MONTH_TOKEN + r") (\d{1,2})$",
+    r"^(three|six|nine|twelve) months ended(?: |(?-i:(?<=[a-z])(?=[A-Z])))("
+    + _FULL_MONTH_TOKEN
+    + r") (\d{1,2}),?$",
     re.IGNORECASE,
 )
 _GROUP_BANNER_MONTHS = {"three": 3, "six": 6, "nine": 9, "twelve": 12}
@@ -133,6 +137,18 @@ _STATEMENT_UNIT_BANDS = (
     "(Millions of dollars)",
 )
 _BARE_MONTH_DAY_RE = re.compile(r"^(" + _FULL_MONTH_TOKEN + r")\.? (\d{1,2})$", re.IGNORECASE)
+# A whole-cell unit caption printed in the leading cell of a year row ("(in
+# millions)", "In millions, except par value", "(Dollars in millions, except
+# per share data)", "(Millions of dollars)"). Consulted only in that leading
+# position of a factless year row under one month-day banner; a caption alone
+# on its row is never skipped here (only _STATEMENT_UNIT_BANDS may be).
+_UNIT_CAPTION_BODY = (
+    r"(?:(?:dollars|amounts)\s+in\s+|in\s+)?(?:millions|thousands|billions)"
+    r"(?:\s+of\s+dollars)?(?:(?:,\s*|\s+)except\s+[^()]+)?"
+)
+_UNIT_CAPTION_RE = re.compile(
+    r"^(?:\(" + _UNIT_CAPTION_BODY + r"\)|" + _UNIT_CAPTION_BODY + r")$", re.IGNORECASE
+)
 _R7_DISAGREEMENT = "displayed cell period disagrees with its column"
 _MONTHS = {
     "january": 1,
@@ -168,6 +184,8 @@ STATEMENT_REFUSAL_CODES = (
     "displayed_columns_absent",
     "statement_role_not_consolidated",
     "displayed_cell_period_mismatch",
+    "displayed_column_period_unbound",
+    "statement_role_presentation_absent",
 )
 
 
@@ -461,7 +479,10 @@ def parse_presentation_tree(content: bytes, *, role_uri: str) -> list[dict[str, 
             link = el
             break
     if link is None:
-        raise StatementGraphError(f"presentation role is absent: {role_uri}")
+        raise StatementGraphError(
+            f"presentation role is absent: {role_uri}",
+            refusal_code="statement_role_presentation_absent",
+        )
     locs: dict[str, str] = {}
     for loc in link.findall(f"{{{LINK}}}loc"):
         label = _xlink(loc, "label")
@@ -618,6 +639,14 @@ def _compose_year_row_header(
     ISO dates, the consumed row indices, and the composition source:
     ``"composed_title_year_row"`` when a title banner reached its year row
     across one exact unit band, otherwise ``"composed_year_row"``.
+
+    Three source-observed variants compose the same way (each column still
+    binds to its own facts' contexts downstream): a banner printed in the
+    leading cell of its own year row (``"composed_same_row"``); and, when the
+    exact shape above fails under a banner row with no N-months-ended
+    group-banner cell, fully blank rows before the year row
+    (``"composed_blank_gap_year_row"``) and/or one leading whole-cell unit
+    caption in the year row (``"composed_caption_year_row"``).
     """
     first_fact_row = next(
         (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
@@ -628,6 +657,9 @@ def _compose_year_row_header(
         banner_cells = rows[index]
         if any(cell["facts"] for cell in banner_cells):
             continue
+        same_row = _compose_same_row_banner(banner_cells)
+        if same_row is not None:
+            return same_row, frozenset({index}), "composed_same_row"
         month_days = _month_day_pairs_from_text(
             " ".join(cell["text"] for cell in banner_cells)
         )
@@ -637,44 +669,126 @@ def _compose_year_row_header(
         if len(distinct) != 1:
             return None
         month, day = distinct[0]
-        year_row = index + 1
-        year_cells = rows[year_row]
-        # Some annual statements print a factless, unit-only band between the
-        # "at December 31," title and the bare-year comparative row.  This is
-        # a narrow, source-observed interstitial, not an invitation to skip any
-        # arbitrary narrative or extra header row.
-        units = [str(cell["text"]).strip() for cell in year_cells if str(cell["text"]).strip()]
-        skip_units = (
-            year_row + 1 < header_limit
-            and not any(cell["facts"] for cell in year_cells)
-            # Other observed annual headings use the same one-row
-            # position for different, but exact, statement-unit labels.
-            and len(units) == 1
-            and units[0] in _STATEMENT_UNIT_BANDS
-        )
-        if skip_units:
-            year_row += 1
-            year_cells = rows[year_row]
-        if any(cell["facts"] for cell in year_cells):
-            return None
-        years: list[str] = []
-        for cell in year_cells:
-            text = str(cell["text"]).strip()
-            if not text or text == "$":
-                continue
-            if not _YEAR_CELL_RE.match(text):
-                return None
-            years.append(text)
-        if len(years) < 2:
-            return None
-        composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
-        consumed = {index, year_row}
-        if skip_units:
-            consumed.add(index + 1)
-        source = "composed_title_year_row" if skip_units else "composed_year_row"
-        return composed, frozenset(consumed), source
+        exact = _compose_exact_year_row(rows, index, header_limit, month, day)
+        if exact is not None or _has_group_banner_cell(banner_cells):
+            return exact
+        return _compose_gap_or_caption_year_row(rows, index, header_limit, month, day)
     return None
 
+
+def _compose_exact_year_row(
+    rows: list[list[dict[str, Any]]], index: int, header_limit: int, month: int, day: int
+) -> tuple[list[str], frozenset[int], str] | None:
+    """The banner's immediate year row, or the year row after one exact unit band."""
+    year_row = index + 1
+    year_cells = rows[year_row]
+    # Some annual statements print a factless, unit-only band between the
+    # "at December 31," title and the bare-year comparative row.  This is
+    # a narrow, source-observed interstitial, not an invitation to skip any
+    # arbitrary narrative or extra header row.
+    units = [str(cell["text"]).strip() for cell in year_cells if str(cell["text"]).strip()]
+    skip_units = (
+        year_row + 1 < header_limit
+        and not any(cell["facts"] for cell in year_cells)
+        # Other observed annual headings use the same one-row
+        # position for different, but exact, statement-unit labels.
+        and len(units) == 1
+        and units[0] in _STATEMENT_UNIT_BANDS
+    )
+    if skip_units:
+        year_row += 1
+        year_cells = rows[year_row]
+    if any(cell["facts"] for cell in year_cells):
+        return None
+    years: list[str] = []
+    for cell in year_cells:
+        text = str(cell["text"]).strip()
+        if not text or text == "$":
+            continue
+        if not _YEAR_CELL_RE.match(text):
+            return None
+        years.append(text)
+    if len(years) < 2:
+        return None
+    composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
+    consumed = {index, year_row}
+    if skip_units:
+        consumed.add(index + 1)
+    source = "composed_title_year_row" if skip_units else "composed_year_row"
+    return composed, frozenset(consumed), source
+
+
+def _header_texts(cells: list[dict[str, Any]]) -> list[str]:
+    """A header row's non-empty cell texts besides "$", in display order."""
+    texts = [str(cell["text"]).strip() for cell in cells]
+    return [text for text in texts if text and text != "$"]
+
+
+def _has_group_banner_cell(cells: list[dict[str, Any]]) -> bool:
+    """True when any header cell is an N-months-ended group banner."""
+    texts = [str(cell["text"]).strip() for cell in cells]
+    return any(_GROUP_BANNER_RE.match(text) for text in texts)
+
+
+def _composed_year_dates(years: list[str], month: int, day: int) -> list[str] | None:
+    """One ISO date per bare year, or None when the month-day is not a real date that year."""
+    if len(years) < 2 or not all(_YEAR_CELL_RE.match(text) for text in years):
+        return None
+    if any(not 1 <= day <= calendar.monthrange(int(year), month)[1] for year in years):
+        return None
+    return [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
+
+
+def _compose_same_row_banner(cells: list[dict[str, Any]]) -> list[str] | None:
+    """Composed dates when one factless header row prints the banner and its years.
+
+    The leading cell carries exactly one month-day phrase and no full date
+    ("years ended December 31 (in millions, except per share data)", "Year
+    Ended April 30,"); every other cell besides "$" is a bare 4-digit year, at
+    least two. An N-months-ended group banner keeps its own composer. Returns
+    None when the row is not this shape.
+    """
+    texts = _header_texts(cells)
+    if len(texts) < 3:
+        return None
+    banner, years = texts[0], texts[1:]
+    if _GROUP_BANNER_RE.match(banner) or _iso_dates_from_text(banner):
+        return None
+    month_days = _month_day_pairs_from_text(banner)
+    if len(month_days) != 1:
+        return None
+    month, day = month_days[0]
+    return _composed_year_dates(years, month, day)
+
+
+def _compose_gap_or_caption_year_row(
+    rows: list[list[dict[str, Any]]], index: int, header_limit: int, month: int, day: int
+) -> tuple[list[str], frozenset[int], str] | None:
+    """Composed dates across fully blank rows and/or a leading unit caption.
+
+    Observed annual shapes put fully blank rows between the month-day banner
+    and its year row ("December 31" / blank / "(Dollars in millions) 2025
+    2024"), or print the unit caption in the year row's leading cell ("In
+    millions, except par value 2024 2023"). Only rows with no text at all are
+    skipped; the first row with text must sit above the first fact row, may
+    lead with one whole-cell unit caption, and must otherwise print at least
+    two bare years. Returns None for anything else so the caller keeps its
+    refusal.
+    """
+    year_row = index + 1
+    while year_row < header_limit and not any(
+        str(cell["text"]).strip() for cell in rows[year_row]
+    ):
+        year_row += 1
+    if year_row >= header_limit:
+        return None
+    texts = _header_texts(rows[year_row])
+    caption = bool(texts) and _UNIT_CAPTION_RE.match(texts[0]) is not None
+    composed = _composed_year_dates(texts[1:] if caption else texts, month, day)
+    if composed is None:
+        return None
+    source = "composed_caption_year_row" if caption else "composed_blank_gap_year_row"
+    return composed, frozenset(range(index, year_row + 1)), source
 
 def _first_fact_row(rows: list[list[dict[str, Any]]]) -> int | None:
     return next(
@@ -856,7 +970,10 @@ def _compose_grouped_duration_year_row(
         per_group[covers[0]].append(year)
     for years in per_group:
         if not years or years != sorted(years, reverse=True) or len(set(years)) != len(years):
-            raise _layout_unsupported("grouped duration years are not strictly descending")
+            raise _layout_unsupported(
+                "grouped duration years are not strictly descending",
+                refusal_code="displayed_layout_unsupported",
+            )
     columns_periods: list[dict[str, Any]] = []
     for group, years in zip(groups, per_group):
         for year in years:
@@ -920,26 +1037,38 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     def place(row: int, col: int, cell: dict[str, Any]) -> None:
         slot = occupied.setdefault(row, {})
         if col in slot:
-            raise _layout_unsupported(f"overlapping cell at row {row} column {col}")
+            raise _layout_unsupported(
+                f"overlapping cell at row {row} column {col}",
+                refusal_code="displayed_layout_unsupported",
+            )
         slot[col] = cell
 
     for row_index, raw in enumerate(raw_rows):
         column = 0
         for source in raw:
             if source.get("span_overflow"):
-                raise _layout_unsupported("span exceeds the supported bound")
+                raise _layout_unsupported(
+                    "span exceeds the supported bound",
+                    refusal_code="displayed_layout_unsupported",
+                )
             colspan = int(source.get("colspan") or 1)
             rowspan = int(source.get("rowspan") or 1)
             if rowspan == 0:
                 rowspan = row_count - row_index
             if colspan < 1 or rowspan < 1:
-                raise _layout_unsupported("span is not a positive occupancy")
+                raise _layout_unsupported(
+                    "span is not a positive occupancy",
+                    refusal_code="displayed_layout_unsupported",
+                )
             while column in occupied.get(row_index, {}):
                 column += 1
             for row_delta in range(rowspan):
                 target_row = row_index + row_delta
                 if target_row >= row_count:
-                    raise _layout_unsupported("rowspan overruns the table")
+                    raise _layout_unsupported(
+                        "rowspan overruns the table",
+                        refusal_code="displayed_layout_unsupported",
+                    )
                 for col_delta in range(colspan):
                     target_col = column + col_delta
                     if row_delta == 0 and col_delta == 0:
@@ -1003,7 +1132,10 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         for column in range(max_col):
             cell = row_map.get(column)
             if cell is None and (k is None or column < k or row_has_facts):
-                raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+                raise _layout_unsupported(
+                    f"ragged grid at row {row_index} column {column}",
+                    refusal_code="displayed_layout_unsupported",
+                )
             if cell is None:
                 cell = _grid_slot(
                     text="",
@@ -1267,7 +1399,11 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     banner over a bare-year row (fiscal-year statements) composes the
     columns and the output carries ``"columns_source": "composed_year_row"``;
     a title banner composed across one exact unit band carries
-    ``"composed_title_year_row"``. Duration groups ("Three Months Ended
+    ``"composed_title_year_row"``; a banner printed in the same row as its
+    years carries ``"composed_same_row"``; a banner reaching its year row
+    across fully blank rows carries ``"composed_blank_gap_year_row"``, or
+    ``"composed_caption_year_row"`` when that year row leads with a unit
+    caption. Duration groups ("Three Months Ended
     June 30" over a year row) carry ``"composed_grouped_duration_year_row"``
     plus each column's own period under ``"columns_periods"``; a glued-date
     header row ("June 302025") composes plain dated columns like the full-date
@@ -1370,7 +1506,8 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
             or years_per_group[0] * len(years_per_group) != fact_columns
         ):
             raise _layout_unsupported(
-                "grouped duration groups do not match the displayed fact columns"
+                "grouped duration groups do not match the displayed fact columns",
+                refusal_code="displayed_layout_unsupported",
             )
     if len(header_dates) < 2:
         raise StatementGraphError(
@@ -1384,7 +1521,8 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     for spec in display_rows:
         if len(spec["value_facts"]) > len(header_dates):
             raise _layout_unsupported(
-                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns"
+                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns",
+                refusal_code="displayed_layout_unsupported",
             )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
@@ -1478,7 +1616,10 @@ def _columns_from_display(
     """
     if explicit_periods is not None:
         if len(explicit_periods) < 2:
-            raise StatementGraphError("displayed statement columns are absent")
+            raise StatementGraphError(
+                "displayed statement columns are absent",
+                refusal_code="displayed_columns_absent",
+            )
         columns: list[dict[str, Any]] = []
         seen: set[tuple[str, str | None, str]] = set()
         for index, spec in enumerate(explicit_periods):
@@ -1494,15 +1635,24 @@ def _columns_from_display(
                 require_start=start,
             )
             if period is None or period.get("start_date") != start:
-                raise StatementGraphError("displayed duration column is not bound to the filing period")
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
             identity: tuple[str, str | None, str] = ("duration", start, iso)
             if identity in seen:
-                raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+                raise StatementGraphError(
+                    "displayed statement columns collapse distinct filing periods",
+                    refusal_code="displayed_column_period_unbound",
+                )
             seen.add(identity)
             columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
         return columns
     if len(iso_dates) < 2:
-        raise StatementGraphError("displayed statement columns are absent")
+        raise StatementGraphError(
+            "displayed statement columns are absent",
+            refusal_code="displayed_columns_absent",
+        )
     prefer_kind = "instant" if statement_type == "balance_sheet" else "duration"
     columns: list[dict[str, Any]] = []
     seen: set[tuple[str, str | None, str]] = set()
@@ -1517,17 +1667,26 @@ def _columns_from_display(
         )
         if prefer_kind == "instant":
             if not period:
-                raise StatementGraphError("displayed balance-sheet column is not bound to the filing date")
+                raise StatementGraphError(
+                    "displayed balance-sheet column is not bound to the filing date",
+                    refusal_code="displayed_column_period_unbound",
+                )
             identity: tuple[str, str | None, str] = ("instant", None, iso)
             columns.append({"kind": "instant", "start": None, "end": iso, "label": iso})
         else:
             if not period:
-                raise StatementGraphError("displayed duration column is not bound to the filing period")
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
             start = str(period.get("start_date"))
             identity = ("duration", start, iso)
             columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
         if identity in seen:
-            raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+            raise StatementGraphError(
+                "displayed statement columns collapse distinct filing periods",
+                refusal_code="displayed_column_period_unbound",
+            )
         seen.add(identity)
     return columns
 
