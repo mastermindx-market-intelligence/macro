@@ -396,8 +396,9 @@ def test_workflows_cancel_superseded_pr_runs() -> None:
     assert "github.ref" in ci["concurrency"]["group"]
     assert "pull_request.number" in fences["concurrency"]["group"]
     assert ci["concurrency"]["group"] == (
-        "ci-${{ github.event.pull_request.number || github.ref }}"
-    )
+        "ci-${{ inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', "
+        "inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}"
+    ), "admitted original runs must not replace one another; legacy PR/main grouping remains"
     triggers = ci.get("on") or ci.get(True)
     assert triggers["pull_request"]["types"] == [
         "opened", "synchronize", "reopened"
@@ -3827,7 +3828,7 @@ def test_workflow_scopes_only_pull_requests() -> None:
         "${{ vars.CI_DYNAMIC_MATRIX_MODE == 'off' && 'off' || 'active' }}"
     )
     scope_arg = str(plan_step["env"]["CI_SCOPE_ARG"])
-    assert "github.event_name == 'pull_request'" in scope_arg
+    assert "steps.identity.outputs.semantic_role == 'pr_head'" in scope_arg
     assert "--changed-from" in scope_arg
     assert "steps.identity.outputs.tested_base_sha" in scope_arg
     assert "github.base_ref" not in scope_arg
@@ -3885,6 +3886,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # called main workflow; the caller's ci-pack matrix remains the stable hosted
     # anchor set and retains the full implementation only for forks.
     assert set(workflow["jobs"]) <= {
+        "ci-admission",
         "ci-plan",
         "trusted-ci",
         "ci-pack",
@@ -3948,7 +3950,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     assert pack["if"] == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(needs.ci-plan.outputs.same_repository != 'true' || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
@@ -4052,7 +4054,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     checkout = next(
         step
         for step in pack["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("name") == "check out the exact candidate"
     )
     assert "filter" not in checkout["with"]
     assert checkout["with"]["fetch-depth"] == 1
@@ -4061,7 +4063,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     plan_checkout = next(
         step
         for step in plan["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("name") == "check out the exact candidate"
     )
     assert plan_checkout["with"]["fetch-depth"] == 0
     assert plan_checkout["with"]["sparse-checkout-cone-mode"] is False
@@ -7368,7 +7370,7 @@ def _run_ci_pack_invocation_blocks(text: str) -> list[str]:
     interpreter line — the next YAML key/step.
     """
     lines = text.splitlines()
-    invocation_re = re.compile(r'bin/python"?\s+scripts/run_ci_pack\.py\b')
+    invocation_re = re.compile(r'bin/python"?\s+(?:-I\s+)?(?:scripts/run_ci_pack\.py\b|"\$CONTROL_ROOT/scripts/run_ci_pack\.py")')
     blocks: list[str] = []
     index = 0
     while index < len(lines):

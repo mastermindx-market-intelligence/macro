@@ -32,6 +32,109 @@ SHA_HEAD = "2" * 40
 SHA_BASE = "3" * 40
 
 
+def _admitted_plan(jobs, generation="a" * 12):
+    return PACK.build_plan(jobs, ["engine/example.py"], changed_from=SHA_BASE,
+        scope_mode="active", pack_count=1, workflow_run_id="987654321", workflow="ci",
+        event="workflow_dispatch", role="pr_head", tested_tree_sha=SHA_TREE,
+        subject_head_sha=SHA_HEAD, base_sha=SHA_BASE, admission_generation=generation)
+
+
+def test_admitted_plan_roundtrip_and_generation_expectation(tmp_path):
+    manifest = _write_manifest(tmp_path / "manifest.yml", [_job("demo", [{"name": "proof", "run": "true"}])])
+    jobs = PACK.load_legacy_jobs(manifest)
+    plan = _admitted_plan(jobs)
+    path = tmp_path / "plan.json"
+    PACK._atomic_write_json(path, plan.to_dict())
+    consumed = PACK.load_authoritative_plan(path, workflow=manifest,
+        expect_plan_sha=plan.plan_sha256, expect_admission_generation="a" * 12)
+    assert consumed.to_dict() == plan.to_dict()
+    assert SEMANTIC.authoritative_plan_sha256(plan.to_dict()) == plan.plan_sha256
+    assert _admitted_plan(jobs, "b" * 12).plan_sha256 != plan.plan_sha256
+    with pytest.raises(PACK.ManifestError, match="admission_generation"):
+        PACK.load_authoritative_plan(path, workflow=manifest, expect_admission_generation="b" * 12)
+    for change in (None, "b" * 12):
+        document = plan.to_dict()
+        if change is None:
+            document.pop("admission_generation")
+        else:
+            document["admission_generation"] = change
+        PACK._atomic_write_json(path, document)
+        with pytest.raises(PACK.ManifestError):
+            PACK.load_authoritative_plan(path, workflow=manifest)
+
+
+@pytest.mark.parametrize("generation", [None, "", True, "A" * 12, "a" * 11])
+def test_admitted_planner_refuses_missing_or_malformed_generation(monkeypatch, generation):
+    monkeypatch.delenv("CI_ADMISSION_GENERATION", raising=False)
+    with pytest.raises(PACK.ManifestError, match="admission_generation"):
+        _admitted_plan([_job("demo", [{"run": "true"}])], generation)
+
+
+@pytest.mark.parametrize("mode", ["success", "startup-failure", "attestation-failure"])
+def test_admitted_pack_all_fragment_paths_retain_generation(tmp_path, monkeypatch, mode):
+    job = _job("demo", [{"name": "proof", "run": "true"}])
+    plan = _admitted_plan([job])
+    target = tmp_path / "fragment.json"
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda _root: "9" * 40 if mode == "startup-failure" else SHA_TREE)
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_args: None)
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_kwargs: None)
+    if mode == "attestation-failure":
+        def refuse(_plan):
+            raise RuntimeError("test attestation refusal")
+        monkeypatch.setattr(PACK, "attest_execution_profile", refuse)
+    result = PACK.execute_pack([job], plan=plan, pack_index=0,
+        emit_semantic_fragment=target, require_attestation=mode == "attestation-failure")
+    assert result == (0 if mode == "success" else 1)
+    fragment = json.loads(target.read_text())
+    assert fragment["admission_generation"] == "a" * 12 and fragment["event"] == "workflow_dispatch"
+    if mode == "attestation-failure":
+        # Existing attestation_failed fragments deliberately remain rejected by
+        # the strict aggregate; its CLI emits bound planner-failure evidence.
+        # This identity change must not widen the legacy outcome allowlist.
+        with pytest.raises(SEMANTIC.SemanticProofError, match="attestation_failed"):
+            SEMANTIC.reconcile_evidence(plan.to_dict(), [fragment])
+        return
+    evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [fragment])
+    assert evidence["admission_generation"] == "a" * 12
+    assert evidence["status"] == ("clear" if mode == "success" else "failure")
+
+
+def test_replay_identity_does_not_inherit_parent_admission_generation(monkeypatch):
+    monkeypatch.setenv("CI_ADMISSION_GENERATION", "a" * 12)
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "base_replay")
+    monkeypatch.setenv("CI_SEMANTIC_ROLE", "main")
+    assert PACK._fragment_admission_fields(None) == {}
+    with pytest.raises(SystemExit):
+        PACK.parse_args(["--workflow", str(MANIFEST), "--execute", "--semantic-replay-job", "demo", "--emit-semantic-fragment", "/unused",
+                         "--admission-generation", "a" * 12])
+
+
+def test_runner_cli_carries_generation_for_plan_and_consumer():
+    args = PACK.parse_args(["--workflow", str(MANIFEST), "--admission-generation", "a" * 12, "--expect-admission-generation", "a" * 12])
+    assert args.admission_generation == args.expect_admission_generation == "a" * 12
+
+
+def test_admitted_runner_cli_publishes_and_consumes_full_plan(tmp_path):
+    manifest = _write_manifest(tmp_path / "manifest.yml", [_job("demo", [{"name": "proof", "run": "true"}])])
+    changed = tmp_path / "changed.json"
+    changed.write_text('["engine/example.py"]')
+    published, consumed = tmp_path / "published.json", tmp_path / "consumed.json"
+    assert PACK.main(["--workflow", str(manifest), "--plan-only", "--pack-count", "1",
+        "--changed-from", SHA_BASE, "--changed-files-file", str(changed),
+        "--workflow-run-id", "987654321", "--workflow-name", "ci", "--event", "workflow_dispatch",
+        "--role", "pr_head", "--tested-tree-sha", SHA_TREE, "--subject-head-sha", SHA_HEAD,
+        "--base-sha", SHA_BASE, "--admission-generation", "a" * 12,
+        "--emit-plan-json", str(published)]) == 0
+    document = json.loads(published.read_text())
+    assert document["admission_generation"] == "a" * 12
+    assert PACK.main(["--workflow", str(manifest), "--plan-json", str(published),
+        "--changed-files-file", str(changed), "--expect-plan-sha", document["plan_sha256"],
+        "--expect-admission-generation", "a" * 12, "--emit-plan-json", str(consumed)]) == 0
+    assert json.loads(consumed.read_text()) == document
+
+
 @pytest.fixture(autouse=True)
 def _isolate_tested_tree_sha():
     """``execute_pack`` publishes the plan-bound tree as ``TESTED_TREE_SHA`` in

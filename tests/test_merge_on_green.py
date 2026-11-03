@@ -290,6 +290,8 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
     wanted = set(str(options["sparse-checkout"]).split())
     assert wanted == {
         "scripts/merge_on_green.py",
+        "scripts/ci_proof_admission.py",
+        "scripts/ci_admission_stages.py",
         "scripts/ci_semantic_proof.py",
         "scripts/ci_authority_paths.py",
         "scripts/gh_path_filter.py",
@@ -4940,27 +4942,38 @@ def _main_harness(
     return seen
 
 
-def test_repo_wide_proof_census_sums_every_active_actions_state(monkeypatch):
-    counts = {
-        "queued": 3,
-        "in_progress": 4,
-        "pending": 1,
-        "requested": 2,
-        "waiting": 5,
-    }
-    seen: list[str] = []
-
+def test_repo_wide_proof_census_counts_distinct_runs_across_both_carriers(monkeypatch):
+    from urllib.parse import parse_qs, urlsplit
+    seen = []
     def fake_request(method, url, token, payload=None):
         assert method == "GET" and token == "read" and payload is None
-        for run_status, count in counts.items():
-            if f"status={run_status}" in url:
-                seen.append(run_status)
-                return 200, {"total_count": count, "workflow_runs": []}
-        raise AssertionError(url)
-
+        query = parse_qs(urlsplit(url).query)
+        # Event-filtering would omit admitted dispatches and reopen oversubscription.
+        assert "event" not in query
+        assert query["per_page"] == ["100"]
+        state = query["status"][0]
+        seen.append(state)
+        rows = {
+            "queued": [(1,"pull_request"), (2,"workflow_dispatch")],
+            "in_progress": [(1,"pull_request"), (3,"pull_request")],
+            "pending": [(4,"workflow_dispatch")],
+            "requested": [(5,"pull_request")],
+            "waiting": [(6,"workflow_dispatch")],
+        }[state]
+        return 200, {"total_count":len(rows), "workflow_runs":[
+            {"id":i, "run_attempt":1, "event":event, "status":state}
+            for i,event in rows]}
     monkeypatch.setattr(MOG, "_request", fake_request)
-    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") == sum(counts.values())
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") == 6
     assert set(seen) == set(MOG.ACTIVE_PR_PROOF_STATUSES)
+
+
+@pytest.mark.parametrize("rows,total", [([],1), ([{"id":True}],1),
+    ([{"id":1,"run_attempt":1,"status":"unknown"}],1), ([],101)])
+def test_census_requires_complete_run_identities(monkeypatch, rows, total):
+    monkeypatch.setattr(MOG,"_request",lambda *_a,**_k:(200,{
+        "total_count":total,"workflow_runs":rows}))
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets","read") is None
 
 
 @pytest.mark.parametrize(

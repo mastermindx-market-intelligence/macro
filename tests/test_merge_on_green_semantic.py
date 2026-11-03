@@ -1303,3 +1303,262 @@ def test_semantic_main_producer_is_zero_cost_when_evidence_exists(monkeypatch):
         baseline_state="red",
         semantic_main_available=True,
     ) == "not needed (current semantic main evidence is available)"
+
+
+def _admitted_completion_fixture():
+    import hashlib
+    import json
+    import runpy
+    from dataclasses import asdict
+    from pathlib import Path
+    fixture = runpy.run_path(str(Path(__file__).with_name('test_ci_semantic_proof.py')))
+    plan = fixture['_admitted_dispatch_plan']()
+    fragment = dict(fixture['_fragment'](plan=plan), admission_generation='a'*12)
+    evidence = MOG.semantic_proof.reconcile_evidence(plan, [fragment])
+    admission = MOG.proof_admission.Admission('a'*12, 9, plan['subject_head_sha'],
+        plan['base_sha'], plan['tested_tree_sha'], '4'*40, 99, 1)
+    def bundle(name, document):
+        buf=io.BytesIO()
+        with zipfile.ZipFile(buf,'w') as z: z.writestr(name,json.dumps(document).encode())
+        return buf.getvalue()
+    receipt={'schema':'mastermind.ci-proof-admission.v1','repository_id':17,
+        'controller_run_id':70,'controller_run_attempt':1,'admission':asdict(admission)}
+    receipt_bytes=json.dumps(receipt).encode()
+    receipt_zip=bundle('ci-proof-admission.json',receipt)
+    evidence_zip=bundle('ci-semantic-evidence.json',evidence)
+    reference=dict(artifact_id=80,controller_run_id=70,controller_attempt=1,
+        controller_sha='4'*40,payload_sha256=hashlib.sha256(receipt_bytes).hexdigest())
+    def artifact(ident,name,data,run_id):
+        return {'id':ident,'name':name,'expired':False,'digest':'sha256:'+hashlib.sha256(data).hexdigest(),
+            'workflow_run':{'id':run_id,'repository_id':17,'head_sha':'4'*40}}
+    rows={
+        '':{'id':17,'full_name':'acme/widgets','default_branch':'main'},
+        '/branches/main':{'commit':{'sha':'4'*40}},
+        '/actions/artifacts/80':artifact(80,'ci-proof-admission-70-1-aaaaaaaaaaaa-bound',receipt_zip,70),
+        '/actions/runs/70/attempts/1':{'id':70,'run_attempt':1,'repository':{'id':17},
+            'path':'.github/workflows/merge-on-green.yml','head_branch':'main','head_sha':'4'*40,'event':'schedule'},
+        '/actions/runs/99':{'id':99,'run_attempt':1,'run_number':99,'created_at':'2026-11-03T00:00:00Z','status':'completed','name':'ci',
+            'event':'workflow_dispatch','path':'.github/workflows/ci.yml','head_branch':'main',
+            'head_sha':'4'*40,'repository':{'id':17}},
+        '/git/commits/'+admission.merge_sha:{'sha':admission.merge_sha,'parents':[{'sha':admission.base_sha},{'sha':admission.head_sha}]},
+        '/actions/runs/99/artifacts?per_page=100':{'total_count':1,'artifacts':[
+            artifact(81,'ci-semantic-evidence-99',evidence_zip,99)]},
+        '/actions/runs/99/attempts/1/jobs?per_page=100':{'total_count':3,'jobs':[
+            {'name':n,'status':'completed','conclusion':'success','run_id':99,'run_attempt':1}
+            for n in MOG.ADMITTED_SUBJECT_CHECK_NAMES]},
+        '/commits/'+admission.head_sha+'/check-runs?per_page=100&page=1&filter=all':{'total_count':0,'check_runs':[]},
+    }
+    archives={80:receipt_zip,81:evidence_zip}
+    prefix='https://api.github.com/repos/acme/widgets'
+    calls=[]
+    def read(url):
+        assert url.startswith(prefix); path=url[len(prefix):]; calls.append(path)
+        assert path in rows, path
+        return rows[path]
+    def download(url):
+        assert url.startswith(prefix+'/actions/artifacts/') and url.endswith('/zip')
+        return archives[int(url.split('/')[-2])]
+    return admission,reference,rows,archives,read,download,calls
+
+
+def test_admitted_completion_uses_actual_subject_and_generation_without_event_relabel():
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    result=MOG.admitted_completion_proof('acme/widgets','',ref,expected_run_id=99,
+        expected_run_attempt=1,expected_subject_head=a.head_sha,expected_base_sha=a.base_sha,
+        read_json=read,download=download)
+    assert result['loaded'].evidence['event']=='workflow_dispatch'
+    assert result['loaded'].evidence['subject_head_sha']==a.head_sha!='4'*40
+    assert result['loaded'].evidence['admission_generation']==a.generation
+    assert result['jobs']==dict.fromkeys(MOG.ADMITTED_SUBJECT_CHECK_NAMES,'success')
+
+
+@pytest.mark.parametrize('mutation',['attempt','running','origin','digest','expired','parents','subject',
+    'generation','job_missing','job_pending','job_attempt','truncated'])
+def test_admitted_completion_rejects_wrong_identity_or_incomplete_original(mutation):
+    import hashlib,json
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    expected_head=a.head_sha
+    if mutation=='attempt':rows['/actions/runs/99']['run_attempt']=2
+    if mutation=='running':rows['/actions/runs/99']['status']='in_progress'
+    if mutation=='origin':rows['/actions/runs/70/attempts/1']['event']='pull_request'
+    if mutation=='digest':rows['/actions/artifacts/80']['digest']='sha256:'+'0'*64
+    if mutation=='expired':rows['/actions/artifacts/80']['expired']=True
+    if mutation=='parents':rows['/git/commits/'+a.merge_sha]['parents'].reverse()
+    if mutation=='subject':expected_head='f'*40
+    if mutation=='generation':
+        source=MOG._semantic_json_from_archive(archives[81]);source['admission_generation']='b'*12
+        source.pop('evidence_sha256');source['evidence_sha256']=MOG.semantic_proof.canonical_sha256(source)
+        buf=io.BytesIO()
+        with zipfile.ZipFile(buf,'w') as z:z.writestr('ci-semantic-evidence.json',json.dumps(source))
+        archives[81]=buf.getvalue()
+        rows['/actions/runs/99/artifacts?per_page=100']['artifacts'][0]['digest']='sha256:'+hashlib.sha256(archives[81]).hexdigest()
+    jobs=rows['/actions/runs/99/attempts/1/jobs?per_page=100']
+    if mutation=='job_missing':jobs['jobs'].pop();jobs['total_count']=2
+    if mutation=='job_pending':jobs['jobs'][1]['status']='in_progress'
+    if mutation=='job_attempt':jobs['jobs'][1]['run_attempt']=2
+    if mutation=='truncated':jobs['total_count']=4
+    with pytest.raises(MOG.semantic_proof.SemanticProofError):
+        MOG.admitted_completion_proof('acme/widgets','',ref,expected_subject_head=expected_head,
+            read_json=read,download=download)
+
+
+def test_admitted_subject_discovery_does_not_trust_url_or_marker_payload():
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    check={'name':'ci-gate','external_id':MOG.admitted_subject_external_id(ref),
+        'details_url':'https://attacker.invalid/actions/runs/12345','conclusion':'success'}
+    checks=[dict(check,name=n,id=i+1,head_sha=a.head_sha,status='completed',app={'slug':'github-actions'})
+            for i,n in enumerate(MOG.ADMITTED_SUBJECT_CHECK_NAMES)]
+    loaded=MOG.admitted_semantic_evidence_for_head('acme/widgets',a.head_sha,'',check_runs=checks,
+        expected_base_sha=a.base_sha,read_json=read,download=download)
+    assert loaded.evidence['workflow_run_id']=='99'
+    check['external_id']=check['external_id'].replace('4'*40,'f'*40)
+    with pytest.raises((MOG.semantic_proof.SemanticProofError,AssertionError)):
+        MOG.admitted_semantic_evidence_for_head('acme/widgets',a.head_sha,'',check_runs=[check],read_json=read,download=download)
+
+
+@pytest.mark.parametrize('lost_at',[None,1,2,3])
+def test_completion_publisher_posts_actual_original_three_checks_and_stops_unknown(monkeypatch,lost_at):
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    writes=[]
+    def request(method,url,token,payload=None):
+        if method=='GET':return 200,read(url)
+        assert method=='POST' and url.endswith('/check-runs') and token=='job-checks-token'
+        writes.append(payload)
+        if lost_at==len(writes):raise OSError('lost response')
+        return 201,dict(payload,id=100+len(writes))
+    monkeypatch.setattr(MOG,'_request',request)
+    monkeypatch.setattr(MOG,'_download_semantic_artifact',lambda url,token:download(url))
+    monkeypatch.setattr(MOG,'head_check_runs',lambda *args:[])
+    result=MOG.publish_admitted_subject_checks('acme/widgets','read','job-checks-token',ref,
+        expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
+    assert result['disposition']==('unknown' if lost_at else 'published')
+    assert len(writes)==(lost_at or 3)
+    assert all(w['head_sha']==a.head_sha and w['external_id']==MOG.admitted_subject_external_id(ref) for w in writes)
+    if lost_at is None:
+        checks=[dict(w,id=i+100,app={'slug':'github-actions'}) for i,w in enumerate(writes)]
+        assert MOG.proof_anchor_verdict(checks)[0]=='incomplete'  # fence is still independently required
+        checks.append(dict(_check('fence-pack','success'),id=200))
+        assert MOG.proof_anchor_verdict(checks)[0]=='clean'
+
+
+def test_completion_publisher_never_creates_green_checks_for_unknown_original(monkeypatch):
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    rows['/actions/runs/99']['status']='in_progress'
+    def request(method,url,token,payload=None):
+        assert method=='GET'
+        return 200,read(url)
+    monkeypatch.setattr(MOG,'_request',request)
+    monkeypatch.setattr(MOG,'_download_semantic_artifact',lambda url,token:download(url))
+    result=MOG.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
+        expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
+    assert result['disposition']=='held' and result['published']==()
+
+
+@pytest.mark.parametrize('newer_state',['success','failure','unknown'])
+def test_authenticated_generation_selection_never_falls_back_to_older_green(monkeypatch,newer_state):
+    from dataclasses import replace
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    actual=MOG.admitted_completion_proof('acme/widgets','',ref,read_json=read,download=download)
+    newer_ref=dict(ref,artifact_id=82)
+    old_marker=MOG.admitted_subject_external_id(ref)
+    new_marker=MOG.admitted_subject_external_id(newer_ref)
+    checks=[{'name':n,'external_id':marker,'id':i+offset,'head_sha':a.head_sha,'status':'completed',
+             'conclusion':'failure' if newer_state=='failure' and marker==new_marker and n=='contract-delta' else 'success',
+             'app':{'slug':'github-actions'}}
+        for marker,offset in [(old_marker,1000),(new_marker,1)] for i,n in enumerate(MOG.ADMITTED_SUBJECT_CHECK_NAMES)]
+    older=dict(actual)
+    newer=dict(actual,admission=replace(a,generation='b'*12,run_id=100),reference=newer_ref,
+        run=dict(actual['run'],id=100,run_number=1,created_at='2026-11-03T00:01:00Z'))
+    def binding(repo,token,reference,**kwargs):return older if reference['artifact_id']==80 else newer
+    selected=[]
+    def complete(repo,token,reference,**kwargs):
+        selected.append(reference['artifact_id'])
+        assert reference['artifact_id']==82
+        if newer_state=='unknown':raise MOG.semantic_proof.SemanticProofError('new original incomplete')
+        return dict(newer,jobs=dict(newer['jobs'],**({'contract-delta':'failure'} if newer_state=='failure' else {})))
+    monkeypatch.setattr(MOG,'_admitted_completion_binding',binding)
+    monkeypatch.setattr(MOG,'admitted_completion_proof',complete)
+    if newer_state=='success':
+        assert MOG.admitted_semantic_evidence_for_head('acme/widgets',a.head_sha,'',check_runs=checks,
+            read_json=read,download=download) is actual['loaded']
+    else:
+        with pytest.raises(MOG.semantic_proof.SemanticProofError):
+            MOG.admitted_semantic_evidence_for_head('acme/widgets',a.head_sha,'',check_runs=checks,
+                read_json=read,download=download)
+    assert selected==[82]
+
+
+def test_admitted_pr_artifact_is_not_a_main_baseline(monkeypatch):
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    artifact=rows['/actions/runs/99/artifacts?per_page=100']['artifacts'][0]
+    artifact['archive_download_url']='https://api.github.com/repos/acme/widgets/actions/artifacts/81/zip'
+    monkeypatch.setattr(MOG,'_request',lambda method,url,token:(200,read(url)))
+    monkeypatch.setattr(MOG,'_download_semantic_artifact',lambda url,token:download(url))
+    assert MOG._semantic_evidence_for_run('acme/widgets',rows['/actions/runs/99'],'read',role='main').mode=='admitted_pr'
+
+
+@pytest.mark.parametrize('omitted',['ci-plan','contract-delta','ci-gate'])
+def test_partial_subject_check_publication_cannot_expose_older_green(monkeypatch,omitted):
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    marker=MOG.admitted_subject_external_id(ref)
+    checks=[{'name':n,'external_id':marker,'id':i+1,'head_sha':a.head_sha,'status':'completed',
+             'conclusion':'success','app':{'slug':'github-actions'}}
+            for i,n in enumerate(MOG.ADMITTED_SUBJECT_CHECK_NAMES) if n!=omitted]
+    with pytest.raises(MOG.semantic_proof.SemanticProofError,match='partial or inconsistent'):
+        MOG.admitted_semantic_evidence_for_head('acme/widgets',a.head_sha,'',check_runs=checks,
+            read_json=read,download=download)
+
+
+def test_completion_publication_is_idempotent_only_for_exact_existing_triplet(monkeypatch):
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    marker=MOG.admitted_subject_external_id(ref)
+    checks=[{'name':n,'external_id':marker,'id':i+1,'head_sha':a.head_sha,'status':'completed',
+             'conclusion':'success','app':{'slug':'github-actions'}}
+            for i,n in enumerate(MOG.ADMITTED_SUBJECT_CHECK_NAMES)]
+    rows['/commits/'+a.head_sha+'/check-runs?per_page=100&page=1&filter=all']={'total_count':3,'check_runs':checks}
+    def request(method,url,token,payload=None):
+        assert method=='GET', 'exact existing publication must not be repeated'
+        return 200,read(url)
+    monkeypatch.setattr(MOG,'_request',request)
+    monkeypatch.setattr(MOG,'_download_semantic_artifact',lambda url,token:download(url))
+    monkeypatch.setattr(MOG,'head_check_runs',lambda *args:checks)
+    result=MOG.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
+        expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
+    assert result['disposition']=='already_published'
+    checks[1]['conclusion']='failure'
+    assert MOG.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
+        expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)['disposition']=='held'
+
+
+@pytest.mark.parametrize('payload',[
+    {'total_count':1,'check_runs':[]},
+    {'total_count':0,'check_runs':[{'id':1}]},
+    {'total_count':2,'check_runs':[{'id':1},{'id':1}]},
+    {'total_count':1,'check_runs':[{'id':True}]},
+    {'total_count':1,'check_runs':[None]},
+    {'total_count':501,'check_runs':[]},
+])
+def test_admitted_check_inventory_never_hides_truncated_or_malformed_history(payload):
+    with pytest.raises(MOG.semantic_proof.SemanticProofError):
+        MOG._admitted_check_inventory(lambda path:payload,HEAD)
+
+
+def test_late_older_completion_cannot_replace_newer_published_generation(monkeypatch):
+    from dataclasses import replace
+    a,ref,rows,archives,read,download,calls=_admitted_completion_fixture()
+    actual=MOG.admitted_completion_proof('acme/widgets','',ref,read_json=read,download=download)
+    newer_ref=dict(ref,artifact_id=82)
+    marker=MOG.admitted_subject_external_id(newer_ref)
+    newer=dict(actual,admission=replace(a,run_id=100,generation='b'*12),reference=newer_ref,
+        run=dict(actual['run'],id=100,created_at='2026-11-03T00:01:00Z'))
+    rows['/commits/'+a.head_sha+'/check-runs?per_page=100&page=1&filter=all']={
+        'total_count':1,'check_runs':[{'id':101,'name':'ci-plan','external_id':marker}]}
+    monkeypatch.setattr(MOG,'admitted_completion_proof',lambda *args,**kwargs:actual)
+    monkeypatch.setattr(MOG,'_admitted_completion_binding',lambda *args,**kwargs:newer)
+    def request(method,url,token,payload=None):
+        assert method=='GET','superseded completion must never write'
+        return 200,read(url)
+    monkeypatch.setattr(MOG,'_request',request)
+    result=MOG.publish_admitted_subject_checks('acme/widgets','read','checks',ref,
+        expected_run_id=99,expected_run_attempt=1,protected_controller_sha='4'*40)
+    assert result['disposition']=='held' and result['published']==()

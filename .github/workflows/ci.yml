@@ -1577,6 +1577,12 @@ on:
       # had ZERO runs on its branch). A guard whose own change cannot trigger it is
       # a guard that reviews as covered and runs never.
       - "scripts/merge_on_green.py"
+      - "scripts/resolve_ci_pr_admission.py"
+      - "scripts/ci_proof_admission.py"
+      - "tests/test_ci_proof_admission.py"
+      - "tests/test_resolve_ci_pr_admission.py"
+      - "tests/test_ci_admission_workflow.py"
+      - "tests/test_merge_on_green_admission.py"
       - "tests/test_merge_on_green.py"
       # SKIP-ONLY suite guard (job: ci-control-plane-contracts). scripts/*.py already reaches
       # the checker; these two are the other halves. requirements.txt matters
@@ -4480,6 +4486,42 @@ on:
         description: Exact main SHA the semantic baseline request observed
         required: false
         type: string
+      proof_role:
+        description: pr_head only for an authenticated controller admission; empty retains main baseline
+        required: false
+        type: string
+      admission_generation:
+        description: Exact original controller admission generation
+        required: false
+        type: string
+      admission_artifact_id:
+        description: Prepared immutable controller artifact ID
+        required: false
+        type: string
+      admission_payload_sha256:
+        description: Exact prepared receipt payload digest
+        required: false
+        type: string
+      pr_number:
+        description: Admitted PR number; the protected resolver revalidates it
+        required: false
+        type: string
+      subject_head_sha:
+        description: Exact admitted subject head
+        required: false
+        type: string
+      tested_base_sha:
+        description: Exact admitted base
+        required: false
+        type: string
+      tested_merge_sha:
+        description: Exact admitted two-parent merge
+        required: false
+        type: string
+      expected_workflow_definition_sha:
+        description: Exact protected ci workflow definition
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -4496,7 +4538,9 @@ concurrency:
   # synchronize/reopen can replace obsolete proof for that candidate. `closed`
   # is absent from the trigger above and therefore cannot occupy, replace, or
   # cancel this slot when lifecycle delivery is out of order.
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  # Admitted generations keep separate original executions, including pending
+  # runs. A repeated or forged generation cannot replace its actual admitted run.
+  group: ci-${{ inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}
   # cancel-in-progress became EVENT-CONDITIONAL 2026-08-09, after the flat `true`
   # livelocked main's proof path fleet-wide (12 merge-blocked + 56 cap-deferred
   # pull requests; sweep run 31311549150 reported "0 main commit(s) classified …
@@ -4586,7 +4630,44 @@ jobs:
   # This is a proof-semantics boundary, not the CI SPEED wave. Pack count,
   # weighting, runner fleet, dependency caching, and existing scope selection are
   # deliberately unchanged here.
+  # Foundation stage: existing PR triggers remain until protected admission and
+  # subject-head completion publication are installed and verified together.
+  ci-admission:
+    if: github.event_name == 'workflow_dispatch' && inputs.proof_role != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      tested_commit: ${{ steps.resolve.outputs.tested_commit }}
+      subject_head: ${{ steps.resolve.outputs.subject_head }}
+      base: ${{ steps.resolve.outputs.base }}
+      same_repository: ${{ steps.resolve.outputs.same_repository }}
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      head_repository_id: ${{ steps.resolve.outputs.head_repository_id }}
+      admission_generation: ${{ steps.resolve.outputs.admission_generation }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          filter: blob:none
+          sparse-checkout: scripts
+          persist-credentials: false
+      - id: resolve
+        name: authenticate original admitted proof before candidate checkout
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          CI_PR_ADMISSION_INPUTS: ${{ toJSON(inputs) }}
+        run: python3 -I scripts/resolve_ci_pr_admission.py
+
   ci-plan:
+    needs: [ci-admission]
+    if: >-
+      always() && !cancelled() &&
+      (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')
     name: ci-plan
     runs-on: ubuntu-latest
     # Planning loads one manifest and diffs one base; 30 minutes is a hang bound,
@@ -4612,6 +4693,13 @@ jobs:
       subject_head_sha: ${{ steps.identity.outputs.subject_head_sha }}
       tested_base_sha: ${{ steps.identity.outputs.tested_base_sha }}
       semantic_role: ${{ steps.identity.outputs.semantic_role }}
+      admission_generation: ${{ steps.identity.outputs.admission_generation }}
+      admitted_pr: ${{ needs.ci-admission.outputs.pr_number }}
+      admitted_repository_id: ${{ needs.ci-admission.outputs.head_repository_id }}
+      same_repository: ${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}
+    env:
+      CONTROL_ROOT: ${{ needs.ci-admission.result == 'success' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # NO sparse-clear step and NO setup-node here, unlike `ci-pack` below. Both of
       # those exist for conditions this job cannot meet: the sparse-clear guards a
@@ -4619,12 +4707,29 @@ jobs:
       # self-hosted branch), so it gets a fresh VM and can never inherit a sibling's
       # `core.sparseCheckout`; and setup-node exists for the legacy jobs' Node steps,
       # which planning never executes. Adding either would be cargo cult.
-      - uses: actions/checkout@v4
+      - name: check out protected proof control
+        if: needs.ci-admission.result == 'success'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          filter: blob:none
+          sparse-checkout: scripts
+          persist-credentials: false
+      - name: retain protected proof control bundle
+        if: needs.ci-admission.result == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/ci-proof-control"
+          mkdir "$RUNNER_TEMP/ci-proof-control"
+          cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+      - name: check out the exact candidate
+        uses: actions/checkout@v4
         with:
           # Semantic evidence binds the exact tree this runner executes. A PR
           # run proves GitHub's synthetic merge commit, not a later API-resolved
           # branch tip, so make the event SHA explicit.
-          ref: ${{ github.sha }}
+          ref: ${{ needs.ci-admission.outputs.tested_commit || github.sha }}
           # `fetch-depth: 0` is REQUIRED, not an optimisation. The planner derives
           # the tested base from parent 1 of this exact synthetic merge commit, and
           # a shallow clone may not contain that commit — the diff would fail, the planner would widen to the full
@@ -4684,10 +4789,15 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           EXPECTED_DISPATCH_SHA: ${{ inputs.expected_sha || '' }}
+          ADMISSION_GENERATION: ${{ needs.ci-admission.outputs.admission_generation }}
+          ADMITTED_MERGE: ${{ needs.ci-admission.outputs.tested_commit }}
+          ADMITTED_BASE: ${{ needs.ci-admission.outputs.base }}
+          ADMITTED_HEAD: ${{ needs.ci-admission.outputs.subject_head }}
         run: |
           set -euo pipefail
           tested_tree_sha=$(git rev-parse HEAD)
-          if [ "$tested_tree_sha" != "$GITHUB_SHA" ]; then
+          expected_checkout=${ADMITTED_MERGE:-$GITHUB_SHA}
+          if [ "$tested_tree_sha" != "$expected_checkout" ]; then
             echo "::error title=ci-tested-tree::checkout $tested_tree_sha does not match event SHA $GITHUB_SHA"
             exit 1
           fi
@@ -4697,7 +4807,14 @@ jobs:
               exit 1
             fi
           fi
-          if [ "$EVENT_NAME" = "pull_request" ]; then
+          if [ -n "$ADMISSION_GENERATION" ]; then
+            read -r merge_sha tested_base_sha subject_head_sha extra < <(git rev-list --parents -n 1 "$tested_tree_sha")
+            if [ "$merge_sha" != "$ADMITTED_MERGE" ] || [ "$tested_base_sha" != "$ADMITTED_BASE" ] || [ "$subject_head_sha" != "$ADMITTED_HEAD" ] || [ -n "${extra:-}" ]; then
+              echo "::error title=ci-admitted-merge::checkout differs from the authenticated original merge"
+              exit 1
+            fi
+            semantic_role=pr_head
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
             read -r merge_sha tested_base_sha subject_head_sha extra < <(git rev-list --parents -n 1 "$GITHUB_SHA")
             if [ "$merge_sha" != "$GITHUB_SHA" ] || [ -z "${tested_base_sha:-}" ] || [ -z "${subject_head_sha:-}" ] || [ -n "${extra:-}" ]; then
               echo "::error title=ci-tested-base::PR event SHA is not an exact two-parent merge commit"
@@ -4718,6 +4835,7 @@ jobs:
             echo "subject_head_sha=$subject_head_sha"
             echo "tested_base_sha=$tested_base_sha"
             echo "semantic_role=$semantic_role"
+            echo "admission_generation=$ADMISSION_GENERATION"
             echo "plan_artifact_name=ci-semantic-plan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           } >> "$GITHUB_OUTPUT"
       - name: install isolated pack runner
@@ -4726,7 +4844,7 @@ jobs:
           "$RUNNER_TEMP/ci-plan-runner/bin/pip" install pyyaml
       - name: bind exact tested-tree path inventory
         run: >-
-          "$RUNNER_TEMP/ci-plan-runner/bin/python" scripts/ci_scope_dependencies.py
+          "$RUNNER_TEMP/ci-plan-runner/bin/python" -I "$CONTROL_ROOT/scripts/ci_scope_dependencies.py"
           --write-tracked-paths "$RUNNER_TEMP/ci-tracked-paths/tracked-paths.v1"
           --tested-tree-sha "${{ steps.identity.outputs.tested_tree_sha }}"
       # Same `env`-built, UNQUOTED shell-argument idiom as the pack step below, and
@@ -4752,13 +4870,15 @@ jobs:
           # therefore still audits the complete manifest.
           CI_SCOPE_MODE: ${{ vars.CI_SCOPE_MODE == 'off' && 'off' || 'active' }}
           CI_DYNAMIC_MATRIX_MODE: ${{ vars.CI_DYNAMIC_MATRIX_MODE == 'off' && 'off' || 'active' }}
-          CI_SCOPE_ARG: ${{ github.event_name == 'pull_request' && format('--changed-from {0}', steps.identity.outputs.tested_base_sha) || '' }}
+          CI_SCOPE_ARG: ${{ steps.identity.outputs.semantic_role == 'pr_head' && format('--changed-from {0}', steps.identity.outputs.tested_base_sha) || '' }}
           TESTED_TREE_SHA: ${{ steps.identity.outputs.tested_tree_sha }}
           SUBJECT_HEAD_SHA: ${{ steps.identity.outputs.subject_head_sha }}
           TESTED_BASE_SHA: ${{ steps.identity.outputs.tested_base_sha }}
           SEMANTIC_ROLE: ${{ steps.identity.outputs.semantic_role }}
+          CI_ADMISSION_ARG: ${{ steps.identity.outputs.admission_generation != '' && format('--admission-generation {0}', steps.identity.outputs.admission_generation) || '' }}
+          ADMISSION_GENERATION: ${{ steps.identity.outputs.admission_generation }}
         run: >-
-          "$RUNNER_TEMP/ci-plan-runner/bin/python" scripts/run_ci_pack.py
+          "$RUNNER_TEMP/ci-plan-runner/bin/python" -I "$CONTROL_ROOT/scripts/run_ci_pack.py"
           --workflow .github/ci/legacy-jobs.yml
           --gate code
           --pack-count 12
@@ -4771,6 +4891,7 @@ jobs:
           --workflow-name ci
           --event "$GITHUB_EVENT_NAME"
           --role "$SEMANTIC_ROLE"
+          $CI_ADMISSION_ARG
           --tested-tree-sha "$TESTED_TREE_SHA"
           --subject-head-sha "$SUBJECT_HEAD_SHA"
           --base-sha "$TESTED_BASE_SHA"
@@ -4813,8 +4934,15 @@ jobs:
   trusted-ci:
     name: trusted-ci
     needs: ci-plan
-    if: needs.ci-plan.outputs.has_work == 'true' && github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
+    if: needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
     uses: mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main
+    with:
+      admitted_merge: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}
+      admitted_head: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}
+      admitted_base: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}
+      admitted_pr: ${{ needs.ci-plan.outputs.admitted_pr }}
+      admitted_repository_id: ${{ needs.ci-plan.outputs.admitted_repository_id }}
+      admission_generation: ${{ needs.ci-plan.outputs.admission_generation }}
     permissions:
       contents: read
       pull-requests: read
@@ -4836,7 +4964,7 @@ jobs:
     if: >-
       !cancelled() && needs.ci-plan.result == 'success' &&
       needs.ci-plan.outputs.has_work == 'true' &&
-      (github.event.pull_request.head.repo.full_name != github.repository ||
+      (needs.ci-plan.outputs.same_repository != 'true' ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||
       needs.trusted-ci.result == 'success')
     # The logical jobs in .github/ci/legacy-jobs.yml remain the reviewable
@@ -4934,6 +5062,9 @@ jobs:
       # here and in `ci-plan`. Under `CI_DYNAMIC_MATRIX_MODE=active` the plan emits
       # only the non-empty pack indices; `shadow`/`off` still launch all twelve.
       matrix: ${{ fromJSON(needs.ci-plan.outputs.matrix) }}
+    env:
+      CONTROL_ROOT: ${{ needs.ci-plan.outputs.admission_generation != '' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # A self-hosted runner REUSES its workspace between jobs, and a sibling job that
       # checked out sparsely leaves `core.sparseCheckout=true` behind in the SAME
@@ -4975,10 +5106,27 @@ jobs:
               echo "::warning title=sparse-clear::core.sparseCheckout unset exited $rc — this workspace may still be sparse"
             fi
           fi
-      - uses: actions/checkout@v4
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+      - name: check out protected proof control
+        if: needs.ci-plan.outputs.admission_generation != '' && (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.workflow_sha }}
+          filter: blob:none
+          sparse-checkout: scripts
+          persist-credentials: false
+      - name: retain protected proof control bundle
+        if: needs.ci-plan.outputs.admission_generation != '' && (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/ci-proof-control"
+          mkdir "$RUNNER_TEMP/ci-proof-control"
+          cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+      - name: check out the exact candidate
+        uses: actions/checkout@v4
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        with:
+          ref: ${{ needs.ci-plan.outputs.tested_tree_sha }}
           # Packs consume ci-plan's changed-file list and only need the current
           # tree. fetch-depth: 0 on all twelve packs at once was the 56-minute
           # wall-clock: measured PR #5550 / run 31729769728, ci-pack-1 spent
@@ -5012,7 +5160,7 @@ jobs:
           # `fetch --depth=1` brings the base's differing blobs itself.
           fetch-depth: 1
       - uses: actions/setup-python@v5
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
         with:
           # PINNED to an exact patch release, not the floating "3.12".
           #
@@ -5044,16 +5192,16 @@ jobs:
           # SHA-256), THEN bump here. tests/test_ci_pack.py enforces that order.
           python-version: "3.12.13"
       - uses: actions/setup-node@v4
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
         with:
           node-version: "20"
       - name: install isolated pack runner
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
         run: |
           python -m venv "$RUNNER_TEMP/ci-pack-runner"
           "$RUNNER_TEMP/ci-pack-runner/bin/pip" install pyyaml
       - name: download the authoritative semantic plan
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ${{ needs.ci-plan.outputs.plan_artifact_name }}
@@ -5074,19 +5222,19 @@ jobs:
       # inside the hashed plan payload, so it would recompute a different plan
       # sha and `--expect-plan-sha` refuses below.
       - name: download the planner's changed-file list
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
         uses: actions/download-artifact@v4
         with:
           name: ci-changed-files
           path: ${{ runner.temp }}/ci-changed-files
       - name: publish the changed-file handle
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
         run: echo "CI_CHANGED_FILES_FILE=$RUNNER_TEMP/ci-changed-files/changed-files.json" >> "$GITHUB_ENV"
       # Pack index is transport only. Each runner consumes the one hashed plan,
       # verifies the exact tree/head/base identities, and emits raw semantic facts.
       # Causality is computed later by ci-gate; a pack never labels itself inherited.
       - name: validate and run legacy CI pack
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
         id: execute_semantic_pack
         env:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
@@ -5095,11 +5243,16 @@ jobs:
           TESTED_TREE_SHA: ${{ needs.ci-plan.outputs.tested_tree_sha }}
           SUBJECT_HEAD_SHA: ${{ needs.ci-plan.outputs.subject_head_sha }}
           TESTED_BASE_SHA: ${{ needs.ci-plan.outputs.tested_base_sha }}
+          ADMISSION_GENERATION: ${{ needs.ci-plan.outputs.admission_generation }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ci-semantic-fragments"
-          "$RUNNER_TEMP/ci-pack-runner/bin/python" scripts/run_ci_pack.py \
+          admission_args=()
+          if [ -n "$ADMISSION_GENERATION" ]; then
+            admission_args=(--expect-admission-generation "$ADMISSION_GENERATION")
+          fi
+          "$RUNNER_TEMP/ci-pack-runner/bin/python" -I "$CONTROL_ROOT/scripts/run_ci_pack.py" \
             --workflow .github/ci/legacy-jobs.yml \
             --gate code \
             --plan-json "$RUNNER_TEMP/ci-semantic-plan/ci-plan.json" \
@@ -5108,6 +5261,7 @@ jobs:
             --expect-tested-tree-sha "$TESTED_TREE_SHA" \
             --expect-subject-head-sha "$SUBJECT_HEAD_SHA" \
             --expect-base-sha "$TESTED_BASE_SHA" \
+            "${admission_args[@]}" \
             --pack-index ${{ matrix.pack }} \
             --pack-count 12 \
             --base-replay-budget-seconds 900 \
@@ -5117,12 +5271,12 @@ jobs:
       # semantic authority because no exact plan exists, so ci-gate will block
       # even if these compatibility packs happen to pass.
       - name: fail-safe full suite when no authoritative plan was produced
-        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha == ''
+        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha == ''
         env:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
           CI_HEAD_REF: ${{ github.head_ref || github.ref_name }}
         run: >-
-          "$RUNNER_TEMP/ci-pack-runner/bin/python" scripts/run_ci_pack.py
+          "$RUNNER_TEMP/ci-pack-runner/bin/python" -I "$CONTROL_ROOT/scripts/run_ci_pack.py"
           --workflow .github/ci/legacy-jobs.yml
           --gate code
           --pack-index ${{ matrix.pack }}
@@ -5133,13 +5287,13 @@ jobs:
       # ci-pack-N check and artifact contract while refusing any mismatch between
       # the hosted authoritative plan and the independently main-derived plan.
       - name: relay the trusted pack fragment under the existing check contract
-        if: github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
+        if: needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: trusted-ci-fragment-${{ matrix.pack }}
           path: ${{ runner.temp }}/trusted-ci-fragment
       - name: bind trusted execution to the hosted authoritative plan
-        if: github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
+        if: needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
         env:
           HOSTED_PLAN_SHA: ${{ needs.ci-plan.outputs.plan_sha }}
           TRUSTED_PLAN_SHA: ${{ needs.trusted-ci.outputs.plan_sha }}
@@ -5204,7 +5358,8 @@ jobs:
     # `pull_request.base.sha` to diff against and must never be asked to run
     # this job — see ci-gate's handling of this job's `result` below, which
     # treats `skipped` as OK precisely because non-PR events skip it here.
-    if: github.event_name == 'pull_request'
+    needs: [ci-plan]
+    if: needs.ci-plan.outputs.semantic_role == 'pr_head'
     name: contract-delta
     runs-on: ubuntu-latest
     # 25 -> 45 (2026-08-19). PR #6013's contract-delta job was CANCELLED at
@@ -5217,6 +5372,9 @@ jobs:
     # Safe to keep generous: this job is off the critical path entirely — the
     # ci-pack matrix it runs alongside already takes ~30 min.
     timeout-minutes: 45
+    env:
+      CONTROL_ROOT: ${{ needs.ci-plan.outputs.admission_generation != '' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # Checkout recipe copied verbatim from integration-baseline.yml's
       # `baseline` job (2026-08-13 diet) — same reasoning applies here: this
@@ -5228,8 +5386,26 @@ jobs:
       # deliberately: it states the EXCLUSION, so a new top-level directory is
       # included by default and cannot silently fall out of this job's view the
       # way a cone allowlist would.
-      - uses: actions/checkout@v4
+      - name: check out protected proof control
+        if: needs.ci-plan.outputs.admission_generation != ''
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.workflow_sha }}
+          filter: blob:none
+          sparse-checkout: scripts
+          persist-credentials: false
+      - name: retain protected proof control bundle
+        if: needs.ci-plan.outputs.admission_generation != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/ci-proof-control"
+          mkdir "$RUNNER_TEMP/ci-proof-control"
+          cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+      - name: check out the exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.ci-plan.outputs.tested_tree_sha }}
           filter: blob:none
           fetch-depth: 1
           sparse-checkout: |
@@ -5253,11 +5429,13 @@ jobs:
         id: contract-merge
         shell: bash
         env:
-          EXPECTED_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_PR_HEAD: ${{ needs.ci-plan.outputs.subject_head_sha }}
+          EXPECTED_TESTED_MERGE: ${{ needs.ci-plan.outputs.tested_tree_sha }}
+          EXPECTED_TESTED_BASE: ${{ needs.ci-plan.outputs.tested_base_sha }}
         run: |
           set -euo pipefail
           tested_merge=$(git rev-parse HEAD)
-          if [ "$tested_merge" != "$GITHUB_SHA" ]; then
+          if [ "$tested_merge" != "$EXPECTED_TESTED_MERGE" ]; then
             echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2
             exit 1
           fi
@@ -5273,7 +5451,7 @@ jobs:
           fi
           tested_base=$1
           tested_head=$2
-          if [ "$tested_head" != "$EXPECTED_PR_HEAD" ]; then
+          if [ "$tested_head" != "$EXPECTED_PR_HEAD" ] || [ "$tested_base" != "$EXPECTED_TESTED_BASE" ]; then
             echo "::error title=contract-delta::tested merge second parent does not match the exact PR head" >&2
             exit 1
           fi
@@ -5295,7 +5473,7 @@ jobs:
         # cannot see a PR that moves them. The step prints each census's seconds
         # on both sides.
         run: >-
-          python scripts/check_contract_delta.py
+          python -I "$CONTROL_ROOT/scripts/check_contract_delta.py"
           --base ${{ steps.contract-merge.outputs.base_sha }}
   # ONE STABLE NAME FOR "CI SAID YES" (Wave B, 2026-08-11). Every other check name
   # in this workflow is now conditional: `ci-pack-N` exists only when the plan
@@ -5357,6 +5535,7 @@ jobs:
           FALLBACK_TESTED_TREE: ${{ needs.ci-plan.outputs.tested_tree_sha }}
           FALLBACK_SUBJECT_HEAD: ${{ needs.ci-plan.outputs.subject_head_sha }}
           FALLBACK_BASE: ${{ needs.ci-plan.outputs.tested_base_sha }}
+          ADMISSION_GENERATION: ${{ needs.ci-plan.outputs.admission_generation }}
         run: |
           set -u
           mkdir -p "$RUNNER_TEMP/ci-semantic-fragments" "$RUNNER_TEMP/ci-semantic-final"
@@ -5371,6 +5550,9 @@ jobs:
               --fallback-subject-head-sha "$FALLBACK_SUBJECT_HEAD"
               --fallback-base-sha "$FALLBACK_BASE"
             )
+          fi
+          if [ -n "$ADMISSION_GENERATION" ]; then
+            fallback_args+=(--fallback-admission-generation "$ADMISSION_GENERATION")
           fi
           python3 scripts/ci_semantic_proof.py reconcile \
             --plan "$RUNNER_TEMP/ci-semantic-plan/ci-plan.json" \
@@ -5445,8 +5627,9 @@ jobs:
         if: always()
         env:
           CONTRACT_DELTA_RESULT: ${{ needs.contract-delta.result }}
+          PR_PROOF: ${{ github.event_name == 'pull_request' || needs.ci-plan.outputs.semantic_role == 'pr_head' }}
         run: |
-          if [ "$CONTRACT_DELTA_RESULT" = "failure" ]; then
+          if [ "$PR_PROOF" = "true" ] && [ "$CONTRACT_DELTA_RESULT" != "success" ]; then
             echo "::error title=ci-gate::contract-delta found a NEW CI-contract defect this PR introduces ($CONTRACT_DELTA_RESULT) — see the contract-delta job's own log for the job/suite and the exact fix"
             exit 1
           fi

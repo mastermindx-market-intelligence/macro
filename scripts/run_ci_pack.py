@@ -63,6 +63,7 @@ from scripts.ci_semantic_proof import (  # noqa: E402
     PLAN_SCHEMA,
     FailureAtomCollector,
     SemanticProofError,
+    admission_identity_fields,
     _validate_base_replay,
     effective_proof_id,
     job_exec_sha256,
@@ -131,10 +132,10 @@ RUNNER_CONTRACT = "ci-pack/linux-x86_64/python-3.12.13/node-20/v2"
 # plan and replay an exact PR candidate's changed-file inventory the same way
 # `ci.yml`'s real `pr_head/pull_request` plan does, so every existing pr_head
 # invariant (exact changed inventory, changed_from == base_sha) still applies
-# unchanged. No other workflow name may use this pair; a merge-gating plan
-# (`workflow == "ci"`) is refused independently by
-# scripts/ci_semantic_proof.py's own narrower pair set and its own
-# `workflow == "ci"` assertion, which this constant does not touch.
+# unchanged. The separate merge-gating ci dispatch path additionally requires an
+# admission_generation; it does not change this diagnostic exception or grant
+# diagnostic evidence merge authority. The shared semantic reader still requires
+# workflow == "ci" and authenticating consumers bind the admitted generation.
 DIAGNOSTIC_CANARY_WORKFLOW = "infrastructure-selfhosted-ci-canary"
 TRUSTED_EXECUTOR_WORKFLOW = "trusted-ci-executor"
 DIAGNOSTIC_PR_WORKFLOWS = frozenset(
@@ -2159,6 +2160,7 @@ class CIPackPlan:
     # plan sha, and the consuming pack's artifact/digest check refuses.
     changed_files_sha256: str = field(default="", compare=False, repr=False)
     changed_files_count: int = field(default=0, compare=False, repr=False)
+    admission_generation: str | None = None
 
     @property
     def pack_count(self) -> int:
@@ -2181,6 +2183,7 @@ class CIPackPlan:
         """
         return {
             "schema": self.schema,
+            **_admission_fields(self.workflow, self.event, self.role, self.admission_generation),
             "workflow_run_id": self.workflow_run_id,
             "workflow": self.workflow,
             "event": self.event,
@@ -2221,6 +2224,27 @@ class CIPackPlan:
         }
 
 
+def _admission_fields(workflow, event, role, generation=None):
+    try:
+        return admission_identity_fields(workflow=workflow, event=event, role=role,
+                                         admission_generation=generation)
+    except SemanticProofError as exc:
+        raise ManifestError(str(exc)) from exc
+
+
+def _fragment_admission_fields(plan):
+    if plan is not None:
+        return _admission_fields(plan.workflow, plan.event, plan.role, plan.admission_generation)
+    workflow = os.environ.get("GITHUB_WORKFLOW", "ci")
+    event = os.environ.get("GITHUB_EVENT_NAME", "local")
+    role = os.environ.get("CI_SEMANTIC_ROLE", "main")
+    # Exact-base replay is a separate legacy main identity. An inherited parent
+    # generation must not be relabeled onto that replay.
+    generation = os.environ.get("CI_ADMISSION_GENERATION") if (
+        workflow, event, role) == ("ci", "workflow_dispatch", "pr_head") else None
+    return _admission_fields(workflow, event, role, generation)
+
+
 def plan_hash_payload(
     *,
     workflow_run_id: str,
@@ -2239,6 +2263,7 @@ def plan_hash_payload(
     pack_jobs: Iterable[Iterable[str]],
     pack_weights: Iterable[int],
     semantic_jobs: Iterable[SemanticJobSpec | Mapping[str, Any]],
+    admission_generation: str | None = None,
 ) -> dict[str, Any]:
     """Exactly what a pack must agree with ci-plan about, and nothing else.
 
@@ -2262,6 +2287,7 @@ def plan_hash_payload(
     """
     return {
         "schema": PLAN_SCHEMA,
+        **_admission_fields(workflow, event, role, admission_generation),
         "workflow_run_id": workflow_run_id,
         "workflow": workflow,
         "event": event,
@@ -2320,6 +2346,7 @@ def build_plan(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    admission_generation: str | None = None,
 ) -> CIPackPlan:
     """Decide, once, what this CI run executes.
 
@@ -2409,11 +2436,14 @@ def build_plan(
     if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
         role == "pr_head"
         and event == "workflow_dispatch"
-        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+        and (workflow in DIAGNOSTIC_PR_WORKFLOWS or workflow == "ci")
     ):
         raise ManifestError(
             f"semantic plan role/event combination {role}/{event} is unsupported"
         )
+    if admission_generation is None and (workflow, event, role) == ("ci", "workflow_dispatch", "pr_head"):
+        admission_generation = os.environ.get("CI_ADMISSION_GENERATION")
+    _admission_fields(workflow, event, role, admission_generation)
     if role == "pr_head" and changed is None:
         raise ManifestError(
             "a PR semantic plan requires an exact changed-file inventory; "
@@ -2456,6 +2486,7 @@ def build_plan(
         for job in eligible
     )
     hash_payload = plan_hash_payload(
+        admission_generation=admission_generation,
         workflow_run_id=workflow_run_id,
         workflow=workflow,
         event=event,
@@ -2474,6 +2505,7 @@ def build_plan(
         semantic_jobs=semantic_jobs,
     )
     return CIPackPlan(
+        admission_generation=admission_generation,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -2520,6 +2552,7 @@ def plan_from_workflow(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    admission_generation: str | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the manifest, resolve the diff, and plan — the whole decision."""
@@ -2549,6 +2582,7 @@ def plan_from_workflow(
         return build_plan(
             legacy,
             changed,
+            admission_generation=admission_generation,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
@@ -2600,6 +2634,7 @@ def load_authoritative_plan(
     expect_tested_tree_sha: str | None = None,
     expect_subject_head_sha: str | None = None,
     expect_base_sha: str | None = None,
+    expect_admission_generation: str | None = None,
     gate: str | None = None,
 ) -> CIPackPlan:
     """Load the planner artifact without recomputing scope or partition.
@@ -2646,6 +2681,8 @@ def load_authoritative_plan(
         "base_sha": expect_base_sha,
     }
     actuals = {"plan_sha256": published_sha, **identities}
+    if expect_admission_generation is not None and document.get("admission_generation") != expect_admission_generation:
+        raise ManifestError("authoritative plan admission_generation mismatch")
     for key, expected in expectations.items():
         if expected and actuals[key] != expected:
             raise ManifestError(
@@ -2744,11 +2781,13 @@ def load_authoritative_plan(
     if (role, event) not in SUPPORTED_PLAN_ROLE_EVENTS and not (
         role == "pr_head"
         and event == "workflow_dispatch"
-        and workflow in DIAGNOSTIC_PR_WORKFLOWS
+        and (workflow in DIAGNOSTIC_PR_WORKFLOWS or workflow == "ci")
     ):
         raise ManifestError(
             f"authoritative plan role/event combination {role}/{event} is unsupported"
         )
+    admission_generation = document.get("admission_generation")
+    _admission_fields(workflow, event, role, admission_generation)
     if role == "pr_head" and changed_from != identities["base_sha"]:
         raise ManifestError(
             "PR authoritative plan must diff and replay the same exact base SHA"
@@ -2782,6 +2821,7 @@ def load_authoritative_plan(
         raise ManifestError("authoritative plan authority_changed must be boolean")
 
     payload = plan_hash_payload(
+        admission_generation=admission_generation,
         workflow_run_id=required_text("workflow_run_id"),
         workflow=workflow,
         event=event,
@@ -2832,6 +2872,7 @@ def load_authoritative_plan(
         resolved_changed = None
 
     plan = CIPackPlan(
+        admission_generation=admission_generation,
         schema=PLAN_SCHEMA,
         changed_from=changed_from,
         scope_mode=scope_mode,
@@ -5369,6 +5410,7 @@ def execute_pack(
                     emit_semantic_fragment,
                     {
                         "schema": FRAGMENT_SCHEMA,
+                        **_fragment_admission_fields(plan),
                         "workflow_run_id": plan.workflow_run_id,
                         "workflow": plan.workflow,
                         "event": plan.event,
@@ -5421,6 +5463,7 @@ def execute_pack(
                     emit_semantic_fragment,
                     {
                         "schema": FRAGMENT_SCHEMA,
+                        **_fragment_admission_fields(plan),
                         "workflow_run_id": (
                             plan.workflow_run_id
                             if plan is not None
@@ -5657,6 +5700,7 @@ def execute_pack(
             }
         fragment = {
             "schema": FRAGMENT_SCHEMA,
+            **_fragment_admission_fields(plan),
             **identity,
             "pack_index": pack_index,
             "infrastructure": pack_infrastructure,
@@ -5791,6 +5835,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workflow-name", default=None)
     parser.add_argument("--event", default=None)
     parser.add_argument("--role", choices=("pr_head", "main"), default=None)
+    parser.add_argument("--admission-generation", default=None)
+    parser.add_argument("--expect-admission-generation", default=None)
     parser.add_argument("--expect-tested-tree-sha", default=None)
     parser.add_argument("--expect-subject-head-sha", default=None)
     parser.add_argument("--expect-base-sha", default=None)
@@ -5886,6 +5932,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--tracked-paths-file requires --tested-tree-sha")
     if args.semantic_replay_job and not args.execute:
         parser.error("--semantic-replay-job requires --execute")
+    if args.semantic_replay_job and (args.admission_generation is not None or args.expect_admission_generation is not None):
+        parser.error("exact-base replay cannot carry a parent admission generation")
     if args.semantic_replay_job and args.emit_semantic_fragment is None:
         parser.error("--semantic-replay-job requires --emit-semantic-fragment")
     if args.base_replay_budget_seconds < 1:
@@ -5962,6 +6010,7 @@ def main(argv: list[str] | None = None) -> int:
                 expect_tested_tree_sha=args.expect_tested_tree_sha,
                 expect_subject_head_sha=args.expect_subject_head_sha,
                 expect_base_sha=args.expect_base_sha,
+                expect_admission_generation=args.expect_admission_generation,
                 gate=args.gate,
             )
         else:
@@ -5976,6 +6025,7 @@ def main(argv: list[str] | None = None) -> int:
                 workflow_name=args.workflow_name,
                 event=args.event,
                 role=args.role,
+                admission_generation=args.admission_generation,
                 tested_tree_sha=args.tested_tree_sha,
                 subject_head_sha=args.subject_head_sha,
                 base_sha=args.base_sha,

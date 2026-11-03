@@ -26,16 +26,23 @@ def test_hosted_first_keeps_exact_main_owned_executor_as_pc_opt_in() -> None:
         "needs": "ci-plan",
         "if": (
             "needs.ci-plan.outputs.has_work == 'true' && "
-            "github.event.pull_request.head.repo.full_name == github.repository && "
+            "needs.ci-plan.outputs.same_repository == 'true' && "
             "vars.CI_EXECUTION_ROUTE == 'pc'"
         ),
         "uses": (
             "mastermindx-market-intelligence/macro/.github/workflows/"
             "trusted-ci-executor.yml@main"
         ),
+        "with": {
+            "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
+            "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
+            "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
+            "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
+            "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
+            "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
+        },
         "permissions": {"contents": "read", "pull-requests": "read"},
     }
-    assert "with" not in trusted
     assert "secrets" not in trusted
 
 
@@ -52,17 +59,17 @@ def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> Non
     assert job["if"] == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(needs.ci-plan.outputs.same_repository != 'true' || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
 
     same_repo_guard = (
-        "github.event.pull_request.head.repo.full_name == github.repository && "
+        "needs.ci-plan.outputs.same_repository == 'true' && "
         "vars.CI_EXECUTION_ROUTE == 'pc'"
     )
     hosted_guard = (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(needs.ci-plan.outputs.same_repository != 'true' || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     relay = named_step(job, "relay the trusted pack fragment under the existing check contract")
@@ -129,9 +136,9 @@ def test_hosted_first_keeps_the_existing_semantic_gate_and_full_hosted_path() ->
     assert gate["if"] == "always()"
 
     pack = jobs["ci-pack"]
-    checkout = next(step for step in pack["steps"] if step.get("uses") == "actions/checkout@v4")
+    checkout = next(step for step in pack["steps"] if step.get("uses") == "actions/checkout@v4" and step.get("with", {}).get("ref") == "${{ needs.ci-plan.outputs.tested_tree_sha }}")
     assert checkout["if"] == (
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(needs.ci-plan.outputs.same_repository != 'true' || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     execute = named_step(pack, "validate and run legacy CI pack")

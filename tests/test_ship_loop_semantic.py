@@ -2297,3 +2297,41 @@ def test_fabric_lane_session_gets_lane_context_and_stop_stays_out(
         {"hook_event_name": "Stop", "last_assistant_message": "SPARSE_CENSUS_RESULT {}"},
     )
     assert capsys.readouterr().out.strip() == ""
+
+
+@pytest.mark.parametrize('valid',[True,False])
+def test_green_admitted_subject_checks_force_shared_authentication(monkeypatch,tmp_path,valid):
+    from scripts import merge_on_green as reader
+    checks=[dict(_merged_check('ci-gate','success'),external_id=reader.ADMITTED_SUBJECT_CHECK_PREFIX+'untrusted')]
+    monkeypatch.setattr(GUARD,'_head_check_runs',lambda *args:checks)
+    seen=[]
+    def authenticate(owner,repo,head,runs,base):
+        seen.append((head,base))
+        if not valid:raise GUARD.semantic_proof.SemanticProofError('untrusted receipt')
+    monkeypatch.setattr(GUARD,'_authenticate_admitted_green',authenticate)
+    ok,reason=GUARD._check_ci(tmp_path,'acme','widgets',HEAD,MERGE,'2026-08-16T01:32:13Z','claude/x',BASE)
+    assert ok is valid and seen==[(HEAD,BASE)]
+    if not valid:assert 'untrusted receipt' in reason
+
+
+def test_local_admitted_reader_uses_incumbent_cached_get_and_download(monkeypatch):
+    from scripts import merge_on_green as reader
+    checks=[{'name':'ci-gate','external_id':reader.ADMITTED_SUBJECT_CHECK_PREFIX+'untrusted'}]
+    def load(repo,head,token,**kwargs):
+        assert (repo,head,token)==('acme/widgets',HEAD,'')
+        assert kwargs['read_json'] is GUARD._get_json
+        assert kwargs['download'] is GUARD._get_artifact_bytes
+        assert kwargs['check_runs'] is checks
+        return _loaded()
+    monkeypatch.setattr(reader,'admitted_semantic_evidence_for_head',load)
+    assert GUARD._semantic_evidence_for_head('acme','widgets',HEAD,check_runs=checks).mode=='semantic'
+
+
+def test_green_armed_admitted_head_is_not_allowed_past_failed_receipt_auth(monkeypatch):
+    monkeypatch.setattr(GUARD,'_open_pull',lambda *args:_pull())
+    checks=[_check('ci-gate','success'),_check('fence-pack','success')]
+    monkeypatch.setattr(GUARD,'_head_check_runs',lambda *args:checks)
+    def refuse(*args,**kwargs):raise GUARD.semantic_proof.SemanticProofError('generation mismatch')
+    monkeypatch.setattr(GUARD,'_authenticate_admitted_green',refuse)
+    code,detail=GUARD._armed_pull_status('acme','widgets','codex/example',HEAD)
+    assert code==GUARD.CI_FAILED_UNMERGED and 'generation mismatch' in detail

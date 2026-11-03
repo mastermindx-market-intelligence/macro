@@ -263,10 +263,12 @@ sys.path.insert(0, str(_ROOT))
 try:  # imported as `scripts.merge_on_green` (the test pack, and any other caller)
     from scripts.gh_path_filter import NEGATION_PREFIX, matching_patterns
     from scripts import ci_semantic_proof as semantic_proof
+    from scripts import ci_proof_admission as proof_admission
     from scripts.ci_authority_paths import AuthorityPathError, is_ci_authority_path
 except ImportError:  # run as `python3 scripts/merge_on_green.py` (the workflow step)
     from gh_path_filter import NEGATION_PREFIX, matching_patterns  # type: ignore[no-redef]
     import ci_semantic_proof as semantic_proof  # type: ignore[no-redef]
+    import ci_proof_admission as proof_admission  # type: ignore[no-redef]
     from ci_authority_paths import (  # type: ignore[no-redef]
         AuthorityPathError,
         is_ci_authority_path,
@@ -1324,6 +1326,340 @@ def _bind_pr_tested_tree(
     return loaded
 
 
+ADMITTED_SUBJECT_CHECK_PREFIX = "mm-ci-admission-v1:"
+ADMITTED_SUBJECT_CHECK_NAMES = ("ci-plan", "contract-delta", "ci-gate")
+
+
+def has_admitted_subject_checks(checks):
+    """A marker triggers authentication; its presence grants no authority."""
+    return any(isinstance(c, dict) and str(c.get("external_id") or "").startswith(
+        ADMITTED_SUBJECT_CHECK_PREFIX) for c in checks or [])
+
+
+def admitted_subject_external_id(reference):
+    keys = ("artifact_id", "controller_run_id", "controller_attempt", "controller_sha", "payload_sha256")
+    if not isinstance(reference, dict) or set(reference) != set(keys):
+        raise semantic_proof.SemanticProofError("invalid admitted check reference")
+    value = ADMITTED_SUBJECT_CHECK_PREFIX + ":".join(str(reference[k]) for k in keys)
+    if _admitted_subject_reference(value) != reference:
+        raise semantic_proof.SemanticProofError("noncanonical admitted check reference")
+    return value
+
+
+def _admitted_subject_reference(value):
+    if not isinstance(value, str) or len(value) > 255:
+        raise semantic_proof.SemanticProofError("oversized admitted check reference")
+    pattern = re.escape(ADMITTED_SUBJECT_CHECK_PREFIX) + r"([1-9][0-9]{0,19}):([1-9][0-9]{0,19}):([1-9][0-9]{0,19}):([0-9a-f]{40}):([0-9a-f]{64})"
+    match = re.fullmatch(pattern, value)
+    if not match:
+        raise semantic_proof.SemanticProofError("malformed admitted check reference")
+    return dict(zip(("artifact_id", "controller_run_id", "controller_attempt", "controller_sha", "payload_sha256"),
+                    [int(match[1]), int(match[2]), int(match[3]), match[4], match[5]]))
+
+
+def _admitted_reads(repo, token, read_json=None, download=None):
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+        raise semantic_proof.SemanticProofError("invalid admitted repository")
+    prefix = f"{GITHUB_API}/repos/{repo}"
+    def read(suffix):
+        url = prefix + suffix
+        if read_json is not None:
+            result = read_json(url)
+        else:
+            status, result = _request("GET", url, token)
+            if status != 200:
+                raise semantic_proof.SemanticProofError("admitted proof source unavailable")
+        if not isinstance(result, dict):
+            raise semantic_proof.SemanticProofError("malformed admitted proof source")
+        return result
+    def archive(artifact_id):
+        if type(artifact_id) is not int or artifact_id <= 0:
+            raise semantic_proof.SemanticProofError("invalid artifact identity")
+        url = prefix + f"/actions/artifacts/{artifact_id}/zip"
+        return download(url) if download is not None else _download_semantic_artifact(url, token)
+    return read, archive
+
+
+def _admitted_ancestor(read, ancestor, descendant):
+    if ancestor == descendant:
+        return True
+    compared = read(f"/compare/{ancestor}...{descendant}?per_page=1")
+    return (compared.get("status") in {"ahead", "identical"}
+            and (compared.get("base_commit") or {}).get("sha") == ancestor
+            and (compared.get("merge_base_commit") or {}).get("sha") == ancestor)
+
+
+def _admitted_run_order(proof):
+    stamp = proof["run"].get("created_at")
+    if not isinstance(stamp, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z", stamp):
+        raise semantic_proof.SemanticProofError("original run creation clock unavailable")
+    try:
+        return (dt.datetime.fromisoformat(stamp.replace("Z", "+00:00")), proof["admission"].run_id)
+    except ValueError as exc:
+        raise semantic_proof.SemanticProofError("invalid original run creation clock") from exc
+
+
+def _admitted_completion_binding(repo, token, reference, *, expected_run_id=None,
+                              expected_run_attempt=None, expected_subject_head=None,
+                              expected_base_sha=None, protected_controller_sha=None,
+                              read_json=None, download=None):
+    """Authenticate one terminal original dispatch; no check text is evidence.
+
+    Optional I/O adapters keep the local guard on its incumbent cached reader and
+    download carrier. All paths are fixed repository APIs; no URL from an index
+    or artifact is followed. This function performs no writes.
+    """
+    reference = _admitted_subject_reference(admitted_subject_external_id(reference))
+    read, archive = _admitted_reads(repo, token, read_json, download)
+    repository = read("")
+    repository_id = repository.get("id")
+    if (type(repository_id) is not int or repository_id <= 0
+            or repository.get("full_name") != repo or repository.get("default_branch") != "main"):
+        raise semantic_proof.SemanticProofError("admitted repository identity mismatch")
+    current_control = protected_controller_sha or (read("/branches/main").get("commit") or {}).get("sha")
+    if (not isinstance(current_control, str) or not re.fullmatch(r"[0-9a-f]{40}", current_control)
+            or not _admitted_ancestor(read, reference["controller_sha"], current_control)):
+        raise semantic_proof.SemanticProofError("receipt controller lacks protected ancestry")
+    artifact = read(f"/actions/artifacts/{reference['artifact_id']}")
+    controller = read(f"/actions/runs/{reference['controller_run_id']}/attempts/{reference['controller_attempt']}")
+    try:
+        admitted = proof_admission.authenticate_receipt(archive=archive(reference["artifact_id"]),
+            payload_sha256=reference["payload_sha256"], repository_id=repository_id,
+            artifact_id=reference["artifact_id"], controller_run_id=reference["controller_run_id"],
+            controller_attempt=reference["controller_attempt"], controller_sha=reference["controller_sha"],
+            artifact=artifact, controller=controller)
+    except (ValueError, TypeError) as exc:
+        raise semantic_proof.SemanticProofError("admitted bound receipt unavailable or invalid") from exc
+    if (admitted.run_id is None or admitted.settled
+            or (expected_run_id is not None and (type(expected_run_id) is not int or admitted.run_id != expected_run_id))
+            or (expected_run_attempt is not None and (type(expected_run_attempt) is not int or admitted.run_attempt != expected_run_attempt))
+            or (expected_subject_head is not None and admitted.head_sha != expected_subject_head)
+            or not _admitted_ancestor(read, admitted.workflow_sha, current_control)):
+        raise semantic_proof.SemanticProofError("original admitted execution identity mismatch")
+    if expected_base_sha is not None:
+        if (not re.fullmatch(r"[0-9a-f]{40}", expected_base_sha)
+                or not _admitted_ancestor(read, expected_base_sha, admitted.base_sha)):
+            raise semantic_proof.SemanticProofError("admitted proof does not cover expected base")
+    run = read(f"/actions/runs/{admitted.run_id}")
+    if (type(run.get("id")) is not int or run["id"] != admitted.run_id
+            or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+            or run.get("status") not in {*proof_admission.ACTIVE_STATUSES, "completed"} or run.get("event") != "workflow_dispatch"
+            or run.get("name") != "ci" or run.get("head_branch") != "main"
+            or run.get("head_sha") != admitted.workflow_sha
+            or run.get("path") not in {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+            or type((run.get("repository") or {}).get("id")) is not int
+            or run["repository"]["id"] != repository_id
+            or type(run.get("run_number")) is not int or run["run_number"] <= 0):
+        raise semantic_proof.SemanticProofError("original admitted run is not terminal or changed identity/attempt")
+    binding = {"admission": admitted, "run": run, "reference": reference,
+               "read": read, "archive": archive, "repository_id": repository_id}
+    _admitted_run_order(binding)
+    return binding
+
+
+def admitted_completion_proof(repo, token, reference, **context):
+    """Load complete terminal evidence only after immutable dispatch binding."""
+    import hashlib
+    binding = _admitted_completion_binding(repo, token, reference, **context)
+    admitted, run = binding["admission"], binding["run"]
+    repository_id = binding["repository_id"]
+    read, archive, reference = binding["read"], binding["archive"], binding["reference"]
+    if run["status"] != "completed":
+        raise semantic_proof.SemanticProofError("original admitted run is not terminal")
+    commit = read(f"/git/commits/{admitted.merge_sha}")
+    parents = commit.get("parents")
+    if (commit.get("sha") != admitted.merge_sha or not isinstance(parents, list)
+            or [p.get("sha") if isinstance(p, dict) else None for p in parents] != [admitted.base_sha, admitted.head_sha]):
+        raise semantic_proof.SemanticProofError("admitted immutable merge parents mismatch")
+    listing = read(f"/actions/runs/{admitted.run_id}/artifacts?per_page=100")
+    rows = listing.get("artifacts")
+    if (not isinstance(rows, list) or type(listing.get("total_count")) is not int
+            or listing["total_count"] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise semantic_proof.SemanticProofError("incomplete admitted artifact inventory")
+    matches = [row for row in rows if row.get("name") == f"{SEMANTIC_ARTIFACT_PREFIX}{admitted.run_id}"]
+    if len(matches) != 1:
+        raise semantic_proof.SemanticProofError("missing or ambiguous admitted semantic evidence")
+    artifact = matches[0]
+    binding = artifact.get("workflow_run") or {}
+    if (artifact.get("expired") is not False or type(binding.get("id")) is not int
+            or binding["id"] != admitted.run_id or type(binding.get("repository_id")) is not int
+            or binding["repository_id"] != repository_id or binding.get("head_sha") != admitted.workflow_sha):
+        raise semantic_proof.SemanticProofError("semantic artifact original-run binding mismatch")
+    data = archive(artifact.get("id"))
+    if artifact.get("digest") != "sha256:" + hashlib.sha256(data).hexdigest():
+        raise semantic_proof.SemanticProofError("semantic archive digest mismatch")
+    loaded = semantic_proof.load_semantic_evidence(_semantic_json_from_archive(data), advertised=True,
+        expected_run_id=admitted.run_id, expected_subject_head_sha=admitted.head_sha,
+        expected_tested_tree_sha=admitted.merge_sha, expected_base_sha=admitted.base_sha,
+        expected_event="workflow_dispatch", expected_role="pr_head", expected_workflow="ci",
+        expected_admission_generation=admitted.generation)
+    gate = semantic_proof.semantic_gate_verdict(loaded.evidence)
+    if gate.infrastructure_blocking:
+        raise semantic_proof.SemanticProofError("admitted semantic execution is incomplete")
+    listing = read(f"/actions/runs/{admitted.run_id}/attempts/{admitted.run_attempt}/jobs?per_page=100")
+    rows = listing.get("jobs")
+    if (not isinstance(rows, list) or type(listing.get("total_count")) is not int
+            or listing["total_count"] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise semantic_proof.SemanticProofError("incomplete original-attempt jobs")
+    jobs = {}
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        matches = [row for row in rows if row.get("name") == name]
+        if (len(matches) != 1 or matches[0].get("status") != "completed"
+                or matches[0].get("conclusion") not in {"success", "failure"}
+                or type(matches[0].get("run_id")) is not int or matches[0]["run_id"] != admitted.run_id
+                or ("run_attempt" in matches[0] and (type(matches[0]["run_attempt"]) is not int
+                    or matches[0]["run_attempt"] != admitted.run_attempt))):
+            raise semantic_proof.SemanticProofError("original required job is incomplete or ambiguous")
+        jobs[name] = matches[0]["conclusion"]
+    if not gate.clear:
+        jobs["ci-gate"] = "failure"
+    return {"admission": admitted, "run": run, "loaded": loaded, "jobs": jobs, "reference": reference}
+
+
+def _admitted_check_inventory(read, head_sha):
+    all_checks = []
+    seen = set()
+    expected_total = None
+    for page in range(1, CHECK_RUN_PAGE_CAP + 1):
+        listing = read(f"/commits/{head_sha}/check-runs?per_page=100&page={page}&filter=all")
+        rows = listing.get("check_runs")
+        total = listing.get("total_count")
+        if (not isinstance(rows, list) or len(rows) > 100
+                or any(not isinstance(c, dict) or type(c.get("id")) is not int or c["id"] <= 0 for c in rows)
+                or type(total) is not int or total < len(rows) or total > CHECK_RUN_PAGE_CAP * 100
+                or (expected_total is not None and expected_total != total)):
+            raise semantic_proof.SemanticProofError("incomplete admitted check discovery")
+        expected_total = total
+        for check in rows:
+            if check["id"] in seen:
+                raise semantic_proof.SemanticProofError("duplicated admitted check inventory identity")
+            seen.add(check["id"])
+        all_checks.extend(rows)
+        if len(all_checks) == total:
+            break
+        if len(rows) < 100:
+            raise semantic_proof.SemanticProofError("truncated admitted check discovery")
+    else:
+        raise semantic_proof.SemanticProofError("admitted check discovery exceeds bound")
+    return all_checks
+
+
+def admitted_semantic_evidence_for_head(repo, head_sha, token, *, check_runs,
+                                        expected_base_sha=None, read_json=None, download=None):
+    """Select the newest authenticated original run; never fall back from UNKNOWN.
+
+    Every advertised admitted generation is authenticated before ordering by the
+    server run creation time and original ID. An unreadable candidate closes this decision.
+    Legacy check conflicts remain with the existing legacy reader.
+    """
+    read, _archive = _admitted_reads(repo, token, read_json, download)
+    # filter=latest can hide a newer original run behind a later-published old
+    # completion. Recover the bounded server inventory before selecting identity.
+    all_checks = _admitted_check_inventory(read, head_sha)
+    check_runs = [*check_runs, *all_checks]
+    markers = {str(c.get("external_id") or "") for c in check_runs if isinstance(c, dict)
+        and c.get("name") in ADMITTED_SUBJECT_CHECK_NAMES and str(c.get("external_id") or "").startswith(ADMITTED_SUBJECT_CHECK_PREFIX)}
+    if len(markers) > SEMANTIC_RUN_LOOKBACK:
+        raise semantic_proof.SemanticProofError("admitted generation discovery exceeds bounded lookback")
+    candidates = {}
+    for check in check_runs:
+        if not isinstance(check, dict) or check.get("name") not in ADMITTED_SUBJECT_CHECK_NAMES:
+            continue
+        marker = check.get("external_id")
+        if not isinstance(marker, str) or not marker.startswith(ADMITTED_SUBJECT_CHECK_PREFIX):
+            continue
+        reference = _admitted_subject_reference(marker)
+        if marker not in candidates:
+            candidates[marker] = _admitted_completion_binding(repo, token, reference,
+                expected_subject_head=head_sha,
+                read_json=read_json, download=download)
+    if not candidates:
+        raise semantic_proof.SemanticProofError("admitted subject checks lack an authenticated ci-gate")
+    selected = max(candidates.values(), key=_admitted_run_order)
+    if expected_base_sha is not None and (not re.fullmatch(r"[0-9a-f]{40}", expected_base_sha)
+            or not _admitted_ancestor(read, expected_base_sha, selected["admission"].base_sha)):
+        raise semantic_proof.SemanticProofError("newest admitted proof does not cover expected base")
+    selected = admitted_completion_proof(repo, token, selected["reference"],
+        expected_subject_head=head_sha, expected_base_sha=expected_base_sha,
+        read_json=read_json, download=download)
+    selected_marker = admitted_subject_external_id(selected["reference"])
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        matches = [c for c in check_runs if c.get("name") == name and c.get("external_id") == selected_marker]
+        if any(type(c.get("id")) is not int or c["id"] <= 0 for c in matches):
+            raise semantic_proof.SemanticProofError("admitted check lacks server identity")
+        by_id = {c["id"]: c for c in matches}
+        if (len(by_id) != 1 or any(c.get("head_sha") != head_sha or not is_actions_check(c)
+                or c.get("status") != "completed" or c.get("conclusion") != selected["jobs"][name]
+                for c in matches)):
+            raise semantic_proof.SemanticProofError("selected admission completion is partial or inconsistent")
+    if any(selected["jobs"][name] != "success" for name in ADMITTED_SUBJECT_CHECK_NAMES):
+        if semantic_proof.semantic_gate_verdict(selected["loaded"].evidence).clear:
+            raise semantic_proof.SemanticProofError("original admitted required job failed outside semantic units")
+    return selected["loaded"]
+
+
+def publish_admitted_subject_checks(repo, read_token, checks_token, bound_reference, *,
+                                    expected_run_id, expected_run_attempt, protected_controller_sha):
+    """One completion publication attempt, called only by protected controller.
+
+    A lost POST result is UNKNOWN and ends this invocation. The caller must retain
+    that original operation and reconcile it; this function grants no retry.
+    """
+    try:
+        proof = admitted_completion_proof(repo, read_token, bound_reference,
+            expected_run_id=expected_run_id, expected_run_attempt=expected_run_attempt,
+            protected_controller_sha=protected_controller_sha)
+        admitted = proof["admission"]
+        marker = admitted_subject_external_id(bound_reference)
+        read, _archive = _admitted_reads(repo, read_token)
+        existing = _admitted_check_inventory(read, admitted.head_sha)
+        markers = {c.get("external_id") for c in existing if c.get("name") in ADMITTED_SUBJECT_CHECK_NAMES
+            and isinstance(c.get("external_id"), str) and c["external_id"].startswith(ADMITTED_SUBJECT_CHECK_PREFIX)}
+        if len(markers) > SEMANTIC_RUN_LOOKBACK:
+            raise semantic_proof.SemanticProofError("admitted publication history exceeds bounded lookback")
+        for other in markers:
+            if other != marker:
+                newer = _admitted_completion_binding(repo, read_token, _admitted_subject_reference(other),
+                    expected_subject_head=admitted.head_sha, protected_controller_sha=protected_controller_sha)
+                if _admitted_run_order(newer) > _admitted_run_order(proof):
+                    raise semantic_proof.SemanticProofError("newer original generation already published")
+        done = set()
+        for name in ADMITTED_SUBJECT_CHECK_NAMES:
+            matches = [c for c in existing if c.get("name") == name and c.get("external_id") == marker]
+            if len(matches) > 1:
+                raise semantic_proof.SemanticProofError("ambiguous original completion publication")
+            if matches:
+                check = matches[0]
+                if (not is_actions_check(check) or check.get("head_sha") != admitted.head_sha
+                        or check.get("status") != "completed" or check.get("conclusion") != proof["jobs"][name]):
+                    raise semantic_proof.SemanticProofError("existing completion does not match original evidence")
+                done.add(name)
+    except Exception:
+        return {"disposition": "held", "published": (), "detail": "original completion proof unavailable or incomplete"}
+    published = []
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        if name in done:
+            continue
+        payload = {"name": name, "head_sha": admitted.head_sha, "external_id": marker,
+            "details_url": f"https://github.com/{repo}/actions/runs/{admitted.run_id}/attempts/{admitted.run_attempt}",
+            "status": "completed", "conclusion": proof["jobs"][name],
+            "output": {"title": "Authenticated original PR proof", "summary":
+                f"Original run {admitted.run_id}, attempt {admitted.run_attempt}; admission {admitted.generation}."}}
+        try:
+            status, check = _request("POST", f"{GITHUB_API}/repos/{repo}/check-runs", checks_token, payload)
+            if (status != 201 or not isinstance(check, dict) or type(check.get("id")) is not int
+                    or check["id"] <= 0 or any(check.get(k) != payload[k] for k in
+                        ("name", "head_sha", "external_id", "status", "conclusion"))):
+                return {"disposition": "unknown", "published": tuple(published), "detail": "original check creation not settled; no retry"}
+        except Exception:
+            return {"disposition": "unknown", "published": tuple(published), "detail": "original check creation response lost; no retry"}
+        published.append(name)
+    return {"disposition": "published" if published else "already_published", "published": tuple(published), "detail": "exact original completion checks"}
+
+
 def _semantic_evidence_for_run(
     repo: str,
     run: dict[str, Any],
@@ -1442,6 +1778,11 @@ def _semantic_evidence_for_run(
             f"run {run_id}'s advertised semantic artifact has no download URL"
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
+    if (role == "main" and isinstance(source, dict) and source.get("event") == "workflow_dispatch"
+            and source.get("role") == "pr_head"):
+        semantic_proof.load_semantic_evidence(source, advertised=True, expected_run_id=run_id,
+            expected_event="workflow_dispatch", expected_role="pr_head", expected_workflow="ci")
+        return semantic_proof.LoadedSemanticEvidence("admitted_pr", None)
     expected_tree = head_sha if role == "main" else None
     # PR-head evidence seals the tested merge commit's FIRST PARENT as
     # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
@@ -1540,6 +1881,9 @@ def semantic_evidence_for_head(
     expected_base_sha: str | None = None,
 ) -> Any:
     """Newest canonical PR evidence for an exact subject head, with bounded lookup."""
+    if has_admitted_subject_checks(check_runs):
+        return admitted_semantic_evidence_for_head(repo, head_sha, token,
+            check_runs=check_runs, expected_base_sha=expected_base_sha)
     linked: list[tuple[int, dict[str, Any]]] = []
     for check in check_runs or []:
         if str(check.get("name") or "") != REQUIRED_CI_GATE:
@@ -1905,7 +2249,12 @@ def _changed_file_paths(rows: Any) -> list[str]:
 
 
 def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
-    """Every `on.pull_request` workflow and the `paths:` filter it declares.
+    """PR proof ownership, including CI's authenticated dispatch entrypoint.
+
+    Admitted CI keeps its canonical paths in the incumbent executable manifest.
+    The foundation's native paths must exactly match until that trigger is
+    removed; removing the trigger must never remove the proof's tested surface.
+    Other workflows retain their historical native path-filter interpretation.
 
     ``patterns is None`` means the workflow declares no filter and starts on every
     pull request — it therefore says NOTHING about which files affect its verdict,
@@ -1942,9 +2291,31 @@ def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
             continue
         # PyYAML resolves the bare key `on:` to the boolean True (YAML 1.1).
         block = payload[True] if True in payload else payload.get("on")
-        if not isinstance(block, dict) or "pull_request" not in block:
+        if not isinstance(block, dict):
+            continue
+        dispatch = block.get("workflow_dispatch")
+        inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
+        admitted_ci = (path.name == "ci.yml" and isinstance(inputs, dict)
+                       and {"proof_role", "admission_generation"} <= inputs.keys())
+        if "pull_request" not in block and not admitted_ci:
             continue
         trigger = block.get("pull_request")
+        if admitted_ci:
+            manifest_path = workflows_dir.parent / "ci" / "legacy-jobs.yml"
+            try:
+                manifest = yaml.safe_load(manifest_path.read_text())
+                canonical = manifest.get("proof_paths") if isinstance(manifest, dict) else None
+            except (OSError, yaml.YAMLError) as exc:
+                raise RuntimeError(f"canonical CI proof ownership unavailable: {exc}") from exc
+            if (not isinstance(canonical, list) or not canonical
+                    or any(not isinstance(entry, str) or not entry or entry.startswith(NEGATION_PREFIX)
+                           for entry in canonical)
+                    or not any(entry not in START_ONLY_PATH_PATTERNS for entry in canonical)):
+                raise RuntimeError("canonical CI proof ownership must contain valid specific paths without negation")
+            if "pull_request" in block and (
+                    not isinstance(trigger, dict) or trigger.get("paths") != canonical):
+                raise RuntimeError("ci.yml native paths list differs from canonical CI proof ownership")
+            trigger = {"paths": canonical}
         patterns = None
         start_only_patterns: list[str] = []
         if isinstance(trigger, dict) and isinstance(trigger.get("paths"), list):
@@ -2696,6 +3067,18 @@ class ProofFreshness:
         cannot repair a control-plane read, and treating one as staleness recreates
         the self-reproof loop this controller exists to end.
         """
+        if has_admitted_subject_checks(runs):
+            try:
+                loaded = admitted_semantic_evidence_for_head(self.repo,
+                    str((pull.get("head") or {}).get("sha") or ""), self.token,
+                    check_runs=runs)
+                base = loaded.evidence["base_sha"]
+                if not isinstance(base, str) or not re.fullmatch(r"[0-9a-f]{40}", base):
+                    raise ValueError("missing original admitted base")
+                return base, "authenticated original admitted tested base"
+            except Exception:
+                return None, "admitted original tested-base evidence unavailable"
+
         number = str(pull.get("number") or "")
         head_sha = str((pull.get("head") or {}).get("sha") or "").lower()
         if not number or not head_sha:
@@ -2819,6 +3202,8 @@ class ProofFreshness:
         """
         number = pull.get("number")
         proof_base, metadata_problem = self.exact_proof_base(pull, runs)
+        if proof_base is None and has_admitted_subject_checks(runs):
+            return None, metadata_problem  # never downgrade to head ancestry
         if proof_base:
             for index, commit in enumerate(self.commits):
                 if str(commit.get("sha") or "").lower() != proof_base:
@@ -2952,14 +3337,15 @@ class ProofFreshness:
         )
 
 
-def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
-    """Open pull requests carrying `merge-on-green`.
+def open_pulls(repo: str, token: str) -> list[dict[str, Any]]:
+    """One complete bounded open-PR census for source admission and merging.
 
     Discovery is paginated independently of the evaluation cap.  Otherwise an
     older armed pull request beyond the first 100 open pulls is invisible forever;
     wall-clock rotation cannot rotate something it never discovered.
     """
     pulls: list[dict[str, Any]] = []
+    seen = set()
     for page in range(1, OPEN_PULL_PAGE_CAP + 1):
         query = urllib.parse.urlencode(
             {"state": "open", "per_page": "100", "page": str(page)}
@@ -2969,7 +3355,12 @@ def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
         )
         if status >= 400 or not isinstance(payload, list):
             raise _read_failed(status, payload, "pull-request listing failed")
-        pulls.extend(pull for pull in payload if isinstance(pull, dict))
+        for pull in payload:
+            if (not isinstance(pull, dict) or type(pull.get("number")) is not int
+                    or pull["number"] <= 0 or pull["number"] in seen):
+                raise RuntimeError("open pull discovery returned malformed or duplicate identity")
+            seen.add(pull["number"])
+            pulls.append(pull)
         if len(payload) < 100:
             break
     else:
@@ -2977,7 +3368,34 @@ def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
             f"open pull discovery reached its {OPEN_PULL_PAGE_CAP * 100}-pull safety "
             "cap; refusing a permanently truncated queue"
         )
-    return [pull for pull in pulls if MERGE_ON_GREEN_LABEL in label_names(pull)]
+    return pulls
+
+
+def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
+    """Legacy merge evaluation projection; source admission also retains Drafts."""
+    return [pull for pull in open_pulls(repo, token) if MERGE_ON_GREEN_LABEL in label_names(pull)]
+
+
+def current_shared_census() -> list[dict[str, Any]] | None:
+    """Reuse only the complete protected same-job discovery, never a PR file."""
+    directory = os.environ.get("CI_ADMISSION_STAGE_DIR", "")
+    if not directory:
+        return None
+    path = Path(directory) / "census.json"
+    if not path.exists():
+        return None  # no complete stage result; incumbent read path remains
+    data = json.loads(path.read_text(encoding="utf-8"))
+    expected = dict(repository_id=int(os.environ["GITHUB_REPOSITORY_ID"]),
+                    protected_controller_sha=os.environ["GITHUB_SHA"],
+                    current_run_id=os.environ["GITHUB_RUN_ID"],
+                    current_run_attempt=int(os.environ["GITHUB_RUN_ATTEMPT"]))
+    pulls = data.get("pulls")
+    if (data.get("context") != expected or not isinstance(pulls, list)
+            or len(pulls) > OPEN_PULL_PAGE_CAP * 100
+            or any(not isinstance(p, dict) or type(p.get("number")) is not int or p["number"] <= 0 for p in pulls)
+            or len({p["number"] for p in pulls}) != len(pulls)):
+        raise ValueError("shared discovery does not belong to this original controller")
+    return pulls
 
 
 def is_sweep_candidate(pull: dict[str, Any]) -> bool:
@@ -2990,43 +3408,710 @@ def is_sweep_candidate(pull: dict[str, Any]) -> bool:
     )
 
 
-def in_flight_pr_proofs(repo: str, token: str) -> int | None:
-    """Repo-wide active pull-request ``ci.yml`` runs, or ``None`` if unreadable.
+ADMISSION_COMMENT_PREFIX = "<!-- merge-on-green:proof-admission:v1 -->\n"
+DEMAND_COMMENT_PREFIX = "<!-- merge-on-green:proof-demand:v1 -->\n"
+CHECKPOINT_COMMENT_PREFIX = "<!-- merge-on-green:proof-checkpoint:v1 -->\n"
 
-    This is the controller's workload circuit breaker.  A per-sweep refresh cap
-    does not bound anything when green workflow completions start another sweep
-    every minute; active Actions runs are the durable state shared by those sweeps.
-    Five tiny ``per_page=1`` reads use GitHub's own status index and ``total_count``
-    so proofs outside the pull-list/evaluation window still consume capacity.
 
-    Unreadable is deliberately ``None`` rather than zero.  The caller pauses only
-    NEW ``update-branch`` work while continuing to judge and merge already-proven
-    heads; an API blip must not be interpreted as an empty runner pool.
+@dataclass(frozen=True)
+class SharedProofWorkload:
+    complete: bool
+    runs: tuple[proof_admission.Run, ...] = ()
+    admissions: tuple[proof_admission.Admission, ...] = ()
+
+
+def _read_admitted_run(repo, token, admitted, repository_id):
+    """Return status only for the exact original run, attempt and definition."""
+    if admitted.run_id is None:
+        raise ValueError("unbound admission has no observable run")
+    status, run = _request("GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{admitted.run_id}", token)
+    if (status != 200 or not isinstance(run, dict)
+            or type(run.get("id")) is not int or run["id"] != admitted.run_id
+            or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+            or run.get("path") not in {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+            or run.get("head_branch") != "main" or run.get("event") != "workflow_dispatch"
+            or type((run.get("repository") or {}).get("id")) is not int
+            or run["repository"]["id"] != repository_id
+            or run.get("head_sha") != admitted.workflow_sha
+            or run.get("status") not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}):
+        raise ValueError("original admitted run evidence unavailable or changed")
+    return proof_admission.Run(admitted.run_id, admitted.run_attempt, run["status"], "pr_head")
+
+
+def prepare_shared_checkpoint(repo, read_token, number, *, repository_id,
+                              protected_controller_sha, current_run_id, current_run_attempt):
+    """Construct replacement coverage from complete authenticated original state.
+
+    No caller-supplied record list, elapsed time or PR closure can retire a slot.
+    This stage has no hosted writes; later upload/publication must authenticate
+    these bytes from this same controller attempt. Unknown reads refuse coverage.
     """
-    total = 0
+    if not _shared_controller_authority(repo, read_token, repository_id=repository_id,
+            protected_controller_sha=protected_controller_sha, current_run_id=current_run_id,
+            current_run_attempt=current_run_attempt):
+        raise ValueError("not exact original checkpoint controller")
+    comments = fetch_issue_comments(repo, number, read_token, strict=True)
+    if (not isinstance(comments, list) or not comments
+            or any(not isinstance(c, dict) or type(c.get("id")) is not int or c["id"] <= 0 for c in comments)
+            or len({c["id"] for c in comments}) != len(comments)):
+        raise ValueError("no complete original comment coverage")
+    records, demands = pr_admission_history(repo, read_token, number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    active = indexed_active_ci_runs(repo, read_token)
+    if active is None:
+        raise ValueError("active original-run census unavailable")
+    observations = list(active)
+    for admitted in records:
+        if admitted.run_id is not None:
+            if any(r.run_id == admitted.run_id and (r.attempt != admitted.run_attempt or r.role != "pr_head")
+                    for r in active):
+                raise ValueError("indexed original run identity changed")
+            if not admitted.settled:
+                observations.append(_read_admitted_run(repo, read_token, admitted, repository_id))
+    coverage = max(c["id"] for c in comments)
+    original = proof_admission.compact_pr_records(number, coverage, records, demands, [], records_complete=True)
+    replacement = proof_admission.compact_pr_records(number, coverage, records, demands, observations, records_complete=True)
+    # Compare complete authenticated source state BEFORE publishing replacement.
+    # Coverage is the actual last original comment ID, never a minted boundary.
+    proof_admission.validate_checkpoint_transition(original, replacement)
+    return replacement
+
+
+def shared_proof_workload(repo: str, token: str, *, repository_id: int,
+                          protected_controller_sha: str) -> SharedProofWorkload:
+    """Load the incumbent label/PR record inventory and immutable receipts.
+
+    Closed PRs retain their association. Missing index records, unreadable/expired
+    receipt evidence and conflicting original identities make capacity unknown.
+    This function is read-only; even terminal observation never removes a label.
+    """
+    inventory = shared_admission_inventory(repo, token)
+    if inventory.mode != "shared" or not inventory.complete:
+        return SharedProofWorkload(False)
+    runs = indexed_active_ci_runs(repo, token)
+    if runs is None:
+        return SharedProofWorkload(False)
+    records = []
+    try:
+        for issue in inventory.issues:
+            comments = fetch_issue_comments(repo, issue["number"], token, strict=True)
+            if comments is None:
+                return SharedProofWorkload(False, tuple(runs))
+            current, _demands = pr_admission_history(repo, token, issue["number"], comments,
+                repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+            records.extend(current)
+        records = proof_admission.merge_records(records)
+        if inventory.launch and not any(
+                a.pr_number == inventory.launch[0] and a.generation == inventory.launch[1]
+                for a in records):
+            return SharedProofWorkload(False, tuple(runs))
+        for index, admitted in enumerate(records):
+            if admitted.run_id is None or admitted.settled:
+                continue
+            observed = _read_admitted_run(repo, token, admitted, repository_id)
+            runs.append(observed)
+            if observed.status == "completed":
+                records[index] = proof_admission.settle_run(admitted, observed)
+        return SharedProofWorkload(True, tuple(runs), tuple(records))
+    except RateLimited:
+        raise
+    except Exception:
+        return SharedProofWorkload(False, tuple(runs))
+
+
+@dataclass(frozen=True)
+class AdmissionDispatchResult:
+    disposition: str
+    admission: proof_admission.Admission | None = None
+    detail: str = ""
+
+
+def _shared_controller_authority(repo, token, *, repository_id, protected_controller_sha,
+                                 current_run_id, current_run_attempt):
+    """Verify this exact original controller attempt, not just its run number."""
+    if (type(repository_id) is not int or repository_id <= 0
+            or not isinstance(current_run_id, str) or not re.fullmatch(r"[1-9][0-9]*", current_run_id)
+            or type(current_run_attempt) is not int or current_run_attempt <= 0
+            or not isinstance(protected_controller_sha, str)
+            or not re.fullmatch(r"[0-9a-f]{40}", protected_controller_sha)
+            or not serialized_refresh_authority(repo, token, current_run_id, "")):
+        return False
+    try:
+        status, run = _request("GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{current_run_id}", token)
+        return (status == 200 and isinstance(run, dict)
+                and type(run.get("id")) is int and run["id"] == int(current_run_id)
+                and type(run.get("run_attempt")) is int and run["run_attempt"] == current_run_attempt
+                and run.get("head_sha") == protected_controller_sha
+                and type((run.get("repository") or {}).get("id")) is int
+                and run["repository"]["id"] == repository_id)
+    except Exception:
+        return False
+
+
+def reserve_shared_admission(repo, read_token, write_token, demand, *, repository_id,
+                             protected_controller_sha, current_run_id, current_run_attempt):
+    """Prepare one exact synthetic-merge proof in the incumbent serialized lane.
+
+    Both authored and stale-base demand use the actual current merge object. A
+    refresh does not PUT update-branch: its old head gets new, independently bound
+    proof against the admitted base. Draft/merge holds remain wholly separate.
+    A missing/conflicted merge is ineligible. No dispatch is possible until the
+    prepared receipt is uploaded and authenticated by the same original attempt.
+    The launch register is persisted BEFORE that upload; an ambiguous write is
+    retained, never cleared or retried here. Fair eligibility is a caller duty.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if not _shared_controller_authority(repo, read_token, **context):
+        return AdmissionDispatchResult("held", detail="not the exact serialized controller attempt")
+    try:
+        proof_admission.ordered_demands([demand])
+        workload = shared_proof_workload(repo, read_token, repository_id=repository_id,
+                                         protected_controller_sha=protected_controller_sha)
+        if (any(a.generation == demand.demand_id or
+                (a.pr_number == demand.pr_number and not a.settled) for a in workload.admissions)
+                or not proof_admission.capacity(workload.runs, workload.admissions,
+                    census_complete=workload.complete, records_complete=workload.complete)):
+            return AdmissionDispatchResult("held", detail="shared capacity or outstanding generation")
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != "a2 idle":
+            return AdmissionDispatchResult("held", detail="launch register occupied or unqualified")
+        status, pull = _request("GET", root + f"/pulls/{demand.pr_number}", read_token)
+        if status == 200 and isinstance(pull, dict) and pull.get("number") == demand.pr_number:
+            if (pull.get("state") == "closed" or pull.get("mergeable") is False
+                    or (isinstance((pull.get("head") or {}).get("sha"), str)
+                        and pull["head"]["sha"] != demand.head_sha)):
+                return AdmissionDispatchResult("ineligible", detail="affirmatively closed, conflicted or replaced subject")
+        if (status != 200 or not isinstance(pull, dict)
+                or type(pull.get("number")) is not int or pull["number"] != demand.pr_number
+                or pull.get("state") != "open" or pull.get("mergeable") is not True
+                or (pull.get("head") or {}).get("sha") != demand.head_sha
+                or (pull.get("base") or {}).get("ref") != "main"
+                or type(((pull.get("base") or {}).get("repo") or {}).get("id")) is not int
+                or pull["base"]["repo"]["id"] != repository_id
+                or pull["base"].get("sha") != protected_controller_sha):
+            return AdmissionDispatchResult("held", detail="live subject/base/merge eligibility incomplete")
+        admitted = proof_admission.Admission(demand.demand_id, demand.pr_number, demand.head_sha,
+            pull["base"]["sha"], pull.get("merge_commit_sha"), protected_controller_sha)
+        if not proof_admission._admission_valid(admitted):
+            return AdmissionDispatchResult("held", detail="no exact current merge identity")
+        status, commit = _request("GET", root + f"/git/commits/{admitted.merge_sha}", read_token)
+        if status != 200 or not isinstance(commit, dict) or commit.get("sha") != admitted.merge_sha:
+            return AdmissionDispatchResult("held", detail="exact merge object unavailable")
+        proof_admission.validate_execution(admitted, subject_head=demand.head_sha,
+            base=admitted.base_sha, merge=commit["sha"],
+            parents=[p.get("sha") for p in commit.get("parents", [])], workflow=protected_controller_sha)
+        # Do not start a protected-main dispatch after the control definition has
+        # changed. Existing admitted proofs retain their exact immutable tuple.
+        status, main = _request("GET", root + "/branches/main", read_token)
+        if status != 200 or not isinstance(main, dict) or (main.get("commit") or {}).get("sha") != protected_controller_sha:
+            return AdmissionDispatchResult("held", detail="protected dispatch definition moved")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="preparation evidence unreadable or inconsistent")
+    description = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
+    try:
+        status, _ = _request("PATCH", register_url, write_token, {"description": description})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original reservation write unsettled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != description:
+            return AdmissionDispatchResult("unknown", admitted, "original reservation readback unsettled")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original reservation response lost")
+    return AdmissionDispatchResult("prepared", admitted, "reservation retained; immutable receipt upload owed")
+
+
+def _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+    """Index one authenticated receipt, returning only exact original readback.
+
+    The caller has authenticated the artifact and owns the launch register. A
+    comment is merely discovery, never authority. Lost POST/readback is retained
+    as unknown; this function never searches, posts twice or releases capacity.
+    """
+    body = ADMISSION_COMMENT_PREFIX + json.dumps(reference, sort_keys=True, separators=(",", ":"))
+    root = f"{GITHUB_API}/repos/{repo}"
+    status, result = _request("POST", root + f"/issues/{admitted.pr_number}/comments", read_token, {"body": body})
+    if (status != 201 or not isinstance(result, dict) or type(result.get("id")) is not int
+            or result["id"] <= 0 or result.get("body") != body):
+        return False
+    status, observed = _request("GET", root + f"/issues/comments/{result['id']}", read_token)
+    return status == 200 and isinstance(observed, dict) and observed.get("id") == result["id"] and observed.get("body") == body
+
+
+def publish_prepared_shared_admission(repo, read_token, write_token, reference, *, repository_id,
+                                     protected_controller_sha, current_run_id, current_run_attempt):
+    """Index the original uploaded reservation before any dispatch is eligible.
+
+    The singleton pointer already conserves capacity if upload or indexing fails.
+    This stage never clears that pointer or launches proof. Authenticated receipt
+    plus exact original POST readback make discovery possible for the later stage;
+    a lost response remains on this generation without a compensating write.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not original preparation owner")
+    try:
+        admitted = authenticated_admission_from_ref(repo, read_token, reference,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        if (admitted.run_id is not None or admitted.settled or admitted.run_attempt != 1
+                or admitted.workflow_sha != protected_controller_sha):
+            return AdmissionDispatchResult("held", admitted, "not original prepared identity")
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        prepared = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "original preparation pointer differs")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="prepared evidence unavailable")
+    try:
+        if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+            return AdmissionDispatchResult("unknown", admitted, "original prepared index unsettled")
+        status, _ = _request("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+                             {"labels": [REFRESH_LEASE_LABEL]})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "prepared association unsettled")
+        status, labels = _request("GET", root + f"/issues/{admitted.pr_number}/labels", read_token)
+        if (status != 200 or not isinstance(labels, list)
+                or REFRESH_LEASE_LABEL not in {row.get("name") for row in labels if isinstance(row, dict)}):
+            return AdmissionDispatchResult("unknown", admitted, "prepared association readback unavailable")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original prepared indexing response lost")
+    return AdmissionDispatchResult("indexed", admitted, "original preparation indexed; dispatch still separate")
+
+
+def finalize_shared_admission(repo, read_token, write_token, reference, *, repository_id,
+                              protected_controller_sha, current_run_id, current_run_attempt):
+    """Bind the returned original run before clearing only the launch pointer.
+
+    Actual active capacity remains in the authenticated PR admission association.
+    This does not settle the run, publish success, clear holds or authorize merge.
+    Every dependent write needs the preceding original readback. A lost response
+    stops this invocation without a retry or compensating cleanup.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not original controller receipt owner")
+    try:
+        admitted = authenticated_admission_from_ref(repo, read_token, reference,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        if admitted.run_id is None or admitted.settled or admitted.run_attempt != 1:
+            return AdmissionDispatchResult("held", admitted, "no original bound dispatch")
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        status, register = _request("GET", register_url, read_token)
+        started = f"a2 p={admitted.pr_number} g={admitted.generation} s=started"
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("held", admitted, "not original started generation")
+        status, run = _request("GET", root + f"/actions/runs/{admitted.run_id}", read_token)
+        allowed_paths = {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                         ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+        if (status != 200 or not isinstance(run, dict)
+                or type(run.get("id")) is not int or run["id"] != admitted.run_id
+                or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+                or run.get("path") not in allowed_paths or run.get("event") != "workflow_dispatch"
+                or run.get("head_branch") != "main" or run.get("head_sha") != admitted.workflow_sha
+                or type((run.get("repository") or {}).get("id")) is not int
+                or run["repository"]["id"] != repository_id
+                or run.get("status") not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}):
+            return AdmissionDispatchResult("held", admitted, "returned run identity unavailable or different")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="bound receipt/run evidence unreadable")
+    try:
+        if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+            return AdmissionDispatchResult("unknown", admitted, "original bound index publication unsettled")
+        status, _ = _request("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+                             {"labels": [REFRESH_LEASE_LABEL]})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original capacity association unsettled")
+        status, labels = _request("GET", root + f"/issues/{admitted.pr_number}/labels", read_token)
+        if (status != 200 or not isinstance(labels, list)
+                or REFRESH_LEASE_LABEL not in {l.get("name") for l in labels if isinstance(l, dict)}):
+            return AdmissionDispatchResult("unknown", admitted, "capacity association readback unavailable")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("unknown", admitted, "launch custody changed before finalization")
+        status, _ = _request("PATCH", register_url, write_token, {"description": "a2 idle"})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original pointer finalization unsettled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != "a2 idle":
+            return AdmissionDispatchResult("unknown", admitted, "pointer finalization readback unavailable")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original finalization effect unresolved")
+    return AdmissionDispatchResult("finalized", admitted, "bound PR workload retained; original launch pointer released")
+
+
+def dispatch_admitted_pr_proof(
+    repo: str, read_token: str, write_token: str, reference: dict[str, Any], *,
+    repository_id: int, protected_controller_sha: str,
+    current_run_id: str, current_run_attempt: int,
+) -> AdmissionDispatchResult:
+    """Execute one already reserved, artifact-authenticated original dispatch.
+
+    Preparation owns shared capacity admission and persists the reservation BEFORE
+    upload. Only that same serialized original controller attempt can cross this
+    boundary. Start intent is durably read back before POST; unknown responses keep
+    the same reservation, and this function has no retry or release path. The
+    returned run ID still needs an immutable post-dispatch receipt before the
+    singleton pointer can be cleared. No successful check is created here.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not the original serialized controller attempt")
+    try:
+        admitted = authenticated_admission_from_ref(
+            repo, read_token, reference, repository_id=repository_id,
+            protected_controller_sha=protected_controller_sha)
+    except Exception:
+        return AdmissionDispatchResult("held", detail="admission receipt unavailable or unqualified")
+    if admitted.run_id is not None or admitted.run_attempt != 1 or admitted.settled:
+        return AdmissionDispatchResult("held", admitted, "already bound or settled admission")
+    workload = shared_proof_workload(repo, read_token, repository_id=repository_id,
+                                     protected_controller_sha=protected_controller_sha)
+    if not proof_admission.reserved_dispatch_allowed(
+            workload.runs, workload.admissions, admitted,
+            census_complete=workload.complete, records_complete=workload.complete):
+        return AdmissionDispatchResult("held", admitted, "reserved workload no longer fits true cap8")
+    encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+    register_url = f"{GITHUB_API}/repos/{repo}/labels/{encoded}"
+    prepared = f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared"
+    started = f"a2 p={admitted.pr_number} g={admitted.generation} s=started"
+    try:
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "launch not affirmatively unstarted")
+        status, pull = _request("GET", f"{GITHUB_API}/repos/{repo}/pulls/{admitted.pr_number}", read_token)
+        if (status != 200 or not isinstance(pull, dict) or pull.get("state") != "open"
+                or pull.get("number") != admitted.pr_number
+                or (pull.get("head") or {}).get("sha") != admitted.head_sha
+                or (pull.get("base") or {}).get("sha") != admitted.base_sha
+                or (pull.get("base") or {}).get("ref") != "main"
+                or pull.get("merge_commit_sha") != admitted.merge_sha):
+            return AdmissionDispatchResult("held", admitted, "current PR no longer matches reserved source")
+    except Exception:
+        return AdmissionDispatchResult("held", admitted, "pre-dispatch live read unavailable")
+    try:
+        status, _ = _request("PATCH", register_url, write_token, {"description": started})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "start-intent write not settled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("unknown", admitted, "start-intent readback not exact")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "start-intent effect unresolved")
+    inputs = {
+        "proof_role": "pr_head", "admission_generation": admitted.generation,
+        "admission_artifact_id": str(reference["artifact_id"]),
+        "admission_payload_sha256": reference["payload_sha256"],
+        "pr_number": str(admitted.pr_number), "subject_head_sha": admitted.head_sha,
+        "tested_base_sha": admitted.base_sha, "tested_merge_sha": admitted.merge_sha,
+        "expected_workflow_definition_sha": admitted.workflow_sha,
+    }
+    try:
+        status, result = _request("POST", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/dispatches",
+                                 write_token, {"ref": "main", "inputs": inputs, "return_run_details": True})
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original dispatch response lost")
+    if status in {400, 401, 403, 404, 422}:
+        return AdmissionDispatchResult("refused", admitted, f"original dispatch refused HTTP {status}; no retry")
+    run_id = result.get("workflow_run_id") if isinstance(result, dict) else None
+    if status != 200 or type(run_id) is not int or run_id <= 0:
+        return AdmissionDispatchResult("unknown", admitted, "no exact original run ID in dispatch response")
+    return AdmissionDispatchResult("bound", proof_admission.bind_run(admitted, run_id, 1),
+                                   "returned original run ID; post-dispatch receipt still required")
+
+
+def _receipt_context_from_ref(
+    repo: str, token: str, reference: dict[str, Any], *,
+    repository_id: int, protected_controller_sha: str,
+) -> dict[str, Any]:
+    """Load a PR index reference through server-bound immutable controller evidence.
+
+    The reference is untrusted comment data, never a bearer capability. The caller
+    establishes the control revision's protected ancestry independently. Fixed
+    repository API paths prevent comment-controlled download URLs/credentials.
+    Failure preserves the reservation; this read neither dispatches nor settles.
+    """
+    required = {"artifact_id", "controller_run_id", "controller_attempt",
+                "controller_sha", "payload_sha256"}
+    if (not isinstance(reference, dict) or set(reference) != required
+            or any(type(reference[k]) is not int or reference[k] <= 0
+                   for k in ("artifact_id", "controller_run_id", "controller_attempt"))
+            or reference["controller_sha"] != protected_controller_sha):
+        raise ValueError("invalid admission receipt reference")
+    artifact_id, run_id = reference["artifact_id"], reference["controller_run_id"]
+    artifact_status, artifact = _request(
+        "GET", f"{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}", token)
+    run_status, controller = _request(
+        "GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}/attempts/{reference['controller_attempt']}", token)
+    if artifact_status != 200 or run_status != 200:
+        raise ValueError("unreadable original controller admission evidence")
+    archive = _download_semantic_artifact(
+        f"{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}/zip", token)
+    return dict(
+        archive=archive, payload_sha256=reference["payload_sha256"],
+        repository_id=repository_id, artifact_id=artifact_id,
+        controller_run_id=run_id, controller_attempt=reference["controller_attempt"],
+        controller_sha=protected_controller_sha, artifact=artifact, controller=controller)
+
+
+def authenticated_admission_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_receipt(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+def authenticated_demands_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_demands(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+def authenticated_checkpoint_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_checkpoint(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+def admission_index_writer(comment):
+    """Classify server provenance before parsing untrusted comment bodies.
+
+    New shared-admission indexes are posted only by the protected job token.
+    A PAT's changing collaborator permissions must never erase original history.
+    The immutable original controller artifact remains the authority; the bot
+    identity is only the mandatory-history namespace, not proof by itself.
+    """
+    author = comment.get("user")
+    if (not isinstance(author, dict) or type(author.get("id")) is not int
+            or author["id"] <= 0 or not isinstance(author.get("login"), str)
+            or not isinstance(author.get("type"), str)):
+        raise ValueError("admission index author unavailable")
+    return (author["id"] == 41898282 and author["type"] == "Bot"
+            and author["login"] == "github-actions[bot]")
+
+
+def pr_admission_history(repo, token, number, comments, *, repository_id, protected_controller_sha, reference_catalog=None, allow_empty=False):
+    """Read bounded original records after authenticated complete PR coverage.
+
+    Old artifacts below a verified checkpoint need not be reopened. No expired or
+    unreadable *uncovered* reference is silently ignored. New/replayed comments
+    cannot rewind coverage or erase a later original dispatch. The supplied
+    comments must be the incumbent complete bounded server read, not a tail page.
+    """
+    if type(number) is not int or number <= 0 or not isinstance(comments, list):
+        raise ValueError("invalid PR comment custody")
+    prefixes = {ADMISSION_COMMENT_PREFIX: "admission", DEMAND_COMMENT_PREFIX: "demands",
+                CHECKPOINT_COMMENT_PREFIX: "checkpoint"}
+    entries = []
+    seen = set()
+    for comment in comments:
+        if not isinstance(comment, dict):
+            raise ValueError("malformed PR comment")
+        body = comment.get("body")
+        if not isinstance(body, str):
+            continue
+        matching = [(prefix, kind) for prefix, kind in prefixes.items() if body.startswith(prefix)]
+        if not matching:
+            continue
+        if not admission_index_writer(comment):
+            continue
+        comment_id = comment.get("id")
+        if type(comment_id) is not int or comment_id <= 0 or comment_id in seen or len(body) > 4096:
+            raise ValueError("malformed original admission index")
+        seen.add(comment_id)
+        prefix, kind = matching[0]
+        reference = json.loads(body[len(prefix):], object_pairs_hook=proof_admission._unique_object)
+        entries.append((comment_id, (kind, reference)))
+    controls = {protected_controller_sha}
+
+    def load(kind, reference):
+        control_sha = reference.get("controller_sha") if isinstance(reference, dict) else None
+        if not isinstance(control_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", control_sha):
+            raise ValueError("invalid admission control identity")
+        if control_sha not in controls:
+            status, compared = _request("GET", f"{GITHUB_API}/repos/{repo}/compare/{control_sha}...{protected_controller_sha}?per_page=1", token)
+            if (status != 200 or not isinstance(compared, dict)
+                    or compared.get("status") not in {"ahead", "identical"}
+                    or (compared.get("base_commit") or {}).get("sha") != control_sha
+                    or (compared.get("merge_base_commit") or {}).get("sha") != control_sha):
+                raise ValueError("record controller is not protected ancestry")
+            controls.add(control_sha)
+        loader = {"admission": authenticated_admission_from_ref,
+                  "demands": authenticated_demands_from_ref,
+                  "checkpoint": authenticated_checkpoint_from_ref}[kind]
+        return loader(repo, token, reference, repository_id=repository_id, protected_controller_sha=control_sha)
+
+    checkpoint = None
+    checkpoints = []
+    for comment_id, (kind, reference) in sorted(entries, reverse=True):
+        if kind != "checkpoint" or (checkpoint and comment_id <= checkpoint.covered_through_comment_id):
+            continue
+        observed = load(kind, reference)
+        if observed.pr_number != number or observed.covered_through_comment_id >= comment_id:
+            raise ValueError("checkpoint covers its own or future index")
+        checkpoints.append(observed)
+        checkpoint = proof_admission.select_checkpoint(checkpoints, number)
+    records = list(checkpoint.admissions + checkpoint.settled) if checkpoint else []
+    demands = list(checkpoint.demands) if checkpoint else []
+    uncovered = proof_admission.references_after_checkpoint(entries, checkpoint)
+    for _comment_id, (kind, reference) in sorted(uncovered):
+        if kind == "checkpoint":
+            continue  # already authenticated above, never just skipped by its text
+        result = load(kind, reference)
+        if kind == "admission":
+            if result.pr_number != number:
+                raise ValueError("cross-PR admission index")
+            if reference_catalog is not None:
+                reference_catalog[(result.generation, result.run_id)] = reference
+            records.append(result)
+        else:
+            matching = [d for d in result if d.pr_number == number]
+            if not matching:
+                raise ValueError("PR demand index lacks its own demand")
+            demands.extend(matching)
+    if checkpoint is None and not records and not demands and not allow_empty:
+        raise ValueError("associated PR lacks authenticated records")
+    return proof_admission.merge_records(records), demands
+
+
+@dataclass(frozen=True)
+class SharedAdmissionInventory:
+    """Read-only v2 view of the existing lease label, not a second registry.
+
+    ``complete`` covers association discovery only. Authentication and exact
+    outstanding-record settlement remain required before capacity is computed.
+    """
+    mode: str
+    complete: bool
+    issues: tuple[dict[str, Any], ...] = ()
+    launch: tuple[int, str] | None = None
+    launch_started: bool = False
+
+
+def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventory:
+    """Preserve every outstanding association, including closed/disarmed PRs.
+
+    Never migrates or cleans an m1 owner. The a2 description is only a singleton
+    launch pointer; associations retain admitted work until exact settlement.
+    The direct pointer closes eventual-consistency gaps in GitHub's label index.
+    """
+    encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+    try:
+        status, label = _request("GET", f"{GITHUB_API}/repos/{repo}/labels/{encoded}", token)
+        if status == 404:
+            return SharedAdmissionInventory("legacy", False)
+        if status != 200 or not isinstance(label, dict):
+            return SharedAdmissionInventory("unknown", False)
+        description = label.get("description")
+        if (description == REFRESH_LEASE_DESCRIPTION
+                or parse_refresh_lease_record(description) is not None):
+            return SharedAdmissionInventory("legacy", False)
+        launch = None
+        launch_started = False
+        if description != "a2 idle":
+            match = re.fullmatch(r"a2 p=([1-9][0-9]*) g=([0-9a-f]{12}) s=(prepared|started|completing)", str(description))
+            if not match:
+                return SharedAdmissionInventory("unknown", False)
+            launch = (int(match[1]), match[2])
+            launch_started = match[3] == "started"
+        issues: dict[int, dict[str, Any]] = {}
+        for page in range(1, OPEN_PULL_PAGE_CAP + 1):
+            query = urllib.parse.urlencode({
+                "state": "all", "labels": REFRESH_LEASE_LABEL, "per_page": "100", "page": str(page)})
+            status, rows = _request("GET", f"{GITHUB_API}/repos/{repo}/issues?{query}", token)
+            if status != 200 or not isinstance(rows, list):
+                return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+            for issue in rows:
+                if (not isinstance(issue, dict) or type(issue.get("number")) is not int
+                        or issue["number"] <= 0 or not isinstance(issue.get("pull_request"), dict)
+                        or issue.get("state") not in {"open", "closed"}
+                        or not isinstance(issue.get("labels"), list)
+                        or REFRESH_LEASE_LABEL not in label_names(issue)
+                        or issue["number"] in issues):
+                    return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+                issues[issue["number"]] = issue
+            if len(rows) < 100:
+                break
+        else:
+            return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+        if launch and launch[0] not in issues:
+            status, issue = _request("GET", f"{GITHUB_API}/repos/{repo}/issues/{launch[0]}", token)
+            if (status != 200 or not isinstance(issue, dict)
+                    or type(issue.get("number")) is not int or issue["number"] != launch[0]
+                    or issue.get("state") not in {"open", "closed"}
+                    or not isinstance(issue.get("pull_request"), dict)):
+                return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+            issues[launch[0]] = issue
+        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started)
+    except RateLimited:
+        raise
+    except Exception:
+        return SharedAdmissionInventory("unknown", False)
+
+
+def indexed_active_ci_runs(repo: str, token: str) -> list[proof_admission.Run] | None:
+    """Distinct active CI identities across legacy PR and dispatched carriers.
+
+    All five active states count. A dispatch without affirmative main-baseline
+    binding is conservatively workload, never an exemption. The five reads retain
+    the incumbent API budget; a truncated/malformed page closes admission rather
+    than pretending the omitted runs do not exist. Status-page transitions are a
+    set union. Authenticated outstanding admission records supply the additional
+    conservative floor in the shared admission path; this census alone is not an
+    atomic platform snapshot or authority to dispatch.
+    """
+    identities: dict[int, tuple[int, str]] = {}
     for run_status in ACTIVE_PR_PROOF_STATUSES:
-        query = urllib.parse.urlencode(
-            {
-                "event": "pull_request",
-                "status": run_status,
-                "per_page": "1",
-            }
-        )
+        query = urllib.parse.urlencode({"status": run_status, "per_page": "100"})
         status, payload = _request(
-            "GET",
-            f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
-            token,
+            "GET", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}", token,
         )
-        count = (payload or {}).get("total_count") if isinstance(payload, dict) else None
-        if (
-            status >= 400
-            or not isinstance(count, int)
-            or isinstance(count, bool)
-            or count < 0
-        ):
+        if status != 200 or not isinstance(payload, dict):
             return None
-        total += count
-    return total
+        count = payload.get("total_count")
+        rows = payload.get("workflow_runs")
+        if (type(count) is not int or count < 0 or not isinstance(rows, list)
+                or len(rows) != count or count > 100):
+            return None
+        page_ids: set[int] = set()
+        for run in rows:
+            if not isinstance(run, dict):
+                return None
+            run_id, attempt = run.get("id"), run.get("run_attempt")
+            event, observed_status = run.get("event"), run.get("status")
+            if (type(run_id) is not int or run_id <= 0
+                    or type(attempt) is not int or attempt <= 0
+                    or not isinstance(event, str) or not event
+                    or observed_status not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}
+                    or run_id in page_ids):
+                return None
+            page_ids.add(run_id)
+            identity = (attempt, event)
+            if run_id in identities and identities[run_id] != identity:
+                return None
+            # A run selected by the active index may complete during the read;
+            # retain it conservatively for this observation, not as green proof.
+            identities[run_id] = identity
+    return [proof_admission.Run(run_id, identity[0], "in_progress", "pr_head")
+            for run_id, identity in identities.items()]
+
+
+def in_flight_pr_proofs(repo: str, token: str) -> int | None:
+    runs = indexed_active_ci_runs(repo, token)
+    return len(runs) if runs is not None else None
 
 
 def refresh_lease_reservation_count(
@@ -3127,7 +4212,7 @@ def serialized_refresh_authority(
         and str(payload.get("head_branch") or "") == "main"
         and str((repository or {}).get("full_name") or "") == repo
         and str(payload.get("event") or "")
-        in {"workflow_run", "schedule", "workflow_dispatch"}
+        in {"workflow_run", "schedule", "workflow_dispatch", "pull_request_target"}
     )
 
 
@@ -3593,6 +4678,10 @@ class RefreshLease:
         """Release a definitive owner; failure leaves ownership fail-closed."""
         if not self.owns(pull) and REFRESH_LEASE_LABEL not in label_names(pull):
             return True
+        if not self.readable:
+            # Includes the shared a2 register: this legacy lease object owns no
+            # authority to erase a shared active/UNKNOWN record association.
+            return False
         number = pull.get("number")
         # A settled generation must never reacquire in this same sweep, even when
         # GitHub accepts the delete but loses the response.  Keeping owner_number on
@@ -5906,7 +6995,7 @@ class CommentCapExceeded(RuntimeError):
 
 
 def fetch_issue_comments(
-    repo: str, number: Any, token: str
+    repo: str, number: Any, token: str, *, strict: bool = False
 ) -> list[dict[str, Any]] | None:
     """Every issue comment on a pull request.
 
@@ -5919,10 +7008,9 @@ def fetch_issue_comments(
     more history than the cap can see, and the caller uses the partial
     inventory rather than treating this as an ordinary API outage.
 
-    Called from exactly one place: `sweep_pull`'s about-to-merge path, immediately
-    before the merge call and after every other gate (checks, freshness, the
-    clobbered-head invariant) has already concluded clean — this module's API
-    budget doctrine spends a call here only on a pull request that has earned it.
+    Admission custody uses strict mode: a malformed row is incomplete evidence,
+    never an item to discard while claiming complete checkpoint coverage.
+    Legacy hold readers retain their incumbent interface and page cap.
     """
     if number is None:
         return None
@@ -5935,6 +7023,8 @@ def fetch_issue_comments(
             token,
         )
         if status >= 400 or not isinstance(payload, list):
+            return None
+        if strict and any(not isinstance(item, dict) for item in payload):
             return None
         comments.extend(item for item in payload if isinstance(item, dict))
         if len(payload) < 100:
@@ -6885,11 +7975,14 @@ def sweep_pull(
     semantic_mode = False
     semantic_gate = None
     semantic_refusal = ""
-    # Green heads retain the zero-artifact-call fast path. A red/ambiguous head,
+    # Legacy green heads retain the zero-artifact-call fast path. Admitted
+    # subject checks always authenticate their original generation and artifact. A red/ambiguous head,
     # or a candidate already loaded for the semantic main-red overlap decision,
     # must use v1 when present. Claimed malformed v1 is a hard refusal and cannot
     # fall back to pack-name causality.
-    if semantic_evidence is not None or (
+    admitted_authentication = has_admitted_subject_checks(runs)
+    physically_clean_admitted = admitted_authentication and verdict == "clean" and semantic_evidence is None
+    if admitted_authentication or semantic_evidence is not None or (
         verdict in {"blocked", "incomplete"}
         and _head_can_advertise_semantic_evidence(runs)
     ):
@@ -6904,7 +7997,7 @@ def sweep_pull(
             semantic_gate = _semantic_gate(loaded)
             if semantic_gate is not None:
                 semantic_mode = True
-                if semantic_gate.clear and _touches_semantic_authority(
+                if semantic_gate.clear and not physically_clean_admitted and _touches_semantic_authority(
                     freshness.pull_files(number)
                 ):
                     semantic_refusal = _semantic_authority_refusal(number)
@@ -8123,7 +9216,9 @@ def main() -> int:
         )
 
     try:
-        pulls = labeled_pulls(repo, read_token)
+        census = current_shared_census()
+        pulls = ([p for p in census if MERGE_ON_GREEN_LABEL in label_names(p)]
+                 if census is not None else labeled_pulls(repo, read_token))
     except RateLimited as exc:
         _annotate("warning", "merge-on-green", f"Sweep deferred: {exc}. No PRs swept.")
         return 0

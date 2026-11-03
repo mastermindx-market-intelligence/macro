@@ -27,6 +27,9 @@ name: merge-on-green
 # 100 sweep runs was a `schedule` event across a 117-minute window (~0.5/hr
 # against a nominal 6/hr). Nothing in this lane may lean on the cron alone.
 on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches: [main]
   workflow_run:
     workflows: [ci, fences, integration-baseline]
     types: [completed]
@@ -36,6 +39,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  checks: write          # protected original terminal proof -> subject-head checks only
   actions: write         # READ the integration-baseline / ci / fences workflow-run
                          # state, and WRITE one `workflow_dispatch` of ci.yml on main.
                          # The write half is new (2026-08-08) and is load-bearing: the
@@ -141,6 +145,8 @@ jobs:
         && 'skip-ci-ignored'
         || github.event_name != 'workflow_run'
         && 'sweep'
+        || github.event.workflow_run.name == 'ci'
+        && 'sweep'
         || github.event.workflow_run.conclusion == 'failure'
         && format('mark-{0}', github.event.workflow_run.head_sha)
         || github.event.workflow_run.conclusion == 'success'
@@ -177,13 +183,18 @@ jobs:
       # gate`) rather than merging on undated greens.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
           filter: blob:none
           sparse-checkout: |
             scripts/merge_on_green.py
+            scripts/ci_proof_admission.py
+            scripts/ci_admission_stages.py
             scripts/ci_semantic_proof.py
             scripts/ci_authority_paths.py
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
+            .github/ci/legacy-jobs.yml
             .github/workflows
           sparse-checkout-cone-mode: false
 
@@ -207,8 +218,118 @@ jobs:
                  --break-system-packages pyyaml
           python3 -c "import yaml"
 
-      - name: sweep merge-on-green pull requests
+      # The same serialized job owns every stage. Upload boundaries seal
+      # immutable original-attempt bytes before their dependent hosted effect.
+      - name: reconcile original admitted completion
+        if: >-
+          github.event_name != 'workflow_run' || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success'
         env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CHECKS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+          TRIGGER_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py complete
+
+      - name: prepare complete shared proof demand
+        id: admission_prepare
+        if: >-
+          !cancelled() && (github.event_name != 'workflow_run'
+          || github.event.workflow_run.name == 'ci'
+          || github.event.workflow_run.conclusion == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 -I scripts/ci_admission_stages.py prepare
+
+      - name: seal changed demand records
+        id: admission_demands
+        if: steps.admission_prepare.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-demands-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/demands/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: index all changed demand and reserve oldest eligible
+        id: admission_reserve
+        if: >-
+          !cancelled() && steps.admission_prepare.outcome == 'success'
+          && (steps.admission_prepare.outputs.changed != 'true' || steps.admission_demands.outcome == 'success')
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_demands.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py reserve
+
+      - name: seal original preparation
+        id: admission_prepared
+        if: steps.admission_reserve.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.generation }}-prepared
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/prepared/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: seal complete original PR coverage
+        id: admission_checkpoint
+        if: steps.admission_reserve.outputs.prepared == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_reserve.outputs.pr_number }}
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/checkpoint/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: dispatch exactly one original admitted proof
+        id: admission_dispatch
+        if: steps.admission_prepared.outcome == 'success' && steps.admission_checkpoint.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_prepared.outputs.artifact-id }}
+          CHECKPOINT_ARTIFACT_ID: ${{ steps.admission_checkpoint.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py dispatch
+
+      - name: seal original returned proof run
+        id: admission_bound
+        if: steps.admission_dispatch.outputs.bound == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-proof-admission-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.admission_dispatch.outputs.generation }}-bound
+          path: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}/bound/ci-proof-admission.json
+          if-no-files-found: error
+          retention-days: 90
+          overwrite: false
+
+      - name: index original run then release launch pointer
+        if: steps.admission_bound.outcome == 'success'
+        env:
+          GH_REPO: ${{ github.repository }}
+          READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.ADMIN_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
+          ARTIFACT_ID: ${{ steps.admission_bound.outputs.artifact-id }}
+        run: python3 -I scripts/ci_admission_stages.py finalize
+
+      - name: sweep merge-on-green pull requests
+        if: ${{ !cancelled() }}
+        env:
+          CI_ADMISSION_STAGE_DIR: ${{ runner.temp }}/ci-admission-${{ github.run_id }}-${{ github.run_attempt }}
           GH_REPO: ${{ github.repository }}
           # READS use the job's own GITHUB_TOKEN. Its quota is per-repository and
           # separate from the shared 5,000/hr account pool that ship_loop_guard.py

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -45,6 +46,7 @@ PACK_PLANNER_ENV = frozenset(
         "CI_TESTED_TREE_SHA",
         "CI_SUBJECT_HEAD_SHA",
         "CI_BASE_SHA",
+        "CI_ADMISSION_GENERATION",
     }
 )
 CONTROL_SPARSE_PATHS = {f"scripts/{filename}" for filename in MAIN_CONTROL_FILES}
@@ -101,6 +103,14 @@ def run_trusted_gate(
         "EVENT_PR_NUMBER": pr_number,
         "DISPATCH_PR_NUMBER": "",
         "REQUESTED_ROUTE": "hosted",
+        "CALLER_WORKFLOW_SHA": "b" * 40,
+        "CALLER_SHA": "b" * 40,
+        "ADMITTED_MERGE": "",
+        "ADMITTED_HEAD": "",
+        "ADMITTED_BASE": "",
+        "ADMITTED_PR": "",
+        "ADMITTED_REPOSITORY_ID": "",
+        "ADMISSION_GENERATION": "",
     }
     environment.update(overrides)
     result = subprocess.run(
@@ -123,7 +133,9 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
     document = workflow("trusted-ci-executor.yml")
     assert triggers(document) == {"workflow_call", "workflow_dispatch"}
     trigger_config = document.get("on", document.get(True))
-    assert trigger_config["workflow_call"].get("inputs", {}) == {}
+    assert set(trigger_config["workflow_call"]["inputs"]) == {'admission_generation', 'admitted_head', 'admitted_pr', 'admitted_repository_id', 'admitted_merge', 'admitted_base'}
+    for value in trigger_config["workflow_call"]["inputs"].values():
+        assert value["type"] == "string" and value["default"] == "" and value["required"] is False
     assert set(trigger_config["workflow_call"]["outputs"]) == {
         "matrix",
         "plan_sha",
@@ -158,6 +170,14 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
         "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
         "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
+        "CALLER_WORKFLOW_SHA": "${{ github.workflow_sha }}",
+        "CALLER_SHA": "${{ github.sha }}",
+        "ADMITTED_MERGE": "${{ inputs.admitted_merge || '' }}",
+        "ADMITTED_HEAD": "${{ inputs.admitted_head || '' }}",
+        "ADMITTED_BASE": "${{ inputs.admitted_base || '' }}",
+        "ADMITTED_PR": "${{ inputs.admitted_pr || '' }}",
+        "ADMITTED_REPOSITORY_ID": "${{ inputs.admitted_repository_id || '' }}",
+        "ADMISSION_GENERATION": "${{ inputs.admission_generation || '' }}",
     }
 
     production = workflow("ci.yml")
@@ -297,7 +317,7 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     )
     assert control_checkout["with"]["persist-credentials"] is False
 
-    resolve = next(step for step in steps if step.get("id") == "ref")
+    resolve = next(step for step in steps if step.get("id") == "legacy-ref")
     assert "resolve_ci_canary_ref.py" in resolve["run"]
     assert '--github-sha "${{ needs.trust-gate.outputs.control_sha }}"' in resolve["run"]
     assert '--pr-number "${{ needs.trust-gate.outputs.pr_number }}"' in resolve["run"]
@@ -439,7 +459,7 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     planner = next(step for step in plan_steps if step.get("id") == "plan")
     assert planner["env"][CONTROL_REPO_ROOT_ENV] == "${{ github.workspace }}"
     assert (
-        '"$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" '
+        '"$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" -I '
         '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"'
     ) in planner["run"]
     assert 'bin/python" scripts/run_ci_pack.py' not in planner["run"]
@@ -480,7 +500,7 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     assert execute_step["env"]["CI_HEAD_REF"] == "${{ needs.plan.outputs.head_ref }}"
     execute = execute_step["run"]
     assert (
-        '"$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" '
+        '"$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" -I '
         '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"'
     ) in execute
     assert 'bin/python" scripts/run_ci_pack.py' not in execute
@@ -492,6 +512,169 @@ def test_p3ar_freezes_and_transports_the_complete_main_owned_control_bundle() ->
     )["run"]
     assert "$RUNNER_TEMP/trusted-ci-control/scripts/capture_ci_canary_receipt.py" in receipt
     assert "$RUNNER_TEMP/trusted-ci-control/scripts/monitor_ci_host_resources.py" in execute
+
+
+def admitted_gate_values():
+    return dict(EVENT_NAME="workflow_dispatch", TRUSTED_REF="refs/heads/main",
+        CALLER_WORKFLOW_REF="mastermindx-market-intelligence/macro/.github/workflows/ci.yml@refs/heads/main",
+        DISPATCH_PR_NUMBER="", ADMITTED_MERGE="1" * 40, ADMITTED_HEAD="2" * 40,
+        ADMITTED_BASE="3" * 40, ADMITTED_PR="123", ADMITTED_REPOSITORY_ID="456",
+        ADMISSION_GENERATION="a" * 12, REQUESTED_ROUTE="pc")
+
+
+def test_admitted_ci_main_caller_requires_typed_verified_handoff(tmp_path):
+    result, outputs = run_trusted_gate(tmp_path, **admitted_gate_values())
+    assert result.returncode == 0, result.stderr
+    assert outputs == {"control_sha": "a" * 40, "pr_number": "", "mode": "admitted",
+                       "semantic_workflow": "ci", "execution_route": "pc"}
+
+
+@pytest.mark.parametrize("change", [
+    {"ADMISSION_GENERATION": ""}, {"DISPATCH_PR_NUMBER": "123"},
+    {"TRUSTED_REF": "refs/pull/123/merge"}, {"ADMITTED_MERGE": ""},
+    {"ADMITTED_REPOSITORY_ID": "0"}, {"CALLER_WORKFLOW_SHA": "c" * 40},
+    {"CALLER_WORKFLOW_REF": "mastermindx-market-intelligence/macro/.github/workflows/ci.yml@refs/heads/candidate"},
+])
+def test_admitted_context_cannot_use_other_caller_or_diagnostic_identity(tmp_path, change):
+    args = admitted_gate_values()
+    args.update(change)
+    result, outputs = run_trusted_gate(tmp_path, **args)
+    assert result.returncode != 0 and outputs == {}
+
+
+def test_legacy_pr_cannot_smuggle_admission_inputs(tmp_path):
+    result, outputs = run_trusted_gate(tmp_path, ADMISSION_GENERATION="a" * 12)
+    assert result.returncode != 0 and outputs == {}
+
+
+@pytest.mark.parametrize("mutation", [None, "fork", "head", "closed", "parents", "third-parent",
+                                      "repository", "caller", "attempt", "generation", "unavailable"])
+def test_admitted_subject_readback_is_bounded_and_never_uses_mutable_merge(tmp_path, monkeypatch, mutation):
+    import io
+    import urllib.request
+
+    steps = workflow("trusted-ci-executor.yml")["jobs"]["plan"]["steps"]
+    step = next(s for s in steps if s.get("id") == "admitted-ref")
+    script = step["run"].split("<<'PYREAD'\n", 1)[1].rsplit("\nPYREAD", 1)[0]
+    repository = "mastermindx-market-intelligence/macro"
+    output = tmp_path / "output"
+    environment = dict(admitted_gate_values(), GITHUB_RUN_ID="100", GITHUB_RUN_ATTEMPT="1",
+        GITHUB_TOKEN="test-only", GITHUB_OUTPUT=str(output), REPOSITORY=repository,
+        CALLER_REF=repository + "/.github/workflows/ci.yml@refs/heads/main",
+        CALLER_WORKFLOW_SHA="b" * 40, CALLER_SHA="b" * 40)
+    if mutation == "caller": environment["CALLER_REF"] = "candidate/.github/workflows/ci.yml@main"
+    if mutation == "attempt": environment["GITHUB_RUN_ATTEMPT"] = "0"
+    if mutation == "generation": environment["ADMISSION_GENERATION"] = "forged"
+    for key, value in environment.items(): monkeypatch.setenv(key, value)
+    repo = {"id": 456, "full_name": repository}
+    pr = {"number": 123, "state": "open", "merge_commit_sha": "9" * 40,
+          "head": {"sha": "2" * 40, "repo": dict(repo)},
+          "base": {"sha": "8" * 40, "ref": "main", "repo": dict(repo)}}
+    commit = {"sha": "1" * 40, "parents": [{"sha": "3" * 40}, {"sha": "2" * 40}]}
+    if mutation == "fork": pr["head"]["repo"]["id"] = 999
+    if mutation == "head": pr["head"]["sha"] = "7" * 40
+    if mutation == "closed": pr["state"] = "closed"
+    if mutation == "parents": commit["parents"].reverse()
+    if mutation == "third-parent": commit["parents"].append({"sha": "4" * 40})
+    if mutation == "repository": repo["id"] = True
+    responses = {"": repo, "/pulls/123": pr, "/git/commits/" + "1" * 40: commit}
+    requests = []
+
+    class Reader:
+        def open(self, request, timeout):
+            assert 0 < timeout <= 20
+            prefix = "https://api.github.com/repos/" + repository
+            assert request.full_url.startswith(prefix)
+            suffix = request.full_url[len(prefix):]
+            requests.append(suffix)
+            assert suffix in responses
+            if mutation == "unavailable": raise OSError("unavailable")
+            return io.BytesIO(json.dumps(responses[suffix]).encode())
+
+    monkeypatch.setattr(urllib.request, "build_opener", lambda *args: Reader())
+    if mutation is None:
+        exec(compile(script, "protected-reader", "exec"), {})
+        assert "base=" + "3" * 40 in output.read_text()
+        assert "tested_commit=" + "1" * 40 in output.read_text()
+        assert len(requests) == 3
+    else:
+        with pytest.raises(SystemExit): exec(compile(script, "protected-reader", "exec"), {})
+        assert not output.exists()
+        assert len(requests) <= 3
+        if mutation == "unavailable": assert len(requests) == 1
+
+
+def test_admitted_resolver_precedes_candidate_and_same_repo_gate_precedes_pc_eligibility():
+    jobs = workflow("trusted-ci-executor.yml")["jobs"]
+    steps = jobs["plan"]["steps"]
+    resolve = next(s for s in steps if s.get("id") == "admitted-ref")
+    normalize = next(s for s in steps if s.get("id") == "ref")
+    candidate = next(s for s in steps if s.get("name") == "checkout the immutable PR candidate")
+    assert steps.index(resolve) < steps.index(normalize) < steps.index(candidate)
+    assert resolve["if"] == "needs.trust-gate.outputs.mode == 'admitted'"
+    assert resolve["timeout-minutes"] == 3
+    assert resolve["env"]["ADMITTED_MERGE"] == "${{ inputs.admitted_merge }}"
+    assert resolve["env"]["CALLER_WORKFLOW_SHA"] == "${{ github.workflow_sha }}"
+    assert "-I" in resolve["run"] and "/git/commits/" in resolve["run"]
+    assert "actions/" not in resolve["run"]
+    assert 'test "$ADMITTED_SAME_REPOSITORY" = true' in normalize["run"]
+    assert jobs["trusted-pack"]["needs"] == "plan"
+    assert jobs["trusted-pack"]["if"] == "needs.plan.outputs.execution_route == 'pc'"
+    planner = next(s for s in steps if s.get("id") == "plan")
+    assert "--admission-generation" in planner["run"]
+    selector = next(s for s in steps if s.get("id") == "select")
+    assert 'test "$EXECUTION_MODE" = admitted' in selector["run"]
+    for name in ("legacy-hosted-pack", "trusted-pack"):
+        execute = next(s for s in jobs[name]["steps"] if "run_ci_pack.py" in s.get("run", ""))
+        assert "--expect-admission-generation" in execute["run"]
+        assert 'if [ -n "$ADMISSION_GENERATION" ]' in execute["run"]
+
+
+@pytest.mark.parametrize("same_repo,accepted", [("true", True), ("false", False), ("", False)])
+def test_admitted_normalizer_refuses_fork_before_any_checkout(tmp_path, same_repo, accepted):
+    steps = workflow("trusted-ci-executor.yml")["jobs"]["plan"]["steps"]
+    step = next(s for s in steps if s.get("id") == "ref")
+    output = tmp_path / "output"
+    env = dict(os.environ, GITHUB_OUTPUT=str(output), MODE="admitted",
+        ADMITTED_SAME_REPOSITORY=same_repo, ADMISSION_GENERATION="a" * 12,
+        ADMITTED_TESTED="1" * 40, ADMITTED_BASE="2" * 40, ADMITTED_HEAD="3" * 40)
+    result = subprocess.run(["bash", "-c", step["run"]], env=env, capture_output=True, text=True)
+    assert (result.returncode == 0) is accepted
+    if accepted:
+        assert "head_ref=" + "3" * 40 in output.read_text()
+    else:
+        assert not output.exists()
+
+
+@pytest.mark.parametrize("mutation", [None, "bytes", "extra-file", "extra-directory", "symlink", "rename"])
+def test_control_transport_digest_refuses_changed_paths_or_bytes_before_execution(tmp_path, mutation):
+    jobs = workflow("trusted-ci-executor.yml")["jobs"]
+    steps = jobs["plan"]["steps"]
+    seal = next(s for s in steps if s.get("id") == "bundle")
+    candidate = next(s for s in steps if s.get("name") == "checkout the immutable PR candidate")
+    assert steps.index(seal) < steps.index(candidate)
+    control = tmp_path / "trusted-ci-control" / "scripts"
+    control.mkdir(parents=True)
+    original = control / "proof.py"
+    original.write_text("raise RuntimeError('this code must never execute')\n")
+    output = tmp_path / "output"
+    env = dict(os.environ, RUNNER_TEMP=str(tmp_path), GITHUB_OUTPUT=str(output))
+    env.pop("EXPECTED_CONTROL_DIGEST", None)
+    result = subprocess.run(["bash", "-c", seal["run"]], env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    env["EXPECTED_CONTROL_DIGEST"] = output.read_text().strip().split("=", 1)[1]
+    if mutation == "bytes": original.write_text("changed\n")
+    elif mutation == "extra-file": (control / "extra.py").write_text("extra\n")
+    elif mutation == "extra-directory": (control / "extra").mkdir()
+    elif mutation == "symlink": (control / "escape").symlink_to(tmp_path)
+    elif mutation == "rename": original.rename(control / "other.py")
+    for name in ("legacy-hosted-pack", "trusted-pack"):
+        pack_steps = jobs[name]["steps"]
+        verify = next(s for s in pack_steps if s.get("name") == "verify control bundle before any candidate execution")
+        first_code = next(s for s in pack_steps if "scripts/run_ci_pack.py" in s.get("run", ""))
+        assert pack_steps.index(verify) < pack_steps.index(first_code)
+        result = subprocess.run(["bash", "-c", verify["run"]], env=env, capture_output=True, text=True)
+        assert (result.returncode == 0) is (mutation is None), result.stderr
 
 
 LEGACY_JOBS_MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"

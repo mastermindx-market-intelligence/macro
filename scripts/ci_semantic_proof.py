@@ -614,12 +614,30 @@ def _expected_plan(plan: Mapping[str, Any]) -> tuple[dict[tuple[str, str], dict[
     return expected, packs
 
 
+def admission_identity_fields(*, workflow: object, event: object, role: object,
+                              admission_generation: object = None) -> dict[str, str]:
+    """Conditional identity extension; structural binding is not run admission.
+
+    Only admitted ci PR dispatches carry this field. Legacy PR/main documents
+    and diagnostic/base-replay identities retain their exact existing shapes.
+    The resolver and evidence reader separately authenticate the generation.
+    """
+    if (workflow, event, role) == ("ci", "workflow_dispatch", "pr_head"):
+        if not isinstance(admission_generation, str) or not re.fullmatch(r"[0-9a-f]{12}", admission_generation):
+            raise SemanticProofError("unsupported role/event combination pr_head/workflow_dispatch: admission_generation must be 12 lowercase hex")
+        return {"admission_generation": admission_generation}
+    if admission_generation is not None:
+        raise SemanticProofError("unsupported admission_generation on legacy or non-PR-dispatch identity")
+    return {}
+
+
 def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
     role = _string(plan.get("role"), "role")
     if role not in {"pr_head", "main"}:
         raise SemanticProofError("role must be pr_head or main")
     event = _string(plan.get("event"), "event")
-    if (role, event) not in {("pr_head", "pull_request"), ("main", "workflow_dispatch")}:
+    if (role, event) not in {("pr_head", "pull_request"), ("main", "workflow_dispatch")} and not (
+            (role, event) == ("pr_head", "workflow_dispatch") and plan.get("workflow") == "ci"):
         raise SemanticProofError(f"role/event combination {role}/{event} is not authoritative")
     workflow_run_id = _string(str(plan.get("workflow_run_id", "")), "workflow_run_id")
     if not workflow_run_id.isdecimal() or int(workflow_run_id) < 1:
@@ -628,6 +646,8 @@ def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
     if workflow != "ci":
         raise SemanticProofError("workflow must be ci")
     identity = {
+        **admission_identity_fields(workflow=workflow, event=event, role=role,
+                                    admission_generation=plan.get("admission_generation")),
         "workflow_run_id": workflow_run_id,
         "workflow": workflow,
         "event": event,
@@ -655,9 +675,9 @@ def _identity(plan: Mapping[str, Any]) -> dict[str, Any]:
 def plan_hash_payload_from_document(plan_source: Mapping[str, Any]) -> dict[str, Any]:
     """Rebuild exactly the runner's v2 plan-hash payload from its publication."""
     plan = _object(plan_source, "plan")
-    if set(plan) != _PLAN_DOCUMENT_KEYS:
-        raise SemanticProofError("plan has missing or unsupported fields")
     identity = _identity(plan)
+    if set(plan) != _PLAN_DOCUMENT_KEYS | ({"admission_generation"} if "admission_generation" in identity else set()):
+        raise SemanticProofError("plan has missing or unsupported fields")
     if plan.get("schema") != PLAN_SCHEMA:
         raise SemanticProofError(f"plan schema must be {PLAN_SCHEMA}")
     authority_changed = plan.get("authority_changed")
@@ -770,6 +790,7 @@ def plan_hash_payload_from_document(plan_source: Mapping[str, Any]) -> dict[str,
         )
     return {
         "schema": PLAN_SCHEMA,
+        **({"admission_generation": identity["admission_generation"]} if "admission_generation" in identity else {}),
         "workflow_run_id": identity["workflow_run_id"],
         "workflow": identity["workflow"],
         "event": identity["event"],
@@ -896,7 +917,7 @@ def reconcile_evidence(
             "pack_index",
             "infrastructure",
             "jobs",
-        }:
+        } | ({"admission_generation"} if "admission_generation" in identity else set()):
             raise SemanticProofError("fragment has missing or unsupported fields")
         for key, value in identity.items():
             if fragment.get(key) != value:
@@ -1170,9 +1191,9 @@ def _validate_evidence(source: Mapping[str, Any]) -> Mapping[str, Any]:
         "infrastructure",
         "evidence_sha256",
     }
-    if set(evidence) != expected_top_keys:
-        raise SemanticProofError("semantic evidence has missing or unsupported fields")
     identity = _identity(evidence)
+    if set(evidence) != expected_top_keys | ({"admission_generation"} if "admission_generation" in identity else set()):
+        raise SemanticProofError("semantic evidence has missing or unsupported fields")
     if evidence.get("status") not in {"clear", "failure"}:
         raise SemanticProofError("evidence status must be clear or failure")
     if type(evidence.get("authority_changed")) is not bool:
@@ -1325,6 +1346,7 @@ def load_semantic_evidence(
     expected_role: str | None = None,
     expected_workflow: str | None = None,
     expected_event: str | None = None,
+    expected_admission_generation: str | None = None,
 ) -> LoadedSemanticEvidence:
     if source is None:
         if advertised:
@@ -1341,6 +1363,7 @@ def load_semantic_evidence(
         "role": expected_role,
         "workflow": expected_workflow,
         "event": expected_event,
+        "admission_generation": expected_admission_generation,
     }
     for key, value in expected.items():
         if value is not None and str(evidence.get(key)) != str(value):
@@ -1650,6 +1673,7 @@ def _planner_failure_evidence(
     tested_tree_sha: object | None = None,
     subject_head_sha: object | None = None,
     base_sha: object | None = None,
+    admission_generation: object | None = None,
 ) -> dict[str, Any]:
     """Materialize a bounded failure even when the plan cannot be loaded.
 
@@ -1673,6 +1697,7 @@ def _planner_failure_evidence(
     )
     complete_identity = all(value is not None and str(value) for value in supplied)
     evidence: dict[str, Any] = {
+        **({"admission_generation": admission_generation} if admission_generation is not None else {}),
         "schema": EVIDENCE_SCHEMA,
         "workflow_run_id": str(workflow_run_id) if complete_identity else "unknown",
         "workflow": str(workflow) if complete_identity else "ci",
@@ -1730,6 +1755,7 @@ def _cli_reconcile(args: argparse.Namespace) -> int:
             tested_tree_sha=args.fallback_tested_tree_sha,
             subject_head_sha=args.fallback_subject_head_sha,
             base_sha=args.fallback_base_sha,
+            admission_generation=args.fallback_admission_generation,
         )
         _write_json(Path(args.output), evidence)
         print(json.dumps(evidence, sort_keys=True, separators=(",", ":")))
@@ -1770,6 +1796,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     reconcile.add_argument("--fallback-tested-tree-sha")
     reconcile.add_argument("--fallback-subject-head-sha")
     reconcile.add_argument("--fallback-base-sha")
+    reconcile.add_argument("--fallback-admission-generation")
     validate = subparsers.add_parser("validate", help="validate one final evidence document")
     validate.add_argument("--input", required=True)
     return parser.parse_args(argv)
