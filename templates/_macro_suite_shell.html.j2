@@ -679,7 +679,7 @@
                <dd>{% if metric.reference_period %}<time>{{ metric.reference_period }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
           <div><dt>{{ t('Basis', '基准') }}</dt><dd>{{ bl(metric.basis) }}</dd></div>
           <div><dt>{{ t('Definition version', '定义版本') }}</dt>
-               <dd>{% if metric.definition_label %}{{ bl(metric.definition_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+               <dd>{% if view.workspace.id == 'business_activity' %}{{ scalar_or_dash(metric.definition_version, True) }}{% elif metric.definition_label %}{{ bl(metric.definition_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         </dl>
         <p>{{ t('Clocks and owner', '时钟与所有者') }}</p>
         {{ clock_list(metric.clocks) }}

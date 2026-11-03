@@ -1,0 +1,2907 @@
+{
+  "baseline": "52e312afdc3192abc945ea3fb4954fe21309e579",
+  "kind": "controlled standalone retained snapshot, actual native validator/view/template/client; ephemeral offline context; no inShell/served/current-economic claim",
+  "profiles": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "leadingDetails": "LEADING TIER INDEX\nCurrent\n95.02\nIndex pt\n\nHigher = stronger support\n\nDetails\nREFERENCE PERIOD\n2026-10-31\nBASIS\nRebased 100 composite\nDEFINITION VERSION\n1.0.0\n\nClocks and owner\n\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n31 Oct 2026\n\nOwner\nBusiness-cycle desk\n\nAuthority ceiling\nDescriptive reading — this page cannot rank, size or trigger a trade",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 57,
+        "y": 102.828125,
+        "width": 233.5,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 1372,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+      "allSources": [
+        "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+        "ISM / regional-Fed manufacturing & services surveys\nRights blocked\nPROVIDER\n—\nOWNER\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\nARTIFACT\n—\nRIGHTS\nRights blocked\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\n—\nReference period\nThe period the economic value describes.\n—\nnot carried by this source\nObserved\nNative economic or market observation time.\n—\nnot carried by this source\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1066,
+        "scrollAfter": 1066,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "Component histories\nOwner projections with per-series clocks, units, basis and revision behaviour.\n—\nInsufficient history\n\nNo chart yet — we don't have enough history for this one.\n\nTechnical notes\nHow this reading was revised\nTechnical notes",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "MACRO & MONETARY\n\nBusiness Activity\n\nCycle tiers: leading x coincident x lagging\n\nRegion\n·\nUnited States\nSources disagree\nPAGE REFRESHED\nUpdated once a night — not live.\n⌁\nThis workspace is not rendering a state\n\nThe published snapshot did not pass the closed contract, so nothing on this page may be read as the current regime. No value has been substituted, defaulted or estimated.\n\nWHY\nSources disagree\n\nThe page recovers automatically on the next accepted producer build.\n\nTechnical detail",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "leadingDetails": "LEADING TIER INDEX\nCurrent\n95.02\nIndex pt\n\nHigher = stronger support\n\nDetails\nREFERENCE PERIOD\n2026-10-31\nBASIS\nRebased 100 composite\nDEFINITION VERSION\n1.0.0\n\nClocks and owner\n\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n31 Oct 2026\n\nOwner\nBusiness-cycle desk\n\nAuthority ceiling\nDescriptive reading — this page cannot rank, size or trigger a trade",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 57,
+        "y": 102.828125,
+        "width": 233.5,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 1372,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+      "allSources": [
+        "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+        "ISM / regional-Fed manufacturing & services surveys\nRights blocked\nPROVIDER\n—\nOWNER\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\nARTIFACT\n—\nRIGHTS\nRights blocked\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\n—\nReference period\nThe period the economic value describes.\n—\nnot carried by this source\nObserved\nNative economic or market observation time.\n—\nnot carried by this source\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1066,
+        "scrollAfter": 1066,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "Component histories\nOwner projections with per-series clocks, units, basis and revision behaviour.\n—\nInsufficient history\n\nNo chart yet — we don't have enough history for this one.\n\nTechnical notes\nHow this reading was revised\nTechnical notes",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "MACRO & MONETARY\n\nBusiness Activity\n\nCycle tiers: leading x coincident x lagging\n\nRegion\n·\nUnited States\nSources disagree\nPAGE REFRESHED\nUpdated once a night — not live.\n⌁\nThis workspace is not rendering a state\n\nThe published snapshot did not pass the closed contract, so nothing on this page may be read as the current regime. No value has been substituted, defaulted or estimated.\n\nWHY\nSources disagree\n\nThe page recovers automatically on the next accepted producer build.\n\nTechnical detail",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "leadingDetails": "LEADING TIER INDEX\nCurrent\n95.02\nIndex pt\n\nHigher = stronger support\n\nDetails\nREFERENCE PERIOD\n2026-10-31\nBASIS\nRebased 100 composite\nDEFINITION VERSION\n1.0.0\n\nClocks and owner\n\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n31 Oct 2026\n\nOwner\nBusiness-cycle desk\n\nAuthority ceiling\nDescriptive reading — this page cannot rank, size or trigger a trade",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 47,
+        "y": 102.796875,
+        "width": 296,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 322,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+      "allSources": [
+        "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+        "ISM / regional-Fed manufacturing & services surveys\nRights blocked\nPROVIDER\n—\nOWNER\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\nARTIFACT\n—\nRIGHTS\nRights blocked\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\n—\nReference period\nThe period the economic value describes.\n—\nnot carried by this source\nObserved\nNative economic or market observation time.\n—\nnot carried by this source\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1866,
+        "scrollAfter": 1866,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "Component histories\nOwner projections with per-series clocks, units, basis and revision behaviour.\n—\nInsufficient history\n\nNo chart yet — we don't have enough history for this one.\n\nTechnical notes\nHow this reading was revised\nTechnical notes",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "MACRO & MONETARY\n\nBusiness Activity\n\nCycle tiers: leading x coincident x lagging\n\nRegion\n·\nUnited States\nSources disagree\nPAGE REFRESHED\nUpdated once a night — not live.\n⌁\nThis workspace is not rendering a state\n\nThe published snapshot did not pass the closed contract, so nothing on this page may be read as the current regime. No value has been substituted, defaulted or estimated.\n\nWHY\nSources disagree\n\nThe page recovers automatically on the next accepted producer build.\n\nTechnical detail",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "leadingDetails": "LEADING TIER INDEX\nCurrent\n95.02\nIndex pt\n\nHigher = stronger support\n\nDetails\nREFERENCE PERIOD\n2026-10-31\nBASIS\nRebased 100 composite\nDEFINITION VERSION\n1.0.0\n\nClocks and owner\n\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n31 Oct 2026\n\nOwner\nBusiness-cycle desk\n\nAuthority ceiling\nDescriptive reading — this page cannot rank, size or trigger a trade",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 47,
+        "y": 102.796875,
+        "width": 296,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 322,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+      "allSources": [
+        "Business-cycle Leading/Coincident/Lagging composite\nCurrent\nPROVIDER\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\nOWNER\nengine.business_cycle\nARTIFACT\ndata/regime/latest.json#business_cycle\nRIGHTS\nOpen\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\ntier-level standardized-leg cumulative composite; individual legs are not separately published\nReference period\nThe period the economic value describes.\n31 Oct 2026\nObserved\nNative economic or market observation time.\n31 Oct 2026\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source",
+        "ISM / regional-Fed manufacturing & services surveys\nRights blocked\nPROVIDER\n—\nOWNER\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\nARTIFACT\n—\nRIGHTS\nRights blocked\nCORRECTION\nCorrection state unknown\nDEFINITION\n—\nTRANSFORM\n—\nReference period\nThe period the economic value describes.\n—\nnot carried by this source\nObserved\nNative economic or market observation time.\n—\nnot carried by this source\nReleased\nProvider publication time.\n—\nnot carried by this source\nFirst knowable\nEarliest time this value was lawfully knowable to us.\n—\nnot carried by this source\nCollected\nWhen Mastermind received it.\n—\nnot carried by this source\nRevised\nProvider correction or revision time.\n—\nnot carried by this source\nWorked out on\nCut-off used for the derived result.\n—\nnot carried by this source"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1866,
+        "scrollAfter": 1866,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "Component histories\nOwner projections with per-series clocks, units, basis and revision behaviour.\n—\nInsufficient history\n\nNo chart yet — we don't have enough history for this one.\n\nTechnical notes\nHow this reading was revised\nTechnical notes",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "MACRO & MONETARY\n\nBusiness Activity\n\nCycle tiers: leading x coincident x lagging\n\nRegion\n·\nUnited States\nSources disagree\nPAGE REFRESHED\nUpdated once a night — not live.\n⌁\nThis workspace is not rendering a state\n\nThe published snapshot did not pass the closed contract, so nothing on this page may be read as the current regime. No value has been substituted, defaulted or estimated.\n\nWHY\nSources disagree\n\nThe page recovers automatically on the next accepted producer build.\n\nTechnical detail",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "appliedTheme": "dark",
+      "appliedLocale": "zh",
+      "leadingDetails": "领先层指数\n当前有效\n95.02\n指数点\n\n数值越高＝支持越强\n\n详情\n参考期\n2026-10-31\n基准\n以100为基准的综合指数\n定义版本\n1.0.0\n\n时钟与所有者\n\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n2026年10月31日\n\n所有者\n商业周期小组\n\n权限上限\n描述性读数 — 本页不能排名、定仓或触发交易",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 57,
+        "y": 103.4375,
+        "width": 233.5,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 1372,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+      "allSources": [
+        "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+        "ISM/地区联储制造业与服务业调查\n授权受限\n提供方\n—\n所有者\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\n产物\n—\n授权\n授权受限\n更正\n更正状态未知\n定义\n—\n变换\n—\n参考期\n该经济数值所描述的期间。\n—\n该数据源未提供\n观察时间\n原生经济或市场观察时间。\n—\n该数据源未提供\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1005,
+        "scrollAfter": 1005,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "分项历史\n所有者投影序列，附各序列的时钟、单位、基准与修订行为。\n—\n历史数据不足\n\n暂无图表 — 该项历史数据不足。\n\n技术说明\n本读数如何被修订\n技术说明",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "宏观与货币\n\n商业活动\n\n周期分层：领先 × 同步 × 滞后\n\n地区\n·\n美国\n数据源存在分歧\n页面更新于\n每晚更新一次 — 非实时。\n⌁\n本工作区当前不呈现任何状态\n\n已发布的快照未通过封闭契约校验，因此本页任何内容都不得视为当前体制读数。系统没有以任何默认值、替代值或估计值填补。\n\n原因\n数据源存在分歧\n\n下一次生产端成功构建后，本页将自动恢复。\n\n技术细节",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-500.woff2",
+          "source": "templates/fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "appliedTheme": "light",
+      "appliedLocale": "zh",
+      "leadingDetails": "领先层指数\n当前有效\n95.02\n指数点\n\n数值越高＝支持越强\n\n详情\n参考期\n2026-10-31\n基准\n以100为基准的综合指数\n定义版本\n1.0.0\n\n时钟与所有者\n\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n2026年10月31日\n\n所有者\n商业周期小组\n\n权限上限\n描述性读数 — 本页不能排名、定仓或触发交易",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 57,
+        "y": 103.4375,
+        "width": 233.5,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 1372,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+      "allSources": [
+        "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+        "ISM/地区联储制造业与服务业调查\n授权受限\n提供方\n—\n所有者\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\n产物\n—\n授权\n授权受限\n更正\n更正状态未知\n定义\n—\n变换\n—\n参考期\n该经济数值所描述的期间。\n—\n该数据源未提供\n观察时间\n原生经济或市场观察时间。\n—\n该数据源未提供\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1005,
+        "scrollAfter": 1005,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "分项历史\n所有者投影序列，附各序列的时钟、单位、基准与修订行为。\n—\n历史数据不足\n\n暂无图表 — 该项历史数据不足。\n\n技术说明\n本读数如何被修订\n技术说明",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "宏观与货币\n\n商业活动\n\n周期分层：领先 × 同步 × 滞后\n\n地区\n·\n美国\n数据源存在分歧\n页面更新于\n每晚更新一次 — 非实时。\n⌁\n本工作区当前不呈现任何状态\n\n已发布的快照未通过封闭契约校验，因此本页任何内容都不得视为当前体制读数。系统没有以任何默认值、替代值或估计值填补。\n\n原因\n数据源存在分歧\n\n下一次生产端成功构建后，本页将自动恢复。\n\n技术细节",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "appliedTheme": "dark",
+      "appliedLocale": "zh",
+      "leadingDetails": "领先层指数\n当前有效\n95.02\n指数点\n\n数值越高＝支持越强\n\n详情\n参考期\n2026-10-31\n基准\n以100为基准的综合指数\n定义版本\n1.0.0\n\n时钟与所有者\n\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n2026年10月31日\n\n所有者\n商业周期小组\n\n权限上限\n描述性读数 — 本页不能排名、定仓或触发交易",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 47,
+        "y": 102.953125,
+        "width": 296,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 322,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+      "allSources": [
+        "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+        "ISM/地区联储制造业与服务业调查\n授权受限\n提供方\n—\n所有者\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\n产物\n—\n授权\n授权受限\n更正\n更正状态未知\n定义\n—\n变换\n—\n参考期\n该经济数值所描述的期间。\n—\n该数据源未提供\n观察时间\n原生经济或市场观察时间。\n—\n该数据源未提供\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1687,
+        "scrollAfter": 1687,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "分项历史\n所有者投影序列，附各序列的时钟、单位、基准与修订行为。\n—\n历史数据不足\n\n暂无图表 — 该项历史数据不足。\n\n技术说明\n本读数如何被修订\n技术说明",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "宏观与货币\n\n商业活动\n\n周期分层：领先 × 同步 × 滞后\n\n地区\n·\n美国\n数据源存在分歧\n页面更新于\n每晚更新一次 — 非实时。\n⌁\n本工作区当前不呈现任何状态\n\n已发布的快照未通过封闭契约校验，因此本页任何内容都不得视为当前体制读数。系统没有以任何默认值、替代值或估计值填补。\n\n原因\n数据源存在分歧\n\n下一次生产端成功构建后，本页将自动恢复。\n\n技术细节",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "requests": [
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-healthy",
+          "sha256": "45d77334cf4550f44fa07f9bc4ea5ca3bf88f3e296c2e131bf64ea73b6e60eb8"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        },
+        {
+          "path": "macro_business_activity.html",
+          "source": "native-render-candidate-mismatch",
+          "sha256": "4fb3098e5084da6a13a990f83a14c3f85aa64d2dd0dc11d68813de6ebb01409f"
+        },
+        {
+          "path": "macro_suite_boot.js",
+          "source": "templates/macro_suite_boot.js",
+          "sha256": "768a434290a0688b3344270eda0f674ba13dd644c00d19ce92cbdb26cf900b69"
+        },
+        {
+          "path": "theme.css",
+          "source": "templates/theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "path": "macro_suite.css",
+          "source": "templates/macro_suite.css",
+          "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3"
+        },
+        {
+          "path": "macro_command.css",
+          "source": "templates/macro_command.css",
+          "sha256": "803860e31c911ed99d61821e5906b25d175492a75e16adfde099e5f6eb867f65"
+        },
+        {
+          "path": "navigation-refresh.css",
+          "source": "templates/navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "path": "logo_config.js",
+          "source": "templates/logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "path": "stock-logos.js",
+          "source": "templates/stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "path": "live_config.js",
+          "source": "site/live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "path": "live.js",
+          "source": "templates/live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "path": "theme.js",
+          "source": "templates/theme.js",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+        },
+        {
+          "path": "macro_suite.js",
+          "source": "templates/macro_suite.js",
+          "sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+        },
+        {
+          "path": "macro_command.js",
+          "source": "templates/macro_command.js",
+          "sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+        },
+        {
+          "path": "product-nav-icons.css",
+          "source": "templates/product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "path": "fonts/Inter-600.woff2",
+          "source": "templates/fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "path": "fonts/Inter-400.woff2",
+          "source": "templates/fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "path": "account.js",
+          "source": "templates/account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "path": "fonts/Inter-800.woff2",
+          "source": "templates/fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "path": "fonts/Inter-700.woff2",
+          "source": "templates/fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "path": "nav_market.js",
+          "source": "templates/nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "path": "terminal_overlay.js",
+          "source": "templates/terminal_overlay.js",
+          "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+        }
+      ],
+      "blocked": [
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        },
+        {
+          "path": "/script.js",
+          "origin": "cloud.umami.is"
+        }
+      ],
+      "errors": [],
+      "appliedTheme": "light",
+      "appliedLocale": "zh",
+      "leadingDetails": "领先层指数\n当前有效\n95.02\n指数点\n\n数值越高＝支持越强\n\n详情\n参考期\n2026-10-31\n基准\n以100为基准的综合指数\n定义版本\n1.0.0\n\n时钟与所有者\n\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n2026年10月31日\n\n所有者\n商业周期小组\n\n权限上限\n描述性读数 — 本页不能排名、定仓或触发交易",
+      "summaryDisplay": "list-item",
+      "detailsSummaryBox": {
+        "x": 47,
+        "y": 102.953125,
+        "width": 296,
+        "height": 44
+      },
+      "closeBox": {
+        "x": 322,
+        "y": 22,
+        "width": 44,
+        "height": 44
+      },
+      "sourceReceipt": "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+      "allSources": [
+        "商业周期领先/同步/滞后综合指数\n当前有效\n提供方\nFRED / Yahoo (Conference-Board-style standardized-leg composite; see engine/business_cycle.py)\n所有者\nengine.business_cycle\n产物\ndata/regime/latest.json#business_cycle\n授权\n公开\n更正\n更正状态未知\n定义\n—\n变换\ntier-level standardized-leg cumulative composite; individual legs are not separately published\n参考期\n该经济数值所描述的期间。\n2026年10月31日\n观察时间\n原生经济或市场观察时间。\n2026年10月31日\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供",
+        "ISM/地区联储制造业与服务业调查\n授权受限\n提供方\n—\n所有者\nNONE -- no lawful ISM/PMI or regional-Fed survey collector is wired in this repository\n产物\n—\n授权\n授权受限\n更正\n更正状态未知\n定义\n—\n变换\n—\n参考期\n该经济数值所描述的期间。\n—\n该数据源未提供\n观察时间\n原生经济或市场观察时间。\n—\n该数据源未提供\n发布时间\n数据提供方的发布时间。\n—\n该数据源未提供\n首次可知\n本系统可合法获知该数值的最早时间。\n—\n该数据源未提供\n采集时间\nMastermind 接收到该数据的时间。\n—\n该数据源未提供\n修订时间\n数据提供方的更正或修订时间。\n—\n该数据源未提供\n计算日期\n推导结果所使用的数据截止点。\n—\n该数据源未提供"
+      ],
+      "returned": {
+        "url": "https://fixture.invalid/macro_business_activity.html#current",
+        "scrollBefore": 1687,
+        "scrollAfter": 1687,
+        "openerFocused": true,
+        "metricDetailsStillOpen": true
+      },
+      "closeClickReturn": true,
+      "history": "分项历史\n所有者投影序列，附各序列的时钟、单位、基准与修订行为。\n—\n历史数据不足\n\n暂无图表 — 该项历史数据不足。\n\n技术说明\n本读数如何被修订\n技术说明",
+      "historyUrl": "https://fixture.invalid/macro_business_activity.html#history",
+      "healthyOverflow": false,
+      "refusal": "宏观与货币\n\n商业活动\n\n周期分层：领先 × 同步 × 滞后\n\n地区\n·\n美国\n数据源存在分歧\n页面更新于\n每晚更新一次 — 非实时。\n⌁\n本工作区当前不呈现任何状态\n\n已发布的快照未通过封闭契约校验，因此本页任何内容都不得视为当前体制读数。系统没有以任何默认值、替代值或估计值填补。\n\n原因\n数据源存在分歧\n\n下一次生产端成功构建后，本页将自动恢复。\n\n技术细节",
+      "noEconomicFigureOnRefusal": true,
+      "refusalOverflow": false
+    }
+  ],
+  "failures": [],
+  "reuse": "Four EN original successful cells; four ZH cells after correcting harness lang assertion zh to actual data-lang=zh (document.lang remains zh-CN). No product change between these cases. Separate settled capture manifest asserts actual theme+locale in all eight cells.",
+  "negative": "candidate-result-harness-locale-negative.json retains the incorrect zh document.lang expectation; before-result/probe-failure in external retained directory are hidden-duplicate-selector harness failures."
+}
