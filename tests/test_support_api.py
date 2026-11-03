@@ -294,7 +294,7 @@ def test_bearer_overrides_body_email_and_snapshots_tier(wired, monkeypatch):
                         lambda auth: {"id": UID, "email": "real@account.com"})
     from app import billing
     monkeypatch.setattr(billing, "read_entitlement",
-                        lambda uid: {"tier": "pro", "features": [], "status": "active",
+                        lambda uid, **kwargs: {"tier": "pro", "features": [], "status": "active",
                                      "current_period_end": None, "source": "stripe",
                                      "interval": "annual"})
     out = _post(_body(email="spoofed@attacker.test"), authorization="Bearer good-token")
@@ -321,7 +321,7 @@ def test_tier_snapshot_failure_is_not_fatal(wired, monkeypatch):
                         lambda auth: {"id": UID, "email": "real@account.com"})
     from app import billing
     monkeypatch.setattr(billing, "read_entitlement",
-                        lambda uid: (_ for _ in ()).throw(RuntimeError("supabase down")))
+                        lambda uid, **kwargs: (_ for _ in ()).throw(RuntimeError("supabase down")))
     out = _post(authorization="Bearer good")
     assert out["ok"] is True and store.tickets[0]["tier"] is None
 
@@ -651,7 +651,7 @@ def test_ack_attaches_the_verified_user_id_when_signed_in(wired, monkeypatch):
     monkeypatch.setattr(support, "_notify_operator", lambda **kw: "sent")
     monkeypatch.setattr(support, "_resolve_user",
                         lambda auth: {"id": UID, "email": "signed@example.com"})
-    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {"tier": "insider"})
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid, **kwargs: {"tier": "insider"})
     sent: list[dict] = []
     monkeypatch.setattr(mailer, "send", lambda **kw: (sent.append(kw), "sent")[1])
     _post(_body(email="typed@example.com"), authorization="Bearer tok")
@@ -814,3 +814,59 @@ def test_the_ack_claims_a_person_not_a_ticket_thread(wired, monkeypatch):
     assert "它会送到同一个人手里" in html
     for false_claim in ("lands on the same ticket", "记到同一个工单上"):
         assert false_claim not in html and false_claim not in text
+
+
+# MO-PAID-058: exercise the real billing reader, not a mock that raises above
+# its fail-safe boundary. All store and identity operations are synthetic.
+@pytest.mark.parametrize("failure", ["transport", "unconfigured", "null", "object", "missing-tier", "boolean-tier"])
+def test_actual_entitlement_read_failure_is_disclosed(wired, monkeypatch, failure):
+    from app import billing
+
+    store, _ = wired
+    monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "" if failure == "unconfigured" else "synthetic")
+    def read(method, path):
+        assert method == "GET" and f"user_id=eq.{UID}" in path
+        if failure == "transport":
+            raise RuntimeError("synthetic store unavailable")
+        if failure == "unconfigured":
+            pytest.fail("unconfigured read must not attempt transport")
+        return {"null": None, "object": {}, "missing-tier": [{}], "boolean-tier": [{"tier": True}]}[failure]
+    monkeypatch.setattr(billing, "_pg", read)
+    out = _post(authorization="Bearer synthetic", drain=False)
+    row = store.tickets[0]
+    assert out["ok"] is True
+    assert row["tier"] is None
+    assert row["meta"]["plan_read"] is False
+    assert row["meta"]["queue"] == "community"
+    assert "could not read" in out["routing"]["note_en"]
+    assert out["routing"]["note_zh"]
+
+
+@pytest.mark.parametrize("rows,tier,queue", [([], "free", "community"), ([{"tier": "free"}], "free", "community"), ([{"tier": "pro"}], "pro", "priority")])
+def test_actual_known_entitlement_keeps_support_routing(wired, monkeypatch, rows, tier, queue):
+    from app import billing
+
+    store, _ = wired
+    monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "synthetic")
+    monkeypatch.setattr(billing, "_pg", lambda *a, **kw: rows)
+    out = _post(authorization="Bearer synthetic", drain=False)
+    assert store.tickets[0]["tier"] == tier
+    assert store.tickets[0]["meta"]["plan_read"] is True
+    assert store.tickets[0]["meta"]["queue"] == queue
+    assert out["routing"]["note_en"] is None
+
+
+@pytest.mark.parametrize("configured", [True, False])
+def test_display_entitlement_default_remains_fail_safe(monkeypatch, configured):
+    from app import billing
+
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", "synthetic" if configured else "")
+    def unavailable(*a, **kw):
+        raise RuntimeError("synthetic store unavailable")
+    monkeypatch.setattr(billing, "_pg", unavailable)
+    assert billing.read_entitlement(UID) == {
+        "tier": "free", "features": [], "status": "none", "current_period_end": None,
+        "source": "stripe", "interval": None,
+    }

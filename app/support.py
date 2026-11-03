@@ -291,12 +291,14 @@ def _resolve_user(authorization: str | None) -> dict | None:
 
 def _tier_for_state(user_id: str) -> tuple[str | None, bool]:
     """(tier, tier_known). tier_known is False ONLY when the read raised —
-    an anonymous submitter is a known-absent plan, not an unreadable one."""
+    an anonymous submitter is a known-absent plan, not an unreadable one.
+    Request a qualified read so billing's display-only free fallback cannot
+    turn an unavailable plan into a confirmed Free support receipt."""
     if not user_id:
         return None, True
     try:
         from app import billing  # noqa: PLC0415
-        return billing.read_entitlement(user_id).get("tier"), True
+        return billing.read_entitlement(user_id, require_read=True).get("tier"), True
     except Exception as exc:  # noqa: BLE001
         log.debug("support: plan snapshot failed for %s (%s)", user_id, type(exc).__name__)
         return None, False
