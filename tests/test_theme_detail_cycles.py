@@ -29,9 +29,10 @@ def test_cycle_from_chart_builds_compact_record():
     assert rec["xDomain"][1] > rec["today"]
 
 
+
 def test_theme_cycle_chart_preserves_geometry_on_wide_detail_pages():
     template = (Path(__file__).parents[1] / "templates" / "basket_detail.html.j2").read_text()
     assert 'const W=1080,H=240' in template
     assert 'preserveAspectRatio="xMidYMid meet"' in template
-    assert 'aspect-ratio:${W}/${H}' in template
+    assert 'aspect-ratio:'+'$'+'{W}/'+'$'+'{H}' in template
     assert 'preserveAspectRatio="none" style="display:block;height:168px"' not in template

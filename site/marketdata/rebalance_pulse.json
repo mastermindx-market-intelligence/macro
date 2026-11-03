@@ -1,31 +1,31 @@
 {
-  "as_of": "2026-10-06",
-  "built_at": "2026-10-07T08:08:03Z",
+  "as_of": "2026-10-30",
+  "built_at": "2026-11-02T10:17:48Z",
   "latest_pulse": {
-    "date": "2026-10-06",
+    "date": "2026-10-30",
     "class": "quiet",
-    "market_vol_ratio": 0.932,
-    "up_share": 0.697,
+    "market_vol_ratio": 1.497,
+    "up_share": 0.329,
     "basis": "updown",
-    "n_megacap_rvol2": 0,
+    "n_megacap_rvol2": 5,
     "megacap_rvol": {
-      "PG": 1.77,
-      "AVGO": 1.3,
-      "AMD": 1.15,
-      "UNH": 1.1,
-      "MSFT": 1.08,
-      "ABBV": 1.08,
-      "NFLX": 1.05,
-      "LLY": 1.04
+      "AMZN": 3.01,
+      "GOOG": 2.88,
+      "GOOGL": 2.77,
+      "LLY": 2.48,
+      "AMD": 2.12,
+      "TMUS": 1.95,
+      "XOM": 1.92,
+      "AAPL": 1.84
     },
     "calendar": {
       "is_quarter_end": false,
-      "td_to_quarter_end": -4,
+      "td_to_quarter_end": -22,
       "in_qtr_end_window": false,
       "is_russell_recon_session": false,
       "in_recon_week": false,
       "is_sp_rebalance_session": false,
-      "is_month_end_session": false
+      "is_month_end_session": true
     },
     "summary_en": "No elevated volume or scheduled rebalancing activity.",
     "summary_zh": "无异常量能或计划中的再平衡活动。",
@@ -41,21 +41,21 @@
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 52
+      "td_to": 34
     },
     {
       "date": "2026-12-31",
       "types": [
         "quarter_end"
       ],
-      "td_to": 60
+      "td_to": 42
     },
     {
       "date": "2027-03-19",
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 113
+      "td_to": 95
     }
   ],
   "recent_events": [],

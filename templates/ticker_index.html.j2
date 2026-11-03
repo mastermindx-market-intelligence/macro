@@ -262,6 +262,8 @@ a { color: inherit; text-decoration: none; }
 .pw-note { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); max-width: 62ch;
            line-height: 1.5; }
 .pw-note b { color: var(--text); font-weight: 650; }
+/* Keep event continuations out of the ticker-only grid track. */
+.pw-research-action { grid-column: 1 / -1; }
 /* Law 1 — the stance gets its own line. Tucked onto the end of the null
    sentence it landed after a line wrap, which is where a reader stops. */
 .pw-stance { margin: 7px 0 0; font-size: 13px; font-weight: 700; color: var(--text);
@@ -783,6 +785,7 @@ footer.foot { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--l
           <span class="pw-mv">{{ t(r.move_en ~ ' · ' ~ r.when_en, r.move_zh ~ ' · ' ~ r.when_zh) }}</span>
           <span class="pw-end"><i class="pw-sw pw-s-{{ r.end_cls }}"></i>{{ t(r.end_en, r.end_zh) }}</span>
         {%- if r.href %}</a>{% else %}</span>{% endif %}
+        {%- if r.research_href %}<p class="pw-note pw-research-action"><a href="{{ r.research_href }}">{{ t('Inspect event research for ' ~ r.t, '查看 ' ~ r.t ~ ' 的事件研究') }}</a></p>{% endif %}
         {%- endfor %}
       </div>
     </div>
@@ -804,6 +807,7 @@ footer.foot { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--l
             {%- if e.state_en %}<span class="pw-chip pw-st"{% if e.tip_en %} data-tip-en="{{ e.tip_en }}" data-tip-zh="{{ e.tip_zh }}"{% endif %}>{{ t(e.state_en, e.state_zh) }}</span>{% endif %}
           </span>
         {%- if e.href %}</a>{% else %}</span>{% endif %}
+        {%- if e.research_href %}<p class="pw-note pw-research-action"><a href="{{ e.research_href }}">{{ t('Inspect event research for ' ~ e.t, '查看 ' ~ e.t ~ ' 的事件研究') }}</a></p>{% endif %}
         {%- endfor %}
       </div>
     </div>
@@ -1076,7 +1080,7 @@ window.__HUB_SECEN={{ ((hub.sector_keys if hub else []) | map(attribute='key') |
     if (e.key === "Escape") { q.value = ""; state.q = ""; state.page = 1; render(); }
     if (e.key === "Enter") {
       var first = out.querySelector("a.rrow");
-      if (first) window.location.href = first.getAttribute("href");
+      if (first) { var _d = first.getAttribute("href"); var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { window.location.href = _d; } }
     }
   });
   document.addEventListener("keydown", function (e) {

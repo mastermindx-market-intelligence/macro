@@ -77,8 +77,9 @@ def render_markdown(packets: list[dict], generated_at: str) -> str:
       2. Blocked — awaiting_data candidates (blocked on data/label/grader availability)
     """
     # Split packets into active and blocked
-    active_packets = [p for p in packets if not p.get("is_awaiting_data")]
+    active_packets = [p for p in packets if not p.get("is_awaiting_data") and not p.get("is_research_diagnostic")]
     blocked_packets = [p for p in packets if p.get("is_awaiting_data")]
+    diagnostic_packets = [p for p in packets if p.get("is_research_diagnostic")]
 
     lines: list[str] = []
     lines.append("# Research Factory — Human Review Queue")
@@ -127,11 +128,47 @@ def render_markdown(packets: list[dict], generated_at: str) -> str:
         for i, pkt in enumerate(blocked_packets, 1):
             _render_blocked_packet(lines, i, pkt)
 
+    if diagnostic_packets:
+        lines.extend(["", "## Synthetic research diagnostics", ""])
+        for i, pkt in enumerate(diagnostic_packets, 1):
+            _render_packet(lines, i, pkt)
     return "\n".join(lines)
 
 
 def _render_packet(lines: list[str], i: int, pkt: dict) -> None:
     """Render one active-queue packet into lines (mutates lines in place)."""
+    if pkt.get("is_research_diagnostic"):
+        # These are owner-bound attachments, never decide.py candidates.
+        from engine.research_codegen.bridge import PUBLIC_AGGREGATE_KEYS
+        lines.extend([f"### {i}. {pkt['diagnostic_id']}", "", pkt["note"], ""])
+        metrics = pkt["frozen_gate_metrics"]
+        lines.extend(_render_metric_line(k, metrics[k]) for k in PUBLIC_AGGREGATE_KEYS)
+        if "engineering_evidence" in pkt:
+            # Recompile before rendering caller-owned packet data. The exact
+            # compiled shape rejects extra fields and altered authority flags.
+            from engine.research_factory.review_queue import diagnostic_review_packet
+            attached = pkt["engineering_evidence"]
+            keys = ("schema", "identity", "accounting", "attempts", "controls")
+            flags = {"authority": "display_only", "scope": "SYNTHETIC_ENGINEERING_ONLY",
+                     "physical_acceptance": False, "scientific_acceptance": "UNQUALIFIED"}
+            if (type(attached) is not dict or len(attached) != len(keys) + len(flags)
+                    or not all(type(key) is str for key in attached)
+                    or set(attached) != set(keys) | set(flags)
+                    or any(type(attached[key]) is not type(value) or attached[key] != value
+                           for key, value in flags.items())):
+                raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_EVIDENCE")
+            checked = diagnostic_review_packet(pkt["diagnostic"],
+                engineering_evidence={key: attached[key] for key in keys})["engineering_evidence"]
+            lines.extend(["", "**Engineering controls — synthetic receipts only**", "",
+                          "| Control | Observation | Evidence SHA-256 |",
+                          "| --- | --- | --- |"])
+            for control in checked["controls"]:
+                evidence = control["evidence_sha256"] or "none"
+                lines.append(f"| {control['id']} | {control['status']} | {evidence} |")
+            lines.extend(["", f"Retained attempts: {len(checked['attempts'])}.",
+                          "Physical acceptance: unqualified. Scientific acceptance: unqualified."])
+        lines.append("")
+        return
     cid = pkt.get("candidate_id", "?")
     ctype = pkt.get("candidate_type", "?")
     domain = pkt.get("domain", "?")
@@ -294,22 +331,47 @@ def _build_parser() -> argparse.ArgumentParser:
         "--dry-run", action="store_true", default=False,
         help="Print summary without writing (default behaviour; explicit flag for clarity)",
     )
+    ap.add_argument("--retain-diagnostics", action="store_true", help="Preserve the existing compiled display projection when publishing a refreshed queue.")
+    ap.add_argument("--retire-diagnostics", action="store_true", help="Explicitly retire the existing compiled diagnostic projection.")
     return ap
 
 
-def main() -> int:
+def main(*, trusted_codegen_artifacts: tuple = (), synthetic_commission=None) -> int:
     ap = _build_parser()
     args = ap.parse_args()
     dry_run = not args.write
 
     rf_dir = args.rf_dir or DEFAULT_RF_DIR
 
-    packets = build_queue(rf_dir=rf_dir)
+    packets = build_queue(rf_dir=rf_dir, trusted_codegen_artifacts=trusted_codegen_artifacts,
+                          synthetic_commission=synthetic_commission)
 
     generated_at = datetime.now(timezone.utc).isoformat()
 
-    active_packets = [p for p in packets if not p.get("is_awaiting_data")]
+    active_packets = [p for p in packets if not p.get("is_awaiting_data") and not p.get("is_research_diagnostic")]
     blocked_packets = [p for p in packets if p.get("is_awaiting_data")]
+    diagnostic_rows = [p["diagnostic"] for p in packets if p.get("is_research_diagnostic")]
+    diagnostic_state = "AVAILABLE" if diagnostic_rows else "DISABLED"
+    if args.retain_diagnostics and args.retire_diagnostics:
+        ap.error("choose one diagnostic retention disposition")
+    if args.write and not trusted_codegen_artifacts:
+        prior = rf_dir / "review" / "queue.json"
+        if prior.exists():
+            from engine.research_codegen.bridge import MAX_ARTIFACT_BYTES, decode_published_diagnostics
+            try:
+                with prior.open("rb") as stream:
+                    retained, prior_state = decode_published_diagnostics(stream.read(MAX_ARTIFACT_BYTES + 1))
+            except (OSError, ValueError):
+                print("Existing queue cannot be qualified; publication refused.")
+                return 2
+            if retained or prior_state == "UNAVAILABLE":
+                if not args.retain_diagnostics and not args.retire_diagnostics:
+                    print("Existing diagnostic publication needs --retain-diagnostics or --retire-diagnostics.")
+                    return 2
+                if args.retain_diagnostics:
+                    diagnostic_rows, diagnostic_state = list(retained), prior_state
+                    from engine.research_factory.review_queue import diagnostic_review_packet
+                    packets.extend(diagnostic_review_packet(row) for row in sorted(retained, key=lambda r: (r["created_at"], r["diagnostic_id"])))
 
     # Build JSON payload
     queue_json: dict = {
@@ -317,6 +379,9 @@ def main() -> int:
         "authority": "display_only",
         "generated_at": generated_at,
         "n_candidates": len(active_packets),
+        "n_research_diagnostics": len(diagnostic_rows),
+        "research_diagnostics": diagnostic_rows,
+        "research_diagnostics_state": diagnostic_state,
         "n_blocked": len(blocked_packets),
         "candidates": packets,
         "note": (

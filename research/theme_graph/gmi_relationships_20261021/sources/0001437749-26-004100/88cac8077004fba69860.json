@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-13T21:03:51Z",
+ "accession": "0001437749-26-004100",
+ "cik": "0000855658",
+ "doc_byte_length": 2133659,
+ "doc_sha256": "17e693d25bd745e0cfc4d5358b65e259eda6606b391713706f638a627adf5477",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "lscc20260103_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1225342,
+  "byte_start": 1223903,
+  "normalized": "Distributor D — 4",
+  "normalized_sha256": "7ce4ab37e5b6ff5b9617111fffca7432934b25a952661663ca2a299d13c75509",
+  "raw": "Distributor D</p> </td><td style=\"width: 1%; font-family: Arial, Helvetica, sans-serif; font-size: 9pt;\">&#160;</td><td style=\"width: 1%; font-family: Arial, Helvetica, sans-serif; font-size: 9pt;\">&#160;</td><td style=\"width: 15%; text-align: right; font-family: Arial, Helvetica, sans-serif; font-size: 9pt; margin-left: 0pt;\"><ix:nonFraction id=\"c139794618\" contextRef=\"d_2024-12-29_2026-01-03_ConcentrationRiskByBenchmarkAxis-SalesRevenueNetMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorDMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:fixed-zero\" decimals=\"0\">&#8212;</ix:nonFraction></td><td style=\"width: 1%; font-family: Arial, Helvetica, sans-serif; font-size: 9pt; margin-left: 0pt;\">&#160;</td><td style=\"width: 1%; font-family: Arial, Helvetica, sans-serif; font-size: 9pt;\">&#160;</td><td style=\"width: 1%; font-family: Arial, Helvetica, sans-serif; font-size: 9pt;\">&#160;</td><td style=\"width: 15%; text-align: right; font-family: Arial, Helvetica, sans-serif; font-size: 9pt; margin-left: 0pt;\"><ix:nonFraction id=\"c139794619\" contextRef=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-SalesRevenueNetMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorDMember\" unitRef=\"Pure\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" format=\"ixt:num-dot-decimal\" decimals=\"2\">4",
+  "raw_sha256": "88cac8077004fba69860a959d3be7bbb0c8c9e7c8bbeacf4f5321dbfc97b3fe0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/855658/000143774926004100/lscc20260103_10k.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 49730,
+   "byte_start": 48895,
+   "context_ref": "d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-SalesRevenueNetMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorDMember",
+   "raw": "<xbrli:context id=\"d_2023-12-31_2024-12-28_ConcentrationRiskByBenchmarkAxis-SalesRevenueNetMember_ConcentrationRiskByTypeAxis-CustomerConcentrationRiskMember_MajorCustomersAxis-DistributorDMember\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000855658</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">lscc:DistributorDMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-12-31</xbrli:startDate><xbrli:endDate>2024-12-28</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "40bc18d1c93ab4b825adbacdfc5869bdccee411a02e2e64d75d9f191c6347950"
+  }
+ ]
+}
