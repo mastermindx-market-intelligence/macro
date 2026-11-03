@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-11-03T10:13:28Z",
+  "produced_at": "2026-11-03T11:05:11Z",
   "as_of": "2026-11-03",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 34,
-    "passed": 34,
+    "items": 29,
+    "passed": 29,
     "quarantined": 0,
     "quarantined_policy": 0,
     "quarantined_overflow": 0,
@@ -35,19 +35,11 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-020",
+      "id": "post-flagship-021",
       "account": "flagship",
-      "slot": "D1-S20",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "The labor slowdown still isn't in claims"
-    },
-    {
-      "id": "post-flagship-022",
-      "account": "flagship",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$NBIX",
+      "slot": "D1-S21",
+      "type": "watchlist",
+      "cashtag": "$IREN",
       "headline": ""
     },
     {
@@ -67,20 +59,12 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-033",
+      "id": "post-flagship-034",
       "account": "flagship",
-      "slot": "D1-S33",
+      "slot": "D1-S34",
       "type": "receipt",
-      "cashtag": "$LSTR",
-      "headline": "The $LSTR long setup closed at -5.7%."
-    },
-    {
-      "id": "post-flagship-041",
-      "account": "flagship",
-      "slot": "D1-S41",
-      "type": "watchlist",
-      "cashtag": "$COHR",
-      "headline": "$COHR keeps closing lower"
+      "cashtag": "$SFM",
+      "headline": ""
     },
     {
       "id": "post-flagship-049",
@@ -99,12 +83,12 @@
       "headline": "$DG just lined up a pattern we track."
     },
     {
-      "id": "post-conf-flagship-010",
+      "id": "post-theme-003",
       "account": "flagship",
-      "slot": "CONF-10",
-      "type": "signal",
-      "cashtag": "$TSLA",
-      "headline": "$TSLA just lined up a pattern we track."
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$CMPS",
+      "headline": "Healthcare & Biotech selling off, -1.7% avg on Monday"
     },
     {
       "id": "post-insider-001",
@@ -115,12 +99,20 @@
       "headline": ""
     },
     {
+      "id": "post-founder-007",
+      "account": "founder",
+      "slot": "D1-S7",
+      "type": "receipt",
+      "cashtag": "$SFM",
+      "headline": ""
+    },
+    {
       "id": "post-founder-009",
       "account": "founder",
       "slot": "D1-S9",
       "type": "chart",
       "cashtag": "$AGNT",
-      "headline": "$AGNT reclaimed 3.91"
+      "headline": "$AGNT found buyers again"
     },
     {
       "id": "post-founder-016",
@@ -144,7 +136,7 @@
       "slot": "D1-S33",
       "type": "chart",
       "cashtag": "$LECO",
-      "headline": "The $LECO breakout isn't live yet"
+      "headline": "The $LECO trade starts at 284"
     },
     {
       "id": "post-insider-002",
@@ -163,11 +155,11 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-013",
+      "id": "post-meagan-009",
       "account": "meagan",
-      "slot": "D1-S13",
-      "type": "macro",
-      "cashtag": "",
+      "slot": "D1-S9",
+      "type": "watchlist",
+      "cashtag": "$SNDK",
       "headline": ""
     },
     {
@@ -187,11 +179,19 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-036",
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S36",
-      "type": "watchlist",
-      "cashtag": "$VRT",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "The slowdown story is losing support"
+    },
+    {
+      "id": "post-sophia-020",
+      "account": "sophia",
+      "slot": "D1-S20",
+      "type": "chart",
+      "cashtag": "$WLK",
       "headline": ""
     },
     {
@@ -211,27 +211,11 @@
       "headline": ""
     },
     {
-      "id": "post-kelly-017",
+      "id": "post-kelly-040",
       "account": "kelly",
-      "slot": "D1-S17",
+      "slot": "D1-S40",
       "type": "chart",
-      "cashtag": "$HMN",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-026",
-      "account": "kelly",
-      "slot": "D1-S26",
-      "type": "chart",
-      "cashtag": "$NVST",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-044",
-      "account": "kelly",
-      "slot": "D1-S44",
-      "type": "receipt",
-      "cashtag": "$AA",
+      "cashtag": "$FICO",
       "headline": ""
     },
     {
@@ -241,14 +225,6 @@
       "type": "theme_list",
       "cashtag": "$VUZI",
       "headline": "Virtual & Augmented Reality selling off, -2.6% avg on Monday"
-    },
-    {
-      "id": "post-housepick-001",
-      "account": "kelly",
-      "slot": "D1-S9",
-      "type": "watchlist",
-      "cashtag": "$AEP",
-      "headline": ""
     },
     {
       "id": "post-cici-010",
@@ -263,23 +239,7 @@
       "account": "cici",
       "slot": "D1-S11",
       "type": "watchlist",
-      "cashtag": "$SNDK",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-024",
-      "account": "cici",
-      "slot": "D1-S24",
-      "type": "receipt",
-      "cashtag": "$MTZ",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-049",
-      "account": "cici",
-      "slot": "D1-S49",
-      "type": "receipt",
-      "cashtag": "$ALHC",
+      "cashtag": "$SMCI",
       "headline": ""
     },
     {
@@ -293,7 +253,7 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 454,
+      "pairs_checked": 331,
       "hits": 0,
       "shared_media_hits": 0
     },

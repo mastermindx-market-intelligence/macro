@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-11-03T10:14:08Z",
+  "produced_at": "2026-11-03T11:05:34Z",
   "tier": "display",
   "as_of": "2026-11-03",
   "feeds": [
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 2451,
+    "n_tickers": 2458,
     "window_plans": 7
   },
   "surplus": [
@@ -115,30 +115,6 @@
       "opportunity_id": "radar-earnings-ADMA-2026-11-03"
     },
     {
-      "ticker": "AAOX",
-      "feed": "movers",
-      "why": "S&P mover -25.5% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AAOX-2026-11-02"
-    },
-    {
-      "ticker": "AAOZ",
-      "feed": "movers",
-      "why": "S&P mover +27.0% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-AAOZ-2026-11-02"
-    },
-    {
-      "ticker": "ABR",
-      "feed": "movers",
-      "why": "S&P mover -29.1% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-ABR-2026-11-02"
-    },
-    {
       "ticker": "ATYR",
       "feed": "stage",
       "why": "stage 2A_strong_breakout, SATA 10, 1w in stage",
@@ -172,11 +148,11 @@
     },
     {
       "ticker": "CDNA",
-      "feed": "movers",
-      "why": "S&P mover +22.2% 1D ()",
+      "feed": "stage",
+      "why": "stage 2D_extended_run, SATA 10, 38w in stage",
       "as_of": "2026-11-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-CDNA-2026-11-02"
+      "opportunity_id": "radar-stage-CDNA-2026-11-02"
     },
     {
       "ticker": "CL",
@@ -185,30 +161,6 @@
       "as_of": "2026-11-02",
       "staleness_days": 1,
       "opportunity_id": "radar-confluence-CL-2026-11-02"
-    },
-    {
-      "ticker": "CORD",
-      "feed": "movers",
-      "why": "S&P mover +19.1% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-CORD-2026-11-02"
-    },
-    {
-      "ticker": "COUR",
-      "feed": "movers",
-      "why": "S&P mover -25.5% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-COUR-2026-11-02"
-    },
-    {
-      "ticker": "CPRI",
-      "feed": "movers",
-      "why": "S&P mover +16.3% 1D ()",
-      "as_of": "2026-11-02",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-CPRI-2026-11-02"
     },
     {
       "ticker": "DLR",
@@ -235,12 +187,12 @@
       "opportunity_id": "radar-movers-FDXF-2026-11-02"
     },
     {
-      "ticker": "FMC",
+      "ticker": "GDDY",
       "feed": "movers",
-      "why": "S&P mover +30.5% 1D ()",
+      "why": "S&P mover +10.7% 1D (Technology)",
       "as_of": "2026-11-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-FMC-2026-11-02"
+      "opportunity_id": "radar-movers-GDDY-2026-11-02"
     },
     {
       "ticker": "GDYN",
@@ -251,12 +203,28 @@
       "opportunity_id": "radar-stage-GDYN-2026-11-02"
     },
     {
+      "ticker": "GPN",
+      "feed": "movers",
+      "why": "S&P mover +13.0% 1D (Financial)",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-GPN-2026-11-02"
+    },
+    {
       "ticker": "HZO",
       "feed": "stage",
       "why": "stage 2D_extended_run, SATA 10, 28w in stage",
       "as_of": "2026-11-02",
       "staleness_days": 1,
       "opportunity_id": "radar-stage-HZO-2026-11-02"
+    },
+    {
+      "ticker": "ILMN",
+      "feed": "movers",
+      "why": "S&P mover -18.6% 1D (Health Care)",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-ILMN-2026-11-02"
     },
     {
       "ticker": "ITGR",
@@ -267,12 +235,12 @@
       "opportunity_id": "radar-stage-ITGR-2026-11-02"
     },
     {
-      "ticker": "LXP",
-      "feed": "stage",
-      "why": "stage 2D_extended_run, SATA 10, 62w in stage",
+      "ticker": "KOS",
+      "feed": "movers",
+      "why": "S&P mover -13.3% 1D ()",
       "as_of": "2026-11-02",
       "staleness_days": 1,
-      "opportunity_id": "radar-stage-LXP-2026-11-02"
+      "opportunity_id": "radar-movers-KOS-2026-11-02"
     },
     {
       "ticker": "MU",
@@ -281,6 +249,38 @@
       "as_of": "2026-11-02",
       "staleness_days": 1,
       "opportunity_id": "radar-confluence-MU-2026-11-02"
+    },
+    {
+      "ticker": "NN",
+      "feed": "movers",
+      "why": "S&P mover -16.5% 1D ()",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-NN-2026-11-02"
+    },
+    {
+      "ticker": "NWL",
+      "feed": "movers",
+      "why": "S&P mover +15.1% 1D ()",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-NWL-2026-11-02"
+    },
+    {
+      "ticker": "NXT",
+      "feed": "movers",
+      "why": "S&P mover +14.9% 1D ()",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-NXT-2026-11-02"
+    },
+    {
+      "ticker": "RDDT",
+      "feed": "movers",
+      "why": "S&P mover -29.2% 1D (Communication Services)",
+      "as_of": "2026-11-02",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-RDDT-2026-11-02"
     },
     {
       "ticker": "TGT",
@@ -364,17 +364,17 @@
     }
   ],
   "queue": {
-    "added": 23,
-    "expired": 22,
-    "total": 332,
-    "open": 217,
+    "added": 1,
+    "expired": 0,
+    "total": 333,
+    "open": 218,
     "doa_skipped": 9
   },
   "tiers_summary": {
     "as_of": "2026-11-02",
     "t1": 28,
-    "t2": 1578,
-    "t3": 1080
+    "t2": 1057,
+    "t3": 443
   },
   "cadence": {
     "available": true,
