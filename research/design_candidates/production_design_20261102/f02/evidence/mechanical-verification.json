@@ -1,0 +1,769 @@
+{
+  "observed_at": "2026-11-03T01:52:20.605666+00:00",
+  "scope": "source and mathematical checks; not browser or accessibility certification",
+  "html_sha256": "e6466c85a9286f41ee56ded6c2f7a7cf177528ad8dcbda512a7386ea021b7e84",
+  "javascript_syntax": {
+    "exit": 0,
+    "output": ""
+  },
+  "svg_parse_count": 13,
+  "paper_ledger_unique_boards": 67,
+  "capability_rows": 36,
+  "arithmetic": {
+    "breadth_delta_pp": 1.13,
+    "revenue_growth_percent": 33.3,
+    "operating_margin_pp": 1.2,
+    "premium_total_usd": 4544000,
+    "premium_by_expiry_usd": [
+      2857000,
+      1687000
+    ],
+    "side_buy_count": 4,
+    "compound_ending_usd": 7500.0,
+    "compound_total_return_percent": -25.0,
+    "compound_cagr_percent": -13.4
+  },
+  "contrast_checks": [
+    {
+      "theme": "dark",
+      "role": "text-primary",
+      "surface": "canvas",
+      "ratio": 18.049,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-primary",
+      "surface": "panel",
+      "ratio": 16.883,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-primary",
+      "surface": "raised",
+      "ratio": 15.845,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-primary",
+      "surface": "selected",
+      "ratio": 13.111,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-secondary",
+      "surface": "canvas",
+      "ratio": 10.096,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-secondary",
+      "surface": "panel",
+      "ratio": 9.444,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-secondary",
+      "surface": "raised",
+      "ratio": 8.863,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-secondary",
+      "surface": "selected",
+      "ratio": 7.334,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-tertiary",
+      "surface": "canvas",
+      "ratio": 6.602,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-tertiary",
+      "surface": "panel",
+      "ratio": 6.176,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-tertiary",
+      "surface": "raised",
+      "ratio": 5.796,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "text-tertiary",
+      "surface": "selected",
+      "ratio": 4.796,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "accent-data",
+      "surface": "canvas",
+      "ratio": 10.392,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "accent-data",
+      "surface": "panel",
+      "ratio": 9.72,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "accent-data",
+      "surface": "raised",
+      "ratio": 9.123,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "accent-data",
+      "surface": "selected",
+      "ratio": 7.549,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "link",
+      "surface": "canvas",
+      "ratio": 11.7,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "link",
+      "surface": "panel",
+      "ratio": 10.944,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "link",
+      "surface": "raised",
+      "ratio": 10.271,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "link",
+      "surface": "selected",
+      "ratio": 8.499,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-up-west",
+      "surface": "canvas",
+      "ratio": 12.364,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-up-west",
+      "surface": "panel",
+      "ratio": 11.565,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-up-west",
+      "surface": "raised",
+      "ratio": 10.854,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-up-west",
+      "surface": "selected",
+      "ratio": 8.981,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-down-west",
+      "surface": "canvas",
+      "ratio": 10.231,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-down-west",
+      "surface": "panel",
+      "ratio": 9.57,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-down-west",
+      "surface": "raised",
+      "ratio": 8.982,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "price-down-west",
+      "surface": "selected",
+      "ratio": 7.432,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "warning",
+      "surface": "canvas",
+      "ratio": 11.481,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "warning",
+      "surface": "panel",
+      "ratio": 10.739,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "warning",
+      "surface": "raised",
+      "ratio": 10.079,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "warning",
+      "surface": "selected",
+      "ratio": 8.34,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-buy",
+      "surface": "canvas",
+      "ratio": 10.743,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-buy",
+      "surface": "panel",
+      "ratio": 10.049,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-buy",
+      "surface": "raised",
+      "ratio": 9.431,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-buy",
+      "surface": "selected",
+      "ratio": 7.804,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-sell",
+      "surface": "canvas",
+      "ratio": 10.158,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-sell",
+      "surface": "panel",
+      "ratio": 9.502,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-sell",
+      "surface": "raised",
+      "ratio": 8.917,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "flow-sell",
+      "surface": "selected",
+      "ratio": 7.379,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "control-boundary",
+      "surface": "canvas",
+      "ratio": 3.986,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "control-boundary",
+      "surface": "panel",
+      "ratio": 3.728,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "control-boundary",
+      "surface": "raised",
+      "ratio": 3.499,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "focus",
+      "surface": "canvas",
+      "ratio": 13.903,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "focus",
+      "surface": "panel",
+      "ratio": 13.005,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "role": "focus",
+      "surface": "raised",
+      "ratio": 12.206,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-primary",
+      "surface": "canvas",
+      "ratio": 15.757,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-primary",
+      "surface": "panel",
+      "ratio": 17.061,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-primary",
+      "surface": "raised",
+      "ratio": 14.942,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-primary",
+      "surface": "selected",
+      "ratio": 13.117,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-secondary",
+      "surface": "canvas",
+      "ratio": 6.926,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-secondary",
+      "surface": "panel",
+      "ratio": 7.499,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-secondary",
+      "surface": "raised",
+      "ratio": 6.568,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-secondary",
+      "surface": "selected",
+      "ratio": 5.766,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-tertiary",
+      "surface": "canvas",
+      "ratio": 5.587,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-tertiary",
+      "surface": "panel",
+      "ratio": 6.05,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-tertiary",
+      "surface": "raised",
+      "ratio": 5.298,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "text-tertiary",
+      "surface": "selected",
+      "ratio": 4.651,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "accent-data",
+      "surface": "canvas",
+      "ratio": 6.697,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "accent-data",
+      "surface": "panel",
+      "ratio": 7.251,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "accent-data",
+      "surface": "raised",
+      "ratio": 6.35,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "accent-data",
+      "surface": "selected",
+      "ratio": 5.575,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "link",
+      "surface": "canvas",
+      "ratio": 6.556,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "link",
+      "surface": "panel",
+      "ratio": 7.098,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "link",
+      "surface": "raised",
+      "ratio": 6.217,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "link",
+      "surface": "selected",
+      "ratio": 5.457,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-up-west",
+      "surface": "canvas",
+      "ratio": 6.598,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-up-west",
+      "surface": "panel",
+      "ratio": 7.144,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-up-west",
+      "surface": "raised",
+      "ratio": 6.256,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-up-west",
+      "surface": "selected",
+      "ratio": 5.492,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-down-west",
+      "surface": "canvas",
+      "ratio": 6.302,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-down-west",
+      "surface": "panel",
+      "ratio": 6.823,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-down-west",
+      "surface": "raised",
+      "ratio": 5.976,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "price-down-west",
+      "surface": "selected",
+      "ratio": 5.246,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "warning",
+      "surface": "canvas",
+      "ratio": 5.96,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "warning",
+      "surface": "panel",
+      "ratio": 6.453,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "warning",
+      "surface": "raised",
+      "ratio": 5.651,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "warning",
+      "surface": "selected",
+      "ratio": 4.961,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-buy",
+      "surface": "canvas",
+      "ratio": 5.86,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-buy",
+      "surface": "panel",
+      "ratio": 6.344,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-buy",
+      "surface": "raised",
+      "ratio": 5.556,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-buy",
+      "surface": "selected",
+      "ratio": 4.878,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-sell",
+      "surface": "canvas",
+      "ratio": 6.47,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-sell",
+      "surface": "panel",
+      "ratio": 7.005,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-sell",
+      "surface": "raised",
+      "ratio": 6.135,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "flow-sell",
+      "surface": "selected",
+      "ratio": 5.386,
+      "threshold": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "control-boundary",
+      "surface": "canvas",
+      "ratio": 3.362,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "control-boundary",
+      "surface": "panel",
+      "ratio": 3.64,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "control-boundary",
+      "surface": "raised",
+      "ratio": 3.188,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "focus",
+      "surface": "canvas",
+      "ratio": 6.433,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "focus",
+      "surface": "panel",
+      "ratio": 6.966,
+      "threshold": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "role": "focus",
+      "surface": "raised",
+      "ratio": 6.101,
+      "threshold": 3,
+      "pass": true
+    }
+  ],
+  "contrast_failures": [],
+  "browser_execution": "NOT_VERIFIED",
+  "paper_edits": 0,
+  "real_save_writes": 0,
+  "contrast_remediation": "Light tertiary text adjusted from #62666b to #5f6368; selected-surface contrast now meets the 4.5 check."
+}

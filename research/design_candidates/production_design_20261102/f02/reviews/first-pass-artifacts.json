@@ -1,0 +1,168 @@
+{
+  "schema": "f02.advisory_first_pass_artifact_set.v1",
+  "frozen_at": "2026-11-03T01:56:26.418432+00:00",
+  "artifact_set_sha256": "2823e06343b79f47474657310a9301f22e25b8051e0cd168db60150d6ece97a0",
+  "kind": "source and static comparison freeze; not Paper or RIG approval",
+  "files": [
+    {
+      "path": "evidence/company-before.png",
+      "bytes": 131024,
+      "sha256": "665abd9106284ed5766606a81b5abb0478af416b1e44245caa43e0d4bf4833ed"
+    },
+    {
+      "path": "evidence/editorial-before.png",
+      "bytes": 143085,
+      "sha256": "e379042f5bb1b06b639d005097a71ccaa36024e4ba997520eaa36b03655170fc"
+    },
+    {
+      "path": "evidence/macro-before.png",
+      "bytes": 141809,
+      "sha256": "ea739764ec49e432edce8e77fa18c3f9d301cf00ef8ce52aab11b6b783bc186e"
+    },
+    {
+      "path": "evidence/options-before.png",
+      "bytes": 172039,
+      "sha256": "618d86b9cd44d44800e22fc1ac3c294a50deac934921ccfc04bdefa29e3c5019"
+    },
+    {
+      "path": "evidence/paper-metric-before.jpg",
+      "bytes": 22687,
+      "sha256": "87d76a7d22f959b7dce288147ec0c6cacaf5b0df7568fff76931f601f718e041"
+    },
+    {
+      "path": "evidence/paper-pattern-before.jpg",
+      "bytes": 196588,
+      "sha256": "2d9c3cb56e32af2c8867a8317403677b10477e486c3922c6f336c1347308bf89"
+    },
+    {
+      "path": "evidence/paper-state-before.jpg",
+      "bytes": 60060,
+      "sha256": "aaf79b2e8eff35d1fdbfeeeb9fe360b6a09f16f1cad15d36f29d93d2efde0fdc"
+    },
+    {
+      "path": "pattern-lab.html",
+      "bytes": 59940,
+      "sha256": "e6466c85a9286f41ee56ded6c2f7a7cf177528ad8dcbda512a7386ea021b7e84"
+    },
+    {
+      "path": "sheets/company-dark-1440.png",
+      "bytes": 253775,
+      "sha256": "36f6611574f838dd07850fd77938135280b28d6ce9c38f23dd984a448b1a7f08"
+    },
+    {
+      "path": "sheets/company-dark-1440.svg",
+      "bytes": 24630,
+      "sha256": "43fdbfae2a71dfe7b06a5fe18268ec27e0a34d7260f6a0c243b33cedcefed187"
+    },
+    {
+      "path": "sheets/company-evidence-light-320.svg",
+      "bytes": 7571,
+      "sha256": "2121c489377f613d9284b165322948efab10d11dba518599b87ca2f4f870a080"
+    },
+    {
+      "path": "sheets/company-light-1440.png",
+      "bytes": 269533,
+      "sha256": "3201ce400d77464803495646dacaef0eb82a3d8c404e40234e608565613c9cf4"
+    },
+    {
+      "path": "sheets/company-light-1440.svg",
+      "bytes": 24604,
+      "sha256": "aa4ce8fe771483ace091cf9f7bce977f2b66aa8a122a3128ffac1ca4870f1d5f"
+    },
+    {
+      "path": "sheets/editorial-dark-1440.png",
+      "bytes": 280124,
+      "sha256": "b5349e19f42a47bce6d43d58f039638165e13c6b4158c7adfc93699ed24eccbe"
+    },
+    {
+      "path": "sheets/editorial-dark-1440.svg",
+      "bytes": 10710,
+      "sha256": "01957c502c8490fb7945a0ca5af2990583994a92e741323540c727e1b2c51640"
+    },
+    {
+      "path": "sheets/editorial-light-1440.png",
+      "bytes": 314864,
+      "sha256": "0b750ab8aad1e1a8015138b6e7e72c60ac81661ed6a003315e8d320e44d4fa57"
+    },
+    {
+      "path": "sheets/editorial-light-1440.svg",
+      "bytes": 10702,
+      "sha256": "eb597ab392fbc63483c527bf87832ddaead698bdbe56550931e0ce8881b44c6b"
+    },
+    {
+      "path": "sheets/macro-dark-1440.png",
+      "bytes": 290021,
+      "sha256": "95edd3c5fb3f48296a081bbef3283b0b7c9832a77daf0ddd38ad6b35c8c2ba94"
+    },
+    {
+      "path": "sheets/macro-dark-1440.svg",
+      "bytes": 25877,
+      "sha256": "933d0123caf9529489e323029b08407978b5dc93234390f4cd24700c67764c5a"
+    },
+    {
+      "path": "sheets/macro-dark-390.png",
+      "bytes": 125321,
+      "sha256": "b5543d72951911fc960217a69a295762a7a5fd5c565483e38933808e68d2e269"
+    },
+    {
+      "path": "sheets/macro-dark-390.svg",
+      "bytes": 12648,
+      "sha256": "f6e0115ba4d25195b15fdfdb2babf4ded1726d2d00c8e547cdd2aed6e1808317"
+    },
+    {
+      "path": "sheets/macro-light-1440.png",
+      "bytes": 302590,
+      "sha256": "f238f01a42e6f5c558267df80cb081a14dd7fc9e57d1c0a0ae864aae510e2361"
+    },
+    {
+      "path": "sheets/macro-light-1440.svg",
+      "bytes": 25842,
+      "sha256": "6d27de2ba319f1cf25e119304291fb346fe72d1e6f42a760712546f6839fea46"
+    },
+    {
+      "path": "sheets/macro-light-zh-390.svg",
+      "bytes": 12229,
+      "sha256": "054ea0e36cf24bcf166e0d08b2269e68fce04dbda13005a1fd4bd5f35e89b2d8"
+    },
+    {
+      "path": "sheets/mobile-comparison.png",
+      "bytes": 266602,
+      "sha256": "9d647d31c93abc7e3e94b7826f607a8819ca10665ea5a8d3010e3807533dd9b9"
+    },
+    {
+      "path": "sheets/mobile-comparison.svg",
+      "bytes": 20502,
+      "sha256": "db07205227d5f7925564395966a4ff17439eada8b6d99de6d90fb7d6b285c776"
+    },
+    {
+      "path": "sheets/options-dark-1440.png",
+      "bytes": 320278,
+      "sha256": "b1fd37cfdc79ccb2ea30aee97b1c7d01aeb36e39badbb2a6ff46a14d1bed9d42"
+    },
+    {
+      "path": "sheets/options-dark-1440.svg",
+      "bytes": 40857,
+      "sha256": "4476313406e9b9ae6c037a3f6492c19263f10c8fa6486f9d34e1766c679eee71"
+    },
+    {
+      "path": "sheets/options-light-1440.png",
+      "bytes": 337866,
+      "sha256": "0695aeb2ce5fc2eae12ac21c756e7364fb133ee1cbe8544c0a8c4d73d5020103"
+    },
+    {
+      "path": "sheets/options-light-1440.svg",
+      "bytes": 40795,
+      "sha256": "df925938afb884223caecbee2d7acf0decdc728dadbe0a5c0151a8dc6db2a699"
+    },
+    {
+      "path": "sheets/states-and-semantics.png",
+      "bytes": 342030,
+      "sha256": "e63587981b37206ba2c2c5868d3d03b587e48cb8d61166b91c47164d96a5ee5f"
+    },
+    {
+      "path": "sheets/states-and-semantics.svg",
+      "bytes": 23290,
+      "sha256": "0bf090b8a3f6be0ca3791f5fa793ea12a55c3236a4c150c9a2347b9137df6150"
+    }
+  ]
+}

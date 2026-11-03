@@ -1,0 +1,222 @@
+[
+  {
+    "page_id": "macro:blog_index",
+    "repo": "macro",
+    "route": "/blog/index.html",
+    "route_kind": "page",
+    "source_template": "unknown",
+    "builder": [],
+    "access_shell": "anonymous",
+    "payload_tier": "public",
+    "nav_family": "public_nav.public",
+    "archetype": "editorial",
+    "lifecycle": "live",
+    "priority": "unclassified",
+    "primary_user_question": "",
+    "source_evidence": [
+      "config/site_access.yml:1",
+      "site/blog/index.html",
+      "templates/_public_nav.html.j2"
+    ],
+    "notes": [
+      "no write_page() call site resolves to this route; builder unknown"
+    ],
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+    "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+    "primary_session": "D26",
+    "consult_sessions": [
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "delegated_design_slices": [],
+    "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+    "governed_regions": [],
+    "scope_disposition": "design/migration coverage required",
+    "paper_coverage": "no dedicated route-to-board mapping established; inspect reusable foundations and determine gap",
+    "source_contract_gap": "resolve unknown template from actual builder/source",
+    "implementation_status": "not assessed as ready by this audit"
+  },
+  {
+    "page_id": "macro:macro",
+    "repo": "macro",
+    "route": "/macro.html",
+    "route_kind": "page",
+    "source_template": "templates/dashboard.html.j2",
+    "builder": [
+      "scripts/build_site.py"
+    ],
+    "access_shell": "anonymous",
+    "payload_tier": "public_shell_premium_payload",
+    "nav_family": "product_nav.brand",
+    "archetype": "regime_dashboard",
+    "lifecycle": "live",
+    "priority": "P0",
+    "primary_user_question": "What is the macro regime right now?",
+    "source_evidence": [
+      "config/site_access.yml",
+      "config/site_access.yml:1",
+      "scripts/build_site.py:8147",
+      "site/macro.html",
+      "templates/_navlinks.html.j2",
+      "templates/dashboard.html.j2"
+    ],
+    "notes": [],
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+    "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+    "primary_session": "D02",
+    "consult_sessions": [
+      "D03",
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "delegated_design_slices": [],
+    "shared_archetype_owner": "D02 common-template integration; D02 body.page-macro; D03 body.page-stocks",
+    "governed_regions": [
+      {
+        "region": "body.page-macro",
+        "template": "templates/dashboard.html.j2"
+      }
+    ],
+    "scope_disposition": "design/migration coverage required",
+    "paper_coverage": "domain references exist; route-to-board qualification required",
+    "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+    "implementation_status": "not assessed as ready by this audit"
+  },
+  {
+    "page_id": "macro:methodology",
+    "repo": "macro",
+    "route": "/methodology.html",
+    "route_kind": "page",
+    "source_template": "templates/methodology.html.j2",
+    "builder": [
+      "scripts/build_methodology.py"
+    ],
+    "access_shell": "anonymous",
+    "payload_tier": "public_shell_premium_payload",
+    "nav_family": "none",
+    "archetype": "editorial",
+    "lifecycle": "live",
+    "priority": "unclassified",
+    "primary_user_question": "",
+    "source_evidence": [
+      "config/site_access.yml:1",
+      "scripts/build_methodology.py:47",
+      "site/methodology.html",
+      "templates/methodology.html.j2"
+    ],
+    "notes": [],
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+    "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+    "primary_session": "D26",
+    "consult_sessions": [
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "delegated_design_slices": [],
+    "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+    "governed_regions": [],
+    "scope_disposition": "design/migration coverage required",
+    "paper_coverage": "no dedicated route-to-board mapping established; inspect reusable foundations and determine gap",
+    "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+    "implementation_status": "not assessed as ready by this audit"
+  },
+  {
+    "page_id": "terminal:analysis",
+    "repo": "terminal",
+    "route": "/analysis",
+    "route_kind": "page",
+    "source_template": "terminal/app/(shell)/analysis/page.tsx",
+    "builder": [],
+    "access_shell": "signed_in",
+    "payload_tier": "unknown",
+    "nav_family": "app_nav.rail",
+    "archetype": "chart_workspace",
+    "lifecycle": "live",
+    "priority": "unclassified",
+    "primary_user_question": "",
+    "source_evidence": [
+      "terminal/app/(shell)/analysis/page.tsx",
+      "terminal/app/layout.tsx",
+      "terminal/components/AppNav.tsx",
+      "terminal/components/gates/SignupGate.tsx",
+      "terminal/lib/i18n.tsx"
+    ],
+    "notes": [
+      "Next.js App Router page module (the module IS the page)",
+      "gate marker `SignupGate` in the page module"
+    ],
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+    "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+    "primary_session": "D07",
+    "consult_sessions": [
+      "D06",
+      "D09",
+      "D11",
+      "D12",
+      "D14",
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "delegated_design_slices": [],
+    "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+    "governed_regions": [],
+    "scope_disposition": "design/migration coverage required",
+    "paper_coverage": "domain references exist; route-to-board qualification required",
+    "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+    "implementation_status": "not assessed as ready by this audit"
+  },
+  {
+    "page_id": "terminal:options",
+    "repo": "terminal",
+    "route": "/options",
+    "route_kind": "page",
+    "source_template": "terminal/app/(shell)/options/page.tsx",
+    "builder": [],
+    "access_shell": "unknown",
+    "payload_tier": "unknown",
+    "nav_family": "app_nav.rail",
+    "archetype": "chart_workspace",
+    "lifecycle": "live",
+    "priority": "P0",
+    "primary_user_question": "Where is the options market positioned?",
+    "source_evidence": [
+      "terminal/app/(shell)/options/page.tsx",
+      "terminal/app/layout.tsx",
+      "terminal/components/AppNav.tsx",
+      "terminal/lib/entitlement.ts",
+      "terminal/lib/i18n.tsx"
+    ],
+    "notes": [
+      "Next.js App Router page module (the module IS the page)",
+      "terminal_live_options feature — essential + pro (incl. trial); anonymous and free get OptionsPaywall"
+    ],
+    "source_registry_generated_at": "2026-10-21T16:34:10Z",
+    "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+    "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+    "primary_session": "D08",
+    "consult_sessions": [
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "delegated_design_slices": [
+      "D08A",
+      "D08B",
+      "D08C"
+    ],
+    "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+    "governed_regions": [],
+    "scope_disposition": "design/migration coverage required",
+    "paper_coverage": "domain references exist; route-to-board qualification required",
+    "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+    "implementation_status": "not assessed as ready by this audit"
+  }
+]

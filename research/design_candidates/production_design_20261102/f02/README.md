@@ -1,45 +1,62 @@
-# F02 — Shared product system v1 candidate
+# F02 — Production design system candidate
 
-Status: IN_PROGRESS / SPEC_ONLY / RIG draft. This is design and specification work, not product implementation or approval.
+**System:** `F02-SYSTEM/1.0.0-candidate.1`  
+**Delivery:** `PARTIAL` — source/specification and supporting design artifact set prepared; editable Paper and qualification gates remain.  
+**RIG projection:** `draft`; no approval receipt.  
+**Paper:** `NOT_APPLIED_TO_PAPER`;0 mutations.  
+**Product:** design/specification only; no implementation, merge or deployment.
 
-## Identity and scope
+This package executes the [F02 handoff](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md) under programme Draft PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). It proposes source-mapped reusable components and explicit chart/table/state contracts while preserving current domain capabilities. It does not create a new umbrella programme or route registry.
 
-- Assignment: F02, delivered directly by the Chairman in the active ChatGPT2 session.
-- Parent charter: `research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md`.
-- Programme: macro #10617; package pin `6e1862867193ec6486a22001a0e4fb515da20448`.
-- Procedure: Mastermind protected master `c57adacb338fe837c7d585f1e372c64d9b0118ec`, skillpack 1.0.1, bootstrap major 1 compatible.
-- Current Macro source observation: `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e`.
-- Current Terminal source observation: `b79b1e136290978ff7675087de979bb1b42b3713`.
-- Source carrier: branch `design/f02-system-v1-20261102-c2`, GitHub connector identity `mastermindx-2`.
-- Design target: canonical file `01M312VSDSZFVT45674GDVJVZN`; all eight existing pages, 48 boards. Supporting references: MASTERMIND PAGES `01M2WGNCX9475G79JRKJTCM08P`, pages `p-1Q-0` and `p-5-0` (19 boards).
-- Scope: shared tokens, component anatomy, analytical/reading density, chart/table grammar, accessible state patterns, consumer and builder contracts.
-- F01 retains shell navigation/composition; F03 retains organization/lineage; domains retain financial semantics; D23 retains saved-state/alert ownership.
+## Read in this order
 
-## Outcome and task tree
+1. [SYSTEM_CONTRACT.md](SYSTEM_CONTRACT.md) — product/job, four consumer patterns, component anatomy/variants, typography, density, chart/table rules, source boundaries, versioning and builder plan.
+2. [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md) — exact current source owners, token collisions, actual read paths/schemas, entity/unit/time/access semantics, migration and rollback.
+3. [INTERACTION_STATES.md](INTERACTION_STATES.md) — copy, independent state axes, control transitions, keyboard/touch/focus/scroll and saved-state outcomes.
+4. [CAPABILITY_LEDGER.md](CAPABILITY_LEDGER.md) and [PAPER_RETENTION_LEDGER.md](PAPER_RETENTION_LEDGER.md) —36 shared/consumer capabilities and every one of67 assigned Paper boards.
+5. [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md) — exact existing targets,12 bounded construction items, ready-to-place Read me and adjacent annotations; successor IDs remain uncreated.
+6. [VERIFICATION.md](VERIFICATION.md) and [CONTINUITY_AND_GATES.md](CONTINUITY_AND_GATES.md) — completed evidence, exact limits, inherited conditions and named remaining owners.
 
-DONE_WHEN: a source-mapped reusable kit and accessible pattern specimens work in Macro, Company, Options and public editorial contexts; editable Paper compositions, theme/locale/width/state evidence, versioned F01/F02 consumer contract and required independent review are frozen and recoverable. Product code, rollout and merge are outside this assignment.
+## Reviewable artifacts
 
-| Node | Work | Editorial state | Evidence or next dependency |
-| --- | --- | --- | --- |
-| F02.1 | Establish assignment, source, Paper and live baseline | in_progress | Exact source pins; canonical pages/boards read; beta Macro browser inspected |
-| F02.2 | Retention ledger and cross-system token reconciliation | in_progress | Preserve 48+19 source references; identify conflicts without broad token aliasing |
-| F02.3 | Component/state/data/formatting and consumer contracts | in_progress | Explicit units/clocks/null semantics and domain boundaries |
-| F02.4 | Editable Paper kit and in-Paper build annotations | blocked | P00 writer qualification and exact target permission |
-| F02.5 | Four consumer stress specimens and responsive/access checks | proposed | F01 dimensions remain separately versioned; supporting specimens never substitute for Paper |
-| F02.6 | Independent regression/taste review, corrections and frozen return | proposed | Candidate artifact set; formal RIG admission remains separate |
+- [pattern-lab.html](pattern-lab.html): standalone source specimen for Macro, Company, Options and public editorial; dark/light, EN/ZH chrome, density, analytical state examples, table/chart values and evidence patterns. It has no external dependencies or live save integration. Browser execution is not qualified.
+- [sheets/README.md](sheets/README.md):13 editable SVG **source illustrations**,10 PNG plates and reproducible direct-drawing generator. These are supporting static compositions, not editable Paper or browser screenshots.
+- [sheets/macro-dark-1440.png](sheets/macro-dark-1440.png), [sheets/company-light-1440.png](sheets/company-light-1440.png), [sheets/options-light-1440.png](sheets/options-light-1440.png), [sheets/editorial-light-1440.png](sheets/editorial-light-1440.png), [sheets/mobile-comparison.png](sheets/mobile-comparison.png), [sheets/states-and-semantics.png](sheets/states-and-semantics.png).
+- [token-map.json](token-map.json):18 proposed semantic role mappings,20 live observed Paper color tokens, exact source collisions and scoped migration decisions.
+- `evidence/`: committed production/Paper before captures, live identity/tree observations, source lineage records and mechanical verification results.
+- [reviews/FIRST_PASS_PACKET.md](reviews/FIRST_PASS_PACKET.md): quarantined job/before/after/capability packet for independent critique. Author rationale must not be supplied before the first-pass findings freeze.
 
-## Confirmed gates and findings
+## Exact inputs and working source
 
-Paper read service is OBSERVED on the exact canonical target. Live catalog reports Paper Desktop 0.5.18, actual catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd`, expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`, `accepted_for_write=false`. No Paper mutation was dispatched. P00 must complete its original-owner qualification; F02 does not install, repin, route around or duplicate that repair.
+| Input | Immutable revision |
+| --- | --- |
+| Assignment package | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
+| Protected Mastermind procedures | `c57adacb338fe837c7d585f1e372c64d9b0118ec`; protected master verified; compatible skillpack1.0.1 |
+| Current Macro evidence | `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` |
+| Current Terminal evidence | `b79b1e136290978ff7675087de979bb1b42b3713` |
+| Isolated source branch | `design/f02-system-v1-20261102-c2`, from the immutable assignment package |
 
-Live component tree shows metric `25Z-0` expressly lacks delta unit and comparison period; state loading nodes `2A8-0`/`2M4-0` contain empty-state labels; callout/state specimens retain accent strips. Existing useful evidence, recovery, table, chart, bilingual and mobile patterns are retained, with these conditions carried.
+Canonical Paper: [01M312VSDSZFVT45674GDVJVZN](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0),8pages/48boards. Supporting MASTERMIND PAGES: [p-1Q-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0),10boards, and [p-5-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0),9boards. All are live observed identities; neither names nor token/snapshot hashes prove approval.
 
-Macro and Terminal token names cannot be equated by spelling: `--sp-8` differs; number-font policy differs; Terminal flow/exposure colors carry domain semantics. Proposed mappings must remain scoped adapters to existing owners.
+## Completed local phases
 
-F01 system handshake is not yet a published frozen dependency. Observed shell geometry is baseline evidence, not a claimed F01 v1 approval.
+| Task node | Current result |
+| --- | --- |
+| F02.1 Baseline and ownership | Completed relevant live/source/Paper inspection,67-board identity inventory, source pins and collision analysis |
+| F02.2 Shared contract | Completed candidate system/source/data/state/format/versioning contracts and36-capability ledger |
+| F02.3 Design specimens | Completed source prototype and static four-consumer/theme/mobile/state compositions; editable Paper application remains blocked |
+| F02.4 Builder package | Completed exact source integration, migration/rollback, component minimums, acceptance cases and ready Paper annotations |
+| F02.5 Review | Principal architecture consultation completed; independent advisory packet prepared; formal RIG admission/approval remains open |
+| F02.6 Persistence and return | Source branch established and immutable artifact freeze in progress; final review/return record follows |
 
-## Continuation
+**Disposition totals:** capabilities16 RETAIN +20 IMPROVE; Paper25 RETAIN +42 IMPROVE.0 removals,0 relocations,0 invented blocked-data assertions. Existing domain semantics, source identities, exports, historical definitions, access controls and focused-chart behavior remain with their current owners.
 
-Complete the retention/contract package, supporting original specimens and independent critique while Paper is held. Re-probe the writer only on material P00/runtime evidence; then use a fresh exact-target snapshot for each authorized edit. Required Paper work remains NOT_APPLIED_TO_PAPER until actual edit, screenshot, export and review evidence exists. Preserve all incumbent source and Paper IDs; no deletion, archive, product implementation, merge, Ready label or deployment.
+## Concrete remaining actions
 
-This directory is subsidiary source evidence under the existing programme, not a new workstream, route registry, task service or execution owner. GitHub publication does not assert Agent OS adoption.
+1. **P00:** resolve the original Paper adapter catalog qualification and return actual admitted write/readback evidence. The current catalog mismatch is recorded exactly in the gate evidence; F02 did not attempt a mutation or alternate-carrier bypass.
+2. **F01/F02:** settle and version the joint shell/system composition. The proposed inspector rule is320px +24px gap only if at least640px primary content remains; all dimensions are explicitly baseline/proposed until joint review.
+3. **F02/QA01:** execute the candidate in an authorized reachable HTTP/HTTPS browser preview; prove keyboard/touch/focus, real400% zoom, all width classes, CJK typography and reduced-motion/forced-color behavior. The local preview was unreachable and inline data URLs were policy-blocked; no workaround or false browser proof is claimed.
+4. **F02 after P00/F01:** construct/read back the editable Paper references and in-Paper Read me/annotations, then freeze their exports with source artifacts and exact digests.
+5. **Existing review owner/QA01:** obtain admitted independent RIG critics and the design-authority verdict bound to that final set. Native advisory critique is useful but is not that receipt.
+
+D02/D07/D08/public editorial and D23 retain the explicitly named producer/identity/entitlement/mutation qualifications. Refraction, Sector and Prophet authority conditions are preserved in the continuity register. No product implementation is authorized by this source candidate.

@@ -1,0 +1,765 @@
+ "" (root_node_p-4-0) ?×?
+  Frame "MX/Section Header" (25V-0) 560×?
+    Text "Section title" (25W-0) ?×? "Section title"
+    Frame "spacer" (25X-0) ?×1
+    Text "AS OF 09-19" (25Y-0) ?×? "AS OF 09-19"
+  Frame "MX/Metric Tile" (25Z-0) 708×228
+    Frame "Tone=Positive" (260-0) 220×116
+      Text "Participation rate" (261-0) ?×? "Participation rate"
+      Text "66.7%" (262-0) ?×? "66.7%"
+      Text "+1.13%" (263-0) ?×? "+1.13%"
+    Frame "Tone=Negative" (264-0) 220×116
+      Text "Participation rate" (265-0) ?×? "Participation rate"
+      Text "66.7%" (266-0) ?×? "66.7%"
+      Text "+1.13%" (267-0) ?×? "+1.13%"
+    Frame "Tone=Neutral" (268-0) 220×116
+      Text "Participation rate" (269-0) ?×? "Participation rate"
+      Text "66.7%" (26A-0) ?×? "66.7%"
+      Text "+1.13%" (26B-0) ?×? "+1.13%"
+    Frame "Metric specimen qualification" (47H-0) 708×?
+      Text "Metric tile · retain…" (47I-0) ?×? "Metric tile · retained tone specimens"
+      Text "Illustrative values …" (47J-0) ?×? "Illustrative values only. Delta unit and comparison period a"
+    Frame "Metric tone labels" (47L-0) 708×?
+      Text "Positive tone" (47M-0) 220×? "Positive tone"
+      Text "Negative tone" (47N-0) 220×? "Negative tone"
+      Text "Neutral tone" (47O-0) 220×? "Neutral tone"
+  Frame "MX/Tab" (26C-0) 116×?
+    Frame "Selected=True" (26D-0) 116×44
+      Text "1Y" (26E-0) ?×? "1Y"
+      Rectangle "Rectangle" (26F-0) 92×2
+    Frame "Selected=False" (26G-0) 116×44
+      Text "1Y" (26H-0) ?×? "1Y"
+      Rectangle "Rectangle" (26I-0) 92×2
+  Frame "MX/Data Row" (26J-0) 1120×?
+    Text "Tone samples · data binding caveat" (45Y-0) 1120×? "Tone samples use repeated placeholder data. Bind direction c"
+    Frame "Tone sample · Positive" (462-0) 1120×?
+      Text "Positive tone" (463-0) ?×? "Positive tone"
+      Frame "Tone=Positive" (26K-0) 1120×48
+        Text "State" (26L-0) 180×? "Above average"
+        Text "Member" (26M-0) 140×? "TEC0"
+        Text "Close" (26N-0) 140×? "144.03"
+        Text "Distance" (26O-0) 180×? "+1.13%"
+        Text "Evidence" (26P-0) 392×? "Open stock evidence ↗"
+    Frame "Tone sample · Negative" (465-0) 1120×?
+      Text "Negative tone" (466-0) ?×? "Negative tone"
+      Frame "Tone=Negative" (26Q-0) 1120×48
+        Text "State" (26R-0) 180×? "Above average"
+        Text "Member" (26S-0) 140×? "TEC0"
+        Text "Close" (26T-0) 140×? "144.03"
+        Text "Distance" (26U-0) 180×? "+1.13%"
+        Text "Evidence" (26V-0) 392×? "Open stock evidence ↗"
+    Frame "Tone sample · Neutral" (468-0) 1120×?
+      Text "Neutral tone" (469-0) ?×? "Neutral tone"
+      Frame "Tone=Neutral" (26W-0) 1120×48
+        Text "State" (26X-0) 180×? "Above average"
+        Text "Member" (26Y-0) 140×? "TEC0"
+        Text "Close" (26Z-0) 140×? "144.03"
+        Text "Distance" (270-0) 180×? "+1.13%"
+        Text "Evidence" (271-0) 392×? "Open stock evidence ↗"
+  Frame "MX/Freshness" (272-0) 220×?
+    Frame "State=Live" (273-0) 220×32
+      SVG "Ellipse" (274-0) 7×7
+        SVGVisualElement "Path" (275-0) ?×?
+      Text "LIVE" (276-0) ?×? "LIVE"
+      Text "09-19 09:31 ET" (277-0) 150×? "09-19 09:31 ET"
+    Frame "State=Settled" (278-0) 220×32
+      SVG "Ellipse" (279-0) 7×7
+        SVGVisualElement "Path" (27A-0) ?×?
+      Text "LIVE" (27B-0) ?×? "SETTLED"
+      Text "09-19 09:31 ET" (27C-0) 150×? "09-18 CLOSE ET"
+    Frame "State=Stale" (27D-0) 220×32
+      SVG "Ellipse" (27E-0) 7×7
+        SVGVisualElement "Path" (27F-0) ?×?
+      Text "LIVE" (27G-0) ?×? "STALE"
+      Text "09-19 09:31 ET" (27H-0) 150×? "09-19 09:31 ET"
+  Frame "MX/Data Row · Mobile" (27I-0) 342×?
+    Text "Tone samples · data binding caveat" (460-0) 342×? "Tone samples use repeated placeholder data. Bind direction c"
+    Frame "Tone sample · Positive" (46B-0) 342×?
+      Text "Positive tone" (46C-0) ?×? "Positive tone"
+      Frame "Tone=Positive" (27J-0) 342×?
+        Frame "Primary" (27K-0) ?×?
+          ... 4 children
+        Frame "Context" (27P-0) ?×?
+          ... 3 children
+    Frame "Tone sample · Negative" (46E-0) 342×?
+      Text "Negative tone" (46F-0) ?×? "Negative tone"
+      Frame "Tone=Negative" (27T-0) 342×?
+        Frame "Primary" (27U-0) ?×?
+          ... 4 children
+        Frame "Context" (27Z-0) ?×?
+          ... 3 children
+    Frame "Tone sample · Neutral" (46H-0) 342×?
+      Text "Neutral tone" (46I-0) ?×? "Neutral tone"
+      Frame "Tone=Neutral" (283-0) 342×?
+        Frame "Primary" (284-0) ?×?
+          ... 4 children
+        Frame "Context" (289-0) ?×?
+          ... 3 children
+  Frame "MX/Button" (28D-0) 448×?
+    Frame "Button specimen · column headings" (45E-0) 416×20
+      Text "State" (45F-0) 120×? "State"
+      Text "Primary" (45G-0) 132×? "Primary"
+      Text "Quiet" (45H-0) 132×? "Quiet"
+    Frame "Button specimen · Default" (45J-0) 416×44
+      Text "Default" (45K-0) 120×? "Default"
+      Frame "Tone=Primary, State=Default" (28E-0) 132×44
+        Text "Open research" (28F-0) ?×? "Open research"
+      Frame "Tone=Quiet, State=Default" (28O-0) 132×44
+        Text "Open research" (28P-0) ?×? "Open research"
+    Frame "Button specimen · Hover" (45M-0) 416×44
+      Text "Hover" (45N-0) 120×? "Hover"
+      Frame "Tone=Primary, State=Hover" (28G-0) 132×44
+        Text "Open research" (28H-0) ?×? "Open research"
+      Frame "Tone=Quiet, State=Hover" (28Q-0) 132×44
+        Text "Open research" (28R-0) ?×? "Open research"
+    Frame "Button specimen · Focus" (45P-0) 416×44
+      Text "Focus" (45Q-0) 120×? "Focus"
+      Frame "Tone=Primary, State=Focus" (28I-0) 132×44
+        Text "Open research" (28J-0) ?×? "Open research"
+      Frame "Tone=Quiet, State=Focus" (28S-0) 132×44
+        Text "Open research" (28T-0) ?×? "Open research"
+    Frame "Button specimen · Pressed" (45S-0) 416×44
+      Text "Pressed" (45T-0) 120×? "Pressed"
+      Frame "Tone=Primary, State=Pressed" (28K-0) 132×44
+        Text "Open research" (28L-0) ?×? "Open research"
+      Frame "Tone=Quiet, State=Pressed" (28U-0) 132×44
+        Text "Open research" (28V-0) ?×? "Open research"
+    Frame "Button specimen · Disabled" (45V-0) 416×44
+      Text "Disabled" (45W-0) 120×? "Disabled"
+      Frame "Tone=Primary, State=Disabled" (28M-0) 132×44
+        Text "Open research" (28N-0) ?×? "Open research"
+      Frame "Tone=Quiet, State=Disabled" (28W-0) 132×44
+        Text "Open research" (28X-0) ?×? "Open research"
+  Frame "MX/Decision Row" (28Y-0) 640×?
+    Frame "State=Default" (28Z-0) 640×58
+      Text "Inflation pulse" (290-0) 150×? "Inflation pulse"
+      Text "Core pressure eased again" (291-0) 250×? "Core pressure eased again"
+      Frame "Frame" (292-0) ?×1
+      Text "Watch — don't chase" (293-0) 128×? "Watch — don't chase"
+      Text "→" (294-0) ?×? "→"
+    Frame "State=Hover" (295-0) 640×58
+      Text "Inflation pulse" (296-0) 150×? "Inflation pulse"
+      Text "Core pressure eased again" (297-0) 250×? "Core pressure eased again"
+      Frame "Frame" (298-0) ?×1
+      Text "Watch — don't chase" (299-0) 128×? "Watch — don't chase"
+      Text "→" (29A-0) ?×? "→"
+    Frame "State=Focus" (29B-0) 640×58
+      Text "Inflation pulse" (29C-0) 150×? "Inflation pulse"
+      Text "Core pressure eased again" (29D-0) 250×? "Core pressure eased again"
+      Frame "Frame" (29E-0) ?×1
+      Text "Watch — don't chase" (29F-0) 128×? "Watch — don't chase"
+      Text "→" (29G-0) ?×? "→"
+  Frame "MX/Callout" (29H-0) 440×?
+    Frame "Tone=Neutral" (29I-0) 440×92
+      Rectangle "Rectangle" (29J-0) 3×64
+      Frame "Frame" (29K-0) ?×?
+        Text "CONTEXT" (29L-0) ?×? "CONTEXT"
+        Text "The page keeps the answer visible and moves mechanics into evidence." (29M-0) 370×? "The page keeps the answer visible and moves mechanics into e"
+    Frame "Tone=Info" (29N-0) 440×92
+      Rectangle "Rectangle" (29O-0) 3×64
+      Frame "Frame" (29P-0) ?×?
+        Text "CONTEXT" (29Q-0) ?×? "CONTEXT"
+        Text "The page keeps the answer visible and moves mechanics into evidence." (29R-0) 370×? "The page keeps the answer visible and moves mechanics into e"
+    Frame "Tone=Caution" (29S-0) 440×92
+      Rectangle "Rectangle" (29T-0) 3×64
+      Frame "Frame" (29U-0) ?×?
+        Text "CONTEXT" (29V-0) ?×? "CONTEXT"
+        Text "The page keeps the answer visible and moves mechanics into evidence." (29W-0) 370×? "The page keeps the answer visible and moves mechanics into e"
+    Frame "Tone=Action" (29X-0) 440×92
+      Rectangle "Rectangle" (29Y-0) 3×64
+      Frame "Frame" (29Z-0) ?×?
+        Text "CONTEXT" (2A0-0) ?×? "CONTEXT"
+        Text "The page keeps the answer visible and moves mechanics into evidence." (2A1-0) 370×? "The page keeps the answer visible and moves mechanics into e"
+    Frame "Tone=Success" (2A2-0) 440×92
+      Rectangle "Rectangle" (2A3-0) 3×64
+      Frame "Frame" (2A4-0) ?×?
+        Text "CONTEXT" (2A5-0) ?×? "CONTEXT"
+        Text "The page keeps the answer visible and moves mechanics into evidence." (2A6-0) 370×? "The page keeps the answer visible and moves mechanics into e"
+  Frame "MX/State Panel" (2A7-0) 440×?
+    Frame "State=Loading" (2A8-0) 440×116
+      Rectangle "Rectangle" (2A9-0) 3×84
+      Frame "Frame" (2AA-0) ?×?
+        Text "EMPTY" (2AB-0) ?×? "EMPTY"
+        Text "No observations yet" (2AC-0) ?×? "No observations yet"
+        Text "Nothing qualified for this view; zero is not inferred." (2AD-0) 365×? "Nothing qualified for this view; zero is not inferred."
+        Frame "Loading skeleton" (44P-0) 365×?
+          ... 3 children
+    Frame "State=Empty" (2AE-0) 440×116
+      Rectangle "Rectangle" (2AF-0) 3×84
+      Frame "Frame" (2AG-0) ?×?
+        Text "EMPTY" (2AH-0) ?×? "EMPTY"
+        Text "No observations yet" (2AI-0) ?×? "No observations yet"
+        Text "Nothing qualified for this view; zero is not inferred." (2AJ-0) 365×? "Nothing qualified for this view; zero is not inferred."
+    Frame "State=Error" (2AK-0) 440×160
+      Rectangle "Rectangle" (2AL-0) 3×84
+      Frame "Frame" (2AM-0) ?×?
+        Text "EMPTY" (2AN-0) ?×? "ERROR"
+        Text "No observations yet" (2AO-0) ?×? "Refresh failed"
+        Text "Nothing qualified for this view; zero is not inferred." (2AP-0) 365×? "Saved view remains available. Retry to refresh."
+      Frame "Retry read-only refresh" (44Z-0) 132×44
+        Text "Retry" (450-0) ?×? "Retry"
+    Frame "State=Stale" (2AQ-0) 440×116
+      Rectangle "Rectangle" (2AR-0) 3×84
+      Frame "Frame" (2AS-0) ?×?
+        Text "EMPTY" (2AT-0) ?×? "STALE"
+        Text "No observations yet" (2AU-0) ?×? "Assessment is behind"
+        Text "Nothing qualified for this view; zero is not inferred." (2AV-0) 365×? "Last assessment is retained. Check its date before use."
+    Frame "State=Denied" (2AW-0) 440×116
+      Rectangle "Rectangle" (2AX-0) 3×84
+      Frame "Frame" (2AY-0) ?×?
+        Text "EMPTY" (2AZ-0) ?×? "ACCESS RESTRICTED"
+        Text "No observations yet" (2B0-0) ?×? "This source is restricted"
+        Text "Nothing qualified for this view; zero is not inferred." (2B1-0) 365×? "Other evidence remains available. Check access."
+    Frame "State=Partial" (2B2-0) 440×116
+      Rectangle "Rectangle" (2B3-0) 3×84
+      Frame "Frame" (2B4-0) ?×?
+        Text "EMPTY" (2B5-0) ?×? "PARTIAL"
+        Text "No observations yet" (2B6-0) ?×? "Coverage is incomplete"
+        Text "Nothing qualified for this view; zero is not inferred." (2B7-0) 365×? "Available evidence is shown; missing is not zero."
+    Frame "State=Corrected" (2B8-0) 440×116
+      Rectangle "Rectangle" (2B9-0) 3×84
+      Frame "Frame" (2BA-0) ?×?
+        Text "EMPTY" (2BB-0) ?×? "CORRECTED"
+        Text "No observations yet" (2BC-0) ?×? "A source revised its reading"
+        Text "Nothing qualified for this view; zero is not inferred." (2BD-0) 365×? "Review the change and the retained prior version."
+    Frame "State=Success" (2BE-0) 440×116
+      Rectangle "Rectangle" (2BF-0) 3×84
+      Frame "Frame" (2BG-0) ?×?
+        Text "EMPTY" (2BH-0) ?×? "SUCCESS"
+        Text "No observations yet" (2BI-0) ?×? "Refresh completed"
+        Text "Nothing qualified for this view; zero is not inferred." (2BJ-0) 365×? "The latest available evidence is now shown."
+  Frame "MX/LENS Evidence" (2BK-0) 340×?
+    Frame "State=Rest" (2BL-0) 124×44
+      Text "Evidence ?" (2BM-0) ?×? "Evidence  ?"
+    Frame "State=Open" (2BN-0) 340×154
+      Text "Evidence ?" (2BO-0) ?×? "Evidence  ?"
+      Text "6 of 9 eligible members are above their 20-session average." (2BP-0) 314×? "6 of 9 eligible members are above their 20-session average."
+      Text "SOURCE · SETTLED CLOSE · 2026-08-28" (2BQ-0) ?×? "SOURCE · SETTLED CLOSE · 2026-08-28"
+  Frame "MX/Verdict Hero" (2BR-0) 720×?
+    Frame "Tone=Neutral" (2BS-0) 720×220
+      Text "REGIME READ" (2BT-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2BU-0) ?×? "NEUTRAL"
+      Text "Participation is broad, but the move is extended enough to wait for a cleaner entry." (2BV-0) 650×? "Participation is broad, but the move is extended enough to w"
+      Text "Watch — don't chase" (2BW-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2BX-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Info" (2BY-0) 720×220
+      Text "REGIME READ" (2BZ-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2C0-0) ?×? "NEUTRAL"
+      Text "Participation is broad, but the move is extended enough to wait for a cleaner entry." (2C1-0) 650×? "Participation is broad, but the move is extended enough to w"
+      Text "Watch — don't chase" (2C2-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2C3-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Caution" (2C4-0) 720×220
+      Text "REGIME READ" (2C5-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2C6-0) ?×? "NEUTRAL"
+      Text "Participation is broad, but the move is extended enough to wait for a cleaner entry." (2C7-0) 650×? "Participation is broad, but the move is extended enough to w"
+      Text "Watch — don't chase" (2C8-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2C9-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Action" (2CA-0) 720×220
+      Text "REGIME READ" (2CB-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2CC-0) ?×? "NEUTRAL"
+      Text "Participation is broad, but the move is extended enough to wait for a cleaner entry." (2CD-0) 650×? "Participation is broad, but the move is extended enough to w"
+      Text "Watch — don't chase" (2CE-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2CF-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Success" (2CG-0) 720×220
+      Text "REGIME READ" (2CH-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2CI-0) ?×? "NEUTRAL"
+      Text "Participation is broad, but the move is extended enough to wait for a cleaner entry." (2CJ-0) 650×? "Participation is broad, but the move is extended enough to w"
+      Text "Watch — don't chase" (2CK-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2CL-0) ?×? "SETTLED · 2026-08-28"
+  Frame "MX/Count Ladder" (2CM-0) 560×?
+    Frame "Active=EARLY" (2CN-0) 560×92
+      Frame "Frame" (2CO-0) 140×92
+        Text "12" (2CP-0) ?×? "12"
+        Text "EARLY" (2CQ-0) ?×? "EARLY"
+      Frame "Frame" (2CR-0) 140×92
+        Text "8" (2CS-0) ?×? "8"
+        Text "BUILDING" (2CT-0) ?×? "BUILDING"
+      Frame "Frame" (2CU-0) 140×92
+        Text "3" (2CV-0) ?×? "3"
+        Text "READY" (2CW-0) ?×? "READY"
+      Frame "Frame" (2CX-0) 140×92
+        Text "1" (2CY-0) ?×? "1"
+        Text "ACTIVE" (2CZ-0) ?×? "ACTIVE"
+    Frame "Active=BUILDING" (2D0-0) 560×92
+      Frame "Frame" (2D1-0) 140×92
+        Text "12" (2D2-0) ?×? "12"
+        Text "EARLY" (2D3-0) ?×? "EARLY"
+      Frame "Frame" (2D4-0) 140×92
+        Text "8" (2D5-0) ?×? "8"
+        Text "BUILDING" (2D6-0) ?×? "BUILDING"
+      Frame "Frame" (2D7-0) 140×92
+        Text "3" (2D8-0) ?×? "3"
+        Text "READY" (2D9-0) ?×? "READY"
+      Frame "Frame" (2DA-0) 140×92
+        Text "1" (2DB-0) ?×? "1"
+        Text "ACTIVE" (2DC-0) ?×? "ACTIVE"
+    Frame "Active=READY" (2DD-0) 560×92
+      Frame "Frame" (2DE-0) 140×92
+        Text "12" (2DF-0) ?×? "12"
+        Text "EARLY" (2DG-0) ?×? "EARLY"
+      Frame "Frame" (2DH-0) 140×92
+        Text "8" (2DI-0) ?×? "8"
+        Text "BUILDING" (2DJ-0) ?×? "BUILDING"
+      Frame "Frame" (2DK-0) 140×92
+        Text "3" (2DL-0) ?×? "3"
+        Text "READY" (2DM-0) ?×? "READY"
+      Frame "Frame" (2DN-0) 140×92
+        Text "1" (2DO-0) ?×? "1"
+        Text "ACTIVE" (2DP-0) ?×? "ACTIVE"
+    Frame "Active=ACTIVE" (2DQ-0) 560×92
+      Frame "Frame" (2DR-0) 140×92
+        Text "12" (2DS-0) ?×? "12"
+        Text "EARLY" (2DT-0) ?×? "EARLY"
+      Frame "Frame" (2DU-0) 140×92
+        Text "8" (2DV-0) ?×? "8"
+        Text "BUILDING" (2DW-0) ?×? "BUILDING"
+      Frame "Frame" (2DX-0) 140×92
+        Text "3" (2DY-0) ?×? "3"
+        Text "READY" (2DZ-0) ?×? "READY"
+      Frame "Frame" (2E0-0) 140×92
+        Text "1" (2E1-0) ?×? "1"
+        Text "ACTIVE" (2E2-0) ?×? "ACTIVE"
+  Frame "MX/Lifecycle Rail" (2E3-0) 640×416
+    Frame "Current=DISCOVERED" (2E4-0) 640×86
+      Frame "Frame" (2E5-0) 160×86
+        SVG "Ellipse" (2E6-0) 14×14
+          ... 2 children
+        Text "DISCOVERED" (2E9-0) ?×? "DISCOVERED"
+      Frame "Frame" (2EA-0) 160×86
+        SVG "Ellipse" (2EB-0) 10×10
+          ... 2 children
+        Text "RESEARCHING" (2EE-0) ?×? "RESEARCHING"
+      Frame "Frame" (2EF-0) 160×86
+        SVG "Ellipse" (2EG-0) 10×10
+          ... 2 children
+        Text "READY" (2EJ-0) ?×? "READY"
+      Frame "Frame" (2EK-0) 160×86
+        SVG "Ellipse" (2EL-0) 10×10
+          ... 2 children
+        Text "TRACKING" (2EO-0) ?×? "TRACKING"
+    Frame "Current=RESEARCHING" (2EP-0) 640×86
+      Frame "Frame" (2EQ-0) 160×86
+        SVG "Ellipse" (2ER-0) 10×10
+          ... 2 children
+        Text "DISCOVERED" (2EU-0) ?×? "DISCOVERED"
+      Frame "Frame" (2EV-0) 160×86
+        SVG "Ellipse" (2EW-0) 14×14
+          ... 2 children
+        Text "RESEARCHING" (2EZ-0) ?×? "RESEARCHING"
+      Frame "Frame" (2F0-0) 160×86
+        SVG "Ellipse" (2F1-0) 10×10
+          ... 2 children
+        Text "READY" (2F4-0) ?×? "READY"
+      Frame "Frame" (2F5-0) 160×86
+        SVG "Ellipse" (2F6-0) 10×10
+          ... 2 children
+        Text "TRACKING" (2F9-0) ?×? "TRACKING"
+    Frame "Current=READY" (2FA-0) 640×86
+      Frame "Frame" (2FB-0) 160×86
+        SVG "Ellipse" (2FC-0) 10×10
+          ... 2 children
+        Text "DISCOVERED" (2FF-0) ?×? "DISCOVERED"
+      Frame "Frame" (2FG-0) 160×86
+        SVG "Ellipse" (2FH-0) 10×10
+          ... 2 children
+        Text "RESEARCHING" (2FK-0) ?×? "RESEARCHING"
+      Frame "Frame" (2FL-0) 160×86
+        SVG "Ellipse" (2FM-0) 14×14
+          ... 2 children
+        Text "READY" (2FP-0) ?×? "READY"
+      Frame "Frame" (2FQ-0) 160×86
+        SVG "Ellipse" (2FR-0) 10×10
+          ... 2 children
+        Text "TRACKING" (2FU-0) ?×? "TRACKING"
+    Frame "Current=TRACKING" (2FV-0) 640×86
+      Frame "Frame" (2FW-0) 160×86
+        SVG "Ellipse" (2FX-0) 10×10
+          ... 2 children
+        Text "DISCOVERED" (2G0-0) ?×? "DISCOVERED"
+      Frame "Frame" (2G1-0) 160×86
+        SVG "Ellipse" (2G2-0) 10×10
+          ... 2 children
+        Text "RESEARCHING" (2G5-0) ?×? "RESEARCHING"
+      Frame "Frame" (2G6-0) 160×86
+        SVG "Ellipse" (2G7-0) 10×10
+          ... 2 children
+        Text "READY" (2GA-0) ?×? "READY"
+      Frame "Frame" (2GB-0) 160×86
+        SVG "Ellipse" (2GC-0) 14×14
+          ... 2 children
+        Text "TRACKING" (2GF-0) ?×? "TRACKING"
+  Frame "MX/Detail Disclosure" (2GG-0) 520×?
+    Frame "State=Closed" (2GH-0) 520×48
+      Text "Methodology & receipt" (2GI-0) ?×? "Methodology & receipt"
+    Frame "State=Open" (2GJ-0) 520×148
+      Text "Methodology & receipt" (2GK-0) ?×? "Methodology & receipt"
+      Text "Open this only when you need mechanics, provenance, or the exact receipt behind the Tier-1 answer." (2GL-0) 480×? "Open this only when you need mechanics, provenance, or the e"
+  Frame "MX/Verdict Hero · Mobile" (2GM-0) 350×?
+    Frame "Tone=Neutral" (2GN-0) 350×188
+      Text "REGIME READ" (2GO-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2GP-0) ?×? "NEUTRAL"
+      Text "Broad participation, but extension argues for patience." (2GQ-0) 350×? "Broad participation, but extension argues for patience."
+      Text "Watch — don't chase" (2GR-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2GS-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Info" (2GT-0) 350×188
+      Text "REGIME READ" (2GU-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2GV-0) ?×? "NEUTRAL"
+      Text "Broad participation, but extension argues for patience." (2GW-0) 350×? "Broad participation, but extension argues for patience."
+      Text "Watch — don't chase" (2GX-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2GY-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Caution" (2GZ-0) 350×188
+      Text "REGIME READ" (2H0-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2H1-0) ?×? "NEUTRAL"
+      Text "Broad participation, but extension argues for patience." (2H2-0) 350×? "Broad participation, but extension argues for patience."
+      Text "Watch — don't chase" (2H3-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2H4-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Action" (2H5-0) 350×188
+      Text "REGIME READ" (2H6-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2H7-0) ?×? "NEUTRAL"
+      Text "Broad participation, but extension argues for patience." (2H8-0) 350×? "Broad participation, but extension argues for patience."
+      Text "Watch — don't chase" (2H9-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2HA-0) ?×? "SETTLED · 2026-08-28"
+    Frame "Tone=Success" (2HB-0) 350×188
+      Text "REGIME READ" (2HC-0) ?×? "REGIME READ"
+      Text "NEUTRAL" (2HD-0) ?×? "NEUTRAL"
+      Text "Broad participation, but extension argues for patience." (2HE-0) 350×? "Broad participation, but extension argues for patience."
+      Text "Watch — don't chase" (2HF-0) ?×? "Watch — don't chase"
+      Text "SETTLED · 2026-08-28" (2HG-0) ?×? "SETTLED · 2026-08-28"
+  Frame "MX/Count Ladder · Mobile" (2HH-0) 350×?
+    Frame "Active=EARLY" (2HI-0) 350×76
+      Frame "Frame" (2HJ-0) 88×76
+        Text "12" (2HK-0) ?×? "12"
+        Text "EARLY" (2HL-0) ?×? "EARLY"
+      Frame "Frame" (2HM-0) 88×76
+        Text "8" (2HN-0) ?×? "8"
+        Text "BUILDING" (2HO-0) ?×? "BUILDING"
+      Frame "Frame" (2HP-0) 88×76
+        Text "3" (2HQ-0) ?×? "3"
+        Text "READY" (2HR-0) ?×? "READY"
+      Frame "Frame" (2HS-0) 86×76
+        Text "1" (2HT-0) ?×? "1"
+        Text "ACTIVE" (2HU-0) ?×? "ACTIVE"
+    Frame "Active=BUILDING" (2HV-0) 350×76
+      Frame "Frame" (2HW-0) 88×76
+        Text "12" (2HX-0) ?×? "12"
+        Text "EARLY" (2HY-0) ?×? "EARLY"
+      Frame "Frame" (2HZ-0) 88×76
+        Text "8" (2I0-0) ?×? "8"
+        Text "BUILDING" (2I1-0) ?×? "BUILDING"
+      Frame "Frame" (2I2-0) 88×76
+        Text "3" (2I3-0) ?×? "3"
+        Text "READY" (2I4-0) ?×? "READY"
+      Frame "Frame" (2I5-0) 86×76
+        Text "1" (2I6-0) ?×? "1"
+        Text "ACTIVE" (2I7-0) ?×? "ACTIVE"
+    Frame "Active=READY" (2I8-0) 350×76
+      Frame "Frame" (2I9-0) 88×76
+        Text "12" (2IA-0) ?×? "12"
+        Text "EARLY" (2IB-0) ?×? "EARLY"
+      Frame "Frame" (2IC-0) 88×76
+        Text "8" (2ID-0) ?×? "8"
+        Text "BUILDING" (2IE-0) ?×? "BUILDING"
+      Frame "Frame" (2IF-0) 88×76
+        Text "3" (2IG-0) ?×? "3"
+        Text "READY" (2IH-0) ?×? "READY"
+      Frame "Frame" (2II-0) 86×76
+        Text "1" (2IJ-0) ?×? "1"
+        Text "ACTIVE" (2IK-0) ?×? "ACTIVE"
+    Frame "Active=ACTIVE" (2IL-0) 350×76
+      Frame "Frame" (2IM-0) 88×76
+        Text "12" (2IN-0) ?×? "12"
+        Text "EARLY" (2IO-0) ?×? "EARLY"
+      Frame "Frame" (2IP-0) 88×76
+        Text "8" (2IQ-0) ?×? "8"
+        Text "BUILDING" (2IR-0) ?×? "BUILDING"
+      Frame "Frame" (2IS-0) 88×76
+        Text "3" (2IT-0) ?×? "3"
+        Text "READY" (2IU-0) ?×? "READY"
+      Frame "Frame" (2IV-0) 86×76
+        Text "1" (2IW-0) ?×? "1"
+        Text "ACTIVE" (2IX-0) ?×? "ACTIVE"
+  Frame "MX/Lifecycle Rail · Mobile" (2IY-0) 350×376
+    Frame "Current=DISCOVERED" (2IZ-0) 350×76
+      Frame "Frame" (2J0-0) 88×76
+        SVG "Ellipse" (2J1-0) 13×13
+          ... 2 children
+        Text "DISCOVERED" (2J4-0) ?×? "DISCOVERED"
+      Frame "Frame" (2J5-0) 88×76
+        SVG "Ellipse" (2J6-0) 9×9
+          ... 2 children
+        Text "RESEARCHING" (2J9-0) ?×? "RESEARCHING"
+      Frame "Frame" (2JA-0) 88×76
+        SVG "Ellipse" (2JB-0) 9×9
+          ... 2 children
+        Text "READY" (2JE-0) ?×? "READY"
+      Frame "Frame" (2JF-0) 86×76
+        SVG "Ellipse" (2JG-0) 9×9
+          ... 2 children
+        Text "TRACKING" (2JJ-0) ?×? "TRACKING"
+    Frame "Current=RESEARCHING" (2JK-0) 350×76
+      Frame "Frame" (2JL-0) 88×76
+        SVG "Ellipse" (2JM-0) 9×9
+          ... 2 children
+        Text "DISCOVERED" (2JP-0) ?×? "DISCOVERED"
+      Frame "Frame" (2JQ-0) 88×76
+        SVG "Ellipse" (2JR-0) 13×13
+          ... 2 children
+        Text "RESEARCHING" (2JU-0) ?×? "RESEARCHING"
+      Frame "Frame" (2JV-0) 88×76
+        SVG "Ellipse" (2JW-0) 9×9
+          ... 2 children
+        Text "READY" (2JZ-0) ?×? "READY"
+      Frame "Frame" (2K0-0) 86×76
+        SVG "Ellipse" (2K1-0) 9×9
+          ... 2 children
+        Text "TRACKING" (2K4-0) ?×? "TRACKING"
+    Frame "Current=READY" (2K5-0) 350×76
+      Frame "Frame" (2K6-0) 88×76
+        SVG "Ellipse" (2K7-0) 9×9
+          ... 2 children
+        Text "DISCOVERED" (2KA-0) ?×? "DISCOVERED"
+      Frame "Frame" (2KB-0) 88×76
+        SVG "Ellipse" (2KC-0) 9×9
+          ... 2 children
+        Text "RESEARCHING" (2KF-0) ?×? "RESEARCHING"
+      Frame "Frame" (2KG-0) 88×76
+        SVG "Ellipse" (2KH-0) 13×13
+          ... 2 children
+        Text "READY" (2KK-0) ?×? "READY"
+      Frame "Frame" (2KL-0) 86×76
+        SVG "Ellipse" (2KM-0) 9×9
+          ... 2 children
+        Text "TRACKING" (2KP-0) ?×? "TRACKING"
+    Frame "Current=TRACKING" (2KQ-0) 350×76
+      Frame "Frame" (2KR-0) 88×76
+        SVG "Ellipse" (2KS-0) 9×9
+          ... 2 children
+        Text "DISCOVERED" (2KV-0) ?×? "DISCOVERED"
+      Frame "Frame" (2KW-0) 88×76
+        SVG "Ellipse" (2KX-0) 9×9
+          ... 2 children
+        Text "RESEARCHING" (2L0-0) ?×? "RESEARCHING"
+      Frame "Frame" (2L1-0) 88×76
+        SVG "Ellipse" (2L2-0) 9×9
+          ... 2 children
+        Text "READY" (2L5-0) ?×? "READY"
+      Frame "Frame" (2L6-0) 86×76
+        SVG "Ellipse" (2L7-0) 13×13
+          ... 2 children
+        Text "TRACKING" (2LA-0) ?×? "TRACKING"
+  Frame "MX/Decision Row · Mobile" (2LB-0) 350×?
+    Frame "State=Default" (2LC-0) 350×96
+      Frame "Frame" (2LD-0) 326×20
+        Text "Inflation pulse" (2LE-0) ?×? "Inflation pulse"
+        Frame "Frame" (2LF-0) ?×1
+        Text "WATCH — DON'T CHASE" (2LG-0) ?×? "WATCH — DON'T CHASE"
+      Text "Core pressure eased again" (2LH-0) 300×? "Core pressure eased again"
+      Text "Evidence ↗" (2LI-0) ?×? "Evidence ↗"
+    Frame "State=Hover" (2LJ-0) 350×96
+      Frame "Frame" (2LK-0) 326×20
+        Text "Inflation pulse" (2LL-0) ?×? "Inflation pulse"
+        Frame "Frame" (2LM-0) ?×1
+        Text "WATCH — DON'T CHASE" (2LN-0) ?×? "WATCH — DON'T CHASE"
+      Text "Core pressure eased again" (2LO-0) 300×? "Core pressure eased again"
+      Text "Evidence ↗" (2LP-0) ?×? "Evidence ↗"
+    Frame "State=Focus" (2LQ-0) 350×96
+      Frame "Frame" (2LR-0) 326×20
+        Text "Inflation pulse" (2LS-0) ?×? "Inflation pulse"
+        Frame "Frame" (2LT-0) ?×1
+        Text "WATCH — DON'T CHASE" (2LU-0) ?×? "WATCH — DON'T CHASE"
+      Text "Core pressure eased again" (2LV-0) 300×? "Core pressure eased again"
+      Text "Evidence ↗" (2LW-0) ?×? "Evidence ↗"
+  Frame "MX/Detail Disclosure · Mobile" (2LX-0) 350×?
+    Frame "State=Closed" (2LY-0) 350×48
+      Text "Methodology & receipt" (2LZ-0) ?×? "Methodology & receipt"
+    Frame "State=Open" (2M0-0) 350×148
+      Text "Methodology & receipt" (2M1-0) ?×? "Methodology & receipt"
+      Text "Mechanics and provenance stay available without taking over the primary answer." (2M2-0) 320×? "Mechanics and provenance stay available without taking over "
+  Frame "MX/State Panel · Mobile" (2M3-0) 350×?
+    Frame "State=Loading" (2M4-0) 350×106
+      Rectangle "Rectangle" (2M5-0) 3×82
+      Frame "Frame" (2M6-0) 309×82
+        Text "EMPTY" (2M7-0) ?×? "EMPTY"
+        Text "No observations yet" (2M8-0) ?×? "No observations yet"
+        Text "Nothing qualified; zero is not inferred." (2M9-0) 309×? "Nothing qualified; zero is not inferred."
+        Frame "Loading skeleton" (44U-0) 309×?
+          ... 3 children
+    Frame "State=Empty" (2MA-0) 350×106
+      Rectangle "Rectangle" (2MB-0) 3×82
+      Frame "Frame" (2MC-0) 309×82
+        Text "EMPTY" (2MD-0) ?×? "EMPTY"
+        Text "No observations yet" (2ME-0) ?×? "No observations yet"
+        Text "Nothing qualified; zero is not inferred." (2MF-0) 309×? "Nothing qualified; zero is not inferred."
+    Frame "State=Error" (2MG-0) 350×160
+      Rectangle "Rectangle" (2MH-0) 3×82
+      Frame "Frame" (2MI-0) 309×?
+        Text "EMPTY" (2MJ-0) ?×? "ERROR"
+        Text "No observations yet" (2MK-0) ?×? "Refresh failed"
+        Text "Nothing qualified; zero is not inferred." (2ML-0) 309×? "Saved view remains available. Retry to refresh."
+      Frame "Retry read-only refresh" (452-0) 132×44
+        Text "Retry" (453-0) ?×? "Retry"
+    Frame "State=Stale" (2MM-0) 350×106
+      Rectangle "Rectangle" (2MN-0) 3×82
+      Frame "Frame" (2MO-0) 309×82
+        Text "EMPTY" (2MP-0) ?×? "STALE"
+        Text "No observations yet" (2MQ-0) ?×? "Assessment is behind"
+        Text "Nothing qualified; zero is not inferred." (2MR-0) 309×? "Last assessment is retained. Check its date before use."
+    Frame "State=Denied" (2MS-0) 350×106
+      Rectangle "Rectangle" (2MT-0) 3×82
+      Frame "Frame" (2MU-0) 309×82
+        Text "EMPTY" (2MV-0) ?×? "ACCESS RESTRICTED"
+        Text "No observations yet" (2MW-0) ?×? "This source is restricted"
+        Text "Nothing qualified; zero is not inferred." (2MX-0) 309×? "Other evidence remains available. Check access."
+    Frame "State=Partial" (2MY-0) 350×106
+      Rectangle "Rectangle" (2MZ-0) 3×82
+      Frame "Frame" (2N0-0) 309×82
+        Text "EMPTY" (2N1-0) ?×? "PARTIAL"
+        Text "No observations yet" (2N2-0) ?×? "Coverage is incomplete"
+        Text "Nothing qualified; zero is not inferred." (2N3-0) 309×? "Available evidence is shown; missing is not zero."
+    Frame "State=Corrected" (2N4-0) 350×106
+      Rectangle "Rectangle" (2N5-0) 3×82
+      Frame "Frame" (2N6-0) 309×82
+        Text "EMPTY" (2N7-0) ?×? "CORRECTED"
+        Text "No observations yet" (2N8-0) ?×? "A source revised its reading"
+        Text "Nothing qualified; zero is not inferred." (2N9-0) 309×? "Review the change and the retained prior version."
+    Frame "State=Success" (2NA-0) 350×106
+      Rectangle "Rectangle" (2NB-0) 3×82
+      Frame "Frame" (2NC-0) 309×82
+        Text "EMPTY" (2ND-0) ?×? "SUCCESS"
+        Text "No observations yet" (2NE-0) ?×? "Refresh completed"
+        Text "Nothing qualified; zero is not inferred." (2NF-0) 309×? "The latest available evidence is now shown."
+  Frame "MX/Callout · Mobile" (2NG-0) 350×?
+    Frame "Tone=Neutral" (2NH-0) 350×88
+      Rectangle "Rectangle" (2NI-0) 3×64
+      Frame "Frame" (2NJ-0) 309×64
+        Text "CONTEXT" (2NK-0) ?×? "CONTEXT"
+        Text "The answer stays visible while mechanics move into evidence." (2NL-0) 309×? "The answer stays visible while mechanics move into evidence."
+    Frame "Tone=Info" (2NM-0) 350×88
+      Rectangle "Rectangle" (2NN-0) 3×64
+      Frame "Frame" (2NO-0) 309×64
+        Text "CONTEXT" (2NP-0) ?×? "CONTEXT"
+        Text "The answer stays visible while mechanics move into evidence." (2NQ-0) 309×? "The answer stays visible while mechanics move into evidence."
+    Frame "Tone=Caution" (2NR-0) 350×88
+      Rectangle "Rectangle" (2NS-0) 3×64
+      Frame "Frame" (2NT-0) 309×64
+        Text "CONTEXT" (2NU-0) ?×? "CONTEXT"
+        Text "The answer stays visible while mechanics move into evidence." (2NV-0) 309×? "The answer stays visible while mechanics move into evidence."
+    Frame "Tone=Action" (2NW-0) 350×88
+      Rectangle "Rectangle" (2NX-0) 3×64
+      Frame "Frame" (2NY-0) 309×64
+        Text "CONTEXT" (2NZ-0) ?×? "CONTEXT"
+        Text "The answer stays visible while mechanics move into evidence." (2O0-0) 309×? "The answer stays visible while mechanics move into evidence."
+    Frame "Tone=Success" (2O1-0) 350×88
+      Rectangle "Rectangle" (2O2-0) 3×64
+      Frame "Frame" (2O3-0) 309×64
+        Text "CONTEXT" (2O4-0) ?×? "CONTEXT"
+        Text "The answer stays visible while mechanics move into evidence." (2O5-0) 309×? "The answer stays visible while mechanics move into evidence."
+  Frame "MX/Table Frame" (2O6-0) 720×?
+    Frame "State=Ready" (2O7-0) 720×300
+      Frame "Frame" (2O8-0) 718×42
+        Text "STATE" (2O9-0) 130×? "STATE"
+        Text "MEMBER" (2OA-0) 120×? "MEMBER"
+        Text "CLOSE" (2OB-0) 100×? "CLOSE"
+        Text "DISTANCE" (2OC-0) 130×? "DISTANCE"
+        Text "EVIDENCE" (2OD-0) 210×? "EVIDENCE"
+      Frame "Frame" (2OE-0) 718×240
+        Frame "Table row" (2OF-0) 718×48
+          ... 5 children
+        Frame "Table row" (2OL-0) 718×48
+          ... 5 children
+        Frame "Table row" (2OR-0) 718×48
+          ... 5 children
+        Frame "Table row" (2OX-0) 718×48
+          ... 5 children
+    Frame "State=Empty" (2P3-0) 720×300
+      Frame "Frame" (2P4-0) 718×42
+        Text "STATE" (2P5-0) 130×? "STATE"
+        Text "MEMBER" (2P6-0) 120×? "MEMBER"
+        Text "CLOSE" (2P7-0) 100×? "CLOSE"
+        Text "DISTANCE" (2P8-0) 130×? "DISTANCE"
+        Text "EVIDENCE" (2P9-0) 210×? "EVIDENCE"
+      Frame "Frame" (2PA-0) 718×240
+        Frame "MX/State Panel" (2PB-0) 440×116
+          ... 2 children
+  Frame "MX/Chart Frame" (2PH-0) 720×?
+    Frame "State=Ready" (2PI-0) 720×350
+      Frame "Frame" (2PJ-0) 688×42
+        Frame "Frame" (2PK-0) ?×?
+          ... 2 children
+        Frame "Frame" (2PN-0) ?×1
+        Text "SETTLED · 2026-08-28" (2PO-0) ?×? "EXAMPLE · NOT LIVE"
+      Frame "Frame" (2PP-0) 688×230
+        Rectangle "Rectangle" (2PQ-0) 688×1
+        Rectangle "Rectangle" (2PR-0) 688×1
+        Rectangle "Rectangle" (2PS-0) 688×1
+        Rectangle "Rectangle" (2PT-0) 688×1
+        Rectangle "Rectangle" (2PU-0) 34×58
+        Rectangle "Rectangle" (2PV-0) 34×84
+        Rectangle "Rectangle" (2PW-0) 34×72
+        Rectangle "Rectangle" (2PX-0) 34×112
+        Rectangle "Rectangle" (2PY-0) 34×96
+        Rectangle "Rectangle" (2PZ-0) 34×148
+        Rectangle "Rectangle" (2Q0-0) 34×132
+        Rectangle "Rectangle" (2Q1-0) 34×166
+        Rectangle "Rectangle" (2Q2-0) 34×154
+        Rectangle "Rectangle" (2Q3-0) 34×188
+        Rectangle "Rectangle" (2Q4-0) 34×172
+        Rectangle "Rectangle" (2Q5-0) 34×205
+      Text "20-session participation · source-bound settled closes" (2Q6-0) 688×? "Illustrative geometry; units and source series not bound"
+    Frame "State=Loading" (2Q7-0) 720×350
+      Frame "Frame" (2Q8-0) 688×42
+        Frame "Frame" (2Q9-0) ?×?
+          ... 2 children
+        Frame "Frame" (2QC-0) ?×1
+        Text "SETTLED · 2026-08-28" (2QD-0) ?×? "AWAITING INPUTS"
+      Frame "Frame" (2QE-0) 688×230
+        Rectangle "Rectangle" (2QF-0) 420×18
+        Rectangle "Rectangle" (2QG-0) 510×18
+        Rectangle "Rectangle" (2QH-0) 370×18
+        Rectangle "Rectangle" (2QI-0) 560×18
+      Text "20-session participation · source-bound settled closes" (2QJ-0) 688×? "Skeleton at true chart geometry; no values inferred"
+    Frame "State=Empty" (2QK-0) 720×350
+      Frame "Frame" (2QL-0) 688×42
+        Frame "Frame" (2QM-0) ?×?
+          ... 2 children
+        Frame "Frame" (2QP-0) ?×1
+        Text "SETTLED · 2026-08-28" (2QQ-0) ?×? "NO OBSERVATIONS"
+      Frame "Frame" (2QR-0) 688×230
+        Frame "MX/State Panel" (2QS-0) 440×116
+          ... 2 children
+      Text "20-session participation · source-bound settled closes" (2QY-0) 688×? "No qualifying observations; empty is not zero"
+    Frame "State=Error" (2QZ-0) 720×350
+      Frame "Frame" (2R0-0) 688×42
+        Frame "Frame" (2R1-0) ?×?
+          ... 2 children
+        Frame "Frame" (2R4-0) ?×1
+        Text "SETTLED · 2026-08-28" (2R5-0) ?×? "REFRESH FAILED"
+      Frame "Frame" (2R6-0) 688×230
+        Frame "MX/State Panel" (2R7-0) 440×160
+          ... 3 children
+      Text "20-session participation · source-bound settled closes" (2RD-0) 688×? "Retry refreshes read-only evidence; it does not resubmit an "
+  Frame "MX/Tier Gate" (2RE-0) 720×?
+    Frame "Kind=Generic" (2RF-0) 720×216
+      Frame "Frame" (2RG-0) 230×142
+        Rectangle "Rectangle" (2RH-0) 170×13
+        Rectangle "Rectangle" (2RI-0) 190×13
+        Rectangle "Rectangle" (2RJ-0) 140×13
+      Frame "Frame" (2RK-0) 420×?
+        Text "RESEARCH DEPTH · LOCKED" (2RL-0) ?×? "RESEARCH DEPTH · LOCKED"
+        Text "Unlock the evidence layer" (2RM-0) ?×? "Unlock the evidence layer"
+        Text "See the full source-bound evidence and methodology without changing the public answer." (2RN-0) 390×? "See the full source-bound evidence and methodology without c"
+        Text "Included with Research Pro" (2RO-0) ?×? "Included with Research Pro"
+        Frame "Unlock" (2RP-0) 142×44
+          ... 1 children
+    Frame "Kind=Prophet" (2RR-0) 720×216
+      Frame "Frame" (2RS-0) 230×142
+        Rectangle "Rectangle" (2RT-0) 170×13
+        Rectangle "Rectangle" (2RU-0) 190×13
+        Rectangle "Rectangle" (2RV-0) 140×13
+      Frame "Frame" (2RW-0) 420×?
+        Text "RESEARCH DEPTH · LOCKED" (2RX-0) ?×? "RESEARCH DEPTH · LOCKED"
+        Text "Unlock the evidence layer" (2RY-0) ?×? "Unlock the evidence layer"
+        Text "See the full source-bound evidence and methodology without changing the public answer." (2RZ-0) 390×? "See the full source-bound evidence and methodology without c"
+        Text "Included with Research Pro" (2S0-0) ?×? "Included with Research Pro"
+        Frame "Unlock" (2S1-0) 142×44
+          ... 1 children

@@ -1,0 +1,133 @@
+{
+  "observed_at": "2026-11-03T01:24:00Z",
+  "observation_time_precision": "approximate minute from session; not a revision",
+  "file": {
+    "id": "01M312VSDSZFVT45674GDVJVZN",
+    "name": "Mastermind Product Design System — Canonical"
+  },
+  "contentHash": {
+    "tokens": "356191c3"
+  },
+  "tokens": [
+    {
+      "name": "--noir-canvas",
+      "type": "color",
+      "value": "#080808",
+      "description": "NOIR / Command base canvas. Zero blue bias."
+    },
+    {
+      "name": "--noir-sidebar",
+      "type": "color",
+      "value": "#0C0C0C",
+      "description": "NOIR / Command navigation and rail surface."
+    },
+    {
+      "name": "--noir-panel",
+      "type": "color",
+      "value": "#121212",
+      "description": "Primary structural panel surface."
+    },
+    {
+      "name": "--noir-raised",
+      "type": "color",
+      "value": "#191919",
+      "description": "Raised interaction surface."
+    },
+    {
+      "name": "--noir-hover",
+      "type": "color",
+      "value": "#222222",
+      "description": "Hover / emphasized neutral surface."
+    },
+    {
+      "name": "--noir-selected",
+      "type": "color",
+      "value": "#292929",
+      "description": "Selected neutral surface."
+    },
+    {
+      "name": "--noir-text-primary",
+      "type": "color",
+      "value": "#F3F3F3",
+      "description": "Primary text on dark surfaces."
+    },
+    {
+      "name": "--noir-text-secondary",
+      "type": "color",
+      "value": "#B8B8B8",
+      "description": "Secondary text on dark surfaces."
+    },
+    {
+      "name": "--noir-text-tertiary",
+      "type": "color",
+      "value": "#949494",
+      "description": "Tertiary labels and metadata."
+    },
+    {
+      "name": "--noir-champagne",
+      "type": "color",
+      "value": "#C9B99B",
+      "description": "Attention, premium focus, and selected-data accent; not a page background."
+    },
+    {
+      "name": "--noir-sage",
+      "type": "color",
+      "value": "#A8C2AD",
+      "description": "Verified / healthy / resolved semantic accent."
+    },
+    {
+      "name": "--noir-rose",
+      "type": "color",
+      "value": "#DEA4A5",
+      "description": "Risk / challenge / negative semantic accent."
+    },
+    {
+      "name": "--noir-steel",
+      "type": "color",
+      "value": "#A7B4C2",
+      "description": "Intelligence / context / active inquiry accent."
+    },
+    {
+      "name": "--noir-lilac",
+      "type": "color",
+      "value": "#BDB2CE",
+      "description": "Localized AI illumination and secondary intelligence accent."
+    },
+    {
+      "name": "--market-canvas",
+      "type": "color",
+      "value": "#0A0B0D",
+      "description": "NOIR / Market base: graphite with only a microscopic cool bias."
+    },
+    {
+      "name": "--market-panel",
+      "type": "color",
+      "value": "#111318",
+      "description": "Primary market workspace panel."
+    },
+    {
+      "name": "--market-raised",
+      "type": "color",
+      "value": "#181B20",
+      "description": "Raised market controls and data surfaces."
+    },
+    {
+      "name": "--market-line",
+      "type": "color",
+      "value": "#2B3038",
+      "description": "Hairline separator for dense market interfaces."
+    },
+    {
+      "name": "--intelligence-panel",
+      "type": "color",
+      "value": "#10131A",
+      "description": "NOIR / Intelligence shell: graphite first, cool atmosphere second."
+    },
+    {
+      "name": "--intelligence-active",
+      "type": "color",
+      "value": "#151B29",
+      "description": "Localized active-reasoning material; never the whole application ground."
+    }
+  ]
+}

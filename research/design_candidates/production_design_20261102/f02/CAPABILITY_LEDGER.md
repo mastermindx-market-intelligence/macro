@@ -1,0 +1,51 @@
+# F02 capability retention ledger
+
+This ledger covers shared capabilities plus the real consumer paths used to stress them. It does not claim a complete domain redesign. Baselines are pinned in SOURCE_AND_DATA_CONTRACT.md and captured under evidence/. All changes are proposed design/specification changes; no production or Paper capability was altered.
+
+| ID | Existing capability | Baseline | Disposition | Successor / retained path | Dependency / remaining owner |
+| --- | --- | --- | --- | --- | --- |
+| CAP-01 | Shared workspace shell and all destinations | Live beta shell; AppShell; F01 | RETAIN | Existing F01 destinations, region/context, search, account, focused Terminal and Brain remain reachable. | F01 frozen composition; specimen chrome is only the observed envelope. |
+| CAP-02 | Macro regime / risk / forward views | Live /macro.html; dashboard.html.j2 | RETAIN | All existing regime, risk, Fed-path, sentiment, alerts, calendar and navigation objects remain domain-owned. | D02/D03; F02 breadth slice does not replace the page. |
+| CAP-03 | Chart-based comparison | Canonical 2PH-0; live Macro and Company charts | IMPROVE | Keep visual history, units, scale and source; show gaps and exact-value alternative. | Actual lib/illus.py missing-value behavior requires later builder repair. |
+| CAP-04 | Dense native comparison table | Canonical 2O6-0/26J-0; Company/Options live tables | IMPROVE | Scoped headers, numeric alignment, local overflow, raw-value sort and explicit coverage. | Existing table/export owners; no global grid-role conversion. |
+| CAP-05 | Virtualized inspector/replay table | Terminal DataInspector and lib/dataInspector.ts | RETAIN | Canonical time/row keys, keyboard selection, row counts/indexes, replay and CSV scope. | D06/D08D; not reimplemented by the specimen. |
+| CAP-06 | Metric magnitude and comparator | Canonical 25Z-0 | IMPROVE | Number plus unit/currency, observation and comparison period; +1.13 pp rather than ambiguous +1.13%. | Domain baseline/comparability mapping. |
+| CAP-07 | Zero versus unknown | Canonical data/state patterns; source formatters | IMPROVE | Reported 0 remains numeric; missing/invalid/not-applicable retain reason and unit. | No imputation or unsupported source claim. |
+| CAP-08 | Market direction and convention | Macro direction tokens; Terminal east/red-up | IMPROVE | Sign/text and explicit convention remain distinct from language, health and selected state. | F01 preference migration; incumbent behavior preserved meanwhile. |
+| CAP-09 | Options side and exposure semantics | Terminal flow-buy/sell and exposure tokens | RETAIN | Side classification and signed exposure stay invariant under locale/direction changes. | D08 meaning, source coverage and color qualification. |
+| CAP-10 | Tabs and local panels | Canonical 26C-0; Company and Options live tabs | IMPROVE | Quiet selected fill, independent focus, correct tab/panel semantics and existing route state. | F01/domain local navigation ownership. |
+| CAP-11 | Evidence and LENS access | Canonical 2BK-0; theme.js LENS; Company EvidenceRail | IMPROVE | Exact row/field/source context; useful compact evidence; keyboard/touch and close return. | Citation precision stays source-owned; missing precision never invented. |
+| CAP-12 | Docked and modal inspector | Canonical evidence/detail patterns; EvidenceRail | IMPROVE | One active inspector; dock only when primary width supports it; modal focus and scroll restoration. | F01 dimensions; interactive browser/AT proof open. |
+| CAP-13 | Freshness, coverage and transport | Canonical 272-0; live Options; flowFreshness | IMPROVE | Separate clocks and axes; retain stale/partial observations under correct identity. | Owner-defined cadence and coverage; no global generic TTL. |
+| CAP-14 | Loading / empty / read error | Canonical 2A7-0/2M3-0 | IMPROVE | Loading no longer contains EMPTY; empty gives reason; errors retain useful prior data and retry. | No Paper change applied yet. |
+| CAP-15 | Callouts and material limitations | Canonical 29H-0/2NG-0 and pattern35W-0 | IMPROVE | Neutral grouping, concise consequence and recovery; no colored stripe; caveat remains visible. | Domain copy retains meaning. |
+| CAP-16 | Access and tier gate | Canonical 2RE-0; source tier/access owners | IMPROVE | Separate guest, denied, expired and provider unavailable; keep permitted content, no data leak. | Actual server entitlement and route behavior not changed/tested. |
+| CAP-17 | Buttons and actions | Canonical 28D-0 | IMPROVE | Clear hierarchy, named icon control, 44px important phone target, explicit pending/disabled. | Callback/data owner supplied by consumer. |
+| CAP-18 | Disclosure | Canonical 2GG-0/2LX-0 | IMPROVE | Keyboard/touch expanded state; optional details only; source limitations remain outside when critical. | Existing lazy-read semantics retained. |
+| CAP-19 | Decision and verdict anatomy | Canonical 28Y-0/2LB-0 and 2BR-0/2GM-0 | RETAIN | Preserve compact domain verdict, evidence and authorized next step. | No shared trading command/probability imposed; domain owner qualifies. |
+| CAP-20 | Count ladder and reconciled counts | Canonical 2CM-0/2HH-0; existing Prophet | RETAIN | Exhaustive/disjoint stage counts, denominator and active stage remain explicit. | Existing Prophet domain semantics; no fused score. |
+| CAP-21 | Lifecycle rail | Canonical 2E3-0/2IY-0 | RETAIN | Existing transitions and terminal/pending states retained. | Domain owns transitions; shared presentation only. |
+| CAP-22 | Company history and comparability | Live Financials Statements; 17-year range, prior-definition caveat | RETAIN | Annual/quarterly, statement types, historical paging, unknown metrics and definition changes remain reachable. | D07 data/source contract; no compact-summary replacement. |
+| CAP-23 | Company context and deep views | Analysis route parser, views and identity guards | RETAIN | Company/thesis/investigation route/query semantics, citations, source resets and race protection. | D07/D11/D12/D14; no new route parser. |
+| CAP-24 | Options workflow and filters | Live /options: Command/Flow/Exposure/Structure/Volatility/Statistics/Prophet | RETAIN | All tabs, futures entry, presets, premium/DTE/moneyness/ticker controls and workflow remain. | D08 integration and slices; F02 tape subset not complete workspace. |
+| CAP-25 | Options save/share/export and 2,000-row scope | Live Options toolbar | RETAIN | Existing saved screens, share and export scope remain reachable and accurately labeled. | D08/D23; no live mutation attempted. |
+| CAP-26 | Options sampled statistics and coverage | optionsObservedStatistics.ts / useFlowStream(meta) | RETAIN | Exact schema, partitions, counts, invalid/missing publisher distinctions and stale policy. | Consumer source verified; producer deployment/coverage not certified. |
+| CAP-27 | Saved-state outcomes | Common contract; D23 owner | IMPROVE | Pending/saved/failed/uncertain, preserved draft and owner readback; no navigation write. | D23 real integration required; local example only. |
+| CAP-28 | Bilingual and regional behavior | Canonical mobile EN/ZH; source locale rules | IMPROVE | Long labels, localized chrome/format, retained listing identity; region is not color convention. | English editorial body retained; translated full article is not silently added. |
+| CAP-29 | Public TOC, related content and continuation | Live compound-growth article; seo_article template | RETAIN | Existing anchors, canonical links, related calculators, article body and CTA remain reachable. | D26 authored source/SEO and publication contract. |
+| CAP-30 | Public publication metadata and numbers | Current public article/template | IMPROVE | Publication/update dates distinct from market clocks; explicitly labeled calculation unit/period. | No invented reading time; existing authored dates and revision behavior retained. |
+| CAP-31 | Public alert ticker and marketing shell | Live public nav/ticker/footer | RETAIN | Public shell not replaced by investor rail; existing destinations remain. | Observed signed-change/arrow conflict needs public/source owner review; F02 does not fix market data. |
+| CAP-32 | Reading versus analytical density | Canonical archetype patterns; public/analytical source | IMPROVE | Comfortable reading measure versus dense comparisons; no one-card-grid mandate. | Component thresholds consume F01 widths. |
+| CAP-33 | Icons, focus, selected and touch | Canonical controls plus source icons | IMPROVE | CurrentColor anatomy, explicit accessible names, distinct focus/selection, no hover-only task. | Real browser/AT/touch validation still open. |
+| CAP-34 | Refraction / rejected full-pane treatment | Terminal settings historical ruling; exact Refraction Paper IDs | RETAIN | Rejected full-pane design remains rejected; top-strip-only conditions preserved without promotion. | No general animated/colored border added. |
+| CAP-35 | Canonical foundations, references and archives | 48 canonical + 19 supporting boards | RETAIN | All 67 boards have per-ID disposition; no moves, deletions or fake approval. | F03 organization and P00 writer; current location does not demote authority. |
+| CAP-36 | Shared-source migration and rollback | Macro theme + shared template, Terminal scopes, public estate | IMPROVE | Per-source role mapping, collision-safe aliases, companion tests and reversible scoped migration. | Later separately authorized implementation; incumbent #7849 preserved. |
+
+## Disposition totals
+
+{"RETAIN":16,"IMPROVE":20}
+
+**REMOVE: 0. RELOCATE: 0. BLOCKED_DATA: 0.** Unqualified producer mappings and infrastructure dependencies are recorded as open dependencies, not invented assertions that existing data is absent. No archive or Paper move occurred. All rows have reviewer decision pending; an author disposition is not an approval receipt.
+
+A later implementation must prove the retained full domain paths, not merely this kit's four slices. If an existing feature cannot be supplied by its real producer, its domain owner must record an actual BLOCKED_DATA dependency and useful interim behavior rather than silently remove it.
+
