@@ -1,0 +1,9 @@
+{
+  "command": "python3 scripts/check_ui_visual_evidence.py --repo-root <candidate> --diff-file <original-baseline UI diff>",
+  "exit_code": 0,
+  "findings": [],
+  "pages": 7,
+  "rest_cells": 56,
+  "hover_focus_cells": 4,
+  "scope": "Canonical receipt and original PNG integrity on changed GMI templates; hosted PR diff is checked separately."
+}

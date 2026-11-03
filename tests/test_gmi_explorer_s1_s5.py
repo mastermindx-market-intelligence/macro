@@ -3,8 +3,9 @@
 Every owned page must render from the live model AND the held variant (the
 specimen parity state), carry exactly one h1, no title=/style= attributes, no
 <script> inside <main>, no REASON_ codes, and never the word "validated".
-S1 branches on the link state (admitted vs held); S5 is the ten-card state
-enum reference sheet (noindex, keys in specimen order).
+S1 shows reviewed dated product evidence and withholds unreviewed links.
+S5 is a generic noindex feedback reference, preserving prior state keys.
+Internal relationship packages do not authorize publication.
 """
 from __future__ import annotations
 
@@ -23,11 +24,7 @@ from scripts.gmi_explorer.variants import edges_variant, held_variant  # noqa: E
 #: the single §10 state enum, in specimen card order
 STATE_KEYS = ["fetch_failed", "stale", "rights_withheld", "purpose_denied",
               "source_paused", "unknown", "loading", "empty", "read_updated",
-              "path_template"]
-#: SPECS §10 plain words an unset S1 value may print (never 0 / — / blank)
-UNSET_WORDS = {"Awaiting review", "Not in the source", "Size withheld",
-               "Not set yet", "Not disclosed"}
-SET_DATE = re.compile(r"\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}")
+              "path_template", "success"]
 MAIN = re.compile(r"<main.*?</main>", re.S)
 
 
@@ -46,15 +43,6 @@ def _assert_hygiene(path: Path) -> None:
     assert "validated" not in html.lower(), f"{path.name}: never 'validated'"
 
 
-def _unknown_values(main: str) -> list[str]:
-    """Trailing values of the side sheet's 'what we don't know yet' list."""
-    aside = re.search(r'<aside class="gmi-sheet">.*?</aside>', main, re.S).group(0)
-    ul = re.search(r'<ul class="gmi-list">(.*?)</ul>', aside, re.S).group(1)
-    out = []
-    for row in re.findall(r"<li>(.*?)</li>", ul, re.S):
-        spans = re.findall(r"<span>(.*?)</span>", row, re.S)
-        out.append(re.sub(r"<[^>]+>", "", spans[-1]).strip())
-    return out
 
 
 @pytest.fixture(scope="module")
@@ -94,28 +82,34 @@ def test_s1_hygiene_live_and_held(live, held):
             _assert_hygiene(page)
 
 
-def test_s1_live_is_admitted_branch(live):
+def test_s1_live_shows_reviewed_dated_product_evidence(live):
     model, site = live
     for issuer in model["issuers"]:
         main = _main(site / f"gmi-issuer-{issuer['ticker'].lower()}.html")
-        assert "Admitted after review." in main
-        assert "Awaiting review" not in main  # the "Whether ... belongs here" row is held-only
+        accepted = [link for link in issuer["links"]
+                    if link["curation"]["decision"] == "ACCEPT" and link["status"] == "RATIFIED"]
+        assert main.count('<article class="gmi-evidence-card">') == len(accepted)
+        for link in accepted:
+            assert link["proposal_id"] in main
+        assert "Current delivery, deal size and revenue exposure are not established" in main
 
 
-def test_s1_held_is_held_branch(held):
+def test_s1_unreviewed_connections_do_not_become_product_evidence(held):
     model, site = held
     for issuer in model["issuers"]:
         main = _main(site / f"gmi-issuer-{issuer['ticker'].lower()}.html")
-        assert "gmi-pip--held" in main
-        assert "Awaiting review" in main
+        assert "No reviewed product evidence" in main
+        assert '<article class="gmi-evidence-card">' not in main
+        assert "gmi-evidence-receipt" not in main
 
 
 def test_s1_receipt_is_closed_details(live, held):
     for _, site in (live, held):
         for page in site.glob("gmi-issuer-*.html"):
-            tag = re.search(r'<details[^>]*id="receipt"[^>]*>', page.read_text(encoding="utf-8"))
-            assert tag, f"{page.name}: receipt details present"
-            assert "open" not in tag.group(0).split("class")[0], "receipt renders closed"
+            main = _main(page)
+            tags = re.findall(r'<details[^>]*class="gmi-evidence-receipt"[^>]*>', main)
+            assert len(tags) == main.count('<article class="gmi-evidence-card">')
+            assert all(not re.search(r'\bopen(?:\s|=|>)', tag) for tag in tags)
 
 
 def test_s1_no_excerpt_text_when_not_granted(live, held):
@@ -130,15 +124,17 @@ def test_s1_no_excerpt_text_when_not_granted(live, held):
                     assert link["excerpt_text"] not in page
 
 
-def test_s1_unset_values_are_plain_words(live, held):
-    for _, site in (live, held):
-        for page in sorted(site.glob("gmi-issuer-*.html")):
-            main = _main(page)
-            values = _unknown_values(main)
-            assert values, f"{page.name}: unknowns list present"
-            for value in values:
-                assert value in UNSET_WORDS or SET_DATE.search(value), \
-                    f"{page.name}: unset value {value!r} is not a §10 plain word or a set date"
+def test_s1_missing_product_values_are_plain_words(live, tmp_path):
+    import copy
+    model = copy.deepcopy(live[0])
+    link = model["issuers"][0]["links"][0]
+    link["scope"].update(product=None, platform=None)
+    link["lifecycle"] = None
+    render_site(model, tmp_path)
+    main = _main(tmp_path / f"gmi-issuer-{model['issuers'][0]['ticker'].lower()}.html")
+    assert "Not recorded" in main and "未记录" in main
+    assert "Stage not recorded" in main and "阶段未记录" in main
+    assert "What remains unknown" in main
 
 
 # --------------------------------------------------------------- S5 states
@@ -148,12 +144,14 @@ def test_s5_hygiene_all_renders(live, held, edges):
 
 
 @pytest.mark.parametrize("fixture_name", ["live", "held", "edges"])
-def test_s5_ten_cards_in_specimen_order(request, fixture_name):
-    model, site = request.getfixturevalue(fixture_name)
+def test_s5_reference_covers_preserved_and_new_feedback_states(request, fixture_name):
+    _, site = request.getfixturevalue(fixture_name)
     html = (site / "gmi-states.html").read_text(encoding="utf-8")
-    assert len(re.findall(r"<article class=\"gmi-state\"", html)) == 10
-    keys = re.findall(r'<span class="gmi-state-k">([a-z_]+)</span>', html)
-    assert keys == STATE_KEYS
+    keys = re.findall(r'<article data-gmi-state="([a-z_]+)"', html)
+    assert len(keys) == len(set(keys)) == len(STATE_KEYS)
+    assert set(keys) == set(STATE_KEYS)
+    assert "Design reference only" in html
+    assert "do not report live incidents" in html
 
 
 def test_s5_noindex(live, held):
@@ -162,25 +160,26 @@ def test_s5_noindex(live, held):
         assert '<meta name="robots" content="noindex">' in html
 
 
-def test_s5_deck_none_branch(live, held, tmp_path):
+def test_s5_generic_reference_does_not_require_provider_data(live, held, tmp_path):
     for name, (model, _) in (("live", live), ("held", held)):
         site = tmp_path / name
-        # S5's no-deck branch, rendered without edges: the S3 present branch reads
-        # its sentences from the deck (as the edges variant's own fixture deck does),
-        # and the live model now carries the committed envelope's edges.
         render_site(dict(model, deck=None, edges=[], edges_state="empty",
                          edge_package=None, party_names={}), site)
         html = (site / "gmi-states.html").read_text(encoding="utf-8")
-        assert "Condition as stated in the filing" in html
-        assert "the filing says:" not in html  # G-UI-14: lead-in foot omitted without a deck
+        assert "A taxonomy path describes research structure" in html
+        assert "the filing says:" not in html
 
 
-def test_s5_deck_present_branch(edges):
-    model, site = edges
-    assert model["deck"] is not None
-    html = (site / "gmi-states.html").read_text(encoding="utf-8")
-    assert "If Apple reduces or stops its purchases" in html
-    assert "the filing says:" in html
+def test_s5_provider_examples_are_not_published(edges, tmp_path):
+    model, _ = edges
+    import copy
+    model = copy.deepcopy(model)
+    model["deck"] = {"private_example": "PRIVATE-DECK-SENTINEL"}
+    render_site(model, tmp_path)
+    html = (tmp_path / "gmi-states.html").read_text(encoding="utf-8")
+    assert "PRIVATE-DECK-SENTINEL" not in html
+    assert "If Apple reduces or stops its purchases" not in html
+    assert "the filing says:" not in html
 
 
 # ------------------------------------------------ S3 envelope receipt (DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT)
@@ -196,41 +195,31 @@ def _receipts(main: str) -> list[str]:
 
 
 @pytest.mark.parametrize("fixture_name", ["live", "edges"])
-def test_s3_envelope_receipt(request, fixture_name):
+def test_s3_internal_package_is_not_a_publication_receipt(request, fixture_name):
     model, site = request.getfixturevalue(fixture_name)
-    package = model["edge_package"]
-    assert model["edges_state"] == "present" and package is not None
-    assert not any(package["authority"].values())
+    assert model["edges_state"] == "present" and model["edge_package"]
     main = _main(site / "gmi-relationships.html")
-    receipts = _receipts(main)
-    assert len(receipts) == 1, "exactly one page-level envelope receipt"
-    receipt = receipts[0]
-    for words in RECEIPT_EN + RECEIPT_ZH:
-        assert words in receipt
-    assert package["package_id"][:12] in receipt
-    counts = package["counts"]
-    assert f"{counts['edges']:,} documented" in receipt
-    assert f"已记录 {counts['edges']:,} 条" in receipt
-    assert f"{counts['non_edges']:,} other mentions checked" in receipt
-    assert f"另核对 {counts['non_edges']:,} 处提及" in receipt
-    assert "As of " in receipt and "截至 " in receipt
-    assert " title=" not in receipt
+    assert "No relationships cleared for public display" in main
+    assert "暂无获准公开展示的关系" in main
+    assert _receipts(main) == []
+    assert model["edge_package"]["package_id"] not in main
 
 
-def test_s3_live_receipt_names_the_committed_package(live):
+def test_s3_public_page_omits_internal_record_identifiers(live):
     model, site = live
-    receipt = _receipts(_main(site / "gmi-relationships.html"))[0]
-    assert model["edge_package"]["package_id"].startswith("pkg:")
-    assert model["edge_package"]["counts"]["edges"] == len(model["edges"])
-    assert f"{len(model['edges']):,} documented" in receipt
+    main = _main(site / "gmi-relationships.html")
+    for edge in model["edges"]:
+        assert edge["relationship_key"] not in main
+    assert "How publication works" in main
 
 
-def test_s3_receipt_drops_the_display_only_claim_if_any_authority_is_true(live, tmp_path):
+def test_s3_rank_authority_does_not_grant_public_display(live, tmp_path):
     model, _ = live
     package = dict(model["edge_package"], authority=dict(model["edge_package"]["authority"], rank=True))
     render_site(dict(model, edge_package=package), tmp_path)
-    receipt = _receipts(_main(tmp_path / "gmi-relationships.html"))[0]
-    assert RECEIPT_EN[1] not in receipt and RECEIPT_ZH[1] not in receipt
+    main = _main(tmp_path / "gmi-relationships.html")
+    assert "No relationships cleared for public display" in main
+    assert _receipts(main) == []
 
 
 def test_s3_no_receipt_without_a_package(live, tmp_path):
@@ -243,16 +232,14 @@ def test_s3_no_receipt_without_a_package(live, tmp_path):
         assert _receipts(_main(site / "gmi-relationships.html")) == []
 
 
-def test_s3_coverage_panel_counts_the_searched_companies(live, edges):
-    model, site = live
-    searched = {c["issuer_id"] for c in model["edge_package"]["coverage"]
-                if c["state"] in ("assessed", "no_supported_result")}
-    main = _main(site / "gmi-relationships.html")
-    assert f"Filings from {len(searched):,} companies have been read so far." in main
-    assert f"目前已读取 {len(searched):,} 家公司的披露文件。" in main
-    assert "Filings from one company" not in main
-    # the one-company fixture package keeps the one-company sentence
-    assert "Filings from one company have been read so far." in _main(edges[1] / "gmi-relationships.html")
+def test_s3_internal_coverage_does_not_imply_public_company_coverage(live, edges):
+    for model, site in (live, edges):
+        main = _main(site / "gmi-relationships.html")
+        assert "not a statement that no relationships exist" in main
+        assert "Company names, relationship details and financial figures are withheld here" in main
+        for issuer_id in model["party_names"]:
+            assert issuer_id not in main
+        assert "Filings from " not in main
 
 
 def test_s3_hero_possessive(live, edges):

@@ -1,0 +1,101 @@
+{
+  "canonical_file": {
+    "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "name": "GMI Explorer · Product system",
+    "page_id": "p-1-0",
+    "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0"
+  },
+  "archived_file": {
+    "id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+    "name": "Archived · GMI Round 2 · merged into Product system",
+    "pointer_board": "4N-0",
+    "originals_page": "p-2-0"
+  },
+  "token_hash": "ac191fd9",
+  "token_count": 48,
+  "final_operation": "gmi-product-upgrade-20261103-sol-release-final-claim-boards",
+  "operation_state": "APPLIED_RESPONSE_OBSERVED",
+  "artifacts": [
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-desktop-en.jpg",
+      "node_id": "61M-0",
+      "git_blob": "00b51d22946d412af6db756c0067117a519a7722"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-desktop-en.jsx",
+      "node_id": "61M-0",
+      "git_blob": "3550994067fdf4b4e5f23bdd1173c1a2b3fd194d"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-desktop-en.jpg",
+      "node_id": "6A7-0",
+      "git_blob": "12b0eb25c27aae29979c0ba2ae1583c257118159"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-desktop-en.jsx",
+      "node_id": "6A7-0",
+      "git_blob": "8f5fe82e988fc9cfaf8caf5e9add4753e395695f"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-mobile-en.jpg",
+      "node_id": "6DR-0",
+      "git_blob": "7ba91d5c12328cc77b0ab8c11f72b038f10f9e05"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-mobile-en.jsx",
+      "node_id": "6DR-0",
+      "git_blob": "53e453bb833a9569514054babe043634bddc7f06"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-mobile-en.jpg",
+      "node_id": "6FY-0",
+      "git_blob": "66be11744a1d795cbbaa09abb5c293ada754cd78"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-mobile-en.jsx",
+      "node_id": "6FY-0",
+      "git_blob": "dfc96355e02a2b655926eb2543399341d735f642"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-desktop-zh.jpg",
+      "node_id": "6I6-0",
+      "git_blob": "4c44ec475b74d12aa259c4dbc9ea98a50259acac"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-desktop-zh.jsx",
+      "node_id": "6I6-0",
+      "git_blob": "ea1459387aded09d17434ef7696acb58fcdf61d3"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-desktop-zh.jpg",
+      "node_id": "6LQ-0",
+      "git_blob": "e82a5a600e1b7ddb94da6be10d6f99a26ab329bf"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-desktop-zh.jsx",
+      "node_id": "6LQ-0",
+      "git_blob": "e0159b9d6b83867bb7bfeb923c98e4c7ac8af5ef"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-mobile-zh.jpg",
+      "node_id": "6PA-0",
+      "git_blob": "5493caefffb58b2aa8683717978cccf9b1fccb77"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-noir-mobile-zh.jsx",
+      "node_id": "6PA-0",
+      "git_blob": "c0455e5d7ca3da624028e16a9f5790383a277157"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-mobile-zh.jpg",
+      "node_id": "6R7-0",
+      "git_blob": "4e62f18880b23ea90524f4c461da5d329697383e"
+    },
+    {
+      "path": "research/theme_graph/gmi_design_20261021/product_20261103/paper-day-mobile-zh.jsx",
+      "node_id": "6R7-0",
+      "git_blob": "f19717b9bcb6c5a132a443e271862f942e0baba8"
+    }
+  ],
+  "status": "Editable Paper design and export proof. Implementation/browser proof are separate. No deployment acceptance claimed."
+}

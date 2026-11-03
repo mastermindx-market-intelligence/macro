@@ -1,0 +1,26 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_gmi_base.html.j2
+  - templates/_gmi_product_header.html.j2
+  - templates/_gmi_product_macros.html.j2
+  - templates/_gmi_taxonomy.html.j2
+  - templates/_gmi_theme_data.html.j2
+  - templates/gmi.css
+  - templates/gmi.js
+  - templates/gmi_companies.html.j2
+  - templates/gmi_coverage.html.j2
+  - templates/gmi_index.html.j2
+  - templates/gmi_issuer.html.j2
+  - templates/gmi_map.html.j2
+  - templates/gmi_relationships.html.j2
+  - templates/gmi_states.html.j2
+  - site/gmi-companies.html
+  - site/gmi-coverage.html
+  - site/gmi-index.html
+  - site/gmi-issuer-mu.html
+  - site/gmi-relationships.html
+  - site/gmi-states.html
+  - site/gmi.css
+  - site/gmi.html
+  - site/gmi.js
+manifest: mockups/evidence/gmi-product-20261103/manifest.json

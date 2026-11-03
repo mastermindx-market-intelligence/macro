@@ -40,27 +40,25 @@
 </style>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <script>try{var g=new URLSearchParams(location.hash.slice(1)).get('lens');if(g==='chain'||g==='coverage')document.documentElement.setAttribute('data-gmi-lens',g)}catch(e){}</script>
-<title>GMI Explorer — Documented relationships</title>
-<meta name="description" content="Supplier, customer and licensing links a company names in its own filings, each with its source and review status.">
+<title>GMI Explorer — Company relationships</title>
+<meta name="description" content="Publication status for documented company relationships.">
 <link rel="canonical" href="https://www.mastermind-x.com/gmi-relationships.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
-<meta property="og:title" content="GMI Explorer — Documented relationships | Mastermind">
-<meta property="og:description" content="Supplier, customer and licensing links a company names in its own filings, each with its source and review status.">
+<meta property="og:title" content="GMI Explorer — Company relationships | Mastermind">
+<meta property="og:description" content="Publication status for documented company relationships.">
 <meta property="og:url" content="https://www.mastermind-x.com/gmi-relationships.html">
 <meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="GMI Explorer — Documented relationships | Mastermind">
-<meta name="twitter:description" content="Supplier, customer and licensing links a company names in its own filings, each with its source and review status.">
+<meta name="twitter:title" content="GMI Explorer — Company relationships | Mastermind">
+<meta name="twitter:description" content="Publication status for documented company relationships.">
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="gmi.css?v=1bdae4af">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="gmi.css">
 <style>
 /* The canvas is this page's own responsibility. theme.css defines the palette
    but never paints <body>, so a page that omits this rule ships dark panels on
@@ -70,14 +68,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 :focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
 </style>
 </head>
-<body class="page-macro gmi-page">
+<body class="page-macro gmi-page gmi-product">
+<a class="gmi-skip" href="#main"><span class="l-en">Skip to research</span><span class="l-zh">跳至研究内容</span></a>
 
 
 <nav class="site-nav">
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -297,10 +296,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -326,142 +325,38 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <main class="gmi-wrap" id="main">
 
-
-
-
+<header class="gmi-product-head">
+  <div><a class="gmi-product-name" href="gmi.html">GMI Explorer</a><p><span class="l-en">Understand themes, business connections, and the evidence behind them.</span><span class="l-zh">理解产业主题、业务关联，以及背后的证据。</span></p></div>
+  <div class="gmi-snapshot" data-gmi-snapshot="2026-11-03"><span><span class="l-en">Snapshot</span><span class="l-zh">快照日期</span> · <span class="l-en">3 Nov 2026</span><span class="l-zh">2026年11月3日</span></span><span class="gmi-snapshot-stale" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="l-en">Older snapshot</span><span class="l-zh">快照较旧</span></span></div>
+<div class="gmi-brain-slot" id="gmi-brain-slot"></div>
+</header>
+<nav class="gmi-product-nav" aria-label="GMI Explorer" data-aria-en="GMI Explorer" data-aria-zh="GMI 浏览器">
+  <div class="gmi-product-tabs">
+    <a href="gmi.html"><span class="l-en">Theme research</span><span class="l-zh">主题研究</span></a>
+    <a href="gmi-companies.html"><span class="l-en">Company evidence</span><span class="l-zh">公司证据</span></a>
+    <a href="gmi-relationships.html" aria-current="page"><span class="l-en">Relationships</span><span class="l-zh">公司关系</span></a>
+  </div>
+  <div class="gmi-product-tools"><a href="gmi-index.html"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></svg><span class="l-en">Full index</span><span class="l-zh">完整索引</span></a><a href="gmi-coverage.html"><span class="l-en">Coverage &amp; methodology</span><span class="l-zh">覆盖与方法</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></div>
+</nav>
 
 <header class="gmi-head">
   <div class="gmi-head-main">
-    <nav class="gmi-crumb" aria-label="Breadcrumb"><span class="l-en">Research</span><span class="l-zh">研究</span><i aria-hidden="true">›</i><span class="l-en">Relationships</span><span class="l-zh">关系</span></nav>
-    <h1 class="gmi-h1"><span class="l-en">Documented relationships</span><span class="l-zh">已记录的关系</span></h1>
-    <p class="gmi-sub"><span class="l-en">Links a company names in its own filings. 248 documented so far.</span><span class="l-zh">公司在自身披露文件中写明的关联。目前已记录 248 条。</span></p>
+    <nav class="gmi-crumb" aria-label="Breadcrumb"><span class="l-en">Research</span><span class="l-zh">研究</span><i aria-hidden="true">›</i><span class="l-en">Relationships</span><span class="l-zh">公司关系</span></nav>
+    <h1 class="gmi-h1"><span class="l-en">Company relationships</span><span class="l-zh">公司关系</span></h1>
+    <p class="gmi-sub"><span class="l-en">Source-stated connections between companies, with publication clearance.</span><span class="l-zh">来源记载且获准发布的公司间关联。</span></p>
   </div>
-  <div class="gmi-head-side"><span class="gmi-asof"><span class="l-en">Read as of 31 Oct 2026</span><span class="l-zh">数据截至2026年10月31日</span></span></div>
+  <div class="gmi-head-side"></div>
 </header>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="gmi-ident"><span class="gmi-ink-info gmi-ident-st"><span class="l-en">Proposed — read from filings, not reviewed yet</span><span class="l-zh">拟议 · 来自披露文件，尚未审核</span></span>
-<span class="gmi-foot"><span class="l-en">Package</span><span class="l-zh">数据包</span> <span class="gmi-mono">pkg:4aba1d2a</span> · <span class="l-en">As of 21 Oct 2026</span><span class="l-zh">截至 2026年10月21日</span> · <span class="l-en">248 documented</span><span class="l-zh">已记录 248 条</span> · <span class="l-en">1,107 other mentions checked</span><span class="l-zh">另核对 1,107 处提及</span> · <span class="l-en">Display only — never a rank, size or gate input</span><span class="l-zh">仅供展示 — 绝不作为排序、仓位或准入依据</span></span></div>
-
-<div class="gmi-species"><button type="button" class="gmi-spec gmi-spec--on" aria-pressed="true"><span class="l-en">Supplier → customer</span><span class="l-zh">供应商 → 客户</span><b>117</b></button><button type="button" class="gmi-spec" aria-pressed="false"><span class="l-en">Contract manufacturing (foundry, CDMO)</span><span class="l-zh">代工制造（晶圆代工、CDMO）</span><b>51</b></button><button type="button" class="gmi-spec" aria-pressed="false"><span class="l-en">Licensing</span><span class="l-zh">授权许可</span><b>50</b></button><button type="button" class="gmi-spec" aria-pressed="false"><span class="l-en">Distribution</span><span class="l-zh">分销</span><b>20</b></button><button type="button" class="gmi-spec" aria-pressed="false"><span class="l-en">Component dependency</span><span class="l-zh">零部件依赖</span><b>10</b></button></div>
-<p class="gmi-foot"><span class="l-en">Zero means none documented yet, not none exist.</span><span class="l-zh">为零表示尚未记录，而非不存在。</span></p>
-
-
-
-
-
-
-
-
-
-
-<section class="gmi-band" aria-labelledby="rel-h"><div class="gmi-band-card">
-<div class="gmi-relgrid"><div class="gmi-relgrid-a">
-<div class="gmi-rel-head" id="rel-h"><span class="gmi-party"><span class="l-en">Cirrus Logic</span><span class="l-zh">Cirrus Logic</span></span>
-<span class="gmi-arrow"><svg viewBox="0 0 28 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6h25M21 1.5L26 6l-5 4.5"/></svg><span class="l-en">supplies</span><span class="l-zh">供货</span></span><span class="gmi-party"><span class="l-en">Apple</span><span class="l-zh">Apple</span></span>
-<span class="gmi-kind">· <span class="l-en">Supplier → customer</span><span class="l-zh">供应商 → 客户</span></span></div>
-<div class="gmi-ident"><span class="gmi-ink-info gmi-ident-st"><span class="l-en">Proposed · not reviewed yet</span><span class="l-zh">拟议 · 尚未审核</span></span>
-<span class="gmi-chip gmi-chip--upd"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></svg><span class="l-en">Read updated · 21 May 2026</span><span class="l-zh">读取已更新 · 2026年5月21日</span></span></div>
-<div class="gmi-mag"><div>
-<div class="gmi-mag-num">91<small>%</small></div>
-<div class="gmi-mag-cap"><span class="l-en">of Cirrus Logic’s revenue came from Apple in FY2026</span><span class="l-zh">Cirrus Logic 2026财年营收来自 Apple 的占比</span></div></div>
-<div class="gmi-hist" aria-hidden="true"><div class="gmi-hist-col"><span class="gmi-hist-v">87%</span><span class="gmi-hist-bar" style="height:78px"></span><span class="gmi-hist-p"><span class="l-en">FY24</span><span class="l-zh">2024财年</span></span></div><div class="gmi-hist-col"><span class="gmi-hist-v">89%</span><span class="gmi-hist-bar" style="height:80px"></span><span class="gmi-hist-p"><span class="l-en">FY25</span><span class="l-zh">2025财年</span></span></div><div class="gmi-hist-col gmi-hist-col--now"><span class="gmi-hist-v">91%</span><span class="gmi-hist-bar" style="height:82px"></span><span class="gmi-hist-p"><span class="l-en">FY26</span><span class="l-zh">2026财年</span></span></div></div>
-</div>
-<p class="gmi-scope"><span class="l-en">Cirrus Logic disclosed that net sales to Apple Inc. was 91% of total net sales for FY2026.</span><span class="l-zh">Cirrus Logic披露，2026财年期间net sales to Apple Inc.占total net sales的91%。</span><span class="l-zh"> 分子/分母范围文字为申报文件英文原文。</span></p>
-</div><div class="gmi-relgrid-b"><dl class="gmi-dl">
-<div><dt><span class="l-en">Direction</span><span class="l-zh">方向</span></dt><dd><span class="l-en">Cirrus Logic supplies Apple</span><span class="l-zh">Cirrus Logic向Apple供货</span></dd></div>
-
-<div><dt><span class="l-en">Period covered</span><span class="l-zh">覆盖期间</span></dt><dd><span class="l-en">Mar 2023 – Mar 2026</span><span class="l-zh">2023年3月 – 2026年3月</span></dd></div>
-<div><dt><span class="l-en">Conditions</span><span class="l-zh">条件</span></dt><dd><span class="l-en">None stated in the filing</span><span class="l-zh">披露文件未列明条件</span></dd></div>
-<div><dt><span class="l-en">First known</span><span class="l-zh">首次获知</span></dt><dd><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></dd></div>
-<div><dt><span class="l-en">Last stated</span><span class="l-zh">最近一次陈述</span></dt><dd><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></dd></div>
-<div><dt><span class="l-en">Last checked</span><span class="l-zh">最近核对</span></dt><dd><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></dd></div>
-<div><dt><span class="l-en">Source</span><span class="l-zh">来源</span></dt><dd><a href="#excerpt">10-K <span class="gmi-mono">0000772406-26-000018</span> <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.5h5.5V10M19.5 4.5L11 13"/><path d="M17.5 14v5.5h-13v-13H10"/></svg></a></dd></div></dl></div></div>
-
-
-<details class="mx-disc" id="excerpt"><summary><span class="l-en">The filing’s words</span><span class="l-zh">披露文件原文</span><small>10-K <span class="gmi-mono">0000772406-26-000018</span></small></summary>
-<div class="mx-disc-body">
-<p class="gmi-note gmi-note--lead"><span class="l-en">Display rights for this figure are still being confirmed. The source filing is linked.</span><span class="l-zh">该数值的展示权限仍在确认中。已附来源披露文件链接。</span></p>
-<div><a class="gmi-btn gmi-btn--quiet" href="https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm" rel="noopener" target="_blank"><span class="l-en">Open the filing</span><span class="l-zh">打开披露文件</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.5h5.5V10M19.5 4.5L11 13"/><path d="M17.5 14v5.5h-13v-13H10"/></svg></a></div>
-
-<p class="gmi-foot gmi-foot--gap"><span class="l-en">Quoted from the filing; nothing is inferred beyond the quoted text.</span><span class="l-zh">引自申报文件原文；除引文外未作任何推断。</span> <span class="gmi-mono">0000772406-26-000018 · bytes 868,068–869,574</span></p></div></details>
-</div></section>
-<div class="gmi-cols"><div class="gmi-col-main"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">How this figure was read over time</span><span class="l-zh">该数值的历次读取</span></h2></div>
-
-<p class="gmi-note gmi-note--lead"><span class="l-en">As known at 21 May 2026:</span><span class="l-zh">截至2026年5月21日已知：</span></p>
-<ul class="gmi-thread">
-
-
-
-
-<li><span class="gmi-node"></span><div><time><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></time><span class="l-en">Cirrus Logic first published 87% for FY2024 in 10-K <span class="gmi-mono">0000772406-26-000018</span> (known 21 May 2026).</span><span class="l-zh">Cirrus Logic在10-K <span class="gmi-mono">0000772406-26-000018</span>（已知日期2026年5月21日）中首次公布2024财年的数值为87%。</span></div></li>
-
-
-
-
-<li><span class="gmi-node"></span><div><time><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></time><span class="l-en">Cirrus Logic first published 89% for FY2025 in 10-K <span class="gmi-mono">0000772406-26-000018</span> (known 21 May 2026).</span><span class="l-zh">Cirrus Logic在10-K <span class="gmi-mono">0000772406-26-000018</span>（已知日期2026年5月21日）中首次公布2025财年的数值为89%。</span></div></li>
-
-
-
-
-<li><span class="gmi-node"></span><div><time><span class="l-en">21 May 2026</span><span class="l-zh">2026年5月21日</span></time><span class="l-en">Cirrus Logic first published 91% for FY2026 in 10-K <span class="gmi-mono">0000772406-26-000018</span> (known 21 May 2026).</span><span class="l-zh">Cirrus Logic在10-K <span class="gmi-mono">0000772406-26-000018</span>（已知日期2026年5月21日）中首次公布2026财年的数值为91%。</span></div></li></ul>
-
-</section>
-<section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Where this link leads</span><span class="l-zh">关联路径</span></h2></div>
-
-
-
-<ol class="gmi-chain gmi-chain--edges"><li class="gmi-chain-step"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Supplier</span><span class="l-zh">供应商</span></span><span class="gmi-chain-name"><span class="l-en">Cirrus Logic</span><span class="l-zh">Cirrus Logic</span></span></div><span class="gmi-chain-edge"><span class="l-en">supplies · no condition stated</span><span class="l-zh">供货 · 未列明条件</span></span></li><li class="gmi-chain-step gmi-chain-step--to-none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--doc"></span></span><div class="gmi-chain-body"><span class="gmi-chain-lvl"><span class="l-en">Customer</span><span class="l-zh">客户</span></span><span class="gmi-chain-name"><span class="l-en">Apple</span><span class="l-zh">Apple</span></span></div><span class="gmi-chain-edge"><span class="l-en">next step</span><span class="l-zh">下一步</span></span></li><li class="gmi-chain-step gmi-chain-step--none"><span class="gmi-chain-slot" aria-hidden="true"><span class="gmi-pip gmi-pip--none"></span></span><div class="gmi-chain-body"><span class="gmi-chain-name"><span class="l-en">No documented links from Apple yet</span><span class="l-zh">尚无 Apple 的已记录关联</span></span></div></li></ol>
-<p class="gmi-note"><span class="l-en">Paths list documented links only. They do not estimate how far an effect spreads.</span><span class="l-zh">路径仅列出已记录的关联，不估算影响的传导范围。</span></p></section></div><div class="gmi-col-side">
-
-
-
-
-
-
-
-
-<section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Admitted</span><span class="l-zh">已纳入</span></h2><button class="lens-q gmi-tip" type="button" data-tip-en="A company joins a micro-theme only after a curator admits it from its own filings." data-tip-zh="公司须经审核员依据其自身披露文件批准后才纳入细分主题。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
-<div class="gmi-status"><span class="gmi-sm gmi-sm--adm gmi-sm--xl" aria-hidden="true"></span><div><div class="gmi-status-t"><span class="l-en">Micron Technology → HBM &amp; advanced packaging</span><span class="l-zh">Micron Technology → HBM 与先进封装</span></div>
-<div class="gmi-status-s"><span class="l-en">Admitted after review.</span><span class="l-zh">经审核已纳入。</span></div></div></div>
-<dl class="gmi-dl">
-
-<div><dt><span class="l-en">Named customer</span><span class="l-zh">所提及客户</span></dt><dd><span class="l-en">NVIDIA H200 platform</span><span class="l-zh">NVIDIA H200 平台</span></dd></div>
-
-
-<div><dt><span class="l-en">Stage</span><span class="l-zh">阶段</span></dt><dd><span class="l-en">Planned</span><span class="l-zh">计划中</span></dd></div>
-
-<div><dt><span class="l-en">Size</span><span class="l-zh">规模</span></dt><dd><span class="l-en">Not disclosed</span><span class="l-zh">未披露</span></dd></div>
-
-
-<div><dt><span class="l-en">Use on the map</span><span class="l-zh">用于主题地图</span></dt><dd><span class="l-en">Not permitted yet</span><span class="l-zh">暂不允许</span></dd></div></dl>
-<div><a class="gmi-btn gmi-btn--quiet" href="gmi-issuer-mu.html"><span class="l-en">Open Micron Technology</span><span class="l-zh">查看 Micron Technology</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></div></section>
-<section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">How complete is this?</span><span class="l-zh">覆盖程度</span></h2></div>
-<div class="mx-empty gmi-empty-inline"><div class="mx-empty-line"><span class="l-en">Not measured yet</span><span class="l-zh">尚未衡量</span></div>
-<div class="mx-empty-why"><span class="l-en">Filings from 281 companies have been read so far. Zero elsewhere means none documented yet, not none exist.</span><span class="l-zh">目前已读取 281 家公司的披露文件。其他处为零，表示尚未记录，而非不存在。</span></div></div></section></div></div>
-
+<section class="gmi-permission-state" aria-labelledby="gmi-publication-title"><span class="gmi-empty-symbol"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 3.5l17 17"/><path d="M10.6 6.1c.5-.1.9-.1 1.4-.1 5 0 8.4 4.4 9.4 6-.5.8-1.5 2.2-3 3.5M6.5 7.5C4.7 8.8 3.4 10.6 2.6 12c1 1.6 4.4 6 9.4 6 1.6 0 3-.4 4.2-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></span><span class="gmi-eyebrow"><span class="l-en">Publication status</span><span class="l-zh">发布状态</span></span><h2 id="gmi-publication-title"><span class="l-en">No relationships cleared for public display</span><span class="l-zh">暂无获准公开展示的关系</span></h2><p><span class="l-en">This snapshot does not include a verified public relationship view. Company names, relationship details and financial figures are withheld here.</span><span class="l-zh">此快照尚不包含经核实的公开关系视图。相关公司名称、关系详情及财务数值暂不在此展示。</span></p><p><span class="l-en">This is a publication restriction, not a statement that no relationships exist.</span><span class="l-zh">这是发布限制，并不表示这些关系不存在。</span></p><div class="gmi-state-actions"><a class="gmi-action-primary" href="gmi.html"><span class="l-en">Explore themes</span><span class="l-zh">探索主题</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a><a class="gmi-action-secondary" href="gmi-coverage.html"><span class="l-en">Coverage &amp; methodology</span><span class="l-zh">覆盖与方法</span></a></div></section>
+<details class="gmi-topic-receipt"><summary><span class="l-en">How publication works</span><span class="l-zh">发布机制</span></summary><div><p><span class="l-en">Relationship facts, magnitudes and excerpts each require the appropriate recorded permission. Public access to a source document does not grant those permissions.</span><span class="l-zh">关系事实、数值与引文分别需要相应的已记录许可。来源文件可公开访问，并不意味着已获得这些许可。</span></p><p><span class="l-en">Theme research and separately cleared company evidence remain available.</span><span class="l-zh">主题研究与另行获准展示的公司证据仍可使用。</span></p></div></details>
 
 </main>
 
-<script src="supabase.js?v=8596965f" defer></script>
-<script src="theme.js?v=3c193891" defer></script>
-<script defer src="gmi.js?v=18ecd38f"></script>
+
+
+<script src="supabase.js" defer></script>
+<script src="theme.js" defer></script>
+<script defer src="gmi.js"></script>
 </body>
 </html>

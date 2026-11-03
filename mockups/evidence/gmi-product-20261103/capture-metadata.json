@@ -1,0 +1,546 @@
+{
+  "generated_at": "2026-11-03T23:28:32.840544+00:00",
+  "browser": "156.0.8078.80",
+  "capture_tool_module_sha256": "7e3489f42c477c8ff8a41801cf2329a31b6e6896500d2001839c629ba4c5e9be",
+  "source_sha256": {
+    "gmi-companies.html": "0b81a0dacd057c24e83e724836eb808f11de3f808295c246cb8c939013245894",
+    "gmi-coverage.html": "c94ffb0a554a892795f338512b1b96d9be74b7637057de50a26e9f5e613ce94a",
+    "gmi-index.html": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+    "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+    "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+    "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+    "gmi.css": "6c320599b62ac03da97f9804792a933e01aedd03eec83642a4ddc89a39fe6e38",
+    "gmi.html": "12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190",
+    "gmi.js": "67e1b7c8d9fae93ab8b7d4408fb47ed27a102c91ef847a76555613ce602b96e6"
+  },
+  "entries": [
+    {
+      "file": "1440-dark-en-focus.png",
+      "bytes": 383738,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "55f4e9b5ba9dc8e35ab92bfdee46eb6fff6c48a070c56945ea4b59d56181dcdb",
+      "git_sha": "660fbed0f02d98545c5214f52a5e5f0151b917af"
+    },
+    {
+      "file": "1440-dark-en-hover.png",
+      "bytes": 383110,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "7991db2062b226f7b0ccc5c2b9e07f47eb920f7f6f0ad6de0e0b2006f8ae4c12",
+      "git_sha": "d7d766b4e55188b94260fefbf995d5794826973e"
+    },
+    {
+      "file": "1440-dark-en.png",
+      "bytes": 382990,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "622c8bfba3445259b966da6c6507088dc194a21cfe9ce5b490a37b4c70c1f592",
+      "git_sha": "97302ce1910671c7498e8a6ddd8613fa81d5466e"
+    },
+    {
+      "file": "1440-dark-zh.png",
+      "bytes": 375093,
+      "width": 1440,
+      "height": 1350,
+      "sha256": "19b398de28dd9d53a82778be06c78823f7430703b5fdbcbb370a20340d4ad376",
+      "git_sha": "4fa94cea05406b5c21483fe1784b2c0374927aab"
+    },
+    {
+      "file": "1440-light-en-focus.png",
+      "bytes": 302560,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "ab1bf132ab3074c6ba7f8da98d68b4cc2ec04ae0a993d7710d8b20bb05656878",
+      "git_sha": "248f38dd047fe3ff0b86ed881c1970e747b0373e"
+    },
+    {
+      "file": "1440-light-en-hover.png",
+      "bytes": 302092,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "c00eed4ff3359bab69bb6d09fa74508aa125d00789868c2077ad69058b3f394b",
+      "git_sha": "199c81db462458046afe118985bede9b97550c66"
+    },
+    {
+      "file": "1440-light-en.png",
+      "bytes": 301963,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "1c6ec4056b53eac4c49ad383784fc3ffa16b3457d3ec6c65d2e406691bc59650",
+      "git_sha": "2029546d11bc5172b0895c1364b42e99f94a3992"
+    },
+    {
+      "file": "1440-light-zh.png",
+      "bytes": 305795,
+      "width": 1440,
+      "height": 1350,
+      "sha256": "f5b8fceb5d0c7565b3a7f7f3324d310964a7a4b43254254f1b56922e8a610eee",
+      "git_sha": "40daf55bf1204e0d30862075dda6294f2445fa11"
+    },
+    {
+      "file": "390-dark-en.png",
+      "bytes": 253970,
+      "width": 390,
+      "height": 2235,
+      "sha256": "47f806626ba25ce463c34fb51e4901611c5dd508332c5c6addb5a1cfc9d86446",
+      "git_sha": "b600f22a1cf4bf32e30b31df2b7aad938ae14b71"
+    },
+    {
+      "file": "390-dark-zh.png",
+      "bytes": 236273,
+      "width": 390,
+      "height": 2079,
+      "sha256": "b16614a9228190e019907a7d85fabace0993d2a73da425ebb0beb97dfe0927ec",
+      "git_sha": "ea1f081514dda3dc9ed8031d8880457b07ff2f8f"
+    },
+    {
+      "file": "390-light-en.png",
+      "bytes": 204979,
+      "width": 390,
+      "height": 2235,
+      "sha256": "817ddaa7c6e6e01d9574970b4ad92419896210ec52ba29d49f9b994afdc8c486",
+      "git_sha": "7303e0d6fdb98313188e530e2c2fbab6d6019244"
+    },
+    {
+      "file": "390-light-zh.png",
+      "bytes": 199256,
+      "width": 390,
+      "height": 2079,
+      "sha256": "1dc3ad2aecd04404d00b28f20090d242b49fe0306960eedc58c0bc74b0be2de8",
+      "git_sha": "b2eecb3ed773e697cf060f7e0f1fe2f50a11fc52"
+    },
+    {
+      "file": "brain-restored-1440.png",
+      "bytes": 407994,
+      "width": 1440,
+      "height": 1433,
+      "sha256": "903e7ef77b4a6cb1452d787ee3994cfb10b6fc42b5fc36a9c02e3d58b43195b1",
+      "git_sha": "4b030338b393cdf8adff8e2753ccde7b52a8349a"
+    },
+    {
+      "file": "brain-restored-390.png",
+      "bytes": 199330,
+      "width": 390,
+      "height": 2079,
+      "sha256": "03e1e63d4db676e112d8bf4f65e292d1e3c0e33e63b3951b481a15cea86780f2",
+      "git_sha": "556f639b28bdeff11decfb8a8fcf8da34de1c87e"
+    },
+    {
+      "file": "gmi-companies-1440-dark-en.png",
+      "bytes": 220281,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "e876bab0d85cef6605de1541b0ff92171d2747a855cb87fcfd450d39e1dd1530",
+      "git_sha": "369256c5ccd79f50eb5a293742265dd0f049d1a0"
+    },
+    {
+      "file": "gmi-companies-1440-dark-zh.png",
+      "bytes": 216948,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "d18ef5836f1419294fcc93c4afe3fe17440cd26f9a7445d72597557f1684cab6",
+      "git_sha": "a915a2c489a58f45be520cfe1604c6475175ed45"
+    },
+    {
+      "file": "gmi-companies-1440-light-en.png",
+      "bytes": 211237,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7022dfd5ccd2950d47c1c5d7d7d53fb0b1f623a2fca540a972145b419abdfe09",
+      "git_sha": "83132ac3b0119b6b7edc2855792150273e018f25"
+    },
+    {
+      "file": "gmi-companies-1440-light-zh.png",
+      "bytes": 208410,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "2b9cbdbbff14defd8a8090d979edc893b039b00626cd20f1cc7bbc81d195c27b",
+      "git_sha": "9b34f9d31b4a11479b2514bbab227b0b15859a10"
+    },
+    {
+      "file": "gmi-companies-390-dark-en.png",
+      "bytes": 132223,
+      "width": 390,
+      "height": 1065,
+      "sha256": "d5f93485bf2b379f6f3241ea3f112f3d5c2ee0b56786625609b0eb44b0e71fe2",
+      "git_sha": "31a1f594a5ca8cd4e190bec57f585c387d1ead0b"
+    },
+    {
+      "file": "gmi-companies-390-dark-zh.png",
+      "bytes": 127827,
+      "width": 390,
+      "height": 1005,
+      "sha256": "63e382cbd9da436b178ea451ff62c228246bee0734f4440d07921b98587c5a4a",
+      "git_sha": "1e9e294220b537248b7c3e4d69e20b607f9296f1"
+    },
+    {
+      "file": "gmi-companies-390-light-en.png",
+      "bytes": 128581,
+      "width": 390,
+      "height": 1065,
+      "sha256": "aa2e8ce14b54423435f9ca82b1133c648847b1f9c4417d136ecbdf549fa63982",
+      "git_sha": "a3ef545a5e9db834388ede9ca7fb1c4dd8fffe0f"
+    },
+    {
+      "file": "gmi-companies-390-light-zh.png",
+      "bytes": 125013,
+      "width": 390,
+      "height": 1005,
+      "sha256": "64e96beba97aed0ef6fe3e2d8ee41d0368df3dcd5da5ddcc77a39376da3326f3",
+      "git_sha": "9d896a380431849392cf471da8a11df39e98a390"
+    },
+    {
+      "file": "gmi-coverage-1440-dark-en.png",
+      "bytes": 313266,
+      "width": 1440,
+      "height": 1327,
+      "sha256": "55674f67f4419a1a4a89eef9948018ff03a2be381a8ed626b3970f7c4f5ad8d4",
+      "git_sha": "bbe28e922227effb88a73e052f9ebffa7723afc6"
+    },
+    {
+      "file": "gmi-coverage-1440-dark-zh.png",
+      "bytes": 317094,
+      "width": 1440,
+      "height": 1327,
+      "sha256": "1ba8ecb575de2154d32623e2b0eba6c57849145ce81a3974b41df53570d1da10",
+      "git_sha": "6abf4373a9724351bea0f27f342c33988e047bf0"
+    },
+    {
+      "file": "gmi-coverage-1440-light-en.png",
+      "bytes": 237520,
+      "width": 1440,
+      "height": 1327,
+      "sha256": "9d483384f26bfe20c3d7725015c2ef7f82845b251864e82b7027917739a857b0",
+      "git_sha": "762b14f7eeb5f6632d3d288903cfe7d221136480"
+    },
+    {
+      "file": "gmi-coverage-1440-light-zh.png",
+      "bytes": 243615,
+      "width": 1440,
+      "height": 1327,
+      "sha256": "97ed027372e62b7ae3e6e604668b40c1d503c0e1838893fc6aad991dc8ebd13d",
+      "git_sha": "cb89e9dca1d3b20969ed934e2d644ad93eea4283"
+    },
+    {
+      "file": "gmi-coverage-390-dark-en.png",
+      "bytes": 214608,
+      "width": 390,
+      "height": 1767,
+      "sha256": "406ec730681fd1b800f60e606e97ccb49d991baed0719549b886f6e41b35ee39",
+      "git_sha": "afb1c24e266a5c7b73341d98e74037c687fd6ac9"
+    },
+    {
+      "file": "gmi-coverage-390-dark-zh.png",
+      "bytes": 212844,
+      "width": 390,
+      "height": 1683,
+      "sha256": "714bd6af6aac336d5a66641537828ff721fa41a8c7c311799c858423234d1277",
+      "git_sha": "1dd6cbd8818ad83d68288abada6b42b325bf83ba"
+    },
+    {
+      "file": "gmi-coverage-390-light-en.png",
+      "bytes": 179746,
+      "width": 390,
+      "height": 1767,
+      "sha256": "f4fe977b79f0e179084e77849433286f6cf93cfd1550a2d135df0e0f065d2dc5",
+      "git_sha": "368bdcde9cb4810f426f394a16cb74804892d704"
+    },
+    {
+      "file": "gmi-coverage-390-light-zh.png",
+      "bytes": 183039,
+      "width": 390,
+      "height": 1683,
+      "sha256": "b73f8a9e6992e2759f1e78e0de82f6808de731974ce63d43386fb6fe441491d0",
+      "git_sha": "4cff8486712d68ce3cc19584c2c8e496e70763ec"
+    },
+    {
+      "file": "gmi-index-1440-dark-en.png",
+      "bytes": 242826,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "df71e2e734cf4f07ba65e4c00389464f22480bfe0019b2c77e9b22c33ba99c4c",
+      "git_sha": "006881fdcc6e503beea2472f6ae71c0c1777997e"
+    },
+    {
+      "file": "gmi-index-1440-dark-zh.png",
+      "bytes": 254815,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "4c7b70576e690ada4fe671a9fd49910b6c26eb41c007b558fe652e7e1d46f3eb",
+      "git_sha": "ab1eddea4185d4a13b93f8f486931abd3acaba02"
+    },
+    {
+      "file": "gmi-index-1440-light-en.png",
+      "bytes": 238396,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "446f5c7b1c451cbb12ce3ec7fd0dc1121b6bf0b12be80cd8bb1f60b096f4eeec",
+      "git_sha": "3c674adb88829ef07cb6203e65a67162e91a3121"
+    },
+    {
+      "file": "gmi-index-1440-light-zh.png",
+      "bytes": 251143,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "ee19503007a06c24c1116e15037c67cea4bdcbe33923ffc7538ca65cebc72abb",
+      "git_sha": "25c34d226c29d54a0a094e262d38da4d51600330"
+    },
+    {
+      "file": "gmi-index-390-dark-en.png",
+      "bytes": 240752,
+      "width": 390,
+      "height": 2547,
+      "sha256": "dd43d9b56ec436f0049dc58a728a8ada01d347d796fb66a3174476627fbc3d24",
+      "git_sha": "67a6053784ac55dd9761073ba4adb7fe2f7700cd"
+    },
+    {
+      "file": "gmi-index-390-dark-zh.png",
+      "bytes": 227731,
+      "width": 390,
+      "height": 2534,
+      "sha256": "637d41b6cdb63bf9af0d795a70a2a7a23d881f806a2532ebae8c370cd7503d33",
+      "git_sha": "a461b50296a49b039035949db0d6c9d6a6a29725"
+    },
+    {
+      "file": "gmi-index-390-light-en.png",
+      "bytes": 246987,
+      "width": 390,
+      "height": 2547,
+      "sha256": "3ab5261b7baf70e8b3302977f6d41b0f2954b6c6ab6a2e4e0441a4dee4d0cf24",
+      "git_sha": "1cd1db167f1ea8a9341404d51c93e16a5609d65a"
+    },
+    {
+      "file": "gmi-index-390-light-zh.png",
+      "bytes": 233815,
+      "width": 390,
+      "height": 2534,
+      "sha256": "8726c8e585fe520693d910511d93e684ba64f1599219a3c6c51bcbb9acd0845e",
+      "git_sha": "e0e24eba7bd5c46bc930e44d7b54f1f47a520fb1"
+    },
+    {
+      "file": "gmi-issuer-mu-1440-dark-en.png",
+      "bytes": 312529,
+      "width": 1440,
+      "height": 1039,
+      "sha256": "aded36d7f48c712030ca9d53e5121b89f548d6213d7fdd00782daaa7268702ac",
+      "git_sha": "49cc3a9be557b7a7792bb542038bcf5ff2ad2800"
+    },
+    {
+      "file": "gmi-issuer-mu-1440-dark-zh.png",
+      "bytes": 309492,
+      "width": 1440,
+      "height": 1015,
+      "sha256": "a7d433779ba4ee8e636e30f3f8c1cbffdd428a28e047bd47514b2d89dbf95449",
+      "git_sha": "5b87de04af603f293aebf1594351578a4ee9195b"
+    },
+    {
+      "file": "gmi-issuer-mu-1440-light-en.png",
+      "bytes": 239369,
+      "width": 1440,
+      "height": 1039,
+      "sha256": "db2488ef0883cda5d6ffc917607a99bfacc34ffc88db369e3c175f07a406c1e3",
+      "git_sha": "e243e62f4910de311dd4d6073900d8a82e6d45fc"
+    },
+    {
+      "file": "gmi-issuer-mu-1440-light-zh.png",
+      "bytes": 245395,
+      "width": 1440,
+      "height": 1015,
+      "sha256": "5e3819b10cc433913648d34dac4a2d9e8915f93384aac7740e1041fac5dc2b17",
+      "git_sha": "8ca2a7729064841f42a8e7a9523a92357b54c252"
+    },
+    {
+      "file": "gmi-issuer-mu-390-dark-en.png",
+      "bytes": 224635,
+      "width": 390,
+      "height": 1951,
+      "sha256": "613ab5a60f0806b67c16b3dbdcdd58c6b8114ae0c77dc58cc2af05cc94082ea3",
+      "git_sha": "f7ee9a421d0ab82bfcc34044ee58858797e5872e"
+    },
+    {
+      "file": "gmi-issuer-mu-390-dark-zh.png",
+      "bytes": 219183,
+      "width": 390,
+      "height": 1797,
+      "sha256": "63132354fd516c287c008a72110620391cca69238c53aa7afe1692264bbd5a40",
+      "git_sha": "3c804abf73834cf113c5b3c5c5bcf3403e663f97"
+    },
+    {
+      "file": "gmi-issuer-mu-390-light-en.png",
+      "bytes": 180212,
+      "width": 390,
+      "height": 1951,
+      "sha256": "4f278397992847d0bd80e50e1f3da098eecd0d683dec7536aceed6b1de94f851",
+      "git_sha": "47657f956262810da1c3df0ceacd896eaa04fe26"
+    },
+    {
+      "file": "gmi-issuer-mu-390-light-zh.png",
+      "bytes": 182872,
+      "width": 390,
+      "height": 1797,
+      "sha256": "028502f78d6cb75a519354df0c61b1298de13ddd16a77c913fd33e77f4216b7e",
+      "git_sha": "0b1edf280f18ae5c796cc3aa75091f696a40a8fb"
+    },
+    {
+      "file": "gmi-relationships-1440-dark-en.png",
+      "bytes": 225913,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "6dec7d67abd31dc043d60b81c8d699ddf233e8b8a2f9498deb2541aae8c21071",
+      "git_sha": "6474da210cba81eafbe83c1770585191b3bc944a"
+    },
+    {
+      "file": "gmi-relationships-1440-dark-zh.png",
+      "bytes": 221850,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "7d122af829738ef4ee4518fd35ea6381e04949f564f77c9ab20a38778af62c85",
+      "git_sha": "e5b47ae17ba47ed207745c74b1da145abdfef017"
+    },
+    {
+      "file": "gmi-relationships-1440-light-en.png",
+      "bytes": 217586,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "4246e347946f121c850f86bd7114e788188dc66b1d68536c6f52a968fda936e4",
+      "git_sha": "d3aa4b841d5eee72184ffe24cd99c950cb6a9a4d"
+    },
+    {
+      "file": "gmi-relationships-1440-light-zh.png",
+      "bytes": 214153,
+      "width": 1440,
+      "height": 1000,
+      "sha256": "93806dc81ebf784562baebf2e00c365e19c1bc4508a0cc03206b3d5334382bd9",
+      "git_sha": "7eff4ae5b5c7e5bc8cd6cfdc019241c2f10220bf"
+    },
+    {
+      "file": "gmi-relationships-390-dark-en.png",
+      "bytes": 138578,
+      "width": 390,
+      "height": 1178,
+      "sha256": "4478d0569e53ffe10bc4c94b676ec7fde548e62849f9ad8d5f52c4cf2ff641f2",
+      "git_sha": "6584d48977ef1ddbaced155bc7207ad076514494"
+    },
+    {
+      "file": "gmi-relationships-390-dark-zh.png",
+      "bytes": 130056,
+      "width": 390,
+      "height": 1004,
+      "sha256": "acb4d7c7ebfa819423674a18d35287af9e4e745c33ca4ccb3d26ddb641bd3329",
+      "git_sha": "fd51d575dac6444cc83a66f68728d047a02dc42c"
+    },
+    {
+      "file": "gmi-relationships-390-light-en.png",
+      "bytes": 134124,
+      "width": 390,
+      "height": 1178,
+      "sha256": "234c55d1da1ffce1a71985ce1f337819f6d1894b53c47813d89c1b59c098f4c8",
+      "git_sha": "63e248ae9f7edcb36cd6c5dc3532b1a46de05d74"
+    },
+    {
+      "file": "gmi-relationships-390-light-zh.png",
+      "bytes": 127693,
+      "width": 390,
+      "height": 1004,
+      "sha256": "3b2ab26a07febccbe46ff260e2b261b40a539ad68be95205a497a242d21d58f8",
+      "git_sha": "d6e7c3f098efd8b00952e8d0678d7ee788746c53"
+    },
+    {
+      "file": "gmi-states-1440-dark-en.png",
+      "bytes": 253742,
+      "width": 1440,
+      "height": 1299,
+      "sha256": "c3f3a75d879aa8f6c1d4cb8bbf80c12ebb14af384a554f5aac0f4e04ac505a8b",
+      "git_sha": "bdde6cb81fe24d7fd059cc8ebbedf021dd464265"
+    },
+    {
+      "file": "gmi-states-1440-dark-zh.png",
+      "bytes": 265891,
+      "width": 1440,
+      "height": 1299,
+      "sha256": "447ab012a5b238363748f5f68b322427db87adf84f5b2d9daec1a64cc0fedbc7",
+      "git_sha": "a345c62ddd614c1b0486c8b4c999093826e124ae"
+    },
+    {
+      "file": "gmi-states-1440-light-en.png",
+      "bytes": 249411,
+      "width": 1440,
+      "height": 1299,
+      "sha256": "2576c694aec3a24e4c34ffc5dd60db655ac761c0f35f072d42d067d18a929a3a",
+      "git_sha": "7b3147535c1c8ec513f5751c95dce8dbb52e2980"
+    },
+    {
+      "file": "gmi-states-1440-light-zh.png",
+      "bytes": 261960,
+      "width": 1440,
+      "height": 1299,
+      "sha256": "168e755b485cea875a720abe342dada44bce690737d57632f1f8af22767a84ba",
+      "git_sha": "4088ed796e36c77dbdf48c0a9c254240e564dc27"
+    },
+    {
+      "file": "gmi-states-390-dark-en.png",
+      "bytes": 216746,
+      "width": 390,
+      "height": 2298,
+      "sha256": "a04ff5d0d217688ce6059f7c1526f61d865abd385527f571939b169ec1745b67",
+      "git_sha": "7cceb264baf2c2102cb6b1f1e653a4db541d0eb0"
+    },
+    {
+      "file": "gmi-states-390-dark-zh.png",
+      "bytes": 210595,
+      "width": 390,
+      "height": 2087,
+      "sha256": "1bf35a5e830905c9ec447f92aa8e4a0e0f23bcaf4106149f8b1626bd9a6b8462",
+      "git_sha": "1ecc25c3ccc52265e5f66f172cbe569462c50b54"
+    },
+    {
+      "file": "gmi-states-390-light-en.png",
+      "bytes": 213334,
+      "width": 390,
+      "height": 2298,
+      "sha256": "9b1b0f2e48b2211cea347f8b351c64153c888b9b15268f1e10e93e2d0bfe6553",
+      "git_sha": "9d9245d3b98c647e929962125b1b2d6ecb6865dd"
+    },
+    {
+      "file": "gmi-states-390-light-zh.png",
+      "bytes": 207548,
+      "width": 390,
+      "height": 2087,
+      "sha256": "bd43ee0bcb118facf260a97bc09f3fa4f1c6c550f130f8627b571485f8be0514",
+      "git_sha": "d0d93a4e6123b7db806e52377e9579bb2e54a2fb"
+    },
+    {
+      "file": "mobile-company-zh.png",
+      "bytes": 182281,
+      "width": 390,
+      "height": 1797,
+      "sha256": "9efb788c807935d43efd0aa3511d5b7c3c2890a9aba68dcab216fcb3c3be3010",
+      "git_sha": "ce736d4b49835ca80073496ab71cd0992c164c19"
+    },
+    {
+      "file": "mobile-publication-zh.png",
+      "bytes": 127297,
+      "width": 390,
+      "height": 1004,
+      "sha256": "602db1fc947b6cf80cbb88c3d03b8575c7da84ccdd8e921bb6aba69ebf67581d",
+      "git_sha": "738b92e7b6eabf61772be2ee558da1e43f9c1d52"
+    },
+    {
+      "file": "mobile-search-no-results.png",
+      "bytes": 109570,
+      "width": 390,
+      "height": 1699,
+      "sha256": "f843e9c30f6fd5f7a015c870b7d5569d968cf63e410bfcb251d430ed845500d4",
+      "git_sha": "573058bd89616ca4c1f50cf5760ecc949f9de01c"
+    },
+    {
+      "file": "mobile-selected-empty.png",
+      "bytes": 186669,
+      "width": 390,
+      "height": 1619,
+      "sha256": "24774d5b86fd95b06f3ca965d2f2fe1d8f3ac4bccd4d9efd43bf08c089102506",
+      "git_sha": "8f971aada5037e6b49a9484073b7b6f189f81cbf"
+    }
+  ]
+}

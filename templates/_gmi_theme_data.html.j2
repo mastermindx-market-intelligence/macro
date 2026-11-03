@@ -1,0 +1,20 @@
+{# Public presentation allowlist. Never serialize model, edges, party_names or deck.
+   Rights and membership decisions remain with the existing data owners. #}
+{% set topic_names = {} %}
+{% for c in model.cats %}
+{% set _ = topic_names.update({c.id: {'en': c.en, 'zh': c.zh}}) %}
+{% for th in c.themes %}{% set _ = topic_names.update({th.id: {'en': th.en, 'zh': th.zh}}) %}
+{% for sb in th.subs %}{% set _ = topic_names.update({sb.id: {'en': sb.en, 'zh': sb.zh}}) %}{% endfor %}
+{% endfor %}{% endfor %}
+{% set public_topics = [] %}
+{% for mid in model.micros.keys()|ordered %}{% set m = model.micros[mid] %}
+{% set paths = [] %}{% for path in m.paths %}{% set pnames = [] %}{% for pid in path[:-1] %}{% set _ = pnames.append({'id': pid, 'en': topic_names.get(pid, {}).get('en', pid), 'zh': topic_names.get(pid, {}).get('zh', pid)}) %}{% endfor %}{% set _ = paths.append(pnames) %}{% endfor %}
+{% set connections = [] %}
+{% for iss in model.issuers %}{% for lk in iss.links if lk.micro_id == mid and lk.curation.decision == 'ACCEPT' and lk.status == 'RATIFIED' %}
+{% set url = lk.source.url_if_public or '' %}
+{% set _ = connections.append({'company': iss.display_name, 'ticker': iss.ticker, 'href': nav_prefix ~ 'gmi-issuer-' ~ iss.ticker|lower ~ '.html', 'product': lk.scope.product, 'platform': lk.scope.platform, 'lifecycle': lk.lifecycle, 'source': {'date': lk.source.published_date, 'en': lk.source.label_en, 'zh': lk.source.label_zh, 'url': url if url.startswith('https://') or url.startswith('http://') else '', 'key': lk.source.source_key, 'sha256': lk.source.text_sha256}, 'receipt': lk.proposal_id}) %}
+{% endfor %}{% endfor %}
+{% set _ = public_topics.append({'id': mid, 'en': m.en, 'zh': m.zh, 'tier': 'core' if m.tier == 'acceptance' else 'extended', 'category': m.primary_path[0], 'parent': m.primary_path[-2], 'paths': paths, 'position': m.vcp, 'connections': connections}) %}
+{% endfor %}
+{% set default_topic = namespace(value=public_topics[0] if public_topics else none) %}
+{% for topic in public_topics %}{% if topic.connections and not default_topic.value.connections %}{% set default_topic.value = topic %}{% endif %}{% endfor %}

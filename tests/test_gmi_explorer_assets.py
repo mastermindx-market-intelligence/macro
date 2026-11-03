@@ -204,8 +204,7 @@ def test_gmi_css_selector_parity():
 
 
 @pytest.mark.needs_full_checkout("mockups")
-def test_gmi_js_states_match_specs():
-    """GMI_STATES equals the §10 table keys, in table order."""
+def test_gmi_js_preserves_spec_keys_and_adds_confirmed_success():
     specs = _read_mockups("SPECS.md")
     section10 = specs.split("## 10.", 1)[1].split("## 11.", 1)[0]
     keys = re.findall(r"^\| `([a-z_]+)` \|", section10, re.M)
@@ -213,18 +212,17 @@ def test_gmi_js_states_match_specs():
     m = re.search(r"GMI_STATES\s*=\s*Object\.freeze\(\[([^\]]*)\]\)", GMI_JS)
     assert m, "GMI_STATES literal not found in templates/gmi.js"
     js_keys = re.findall(r"'([a-z_]+)'", m.group(1))
-    assert js_keys == keys
+    assert js_keys == keys + ["success"]
 
 
-def test_gmi_js_no_style_injection():
-    """None of the forbidden presentation-side-effect tokens occur in gmi.js."""
+def test_gmi_js_no_style_injection_or_duplicate_theme_owner():
+    """Text nodes and page titles are safe; styling, HTML injection and ownership are not."""
     forbidden = [
-        "<style", "<link", "textContent", "innerHTML", "insertRule", "cssText",
-        ".style", "setAttribute('style'", 'setAttribute("style"',
-        "document.title", ".title", "fetch(", "XMLHttpRequest", "localStorage",
+        "<style", "<link", "innerHTML", "insertRule", "cssText", ".style",
+        "setAttribute('style'", 'setAttribute("style"', "fetch(", "XMLHttpRequest", "localStorage",
     ]
-    present = [tok for tok in forbidden if tok in GMI_JS]
-    assert not present, f"forbidden tokens in templates/gmi.js: {present}"
+    assert not [token for token in forbidden if token in GMI_JS]
+    assert not re.search(r"setAttribute\(\s*['\"]data-(?:theme|lang)['\"]", GMI_JS)
 
 
 @pytest.mark.needs_full_checkout("site")

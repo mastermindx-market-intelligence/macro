@@ -57,10 +57,8 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="gmi.css?v=1bdae4af">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="gmi.css">
 <style>
 /* The canvas is this page's own responsibility. theme.css defines the palette
    but never paints <body>, so a page that omits this rule ships dark panels on
@@ -70,14 +68,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 :focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
 </style>
 </head>
-<body class="page-macro gmi-page">
+<body class="page-macro gmi-page gmi-product">
+<a class="gmi-skip" href="#main"><span class="l-en">Skip to research</span><span class="l-zh">跳至研究内容</span></a>
 
 
 <nav class="site-nav">
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -297,10 +296,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -326,6 +325,20 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <main class="gmi-wrap" id="main">
 
+<header class="gmi-product-head">
+  <div><a class="gmi-product-name" href="gmi.html">GMI Explorer</a><p><span class="l-en">Understand themes, business connections, and the evidence behind them.</span><span class="l-zh">理解产业主题、业务关联，以及背后的证据。</span></p></div>
+  <div class="gmi-snapshot" data-gmi-snapshot="2026-11-03"><span><span class="l-en">Snapshot</span><span class="l-zh">快照日期</span> · <span class="l-en">3 Nov 2026</span><span class="l-zh">2026年11月3日</span></span><span class="gmi-snapshot-stale" hidden><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="l-en">Older snapshot</span><span class="l-zh">快照较旧</span></span></div>
+<div class="gmi-brain-slot" id="gmi-brain-slot"></div>
+</header>
+<nav class="gmi-product-nav" aria-label="GMI Explorer" data-aria-en="GMI Explorer" data-aria-zh="GMI 浏览器">
+  <div class="gmi-product-tabs">
+    <a href="gmi.html"><span class="l-en">Theme research</span><span class="l-zh">主题研究</span></a>
+    <a href="gmi-companies.html"><span class="l-en">Company evidence</span><span class="l-zh">公司证据</span></a>
+    <a href="gmi-relationships.html"><span class="l-en">Relationships</span><span class="l-zh">公司关系</span></a>
+  </div>
+  <div class="gmi-product-tools"><a href="gmi-index.html"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></svg><span class="l-en">Full index</span><span class="l-zh">完整索引</span></a><a href="gmi-coverage.html" aria-current="page"><span class="l-en">Coverage &amp; methodology</span><span class="l-zh">覆盖与方法</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></svg></a></div>
+</nav>
+
 
 
 
@@ -336,9 +349,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     <h1 class="gmi-h1"><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>
     <p class="gmi-sub"><span class="l-en">Only 1 company is admitted to a theme so far. Here is why.</span><span class="l-zh">目前仅有 1 家公司获准纳入主题。原因如下。</span></p>
   </div>
-  <div class="gmi-head-side"><span class="gmi-asof"><span class="l-en">Read as of 31 Oct 2026</span><span class="l-zh">数据截至2026年10月31日</span></span></div>
+  <div class="gmi-head-side"><span class="gmi-asof"><span class="l-en">Read as of 3 Nov 2026</span><span class="l-zh">数据截至2026年11月3日</span></span></div>
 </header>
-
 
 
 
@@ -374,9 +386,9 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 
 <div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt"><span class="l-en">US</span><span class="l-zh">美国</span></span>
-<span class="gmi-cov-num">1</span><span class="gmi-cov-den"><span class="l-en">of 1,928–1,931 companies</span><span class="l-zh">/ 共 1,928–1,931 家公司</span></span><button class="lens-q gmi-tip" type="button" data-tip-en="The count is a range because 4 listed securities are not yet matched to a company." data-tip-zh="该数字为区间，因为有4只上市证券尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<span class="gmi-cov-num">1</span><span class="gmi-cov-den"><span class="l-en">of 1,928–1,931 companies</span><span class="l-zh">/ 共 1,928–1,931 家公司</span><button class="lens-q gmi-tip" type="button" data-tip-en="The count is a range because 4 listed securities are not yet matched to a company." data-tip-zh="该数字为区间，因为有4只上市证券尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></span></div>
 <div class="gmi-track"><span class="gmi-track-fill" style="width:0.05%"></span></div>
-<p class="gmi-note gmi-note--flush"><span class="l-en">Why the rest are not admitted yet</span><span class="l-zh">其余公司尚未纳入的原因</span></p><div class="gmi-stack" aria-hidden="true"><i class="s1" style="flex:726 1 0"></i><i class="s2" style="flex:1200 1 0"></i><i class="s3" style="flex:4 1 0"></i></div><div class="gmi-legend"><span><i class="s1"></i><b>726</b><span class="l-en">company identity not confirmed</span><span class="l-zh">公司身份尚未确认</span></span><span><i class="s2"></i><b>1,200</b><span class="l-en">only on a third-party list</span><span class="l-zh">仅见于第三方名单</span></span><span><i class="s3"></i><b>4</b><span class="l-en">no activity evidence</span><span class="l-zh">无业务活动证据</span></span></div></div>
+<p class="gmi-note gmi-note--flush"><span class="l-en">Why the rest are not admitted yet</span><span class="l-zh">其余公司尚未纳入的原因</span></p><div class="gmi-stack" aria-hidden="true"><i class="s1" style="flex:726 1 0"></i><i class="s2" style="flex:4 1 0"></i><i class="s3" style="flex:1200 1 0"></i></div><div class="gmi-legend"><span><i class="s1"></i><b>726</b><span class="l-en">company identity not confirmed</span><span class="l-zh">公司身份尚未确认</span></span><span><i class="s2"></i><b>4</b><span class="l-en">no activity evidence</span><span class="l-zh">无业务活动证据</span></span><span><i class="s3"></i><b>1,200</b><span class="l-en">only on a third-party list</span><span class="l-zh">仅见于第三方名单</span></span></div></div>
 
 
 
@@ -391,7 +403,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 
 <div class="gmi-cov-row"><div class="gmi-cov-top"><span class="gmi-cov-mkt"><span class="l-en">China</span><span class="l-zh">中国</span></span>
-<span class="gmi-cov-num">0</span><span class="gmi-cov-den"><span class="l-en">of 1–1,019 companies</span><span class="l-zh">/ 共 1–1,019 家公司</span></span><button class="lens-q gmi-tip" type="button" data-tip-en="The range is wide because none of the 1,019 listed securities is matched to a company yet." data-tip-zh="区间较宽，因为1,019只上市证券均尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
+<span class="gmi-cov-num">0</span><span class="gmi-cov-den"><span class="l-en">of 1–1,019 companies</span><span class="l-zh">/ 共 1–1,019 家公司</span><button class="lens-q gmi-tip" type="button" data-tip-en="The range is wide because none of the 1,019 listed securities is matched to a company yet." data-tip-zh="区间较宽，因为1,019只上市证券均尚未匹配到对应公司。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></span></div>
 <div class="gmi-track"><span class="gmi-track-zero"></span></div>
 <p class="gmi-note gmi-note--flush"><span class="l-en">Why none is admitted yet</span><span class="l-zh">尚无公司纳入的原因</span></p><div class="gmi-stack" aria-hidden="true"><i class="s1" style="flex:1019 1 0"></i></div><div class="gmi-legend"><span><i class="s1"></i><b>1,019</b><span class="l-en">company identity not confirmed</span><span class="l-zh">公司身份尚未确认</span></span></div></div></div>
 </div></section>
@@ -401,16 +413,18 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <p class="gmi-note"><span class="l-en">67 have no admitted company. 1 has an admitted link.</span><span class="l-zh">67个尚无获准纳入的公司；1个有已获准纳入的关联。</span></p>
 <div class="gmi-tally-lab gmi-tally-lab--wrap"><span class="gmi-sm gmi-sm--disp" aria-hidden="true"></span><b class="tnum gmi-num-strong">303</b>&nbsp;<span class="l-en">extended micro-themes are shown on the map but not counted.</span><span class="l-zh">个扩展细分主题在地图上显示，但不计入。</span><button class="lens-q gmi-tip" type="button" data-tip-en="303 micro-themes added on 21 Oct 2026 to help you find your way around. They are shown but not counted in coverage." data-tip-zh="2026年10月21日新增的303个细分主题，用于帮助浏览。予以显示，但不计入覆盖率。"><span aria-hidden="true">?</span><span class="gmi-vh"><span class="l-en">More detail</span><span class="l-zh">更多说明</span></span></button></div>
 </section><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Corrections log</span><span class="l-zh">更正记录</span></h2></div>
-<dl class="gmi-dl">
+<dl class="gmi-dl"><div><dt><span class="l-en">Relationships</span><span class="l-zh">公司关系</span></dt><dd class="gmi-muted"><span class="l-en">Public correction history is not available in this snapshot.</span><span class="l-zh">此快照尚无可公开展示的更正历史。</span></dd></div>
 <div><dt><span class="l-en">Theme links</span><span class="l-zh">主题关联</span></dt><dd class="gmi-muted"><span class="l-en">Changes are not tracked yet.</span><span class="l-zh">变更尚未跟踪。</span></dd></div></dl></section></div><div class="gmi-col-side"><section class="gmi-panel"><div class="mx-sec"><h2><span class="l-en">Accuracy check</span><span class="l-zh">准确性抽查</span></h2></div>
 <div class="mx-empty gmi-empty-inline"><div class="mx-empty-line"><span class="l-en">Not measured yet</span><span class="l-zh">尚未衡量</span></div>
-<div class="mx-empty-why"><span class="l-en">Needs 200 admitted links (100 US, 100 China) before a sample is drawn. Now 1.</span><span class="l-zh">需要200条获准纳入的关联（美国100条、中国100条）后才会抽样。目前为1。</span></div></div></section></div></div>
-<p class="gmi-foot"><span class="l-en">Sources: company filings; exchange symbol directory, 31 Oct 2026; review ledger, 3 Nov 2026.</span><span class="l-zh">来源：公司披露文件；交易所证券代码目录（2026年10月31日）；审核记录（2026年11月3日）。</span></p>
+<div class="mx-empty-why"><span class="l-en">This snapshot does not include an accuracy sample or an accuracy rate.</span><span class="l-zh">此快照不包含准确性样本或准确率。</span></div></div></section></div></div>
+<p class="gmi-foot"><span class="l-en">Sources: company filings; exchange symbol directory, 3 Nov 2026; review ledger, 3 Nov 2026.</span><span class="l-zh">来源：公司披露文件；交易所证券代码目录（2026年11月3日）；审核记录（2026年11月3日）。</span></p>
 
 </main>
 
-<script src="supabase.js?v=8596965f" defer></script>
-<script src="theme.js?v=3c193891" defer></script>
-<script defer src="gmi.js?v=18ecd38f"></script>
+
+
+<script src="supabase.js" defer></script>
+<script src="theme.js" defer></script>
+<script defer src="gmi.js"></script>
 </body>
 </html>

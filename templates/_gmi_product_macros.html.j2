@@ -1,0 +1,40 @@
+{% from "_gmi_macros.html.j2" import t, d, ic with context %}
+{% macro lifecycle(stage) -%}
+{% set words = {'planned': ('Planned', '计划中'), 'announced': ('Announced', '已宣布'), 'in_production': ('In production', '量产中'), 'terminated': ('Ended', '已终止'), 'active': ('Active in source', '来源记载有效')} %}
+{{ t(words.get(stage, ('Stage not recorded', '阶段未记录'))[0], words.get(stage, ('Stage not recorded', '阶段未记录'))[1]) }}
+{%- endmacro %}
+
+{% macro connection(card, topic, company_page=false) -%}
+<article class="gmi-evidence-card">
+  <div class="gmi-evidence-top"><span class="gmi-eyebrow">{{ t('Documented connection', '有据可查的关联') }}</span><div class="gmi-evidence-date"><span>{{ t('Source', '来源') }} · {{ d(card.source.date) }}</span><span class="gmi-stage">{{ lifecycle(card.lifecycle) }}</span></div></div>
+  <div class="gmi-evidence-claim">
+  {% if card.lifecycle == 'planned' and card.product %}
+  {% set company_short = 'Micron' if card.company == 'Micron Technology' else card.company %}{% set product_short = 'HBM3E' if 'HBM3E' in card.product else card.product %}
+    <h2>{{ t(company_short ~ ' planned ' ~ product_short ~ (' for ' ~ card.platform if card.platform else '') ~ '.', company_short ~ ' 曾计划' ~ ('将 ' ~ product_short ~ ' 用于 ' ~ card.platform if card.platform else '推出 ' ~ product_short) ~ '。') }}</h2>
+  {% else %}<h2>{{ card.company }}{% if card.product %} · {{ card.product }}{% endif %}</h2>{% endif %}
+    <p>{{ t('This dated source names the product and its context. Current delivery and revenue exposure are not established here.', '这份有明确日期的来源记载了产品及其背景。当前交付与营收敞口尚未由此证实。') }}</p>
+  </div>
+  <ol class="gmi-product-path" aria-label="Product context" data-aria-en="Product context" data-aria-zh="产品背景">
+    <li><span>{{ t('Company', '公司') }}</span><strong>{{ card.company }}</strong><small>{{ card.ticker }}</small></li>
+    <li><span>{{ t('Product named', '所述产品') }}</span><strong>{{ card.product or t('Not recorded', '未记录') }}</strong><small>{{ lifecycle(card.lifecycle) }}</small></li>
+    <li><span>{{ t('Platform named', '所述平台') }}</span><strong>{{ card.platform or t('Not recorded', '未记录') }}</strong><small>{{ t('As stated in the source', '按来源所述') }}</small></li>
+  </ol>
+  <div class="gmi-evidence-actions">{% if not company_page %}<a class="gmi-action-primary" href="{{ card.href }}">{{ t('Open company evidence', '查看公司证据') }}{{ ic('arrow', 16) }}</a>{% else %}<a class="gmi-action-primary" href="{{ nav_prefix }}gmi.html#theme={{ topic.id|urlencode }}">{{ t('Explore this theme', '探索此主题') }}{{ ic('arrow', 16) }}</a>{% endif %}<div class="gmi-source-link"><span>{{ t(card.source.en, card.source.zh) }}</span>{% if card.source.url %}<a href="{{ card.source.url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the source', '阅读来源') }}{{ ic('ext', 16) }}<span class="gmi-vh">{{ t('opens a new tab', '在新标签页打开') }}</span></a>{% else %}<span>{{ t('Public source link unavailable', '暂无公开来源链接') }}</span>{% endif %}</div></div>
+  <details class="gmi-evidence-receipt"><summary>{{ t('Source receipt', '来源凭证') }}<span>{{ t('record and source identity', '记录与来源标识') }}</span></summary><dl><div><dt>{{ t('Record', '记录') }}</dt><dd>{{ card.receipt }}</dd></div><div><dt>{{ t('Source key', '来源标识') }}</dt><dd>{{ card.source.key }}</dd></div><div><dt>{{ t('Source text hash', '来源文本哈希') }}</dt><dd>{{ card.source.sha256 }}</dd></div></dl></details>
+</article>
+{%- endmacro %}
+
+{% macro topic_answer(topic) -%}
+<div class="gmi-topic-heading">
+  <div class="gmi-topic-heading-top"><div class="gmi-topic-meta"><span data-topic-category>{{ t(topic_names[topic.category].en, topic_names[topic.category].zh) }}</span><span data-topic-tier>{{ t('Core topic', '核心主题') if topic.tier == 'core' else t('Extended topic', '扩展主题') }}</span></div>
+  <button type="button" class="gmi-copy" data-gmi-copy><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3"/></svg><span data-copy-label>{{ t('Copy link', '复制链接') }}</span></button></div>
+  <h1 id="gmi-topic-title" tabindex="-1">{{ t(topic.en, topic.zh) }}</h1>
+  <p data-topic-description>{% if 'hbm' in topic.en|lower %}{{ t('High-bandwidth memory stacking and its packaging — a distinct part of the AI semiconductor stack.', '高带宽内存的堆叠与封装，是 AI 半导体体系中一个独立的环节。') }}{% else %}{{ t('Explore its place in the taxonomy and the company evidence currently on file.', '了解它在主题体系中的位置，以及目前收录的公司证据。') }}{% endif %}</p>
+</div>
+<div class="gmi-copy-fallback" hidden><label for="gmi-share-url">{{ t('Copy this address', '复制此地址') }}</label><input id="gmi-share-url" type="url" readonly><button type="button" class="gmi-action-secondary" data-copy-close>{{ t('Close', '关闭') }}</button></div>
+<div class="gmi-connection-list" data-topic-connections>
+{% for card in topic.connections %}{{ connection(card, topic) }}{% else %}<section class="gmi-topic-empty"><span class="gmi-empty-symbol">{{ ic('file', 24) }}</span><h2>{{ t('No company evidence yet', '暂无公司证据') }}</h2><p>{{ t('This topic is mapped. A reviewed company connection has not been published here yet.', '此主题已列入体系，但此处尚未发布经审核的公司关联。') }}</p><p class="gmi-note">{{ t('An empty result does not mean no companies participate in this theme.', '没有结果并不表示没有公司参与这一主题。') }}</p><a href="{{ nav_prefix }}gmi-companies.html" class="gmi-action-secondary">{{ t('Browse available evidence', '浏览现有证据') }}{{ ic('arrow', 16) }}</a></section>{% endfor %}
+</div>
+<div class="gmi-topic-context"><section><h2>{{ t('Related topics', '相关主题') }}</h2><p>{{ t('Explore the same collection or another path to this topic.', '浏览同一主题组，或查看此主题的其他归属路径。') }}</p><div class="gmi-related-topics" data-topic-related></div></section><section><h2>{{ t('Evidence coverage', '证据覆盖') }}</h2><p data-topic-coverage>{{ t(topic.connections|length ~ ' documented connection' ~ ('' if topic.connections|length == 1 else 's') ~ ' on file.', '已收录 ' ~ topic.connections|length ~ ' 条有据可查的关联。') }}</p><p class="gmi-note">{{ t('This is a source-led research view. It is not a complete company universe or a measure of revenue exposure.', '此研究视图以来源为依据，并非完整的公司集合，也不衡量营收敞口。') }}</p></section></div>
+<details class="gmi-topic-receipt"><summary>{{ t('Taxonomy & research context', '分类与研究背景') }}<span>{{ t('paths, scope and value-chain position', '路径、范围与价值链位置') }}</span></summary><div data-topic-taxonomy>{% for path in topic.paths %}<p>{% for node in path %}{{ t(node.en, node.zh) }}{% if not loop.last %} <span aria-hidden="true">›</span> {% endif %}{% endfor %} <span aria-hidden="true">›</span> {{ t(topic.en, topic.zh) }}</p>{% endfor %}<p>{{ t('Value-chain position', '价值链位置') }}: {{ topic.position or t('Not recorded', '未记录') }}</p></div></details>
+{%- endmacro %}

@@ -17999,11 +17999,13 @@ jobs:
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "research/theme_graph/micro_owner_dispositions.yml"
       - "templates/gmi*"
+      - "templates/_gmi*"
       - "templates/theme.css"
       - "templates/landing.css"
       - "templates/navigation-refresh.css"
       - "tests/test_gmi_explorer_*.py"
       - "tests/test_gmi_reason_codes.py"
+      - "tests/test_gmi_product_public_view.py"
       # Widened 2026-11-01 (seat merge of main f50fc7b7 into #10099): #10178's
       # identity reader now reaches the SEC document spine / fundamental
       # forensics chain via lib/dataos identity -> engine/neuralweb
@@ -18034,9 +18036,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 beautifulsoup4
       - name: gmi explorer — model, shared assets, reason-code pin, S1-S5 pages
-        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_explorer_model.py tests/test_gmi_explorer_shared.py tests/test_gmi_explorer_assets.py tests/test_gmi_reason_codes.py tests/test_gmi_explorer_s2.py tests/test_gmi_explorer_s1_s5.py tests/test_gmi_explorer_s3_s4.py tests/test_gmi_product_public_view.py -q
 
   research-factory-authority:
     if: ${{ false }}

@@ -1,0 +1,338 @@
+{
+  "scope": "Generated public pages from current source model; existing shared shell. Live backend/release acceptance is separate.",
+  "cases": [
+    {
+      "name": "visual-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "desktop-search-multiparent-history-keyboard-theme-language",
+      "result": "PASS"
+    },
+    {
+      "name": "mobile-dialog-search-empty-escape-focus",
+      "result": "PASS"
+    },
+    {
+      "name": "clipboard-real-success-and-injected-denial",
+      "result": "PASS"
+    },
+    {
+      "name": "company-source-relationships-index-reduced-motion",
+      "result": "PASS"
+    },
+    {
+      "name": "shared-brain-single-launcher-open-close-focus",
+      "result": "PASS"
+    },
+    {
+      "name": "malformed-payload-preserves-server-answer-and-index",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-interaction-hover-and-keyboard-focus",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-companies.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-issuer-mu.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-relationships.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-coverage.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-states.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-1440-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-1440-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-1440-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-1440-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-390-dark-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-390-dark-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-390-light-en",
+      "result": "PASS"
+    },
+    {
+      "name": "visual-gmi-index.html-390-light-zh",
+      "result": "PASS"
+    },
+    {
+      "name": "server-answer-without-javascript",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "1440-dark-en.png",
+    "1440-dark-zh.png",
+    "1440-light-en.png",
+    "1440-light-zh.png",
+    "390-dark-en.png",
+    "390-dark-zh.png",
+    "390-light-en.png",
+    "390-light-zh.png",
+    "1440-dark-en-hover.png",
+    "1440-dark-en-focus.png",
+    "1440-light-en-hover.png",
+    "1440-light-en-focus.png",
+    "gmi-companies-1440-dark-en.png",
+    "gmi-companies-1440-dark-zh.png",
+    "gmi-companies-1440-light-en.png",
+    "gmi-companies-1440-light-zh.png",
+    "gmi-companies-390-dark-en.png",
+    "gmi-companies-390-dark-zh.png",
+    "gmi-companies-390-light-en.png",
+    "gmi-companies-390-light-zh.png",
+    "gmi-issuer-mu-1440-dark-en.png",
+    "gmi-issuer-mu-1440-dark-zh.png",
+    "gmi-issuer-mu-1440-light-en.png",
+    "gmi-issuer-mu-1440-light-zh.png",
+    "gmi-issuer-mu-390-dark-en.png",
+    "gmi-issuer-mu-390-dark-zh.png",
+    "gmi-issuer-mu-390-light-en.png",
+    "gmi-issuer-mu-390-light-zh.png",
+    "gmi-relationships-1440-dark-en.png",
+    "gmi-relationships-1440-dark-zh.png",
+    "gmi-relationships-1440-light-en.png",
+    "gmi-relationships-1440-light-zh.png",
+    "gmi-relationships-390-dark-en.png",
+    "gmi-relationships-390-dark-zh.png",
+    "gmi-relationships-390-light-en.png",
+    "gmi-relationships-390-light-zh.png",
+    "gmi-coverage-1440-dark-en.png",
+    "gmi-coverage-1440-dark-zh.png",
+    "gmi-coverage-1440-light-en.png",
+    "gmi-coverage-1440-light-zh.png",
+    "gmi-coverage-390-dark-en.png",
+    "gmi-coverage-390-dark-zh.png",
+    "gmi-coverage-390-light-en.png",
+    "gmi-coverage-390-light-zh.png",
+    "gmi-states-1440-dark-en.png",
+    "gmi-states-1440-dark-zh.png",
+    "gmi-states-1440-light-en.png",
+    "gmi-states-1440-light-zh.png",
+    "gmi-states-390-dark-en.png",
+    "gmi-states-390-dark-zh.png",
+    "gmi-states-390-light-en.png",
+    "gmi-states-390-light-zh.png",
+    "gmi-index-1440-dark-en.png",
+    "gmi-index-1440-dark-zh.png",
+    "gmi-index-1440-light-en.png",
+    "gmi-index-1440-light-zh.png",
+    "gmi-index-390-dark-en.png",
+    "gmi-index-390-dark-zh.png",
+    "gmi-index-390-light-en.png",
+    "gmi-index-390-light-zh.png"
+  ],
+  "page_errors": [],
+  "generated_at": "2026-11-03T23:28:32.840544+00:00",
+  "source_sha256": {
+    "gmi-companies.html": "0b81a0dacd057c24e83e724836eb808f11de3f808295c246cb8c939013245894",
+    "gmi-coverage.html": "c94ffb0a554a892795f338512b1b96d9be74b7637057de50a26e9f5e613ce94a",
+    "gmi-index.html": "304086ae49f2543e143f9e39637cbdae2c2fe684572f3779edb388f0afc20e42",
+    "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+    "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+    "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+    "gmi.css": "6c320599b62ac03da97f9804792a933e01aedd03eec83642a4ddc89a39fe6e38",
+    "gmi.html": "12f2f5aee1ded9d656878db968e3c218e7797c659c89043f12346a14f013f190",
+    "gmi.js": "67e1b7c8d9fae93ab8b7d4408fb47ed27a102c91ef847a76555613ce602b96e6"
+  },
+  "browser": "156.0.8078.80",
+  "pass": true
+}

@@ -44,6 +44,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = {
     "gmi.html": ("gmi_map.html.j2", "map"),
     "gmi-index.html": ("gmi_index.html.j2", "index"),
+    "gmi-companies.html": ("gmi_companies.html.j2", "companies"),
     "gmi-relationships.html": ("gmi_relationships.html.j2", "relationships"),
     "gmi-coverage.html": ("gmi_coverage.html.j2", "coverage"),
     "gmi-states.html": ("gmi_states.html.j2", "states"),
