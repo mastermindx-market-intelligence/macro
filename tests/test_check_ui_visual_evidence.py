@@ -178,6 +178,36 @@ def test_material_paths_detects_inline_style_tag_in_template():
     assert "templates/some_page.html.j2" in material
 
 
+
+def test_script_closing_brace_is_not_inline_css(tmp_path):
+    from difflib import unified_diff
+    path = "templates/support.html.j2"
+    before = "<style>\n.x {\n  color: red;\n}\n</style>\n<script>\n</script>\n"
+    after = before.replace("<script>\n", "<script>\nfunction receipt() {\n  return true;\n}\n")
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True)
+    candidate.write_text(after)
+    diff = "".join(unified_diff(before.splitlines(True), after.splitlines(True),
+                                fromfile="a/" + path, tofile="b/" + path))
+    added = guard.parse_added_lines(diff)
+    assert guard.material_paths(added, tmp_path) == set()
+    assert guard.evaluate(diff, tmp_path) == []
+
+
+def test_positioned_inline_css_remains_material(tmp_path):
+    from difflib import unified_diff
+    path = "templates/support.html.j2"
+    before = "<style>\n.x {\n  color: red;\n}\n</style>\n<script>\n</script>\n"
+    after = before.replace("color: red", "color: blue").replace("<script>\n", "<script>\nfunction receipt() {\n}\n")
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True)
+    candidate.write_text(after)
+    diff = "".join(unified_diff(before.splitlines(True), after.splitlines(True),
+                                fromfile="a/" + path, tofile="b/" + path, n=0))
+    assert path in guard.material_paths(guard.parse_added_lines(diff), tmp_path)
+    assert guard.evaluate(diff, tmp_path)  # No evidence receipt: still fails closed.
+
+
 def _inline_style_diff(rule: str, path: str = "templates/some_page.html.j2") -> str:
     return (
         f"diff --git a/{path} b/{path}\n"
