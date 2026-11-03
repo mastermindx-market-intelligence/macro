@@ -4,7 +4,7 @@
 
 ## Success measures
 
-The primary user outcome is correct movement between market, exact Company, focused chart and the intended return context while retaining usable local analytical views. Measure correctness before speed. The source specifications and 85 proposed acceptance cases (79 earlier cases plus six supplemental consumer cases) provide the observation sheet; they are not measurements.
+The primary user outcome is correct movement between market, exact Company, focused chart and the intended return context while retaining usable local analytical views. Measure correctness before speed. The source specifications and 86 proposed acceptance cases (79 earlier cases, six consumer cases and the later C10 query-context case) provide the observation sheet; they are not measurements.
 
 | Question | Measurement on a later authorized implementation | Decision rule |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ Preserve lazy `SharedShellRuntime`/toolbar mounting, deferred company-manifest i
 | B1 — reconcile source and foundations | F01/F02 resolve their original Paper effects, current candidate clauses and exact native identities; F03 retains admission/export mapping. Re-read overlapping Terminal#1188/#1191/#1228/#1236 and merged#1226 at actual current heads | Actual independent reference disposition and preserved predecessor blockers; no new shell fork or Ready inference |
 | B2 — compose shell geometry | Existing AppShell/AppNav/MobileNav and scoped shared-shell.css implement the agreed header/nav/gutters and existing compact toggle. Preserve focused/public/internal variants | Measured useful width at 600/860/1200 fractional boundaries and 1256/1096 dock examples; no double gutters or silent mode change |
 | B3 — navigation/search/directory | Consume the existing registry projection and reviewed display metadata. Reuse SymbolPicker, ShellSearch and ShellDirectory; keep exact admission, query/hash, access and preference semantics | Exact-route/duplicate-name/invalid-identity cases, no-prefetch behavior, result/failure/keyboard semantics and truthful Show all markets persistence |
-| B4 — layer coordination | F01 composes qualified F02 inspector primitives with the existing domain selected-object state; D06 supplies actual Brain lifecycle/focus binding; D25/D23 keep their pending/unsaved write authority | One-modal and no-double-dock tests, stable source identity, no invented close event or store, correct resize/focus/scroll return |
+| B4 — layer coordination | F01 composes qualified F02 inspector primitives with the existing domain selected-object state; existing Brain/D14 and host owners qualify lifecycle/focus; D06 qualifies its focused variant; D25/D23 keep their pending/unsaved write authority | One-modal and no-double-dock tests, stable source identity, no invented close event or store, correct resize/focus/scroll return |
 | B5 — stress integrations | D02/D03 supply real Macro/template views; D07 supplies Company Financials/history/source paths; D08 supplies complete Tape/local views/exports/access | Actual all-view/field/history reachability inside F01 containers. No acceptance from simplified fixtures or prose promises |
 | B6 — full re-audit | Existing QA01/design authority assesses the exact implementation and qualified reference, EN/ZH, light/dark, access/recovery, keyboard/touch/zoom, source truth and performance | Source/build-bound evidence, independent findings and actual disposition. Reference acceptance, code merge, deployment and served proof remain separate |
 

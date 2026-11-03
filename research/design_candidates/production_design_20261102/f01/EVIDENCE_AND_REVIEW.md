@@ -1,7 +1,7 @@
 # F01 — Evidence, effect state and review record
 
-**Candidate:** F01/1.0.0-candidate.3 / F01-F02-SHELL/1.0.0-candidate.3.  
-**Current acceptance:** PARTIAL, RIG draft. F02 candidate.2 geometry concurrence is source-bound; candidate.3 additions await F02/D06 review. Independent design qualification, implementation, deployment and served-production proof remain unestablished.
+**Candidate:** F01/1.0.0-candidate.4 / F01-F02-SHELL/1.0.0-candidate.4.  
+**Current acceptance:** PARTIAL, RIG draft. F02 candidate.2 geometry concurrence is source-bound; candidate.4 changes await scoped affected-owner concurrence. Bounded source approval and local artifact follow-ups are recorded below without extending their scope. Independent design qualification, implementation, deployment and served-production proof remain unestablished.
 
 ## 1. Immutable authority and source inputs
 
@@ -13,9 +13,9 @@ The following were all read at the user's exact Macro commit6e1862867193ec6486a2
 - [Shared-shell requirements](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/SHARED_SHELL_CONTRACT.md)
 - [Re-audit checklist](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/RE_AUDIT_CHECKLIST.md)
 
-Bootstrap/protected procedure: Mastermind b2326bbe30e9988d26199f5e774a482b9c09068a; skillpack schema/master1.0.1 compatible. Cold start, active execution, delegation, session reliability, plan continuity, routing addendum, Paper integration, independent-review routing and closeout were consumed before their relevant actions. Tool write qualification is not user permission, review acceptance or a release.
+Original bootstrap/protected procedure: Mastermind b2326bbe30e9988d26199f5e774a482b9c09068a; skillpack schema/master1.0.1 compatible. Cold start, active execution, delegation, session reliability, plan continuity, routing addendum, Paper integration, independent-review routing and closeout were consumed before their relevant actions. Tool write qualification is not user permission, review acceptance or a release.
 
-Current Terminal source inspected: mastermind-terminal3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9. F02 source input: c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82. F02's own source/data contract has separate Macro/Terminal pins; its domain findings are attributed to those pins, not silently promoted to the F01 source revision. Source URLs/blob receipts accompany the contract and evidence manifest.
+Original Terminal source inspected: mastermind-terminal3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9. F02 source input: c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82. F02's own source/data contract has separate Macro/Terminal pins; its domain findings are attributed to those pins, not silently promoted to the F01 source revision. Source URLs/blob receipts accompany the contract and evidence manifest.
 
 ## 2. Owner and collision check
 
@@ -61,11 +61,13 @@ Actual edit receipts established page/artboard creation, cloning of the retained
 
 Screenshots and JSX are supporting read exports from actual native nodes, not HTML-to-Paper claims. Their exact byte hashes are recorded in the manifest. Native page links remain mutable; hashes identify the captured review inputs. A snapshot guard is not a document revision, an ownership grant or an immutable visual freeze.
 
-### Candidate.2 source / native divergence
+### Historical candidate.2 divergence and current correction
 
-Source candidate.2 records the F02 agreement. The frozen native Read me and I still carry Candidate 1 metadata; Read me says F02 concurrence required; the frozen D inspector is still 400px rather than the now-agreed 440px. A metadata-only request `F01-20261103-c4-readme-concurrence-v2` returned `DOCUMENT_CHANGED`, `retry_allowed:false`, with no applied response. It was not retried or re-keyed. The planned D width change was never dispatched. The subsequent exact-file read returned the intended p-27-0 boards and its guard, but that does not authorize replay or resolve the earlier state-8 effect. Further native content writes are paused under the Paper workflow's uncertain-effect rule. Candidate.2 source is authoritative for the proposed geometry; these two native discrepancies are explicit carried findings, not repaired evidence or an accepted final freeze.
+At the candidate.2 freeze, D still drew400px while the joint source specified440; Readme/I retained Candidate1 metadata. The original Readme metadata request returned DOCUMENT_CHANGED/retry_allowed:false and was not retried. The originally planned D width edit was never dispatched. An author-imposed broad native pause followed the separate atlas unknown. These are historical facts, not the current scope.
 
-The latest successful screenshot readbacks show H's compact rail without the prior vertical-label overflow, explicit visible search icons on A/H, and C's complete five-row annual table. Those are the actual pixels frozen here. They do not close the remaining native divergence or interaction-proof gaps.
+At protected pin9f65957e29eba92245d78609f032aaea523b7cb4, action/target-scoped law was applied and the overbroad pause explicitly corrected in source at2d008bf91ccff696a3490e5d45eb9bc8d721ec9a before further native work. Existing disjoint A/C/D/E/F/H boards were corrected through the same app; D now measures440. I/grid, Readme and dependent/shared/page effects remain held. The exact boundary and Secretary/P00 capability result are in CAPABILITY_AND_EFFECT_BOUNDARY.md.
+
+Current selected-direction native evidence is A/E/H from the six-board be157007 capture, and the later C/D/F local repair capture at8ee1a8d1. B remains a historical alternative, G a retained drawer reference; neither is represented as a newly reviewed current variant. Ten original board IDs and17 predecessor references remain. The source page name was not changed.
 
 ## 5. Uncertain Paper operation — preserve the original effect
 
@@ -91,11 +93,11 @@ Two fresh isolated advisers subsequently received only the 29-member neutral bri
 | --- | --- | --- |
 | Same-commit assignment/procedure/source baseline | Read and pinned | Re-read current protected procedure on continuation when needed |
 | F01 owner/collision check and existing source path | Established with scoped limitations | Preserve #10645 and live effects; no duplicate writer |
-| UX/retention/state/data/implementation/test specifications | Candidate package authored;85 unexecuted cases; review findings adjudicated | Existing F01/F02/domain owners qualify the named clauses and later artifacts |
+| UX/retention/state/data/implementation/test specifications | Candidate.4 package authored;86 unexecuted cases; bounded static repairs re-reviewed | Existing F01/F02/domain owners qualify the named clauses and later artifacts |
 | Native comparable directions and three domain stress compositions | Authored; visual QA and captures | Frozen hashes + independent review; not runtime proof |
 | Complete native exceptional-state atlas | PARTIAL, original effect unknown | Reconcile state-8; continue unattempted rows lawfully |
 | F01/F02 joint release | Reciprocal candidate interface concurrence; not released | Both final native identities, effect reconciliation, consumer and review evidence |
-| Independent product/taste and QA01 qualification | Fresh artifact-only passes and separate rationale amendments obtained; findings open; formal qualification not established | Bind repaired native set and actual admitted reviewer/QA01 evidence |
+| Independent product/taste and QA01 qualification | Historical reports plus new isolated first passes and separate C/D/F follow-ups preserved; local repairs confirmed; complete-set/formal qualification not established | Bind repaired native set and actual admitted reviewer/QA01 evidence |
 | Complete live return/mobile/keyboard/locale proof | Not established | Future authorized implementation/re-audit path |
 | Production code, merge, Ready, queue, relabel, deployment | Not performed | Outside this assignment |
 
@@ -109,10 +111,24 @@ The material-closeout protected-source recheck pinned Mastermind e999c6e2161a77c
 
 ## 9. Consumer and directory continuation
 
-The existing D02/D08 comments were consumed on F01/F02's current source threads. Their correctly reported candidate.1 differences are superseded narrowly by F01's candidate.2 acceptance at 245a7d2; current candidate.3 retains600px gutters,440px modal and continuous fractional cutoffs. [CONSUMER_INTEGRATION_NOTES.md](CONSUMER_INTEGRATION_NOTES.md) binds their exact source pins, twelve-section Command/hash/Analyst requirements, domain truth/access/save boundaries and six new NOT_RUN cases. It does not claim consumer adoption or edit their source/prototypes.
+The existing D02/D08 comments were consumed on F01/F02's current source threads. Their correctly reported candidate.1 differences are superseded narrowly by F01's candidate.2 acceptance at 245a7d2; current candidate.4 retains600px gutters,440px modal and continuous fractional cutoffs. [CONSUMER_INTEGRATION_NOTES.md](CONSUMER_INTEGRATION_NOTES.md) binds their exact source pins, twelve-section Command/hash/Analyst requirements, domain truth/access/save boundaries and six new NOT_RUN cases. It does not claim consumer adoption or edit their source/prototypes.
 
 The complete [directory presentation proposal](DIRECTORY_PRESENTATION_PROPOSAL.json) preserves all 290 baseline records exactly, including identity, route, kind, payloadTier, labels, groups and questions. It proposes95 label changes and 256 browse-category changes, with 102 explicit semantic holds; all 290 require owner review before application. Literal aliases and unlinked breadcrumbs carry evidence, and the sixteen Macro-topic classification checks preserve F03's role. The author independently checked counts, exact baseline equality, held labels, route disambiguators and no automatic application. This is a presentation input, never a new runtime registry.
 
 [CAPABILITY_AND_EFFECT_BOUNDARY.md](evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md) records the exact direct-Paper operation, same-carrier readbacks, missing operation-status reader, current source serviceability and reachable recovery owner. The remaining native/qualification gates must not be generalized to all tools or other domain sessions.
 
 The final package inventory hashes the cumulative source/evidence/return files. It is a persistence inventory, not a repaired-native freeze. Original CAPTURE_MANIFEST, REPAIR_MANIFEST and artifact-only INPUT_MANIFEST retain their original immutable input scopes. No later documentation supplement retroactively expands a critic's reviewed set.
+
+## 10. Latest source, native correction and independent review evidence
+
+The current compatible protected pin is Mastermind9f65957e29eba92245d78609f032aaea523b7cb4. Current direct catalog03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4 remains tool-scoped compatible with Paper0.5.18; it supplies no new permission or operation-status reader. Exact background-file reads and fresh per-operation guards were used; no prepare/focus change, shared-token mutation or page administration occurred.
+
+The resumed native phase produced52 APPLIED_RESPONSE_OBSERVED corrections in six existing boards, frozen atbe157007. Its acknowledgment inventory explicitly states that older raw in-memory envelopes were unavailable during persistence; the actual captures and observed-response inventory are retained without pretending to be a full raw archive. A later four-operation correction has complete request/raw reply files and actual C/D/F captures frozen at8ee1a8d1. No original held operation was retried.
+
+[REVISION_ADJUDICATION.md](evidence/review/REVISION_ADJUDICATION.md) records exact first-report freezes, independent hash checks, the three common P2 findings, one P3, applied repairs and separate follow-up verdicts. Both advisers found the requested static repairs addressed/implemented without a new observed visual defect. User-task performance and all runtime proof remain unestablished.
+
+Actual independent nonauthor GitHub reviewer mastermindxryan submitted [APPROVED review5760292764](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760292764) on **be157007**, limited to SOURCE-CONTRACT/HANDOFF. It explicitly permits conditional Phase2A specification consumption and denies native/visual/RIG/final joint/implementation/release acceptance. The unchanged full body is retained in SOURCE_REVIEW_BE157.json. Candidate.4's later changes require fresh applicable review.
+
+D06's later d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf handshake/responsive/source delta are incorporated as attributed consumer evidence:36 beta captures and75 specified-not-executed cases belong to D06. The prior D06 independent review applies only to61d6762 and71 cases. Root additionally verified current ShellSearch/SymbolPicker/SearchModal/companySearchContext blobs at Terminal2ded360 and the Statements source at3cc8. Exact inputs and read scopes are in [CANDIDATE4_INPUT_RECEIPTS.json](evidence/source/CANDIDATE4_INPUT_RECEIPTS.json). The single-cursor correction supersedes any earlier advisory suggestion of a separate committed/hover pin.
+
+The Secretary's actual ACK/RESULT returned CAPABILITY_GAP_ON_ORIGINAL_PAPER_RECEIPT then STOP. The existing P00 owner received [comment6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922), asking only for authorized original-request terminal/canonical reconciliation evidence. No original receipt, new runtime START, alternate carrier or effect resolution is inferred.

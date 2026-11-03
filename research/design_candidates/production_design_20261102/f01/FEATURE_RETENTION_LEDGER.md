@@ -11,7 +11,7 @@ Baseline sources are pinned in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CON
 | F01-L01 | Six primary workspace routes | IMPROVE — Retain; labeled desktop, explicit compact, one narrow drawer | AppNav/MobileNav; one current destination |
 | L02 | US/CN/HK/CA/International homes | IMPROVE — Retain exact hrefs; improve separation of destination and context | No new persisted region API; F03/domain mapping |
 | L03 | Specialist and legacy deep links | RETAIN — Retain every admitted path, query and hash | Existing registry/export/resolver; no title-based merging |
-| L04 | Company search and exact manifest key | IMPROVE — Retain existing SymbolPicker pipeline; improve naming/disambiguation | Search source contract and C01–C09 |
+| L04 | Company search and exact manifest key | IMPROVE — Retain existing SymbolPicker pipeline; improve naming/disambiguation | Search source contract and C01–C10 |
 | L05 | Recent results, category/market visibility and Show all markets | RETAIN — Retain actual owner and persistence semantics | Do not call a saved preference a temporary filter |
 | L06 | All tools, category/query matching and aliases | IMPROVE — Improve labels/disambiguation; preserve search and exact routes | F01 + F03 exporter; all 290 entries retained |
 | L07 | Result counts and Show more | RETAIN — Retain current48-item increments and no-prefetch | Search/category reset and focus tests |
@@ -28,7 +28,7 @@ Baseline sources are pinned in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CON
 | L18 | Chart/table primary objects | IMPROVE — Retain; widths and local overflow protect analytical depth | F02 patterns; domain exact-value path |
 | L19 | Evidence/source inspection | IMPROVE — Improve one-object dock/modal behavior | Keep source precision, limitation, selection and focus |
 | L20 | Terminal current-chart entry | IMPROVE — Retain exact ret and correct symbol priority | Entry paths tested separately; generic Terminal distinguished |
-| L21 | Focused Terminal/chart/Brain | RETAIN — Retain separate chrome and singleton | D06; no AppShell wrapper or second assistant |
+| L21 | Focused Terminal/chart/Brain | RETAIN — Retain separate chrome and singleton | D06/Terminal focused reader and host; existing Brain/D14 lifecycle/request owner; no AppShell wrapper or second assistant |
 | L22 | Named return | RETAIN — Retain captured safe URL and owner behavior | Full native scroll/focus restoration still unproven |
 | L23 | Browser history and legacy view snapshots | RETAIN — Retain entry identity, bounded64-entry map and identity reset | Not unlimited persistent restoration |
 | L24 | Existing auth identity | RETAIN — Retain claims.sub ownership; email is presentation | Dynamic/private layout; domain access remains independent |
@@ -92,3 +92,9 @@ The initial candidate.2 reviews remain bound to245a7d2cd62d88fb6d2ee3863f9d26c63
 | Filing/vendor citation for illustrative C/D values | BLOCKED_DATA in the specimen — no actual record/citation attached | Keep illustrative/no-citation language; use the real D07 field-source or D08 event-source owner in the later integration |
 
 These are three unsupported specimen dependencies, not removal of existing production fields. The 36 capability counts and all 290 exact directory identities remain separate censuses. Initial product/taste findings and their source-only follow-up are in evidence/review; none of these dispositions is a reviewer approval.
+
+## Candidate.4 continuation
+
+No retention disposition changed:36 capabilities remain23 RETAIN/13 IMPROVE, with no removal, relocation or blocked existing feature. The six-board be157007 freeze supplies actual corrections to C/D/E local hierarchy, C selection/history anatomy, A/H compact/location treatment and E/F targets. Those are reviewed artifacts, not feature/runtime passes. B/G/Readme/I and historical reports remain unchanged.
+
+The current-source supplement preserves Company preview/commit and query/listing history through the existing owners, clarifies Brain/D14 versus D06 ownership, and retains the focused reader's real width/current-cursor semantics. It creates no route, preference/selection store, endpoint or request authority. Exact historical Ask, complete return restoration and native/QA01 qualification remain open.

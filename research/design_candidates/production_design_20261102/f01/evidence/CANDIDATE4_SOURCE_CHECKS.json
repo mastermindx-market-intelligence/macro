@@ -1,0 +1,264 @@
+{
+  "schema": "F01.candidate4_source_checks.v1",
+  "recorded_at_utc": "2026-11-03T22:46:59.670017+00:00",
+  "scope": "Package integrity and source consistency only. This is not execution of the 86 product acceptance cases, an independent design verdict, QA01/RIG acceptance, served-release attestation or original-effect resolution.",
+  "source_parent": "8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "specified-case inventory",
+      "result": "PASS",
+      "detail": {
+        "main": 80,
+        "consumer": 6,
+        "unique": 86,
+        "execution": "NOT_RUN; inherited document-wide status, not per-case execution records"
+      }
+    },
+    {
+      "check": "unexecuted qualification labels",
+      "result": "PASS",
+      "detail": {
+        "claim": "All 86 remain specifications; none executed by this check"
+      }
+    },
+    {
+      "check": "feature disposition inventory",
+      "result": "PASS",
+      "detail": {
+        "rows": 36,
+        "RETAIN": 23,
+        "IMPROVE": 13
+      }
+    },
+    {
+      "check": "directory exact baseline identity preservation",
+      "result": "PASS",
+      "detail": {
+        "baseline_records": 290,
+        "proposed_records": 290,
+        "fields": "All original baseline fields exactly equal; proposed labels/categories remain separate and unapproved",
+        "source_counts": {
+          "legacy": 13987,
+          "native": 17,
+          "directory": 290
+        }
+      }
+    },
+    {
+      "check": "capture integrity native_revision_20261103",
+      "result": "PASS",
+      "detail": {
+        "members": 12,
+        "aggregate_sha256": "8465612640379507ac49a88fa6d3b3618736d7f8c586db45b4682b9905d584bc",
+        "actual_JPEG_dimensions": [
+          {
+            "path": "A.jpg",
+            "pixels": [
+              1440,
+              960
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "C.jpg",
+            "pixels": [
+              1280,
+              1180
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "D.jpg",
+            "pixels": [
+              1024,
+              960
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "E.jpg",
+            "pixels": [
+              390,
+              1140
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "F.jpg",
+            "pixels": [
+              320,
+              960
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "H.jpg",
+            "pixels": [
+              1280,
+              960
+            ],
+            "format": "JPEG"
+          }
+        ],
+        "scope": "Byte integrity and dimensions; no new visual acceptance"
+      }
+    },
+    {
+      "check": "capture integrity native_followup_20261103",
+      "result": "PASS",
+      "detail": {
+        "members": 6,
+        "aggregate_sha256": "cc448df630698e66ce8706d79f6ca26307a976967dbda4e7b88a079ef6dc5396",
+        "actual_JPEG_dimensions": [
+          {
+            "path": "C.jpg",
+            "pixels": [
+              1280,
+              1180
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "D.jpg",
+            "pixels": [
+              1024,
+              960
+            ],
+            "format": "JPEG"
+          },
+          {
+            "path": "F.jpg",
+            "pixels": [
+              320,
+              960
+            ],
+            "format": "JPEG"
+          }
+        ],
+        "scope": "Byte integrity and dimensions; no new visual acceptance"
+      }
+    },
+    {
+      "check": "frozen advisory reports unchanged",
+      "result": "PASS",
+      "detail": {
+        "REVISION_PRODUCT_FIRST_PASS.md": "d790d1bdd0844ccccbf6b9cdaafe9ba3d4cf9235d652b5d90b4a0a0c2d6a881e",
+        "REVISION_TASTE_FIRST_PASS.md": "6199dc781403d93da9cc30bebc75c1afef99ca227260820ce5ac78103a24d121",
+        "REVISION_PRODUCT_FOLLOWUP.md": "ec149927bd5bedea111a80bf64492d13a7514463d774a9dc4da699ddc4494b31",
+        "REVISION_TASTE_FOLLOWUP.md": "de13e454a1ef929b5c0e154dc8a54a62fc8b61a2c758be160fba82f88e887e67",
+        "F01_CONSUMER_CONTRACT_ADVISORY_20261103.md": "b736dd55fccfbb717af1eff0ef6b713c6c923c08c031d09f5a41405418619b9b",
+        "CANDIDATE4_TEST_ADVISORY.md": "fbca4e12cc10a53fe0f1c6cf0d8794f8b1524fc6e187884d48172edbff3f67f2"
+      }
+    },
+    {
+      "check": "four follow-up operation receipts",
+      "result": "PASS",
+      "detail": [
+        {
+          "operation_id": "F01-20261103-r4-C-table-units",
+          "state": "APPLIED_RESPONSE_OBSERVED",
+          "retry_allowed": false,
+          "request_and_raw_reply_present": true
+        },
+        {
+          "operation_id": "F01-20261103-r4-D-selected-fill",
+          "state": "APPLIED_RESPONSE_OBSERVED",
+          "retry_allowed": false,
+          "request_and_raw_reply_present": true
+        },
+        {
+          "operation_id": "F01-20261103-r4-D-selected-label",
+          "state": "APPLIED_RESPONSE_OBSERVED",
+          "retry_allowed": false,
+          "request_and_raw_reply_present": true
+        },
+        {
+          "operation_id": "F01-20261103-r4-F-task-descriptions",
+          "state": "APPLIED_RESPONSE_OBSERVED",
+          "retry_allowed": false,
+          "request_and_raw_reply_present": true
+        }
+      ]
+    },
+    {
+      "check": "main-document owned relative links",
+      "result": "PASS",
+      "detail": {
+        "checked": 52,
+        "missing": [],
+        "outside_owned_root_not_checked": 0,
+        "external_URLs": "Not dereferenced by this local check"
+      }
+    },
+    {
+      "check": "version and acceptance boundary labels",
+      "result": "PASS",
+      "detail": {
+        "candidate": "candidate.4",
+        "acceptance": "PARTIAL / REQUEST_CHANGES / RIG draft",
+        "joint_release": "unreleased"
+      }
+    },
+    {
+      "check": "final focus consistency corrections",
+      "result": "PASS",
+      "detail": {
+        "adviser": "existing /root/f01_contract_test_adviser",
+        "scope": "Bounded read-only working-copy consistency advice, not formal qualification; adviser did not retain input hashes",
+        "findings": "PRODUCT_UX_SPEC §6 two transition rows and §9 modal-focus paragraph could be read as unconditional",
+        "root_action": "Qualified all three statements; SOURCE §7 was already corrected",
+        "root_validation": "Both table rows explicitly defer to conditional focus; modal paragraph preserves deliberate later movement",
+        "other_adviser_result": "No other concrete contradiction observed within ownership, one cursor/request identity, reader width, 86 NOT_RUN and prior-approval scope"
+      }
+    }
+  ],
+  "main_document_inputs": {
+    "README.md": {
+      "sha256": "e58d8865fa7b1006abaa58d774375fd1c72986d45779b7c6217bda58a49ac01f",
+      "gitBlobSha1": "60aae2d78cbfa8523faf94465607130f75af1b95"
+    },
+    "RETURN_F01.md": {
+      "sha256": "e38b1b815563ba77b6753605192f821447ad2870e83345bde401904656f175f6",
+      "gitBlobSha1": "41921716979c12ccae6771d6ab8bcd0544eb3dd2"
+    },
+    "JOINT_SHELL_SYSTEM_CONTRACT.md": {
+      "sha256": "7f0816285b6d0e68f8cd0dce7899c891abb6a16b0998931426662242d6b3f660",
+      "gitBlobSha1": "1160f14b108bf0948384f59a249320385a1dfb6c"
+    },
+    "SOURCE_AND_DATA_CONTRACT.md": {
+      "sha256": "b548cb1fe071dc04b0fd24ef311aa19524d4fc5bc89a4e77b7b6aefe7f0c78b2",
+      "gitBlobSha1": "4136710c1dbba1c75b16f4b090ee6a9326667685"
+    },
+    "PRODUCT_UX_SPEC.md": {
+      "sha256": "2290c3f75f86ad79f5a16fef116b594c16a00fce9d7acca92e0fd24b5d219a67",
+      "gitBlobSha1": "0da0883de6c59b5ab850679ddacf66ac08d64547"
+    },
+    "ACCEPTANCE_TESTS.md": {
+      "sha256": "df75806dd7b642580a56190255dce66a7d6194d37b991b10417369e3c0479bc1",
+      "gitBlobSha1": "3392d929590be4cf289fc023836a0049d2a422da"
+    },
+    "CONSUMER_INTEGRATION_NOTES.md": {
+      "sha256": "c972ba05c24f903a4a570ff7f73f384670c20bc4303c4f4d0d02c0b9ead4fd40",
+      "gitBlobSha1": "f267c40d1ef847386099d2e1ec1b3bc3e0a4c209"
+    },
+    "FEATURE_RETENTION_LEDGER.md": {
+      "sha256": "3e3626c7cc2432ce8829d61827656216b3b44a793c4b5c10ea9563c0ac9eaf64",
+      "gitBlobSha1": "b876ac6087bb7431d902d8f56224c0f4b618fa2a"
+    },
+    "BUILDER_AND_MEASUREMENT_PLAN.md": {
+      "sha256": "88a6352d1080a436403c9ad99025b29fbe007fd1d754aa1fc21cdccda4bf8188",
+      "gitBlobSha1": "b4c9ee2011390d26c6efb9b1ed0d38cd358f9c87"
+    },
+    "EVIDENCE_AND_REVIEW.md": {
+      "sha256": "5e1e5ebd3f4cf4443805cc96dbe70b95015f6320433b8a1f29f0e00425b8eb50",
+      "gitBlobSha1": "43673a76264636ac582fb2f87d1bec5c6fa474cf"
+    }
+  },
+  "unchanged_holds": [
+    "F01-20261103-c4-state-8-v1 EFFECT_UNKNOWN on original target",
+    "F01-20261103-c4-readme-concurrence-v2 DOCUMENT_CHANGED without retry",
+    "F02 separate original Chinese-phone footer effect",
+    "Changed candidate.4 clauses await affected-owner response and independent qualification"
+  ]
+}

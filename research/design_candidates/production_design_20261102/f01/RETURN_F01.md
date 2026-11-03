@@ -1,114 +1,108 @@
-# F01 — Shared shell source/research return and native continuation
+# F01 — shared-shell design/research return
 
-**Current state: PARTIAL / REQUEST_CHANGES / RIG draft.**  
-**F01:** F01/1.0.0-candidate.3. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.3.  
-**Source carrier:** [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, under existing [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The enclosing immutable Git commit identifies this cumulative return. [PACKAGE_MANIFEST.json](evidence/PACKAGE_MANIFEST.json) hashes its members except the manifest itself.
+**F01:** F01/1.0.0-candidate.4. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.4.  
+**Current acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. **Final joint v1: unreleased.**  
+**Existing carrier:** [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, stacked under [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The enclosing immutable Git commit binds this return and its [package inventory](evidence/PACKAGE_MANIFEST.json).
 
-## Active continuation — 2026-11-03
+## Outcome of this continuation
 
-The Chairman resumed this same F01 receiver/carrier. The [effect boundary](evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md#2026-11-03-continuation-narrow-the-author-imposed-pause) now explicitly corrects the prior overbroad native pause: independently safe corrections on existing A/C/D/E/F/H boards may proceed through the original direct app with exact target guards and readback. The original I/grid operation remains EFFECT_UNKNOWN; the separate Readme operation, shared token/page effects and all dependent atlas work remain held. This is an action-scope correction, not native acceptance or a released shell contract. The prior all-lanes disposition below is historical and no longer describes the newly available disjoint correction phase.
+The current F01 receiver continued the existing source/Paper owner, corrected an overbroad author-imposed pause, made and captured56 acknowledged local Paper corrections, obtained two isolated artifact-only critiques and separate repair follow-ups, and incorporated D06's later consumer/source evidence into the next versioned joint proposal. The source package now defines the complete bounded shared-shell UX, retention, interaction, source/data, responsive/accessibility, build and test requirements. No production behavior was changed.
 
-Current protected source pin: Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4`, compatible INDEX1.0.1/bootstrap1. Scope adjudication was committed and read back at `2d008bf91ccff696a3490e5d45eb9bc8d721ec9a` before independent native correction. The same Paper app then returned **APPLIED_RESPONSE_OBSERVED for52 distinct corrections** inside A/C/D/E/F/H; no original operation was replayed. Six actual JPEG/JSX pairs are frozen in [the native revision capture](evidence/native_revision_20261103/CAPTURE_MANIFEST.json), aggregate `8465612640379507ac49a88fa6d3b3618736d7f8c586db45b4682b9905d584bc`. The [acknowledgment inventory](evidence/native_revision_20261103/OPERATION_ACKNOWLEDGMENTS.json) explicitly distinguishes observed responses and current captures from unavailable older in-memory raw envelopes. Fresh bounded product/taste advisories are being performed on the isolated twelve-artifact set; no result is assumed.
+The six revised selected-direction boards communicate global/local hierarchy, contextual evidence, desktop/phone and EN/ZH/light/dark examples while retaining advanced Company/Options controls. Both follow-up advisers confirm the narrow C/D/F visual repairs in actual captures. They retain the missing task-test, behavior, full-state/theme/locale and formal-qualification limits. Those reports are useful evidence, not design acceptance.
 
-The native changes establish the proposed440px D inspector, its actual11-field Tape composition and inferred-side wording; C's financial depth, period/history controls and consistent FY2024 selection; explicit A/H compact controls and current-location cues; source-owned Macro suite views, subset/history disclosure; and E/F touch targets/readable copy. They do not establish runtime behavior, final native qualification or the complete held state atlas. D06's newer Brain/return handshake at `61d6762cdd417b00aae879bd411a8bb20c50ff63` is being integrated; no D06/F02 acceptance is inferred. The source/qualification state remains PARTIAL / REQUEST_CHANGES / RIG draft.
+An actual independent nonauthor [GitHub SOURCE-CONTRACT/HANDOFF approval5760292764](https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760292764) by mastermindxryan applies to earlier exact head **be157007c4d4a33feb576a43f431eba3db5650ac**. It confirms coherent candidate geometry and permits conditional Phase2A specification consumption by existing owners. It expressly withholds native/visual/RIG/final joint/implementation/release acceptance. Candidate.4's later semantic changes require applicable fresh review; this return does not broaden that approval.
 
-## Capability delta and scope
+## Delivered package and retention
 
-**Before:** F01 had its immutable assignment, real shell code and strong existing Paper references, but lacked a unified source-bound navigation/width/state/return package and a qualified joint foundation.
-
-**After:** the existing F01 owner has a concrete product/UX specification, retained-feature and directory records, actual backend/source/data contracts, source-bound F02 geometry concurrence, builder/measurement guidance, consumer integration notes, editable native candidate evidence, independent advisory findings and a precise repair/qualification return. This advances the design/research capability. It does not change production behavior or establish reference acceptance.
-
-The current assigned receiver remains Astra Pro / ChatGPT4, GitHub `mastermidx4`. Scoped launch checks found no conflicting active F01 source/canvas writer; they were not universal liveness proof. This resume continued the same carrier. All modifications remain in the F01 subtree; no F02/F03/domain source or Paper target was taken over. Shared `SESSION_RETURNS.md` remains with its integration owner because of the recorded collision.
-
-## Delivered source package
-
-| Deliverable | Result |
+| Deliverable | Complete bounded result |
 | --- | --- |
-| Product and interaction design | Global/local navigation, exact destination search, company context, inspector/drawer/Brain layers, deep links, return/history, responsive modes, EN/ZH and light/dark/auto ownership |
-| Retention ledger | 36 existing capabilities:23 RETAIN,13 IMPROVE,0 RELOCATE,0 REMOVE,0 BLOCKED_DATA. Three unsupported extra specimen fields are separately BLOCKED_DATA; no existing capability is removed |
-| Directory audit and proposed presentation | All 290 inspected directory records retained exactly. Proposal includes labels, browse categories, literal aliases, source-backed market qualifiers and unlinked breadcrumbs;95 rename proposals,256 category proposals,102 explicit semantic holds; all 290 await F03/exporter/domain review |
-| Real source/data contracts | Existing route projection/resolver, closed Analysis parser, six-field host status and message checks, identity/reset/history ownership, manifest-based company search and preferences, Options IA/feed/filter/export, actual source/clock/null/access limits |
-| Tests and build guidance | 85 unique acceptance specifications:79 earlier cases plus M01–M06 consumer cases, **all NOT_RUN**. Future task/performance measures, exact owner-bound build sequence, compatibility and rollback; no implementation |
-| Review evidence | Eight unchanged reports: two advance-context advisories, two bounded follow-ups, two fresh artifact-only first passes and two separate rationale amendments; exact hashes and input scopes preserved |
+| [Product/UX specification](PRODUCT_UX_SPEC.md) | Persona/jobs, global and local hierarchy, company versus destination search, inspector/sidepane/Brain transitions, deep links and return, desktop/mobile, EN/ZH and theme behavior |
+| [Joint F01/F02 contract](JOINT_SHELL_SYSTEM_CONTRACT.md) | Versioned geometry, slot/owner map, changed-versus-concurred clauses, focused-Terminal exception, lifecycle/focus/return requirements and release rules |
+| [Retention ledger](FEATURE_RETENTION_LEDGER.md) |36 existing groups:23 RETAIN,13 IMPROVE; zero existing removals/relocations/blocked features. Three unsupported extra specimen fields are separately BLOCKED_DATA |
+| [Source/data contract](SOURCE_AND_DATA_CONTRACT.md) | Actual route/Analysis parsers, host/status/messages, identity/preferences,64-entry legacy history boundary, Company manifest/preview/query/Financials, Options IA/feed/filter/export, Brain/reader/source-clock/access limits |
+| [Consumer integration](CONSUMER_INTEGRATION_NOTES.md) | D02 twelve-section/hash/Analyst contract, D08 exact destinations/fields/export and old-geometry resolution, D06 current reader/Brain/return and search-source correspondence |
+| [Acceptance cases](ACCEPTANCE_TESTS.md) |86 unique specifications, all NOT_RUN. Existing85 strengthened; C10 adds the separately inspected current company-query boundary. No migration test was executed |
+| [Builder/measurement plan](BUILDER_AND_MEASUREMENT_PLAN.md) | Existing-owner implementation sequence, task/performance measures, compatibility and rollback for a later authorized commission |
+| [Directory proposal](DIRECTORY_PRESENTATION_PROPOSAL.json) | All290 inspected baseline identities exact;95 label and256 category proposals,674 literal aliases,102 semantic holds. All290 still require existing exporter/F03/domain review |
+| [Evidence/review record](EVIDENCE_AND_REVIEW.md) | Original real-beta observations, exact Paper nodes/captures, preserved effects, actual source review and bounded independent critique with immutable inputs |
 
-The directory input is a presentation proposal, not a second runtime registry. Its baseline includes the exact existing ID, href, kind, title, group, question, payloadTier and audit dispositions. The generated projection's older metadata is retained as dated source information, not a fresh served census. Sixteen Macro-topic classification checks preserve F03's authority; fetch-only Command fragments are not promoted into public documents.
+The directory file is a presentation proposal, not a runtime registry or new admission. No route, feature, producer, historical window, saved-object authority, account preference owner or source carrier was replaced. F03's organization/registry work and the shared SESSION_RETURNS.md collision remain with their integration owners.
 
-## Source and ownership receipts
+## Current joint contract: agreed geometry and new clauses
 
-- All five user-supplied authority files: Macro **6e1862867193ec6486a22001a0e4fb515da20448**, with [exact input blobs](evidence/source/ASSIGNMENT_INPUT_RECEIPTS.json).
-- Protected procedure initially used: Mastermind **b2326bbe30e9988d26199f5e774a482b9c09068a**. Material-closeout pin **e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c** has compatible Skillpack1.0.1 and the same13 relevant procedure blobs. [Comparison receipt](evidence/source/PROCEDURE_RECHECK.json).
-- Real Terminal code: **3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9**. Ten detailed Options/Brain/AppShell implementation copies were byte-matched to upstream Git blobs; the broader inspected owner paths are in the source contract. This does not prove beta serves that commit.
-- F02: `mastermindx-2`, [Draft #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), **f7c25c4b9870cff260c2a4b998be18d6c04d36d0**. Token-map blob **a7ec801d3b559cc64f4fd57141c32f63098c6461**, handshake blob **58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306**. [Current coordination](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6598159141).
-- Existing D02 input **a5e4e86092a447a8f4c2e1ecc930b076e106bdac** and D08 input **e89f527e3267b1d1dd27ac7507e9a25983c0c903** are attributed in [consumer notes](CONSUMER_INTEGRATION_NOTES.md). Their source/prototype work remains theirs; F01 did not rerun their tests or change their carriers.
+F02 remains with mastermindx-2 on [Draft #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), consumed head **f7c25c4b9870cff260c2a4b998be18d6c04d36d0**. Its [handshake](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md), blob58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306, and F01 candidate.2 at245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7 establish reciprocal candidate concurrence. The token input a7ec801d3b559cc64f4fd57141c32f63098c6461 is unchanged.
 
-F03 retains registry/export/organization; D07 retains Analysis and Company depth/history; D08 retains Options; D23 retains saves/alerts; D06 retains focused Terminal and Brain; D25 retains account/preferences; D26/D27 retain public/internal audience boundaries; D02/D03 retain their shared-template regions.
-
-## Joint foundation: what is agreed and what is pending
-
-F02's [handshake](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md) plus F01's **candidate.2 at 245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7** establish reciprocal candidate concurrence. Candidate.3 preserves the same dimensions:
-
-| Interface | Agreed candidate rule |
+| Interface | Unchanged candidate rule |
 | --- | --- |
-| Navigation |224px expanded at >=1200;196px above 860/below 1200;72px explicit compact; zero rail/one drawer at <=860 |
-| Header/gutters |64/56px header;16px each gutter at <=600,20px above 600/below 1200,24px at >=1200; continuous fractional cutoffs |
-| Dock |320px plus24px gap, only when measured useful primary content remains >=640 or the domain's larger qualified minimum; no automatic compact switch |
-| Narrow evidence |440px modal at represented768/1024, constrained to viewport; full width at <=600 |
-| Representative widths |320→288,390→358,768→728,1024→788 useful;1280→664 primary with dock;1440→824;1600→984 |
+| Expanded rail |224px at width≥1200;196px at860<width<1200 |
+| Compact rail |72px, explicit desktop choice; opening evidence never auto-collapses navigation |
+| Narrow navigation | One modal drawer at width≤860, zero reserved width while closed |
+| Header / gutters |64px above860,56px at/below860; gutters16px each at≤600,20px at600<width<1200,24px at≥1200 |
+| Shared evidence dock |320px+24px only if measured useful container≥984 and at least640px primary remains, or the domain's larger qualified minimum |
+| Shared evidence modal |440px at represented768/1024, constrained to viewport; full width with internal padding at≤600 |
+| Threshold tests | Expanded1255/1256 and actual compact1095/1096 leave639/640px primary; forced48px-inset1103/1104 is a separate fixture |
 
-Candidate.1's768px gutter boundary,400px modal and literal integer gap were superseded narrowly by candidate.2. D02/D08's reports against the older source remain correct historical observations. Their consumers need the current candidate input; this is not a joint release.
+Candidate.4 adds or corrects the following without extending F02's earlier concurrence:
 
-Candidate.3 adds compact-control/state, chart-entry/current-location and proposed Brain/evidence behavior. F02 review and a real D06 lifecycle binding remain pending. The typed Brain bridge has no qualified close/open-state acknowledgement; a comment or guessed event cannot satisfy it. F01 proposes one existing Brain singleton and suspended evidence, not two side docks.
+- **Ownership:** F01 shared-layer policy; F02 shared primitives; D06 focused Terminal composition/reader and host requirements; existing Brain/D14 widget lifecycle, requests and context. Domain data/state remains domain-owned.
+- **Brain lifecycle:** actual widget close exists. The gap is qualified host visibility/focus lifecycle and served-asset identity. Open/close calls, mounted, ready or a true opener result are insufficient. Conditional onClose is focus restoration, not an unconditional closed event. Hiding is not Stop/cancellation.
+- **Focus/Escape:** preserve internal layer priority and restore only when the closing/removed surface legitimately owns focus. Deliberate later focus is not stolen; chart shortcuts cannot also consume Brain dismissal.
+- **Terminal reader:** existing360px default and300–520 requested width/mm.railW are separate from shared320+24. D06's proposed640px price-plot budget measures axes/tools/scrollbar and is not F01 container math. Temporary adaptation must not overwrite requested width.
+- **Historical Ask:** hover and bar stepping share one current inspection cursor; no new committed-versus-hover store. AI locked selection is separate. Prepared exact-bar attachments need instrument/interval/time-basis/generation validation; dispatched requests keep their original identity.
+- **Search/return:** current ShellSearch previews then commits exact listing+typed company_query and annotates the existing history entry. Named accepted URL return, bounded legacy restoration and complete native selection/scroll/focus restoration remain separately qualified.
 
-## Actual site and Paper work
+**Waiting consumers may continue source mapping, retention, width calculations, candidate composition analysis, test specification and build planning using the cited candidate, with its conditions.** Final shell-dependent after-composition follows the programme's foundation gate; production implementation is outside this assignment. An owner acknowledgment must name the exact source version/clauses/variants; a coordination comment is not independent design review.
 
-[F01 editable page p-27-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0), file **01M2WGNCX9475G79JRKJTCM08P**:
+## Actual Paper work and exact review evidence
 
-| Board | Exact ID | Evidence |
+Editable F01 remains [file01M2WGNCX9475G79JRKJTCM08P / pagep-27-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0). Its17 [p-23-0 predecessors](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0) and other authors' pages remain intact. F02's [file01M312VSDSZFVT45674GDVJVZN / pagep-9-0](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) stays under its existing owner and separate hold.
+
+| Board | Exact ID | Current actual composition |
 | --- | --- | --- |
-| Read me |6ZZX-0|1440×900 source/acceptance page; old metadata remains |
-| A / B |6ZY9-0 /6ZYA-0|1440×960 EN dark Macro directions; same1168px demonstrated table width |
-| C |6ZYB-0|1280×1012 EN light Company;664px primary/320px dock |
-| D |6ZYC-0|1024×960 EN dark Options; actual400px modal and incomplete object |
-| E / F |6ZYD-0 /6ZZV-0|390×1000 ZH light Macro;320×960 EN dark directory |
-| G / H |6ZZW-0 /70WJ-0|768×1024 ZH drawer;1280×960 compact composition |
-| I |710Z-0|1440×735 partial eight-row state atlas |
+| A |6ZY9-0|1440×960, EN dark Macro; source-owned suite Current/Drivers/History; subset/history disclosure; explicit compact action |
+| C |6ZYB-0|1280×1180, EN light Company; full local/Financials/history controls; consistent FY2024 chart/cell; local table units;664px primary+320px inspector |
+| D |6ZYC-0|1024×960, EN dark Options; actual440px modal;11-field Tape/30-field CSV distinction; inferred side/source truth; visible selected origin print |
+| E |6ZYD-0|390×1140, ZH light; source-owned suite views;44px locale/view controls,48px history/full-universe controls; no hidden existing view |
+| F |6ZZV-0|320×960, EN dark; all four original Options destinations with source-backed task descriptions and plain result count |
+| H |70WJ-0|1280×960 explicit compact; named Expand focus/tooltip and retained market/local context |
+| B / G |6ZYA-0 /6ZZW-0|Retained horizontal alternative /768px drawer; not newly revised or included in the six-board critique |
+| Readme / I |6ZZX-0 /710Z-0|Held metadata / partial atlas; source is current, native completion remains partial |
 
-Ten new-board image/JSX pairs and eight retained [p-23-0 predecessor images](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0) were actually inspected; five retained state boards also have JSX. All 17 predecessor identities are retained. The [focused Terminal reference](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-E-0) remains under its existing owner. No F02 or F03 node was modified.
+Scope adjudication was published at **2d008bf91ccff696a3490e5d45eb9bc8d721ec9a** before native continuation. It corrected a file-wide author pause to the protected operation/target-scoped rule. Fifty-two disjoint corrections returned APPLIED_RESPONSE_OBSERVED and produced the [six-board freeze at be157007](https://github.com/mastermindx-market-intelligence/macro/tree/be157007c4d4a33feb576a43f431eba3db5650ac/research/design_candidates/production_design_20261102/f01/evidence/native_revision_20261103), aggregate8465612640379507ac49a88fa6d3b3618736d7f8c586db45b4682b9905d584bc. Its inventory explicitly records that older raw in-memory envelopes were unavailable during persistence; it is not a full raw-response archive.
 
-Real beta inspection observed authenticated Today, the US route failure/recovery surface, Company overview and the Financials route effect. The US capture shows competing Today/United States emphasis. Company Financials readback preserved `page=statements` in the chart return target. Two bounded beta captures are published; private Today portfolio/watchlist content is excluded. Browser evaluation/input timeouts and later managed-tab loss prevented complete Terminal return and mobile/keyboard journeys. These are tool/session limits, not invented product failures. No production preference, saved object, alert, holding or account change was intentionally submitted.
+Fresh isolated Product/Taste first reports were frozen unchanged at **4dfcfde749d1c8566546224da5e9715de1d2b249** and **0d558e74ff16912e431772688d9c79f2a71ad44c** before repairs. Both found local table-unit, selected-print and destination-purpose issues; Taste also identified internal preservation copy. Four further local operations have complete persisted request/raw replies and the [C/D/F capture at8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177](https://github.com/mastermindx-market-intelligence/macro/tree/8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177/research/design_candidates/production_design_20261102/f01/evidence/native_followup_20261103), aggregatecc448df630698e66ce8706d79f6ca26307a976967dbda4e7b88a079ef6dc5396. Root inspected the actual images; both follow-ups verified the corrections and hashes. No screenshots were reconstructed or edited.
 
-## Findings and current acceptance
+[Revision adjudication](evidence/review/REVISION_ADJUDICATION.md) preserves all reports and limits. F's intended task choice still needs user evidence; D's selected cue is subdued under the scrim. Table/history/filter/scroll/focus/route behavior and full state/theme/locale coverage remain unproved. The new six-board freeze and local follow-up do not complete the held atlas or satisfy formal RIG/QA01.
 
-The first advisory pair received rationale/source context too early. Their reports remain preserved as ADVISORY_WITH_ADVANCE_CONTEXT. To correct the method, two fresh isolated critics received the neutral29-member artifact packet and each viewed all 19 images. Their first passes were published and read back at **09742de176f553bb30e89a0ade95643d76416c30** before rationale disclosure; separate amendments preserved all findings. [Complete sequence and reports](evidence/review/REVIEW_SEQUENCE.md).
+## Source and real-product evidence
 
-Both favor **A** as the starting direction. B has no demonstrated density gain and omits useful entries; it remains an unselected comparison. The earlier source follow-up resolves the source portions of seven product findings. Native findings remain open: Company Financials/saved-work depth; complete Tape/local controls; selected FY2024 identity; compact reversal/labels; phone local views and hit areas; truthful breadth coverage; exact return/layer sequences; and complete recovery/write states.
+- **Programme authority:** all five supplied documents read at Macro6e1862867193ec6486a22001a0e4fb515da20448; exact blobs in ASSIGNMENT_INPUT_RECEIPTS.json.
+- **Current protected procedure:** Mastermind9f65957e29eba92245d78609f032aaea523b7cb4, compatible1.0.1/bootstrap1. Earlier action pins remain historical; current action-scoped Paper law was loaded before modifications.
+- **Original real beta:** Today, US destination failure state, NVDA Company/Financials and exact chart-entry ret were actually inspected. The original managed-tab loss prevented full chart return; browser errors are not attributed as product failures. No save, account preference or private holdings mutation occurred.
+- **Primary implementation:** original Terminal3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9; StatementsPage source-focus/history/transcript behavior; Macro widgetfc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9. Four current shared-search files at Terminal2ded360882b9c721e690907ff363b553781fb920 were independently fetched/read and Git-blob verified. No served bundle/widget byte attestation is claimed.
+- **D06:** current consumed source d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf. Its36 beta captures,75 specified migration cases and responsive/return/reader observations are attributed, not rerun by F01. Its prior independent approval applies to61d6762/71 cases only.
+- **D02/D08:** original inputsa5e4e86092a447a8f4c2e1ecc930b076e106bdac/e89f527e3267b1d1dd27ac7507e9a25983c0c903 preserve exact local content, histories, typed refusals, regions and routes. F01 corrected only its source interpretation and own candidate.
 
-The amendments accept sequential modal inspection as a legitimate1024px mode: a dock would leave444px, or 568px even after an explicit compact choice. That does not prove simultaneous comparison. A complete replacement/close/return sequence still needs depiction and qualification. Native D's At ask, bid/ask, exchange and twelve-field claims are unsupported by the inspected source; the real Tape has11 columns, separate30-column CSV and inferred-side semantics. Missing source fields remain absent.
+Exact current read scopes/blobs are in [CANDIDATE4_INPUT_RECEIPTS.json](evidence/source/CANDIDATE4_INPUT_RECEIPTS.json). Architecture/test judgment advisories are preserved separately; their older working-copy limits and the superseded committed/hover interpretation remain explicit. The new C10 case comes from root's separate current-search source inspection, not a claim that the advisory reviewed an86-case final packet.
 
-F02's [native review record](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/paper/reviews/NATIVE_REVIEW_REPORT.md) explicitly preserves **Product BLOCK / Taste BLOCK**. Its historical source/static taste PASS_WITH_CONDITIONS is a different input. Neither author has a complete repaired-native freeze or formal RIG/QA01 acceptance.
+## Held effects and exact next actions
 
-## Remaining blockers and exact next actions
-
-| Lane | Exact blocker | Next owner/action and resolving evidence |
+| Gate | Current evidenced state | Executable successor / existing owner |
 | --- | --- | --- |
-| F01 native completion | Original direct-Paper operation **F01-20261103-c4-state-8-v1**, write_html into grid711X-0 on 710Z-0, returned non-JSON error/parse failure; terminal dispatch/effect unknown | Current F01 receiver obtains original-request terminal/canonical reconciliation through existing Paper/P00 owner on [#10626](https://github.com/mastermindx-market-intelligence/macro/pull/10626). Missing row/current connectivity is insufficient; no retry/rekey/failover |
-| Native/source consistency | D400 versus source440; Readme/I candidate.1 metadata; outstanding controls/data/selection/state findings | After the original-effect gate, same F01 owner repairs only its existing targets, fresh-reads and freezes affected captures/JSX |
-| F02 native foundation | Its separate footer operation and first native BLOCK findings remain open | Existing F02/P00 owner reconciles its own exact request and completes its own repair/freeze; F01 cannot clear it |
-| Added shared interaction clauses | Candidate.3 F02 review and actual Brain lifecycle acknowledgement absent | F02 reviews its interface; D06 supplies the real existing open/close/focus binding; no invented event/API |
-| Directory presentation | All 290 proposals unaccepted;102 semantic holds and 16 separate classification checks | Existing F03/exporter/domain owners review exact-ID display metadata; baseline remains default |
-| Independent qualification | Native artifact gaps remain; advisory critics are not formal reviewer-class/QA01 receipts | Existing review owner/QA01 reviews actual repaired inputs, complete retained tasks and source truth; no approval inferred from comments |
-| Full live-path proof | Exact return/scroll/focus, mobile/keyboard/zoom and real owner access/save outcomes not demonstrated | Later authorized consumer/QA01 path at an identified served build and lawful access state; all 85 cases remain NOT_RUN |
+| F01 atlas original operation | `F01-20261103-c4-state-8-v1`, same direct app, write_html append to711X-0 in710Z-0: **EFFECT_UNKNOWN**. Header+eight rows ending71AE-0 does not establish no effect | Existing direct-Paper/P00/original-runtime owner retrieves terminal original-request disposition or documented canonical same-carrier reconciliation. Then the same F01 receiver acts only on that disposition; no replay/rekey/replacement/alternate carrier |
+| F01 Readme | `F01-20261103-c4-readme-concurrence-v2`: DOCUMENT_CHANGED, retry_allowed:false; no retry | Reconcile original disposition and lawful metadata successor on the same existing target; do not treat source agreement as an applied native update |
+| Receipt capability | Secretary actually ACKed, returned [CAPABILITY_GAP_ON_ORIGINAL_PAPER_RECEIPT](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793744230565109), then STOP. Direct app exposes no operation-status reader; RDC discovery timed out before host access | [P00 request6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922) asks only for authorized original-request evidence. C2/v21 source/runtime observations do not identify this F01 operation's host; do not infer from c4 label |
+| F02 own native work | Consumed source says unresolved `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, first native Product/Taste BLOCK, incomplete repaired freeze | Existing F02 author resolves its own effect/findings and returns exact source/Paper/review evidence; no F01 takeover |
+| Changed joint clauses | Candidate.2 dimensions agreed; candidate.4 later lifecycle/focus/reader/return clauses not yet bilaterally qualified | Existing F02, D06 and Brain/D14/Terminal host owners respond to exact version and clause/variant scope; preserve all conditions |
+| Complete design qualification | Bounded static repairs confirmed; final complete native set, actual independent RIG/QA01 disposition absent | Reconcile remaining states/metadata, freeze both owners' complete sets, obtain independent product/taste and representative cross-product qualification |
+| Runtime implementation/proof | All86 acceptance cases NOT_RUN; no production code, deployment or new behavior | Later separately authorized existing product owners implement and execute real-path tests; no permission inferred from this return |
 
-The [capability/effect boundary](evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md) records the exposed direct-app family/catalog and the lack of an operation-status reader. This is a narrow recovery capability gap, not a claim that Paper, GitHub or review tools are generally unavailable. The current F01 receiver owns recovery; an old chat is not assumed live. No modifying operation is transferred to another carrier.
+## Durability and continuation boundary
 
-## Persistence, do-not-redo and finalization
+All authored source/evidence remains under the existing f01/ path. Git updates use expected-head comparison, and published manifests/read reports have exact readbacks. No other writer's branch/boards, shared registry, lifecycle/control plane or held PR state was changed. Every review identifies its real input and evidence class.
 
-Original manifest scopes remain fixed: candidate.2 freeze245a7d2, candidate.3 repair freezeb55efe2, artifact-only input3ec131b, first-pass report freeze09742de. The current package inventory is a cumulative persistence record; it does not retroactively expand review inputs or declare a final repaired set. The later directory/build/consumer supplements are author-checked source additions, not independently accepted changes. Git publication uses the same branch with an expected-head lease; final readback binds the published source and unchanged Draft state.
+**Do not redo:** unchanged programme/procedure inputs without a material change; candidate.2 geometry reconciliation; retained-feature/directory audit; preserved first reports; actual reviewed captures; source-only GitHub approval at its bound commit. Never re-key/replay the original atlas effect, create a replacement atlas/writer, or treat absent nodes/catalog readiness/CI/source merge as terminal effect or design acceptance.
 
-Do not repeat the completed baseline census, recreate this PR/page, replace owner carriers, replay the original operation under a new ID, treat no visible row as EFFECT_NONE, repair through another Paper account, overwrite frozen reviews, or promote a source/static result into native/runtime approval. Do not modify the shared return ledger to bypass its collision. Keep every production/release hold.
+At this source freeze the remaining delivery step is to send exact candidate.4 links and scoped asks to the already assigned owners and record their actual acknowledgments or absence. No response, runtime START, background executor or automatic continuation is presumed. The final foundation remains incomplete even when the safe source/design phase is durable.
 
-**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED** for the remaining native completion/qualification lanes after the authorized source, advisory review and persistence work in this return. **MISSION_COMPLETE: false.** The F01 accepted-reference mission and parent programme remain incomplete. This does not classify independent domain work as blocked.
-
-**Primary continuation:** current F01 receiver obtains canonical terminal disposition for **F01-20261103-c4-state-8-v1** from its existing direct-Paper/P00 owner; only after that gate can it repair and re-freeze p-27-0 for qualification. In parallel, existing F02/D06/F03/domain owners can resolve their named source/interface questions on their own carriers. No new session, watcher, durable wake or background execution is claimed; all bounded advisers received STOP.
-
-No production implementation, merge, un-draft, enqueue, Ready transition, held-PR relabel or deployment was performed.
+**FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS for publication/coordination; acceptance remains PARTIAL. MISSION_COMPLETE: false.**
