@@ -4413,6 +4413,9 @@ CURATED_EXCLUSIVE = {
     # F09 petroleum: native builder imports have opaque whole-root fallbacks.
     # Keep its complete measured closure; do not widen ordinary packing probes.
     "market-ontology-f09-petroleum-flow",
+    # R-28: a public link to an admin-only page fails before merge. Every template is
+    # walked, and naming the tree would wake the job on every template edit.
+    "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
@@ -5078,6 +5081,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-21 W33-LD: the regime-history reader repairs (US basis, HK segment
+    # in force, Canada today marker, China 120d analogs). Its own exclusive job
+    # pins the four page templates, build_hk's static import closure and the
+    # suites instead of adding test paths to a shared job; ceilings stay fixed.
+    "regime-history-surfaces",
     # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5136,6 +5144,11 @@ CURATED_EXCLUSIVE = {
     # Registered from the lanes' ci_registration_proposal*.yml; no pack
     # ceiling is loosened and no unrelated render probe is selected.
     "company-intelligence-relationships",
+    # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
+    # dashboard-render-contract): the suite's import closure IS the dashboard render
+    # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
+    # suite reads by name; the curated-closure guard audits it like its parent.
+    "ew-p4-descriptive-ui",
 }
 
 
@@ -6885,7 +6898,7 @@ def test_evidence_corpus_edits_select_design_governance(real_manifest_scopes) ->
     job = jobs["design-governance"]
     assert not job.exclusive, "design-governance must stay non-exclusive (floor, not ceiling)"
     assert set(job.paths) >= {"mockups/evidence/**", "mockups/refs/**"}, job.paths
-    assert len(job.paths) == 9, job.paths  # 2 corpora globs + the 7 files the steps name (loader coverage audit)
+    assert len(job.paths) == 13, job.paths  # 2 corpora globs + 7 governance files + 4 News source/test paths
     scoped_jobs, _ = real_manifest_scopes
     for probe in ("mockups/evidence/sanctions-map-event-mark/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
                   "mockups/refs/onboarding/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test

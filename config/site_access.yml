@@ -278,6 +278,11 @@ public:
     - /intl_library_search.js
     - /intl_workspace_scenario.js
     - /intl_workspace.js
+    # GMI Explorer (site/gmi*.html, #10099): the page shell is open like every
+    # *.html; its stylesheet and page script must be public too, or an anonymous
+    # visitor (and Googlebot) gets the shell unstyled behind a 401 JSON (2026-11-02).
+    - /gmi.css
+    - /gmi.js
     - /intl_workspace_entry.js
     # Public Market Memory shell assets. They contain presentation/read-client
     # logic only; every analytical payload remains behind the authenticated API.

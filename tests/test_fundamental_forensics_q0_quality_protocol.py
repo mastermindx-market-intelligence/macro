@@ -367,3 +367,36 @@ def test_protocol_doc_manifest_and_schema_omit_guarded_token() -> None:
         assert "经验证" not in text
 
 
+# Widened per DEC:FIF-PACK-QUALITY-REPORT-ISSUER-ENUM-SPLIT3-20261102.
+SPLIT3_HELD_OUT_ISSUERS = ["AMGN", "ARWR", "GILD", "NBIX", "EXEL", "FATE", "NTLA", "CRSP"]
+
+
+def test_report_schema_issuer_enum_covers_split_decision_3_held_out_issuers() -> None:
+    schema = _load_schema()
+    cell_enum = schema["$defs"]["cell"]["properties"]["issuer"]["enum"]
+    fp_enum = schema["$defs"]["false_positive"]["properties"]["issuer"]["enum"]
+    assert cell_enum == ISSUERS + SPLIT3_HELD_OUT_ISSUERS
+    assert fp_enum == ISSUERS + SPLIT3_HELD_OUT_ISSUERS
+    assert cell_enum == fp_enum
+
+
+def test_report_schema_issuer_enum_widening_is_additive() -> None:
+    schema = _load_schema()
+    protocol = _load_protocol()
+    cell_enum = schema["$defs"]["cell"]["properties"]["issuer"]["enum"]
+    fp_enum = schema["$defs"]["false_positive"]["properties"]["issuer"]["enum"]
+    assert cell_enum[:5] == protocol["issuers"]
+    assert fp_enum[:5] == protocol["issuers"]
+    assert protocol["issuers"] == ISSUERS
+
+
+def test_report_schema_issuer_enum_rejects_unlisted_issuer() -> None:
+    issuer_subschema = _load_schema()["$defs"]["cell"]["properties"]["issuer"]
+    Draft202012Validator(issuer_subschema).validate("CRSP")
+    try:
+        Draft202012Validator(issuer_subschema).validate("ZZZZ")
+    except ValidationError:
+        return
+    raise AssertionError("unlisted issuer ZZZZ must be rejected")
+
+

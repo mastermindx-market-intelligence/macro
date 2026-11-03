@@ -60,3 +60,11 @@ No merge, deploy, publication service change, credentials or independent review 
 ## Implementation checkpoint — November 2, 2026
 
 N2/N3/N4 source implementation is complete and under verification. Detailed behavior, reproduced failures, passing checks and unproven gates are recorded in VALIDATION.md. Canonical isolated workspace acquired at `/Volumes/Mastermind/agent-workspaces/macro/web/news-intelligence-popup-20261101-c2`; sparse data/site materialization uses the incumbent repository helper. No shared primary checkout or held R2 branch was modified.
+
+## Release-repair checkpoint — November 3 UTC / November 2 America/Chicago
+
+N6 remains in progress on the same operation, branch and PR #10496. The previous exact-head CI failure was diagnosed, and its introduced path-count assertion is repaired while preserving all existing packing and file-size ceilings. Integration uses main `1866e2c3891149694b0ec5a757dba072872ae8f6`; final content preservation proves one current Event observation and ten ordered bilingual headlines, with all ten clocks supported by exact pinned records. The original registered workspace and temporary qualification copy reproduce identical generated-page digests.
+
+The temporary source snapshot qualified the six ownership/closure/packing/size contracts. It is validation evidence and does not replace the original workspace or publication carrier. A transient connection failure left no file-write effect: same-carrier readback found the pending QA file absent before the reviewed helper was written and executed. Normal CI, exact-head release authority, merge, covering render and actual live-page proof remain distinct unfinished gates. N1–N5 evidence is retained; no previous visual or review acceptance is counted twice.
+
+Final same-workspace verification passes all 101 targeted rendering/client/access/publication cases. Current protected procedure refresh: `Mastermind@e3ee36e297140539e05a0524f3446e086f40c5d1` (compatible skillpack 1.0.1). Hosted exact-head CI and live proof remain pending.
