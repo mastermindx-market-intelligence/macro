@@ -1,14 +1,14 @@
 {
   "schema": "f02.native-paper-progress.v1",
-  "checkpoint": "Eight consumer compositions complete; mobile and supplements next",
-  "observed_at": "2026-11-03T05:02:16.626Z",
+  "checkpoint": "Sixteen native boards authored; state supplements not dispatched; same-carrier read timeout",
+  "observed_at": "2026-11-03T05:14:59.730Z",
   "fileId": "01M312VSDSZFVT45674GDVJVZN",
   "readmePageId": "p-9-0",
   "readmeURL": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
   "status": "NATIVE_AUTHORING_IN_PROGRESS",
   "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
   "branch": "design/f02-system-v1-20261102-c2",
-  "persisted_head_before_checkpoint": "8e5e4898f631e4963de64ab0afe801563041622e",
+  "persisted_head_before_checkpoint": "ea3a118e03236e4249ad26548641338c6c870567",
   "snapshot_note": "Target drift guard, not a document revision",
   "boards": [
     {
@@ -1776,6 +1776,57 @@
         "6JZ-0": "6Q2-0",
         "6K0-0": "6Q1-0"
       }
+    },
+    {
+      "key": "states-matrix",
+      "id": "6Q3-0",
+      "pageId": "p-4-0",
+      "name": "F02 · States & semantics · Dark / Light · Candidate 2",
+      "width": 1440,
+      "theme": "dark",
+      "steps": {
+        "artifact": "6Q4-0",
+        "heading": "6Q7-0",
+        "matrix": "6QB-0",
+        "state-0": "6QK-0",
+        "state-1": "6R1-0",
+        "state-2": "6RI-0",
+        "state-3": "6RZ-0",
+        "state-4": "6SG-0",
+        "state-5": "6SX-0",
+        "state-6": "6TE-0",
+        "state-7": "6TV-0",
+        "state-8": "6UC-0",
+        "state-9": "6UT-0",
+        "state-10": "6VA-0",
+        "state-11": "6VR-0",
+        "state-12": "6W8-0",
+        "state-13": "6WP-0",
+        "state-14": "6X6-0",
+        "state-15": "6XN-0",
+        "combined-heading": "6Y4-0",
+        "combined": "6Y8-0",
+        "combined-dark": "6YA-0",
+        "combined-dark-heading": "6YC-0",
+        "combined-dark-value": "6YG-0",
+        "combined-dark-status": "6YL-0",
+        "combined-dark-action": "6YP-0",
+        "combined-dark-note": "6YS-0",
+        "combined-light": "6YU-0",
+        "combined-light-heading": "6YW-0",
+        "combined-light-value": "6Z0-0",
+        "combined-light-status": "6Z5-0",
+        "combined-light-action": "6Z9-0",
+        "combined-light-note": "6ZC-0",
+        "semantics-heading": "6ZE-0",
+        "semantics": "6ZH-0",
+        "meaning-0": "6ZJ-0",
+        "meaning-1": "6ZO-0",
+        "meaning-2": "6ZT-0",
+        "selection-focus": "6ZY-0",
+        "notes": "707-0"
+      },
+      "created_at": "2026-11-03T05:05:32.779Z"
     }
   ],
   "operations": [
@@ -8496,6 +8547,1140 @@
           }
         ]
       }
+    },
+    {
+      "id": "f02-c2-states-matrix-create-20261103-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:05:29.891Z",
+      "completed_at": "2026-11-03T05:05:32.773Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"6Q3-0\",\n  \"name\": \"F02 · States & semantics · Dark / Light · Candidate 2\",\n  \"worldX\": 7764,\n  \"worldY\": 0,\n  \"width\": 1440,\n  \"height\": 2800\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-artifact-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:05:36.358Z",
+      "completed_at": "2026-11-03T05:05:42.278Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Q4-0\",\n      \"name\": \"F02 candidate provenance\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Q5-0\",\n      \"name\": \"F02 / STATE + SEMANT…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-heading-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:05:42.289Z",
+      "completed_at": "2026-11-03T05:05:49.580Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Q7-0\",\n      \"name\": \"State contract heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Q8-0\",\n      \"name\": \"A state tells you wh…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Q9-0\",\n      \"name\": \"Read across one outc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-matrix-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:05:49.591Z",
+      "completed_at": "2026-11-03T05:05:53.115Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6QB-0\",\n      \"name\": \"State comparison matrix\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QC-0\",\n      \"name\": \"Column labels\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QD-0\",\n      \"name\": \"State and condition header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QE-0\",\n      \"name\": \"STATE / CONDITION\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QF-0\",\n      \"name\": \"Dark specimen header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QG-0\",\n      \"name\": \"DARK · OBSERVED COPY…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QH-0\",\n      \"name\": \"Light specimen header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QI-0\",\n      \"name\": \"LIGHT · SAME OUTCOME\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-0-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:05:53.125Z",
+      "completed_at": "2026-11-03T05:05:56.063Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6QK-0\",\n      \"name\": \"State comparison · Loading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QL-0\",\n      \"name\": \"State Loading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QM-0\",\n      \"name\": \"Loading\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QN-0\",\n      \"name\": \"Availability · loadi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QO-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QP-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QQ-0\",\n      \"name\": \"Loading observations…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QR-0\",\n      \"name\": \"The source has not r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QS-0\",\n      \"name\": \"Loading… control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QT-0\",\n      \"name\": \"Loading…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QU-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QV-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QW-0\",\n      \"name\": \"Loading observations…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QX-0\",\n      \"name\": \"The source has not r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QY-0\",\n      \"name\": \"Loading… control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6QZ-0\",\n      \"name\": \"Loading…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-1-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:05:56.074Z",
+      "completed_at": "2026-11-03T05:05:58.608Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6R1-0\",\n      \"name\": \"State comparison · Empty\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R2-0\",\n      \"name\": \"State Empty\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R3-0\",\n      \"name\": \"Empty\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R4-0\",\n      \"name\": \"Availability · compl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R5-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R6-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R7-0\",\n      \"name\": \"No observations matc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R8-0\",\n      \"name\": \"The request complete…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6R9-0\",\n      \"name\": \"Clear filter control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RA-0\",\n      \"name\": \"Clear filter\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RB-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RC-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RD-0\",\n      \"name\": \"No observations matc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RE-0\",\n      \"name\": \"The request complete…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RF-0\",\n      \"name\": \"Clear filter control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RG-0\",\n      \"name\": \"Clear filter\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-2-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:05:58.619Z",
+      "completed_at": "2026-11-03T05:06:02.778Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6RI-0\",\n      \"name\": \"State comparison · Partial\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RJ-0\",\n      \"name\": \"State Partial\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RK-0\",\n      \"name\": \"Partial\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RL-0\",\n      \"name\": \"Coverage · partial; …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RM-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RN-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RO-0\",\n      \"name\": \"Partial coverage.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RP-0\",\n      \"name\": \"7 of 8 observations …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RQ-0\",\n      \"name\": \"View coverage control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RR-0\",\n      \"name\": \"View coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RS-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RT-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RU-0\",\n      \"name\": \"Partial coverage.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RV-0\",\n      \"name\": \"7 of 8 observations …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RW-0\",\n      \"name\": \"View coverage control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6RX-0\",\n      \"name\": \"View coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-3-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:06:02.789Z",
+      "completed_at": "2026-11-03T05:06:13.178Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6RZ-0\",\n      \"name\": \"State comparison · Stale\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S0-0\",\n      \"name\": \"State Stale\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S1-0\",\n      \"name\": \"Stale\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S2-0\",\n      \"name\": \"Freshness · stale by…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S3-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S4-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S5-0\",\n      \"name\": \"Older observations r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S6-0\",\n      \"name\": \"Source: 30 Oct, 20:0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S7-0\",\n      \"name\": \"Inspect source control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S8-0\",\n      \"name\": \"Inspect source\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6S9-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SA-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SB-0\",\n      \"name\": \"Older observations r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SC-0\",\n      \"name\": \"Source: 30 Oct, 20:0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SD-0\",\n      \"name\": \"Inspect source control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SE-0\",\n      \"name\": \"Inspect source\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-fit-20261103-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:07:02.676Z",
+      "completed_at": "2026-11-03T05:07:09.241Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"6Q3-0\"\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-4-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:07:14.310Z",
+      "completed_at": "2026-11-03T05:07:18.943Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6SG-0\",\n      \"name\": \"State comparison · Refresh error\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SH-0\",\n      \"name\": \"State Refresh error\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SI-0\",\n      \"name\": \"Refresh error\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SJ-0\",\n      \"name\": \"Read error · a retry…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SK-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SL-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SM-0\",\n      \"name\": \"Refresh failed.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SN-0\",\n      \"name\": \"The last successful …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SO-0\",\n      \"name\": \"Retry refresh control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SP-0\",\n      \"name\": \"Retry refresh\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SQ-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SR-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SS-0\",\n      \"name\": \"Refresh failed.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ST-0\",\n      \"name\": \"The last successful …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SU-0\",\n      \"name\": \"Retry refresh control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SV-0\",\n      \"name\": \"Retry refresh\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-5-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:07:18.954Z",
+      "completed_at": "2026-11-03T05:07:22.763Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6SX-0\",\n      \"name\": \"State comparison · Unsupported\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SY-0\",\n      \"name\": \"State Unsupported\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6SZ-0\",\n      \"name\": \"Unsupported\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T0-0\",\n      \"name\": \"Availability · unsup…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T1-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T2-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T3-0\",\n      \"name\": \"This source is not s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T4-0\",\n      \"name\": \"No value has been in…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T5-0\",\n      \"name\": \"View coverage control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T6-0\",\n      \"name\": \"View coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T7-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T8-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6T9-0\",\n      \"name\": \"This source is not s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TA-0\",\n      \"name\": \"No value has been in…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TB-0\",\n      \"name\": \"View coverage control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TC-0\",\n      \"name\": \"View coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-6-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:07:22.775Z",
+      "completed_at": "2026-11-03T05:07:28.300Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6TE-0\",\n      \"name\": \"State comparison · Guest\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TF-0\",\n      \"name\": \"State Guest\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TG-0\",\n      \"name\": \"Guest\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TH-0\",\n      \"name\": \"Access · guest; bind…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TI-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TJ-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TK-0\",\n      \"name\": \"Sign in to save this…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TL-0\",\n      \"name\": \"Public evidence rema…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TM-0\",\n      \"name\": \"Sign in control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TN-0\",\n      \"name\": \"Sign in\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TO-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TP-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TQ-0\",\n      \"name\": \"Sign in to save this…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TR-0\",\n      \"name\": \"Public evidence rema…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TS-0\",\n      \"name\": \"Sign in control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TT-0\",\n      \"name\": \"Sign in\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-7-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:07:35.081Z",
+      "completed_at": "2026-11-03T05:07:36.625Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6TV-0\",\n      \"name\": \"State comparison · Plan required\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TW-0\",\n      \"name\": \"State Plan required\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TX-0\",\n      \"name\": \"Plan required\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TY-0\",\n      \"name\": \"Access · server omit…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6TZ-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U0-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U1-0\",\n      \"name\": \"This source requires…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U2-0\",\n      \"name\": \"Available public dat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U3-0\",\n      \"name\": \"Check access control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U4-0\",\n      \"name\": \"Check access\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U5-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U6-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U7-0\",\n      \"name\": \"This source requires…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U8-0\",\n      \"name\": \"Available public dat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6U9-0\",\n      \"name\": \"Check access control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UA-0\",\n      \"name\": \"Check access\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-8-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:07:36.637Z",
+      "completed_at": "2026-11-03T05:07:43.007Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6UC-0\",\n      \"name\": \"State comparison · Expired before send\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UD-0\",\n      \"name\": \"State Expired before send\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UE-0\",\n      \"name\": \"Expired before send\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UF-0\",\n      \"name\": \"Only with proof that…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UG-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UH-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UI-0\",\n      \"name\": \"Your session expired…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UJ-0\",\n      \"name\": \"Your view is retaine…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UK-0\",\n      \"name\": \"Sign in again control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UL-0\",\n      \"name\": \"Sign in again\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UM-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UN-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UO-0\",\n      \"name\": \"Your session expired…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UP-0\",\n      \"name\": \"Your view is retaine…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UQ-0\",\n      \"name\": \"Sign in again control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UR-0\",\n      \"name\": \"Sign in again\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-9-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:07:43.019Z",
+      "completed_at": "2026-11-03T05:07:46.243Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6UT-0\",\n      \"name\": \"State comparison · First use\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UU-0\",\n      \"name\": \"State First use\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UV-0\",\n      \"name\": \"First use\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UW-0\",\n      \"name\": \"Availability · no ar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UX-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UY-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6UZ-0\",\n      \"name\": \"Choose a starting vi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V0-0\",\n      \"name\": \"Open an example or s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V1-0\",\n      \"name\": \"Open example control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V2-0\",\n      \"name\": \"Open example\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V3-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V4-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V5-0\",\n      \"name\": \"Choose a starting vi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V6-0\",\n      \"name\": \"Open an example or s…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V7-0\",\n      \"name\": \"Open example control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6V8-0\",\n      \"name\": \"Open example\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-10-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:08:46.663Z",
+      "completed_at": "2026-11-03T05:08:51.142Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6VA-0\",\n      \"name\": \"State comparison · Save pending\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VB-0\",\n      \"name\": \"State Save pending\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VC-0\",\n      \"name\": \"Save pending\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VD-0\",\n      \"name\": \"Mutation · pending; …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VE-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VF-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VG-0\",\n      \"name\": \"Saving…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VH-0\",\n      \"name\": \"This request is pend…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VI-0\",\n      \"name\": \"Saving… control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VJ-0\",\n      \"name\": \"Saving…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VK-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VL-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VM-0\",\n      \"name\": \"Saving…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VN-0\",\n      \"name\": \"This request is pend…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VO-0\",\n      \"name\": \"Saving… control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VP-0\",\n      \"name\": \"Saving…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-11-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:08:51.154Z",
+      "completed_at": "2026-11-03T05:08:54.132Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6VR-0\",\n      \"name\": \"State comparison · Saved\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VS-0\",\n      \"name\": \"State Saved\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VT-0\",\n      \"name\": \"Saved\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VU-0\",\n      \"name\": \"Only after the owner…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VV-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VW-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VX-0\",\n      \"name\": \"Saved. Breadth compa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VY-0\",\n      \"name\": \"Open this view again…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6VZ-0\",\n      \"name\": \"Open saved view control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W0-0\",\n      \"name\": \"Open saved view\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W1-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W2-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W3-0\",\n      \"name\": \"Saved. Breadth compa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W4-0\",\n      \"name\": \"Open this view again…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W5-0\",\n      \"name\": \"Open saved view control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W6-0\",\n      \"name\": \"Open saved view\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-12-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:08:54.145Z",
+      "completed_at": "2026-11-03T05:08:58.378Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6W8-0\",\n      \"name\": \"State comparison · Save failed\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6W9-0\",\n      \"name\": \"State Save failed\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WA-0\",\n      \"name\": \"Save failed\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WB-0\",\n      \"name\": \"Mutation · failure; …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WC-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WD-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WE-0\",\n      \"name\": \"Save failed.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WF-0\",\n      \"name\": \"A noncommit failure …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WG-0\",\n      \"name\": \"Retry save control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WH-0\",\n      \"name\": \"Retry save\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WI-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WJ-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WK-0\",\n      \"name\": \"Save failed.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WL-0\",\n      \"name\": \"A noncommit failure …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WM-0\",\n      \"name\": \"Retry save control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WN-0\",\n      \"name\": \"Retry save\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-13-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:09:01.755Z",
+      "completed_at": "2026-11-03T05:09:04.177Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6WP-0\",\n      \"name\": \"State comparison · Save uncertain\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WQ-0\",\n      \"name\": \"State Save uncertain\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WR-0\",\n      \"name\": \"Save uncertain\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WS-0\",\n      \"name\": \"Owner retains reques…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WT-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WU-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WV-0\",\n      \"name\": \"Save outcome unknown…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WW-0\",\n      \"name\": \"Check the existing r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WX-0\",\n      \"name\": \"Check request status control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WY-0\",\n      \"name\": \"Check request status\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6WZ-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X0-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X1-0\",\n      \"name\": \"Save outcome unknown…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X2-0\",\n      \"name\": \"Check the existing r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X3-0\",\n      \"name\": \"Check request status control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X4-0\",\n      \"name\": \"Check request status\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-14-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:04.189Z",
+      "completed_at": "2026-11-03T05:09:08.121Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6X6-0\",\n      \"name\": \"State comparison · Corrected source\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X7-0\",\n      \"name\": \"State Corrected source\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X8-0\",\n      \"name\": \"Corrected source\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6X9-0\",\n      \"name\": \"Provenance · correct…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XA-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XB-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XC-0\",\n      \"name\": \"The source revised t…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XD-0\",\n      \"name\": \"View the correction …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XE-0\",\n      \"name\": \"Compare readings control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XF-0\",\n      \"name\": \"Compare readings\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XG-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XH-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XI-0\",\n      \"name\": \"The source revised t…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XJ-0\",\n      \"name\": \"View the correction …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XK-0\",\n      \"name\": \"Compare readings control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XL-0\",\n      \"name\": \"Compare readings\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-state-15-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:08.133Z",
+      "completed_at": "2026-11-03T05:09:09.734Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6XN-0\",\n      \"name\": \"State comparison · Loaded\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XO-0\",\n      \"name\": \"State Loaded\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XP-0\",\n      \"name\": \"Loaded\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XQ-0\",\n      \"name\": \"Availability · loade…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XR-0\",\n      \"name\": \"Dark outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XS-0\",\n      \"name\": \"Dark outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XT-0\",\n      \"name\": \"Source: 30 Oct, 20:0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XU-0\",\n      \"name\": \"Available observatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XV-0\",\n      \"name\": \"Inspect source control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XW-0\",\n      \"name\": \"Inspect source\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XX-0\",\n      \"name\": \"Light outcome cell\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XY-0\",\n      \"name\": \"Light outcome copy\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6XZ-0\",\n      \"name\": \"Source: 30 Oct, 20:0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Y0-0\",\n      \"name\": \"Available observatio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Y1-0\",\n      \"name\": \"Inspect source control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Y2-0\",\n      \"name\": \"Inspect source\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-heading-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:09:13.274Z",
+      "completed_at": "2026-11-03T05:09:14.796Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Y4-0\",\n      \"name\": \"Combined state introduction\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Y5-0\",\n      \"name\": \"One view can be stal…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Y6-0\",\n      \"name\": \"Read caveats survive…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:14.809Z",
+      "completed_at": "2026-11-03T05:09:22.205Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Y8-0\",\n      \"name\": \"Combined read and mutation specimens\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:22.217Z",
+      "completed_at": "2026-11-03T05:09:24.016Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YA-0\",\n      \"name\": \"Stale + partial + save pending\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-heading-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:24.027Z",
+      "completed_at": "2026-11-03T05:09:26.019Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YC-0\",\n      \"name\": \"Combined state heading and receipt\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YD-0\",\n      \"name\": \"Stale + partial + sa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YE-0\",\n      \"name\": \"Older source: 30 Oct…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-value-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:26.030Z",
+      "completed_at": "2026-11-03T05:09:28.337Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YG-0\",\n      \"name\": \"Retained observation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YH-0\",\n      \"name\": \"Participation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YI-0\",\n      \"name\": \"66.7%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YJ-0\",\n      \"name\": \"+1.13 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-status-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:28.349Z",
+      "completed_at": "2026-11-03T05:09:30.152Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YL-0\",\n      \"name\": \"Read caveat and save outcome\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YM-0\",\n      \"name\": \"The expected update …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YN-0\",\n      \"name\": \"This request is pend…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-action-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:30.164Z",
+      "completed_at": "2026-11-03T05:09:34.032Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YP-0\",\n      \"name\": \"Saving… control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YQ-0\",\n      \"name\": \"Saving…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-dark-note-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:09:34.044Z",
+      "completed_at": "2026-11-03T05:09:38.141Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YS-0\",\n      \"name\": \"After a confirmed sa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:10:14.573Z",
+      "completed_at": "2026-11-03T05:10:19.227Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YU-0\",\n      \"name\": \"Session expired while saving\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-heading-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:19.240Z",
+      "completed_at": "2026-11-03T05:10:20.891Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6YW-0\",\n      \"name\": \"Combined state heading and receipt\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YX-0\",\n      \"name\": \"Session expired whil…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6YY-0\",\n      \"name\": \"Older source: 30 Oct…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-value-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:20.903Z",
+      "completed_at": "2026-11-03T05:10:24.072Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Z0-0\",\n      \"name\": \"Retained observation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Z1-0\",\n      \"name\": \"Participation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Z2-0\",\n      \"name\": \"66.7%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Z3-0\",\n      \"name\": \"+1.13 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-status-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:24.084Z",
+      "completed_at": "2026-11-03T05:10:25.604Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Z5-0\",\n      \"name\": \"Read caveat and save outcome\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Z6-0\",\n      \"name\": \"The expected update …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6Z7-0\",\n      \"name\": \"The outcome is unkno…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-action-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:25.615Z",
+      "completed_at": "2026-11-03T05:10:27.309Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6Z9-0\",\n      \"name\": \"Sign in and check request control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZA-0\",\n      \"name\": \"Sign in and check re…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-combined-light-note-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:27.320Z",
+      "completed_at": "2026-11-03T05:10:28.869Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZC-0\",\n      \"name\": \"Existing request ide…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-semantics-heading-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "explicit_target_read",
+      "started_at": "2026-11-03T05:10:40.405Z",
+      "completed_at": "2026-11-03T05:10:47.015Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZE-0\",\n      \"name\": \"Semantic distinctions heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZF-0\",\n      \"name\": \"The same sign does n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-semantics-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:47.027Z",
+      "completed_at": "2026-11-03T05:10:48.515Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZH-0\",\n      \"name\": \"Semantic distinctions\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-meaning-0-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:48.526Z",
+      "completed_at": "2026-11-03T05:10:50.011Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZJ-0\",\n      \"name\": \"Direction\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZK-0\",\n      \"name\": \"Direction\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZL-0\",\n      \"name\": \"+1.13 pp / −0.80 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZM-0\",\n      \"name\": \"Signs, units and pri…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-meaning-1-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:50.022Z",
+      "completed_at": "2026-11-03T05:10:53.203Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZO-0\",\n      \"name\": \"Options side\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZP-0\",\n      \"name\": \"Options side\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZQ-0\",\n      \"name\": \"≈ Buy / ≈ Sell / Mix…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZR-0\",\n      \"name\": \"Execution-side estim…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-meaning-2-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:10:53.215Z",
+      "completed_at": "2026-11-03T05:11:00.881Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZT-0\",\n      \"name\": \"Exposure\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZU-0\",\n      \"name\": \"Exposure\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZV-0\",\n      \"name\": \"+ Positive / − Negat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZW-0\",\n      \"name\": \"Signed quantity; ret…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-selection-focus-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:11:00.893Z",
+      "completed_at": "2026-11-03T05:11:03.097Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"6ZY-0\",\n      \"name\": \"Selection and focus\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"6ZZ-0\",\n      \"name\": \"Selection / keyboard…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"700-0\",\n      \"name\": \"Selected and focused controls\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"701-0\",\n      \"name\": \"Selected control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"702-0\",\n      \"name\": \"Selected\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"703-0\",\n      \"name\": \"Focus control\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"704-0\",\n      \"name\": \"Focus\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"705-0\",\n      \"name\": \"Quiet selected fill;…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f02-c2-states-matrix-notes-20261103-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_snapshot": "c2b44db231fbdcc0df489d8d5cee4d83cce269982e32ad56abeacc16a6797495",
+      "after_identity": {
+        "kind": "file-id",
+        "id": "01M312VSDSZFVT45674GDVJVZN"
+      },
+      "guard_source": "immediately_previous_same_carrier_post_read",
+      "started_at": "2026-11-03T05:11:03.109Z",
+      "completed_at": "2026-11-03T05:11:07.336Z",
+      "retry_allowed": false,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M312VSDSZFVT45674GDVJVZN\",\n    \"name\": \"Mastermind Product Design System — Canonical\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"356191c3\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"707-0\",\n      \"name\": \"State implementation notes\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"708-0\",\n      \"name\": \"Builder contract\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"709-0\",\n      \"name\": \"These are editable d…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"70A-0\",\n      \"name\": \"F02-SYSTEM/1.0.0-can…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      }
     }
   ],
   "preflight_events": [
@@ -8507,6 +9692,14 @@
       "error_code": "INVALID_ARGUMENT",
       "mutation_dispatched": false,
       "resolution": "fresh same-carrier exact-target OBSERVED read; continued once"
+    },
+    {
+      "time": "2026-11-03T05:13:01.904Z",
+      "board": "states-matrix",
+      "step": "supplement-source-unavailable",
+      "stage": "explicit_target_read",
+      "error_code": "UNAVAILABLE",
+      "mutation_dispatched": false
     }
   ],
   "limitations": [

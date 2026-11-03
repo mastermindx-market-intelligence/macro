@@ -1,0 +1,152 @@
+{
+  "schema": "f02.native-capture-scope.v1",
+  "fileId": "01M312VSDSZFVT45674GDVJVZN",
+  "complete_boards": [
+    {
+      "key": "readme",
+      "id": "47Q-0",
+      "pageId": "p-9-0",
+      "jsx": "exports/readme.jsx",
+      "screenshot": "screenshots/readme.jpg"
+    },
+    {
+      "key": "foundations",
+      "id": "48W-0",
+      "pageId": "p-3-0",
+      "jsx": "exports/foundations.jsx",
+      "screenshot": "screenshots/foundations.jpg"
+    },
+    {
+      "key": "metrics",
+      "id": "4E3-0",
+      "pageId": "p-4-0",
+      "jsx": "exports/metrics.jsx",
+      "screenshot": "screenshots/metrics.jpg"
+    },
+    {
+      "key": "metrics-light",
+      "id": "4H1-0",
+      "pageId": "p-4-0",
+      "jsx": "exports/metrics-light.jsx",
+      "screenshot": "screenshots/metrics-light.jpg"
+    },
+    {
+      "key": "controls",
+      "id": "4JP-0",
+      "pageId": "p-4-0",
+      "jsx": "exports/controls.jsx",
+      "screenshot": "screenshots/controls.jpg"
+    },
+    {
+      "key": "grammar",
+      "id": "4LC-0",
+      "pageId": "p-5-0",
+      "jsx": "exports/grammar.jsx",
+      "screenshot": "screenshots/grammar.jpg"
+    },
+    {
+      "key": "builder",
+      "id": "4NV-0",
+      "pageId": "p-7-0",
+      "jsx": "exports/builder.jsx",
+      "screenshot": "screenshots/builder.jpg"
+    },
+    {
+      "key": "macro-dark",
+      "id": "4PO-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/macro-dark.jsx",
+      "screenshot": "screenshots/macro-dark.jpg"
+    },
+    {
+      "key": "macro-light",
+      "id": "4YD-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/macro-light.jsx",
+      "screenshot": "screenshots/macro-light.jpg"
+    },
+    {
+      "key": "company-dark",
+      "id": "56L-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/company-dark.jsx",
+      "screenshot": "screenshots/company-dark.jpg"
+    },
+    {
+      "key": "company-light",
+      "id": "5HV-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/company-light.jsx",
+      "screenshot": "screenshots/company-light.jpg"
+    },
+    {
+      "key": "options-dark",
+      "id": "5VE-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/options-dark.jsx",
+      "screenshot": "screenshots/options-dark.jpg"
+    },
+    {
+      "key": "options-light",
+      "id": "67V-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/options-light.jsx",
+      "screenshot": "screenshots/options-light.jpg"
+    },
+    {
+      "key": "editorial-dark",
+      "id": "6JX-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/editorial-dark.jsx",
+      "screenshot": "screenshots/editorial-dark.jpg"
+    },
+    {
+      "key": "editorial-light",
+      "id": "6NG-0",
+      "pageId": "p-6-0",
+      "jsx": "exports/editorial-light.jsx",
+      "screenshot": "screenshots/editorial-light.jpg"
+    }
+  ],
+  "partial_board": {
+    "key": "states-matrix",
+    "id": "6Q3-0",
+    "confirmed_steps": 40,
+    "source_planned_supplement_steps": 3,
+    "final_full_capture": false,
+    "matrix_capture": {
+      "path": "screenshots/states-matrix-in-progress.jpg",
+      "scope": "16 state rows before lower combined/semantic sections were added",
+      "captured_between_utc": [
+        "2026-11-03T05:09:09.734Z",
+        "2026-11-03T05:09:13.274Z"
+      ]
+    },
+    "sections": [
+      {
+        "key": "states-matrix--combined-dark",
+        "boardKey": "states-matrix",
+        "stepKey": "combined-dark",
+        "nodeId": "6YA-0",
+        "captured_at": "2026-11-03T05:10:11.897Z"
+      },
+      {
+        "key": "states-matrix--combined",
+        "boardKey": "states-matrix",
+        "stepKey": "combined",
+        "nodeId": "6Y8-0",
+        "captured_at": "2026-11-03T05:10:33.317Z"
+      }
+    ],
+    "later_confirmed_uncaptured_steps": [
+      "semantics-heading",
+      "semantics",
+      "meaning-0",
+      "meaning-1",
+      "meaning-2",
+      "selection-focus",
+      "notes"
+    ]
+  },
+  "capture_claim": "Actual native Paper reads only; input HTML/JSON is separate prepared design source, not a native receipt."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "f02.paper-read-availability.v1",
+  "recorded_at": "2026-11-03T05:16:14.870Z",
+  "carrier": "Mastermind Paper direct app",
+  "fileId": "01M312VSDSZFVT45674GDVJVZN",
+  "read_checks": [
+    {
+      "tool": "get_basic_info",
+      "purpose": "state supplement preflight",
+      "outcome": "UNAVAILABLE",
+      "message": "Connection timed out"
+    },
+    {
+      "tool": "get_basic_info",
+      "purpose": "fresh exact-file reconciliation",
+      "outcome": "UNAVAILABLE",
+      "message": "Connection timed out"
+    },
+    {
+      "tool": "paper_inspect",
+      "purpose": "same-carrier health check",
+      "outcome": "UNAVAILABLE",
+      "message": "Connection timed out"
+    }
+  ],
+  "last_confirmed_mutation": {
+    "id": "f02-c2-states-matrix-notes-20261103-01",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "completed_at": "2026-11-03T05:11:07.336Z"
+  },
+  "confirmed_operations": 293,
+  "unknown_mutation_effects": 0,
+  "not_dispatched": [
+    "states-matrix/supplement-source-unavailable",
+    "states-matrix/supplement-access-service-unavailable",
+    "states-matrix/supplement-unavailable-contract"
+  ],
+  "next_action": "Continue local completion; one later same-carrier exact-target read after useful work. No route/access change or edit replay.",
+  "later_read_checks": [
+    {
+      "tool": "get_basic_info",
+      "outcome": "INVALID_ARGUMENT",
+      "message": "Session terminated"
+    },
+    {
+      "tool": "paper_catalog",
+      "outcome": "INVALID_ARGUMENT",
+      "message": "Session terminated"
+    },
+    {
+      "tool": "paper_inspect",
+      "outcome": "INVALID_ARGUMENT",
+      "message": "Session terminated"
+    }
+  ],
+  "updated_at": "2026-11-03T05:18:39.221Z",
+  "legacy_read_only_check": {
+    "error_code": "INVALID_ARGUMENT",
+    "mutation_dispatched": false
+  }
+}
