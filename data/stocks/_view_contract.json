@@ -8,10 +8,10 @@
     "vintage": "unattested"
   },
   "coverage": {
-    "listings_resolved": 252,
+    "listings_resolved": 254,
     "listings_unresolved": 2,
     "store": "data/stocks",
-    "symbols": 254
+    "symbols": 256
   },
   "evidence_mode": {
     "clock": "ingested_at",
@@ -254,6 +254,11 @@
       "mic": "XNYS",
       "security_id": "SEC:US-XNYS-CF"
     },
+    "CHD": {
+      "listing_key": "US-XNYS-CHD",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-CHD"
+    },
     "CHTR": {
       "listing_key": "US-XNAS-CHTR",
       "mic": "XNAS",
@@ -393,6 +398,11 @@
       "listing_key": "US-XNYS-DLR",
       "mic": "XNYS",
       "security_id": "SEC:US-XNYS-DLR"
+    },
+    "DLTR": {
+      "listing_key": "US-XNAS-DLTR",
+      "mic": "XNAS",
+      "security_id": "SEC:US-XNAS-DLTR"
     },
     "DOW": {
       "listing_key": "US-XNYS-DOW",
