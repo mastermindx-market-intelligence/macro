@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-03T22:58:01.404879+00:00",
+  "original_CI41729104897_still_unsettled": true,
+  "same_local_RED": "1failed5.23s macro_business_activity same assertion",
+  "affected_native_T11_checks": "53passed50deselected10.70s",
+  "all14_native_targets_preserved_after_only_approved_definition_delta": true,
+  "all_original_fixture_files_unchanged": 37,
+  "extra_controlled_measured_span_mutations_rejected": 81,
+  "mutation_fields": [
+    "definition_version",
+    "reference_period_present_or_absent",
+    "basis_label"
+  ],
+  "honest_missing_reference_periods_explicitly_discriminated": 2,
+  "probe_scope": "Existing canonical method: original golden plus exact measured native metadata spans; not a retained full native HTML output claim. Native14page comparison and original/current provenance mutation tests are qualified by the actual53-test run.",
+  "manual_probe_corrections": [
+    "Initial extra probe assumed every block contained time, stopped at2honest missing periods; corrected the probe to test missing\u2192invented date, with no product/fixture change.",
+    "Ephemeral pytest native-output directory was pruned by ordinary test retention before extra probe rerun. Exact measured spans and53PASS log were already retained; extra controlled vectors use the incumbent golden+measured-span falsifier method, without another renderer or suite run."
+  ],
+  "new_exact_context_pairs": 27,
+  "cells": 31,
+  "CI_owner": "market-os-macro-suite-pages gatecode scopeexclusive paths tests/fixtures/macro_suite_t11/** atlegacy-jobs46394 selects newfixture; sharedcomparator/job/workflow/budget unchanged",
+  "runtime_and_data_changes": false,
+  "frozen10607_and_immutable_proof_changes": false,
+  "not_a_golden_refresh_or_skip": true
+}
