@@ -3487,7 +3487,7 @@ class ProofFreshness:
         A verdict is per (blob, tree) and kept for the sweep, so neither a rejected
         pair nor an accepted one evicted from the two slots is asked about twice.
         An evidence failure while the planner asks about the tree is not a verdict
-        and is not kept here; a quota refusal propagates as itself.
+        and is not kept here; a broken read or a quota refusal propagates as itself.
         """
         failure = self._manifest_parse_failures.get(blob_sha)
         if failure is not None:
@@ -3519,13 +3519,23 @@ class ProofFreshness:
         while len(self._manifest_documents) > 2:
             self._manifest_documents.pop(next(iter(self._manifest_documents)))
         if key not in self._manifest_valid:
+            tree_failures: list[Exception] = []
+
+            def path_exists(reference: str) -> bool:
+                try:
+                    return self._tree_path_exists(root_tree_sha, reference)
+                except Exception as exc:
+                    tree_failures.append(exc)
+                    raise
+
             try:
-                reason = self.manifest_validator(
-                    slot[0], lambda reference: self._tree_path_exists(root_tree_sha, reference)
-                )
+                reason = self.manifest_validator(slot[0], path_exists)
             except RuntimeError:  # the tree could not answer (RateLimited included)
                 raise
-            except Exception as exc:  # a validator that breaks admits nothing
+            except Exception as exc:
+                if tree_failures:  # a broken read of the tree, not the planner's answer
+                    raise
+                # A validator that breaks admits nothing.
                 reason = f"the manifest validator raised {type(exc).__name__}: {exc}"
             if reason is not None:
                 message = (

@@ -11028,6 +11028,29 @@ def test_a_rate_limited_answer_to_the_planner_propagates_and_spares_the_child(mo
     assert _planner_validator()._unavailable is None
 
 
+def test_a_broken_read_answering_the_planner_is_never_kept_as_its_rejection(monkeypatch):
+    """A connection failure while the planner asks about the tree is a broken read,
+    as anywhere else in the sweep: it propagates, nothing is kept against the
+    manifest, and the same sweep admits it once the tree answers."""
+    fresh = _manifest_freshness(_missing_reference_edit())
+    root = fresh._commit_tree_shas[MANIFEST_COMMIT_SHA]
+    subtree = fresh._root_trees[root]["scripts"][2]
+    entries = fresh._root_trees.pop(subtree)
+
+    def unreachable(*_a, **_k):
+        raise MOG.urllib.error.URLError("timed out")
+
+    monkeypatch.setattr(MOG, "_request", unreachable)
+    with pytest.raises(MOG.urllib.error.URLError):
+        fresh._manifest_job_delta(MANIFEST_COMMIT_SHA)
+    assert MANIFEST_COMMIT_SHA not in fresh._manifest_deltas
+    assert not fresh._manifest_valid and not fresh._manifest_rejections
+    assert _planner_validator()._unavailable is None
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (200, _listing(subtree, entries)))
+    stale, reason = _manifest_verdict(fresh)
+    assert stale is False, reason
+
+
 def test_tree_path_lookups_answer_only_from_complete_canonical_listings():
     fresh = _freshness()
     root = _seed_tree(fresh, {path: ("100644", EMPTY_BLOB_SHA) for path in PLANNER_FIXTURE_FILES})
