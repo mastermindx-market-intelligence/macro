@@ -485,6 +485,40 @@ def is_stale(freshness_date: str | None) -> bool:
         return True
 
 
+def _issuer_clocks(per: dict, intel: dict | None, news_rec: dict | None) -> dict:
+    """Keep issuer evidence, measured price and daily-analysis clocks separate.
+
+    A global publication receipt is not an observation of every issuer. The
+    stock-library owner binds price_asof to its actual close and blob.asof to
+    its analysis series; neither may be advanced by news or this render.
+    """
+    blob = per.get("blob") or {}
+    tech = blob.get("tech") or {}
+    price = tech.get("price")
+    price_as_of = None
+    if (isinstance(price, (int, float)) and not isinstance(price, bool)
+            and math.isfinite(price) and price > 0):
+        price_as_of = page_freshness([tech.get("price_asof")])
+    daily_as_of = page_freshness([per.get("blob_asof") or blob.get("asof")]) if tech else None
+    dates = [price_as_of, daily_as_of]
+    for artifact, key in (("blob", "blob_asof"), ("gex_v1", "gex_as_of"),
+                          ("signals", "signals_as_of"), ("flow", "flow_as_of"),
+                          ("brief", "brief_as_of")):
+        if per.get(artifact):
+            dates.append(per.get(key))
+    if isinstance(intel, dict) and any(
+            value for key, value in intel.items()
+            if key not in {"ticker", "asof", "as_of", "generated_at"}):
+        dates.append(intel.get("asof") or intel.get("as_of"))
+    headlines = [h for h in ((news_rec or {}).get("top") or [])
+                 if isinstance(h, dict) and h.get("title") and h.get("url")]
+    if headlines:
+        dates.append(news_rec.get("asof") or news_rec.get("as_of"))
+        dates.extend(h.get("published") for h in headlines)
+    return {"freshness": page_freshness(dates), "price_as_of": price_as_of,
+            "daily_as_of": daily_as_of, "price_stale": is_stale(price_as_of)}
+
+
 def build_sitemap(existing_xml: str, stocks_entries: list[dict]) -> str:
     """Merge stocks entries into existing sitemap, preserving non-/stocks/ entries."""
     non_stocks_lines: list[str] = []
@@ -1585,7 +1619,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
 
 def _build_meta(
     ticker: str, name: str, blob: dict | None, stance_en: str,
-    freshness: str, stale: bool, generated_utc: str,
+    freshness: str | None, stale: bool, generated_utc: str,
 ) -> dict:
     price = None
     if blob:
@@ -1626,12 +1660,15 @@ def _build_meta(
         "@type": "ProfilePage",
         "@id": f"{canonical}#profile",
         "name": f"{ticker} — {name} company dossier",
-        "datePublished": freshness,
-        "dateModified": freshness,
         "publisher": {"@type": "Organization", "name": "MastermindX"},
         "mainEntity": company_entity,
         "url": canonical,
     }
+    # Profile publication history is not retained here. This document's known
+    # generation day can describe modification, never the market observation.
+    generated_day = page_freshness([generated_utc])
+    if generated_day:
+        jsonld["dateModified"] = generated_day
     jsonld_str = json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/")
 
     return {
@@ -5761,16 +5798,8 @@ def build_page_context(
     inv_en, inv_zh = _scrub_machine(inv_en), _scrub_machine_zh(inv_zh)
 
     # --- Freshness ---
-    freshness_dates = [
-        per.get("blob_asof"),
-        per.get("gex_as_of"),
-        per.get("signals_as_of"),
-        per.get("flow_as_of"),
-        agg.get("intel_as_of"),
-        agg.get("news_as_of"),
-        per.get("brief_as_of"),
-    ]
-    freshness = page_freshness(freshness_dates) or date.today().isoformat()
+    clocks = _issuer_clocks(per, intel, news_rec)
+    freshness = clocks["freshness"]
     stale = is_stale(freshness)
 
     # --- Trailing returns + seasonality from ohlc ---
@@ -5963,6 +5992,9 @@ def build_page_context(
         "meta_desc": meta["meta_desc"],
         "jsonld_str": meta["jsonld_str"],
         "freshness": freshness,
+        "price_as_of": clocks["price_as_of"],
+        "daily_as_of": clocks["daily_as_of"],
+        "price_stale": clocks["price_stale"],
         "stale": stale,
         "stance_en": stance_en,
         "stance_zh": stance_zh,
