@@ -10,8 +10,10 @@ context, which is why these tests read it from the registration rather than
 retyping it.
 
 L1:  The include sits after `<a class="back">` and before `<div id="app">`, exactly
-     once, and is the ONLY line of basket_detail.html.j2 that changes (`git diff
-     --numstat` = `1\\t0`).
+     once. Against the integration base, basket_detail.html.j2 sits in exactly ONE
+     of two legal mount-diff states: a single canonical include line inserted
+     (+1/-0) when the base predates the mount, or a byte-identical tree when the
+     base already carries that landed include. Nothing else about the file changes.
 L2:  Optional verticals never break the incumbent page — `ignore missing` everywhere.
 L3:  The base render's asset order is preserved: every <script>/<link> present in the
      base stays in the same relative order; theme.js stays LAST. New assets are
@@ -272,23 +274,42 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 
 
 # ---------------------------------------------------------------------------
-# 2 — L1 (diff): the only change to basket_detail.html.j2 is the new include line
+# 2 — L1: initial mount insertion or unchanged, already-landed mount
 # ---------------------------------------------------------------------------
 
-def test_basket_detail_diff_is_exactly_one_inserted_line():
-    """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
-    be exactly `1\\t0` — one inserted line, zero deleted lines.
+_MOUNT_INCLUDE_RE = re.compile(
+    r"""\{%\s+include\s+(["'])_basket_intelligence_mounts\.html\.j2\1\s+ignore\s+missing\s+%\}"""
+)
 
-    This is the one assertion in this suite that needs *history* rather than
-    working-tree content. The added line and its position are already pinned
-    from the tree by ``test_common_template_has_exactly_one_aggregator_include
-    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
-    in a template frozen by #7669 moved. A checkout that does not carry
-    an integration base cannot evaluate that claim at all: git answers
-    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
-    reports as a template regression that did not happen. Resolve the base
-    first (see ``_integration_base``) and skip honestly when it is absent.
+
+def _assert_mount_delta(base_src: str, candidate_src: str) -> None:
+    """Permit exactly one canonical insertion, or an unchanged valid mount.
+
+    Removing the inserted line must reproduce every base byte. Once the mount
+    is on main, the candidate must preserve the entire template unchanged.
     """
+    lines = candidate_src.splitlines(keepends=True)
+    hits = [i for i, line in enumerate(lines)
+            if _MOUNT_INCLUDE_RE.fullmatch(line.strip())]
+    target = "_basket_intelligence_mounts.html.j2"
+    assert len(hits) == 1 and _INCLUDE_RE.findall(candidate_src).count(target) == 1, (
+        "candidate must contain exactly one canonical ignore-missing mount include"
+    )
+    back, include, app = _back_app_marker_lines(candidate_src)
+    assert 0 < back < include < app, "mount must sit after back and before #app"
+    if base_src == candidate_src:
+        return  # The validated mount already landed on the integration base.
+    assert target not in _INCLUDE_RE.findall(base_src), (
+        "a base that already contains the mount must remain byte-identical"
+    )
+    i = hits[0]
+    assert "".join(lines[:i] + lines[i + 1:]) == base_src, (
+        "initial mount insertion must preserve all other template bytes"
+    )
+
+
+def test_basket_detail_diff_matches_exactly_one_legal_mount_state():
+    """Retain the insertion-only contract after its include has landed on main."""
     base = _integration_base()
     if base is None:
         pytest.skip(
@@ -297,26 +318,13 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
             "tree-content half is covered by "
             "test_common_template_has_exactly_one_aggregator_include_outside_app"
         )
-    result = subprocess.run(
-        ["git", "diff", "--numstat", base, "--",
-         "templates/basket_detail.html.j2"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    shown = subprocess.run(
+        ["git", "show", f"{base}:templates/basket_detail.html.j2"],
+        capture_output=True, cwd=str(REPO_ROOT),
     )
-    assert result.returncode == 0, (
-        f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
-    )
-    line = result.stdout.strip()
-    assert line, (
-        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
-        f"the aggregator include this suite exists to pin is absent from the diff"
-    )
-    parts = line.split("\t")
-    assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
-    added, deleted = int(parts[0]), int(parts[1])
-    assert (added, deleted) == (1, 0), (
-        f"basket_detail diff must be exactly +1/-0; got +{added}/-{deleted} "
-        f"(numstat: {line!r})"
-    )
+    assert shown.returncode == 0, f"cannot read integration-base template: {shown.stderr!r}"
+    candidate = (REPO_ROOT / "templates" / "basket_detail.html.j2").read_bytes()
+    _assert_mount_delta(shown.stdout.decode("utf-8"), candidate.decode("utf-8"))
 
 
 # ---------------------------------------------------------------------------
@@ -645,6 +653,50 @@ def test_state_of_themes_render_unchanged():
     assert html_a == html_b, (
         "state_of_themes render is non-deterministic across identical calls"
     )
+
+
+# ---------------------------------------------------------------------------
+# 8 — The two allowed states and rejected template changes
+# ---------------------------------------------------------------------------
+
+_SYNTH_INCLUDE = '{% include "_basket_intelligence_mounts.html.j2" ignore missing %}'
+_SYNTH_BASE = ('<!DOCTYPE html>\n<a class="back">Back</a>\n'
+               '<meta charset="utf-8">\n<div id="app">basket</div>\n')
+_SYNTH_LANDED = _SYNTH_BASE.replace('<div id="app">', _SYNTH_INCLUDE + '\n<div id="app">')
+_SYNTH_MOVED = _SYNTH_BASE + _SYNTH_INCLUDE + '\n'
+
+
+@pytest.mark.parametrize("base,candidate", [
+    (_SYNTH_BASE, _SYNTH_LANDED),
+    (_SYNTH_LANDED, _SYNTH_LANDED),
+    (_SYNTH_LANDED.replace('\n', '\r\n'), _SYNTH_LANDED.replace('\n', '\r\n')),
+])
+def test_mount_delta_accepts_initial_insertion_and_landed_state(base, candidate):
+    _assert_mount_delta(base, candidate)
+
+
+@pytest.mark.parametrize("base,candidate", [
+    (_SYNTH_BASE, _SYNTH_BASE),  # Empty diff without a mount.
+    (_SYNTH_LANDED, _SYNTH_BASE),  # Removed mount.
+    (_SYNTH_BASE, _SYNTH_LANDED.replace(_SYNTH_INCLUDE, _SYNTH_INCLUDE + '\n' + _SYNTH_INCLUDE)),
+    (_SYNTH_BASE, _SYNTH_MOVED),
+    (_SYNTH_LANDED, _SYNTH_MOVED),
+    (_SYNTH_LANDED, _SYNTH_LANDED + '<aside>extra</aside>\n'),
+    (_SYNTH_LANDED, _SYNTH_LANDED.replace('<meta charset="utf-8">\n', '')),
+    (_SYNTH_LANDED, _SYNTH_LANDED.replace('utf-8', 'utf-16')),
+    (_SYNTH_BASE, _SYNTH_LANDED + '<aside>extra</aside>\n'),
+    (_SYNTH_BASE, _SYNTH_BASE + '<aside>not the mount</aside>\n'),
+    (_SYNTH_BASE, _SYNTH_LANDED.replace('_basket_intelligence_mounts.html.j2', 'evil_basket_intelligence_mounts.html.j2')),
+    (_SYNTH_BASE, _SYNTH_LANDED.replace('_basket_intelligence_mounts.html.j2', '_basket_intelligence_mounts_other.html.j2')),
+    (_SYNTH_BASE, _SYNTH_LANDED.replace(' ignore missing', '')),
+    (_SYNTH_BASE, _SYNTH_LANDED.replace('\n', '\r\n')),
+    (_SYNTH_BASE, _SYNTH_LANDED.rstrip('\n')),
+    (_SYNTH_LANDED + '<aside>' + _SYNTH_INCLUDE + '</aside>\n',
+     _SYNTH_LANDED + '<aside>' + _SYNTH_INCLUDE + '</aside>\n'),
+])
+def test_mount_delta_rejects_invalid_mount_or_unrelated_edits(base, candidate):
+    with pytest.raises(AssertionError):
+        _assert_mount_delta(base, candidate)
 
 
 # ---------------------------------------------------------------------------
