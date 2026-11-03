@@ -1,17 +1,29 @@
 {
-  "asof": "2026-10-30",
+  "asof": "2026-11-02",
   "last_event": {
     "event_date": "2026-10-30",
     "z": 2.7346,
     "spread": 0.072,
     "direction": "defensive",
-    "t1_attribution": null,
-    "verdict": null
+    "t1_attribution": {
+      "t1_date": "2026-11-02",
+      "t1_z": 1.226,
+      "spread_persistence": {
+        "same_direction": true,
+        "magnitude": 0.0321,
+        "direction": "defensive"
+      },
+      "breadth_follow_through": null,
+      "absorption_delta": -0.03,
+      "leadership_continuity": true,
+      "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+    },
+    "verdict": "CONFIRMED"
   },
   "base_rates": {
     "n_events": 29,
-    "n_graded": 28,
-    "confirmed": 7,
+    "n_graded": 29,
+    "confirmed": 8,
     "faded": 16,
     "mixed": 5
   },
@@ -581,8 +593,20 @@
       "z": 2.7346,
       "spread": 0.072,
       "direction": "defensive",
-      "t1_attribution": null,
-      "verdict": null
+      "t1_attribution": {
+        "t1_date": "2026-11-02",
+        "t1_z": 1.226,
+        "spread_persistence": {
+          "same_direction": true,
+          "magnitude": 0.0321,
+          "direction": "defensive"
+        },
+        "breadth_follow_through": null,
+        "absorption_delta": -0.03,
+        "leadership_continuity": true,
+        "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+      },
+      "verdict": "CONFIRMED"
     }
   ]
 }
