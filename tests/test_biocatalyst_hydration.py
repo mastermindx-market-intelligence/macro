@@ -340,6 +340,137 @@ def _run(tmp_path: Path, scenario: dict, js_text: str | None = None) -> dict:
     return json.loads(result.stdout)
 
 
+def _verified_refresh_scenario(actions: list[dict], *, lang: str = "en", mobile: bool = False) -> dict:
+    """Incumbent synthetic fixture, not a clinical claim or a new source cohort."""
+    return {
+        "authSubject": "fixture-user-a", "lang": lang, "mobile": mobile,
+        "routes": {
+            "/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_with_lineage())),
+            "/api/biocatalyst/v1/trials/NCT00000001": _route(200, _json(trial_detail())),
+        },
+        "actions": actions,
+    }
+
+
+def _radar_failure(status: int = 503) -> dict:
+    return {"/api/biocatalyst/v1/catalyst-radar": _route(status, '{"detail":"unavailable"}')}
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_same_scope_outage_preserves_dated_milestone_dossier_and_return(tmp_path: Path, lang: str) -> None:
+    out = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "close"},
+    ], lang=lang, mobile=True))["snapshots"]
+    initial, opened, delayed, closed = out
+    assert delayed["workspaceState"] == "source_outage"
+    assert delayed["queue"] == opened["queue"]
+    assert "Alpha Study" in delayed["queue"]
+    assert delayed["inspector"] == opened["inspector"]
+    assert delayed["sourceAsOf"] == opened["sourceAsOf"]
+    assert delayed["links"] == opened["links"]
+    assert "https://clinicaltrials.gov/study/NCT00000001" in delayed["links"]
+    assert delayed["url"] == opened["url"]
+    assert ("Last verified page" if lang == "en" else "最近已核验页面") in delayed["status"]
+    assert ("Last successful check" if lang == "en" else "最近成功核验") in delayed["notice"]
+    assert ("Failed check" if lang == "en" else "失败核验") in delayed["notice"]
+    assert "2026-08-16" in delayed["notice"]
+    assert not closed["inspectorOpen"]
+    assert closed["activeTrial"] == "NCT00000001"
+    assert closed["url"] == initial["url"]
+
+
+@needs_node
+def test_success_after_retained_outage_recovers_without_relabelling_source_clock(tmp_path: Path) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_with_lineage()))}},
+    ]))["snapshots"]
+    assert "Alpha Study" in snapshots[1]["queue"]
+    assert snapshots[2]["workspaceState"] == "ready"
+    assert "Failed check" not in snapshots[2]["notice"]
+    assert snapshots[2]["sourceAsOf"] == snapshots[0]["sourceAsOf"]
+
+
+@needs_node
+@pytest.mark.parametrize("status", [401, 402, 403, 404])
+def test_access_or_missing_scope_does_not_retain_private_rows(tmp_path: Path, status: int) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure(status)},
+    ]))["snapshots"]
+    assert "Alpha Study" not in snapshots[-1]["queue"]
+    assert "Alpha Study" not in snapshots[-1]["inspector"]
+    assert "Last verified page" not in snapshots[-1]["status"]
+
+
+@needs_node
+@pytest.mark.parametrize("subject,event", [("", "SIGNED_OUT"), ("fixture-user-b", "SIGNED_IN"), ("fixture-user-a", "TOKEN_REFRESHED")])
+def test_auth_scope_transition_clears_verified_rows_before_unavailable_successor(tmp_path: Path, subject: str, event: str) -> None:
+    snapshots = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "auth", "subject": subject, "event": event, "routes": _radar_failure()},
+    ]))["snapshots"]
+    assert "Alpha Study" not in snapshots[-1]["queue"]
+    assert "Alpha Study" not in snapshots[-1]["inspector"]
+    assert "Last verified page" not in snapshots[-1]["status"]
+
+
+@needs_node
+def test_changed_query_and_invalid_success_do_not_reuse_prior_verified_population(tmp_path: Path) -> None:
+    changed = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "mode", "mode": "screen", "routes": {"/api/biocatalyst/v1/trials:screen": _route(503, '{}')}},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed["queue"]
+    invalid = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, '{}')}},
+    ]))["snapshots"][-1]
+    assert invalid["workspaceState"] == "integrity_block"
+    assert "Alpha Study" not in invalid["queue"]
+
+
+@needs_node
+def test_changed_radar_filter_unknown_principal_and_empty_success_do_not_reuse_rows(tmp_path: Path) -> None:
+    changed = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "field", "value": "primary_completion", "routes": _radar_failure()},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed["queue"]
+    unknown = _verified_refresh_scenario([{"type": "refresh", "routes": _radar_failure()}])
+    unknown.pop("authSubject")
+    assert "Alpha Study" not in _run(tmp_path, unknown)["snapshots"][-1]["queue"]
+    changed_user = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "silent-principal-refresh", "subject": "fixture-user-b", "routes": _radar_failure()},
+    ]))["snapshots"][-1]
+    assert "Alpha Study" not in changed_user["queue"]
+    empty = _run(tmp_path, _verified_refresh_scenario([
+        {"type": "refresh", "routes": _radar_failure()},
+        {"type": "refresh", "routes": {"/api/biocatalyst/v1/catalyst-radar": _route(200, _json(catalyst_radar_empty()))}},
+    ]))["snapshots"][-1]
+    assert empty["workspaceState"] == "empty"
+    assert "Alpha Study" not in empty["queue"]
+
+
+@needs_node
+def test_operational_check_clocks_do_not_relabel_registry_or_revision_dates(tmp_path: Path) -> None:
+    scene = _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "refresh", "routes": _radar_failure(), "clientNow": "2026-11-03T17:01:00Z"},
+    ])
+    scene["clientNow"] = "2026-11-03T17:00:00Z"
+    first = _run(tmp_path, scene)["snapshots"][-1]
+    assert "2026-11-03 17:00:00.000 UTC" in first["notice"]
+    assert "2026-11-03 17:01:00.000 UTC" in first["notice"]
+    assert "2026-08-16 12:00:00 UTC" in first["notice"]
+    scene["clientNow"] = "2040-01-01T00:00:00Z"
+    scene["actions"][-1]["clientNow"] = "2040-01-02T00:00:00Z"
+    other_clock = _run(tmp_path, scene)["snapshots"][-1]
+    assert first["sourceAsOf"] == other_clock["sourceAsOf"]
+    assert first["queue"] == other_clock["queue"]
+    assert first["inspector"] == other_clock["inspector"]
+
+
 def _forbidden_machine_text(text: str) -> None:
     lowered = text.lower()
     for token in (
@@ -748,8 +879,8 @@ def test_mutation_routing_validator_through_generic_unavailable_fails_regression
     """If a later edit sends validator failure back through handleUnavailable, fail."""
 
     mutated = JS.read_text(encoding="utf-8").replace(
-        "handleHydrationFailure(error, { append: append });",
-        "handleUnavailable(error, { append: append });",
+        "      handleHydrationFailure(error,",
+        "      handleUnavailable(error,",
         1,
     )
     assert mutated != JS.read_text(encoding="utf-8")

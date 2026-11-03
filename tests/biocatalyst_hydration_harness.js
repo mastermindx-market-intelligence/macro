@@ -386,14 +386,23 @@ function fetch(url) {
   });
 }
 
+var authSubject = scenario.authSubject || '', authListeners = [];
+var fixtureAuth = scenario.authSubject ? {
+  user: function () { return authSubject ? { id: authSubject } : null; },
+  hasSession: function () { return !!authSubject; },
+  onChange: function (callback) { authListeners.push(callback); },
+  client: function () { return Promise.resolve({ auth: { getSession: function () {
+    return Promise.resolve({ data: { session: authSubject ? { access_token: 'fixture-only', user: { id: authSubject } } : null } });
+  } } }); }
+} : null;
 var window = {
   location: location,
   history: history,
   document: document,
   fetch: fetch,
-  MDXAuth: null,
+  MDXAuth: fixtureAuth,
   MMBrain: null,
-  matchMedia: function () { return { matches: false, addEventListener: function () {}, addListener: function () {} }; },
+  matchMedia: function (query) { return { matches: !!scenario.mobile && query.indexOf('1120px') >= 0, addEventListener: function () {}, addListener: function () {} }; },
   addEventListener: function () {},
   innerWidth: 1440
 };
@@ -403,6 +412,13 @@ global.window = window;
 global.fetch = fetch;
 global.HTMLElement = function () {};
 global.Node = function () {};
+if (scenario.clientNow) {
+  var NativeDate = Date;
+  global.Date = class extends NativeDate {
+    constructor() { super(scenario.clientNow); }
+    static now() { return new NativeDate(scenario.clientNow).valueOf(); }
+  };
+}
 
 eval(runtimeJs);
 
@@ -416,6 +432,11 @@ function snapshot() {
     queue: byId['bci-queue'].textContent,
     inspector: byId['bci-inspector-body'].textContent,
     inspectorTitle: byId['bci-inspector-title'].textContent,
+    inspectorOpen: inspector.classList.contains('is-open'),
+    sourceAsOf: byId['bci-asof'].textContent,
+    url: location.href,
+    activeTrial: document.activeElement && document.activeElement.getAttribute('data-trial-id'),
+    links: queryAll(inspector, 'a').map(function (node) { return node.href; }),
     subtitle: byId['bci-queue-subtitle'].textContent,
     stance: byId['bci-decision-stance'].textContent,
     why: byId['bci-decision-why'].textContent,
@@ -442,6 +463,39 @@ function waitFor(predicate, leftover) {
 
 waitFor(function () { return settled(workspace.dataset.state || workspace.getAttribute('data-state')); }).then(function () {
   var first = snapshot();
+  if (scenario.actions) {
+    var snapshots = [first];
+    return scenario.actions.reduce(function (chain, action) {
+      return chain.then(function () {
+        if (action.routes) scenario.routes = action.routes;
+        if (action.clientNow) scenario.clientNow = action.clientNow;
+        if (action.type === 'trial') {
+          var row = document.querySelector('[data-trial-id="' + action.id + '"]');
+          if (!row) throw Error('missing controlled trial row');
+          row.click();
+        } else if (action.type === 'refresh') byId['bci-refresh'].click();
+        else if (action.type === 'close') byId['bci-inspector-close'].click();
+        else if (action.type === 'mode') byId['bci-mode-' + action.mode].click();
+        else if (action.type === 'field') {
+          byId['bci-field-filter'].value = action.value;
+          byId['bci-field-filter'].listeners.change.forEach(function (callback) { callback({ target: byId['bci-field-filter'] }); });
+        }
+        else if (action.type === 'auth') {
+          authSubject = action.subject || '';
+          authListeners.forEach(function (callback) { callback(authSubject ? { id: authSubject } : null, action.event || 'SIGNED_IN'); });
+        } else if (action.type === 'silent-principal-refresh') {
+          authSubject = action.subject || '';
+          byId['bci-refresh'].click();
+        } else throw Error('unknown controlled action');
+        return waitFor(function () {
+          var copy = byId['bci-inspector-body'].textContent || '';
+          return settled(workspace.dataset.state || workspace.getAttribute('data-state')) &&
+            !byId['bci-refresh'].classList.contains('is-spinning') &&
+            copy.indexOf('Reading the current official record') < 0 && copy.indexOf('正在读取当前官方记录') < 0;
+        }).then(function () { snapshots.push(snapshot()); });
+      });
+    }, Promise.resolve()).then(function () { process.stdout.write(JSON.stringify({ snapshots: snapshots })); });
+  }
   if (scenario.secondRoutes) scenario.routes = scenario.secondRoutes;
   if (scenario.clickRefresh) {
     byId['bci-refresh'].click();
