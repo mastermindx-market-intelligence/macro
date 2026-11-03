@@ -1,0 +1,46 @@
+{
+  "schema": "mastermind.f02.local_preview_teardown.v1",
+  "observed_at_utc": "2026-11-03T04:37:52.340976+00:00",
+  "owner": "/root/continuation_dependencies acting on root teardown instruction",
+  "owned_preview_directory": "/workspace/scratch/55964f568673/f02-preview-owned-20261103",
+  "exact_preview_url": "http://terminal.local:4173/",
+  "browser_outcome": {
+    "source": "Root reported one same-Chrome Browser-plugin navigation; raw browser DOM intentionally not copied",
+    "hostname": "terminal.local",
+    "error": "ERR_DNS_FAIL",
+    "application_rendered": false,
+    "preview_tab_id": "1132278983",
+    "tab_closed_by_root": true,
+    "viewport_override_set": false
+  },
+  "pre_stop_status": {
+    "command": "sites-preview status",
+    "exit_code": 0,
+    "output": "Sites preview running at http://terminal.local:4173/\n"
+  },
+  "stop": {
+    "command": "sites-preview stop",
+    "exit_code": 0,
+    "output": "Sites preview stopped\n"
+  },
+  "post_stop_status": {
+    "command": "sites-preview status",
+    "exit_code": 0,
+    "output": "Sites preview stopped\n"
+  },
+  "state": "STOPPED_BROWSER_ROUTE_UNAVAILABLE",
+  "specimen": {
+    "source_path": "/workspace/scratch/55964f568673/f02/pattern-lab.html",
+    "bytes": 80003,
+    "sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+    "preview_copy_sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+    "byte_identical": true,
+    "original_modified": false
+  },
+  "verification_limits": [
+    "Application never rendered; interaction, keyboard focus return, touch, zoom and reflow remain unverified.",
+    "This result does not establish a source-specimen defect or production failure.",
+    "No alternate browser, host, URL, data scheme, CDP, renderer, tunnel, deployment, registration or network recovery was attempted."
+  ],
+  "next_action": "Retain browser-proof gap and continue authorized Paper design work; no preview retry without new evidence of supported route recovery."
+}

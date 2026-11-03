@@ -1,0 +1,45 @@
+{
+  "schema": "mastermind.f02.local_preview_launcher.v1",
+  "observed_at_utc": "2026-11-03T04:35:44.872459+00:00",
+  "owner": "/root/continuation_dependencies acting on root authorized local-only QA request",
+  "scope": "Unchanged F02 source-specimen preview only; no product implementation, production service, Site registration, publication or deployment",
+  "source": {
+    "path": "/workspace/scratch/55964f568673/f02/pattern-lab.html",
+    "bytes": 80003,
+    "sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+    "modified": false
+  },
+  "preview": {
+    "checkout": "/workspace/scratch/55964f568673/f02-preview-owned-20261103",
+    "entrypoint": "dist/index.html",
+    "static_directory": "dist",
+    "project_id": null,
+    "bytes": 80003,
+    "sha256": "f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4",
+    "byte_identical_to_source": true
+  },
+  "pre_start_status": {
+    "command": "sites-preview status",
+    "exit_code": 0,
+    "output": "Sites preview stopped\n"
+  },
+  "launcher": {
+    "command": "sites-preview start /workspace/scratch/55964f568673/f02-preview-owned-20261103",
+    "exit_code": 0,
+    "output": "Sites preview running at http://terminal.local:4173/\n"
+  },
+  "post_start_status": {
+    "command": "sites-preview status",
+    "exit_code": 0,
+    "output": "Sites preview running at http://terminal.local:4173/\n"
+  },
+  "exact_returned_url": "http://terminal.local:4173/",
+  "browser": "No browser calls in this launcher task. Root owns existing Chrome binding and navigation/QA.",
+  "state": "RUNNING_AWAITING_ROOT_QA",
+  "teardown": "Owned preview deliberately left running by root instruction; sites-preview stop owed when root requests or QA finishes.",
+  "evidence_limits": [
+    "Launcher/status success does not prove browser reachability or rendered behavior.",
+    "No keyboard, touch, zoom, reflow or state result claimed by this receipt.",
+    "No data URL, CDP, cloud browser, alternate renderer, tunnel, registration, deployment or network workaround used."
+  ]
+}

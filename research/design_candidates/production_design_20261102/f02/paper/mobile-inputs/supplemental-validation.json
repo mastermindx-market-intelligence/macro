@@ -1,0 +1,42 @@
+{
+  "status": "PASS_SUPPLEMENT_SOURCE_STRUCTURE_ONLY",
+  "supplement_sha256": "aa5bb0dc6880bcc8fe50ce1b7c16fe6ad6945b6d962bf7bb921376456616bf50",
+  "base_171_step_packet_unchanged": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+  "boards": 4,
+  "new_board_steps": 126,
+  "append_steps": 5,
+  "checks": [
+    {
+      "board": "macro-zh-evidence-return-390",
+      "steps": 20,
+      "native_elements": 62,
+      "single_roots_and_parents_valid": true
+    },
+    {
+      "board": "width-768-overlay",
+      "steps": 31,
+      "native_elements": 151,
+      "single_roots_and_parents_valid": true
+    },
+    {
+      "board": "width-1024-overlay",
+      "steps": 32,
+      "native_elements": 156,
+      "single_roots_and_parents_valid": true
+    },
+    {
+      "board": "width-1600-docked",
+      "steps": 43,
+      "native_elements": 180,
+      "single_roots_and_parents_valid": true
+    }
+  ],
+  "clone_opportunities_verified": [
+    "exact Chinese return row",
+    "identical 440px overlay subtree between 768/1024",
+    "same topology 1280→1600 with explicit geometry changes"
+  ],
+  "native_mapping_or_visual_proof": false,
+  "paper_calls": 0,
+  "browser_calls": 0
+}
