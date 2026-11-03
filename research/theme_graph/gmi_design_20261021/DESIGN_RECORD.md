@@ -1,7 +1,7 @@
 # GMI Explorer — design record (2026-10-21 / 22)
 
 Author: ORCH-DESIGN (Opus 5.5 suborchestrator) under GMI Meta-CEO seat `6f14c2da`.
-Deliverable: reference designs and an exact spec for five GMI product surfaces. No product code ships here.
+Historical deliverable: reference designs and an exact spec. The active product implementation and consolidation scope is defined in §11, which supersedes prior design-only completion.
 Exact spec: `mockups/refs/gmi_explorer/SPECS.md`. References: `mockups/refs/gmi_explorer/png/` (60 PNG).
 Paper file: "GMI Explorer 2026-10-21" (16 boards). Rendered against `templates/theme.css` at main `9b48e798a3eb`.
 
@@ -397,3 +397,140 @@ The generator re-rendered all 60 matrix PNGs: 7 stems × 1440/390 × dark/light 
    path boxes or rungs.
 6. Keep S1 at two elevation levels. Keep the five light mechanisms of D2 as written CSS, not as a token swap.
 7. Keep the S2 phone jump strip, the 57px sticky headers and the hash-preserving chip click. Keep the 371-row gate.
+
+
+## 10. GMI editable makeover — completed 2026-11-03
+
+Chairman assignment: substantially upgrade the GMI Explorer UI/UX and its theme system in the original Paper file. The complete static design and implementation handoff are delivered. This does not claim a production application deployment.
+
+- Operation: `gmi-paper-makeover-20261103-sol`
+- Paper file: `01M5H6EARN9YHQV17JC6ZG9BRY`
+- Governing source: Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`
+- Product/data source: Macro `21444bcfd9001654935eb4b43b0005eb5a7eb47b`
+- Displayed reference snapshot: 31 October 2026; original publication/on-file dates remain separate.
+- Root was the sole Paper writer; independent readers reviewed visuals, data semantics, translation and exported variants.
+- Original 16 reference boards remain intact on the archive page.
+
+### Outcome and task tree
+
+| Task | Outcome / DONE_WHEN | Dependencies | Final state / evidence |
+|---|---|---|---|
+| GMI-D1 | Inspect original boards and current product semantics | None | Complete: original raster reference census and current committed source census |
+| GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | Complete: 48 Paper tokens; native editable desktop and mobile atlas |
+| GMI-D3 | Coherent detail/value-chain, index, issuer, relationship and coverage views | D2 | Complete: six desktop journeys in Noir and Day |
+| GMI-D4 | Theme, locale, mobile and state coverage | D3 | Complete: six mobile journeys in Noir and Day; representative Chinese atlas at both sizes/modes; mobile filter sheet/value-chain lens; nine operational states in both themes |
+| GMI-D5 | Actual captures, repaired defects, board map, native JSX and saved handoff | D3,D4 | Complete: 34 JSX +34 native JPEG exports, manifest hashes, no canvas overlaps, final static review accepted, handoff archive saved |
+
+All design tasks are complete. The remaining implementation/browser/accessibility/deployment work is a separate stage, not an unfinished design claim.
+
+### Final Paper structure
+
+| Page | Boards | Link |
+|---|---:|---|
+| 01 · Desktop · Noir + Day |14| [Open desktop](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0) |
+| 02 · Mobile · Journeys & controls |16| [Open mobile](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-3-0) |
+| 03 · System · Tokens & states |4| [Open system](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-4-0) |
+| Archive · 21 Oct references |16 preserved| [Original references](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0) |
+
+Desktop Noir EN: atlas `9A-0`, detail `I4-0`, index `QH-0`, company `YU-0`, relationship `177-0`, coverage `1FK-0`.
+Desktop Day EN: `26V-0`, `2F8-0`, `2KO-0`, `2RB-0`, `2W0-0`, `310-0`.
+Desktop Chinese atlas: `4H1-0` / `4PE-0`.
+
+Mobile Noir EN: atlas `35A-0`, detail `3NX-0`, index `3QZ-0`, company `3U1-0`, relationship `3X3-0`, coverage `405-0`.
+Mobile Day EN: `38N-0`, `4XR-0`, `51O-0`, `559-0`, `58M-0`, `5C5-0`.
+Mobile Chinese atlas: `3BP-0` / `3ER-0`; filter sheet `3HT-0`; value-chain lens `3KV-0`.
+System: foundations `5FQ-0`; Noir states `5FR-0`; Day states `5X8-0`; interaction contracts `5FS-0`.
+
+### Design decisions and preserved semantics
+
+Mastermind Noir foundations with an intentional Day counterpart; Inter/PingFang SC with mono numeric detail; restrained blue actions, explicit state text and symbols, no colored container rails. Readable rows, category navigation and an evidence inspector replace tiny status-square walls. Preserve full index access, optional subthemes/multiple parents, coverage/value-chain lenses, issuer explanations, directed relationships and source receipts.
+
+The current source snapshot has 371 micros (68 Core/303 Extended), one reviewed Micron company/link and zero held. Reviewed classification remains separate from graph-use permission. Micron's product/platform example retains Planned. Relationships remain proposed/unreviewed; Cirrus Logic→Apple retains 91% of seller revenue FY2026, 89% FY2025 and87% FY2024. Provisional U.S. and unresolved China denominators, unmeasured accuracy and untracked changes remain explicit. No live-feed, exposure, validation-score or production acceptance is fabricated.
+
+### Final review and corrections
+
+Root and independent reviews inspected the actual static compositions. All six Day desktop and mobile variants passed; EN mobile visible-text sequences match their Noir counterparts. Representative Chinese desktop/mobile Noir/Day layouts, all system states, filter sheet and value-chain view passed without clipping or remaining layout blockers.
+
+Applied corrections include Taxonomy path wording; explicit global Core/Extended scope (Chinese 全库); Planned in mobile theme evidence; fiscal-year chart labels; neutral withheld-excerpt language; No recorded link yet in mobile index; disabled first-page Previous controls; and the exact 371-micro-theme value-chain denominator.
+
+48-token hash: `ac191fd9`. Final finish operation: `gmi-paper-makeover-20261103-sol-finish-all-design-boards`, result `APPLIED_RESPONSE_OBSERVED`. No unresolved modifying effect remains.
+
+### Saved handoff
+
+`GMI-Explorer-Design-Handoff-2026-11-03.zip` — 3,992,532 bytes, SHA-256 `35319072a59e3e61b3bb2f59acf9ab21a77863152b28c18edfb687aa88c8c7d8`.
+
+Contains an offline visual gallery, 34 native JSX snippets with node IDs, 34 unmodified JPEG captures, 48-token JSON/CSS, the full implementation/data/interaction contract, final page inventory and hashed manifest. Relative links, all content hashes and ZIP integrity were verified. Artboard dimensions and coordinates show zero overlaps.
+
+Chinese atlas composition is supplied at both sizes and in both modes; separate Chinese deep-view/state mockups are not included. Their complete language parity is an implementation requirement.
+
+No live product build, merge, deployment, authentication change, qualification promotion, parent runtime-wave update or source-law change was performed. Implementation should use the existing governed navigation, theme/language controller, components, readers and permissions, then obtain ordinary real-path/browser and accessibility evidence.
+
+## 11. Chairman-directed product rebuild and file consolidation — ACTIVE, 2026-11-03
+
+### Authority, feedback and custody
+
+The Chairman resumed this assignment and explicitly required execution and implementation, rejected the current design/product as mediocre and unclear, and directed consolidation of the two GMI Paper files. This supersedes §10's visual acceptance and separate-stage boundary. Prior exports remain historical evidence, not current production acceptance.
+
+Original operation root: `gmi-paper-makeover-20261103-sol`. Current attended parent/source operation: `gmi-product-upgrade-20261103-sol`. New bounded implementation child: `gmi-product-upgrade-20261103-model01`. These are source-custody continuity identifiers on the existing trusted connection, not new authentication or runtime authority. No prior active or uncertain effect is transferred. Root owns product judgment, Paper edits, integration and acceptance; bounded Fabric workers own only commissioned code paths. Native consultations are read-only reasoning/census.
+
+Protected law: Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4` (compatible Sol skillpack 1.0.1/bootstrap 1).
+Product base: Macro `b8f14e308b57cd772e1464217e1e2becc1286086`.
+Earlier source materialization at `12c551c2512fc57e12743fac17a2874e001cf6db` is compatible for inspected GMI paths; eight critical blobs were rechecked at b8f14e3.
+Source branch: `claude/gmi-product-upgrade-20261103`. Existing workstream: `agentos/workstreams/WS-GMI-THEME-GRAPH.md`; parent program and D2E/W3 closure remain with their existing owners.
+
+### Product contract
+
+Persona: a research reader using English or Chinese on desktop or phone. Primary job: understand a theme, identify a documented business connection, inspect the dated source and limitations. The first viewport must communicate that job without requiring taxonomy/status-code literacy.
+
+Tier-1 title: **GMI Explorer**.
+Deck: **Understand themes, business connections, and the evidence behind them.**
+Main workspace: answer-first theme research; relationship research is a separate capability. Coverage, full taxonomy and technical receipts remain available without dominating the opening answer.
+A selected theme must explain its meaning using approved definitions when available, show taxonomy context, show only permitted documented company evidence, and distinguish absent evidence from absent real-world participation. Never invent definitions or company links from labels.
+The Micron example retains Planned and the 26 February 2024 source date alongside its claim. Product context is Micron → 24GB 8H HBM3E → NVIDIA H200; this is not inferred revenue exposure or a qualified supply-chain graph.
+Search/filter/select state must be addressable, restore through browser history, work in both locales, support keyboard/focus/touch, and have useful zero-result recovery.
+
+### Current truth and permission invariants
+
+- All 371 themes and multiple-parent context remain navigable; Core/Extended describes scope, not completed review or an investment ranking.
+- Current relationship package: 248 records, 165 distinct endpoint companies, 283 distinct coverage issuer IDs. These populations must never be conflated. Package is proposed as of 21 October 2026.
+- All current relationship records have public_display, magnitude_display and excerpt_display = unknown, with purposes private_api/research. Public GMI HTML/JSON MUST NOT contain restricted records, parties, magnitudes, excerpts or hidden payloads. Enforce permission before serialization/rendering; do not implement CSS-only hiding or infer rights from a public source URL. Public aggregate context uses approved package fields only. Rich relationship browsing is available only from a lawful permitted projection/context; no new grant or auth bypass.
+- The old MU graph_membership_use=NOT_GRANTED is stale. The existing APPEND event and bridge receipt authorize internal graph use. The owner state remains NOT_QUALIFIED / D2E_UNSEALED and graph synchronization disagrees (0 materialized, 1 projected). All gate/materialize/publish/qualify/rank/size authority remains false. This UI reads existing owner outputs; it does not write or reinterpret authority.
+- Missing, denied, unknown, stale, failed, empty and loading are distinct. Freshness uses actual source/package/build clocks, not a fabricated live-feed timestamp.
+- Do not consume the frozen 19 October coverage report or design fixture as current production data.
+
+### Paper consolidation and visual contract
+
+Canonical file: `01M5H6EARN9YHQV17JC6ZG9BRY`.
+Original entry `p-1-0` becomes the current product entry, after moving the original 16 references to an explicit historical page.
+Secondary file: `01M5J3GC90GAKHK8B6SAPRV3JQ` (Round 2), four historical boards `1-0,1D-0,29-0,3D-0`. Preserve unique reference content inside the canonical file before marking the secondary file superseded and pointing to the canonical destination. No third GMI file. If archive/delete is unavailable in the guarded catalog, do not bypass it.
+Root is the sole writer for these specific consolidation/new-board effects. Each mutation uses current target read, fresh snapshot and stable operation ID; unknown effects are reconciled on the original carrier.
+Dark: restrained luminance hierarchy, selective raised interaction surfaces, neutral fine rules, deliberate answer typography.
+Light: cool canvas, white research surface, crisp hairlines, controlled layered shadows and neutral selection. Shared semantics/geometry, different material mechanisms; palette swap alone is insufficient.
+Use governed theme tokens and existing shared navigation. No colored container-edge stripes, parallel theme system, duplicate header, speculative charts or unsupported metrics.
+Actual Paper screenshots and JSX follow visual acceptance; browser screenshots prove the integrated product separately.
+
+### Task tree and DONE_WHEN
+
+| Task | Dependency | Required outcome | Status |
+|---|---|---|---|
+| GMI-P1 | None | Live two-file census, current data/rights/custody, preserved advanced functions | Proven read-only |
+| GMI-P2 | P1 | One clear canonical Paper entry; four Round 2 references consolidated; prior versions marked historical | Active |
+| GMI-P3 | P1 | New answer-first compositions, distinct Noir/Day, EN/ZH and desktop/mobile; actual visual review | Active |
+| GMI-P4 | P1 | Render-boundary rights, current MU status from owner outputs, deterministic searchable/selectable model, meaningful tests | Ready for bounded worker |
+| GMI-P5 | P3,P4 | Real template/CSS/JS implementation in existing routes, no raw restricted payload, full user journeys and recovery | Pending |
+| GMI-P6 | P5 | Current builder, relevant regression/design checks, browser matrix and independent exact-head review | Pending |
+| GMI-P7 | P6 | Reviewable coherent candidate, ordinary approved release path, verified served behavior where authorized | Pending |
+| GMI-P8 | P2,P3,P6,P7 | Durable exact Paper/source/proof record; clear distinction between candidate, merge, deployment and acceptance | Pending |
+
+Implementation seam: scripts/build_gmi_explorer.py, scripts/gmi_explorer/{model,present,variants}.py; templates/_gmi*.html.j2, templates/gmi*.html.j2, templates/gmi.{css,js}; paired generated site/gmi*; relevant existing GMI tests plus focused regressions. Do not modify shared theme.css/nav, identity/security owner files, history/bridge producers or active PR #10638 paths. PR #10641 remains separate identity research; #10654 owns shared accent-stripe cleanup.
+
+Build must preserve lib.pages.write_page and shared _site_nav/_navlinks/theme.js/supabase.js. Use current proof and real model. A saved current --model-in is allowed for isolated render; synthetic fixtures are tests, never production facts. Generated CSS/JS must match templates byte-for-byte.
+
+Acceptance: a reader understands purpose in five seconds; can find/select a non-default theme, inspect permitted evidence, follow a company/source path, share and restore state, clear an empty search, use keyboard and a 390px phone, and read equivalent EN/ZH in both themes. Relationship denial is enforced at serialization and explained plainly; lawful future GRANTED records support real search/filter/select rather than hardcoded edges[0]. A rendering, passing CI, PR or deployment alone is not acceptance.
+
+### Execution controls and current frontier
+
+Direct retention reason: PRINCIPAL_JUDGMENT for product/visual decisions; UNIQUE_APPROVED_ACCESS for canonical Paper effects; integration remains with root. Routine bounded source work will use qualified Fabric if admitted; no provider/model/authority invention.
+Git proxy authentication was unavailable, but authenticated GitHub reads and Git-data writes are available. Exact-source materialization and atomic tree/commit/ref publication remain lawful. No credentials or infrastructure change is requested.
+Read-only census found no frontend-path overlap with #10638. There is no claimed file-wide lease.
+Next: verify this plan readback; commission model/projection slice; consolidate Paper; implement/review the visual frontend; prove actual browser journeys and pursue the ordinary release gate.
