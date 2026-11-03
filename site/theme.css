@@ -1481,6 +1481,10 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
   nav.site-nav .nav-search { grid-column: 1 / -1; grid-row: 2; width: 100%; }
   nav.site-nav a.nav-link { padding: 6px 8px; font-size: 12.5px; }
   nav.site-nav .nav-brand .brand-word { display: none; }  /* phones: keep the menu compact, glyph only */
+  /* The inert drill sheet has no usable controls before enhancement. Its
+     translated fixed box otherwise extends a no-JS phone viewport by 16px.
+     initMobileNav supplies .has-nav-toggle before drills can open. */
+  nav.site-nav:not(.has-nav-toggle) .nav-drill-panel[inert] { display: none; }
 }
 @media (max-width: 560px) {
   nav.site-nav .nav-ctrls .ai-brief-link { padding: 8px 12px; font-size: 12px; gap: 5px; }
