@@ -1,38 +1,61 @@
-# F01 — Shared shell and navigation
+# F01 — Shared shell and navigation candidate
 
-Status: **in progress; design/specification only; RIG draft; not approved for implementation**.
+**Version:** F01/1.0.0-candidate.1. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.1.  
+**Acceptance:** PARTIAL / RIG draft. F02 concurrence, native-effect reconciliation and independent qualification remain open. This is design/research work, not implementation or a released foundation.
 
-## Assignment and custody
+## Start here
 
-Current receiver: Astra Pro / ChatGPT4 Fashionbird, under the Chairman's direct F01 assignment. Parent: [macro #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). This is the F01 source slice of the existing whole-estate makeover, not a new programme.
+- [Product and UX specification](PRODUCT_UX_SPEC.md): hierarchy, navigation/search, local views, inspectors, return context, locale/theme, responsive/accessibility and builder guidance.
+- [Joint F01/F02 shell-system candidate](JOINT_SHELL_SYSTEM_CONTRACT.md): exact proposed dimensions, source/component ownership, invariants, composed examples and release gates.
+- [Feature retention ledger](FEATURE_RETENTION_LEDGER.md):36 functional obligations and all17 retained shell predecessors.
+- [Source and data contract](SOURCE_AND_DATA_CONTRACT.md): real routes, parsers, host/status/message contracts, company manifest search, Options hierarchy, identity/preferences, clock/null limits.
+- [Acceptance cases](ACCEPTANCE_TESTS.md): falsifiable route/history/search/Options/identity/geometry/focus cases; test specifications, not passing runtime results.
+- [Evidence and review record](EVIDENCE_AND_REVIEW.md): actual live/Paper observations, ownership checks, effect uncertainty and review status.
+- [Directory retention audit](directory-retention-audit.json): all290 directory identities retained from the inspected source; an audit projection, never a second runtime registry.
 
-- Assignment package: `6e1862867193ec6486a22001a0e4fb515da20448`.
-- Protected procedure: Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`; schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1.
-- Terminal source baseline: `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9`.
-- F02 input: `F02-SYSTEM/1.0.0-candidate.2` at `c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82`, [Draft #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630).
-- F02 coordination: [existing-author request](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6596927050). No concurrence or acceptance is inferred from delivery.
-- Source carrier: `design/f01-shared-shell-v1-20261103-c4`, based on the immutable assignment. Changes are confined to `research/design_candidates/production_design_20261102/f01/`.
+## Source and owners
 
-Scoped launch checks found no F01 design PR, source branch or recent F01 transport claim; the native session-target projection was empty. Existing Terminal #1188, #1191, #1228 and #1236 remain with their authors; #1226 is now merged. An empty projection is not proof that every external chat is idle. Any conflicting live writer must be reconciled before overlap. No existing source or Paper target is overwritten.
+Existing programme [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617); F01 source [#10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch design/f01-shared-shell-v1-20261103-c4. This branch is stacked on the programme source carrier. All supplied authority documents were read at immutable Macro6e1862867193ec6486a22001a0e4fb515da20448. Initial F01 carrier commit34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985 remains in history.
 
-## Product outcome / done when
+Current bounded F01 receiver: Astra Pro / ChatGPT4, GitHub mastermidx4. Scoped launch checks found no conflicting active F01 source/canvas writer; this is not a claim that every external chat was observable. Preserve this carrier and reconcile any exact live writer/effect before changes.
 
-One understandable global shell lets an investor move Today → market → exact company/listing → focused Terminal → original research context. Destinations, market context, entities and executable actions remain distinct. Complete editable desktop/compact/phone/focused/public/internal references, three demanding consumer compositions, retained capabilities, source/data contracts and meaningful acceptance cases are required. A joint F01/F02 version must cite real source and independent review evidence. RIG approval, implementation, deployment and production proof are separate.
+F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). Input version F02-SYSTEM/1.0.0-candidate.2 at c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82. [Coordination request6596927050](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6596927050) does not establish concurrence. F03 retains organization/registry projections. D07 retains Analysis parsing/composition; D23 owns saved state; D06 owns focused Terminal and Brain. Shared SESSION_RETURNS.md is not edited because of its active carrier collision.
 
-## Existing task tree and this slice
+Protected procedure read at Mastermind b2326bbe30e9988d26199f5e774a482b9c09068a. Terminal source inspected at mastermind-terminal3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9. Source code is evidence, not proof of what beta is currently serving.
 
-The [F01 handoff](../handoffs/F01-shared-shell.md), [launch index](../SESSION_INDEX.md), [shared-shell requirements](../SHARED_SHELL_CONTRACT.md) and [re-audit checklist](../RE_AUDIT_CHECKLIST.md) at the assignment pin remain the source task tree. The following is its bounded F01 decomposition, not a runtime registry:
+## Editable Paper
 
-| Node | Deliverable / evidence | State |
+[F01 candidate page](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0) in the existing MASTERMIND PAGES file:
+
+| Board | ID | Scope |
 | --- | --- | --- |
-| F01.1 | Live/source/Paper baseline and overlap check | in_progress |
-| F01.2 | Retention, route, interaction, data and builder contract | in_progress |
-| F01.3 | Two bounded directions; chosen candidate; precise geometry; F02 interface | in_progress |
-| F01.4 | Editable references and real screenshots across widths/states | proposed |
-| F01.5 | Immutable artifact freeze, independent critique and joint qualification | blocked — candidate not yet frozen; F02 concurrence pending |
+| Read me |6ZZX-0| Build/source/acceptance contract |
+| A |6ZY9-0|1440 EN dark Macro, labeled navigation |
+| B |6ZYA-0|1440 same Macro task, horizontal alternative |
+| C |6ZYB-0|1280 EN light Company,664px primary +320px inspector |
+| D |6ZYC-0|1024 EN dark Options, modal evidence |
+| E |6ZYD-0|390 ZH light Macro |
+| F |6ZZV-0|320 EN dark directory disambiguation |
+| G |6ZZW-0|768 ZH dark navigation drawer |
+| H |70WJ-0|1280 explicit compact rail |
+| I |710Z-0| Exceptional-state atlas, partial effect below |
 
-## Target and evidence rules
+The [17 retained p-23-0 references](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0), focused Terminal and other source designs remain intact. New F01 targets do not rename, move or replace F02/F03 resources. Static supporting captures and JSX are review evidence, not functioning production UI.
 
-Retain [MASTERMIND PAGES p-23-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0), including all 17 predecessor boards. New F01 work will use an explicitly returned page/board ID within the same existing file; no guessed destination, move or archive. Direct Mastermind Paper reads and its current tool-scoped write schema were observed serviceable. Snapshot guards are not revisions or permissions. F02 and F03 retain their targets.
+## Task tree and continuation
 
-The shared `SESSION_RETURNS.md` has a documented multi-owner collision and is not changed here. This draft source save is not an Agent OS wave update or formal review receipt. No merge, Ready/un-draft, enqueue, relabel, deployment or production-code implementation is included.
+| Step | Result at this checkpoint |
+| --- | --- |
+| F01.1 baseline/ownership/source | Completed bounded inspection; limitations explicit |
+| F01.2 source/retention/joint interface | Authored candidate; F02 concurrence pending |
+| F01.3 direction comparison and width rules | A/B and exact geometry authored; not independently accepted |
+| F01.4 native compositions/state evidence |10 boards authored; one state append EFFECT_UNKNOWN; supporting freeze/review assembly continues |
+| F01.5 qualification/return | RIG draft; no formal qualification or release |
+
+**Preserve original uncertain effect:** F01-20261103-c4-state-8-v1, direct Paper write_html targeting711X-0, intended Host/content changed row in710Z-0. Readback showed no row; terminal dispatch/effect disposition is unknown. No retry or alternate carrier is permitted merely from that absence. Later rows9–11 were not dispatched. Full state behavior is specified in source and retained references, but native completion is partial.
+
+Primary continuation: reconcile that exact original operation through its existing Paper owner, obtain the F02 author's source-bound interface response, and qualify the frozen F01 candidate through actual independent product/taste and QA01 evidence. The currently assigned F01 receiver can continue safe source/evidence work on this same carrier. Do not allocate a duplicate writer or wait on an imaginary historical session.
+
+FINALIZATION_CLASSIFICATION at this checkpoint: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. The bounded source candidate is recoverable; the foundation release and parent programme are incomplete. No background wake, watcher or automatic continuation is promised.
+
+No production code, merge, Ready/un-draft, enqueue, held-PR relabel or deployment is authorized or performed.

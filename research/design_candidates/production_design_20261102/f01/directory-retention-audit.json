@@ -1,0 +1,4084 @@
+{
+  "schema": "f01.directory_retention_audit.v1",
+  "status": "candidate audit only; not a runtime registry or route admission",
+  "source": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "path": "terminal/lib/sharedShellRoutes.generated.json",
+    "generatedAt": "2026-10-21T16:34:10Z",
+    "sources": {
+      "registrySha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe",
+      "macro": "73852e221d9ce087abe30b4703de3627773f3351",
+      "terminal": "e0d4cabfccd3f1fd83b4362288124ba8078de731",
+      "mastermind": "7ab47f0b62d9a22ff16a13f6b99b96b681874a93",
+      "inventory": "90e0644f9f08ab37115dfffedce2ba7939b0835d"
+    }
+  },
+  "counts": {
+    "legacy": 13987,
+    "native": 17,
+    "directory": 290
+  },
+  "entries": [
+    {
+      "id": "macro:products_mastermind_ai",
+      "href": "/products/mastermind-ai.html",
+      "kind": "legacy",
+      "title": {
+        "en": "A market research assistant grounded in the page and its sources.",
+        "zh": "结合当前页面与来源的市场研究助手。"
+      },
+      "group": "public_nav.public",
+      "question": "What does the AI actually do for me?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:about",
+      "href": "/about.html",
+      "kind": "legacy",
+      "title": {
+        "en": "About MastermindX",
+        "zh": "关于 MastermindX"
+      },
+      "group": "footer.resources",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:about_research",
+      "href": "/about-research.html",
+      "kind": "legacy",
+      "title": {
+        "en": "About the research",
+        "zh": "关于研究"
+      },
+      "group": "footer.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:advanced",
+      "href": "/advanced.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Advanced",
+        "zh": "Advanced"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:ai_desk",
+      "href": "/ai_desk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Ai Desk",
+        "zh": "Ai Desk"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:aibrief",
+      "href": "/aibrief.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Aibrief",
+        "zh": "Aibrief"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:alerts",
+      "href": "/alerts.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Alert Center",
+        "zh": "警报中心"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:alerts",
+      "href": "/alerts",
+      "kind": "native",
+      "title": {
+        "en": "Alerts",
+        "zh": "Alerts"
+      },
+      "group": "app_nav.rail",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:allocation_china",
+      "href": "/allocation_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Allocation China",
+        "zh": "Allocation China"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:alt_data",
+      "href": "/alt_data.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Alternative Data",
+        "zh": "另类数据"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_altdata",
+      "href": "/china_altdata.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Alternative Data",
+        "zh": "另类数据"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:analysis",
+      "href": "/analysis",
+      "kind": "native",
+      "title": {
+        "en": "Analysis",
+        "zh": "Analysis"
+      },
+      "group": "app_nav.rail",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:anticipation",
+      "href": "/anticipation.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Anticipation",
+        "zh": "Anticipation"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:baskets",
+      "href": "/baskets.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Baskets",
+        "zh": "Baskets"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:biocatalyst",
+      "href": "/biocatalyst.html",
+      "kind": "legacy",
+      "title": {
+        "en": "BioCatalyst Intelligence",
+        "zh": "生物医药催化剂情报"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:blog_index",
+      "href": "/blog/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Blog",
+        "zh": "博客"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:bonds",
+      "href": "/bonds.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Bonds",
+        "zh": "债券"
+      },
+      "group": "product_nav.other_assets",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:btc_strategy",
+      "href": "/btc_strategy.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Btc Strategy",
+        "zh": "Btc Strategy"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:calibration",
+      "href": "/calibration.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Calibration",
+        "zh": "Calibration"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:canada",
+      "href": "/canada.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Canada",
+        "zh": "加拿大"
+      },
+      "group": "product_nav.canada",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:canada_history",
+      "href": "/canada_history.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Canada History",
+        "zh": "Canada History"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:canada_stock",
+      "href": "/canada_stock.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Canada Stock",
+        "zh": "Canada Stock"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:flow_velocity",
+      "href": "/flow_velocity.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Capital Flow Velocity",
+        "zh": "资金流速"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:capital_structure",
+      "href": "/capital_structure.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Capital Structure",
+        "zh": "资本结构"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:chat",
+      "href": "/chat.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Chat",
+        "zh": "Chat"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china",
+      "href": "/china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China",
+        "zh": "中国"
+      },
+      "group": "product_nav.china",
+      "question": "What is the China regime right now?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_allocation",
+      "href": "/china_allocation.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China Allocation",
+        "zh": "China Allocation"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china_history",
+      "href": "/china_history.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China History",
+        "zh": "China History"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china_lookup",
+      "href": "/china_lookup.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China Lookup",
+        "zh": "China Lookup"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china_news",
+      "href": "/china_news.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China News Feed",
+        "zh": "中国新闻"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:sector_cycles_china",
+      "href": "/sector_cycles_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China Sector Cycles",
+        "zh": "中国行业周期"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_sector_desk",
+      "href": "/china_sector_desk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China Sector Desk",
+        "zh": "China Sector Desk"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:baskets_china",
+      "href": "/baskets_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "China Thematic Baskets now live in China Sector Intelligence",
+        "zh": "A股主题篮子已并入中国行业情报"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:cn_reversal_sleeve",
+      "href": "/cn_reversal_sleeve.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Cn Reversal Sleeve",
+        "zh": "Cn Reversal Sleeve"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:coming_soon",
+      "href": "/coming-soon.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Coming Soon",
+        "zh": "Coming Soon"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:commodities",
+      "href": "/commodities.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Commodities",
+        "zh": "大宗商品"
+      },
+      "group": "product_nav.other_assets",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:congress_trades",
+      "href": "/congress_trades.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Congress Trades",
+        "zh": "Congress Trades"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:country_cycles",
+      "href": "/country_cycles.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Country Cycles",
+        "zh": "国家周期"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:japan",
+      "href": "/japan.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Country Dashboards",
+        "zh": "国家看板"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:crypto",
+      "href": "/crypto.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Crypto",
+        "zh": "Crypto"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:cycle",
+      "href": "/cycle.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Cycle Intelligence",
+        "zh": "周期情报"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:darkpool",
+      "href": "/darkpool.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Dark Pool Desk",
+        "zh": "场外暗池台"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:demand",
+      "href": "/demand.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Demand",
+        "zh": "Demand"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:disclaimer",
+      "href": "/disclaimer.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Disclaimer",
+        "zh": "免责声明"
+      },
+      "group": "footer.legal",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:discover",
+      "href": "/discover",
+      "kind": "native",
+      "title": {
+        "en": "Discover",
+        "zh": "Discover"
+      },
+      "group": "app_nav.rail",
+      "question": "What is worth looking at right now?",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:discovery",
+      "href": "/discovery.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Discovery",
+        "zh": "Discovery"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "terminal:dislocations",
+      "href": "/dislocations",
+      "kind": "native",
+      "title": {
+        "en": "Dislocations",
+        "zh": "Dislocations"
+      },
+      "group": "app_nav.rail",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_radar",
+      "href": "/china_radar.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Divergence Radar",
+        "zh": "背离雷达"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:radar",
+      "href": "/radar.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Divergence Radar",
+        "zh": "背离雷达"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:euro_area",
+      "href": "/euro_area.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Euro Area Macro",
+        "zh": "欧元区宏观"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:fundamental_forensics",
+      "href": "/fundamental_forensics.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Filing Forensics",
+        "zh": "财报排雷"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:finance_intelligence",
+      "href": "/finance_intelligence.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Finance Intelligence",
+        "zh": "Finance Intelligence"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:financial_lineage",
+      "href": "/financial_lineage.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Financial Lineage",
+        "zh": "Financial Lineage"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:flow_desk",
+      "href": "/flow_desk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Flow Desk",
+        "zh": "Flow Desk"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:flow_leaders",
+      "href": "/flow_leaders.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Flow Leaders",
+        "zh": "Flow Leaders"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:foresight",
+      "href": "/foresight.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Foresight",
+        "zh": "前瞻"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:forex",
+      "href": "/forex.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Forex",
+        "zh": "外汇"
+      },
+      "group": "product_nav.other_assets",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:tools_index",
+      "href": "/tools/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Free Tools",
+        "zh": "免费工具"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:fund_ako",
+      "href": "/fund_ako.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Ako",
+        "zh": "Fund Ako"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_akre",
+      "href": "/fund_akre.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Akre",
+        "zh": "Fund Akre"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_altarock",
+      "href": "/fund_altarock.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Altarock",
+        "zh": "Fund Altarock"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_altimeter",
+      "href": "/fund_altimeter.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Altimeter",
+        "zh": "Fund Altimeter"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_appaloosa",
+      "href": "/fund_appaloosa.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Appaloosa",
+        "zh": "Fund Appaloosa"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_aquamarine",
+      "href": "/fund_aquamarine.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Aquamarine",
+        "zh": "Fund Aquamarine"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_bakerbros",
+      "href": "/fund_bakerbros.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Bakerbros",
+        "zh": "Fund Bakerbros"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_basswood",
+      "href": "/fund_basswood.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Basswood",
+        "zh": "Fund Basswood"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_baupost",
+      "href": "/fund_baupost.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Baupost",
+        "zh": "Fund Baupost"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_berkshire",
+      "href": "/fund_berkshire.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Berkshire",
+        "zh": "Fund Berkshire"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_casdin",
+      "href": "/fund_casdin.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Casdin",
+        "zh": "Fund Casdin"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_coatue",
+      "href": "/fund_coatue.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Coatue",
+        "zh": "Fund Coatue"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_corvex",
+      "href": "/fund_corvex.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Corvex",
+        "zh": "Fund Corvex"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_d1capital",
+      "href": "/fund_d1capital.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund D1Capital",
+        "zh": "Fund D1Capital"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_dorsey",
+      "href": "/fund_dorsey.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Dorsey",
+        "zh": "Fund Dorsey"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_dragoneer",
+      "href": "/fund_dragoneer.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Dragoneer",
+        "zh": "Fund Dragoneer"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_duquesne",
+      "href": "/fund_duquesne.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Duquesne",
+        "zh": "Fund Duquesne"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_durable",
+      "href": "/fund_durable.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Durable",
+        "zh": "Fund Durable"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_egerton",
+      "href": "/fund_egerton.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Egerton",
+        "zh": "Fund Egerton"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_elliott",
+      "href": "/fund_elliott.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Elliott",
+        "zh": "Fund Elliott"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_engaged",
+      "href": "/fund_engaged.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Engaged",
+        "zh": "Fund Engaged"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_fairholme",
+      "href": "/fund_fairholme.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Fairholme",
+        "zh": "Fund Fairholme"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:etfs",
+      "href": "/etfs.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Flows",
+        "zh": "基金流向"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:fund_gates",
+      "href": "/fund_gates.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Gates",
+        "zh": "Fund Gates"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_giverny",
+      "href": "/fund_giverny.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Giverny",
+        "zh": "Fund Giverny"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_greenlea",
+      "href": "/fund_greenlea.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Greenlea",
+        "zh": "Fund Greenlea"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_himalaya",
+      "href": "/fund_himalaya.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Himalaya",
+        "zh": "Fund Himalaya"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_icahn",
+      "href": "/fund_icahn.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Icahn",
+        "zh": "Fund Icahn"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_index",
+      "href": "/fund_index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Index",
+        "zh": "Fund Index"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_jana",
+      "href": "/fund_jana.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Jana",
+        "zh": "Fund Jana"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_kimmeridge",
+      "href": "/fund_kimmeridge.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Kimmeridge",
+        "zh": "Fund Kimmeridge"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_lightstreet",
+      "href": "/fund_lightstreet.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Lightstreet",
+        "zh": "Fund Lightstreet"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_lonepine",
+      "href": "/fund_lonepine.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Lonepine",
+        "zh": "Fund Lonepine"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_mudrick",
+      "href": "/fund_mudrick.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Mudrick",
+        "zh": "Fund Mudrick"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_oaktree",
+      "href": "/fund_oaktree.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Oaktree",
+        "zh": "Fund Oaktree"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_pabrai",
+      "href": "/fund_pabrai.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Pabrai",
+        "zh": "Fund Pabrai"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_perceptive",
+      "href": "/fund_perceptive.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Perceptive",
+        "zh": "Fund Perceptive"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_pershing",
+      "href": "/fund_pershing.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Pershing",
+        "zh": "Fund Pershing"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_polen",
+      "href": "/fund_polen.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Polen",
+        "zh": "Fund Polen"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_punchcard",
+      "href": "/fund_punchcard.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Punchcard",
+        "zh": "Fund Punchcard"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_racapital",
+      "href": "/fund_racapital.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Racapital",
+        "zh": "Fund Racapital"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_rtw",
+      "href": "/fund_rtw.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Rtw",
+        "zh": "Fund Rtw"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_sachem",
+      "href": "/fund_sachem.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Sachem",
+        "zh": "Fund Sachem"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_scion",
+      "href": "/fund_scion.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Scion",
+        "zh": "Fund Scion"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_soros",
+      "href": "/fund_soros.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Soros",
+        "zh": "Fund Soros"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_starboard",
+      "href": "/fund_starboard.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Starboard",
+        "zh": "Fund Starboard"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_tci",
+      "href": "/fund_tci.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Tci",
+        "zh": "Fund Tci"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_thirdpoint",
+      "href": "/fund_thirdpoint.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Thirdpoint",
+        "zh": "Fund Thirdpoint"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_tigerglobal",
+      "href": "/fund_tigerglobal.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Tigerglobal",
+        "zh": "Fund Tigerglobal"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_trian",
+      "href": "/fund_trian.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Trian",
+        "zh": "Fund Trian"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_valueact",
+      "href": "/fund_valueact.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Valueact",
+        "zh": "Fund Valueact"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_viking",
+      "href": "/fund_viking.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Viking",
+        "zh": "Fund Viking"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:fund_whalerock",
+      "href": "/fund_whalerock.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Fund Whalerock",
+        "zh": "Fund Whalerock"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "terminal:options_futures",
+      "href": "/options/futures",
+      "kind": "native",
+      "title": {
+        "en": "Futures",
+        "zh": "Futures"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "premium",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:gex",
+      "href": "/gex.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Gex",
+        "zh": "Gex"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:markets",
+      "href": "/markets.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Global Market Cycles",
+        "zh": "全球市场周期"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:glossary",
+      "href": "/glossary.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Glossary",
+        "zh": "词汇表"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:government_revenue",
+      "href": "/government_revenue.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Government Revenue",
+        "zh": "政府收入"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:help",
+      "href": "/help.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Help",
+        "zh": "帮助"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:history",
+      "href": "/history.html",
+      "kind": "legacy",
+      "title": {
+        "en": "History",
+        "zh": "History"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:hk_history",
+      "href": "/hk_history.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Hk History",
+        "zh": "Hk History"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:hk_lookup",
+      "href": "/hk_lookup.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Hk Lookup",
+        "zh": "Hk Lookup"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:hk",
+      "href": "/hk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Hong Kong",
+        "zh": "香港"
+      },
+      "group": "product_nav.hong_kong",
+      "question": "What is the Hong Kong regime right now?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:impulse",
+      "href": "/impulse.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Impulse",
+        "zh": "Impulse"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:index",
+      "href": "/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Index",
+        "zh": "Index"
+      },
+      "group": "public_nav.public",
+      "question": "What is this product and why should I trust it?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:research_index",
+      "href": "/research/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Index",
+        "zh": "Index"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:india",
+      "href": "/india.html",
+      "kind": "legacy",
+      "title": {
+        "en": "India Macro",
+        "zh": "印度宏观"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:intl",
+      "href": "/intl.html",
+      "kind": "legacy",
+      "title": {
+        "en": "International",
+        "zh": "国际"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:intl_stock",
+      "href": "/intl_stock.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Intl Stock",
+        "zh": "Intl Stock"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:intraday_flow",
+      "href": "/intraday_flow.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Intraday Flow Tracker",
+        "zh": "盘中资金流追踪"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:ipo",
+      "href": "/ipo.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Ipo",
+        "zh": "Ipo"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:leader_radar",
+      "href": "/leader_radar.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Leader Radar",
+        "zh": "龙头雷达"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:learn",
+      "href": "/learn",
+      "kind": "native",
+      "title": {
+        "en": "Learn",
+        "zh": "Learn"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:learn",
+      "href": "/learn.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Learn",
+        "zh": "Learn"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:learn_index",
+      "href": "/learn/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Learning Center",
+        "zh": "学习中心"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:macro_business_activity",
+      "href": "/macro_business_activity.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Business Activity",
+        "zh": "Macro Business Activity"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_capital_structure",
+      "href": "/macro_capital_structure.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Capital Structure",
+        "zh": "Macro Capital Structure"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_consumer_payments",
+      "href": "/macro_consumer_payments.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Consumer Payments",
+        "zh": "Macro Consumer Payments"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_financial_conditions",
+      "href": "/macro_financial_conditions.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Financial Conditions",
+        "zh": "Macro Financial Conditions"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_growth_real_economy",
+      "href": "/macro_growth_real_economy.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Growth Real Economy",
+        "zh": "Macro Growth Real Economy"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_housing_real_estate",
+      "href": "/macro_housing_real_estate.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Housing Real Estate",
+        "zh": "Macro Housing Real Estate"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_inflation_system",
+      "href": "/macro_inflation_system.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Inflation System",
+        "zh": "Macro Inflation System"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_labor_markets",
+      "href": "/macro_labor_markets.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Labor Markets",
+        "zh": "Macro Labor Markets"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_liquidity_central_banks",
+      "href": "/macro_liquidity_central_banks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Liquidity Central Banks",
+        "zh": "Macro Liquidity Central Banks"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_liquidity_regime",
+      "href": "/macro_liquidity_regime.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Liquidity Regime",
+        "zh": "Macro Liquidity Regime"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_monetary",
+      "href": "/macro_monetary.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Monetary",
+        "zh": "Macro Monetary"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_monetary_policy",
+      "href": "/macro_monetary_policy.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Monetary Policy",
+        "zh": "Macro Monetary Policy"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_national_debt_liabilities",
+      "href": "/macro_national_debt_liabilities.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro National Debt Liabilities",
+        "zh": "Macro National Debt Liabilities"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_rates_curves",
+      "href": "/macro_rates_curves.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Rates Curves",
+        "zh": "Macro Rates Curves"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_trade_flows",
+      "href": "/macro_trade_flows.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Trade Flows",
+        "zh": "Macro Trade Flows"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:macro_context",
+      "href": "/macro_context.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Macro Weather",
+        "zh": "宏观气象"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:products_market_dashboards",
+      "href": "/products/market-dashboards.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Dashboards",
+        "zh": "市场仪表盘"
+      },
+      "group": "public_nav.public",
+      "question": "What do the dashboards cover?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:canada_heatmap",
+      "href": "/canada_heatmap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Heatmap",
+        "zh": "市场热力图"
+      },
+      "group": "product_nav.canada",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_heatmap",
+      "href": "/china_heatmap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Heatmap",
+        "zh": "市场热力图"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:hk_heatmap",
+      "href": "/hk_heatmap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Heatmap",
+        "zh": "市场热力图"
+      },
+      "group": "product_nav.hong_kong",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_mechanics",
+      "href": "/china_mechanics.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Mechanics",
+        "zh": "市场结构"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:market_memory",
+      "href": "/market_memory.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Memory",
+        "zh": "市场记忆"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:reference",
+      "href": "/reference.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Reference",
+        "zh": "市场参考"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:market_structure",
+      "href": "/market_structure.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Structure",
+        "zh": "市场结构"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:products_market_terminal",
+      "href": "/products/market-terminal.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Market Terminal",
+        "zh": "市场终端"
+      },
+      "group": "public_nav.public",
+      "question": "What is the Market Terminal and should I sign up?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:watchlist",
+      "href": "/watchlist.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Mastermind Portfolio",
+        "zh": "Mastermind 组合"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:masterminds",
+      "href": "/masterminds.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Masterminds",
+        "zh": "Masterminds"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:methodology",
+      "href": "/methodology.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Methodology",
+        "zh": "Methodology"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "terminal:monitor",
+      "href": "/monitor",
+      "kind": "native",
+      "title": {
+        "en": "Monitor",
+        "zh": "Monitor"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:am_edition",
+      "href": "/am_edition.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Morning Edition",
+        "zh": "早间版"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:movers",
+      "href": "/movers.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Movers",
+        "zh": "Movers"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:narrative_radar",
+      "href": "/narrative_radar.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Narrative Basket Radar",
+        "zh": "主题篮子雷达"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:allocation",
+      "href": "/allocation.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Narrative Rotation",
+        "zh": "主题轮动"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:allocation_canada",
+      "href": "/allocation_canada.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Narrative Rotation",
+        "zh": "主题轮动"
+      },
+      "group": "product_nav.canada",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:allocation_hk",
+      "href": "/allocation_hk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Narrative Rotation",
+        "zh": "主题轮动"
+      },
+      "group": "product_nav.hong_kong",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:neural_web",
+      "href": "/neural_web.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Neural Web",
+        "zh": "智脑"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:news",
+      "href": "/news.html",
+      "kind": "legacy",
+      "title": {
+        "en": "News Feed",
+        "zh": "新闻流"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:odds",
+      "href": "/odds.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Odds",
+        "zh": "Odds"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:start",
+      "href": "/start.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Open the dashboard",
+        "zh": "打开仪表盘"
+      },
+      "group": "product_nav.brand",
+      "question": "Where do I start today?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:options",
+      "href": "/options",
+      "kind": "native",
+      "title": {
+        "en": "Options",
+        "zh": "Options"
+      },
+      "group": "app_nav.rail",
+      "question": "Where is the options market positioned?",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:options",
+      "href": "/options.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Options & Market Structure",
+        "zh": "期权与市场结构"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:options_screener",
+      "href": "/options_screener.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Options Screener",
+        "zh": "Options Screener"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china_policy_watch",
+      "href": "/china_policy_watch.html",
+      "kind": "legacy",
+      "title": {
+        "en": "PBoC & Policy Watch",
+        "zh": "央行与政策观察"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:products_index",
+      "href": "/products/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Platform overview →",
+        "zh": "平台概览 →"
+      },
+      "group": "public_nav.public",
+      "question": "What products are there?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:policy_watch",
+      "href": "/policy_watch.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Policy Watch",
+        "zh": "政策观察"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:portfolio",
+      "href": "/portfolio",
+      "kind": "native",
+      "title": {
+        "en": "Portfolio",
+        "zh": "Portfolio"
+      },
+      "group": "app_nav.rail",
+      "question": "How is my book doing?",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:plans",
+      "href": "/plans.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Pricing",
+        "zh": "定价"
+      },
+      "group": "public_nav.public",
+      "question": "What do I get, and what does it cost?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:privacy",
+      "href": "/privacy.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Privacy",
+        "zh": "隐私政策"
+      },
+      "group": "footer.legal",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:report_ai_master_plan",
+      "href": "/report_ai_master_plan.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Ai Master Plan",
+        "zh": "Report Ai Master Plan"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_bessent_jun24",
+      "href": "/report_bessent_jun24.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Bessent Jun24",
+        "zh": "Report Bessent Jun24"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_haven_audition",
+      "href": "/report_haven_audition.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Haven Audition",
+        "zh": "Report Haven Audition"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_price_of_duration",
+      "href": "/report_price_of_duration.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Price Of Duration",
+        "zh": "Report Price Of Duration"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_relapse_jul8",
+      "href": "/report_relapse_jul8.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Relapse Jul8",
+        "zh": "Report Relapse Jul8"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_second_act",
+      "href": "/report_second_act.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Second Act",
+        "zh": "Report Second Act"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:report_warsh_fomc",
+      "href": "/report_warsh_fomc.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Report Warsh Fomc",
+        "zh": "Report Warsh Fomc"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:china_intel",
+      "href": "/china_intel.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Research",
+        "zh": "研究"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:intelligence_hub",
+      "href": "/intelligence_hub.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Research",
+        "zh": "研究"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:research",
+      "href": "/research",
+      "kind": "native",
+      "title": {
+        "en": "Research",
+        "zh": "Research"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:reports",
+      "href": "/reports.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Research Reports",
+        "zh": "研究报告"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:research_screener",
+      "href": "/research_screener.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Research Screener",
+        "zh": "Research Screener"
+      },
+      "group": "none",
+      "question": "Which names deserve a look first, and why?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:research_vault",
+      "href": "/research_vault.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Research Vault",
+        "zh": "研报库"
+      },
+      "group": "product_nav.research",
+      "question": "What has the research desk published?",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:sanctions_map",
+      "href": "/sanctions_map.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Sanctions Map",
+        "zh": "制裁地图"
+      },
+      "group": "product_nav.international",
+      "question": "Where do US sanctions point today, and which countries is our coverage silent about?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:scripts",
+      "href": "/scripts",
+      "kind": "native",
+      "title": {
+        "en": "Scripts",
+        "zh": "Scripts"
+      },
+      "group": "app_nav.rail",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:seasonality",
+      "href": "/seasonality.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Seasonality",
+        "zh": "Seasonality"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:sector_heatmap",
+      "href": "/sector_heatmap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Sector Heatmap",
+        "zh": "Sector Heatmap"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:sector_central",
+      "href": "/sector_central.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Sector Intelligence",
+        "zh": "行业情报"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:sector_central_china",
+      "href": "/sector_central_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Sector Intelligence",
+        "zh": "行业情报"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:confluence_screener",
+      "href": "/confluence_screener.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Signal Board",
+        "zh": "信号看板"
+      },
+      "group": "product_nav.research",
+      "question": "Which names line up across the signal stack today?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:smart_money",
+      "href": "/smart_money.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Smart Money",
+        "zh": "聪明钱"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:south_korea",
+      "href": "/south_korea.html",
+      "kind": "legacy",
+      "title": {
+        "en": "South Korea Macro",
+        "zh": "韩国宏观"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_special_situations",
+      "href": "/china_special_situations.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Special Situations",
+        "zh": "特殊事件"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:special_situations",
+      "href": "/special_situations.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Special Situations",
+        "zh": "特殊事件"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:spvector",
+      "href": "/spvector.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Spvector",
+        "zh": "Spvector"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:stage_analysis",
+      "href": "/stage_analysis.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stage Analysis",
+        "zh": "阶段分析"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:stock",
+      "href": "/stock.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock",
+        "zh": "Stock"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:canada_stocks",
+      "href": "/canada_stocks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dashboard",
+        "zh": "股票仪表盘"
+      },
+      "group": "product_nav.canada",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_stocks",
+      "href": "/china_stocks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dashboard",
+        "zh": "股票仪表盘"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:hk_stocks",
+      "href": "/hk_stocks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dashboard",
+        "zh": "股票仪表盘"
+      },
+      "group": "product_nav.hong_kong",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:intl_stocks",
+      "href": "/intl_stocks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dashboard",
+        "zh": "股票仪表盘"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:us_stocks",
+      "href": "/us_stocks.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dashboard",
+        "zh": "股票仪表盘"
+      },
+      "group": "product_nav.united_states",
+      "question": "Which US stocks are set up right now?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:stocks_index",
+      "href": "/stocks/index.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Dossiers",
+        "zh": "股票档案"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:stock_seasonality",
+      "href": "/stock_seasonality.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Stock Seasonality",
+        "zh": "个股季节性"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:spr",
+      "href": "/spr.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategic Reserves",
+        "zh": "战略储备"
+      },
+      "group": "product_nav.other_assets",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:china_strategies",
+      "href": "/china_strategies.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategies",
+        "zh": "策略"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:commodity_strategies",
+      "href": "/commodity_strategies.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategies",
+        "zh": "策略"
+      },
+      "group": "product_nav.other_assets",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:strategies",
+      "href": "/strategies.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategies",
+        "zh": "策略"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:strategy_btc_trend",
+      "href": "/strategy_btc_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Btc Trend",
+        "zh": "Strategy Btc Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_copper_active",
+      "href": "/strategy_cm_copper_active.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Copper Active",
+        "zh": "Strategy Cm Copper Active"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_copper_macro",
+      "href": "/strategy_cm_copper_macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Copper Macro",
+        "zh": "Strategy Cm Copper Macro"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_copper_swap",
+      "href": "/strategy_cm_copper_swap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Copper Swap",
+        "zh": "Strategy Cm Copper Swap"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_gold_active",
+      "href": "/strategy_cm_gold_active.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Gold Active",
+        "zh": "Strategy Cm Gold Active"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_gold_macro",
+      "href": "/strategy_cm_gold_macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Gold Macro",
+        "zh": "Strategy Cm Gold Macro"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_gold_swap",
+      "href": "/strategy_cm_gold_swap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Gold Swap",
+        "zh": "Strategy Cm Gold Swap"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_oil_macro",
+      "href": "/strategy_cm_oil_macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Oil Macro",
+        "zh": "Strategy Cm Oil Macro"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_oil_swap",
+      "href": "/strategy_cm_oil_swap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Oil Swap",
+        "zh": "Strategy Cm Oil Swap"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_silver_active",
+      "href": "/strategy_cm_silver_active.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Silver Active",
+        "zh": "Strategy Cm Silver Active"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_silver_macro",
+      "href": "/strategy_cm_silver_macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Silver Macro",
+        "zh": "Strategy Cm Silver Macro"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cm_silver_swap",
+      "href": "/strategy_cm_silver_swap.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cm Silver Swap",
+        "zh": "Strategy Cm Silver Swap"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cn_credit_margin",
+      "href": "/strategy_cn_credit_margin.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cn Credit Margin",
+        "zh": "Strategy Cn Credit Margin"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cn_credit_vol",
+      "href": "/strategy_cn_credit_vol.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cn Credit Vol",
+        "zh": "Strategy Cn Credit Vol"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cn_volmanaged",
+      "href": "/strategy_cn_volmanaged.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cn Volmanaged",
+        "zh": "Strategy Cn Volmanaged"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cnmm_aggressive",
+      "href": "/strategy_cnmm_aggressive.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cnmm Aggressive",
+        "zh": "Strategy Cnmm Aggressive"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cnmm_conservative",
+      "href": "/strategy_cnmm_conservative.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cnmm Conservative",
+        "zh": "Strategy Cnmm Conservative"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_cnmm_moderate",
+      "href": "/strategy_cnmm_moderate.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Cnmm Moderate",
+        "zh": "Strategy Cnmm Moderate"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_copper_growth",
+      "href": "/strategy_copper_growth.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Copper Growth",
+        "zh": "Strategy Copper Growth"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_credit_carry",
+      "href": "/strategy_credit_carry.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Credit Carry",
+        "zh": "Strategy Credit Carry"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_credit_gate_equity",
+      "href": "/strategy_credit_gate_equity.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Credit Gate Equity",
+        "zh": "Strategy Credit Gate Equity"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_curve_recession",
+      "href": "/strategy_curve_recession.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Curve Recession",
+        "zh": "Strategy Curve Recession"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_dual_momentum",
+      "href": "/strategy_dual_momentum.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Dual Momentum",
+        "zh": "Strategy Dual Momentum"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_duration_timing",
+      "href": "/strategy_duration_timing.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Duration Timing",
+        "zh": "Strategy Duration Timing"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_em_debt_carry",
+      "href": "/strategy_em_debt_carry.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Em Debt Carry",
+        "zh": "Strategy Em Debt Carry"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_equalweight_trend",
+      "href": "/strategy_equalweight_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Equalweight Trend",
+        "zh": "Strategy Equalweight Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_eth_trend",
+      "href": "/strategy_eth_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Eth Trend",
+        "zh": "Strategy Eth Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_fin_conditions",
+      "href": "/strategy_fin_conditions.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Fin Conditions",
+        "zh": "Strategy Fin Conditions"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_flight_to_quality",
+      "href": "/strategy_flight_to_quality.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Flight To Quality",
+        "zh": "Strategy Flight To Quality"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_gold_macro",
+      "href": "/strategy_gold_macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Gold Macro",
+        "zh": "Strategy Gold Macro"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_golden_cross",
+      "href": "/strategy_golden_cross.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Golden Cross",
+        "zh": "Strategy Golden Cross"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_ig_carry",
+      "href": "/strategy_ig_carry.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Ig Carry",
+        "zh": "Strategy Ig Carry"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_lowvol_defensive",
+      "href": "/strategy_lowvol_defensive.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Lowvol Defensive",
+        "zh": "Strategy Lowvol Defensive"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_mm_aggressive",
+      "href": "/strategy_mm_aggressive.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Mm Aggressive",
+        "zh": "Strategy Mm Aggressive"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_mm_conservative",
+      "href": "/strategy_mm_conservative.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Mm Conservative",
+        "zh": "Strategy Mm Conservative"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_mm_moderate",
+      "href": "/strategy_mm_moderate.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Mm Moderate",
+        "zh": "Strategy Mm Moderate"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_momentum_crashguard",
+      "href": "/strategy_momentum_crashguard.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Momentum Crashguard",
+        "zh": "Strategy Momentum Crashguard"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_nasdaq_trend",
+      "href": "/strategy_nasdaq_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Nasdaq Trend",
+        "zh": "Strategy Nasdaq Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_net_liquidity",
+      "href": "/strategy_net_liquidity.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Net Liquidity",
+        "zh": "Strategy Net Liquidity"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_oil_trend",
+      "href": "/strategy_oil_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Oil Trend",
+        "zh": "Strategy Oil Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_quality_flight",
+      "href": "/strategy_quality_flight.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Quality Flight",
+        "zh": "Strategy Quality Flight"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_sahm_timer",
+      "href": "/strategy_sahm_timer.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Sahm Timer",
+        "zh": "Strategy Sahm Timer"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_semis_trend",
+      "href": "/strategy_semis_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Semis Trend",
+        "zh": "Strategy Semis Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_smallcap_trend",
+      "href": "/strategy_smallcap_trend.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Smallcap Trend",
+        "zh": "Strategy Smallcap Trend"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_vix_term_timer",
+      "href": "/strategy_vix_term_timer.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Vix Term Timer",
+        "zh": "Strategy Vix Term Timer"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:strategy_vol_managed_sp",
+      "href": "/strategy_vol_managed_sp.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Strategy Vol Managed Sp",
+        "zh": "Strategy Vol Managed Sp"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:subsector_rotation",
+      "href": "/subsector_rotation.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Subsector Rotation",
+        "zh": "Subsector Rotation"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:subsector_rotation_china",
+      "href": "/subsector_rotation_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Subsector Rotation China",
+        "zh": "Subsector Rotation China"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:subsectors",
+      "href": "/subsectors.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Subsectors",
+        "zh": "Subsectors"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:subsectors_china",
+      "href": "/subsectors_china.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Subsectors China",
+        "zh": "Subsectors China"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:support",
+      "href": "/support.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Support",
+        "zh": "支持"
+      },
+      "group": "public_nav.public",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:terminal",
+      "href": "/terminal",
+      "kind": "native",
+      "title": {
+        "en": "Terminal",
+        "zh": "Terminal"
+      },
+      "group": "app_nav.rail",
+      "question": "What is this instrument doing?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:terms",
+      "href": "/terms.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Terms",
+        "zh": "服务条款"
+      },
+      "group": "footer.legal",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:baskets_canada",
+      "href": "/baskets_canada.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Thematic Baskets",
+        "zh": "主题篮子"
+      },
+      "group": "product_nav.canada",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:baskets_hk",
+      "href": "/baskets_hk.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Thematic Baskets",
+        "zh": "主题篮子"
+      },
+      "group": "product_nav.hong_kong",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:baskets_intl",
+      "href": "/baskets_intl.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Thematic Baskets",
+        "zh": "主题篮子"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:theme_tree",
+      "href": "/theme_tree.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Theme Map",
+        "zh": "主题地图"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:state_of_themes",
+      "href": "/state_of_themes.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Theme Tracker",
+        "zh": "主题追踪"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "terminal:today",
+      "href": "/today",
+      "kind": "native",
+      "title": {
+        "en": "Today",
+        "zh": "Today"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "unknown",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:transmission",
+      "href": "/transmission.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Transmission",
+        "zh": "Transmission"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:sector_cycles",
+      "href": "/sector_cycles.html",
+      "kind": "legacy",
+      "title": {
+        "en": "U.S. Sector Cycles",
+        "zh": "美国行业周期"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:united_kingdom",
+      "href": "/united_kingdom.html",
+      "kind": "legacy",
+      "title": {
+        "en": "United Kingdom Macro",
+        "zh": "英国宏观"
+      },
+      "group": "product_nav.international",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:macro",
+      "href": "/macro.html",
+      "kind": "legacy",
+      "title": {
+        "en": "United States",
+        "zh": "美国"
+      },
+      "group": "product_nav.brand",
+      "question": "What is the macro regime right now?",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:unsubscribe",
+      "href": "/unsubscribe.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Unsubscribe",
+        "zh": "Unsubscribe"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:us_track_record",
+      "href": "/us_track_record.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Us Track Record",
+        "zh": "Us Track Record"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:vector",
+      "href": "/vector.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Vector",
+        "zh": "Vector"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:vector_allocation",
+      "href": "/vector_allocation.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Vector Allocation",
+        "zh": "Vector Allocation"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:whitehouse",
+      "href": "/whitehouse.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Whitehouse",
+        "zh": "Whitehouse"
+      },
+      "group": "none",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "unclassified existing group; do not delete or invent admission"
+    },
+    {
+      "id": "macro:winner_health",
+      "href": "/winner_health.html",
+      "kind": "legacy",
+      "title": {
+        "en": "Winner Health",
+        "zh": "持仓健康度"
+      },
+      "group": "product_nav.united_states",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:ontology",
+      "href": "/ontology.html",
+      "kind": "legacy",
+      "title": {
+        "en": "WTI Live Path",
+        "zh": "WTI 实时路径"
+      },
+      "group": "product_nav.research",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    },
+    {
+      "id": "macro:baskets_china_ths",
+      "href": "/baskets_china_ths.html",
+      "kind": "legacy",
+      "title": {
+        "en": "同花顺 Theme Baskets",
+        "zh": "同花顺主题篮子"
+      },
+      "group": "product_nav.china",
+      "question": "",
+      "payloadTier": "public_shell_premium_payload",
+      "disposition": "retain exact identity and existing access; presentation review through F01/F03 exporter owner",
+      "label_review": "retain existing group pending qualified presentation mapping"
+    }
+  ]
+}
