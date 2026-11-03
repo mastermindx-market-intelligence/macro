@@ -1,0 +1,52 @@
+[
+  {
+    "role": "product_regression",
+    "identity": "01a1a388-0126-7981-8657-90d6e7242919",
+    "native_model": "gpt-6.1-sol",
+    "native_ancestry": {
+      "id": "01a1a388-0126-7981-8657-90d6e7242919",
+      "source": {
+        "subagent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a15e6d-f686-7362-8120-632a33dbdee0",
+            "depth": 2,
+            "agent_path": "/root/product_integration/t35_product_critic",
+            "agent_nickname": "Ramanujan",
+            "agent_role": "sol-coordinator"
+          }
+        }
+      }
+    },
+    "actual_final_return_at": "2026-11-03T22:31:50.017Z",
+    "first_pass_frozen_at": "2026-11-03T22:33:10.186095+00:00",
+    "raw_return_path": "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-first-pass.raw.md",
+    "raw_return_sha256": "e098bfa192e427b239a08960cdcc82d59e8d433bac62ed43225afa61d2a8db69",
+    "first_pass_yaml_path": "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-first-pass.yml",
+    "rationale_revealed": false
+  },
+  {
+    "role": "visual_taste",
+    "identity": "01a1a388-3fbd-7580-9dbf-80f27a997a0f",
+    "native_model": "gpt-6.1-sol",
+    "native_ancestry": {
+      "id": "01a1a388-3fbd-7580-9dbf-80f27a997a0f",
+      "source": {
+        "subagent": {
+          "thread_spawn": {
+            "parent_thread_id": "01a15e6d-f686-7362-8120-632a33dbdee0",
+            "depth": 2,
+            "agent_path": "/root/product_integration/t35_taste_critic",
+            "agent_nickname": "Beauvoir",
+            "agent_role": "sol-coordinator"
+          }
+        }
+      }
+    },
+    "actual_final_return_at": "2026-11-03T22:32:05.687Z",
+    "first_pass_frozen_at": "2026-11-03T22:33:10.227925+00:00",
+    "raw_return_path": "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/visual_taste-first-pass.raw.md",
+    "raw_return_sha256": "92f359d1260f4cb265a9adfd36f8cf54faedd084fb69e0af22cf4cc12390a953",
+    "first_pass_yaml_path": "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/visual_taste-first-pass.yml",
+    "rationale_revealed": false
+  }
+]
