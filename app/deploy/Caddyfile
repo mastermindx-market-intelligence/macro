@@ -786,7 +786,22 @@ http:// {
 		}
 		header @manifest Cache-Control "public, s-maxage=60, max-age=0, must-revalidate"
 		header @rest Cache-Control "public, s-maxage=300, max-age=0, must-revalidate"
-		file_server
+		# Keep native static-file behavior first, including method/errors/cache.
+		# Only a not-found continuation reaches this data-local read fallback;
+		# never fall through to the HTML/auth frontend or cache a missing JSON.
+		route {
+			file_server {
+				pass_thru
+			}
+			@data_read method GET HEAD
+			header @data_read Cache-Control "no-store"
+			header @data_read Content-Type "application/json"
+			@data_head method HEAD
+			respond @data_head 404
+			respond @data_read `{"error":"not_found"}` 404
+			# Other missing-file methods retain the native not-found error.
+			error 404
+		}
 	}
 
 }
