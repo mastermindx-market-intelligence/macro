@@ -1,0 +1,114 @@
+{
+  "schema": "f02.writer.controls-native-repairs.v1",
+  "board_key": "controls-variants",
+  "board_id": "771-0",
+  "status": "APPLIED_AND_NATIVE_SCREENSHOT_REVIEWED",
+  "repairs": [
+    {
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-heading",
+      "node_id": "78I-0",
+      "operation_id": "f02-writer-controls-disclosure-heading-spacing-20261103-01",
+      "reason": "Whitespace-only word/value separation observed in rendered copy; arithmetic unchanged.",
+      "source_override": {
+        "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+        "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7",
+        "steps": 4
+      },
+      "state": "APPLIED_AND_NATIVE_SCREENSHOT_REVIEWED"
+    },
+    {
+      "board_key": "controls-variants",
+      "step_key": "core-disclosure-error-action",
+      "old_svg_root_id": "798-0",
+      "new_svg_root_id": "79D-0",
+      "unchanged_button_frame_id": "797-0",
+      "operation_id": "f02-writer-controls-detail-retry-icon-20261103-01",
+      "source_override": {
+        "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+        "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+      },
+      "reason": "Explicit existing text-role SVG stroke restores contrast; native path geometry unchanged.",
+      "state": "APPLIED_AND_NATIVE_SCREENSHOT_REVIEWED"
+    },
+    {
+      "board_key": "controls-variants",
+      "kind": "responsive_specimen_contract_layout",
+      "new_layout_id": "7CK-0",
+      "mobile_node_id": "79H-0",
+      "contract_node_id": "7AH-0",
+      "mobile_width_unchanged": 320,
+      "contract_width_before": 1344,
+      "contract_width_after": 992,
+      "gap": 32,
+      "layout_width": 1344,
+      "root_html": "<div layer-name=\"320px disclosure with browser contract\" style=\"display:flex;flex-direction:row;flex-shrink:0;align-items:flex-start;width:1344px;gap:32px;\"></div>",
+      "operation_ids": [
+        "f02-writer-controls-responsive-layout-create-20261103-01",
+        "f02-writer-controls-responsive-contract-width-20261103-01",
+        "f02-writer-controls-responsive-layout-move-20261103-01",
+        "f02-writer-controls-responsive-contract-text-width-20261103-01"
+      ],
+      "source_override": {
+        "insert_step": "disclosure-responsive-layout",
+        "before_step": "core-disclosure-mobile",
+        "parent_overrides": {
+          "core-disclosure-mobile": "disclosure-responsive-layout",
+          "core-disclosure-contract": "disclosure-responsive-layout"
+        },
+        "contract_style_override": {
+          "width": "992px"
+        },
+        "contract_child_style_overrides": [
+          {
+            "input_path": "0.1",
+            "width_before": "1296px",
+            "width_after": "944px",
+            "native_id": "7AJ-0"
+          },
+          {
+            "input_path": "0.2",
+            "width_before": "1296px",
+            "width_after": "944px",
+            "native_id": "7AK-0"
+          }
+        ]
+      },
+      "state": "APPLIED_AND_NATIVE_SCREENSHOT_REVIEWED"
+    }
+  ],
+  "final_capture": {
+    "key": "controls-variants",
+    "boardKey": "controls-variants",
+    "boardId": "771-0",
+    "nodeId": "771-0",
+    "stepKey": null,
+    "capture_state": "COMPLETE_ACTION_DISCLOSURE_ACCESS_VARIANTS_REPAIRED",
+    "captured_at": "2026-11-03T06:08:52.309Z",
+    "operations_through": 384,
+    "source_input": {
+      "key": "controls-variants",
+      "path": "f02/paper/repairs/fixture-coherence-v1/effective/core-supplement-inputs.json",
+      "sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+      "pageId": "p-4-0",
+      "overrides": [
+        {
+          "path": "f02/paper/repairs/writer-controls-spacing-override.json",
+          "sha256": "a688fabc6c97ddb92d9d59eb25f5ef26ee6ebc8439ac1db399be1d593b40d7c7"
+        },
+        {
+          "path": "f02/paper/repairs/writer-controls-icon-stroke-override.json",
+          "sha256": "39e434f86e847ab9964df0cc2eb0e1263dccc3a09643524b934546c655dc2538"
+        }
+      ]
+    },
+    "screenshot": "f02/paper/screenshots/controls-variants.jpg",
+    "jsx": "f02/paper/exports/controls-variants.jsx",
+    "mime_type": "image/jpeg",
+    "screenshot_sha256": "f34598fa053e12dbf01e2912280dc0fae51b8fa8d61b02df6772748245f0cbf2",
+    "jsx_sha256": "4dca0d7d426283c0bcc880c75453db25f5550726f854b04c92f21c5780ae6b1f",
+    "screenshot_bytes": 252535,
+    "verdict": "PASS: final board retains action hierarchy, dark/light access comparisons and all disclosure states;320px specimen and adjacent contract fit, repaired icons/copy remain legible, and the full fit-content board contains every section without clipping."
+  },
+  "immutable_packets_modified": false
+}
