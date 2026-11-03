@@ -38,8 +38,10 @@ actually serves at one ``as_of`` cutoff:
   A refused producer or builder is one absent cell — never a refused
   manifest — and every answered specialist cell pins the producer bytes
   through ``pack_content_sha256`` / ``pack_schema_digest``.  The ``journey``
-  cell keeps ``no_production_producer`` until the journey ledger has an
-  engine home.
+  cell is proven only by an optionally supplied A1 journey ledger
+  (``fif.a1_journey_ledger/v1``, read as JSON data; the ledger script is
+  never imported); with no ledger supplied the cell stays
+  ``no_production_producer``.
 
 The module never imports the coverage proof or any script: the producer and
 the proof are independent reimplementations of the same rules, and the proof
@@ -111,8 +113,10 @@ MANIFEST_SCHEMA = "fundamental_forensics.coverage_manifest/v1"
 TIERS_SCHEMA = "fundamental_forensics.coverage_tiers/v1"
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 THRESHOLDS_SCHEMA = "fundamental_forensics.coverage_thresholds/v1"
+JOURNEY_LEDGER_SCHEMA = "fif.a1_journey_ledger/v1"
 PRODUCER_ID = "fundamental_forensics.coverage_manifest.b3"
 BASIS_SERVED_ONLY = "served_only"
+SIC_BASIS_COVERAGE_CONTRACT = "coverage_contract"
 SERVED_SET_PREFIX = "served-set/sha256:"
 UNSERVED_GENERATION_PREFIX = "unserved:"
 WILDCARD_PERIOD = "*"
@@ -174,6 +178,7 @@ REASON_METRIC_UNSUPPORTED = "metric_unsupported"
 REASON_KERNEL_REFUSED = "kernel_refused"
 REASON_KERNEL_UNSPECIFIED = "kernel_reason_unspecified"
 REASON_NO_PRODUCTION_PRODUCER = "no_production_producer"
+REASON_JOURNEY_NOT_PROVEN = "journey_not_proven"
 REASON_PACK_PRODUCER_REFUSED = "pack_producer_refused"
 REASON_PACK_REQUIRED_FIELDS_ABSENT = "pack_required_fields_absent"
 REASON_PACKET_BUILDER_REFUSED = "packet_builder_refused"
@@ -205,6 +210,12 @@ _PACKET_EVALUATION_MODE = "historical_replay"
 _IDENTITY_BASIS = "production_generation_binding_v1"
 _SIC_SOURCE_RESOLVED = "sec_submissions"
 _SIC_SOURCE_UNBOUND = "unbound"
+# Journey-ledger literals (fif.a1_journey_ledger/v1): the two check statuses
+# and the one bridge status that proves a served generation.
+_JOURNEY_CHECK_STATUSES = frozenset({"pass", "fail"})
+_BRIDGE_STATUS_MATCH = "match"
+# The supplied coverage contract's SIC spelling: the SEC's own 4-digit form.
+_SIC_DIGITS = 4
 _APPLICABILITY_APPLICABLE = "applicable"
 _APPLICABILITY_NOT_APPLICABLE = "not_applicable"
 _APPLICABILITY_NOT_EVALUABLE = "not_evaluable"
@@ -515,6 +526,178 @@ def load_coverage_contract(data: bytes) -> dict[str, dict[str, Any]]:
             )
         by_cik[cik] = issuer
     return by_cik
+
+
+def _normalized_ledger_cik(value: str) -> str:
+    """Strip and left-pad a CIK to the SEC's 10-digit form.
+
+    The journey ledger's CIK spellings are compared this way throughout the
+    journey-cell rule (the loader's duplicate check included).
+    """
+    return value.strip().zfill(10)
+
+
+@dataclass(frozen=True)
+class JourneyLedgerIndex:
+    """A validated A1 journey ledger, indexed for the journey-cell rule.
+
+    ``by_cik`` maps each issuer row's normalized CIK to its row (a repeated
+    normalized CIK refuses the whole ledger, so at most one row can carry a
+    CIK); ``checks_by_ticker`` groups the check rows by their non-null
+    ``issuer`` ticker; ``run_checks`` holds the issuer-null rows.
+    """
+
+    by_cik: dict[str, dict[str, Any]]
+    checks_by_ticker: dict[str, list[dict[str, Any]]]
+    run_checks: tuple[dict[str, Any], ...]
+
+
+def load_journey_ledger(data: bytes) -> JourneyLedgerIndex:
+    """Load and validate one A1 journey ledger (``fif.a1_journey_ledger/v1``).
+
+    The ledger is JSON data produced by the A1 journey ledger script — read
+    here as data only, that script is never imported — with ``checks`` rows
+    ``{id, issuer, status, detail}`` and ``issuers`` rows
+    ``{ticker, cik, issuer_id, bridge{status, local_generation_id, ...}}``.
+    Any shape drift refuses the whole manifest with
+    ``journey_ledger_malformed``.
+    """
+    document = _json_mapping(data, "journey_ledger")
+    if document.get("schema") != JOURNEY_LEDGER_SCHEMA:
+        raise CoverageManifestError("journey_ledger_malformed", "unsupported journey ledger schema")
+    checks = document.get("checks")
+    issuers = document.get("issuers")
+    if not isinstance(checks, list) or not isinstance(issuers, list):
+        raise CoverageManifestError(
+            "journey_ledger_malformed", "journey ledger checks and issuers must be lists"
+        )
+    by_cik: dict[str, dict[str, Any]] = {}
+    for row in issuers:
+        cik = row.get("cik") if isinstance(row, Mapping) else None
+        bridge = row.get("bridge") if isinstance(row, Mapping) else None
+        if not isinstance(cik, str) or not isinstance(bridge, Mapping):
+            raise CoverageManifestError(
+                "journey_ledger_malformed", "journey ledger issuer row is malformed"
+            )
+        normalized = _normalized_ledger_cik(cik)
+        if normalized in by_cik:
+            raise CoverageManifestError(
+                "journey_ledger_malformed", f"journey ledger repeats CIK {normalized}"
+            )
+        by_cik[normalized] = row
+    checks_by_ticker: dict[str, list[dict[str, Any]]] = {}
+    run_checks: list[dict[str, Any]] = []
+    for row in checks:
+        check_id = row.get("id") if isinstance(row, Mapping) else None
+        status = row.get("status") if isinstance(row, Mapping) else None
+        if not isinstance(check_id, str) or status not in _JOURNEY_CHECK_STATUSES:
+            raise CoverageManifestError(
+                "journey_ledger_malformed", "journey ledger check row is malformed"
+            )
+        issuer = row.get("issuer")
+        if issuer is None:
+            run_checks.append(row)
+        elif isinstance(issuer, str):
+            checks_by_ticker.setdefault(issuer, []).append(row)
+        # Any other issuer label names neither an issuer nor the run, so it
+        # can neither prove nor fail a journey; it rides unmatched.
+    return JourneyLedgerIndex(
+        by_cik=by_cik, checks_by_ticker=checks_by_ticker, run_checks=tuple(run_checks)
+    )
+
+
+def journey_ledger_proves(
+    ledger: JourneyLedgerIndex, cik: str, serve_generation: str
+) -> bool:
+    """Whether the supplied ledger proves this served member's journey.
+
+    Seat ruling ``DEC:FIF-COVERAGE-JOURNEY-CELL-FROM-A1-LEDGER-20261102``:
+    the journey cell is present only when the ledger's issuer row for the
+    member's normalized CIK bridges ``match`` onto exactly the served
+    generation, every check row naming that row's ticker passed (at least
+    one such row exists) and every run-level (issuer-null) check row passed.
+    """
+    row = ledger.by_cik.get(_normalized_ledger_cik(cik))
+    if row is None:
+        return False
+    bridge = row["bridge"]
+    if bridge.get("status") != _BRIDGE_STATUS_MATCH:
+        return False
+    if bridge.get("local_generation_id") != serve_generation:
+        return False
+    ticker = row.get("ticker")
+    issuer_checks = (
+        ledger.checks_by_ticker.get(ticker, ()) if isinstance(ticker, str) else ()
+    )
+    if not issuer_checks or any(check["status"] != "pass" for check in issuer_checks):
+        return False
+    return all(check["status"] == "pass" for check in ledger.run_checks)
+
+
+def _contract_cik(value: Any) -> str | None:
+    """Mirror ``issuer_sic._normalize_cik``: a parseable CIK, 10 digits, or None."""
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, int):
+        digits = str(value)
+    elif isinstance(value, str):
+        digits = value.strip()
+    else:
+        return None
+    if not digits or not digits.isdigit():
+        return None
+    return digits.zfill(10)
+
+
+def _contract_sic_index(contract: Mapping[str, Mapping[str, Any]]) -> dict[str, str]:
+    """CIK -> SIC from the supplied coverage contract's member records.
+
+    Mirrors the acceptance rule ``issuer_sic._shipped_sic_index`` applies to
+    the shipped contracts: a member is admitted only when its CIK normalizes
+    and its SIC is a digit string (tightened here to the contract's own
+    4-digit spelling), carried with the shipped provenance shape — the
+    member's ``sic_source`` capture mapping.  A member without that shape is
+    simply not admitted (fail-closed), never a refusal.
+    """
+    index: dict[str, str] = {}
+    for issuer in contract.values():
+        sic = issuer.get("sic")
+        if not isinstance(sic, str):
+            continue
+        sic = sic.strip()
+        if len(sic) != _SIC_DIGITS or not sic.isascii() or not sic.isdigit():
+            continue
+        if not isinstance(issuer.get("sic_source"), Mapping):
+            continue
+        cik = _contract_cik(issuer.get("cik"))
+        if cik is None:
+            continue
+        index[cik] = sic
+    return index
+
+
+def _resolve_sic_with_contract(index: Mapping[str, str], cik: Any) -> str | None:
+    """The build's SIC resolver under ``sic_from_coverage_file``.
+
+    The shipped contracts' answer wins when they bind the CIK; otherwise the
+    supplied coverage contract's SIC answers; otherwise ``None``.  When both
+    bind the same CIK with different SICs the classification basis is
+    ambiguous, so the whole manifest is refused (``sic_basis_conflict``).
+    """
+    normalized = _contract_cik(cik)
+    if normalized is None:
+        return None
+    shipped = resolve_issuer_sic(cik)
+    supplied = index.get(normalized)
+    if shipped is not None:
+        if supplied is not None and supplied != shipped:
+            raise CoverageManifestError(
+                "sic_basis_conflict",
+                "the shipped contracts and the supplied coverage contract give "
+                f"CIK {normalized} different SICs: {shipped!r} and {supplied!r}",
+            )
+        return shipped
+    return supplied
 
 
 # ---------------------------------------------------------------------------
@@ -1328,6 +1511,7 @@ def _deep_component_cells(
     *,
     policy: QueryPolicy,
     sic_resolver: Callable[[str], Any],
+    journey_ledger: JourneyLedgerIndex | None = None,
 ) -> list[dict[str, Any]]:
     cells: list[dict[str, Any]] = []
     # A served issuer's empty slot is unfiled; an unserved issuer has no slots.
@@ -1376,11 +1560,18 @@ def _deep_component_cells(
             )
         )
     if thresholds.require_journey:
-        cells.append(
-            _absent(
-                cik, WILDCARD_PERIOD, "journey", REASON_NO_PRODUCTION_PRODUCER, serve_generation
+        if journey_ledger is None:
+            cells.append(
+                _absent(
+                    cik, WILDCARD_PERIOD, "journey", REASON_NO_PRODUCTION_PRODUCER, serve_generation
+                )
             )
-        )
+        elif journey_ledger_proves(journey_ledger, cik, serve_generation):
+            cells.append(_present(cik, WILDCARD_PERIOD, "journey", serve_generation))
+        else:
+            cells.append(
+                _absent(cik, WILDCARD_PERIOD, "journey", REASON_JOURNEY_NOT_PROVEN, serve_generation)
+            )
     return cells
 
 
@@ -1502,8 +1693,17 @@ def build_coverage_manifest(
     formulas_file: str | Path = DEFAULT_FORMULAS,
     np_pack: Any | None = None,
     sic_resolver: Callable[[str], Any] | None = None,
+    journey_ledger_file: str | Path | None = None,
+    sic_from_coverage_file: bool = False,
 ) -> dict[str, Any]:
-    """Build the served-only draft coverage manifest at ``as_of``."""
+    """Build the served-only draft coverage manifest at ``as_of``.
+
+    Both optional inputs are default-off and leave the manifest bytes
+    unchanged when omitted: ``journey_ledger_file`` supplies the A1 journey
+    ledger that alone can prove a served deep issuer's ``journey`` cell, and
+    ``sic_from_coverage_file`` lets the supplied coverage contract's own SIC
+    records answer for issuers the shipped contracts do not bind.
+    """
     cutoff = parse_as_of(as_of)
     store_path = Path(store_dir)
     if not store_path.is_dir():
@@ -1521,7 +1721,24 @@ def build_coverage_manifest(
     direct, formula = load_metric_ids(catalog_bytes, formulas_bytes)
     metric_ids = tuple(sorted(set(direct) | set(formula)))
     pack = np_pack if np_pack is not None else load_not_presented_pack()
-    resolver = sic_resolver if sic_resolver is not None else partial(resolve_issuer_sic)
+    journey_ledger_bytes = None
+    journey_ledger = None
+    if journey_ledger_file is not None:
+        journey_ledger_bytes = _read_bytes(journey_ledger_file, "journey_ledger")
+        journey_ledger = load_journey_ledger(journey_ledger_bytes)
+    if sic_resolver is not None:
+        resolver = sic_resolver
+    elif sic_from_coverage_file:
+        # The supplied contract's SIC answers only where the shipped
+        # contracts do not bind, and a disagreement between the two refuses
+        # the manifest.  The kernel and packet builders swallow resolver
+        # errors into one absent cell, so sweep every member up front: a
+        # conflict must refuse the manifest, never pass as one bad cell.
+        resolver = partial(_resolve_sic_with_contract, _contract_sic_index(contract))
+        for member in tiers.members:
+            resolver(member.cik)
+    else:
+        resolver = partial(resolve_issuer_sic)
 
     store = build_production_dataset_store(store_path)
     query_provider = ProductionFinancialQueryProvider(store)
@@ -1582,6 +1799,7 @@ def build_coverage_manifest(
                     slots,
                     policy=policy,
                     sic_resolver=resolver,
+                    journey_ledger=journey_ledger,
                 )
             )
         entry: dict[str, Any] = {
@@ -1619,6 +1837,39 @@ def build_coverage_manifest(
     served_digest = hashlib.sha256(canonical_json(served_set).encode("utf-8")).hexdigest()
     issuers.sort(key=lambda item: item["cik"])
     all_cells.sort(key=lambda c: (c["cik"], c["period_id"], c["field_id"]))
+    inputs_sha256: dict[str, str] = {
+        "tiers": _sha256(tiers_bytes),
+        "coverage_contract": _sha256(coverage_bytes),
+        "thresholds": _sha256(thresholds_bytes),
+        "metric_catalog": _sha256(catalog_bytes),
+        "metric_formulas": _sha256(formulas_bytes),
+    }
+    if journey_ledger_bytes is not None:
+        inputs_sha256["journey_ledger"] = _sha256(journey_ledger_bytes)
+    header: dict[str, Any] = {
+        "producer": PRODUCER_ID,
+        "as_of": cutoff_text,
+        "query_selection": QUERY_SELECTION,
+        "inputs_sha256": inputs_sha256,
+        "not_presented_pack": {
+            "pack_id": pack.pack_id,
+            "pack_version": pack.pack_version,
+            "content_sha256": pack.content_sha256,
+            "applied_by_kernel": False,
+        },
+        "metric_counts": {
+            "direct": len(direct),
+            "formula": len(formula),
+        },
+        "member_counts": {
+            "core": sum(1 for m in tiers.members if m.tier_assigned == "core"),
+            "deep": sum(1 for m in tiers.members if m.tier_assigned == "deep"),
+            "served": len(served_set),
+        },
+        "served_set": served_set,
+    }
+    if sic_from_coverage_file:
+        header["sic_basis"] = SIC_BASIS_COVERAGE_CONTRACT
     return {
         "schema": MANIFEST_SCHEMA,
         "draft": True,
@@ -1627,34 +1878,7 @@ def build_coverage_manifest(
         "source_generation_id": f"{SERVED_SET_PREFIX}{served_digest}",
         "cutoff_at": tiers.cutoff_at,
         "recorded_at": cutoff_text,
-        "header": {
-            "producer": PRODUCER_ID,
-            "as_of": cutoff_text,
-            "query_selection": QUERY_SELECTION,
-            "inputs_sha256": {
-                "tiers": _sha256(tiers_bytes),
-                "coverage_contract": _sha256(coverage_bytes),
-                "thresholds": _sha256(thresholds_bytes),
-                "metric_catalog": _sha256(catalog_bytes),
-                "metric_formulas": _sha256(formulas_bytes),
-            },
-            "not_presented_pack": {
-                "pack_id": pack.pack_id,
-                "pack_version": pack.pack_version,
-                "content_sha256": pack.content_sha256,
-                "applied_by_kernel": False,
-            },
-            "metric_counts": {
-                "direct": len(direct),
-                "formula": len(formula),
-            },
-            "member_counts": {
-                "core": sum(1 for m in tiers.members if m.tier_assigned == "core"),
-                "deep": sum(1 for m in tiers.members if m.tier_assigned == "deep"),
-                "served": len(served_set),
-            },
-            "served_set": served_set,
-        },
+        "header": header,
         "issuers": issuers,
         "cells": all_cells,
     }
@@ -1668,11 +1892,15 @@ def render_manifest(manifest: Mapping[str, Any]) -> bytes:
 __all__ = [
     "ANNUAL_FORMS",
     "INTERIM_FORMS",
+    "JOURNEY_LEDGER_SCHEMA",
     "MANIFEST_SCHEMA",
     "CoverageManifestError",
+    "JourneyLedgerIndex",
     "build_coverage_manifest",
     "issuer_rollup",
+    "journey_ledger_proves",
     "load_coverage_contract",
+    "load_journey_ledger",
     "load_manifest_thresholds",
     "load_metric_ids",
     "load_tiers",

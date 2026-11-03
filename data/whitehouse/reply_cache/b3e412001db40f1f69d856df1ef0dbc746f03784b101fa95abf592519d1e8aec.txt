@@ -1,0 +1,30 @@
+{
+  "activate": true,
+  "importance": 65,
+  "banner_days": 2,
+  "tone": "mixed",
+  "banner_title": "Manufacturing capex surge hits 15-year high — industrials tailwind, import-exposed margins in focus",
+  "banner_title_zh": "制造业资本开支创15年新高——工业股顺风，进口敞口利润率承压",
+  "summary": "White House release highlights a 12.7% Q3 business investment surge, record capital-goods import share, and fresh factory commitments from Audi, U.S. Steel, Westinghouse, Carrier, and Apple — reinforcing the reflationary industrial-capex theme, with mixed read-throughs for import-exposed and labor-intensive names.",
+  "summary_zh": "白宫发布指出第三季度企业投资激增12.7%、资本品进口占比创纪录，以及奥迪、美国钢铁、西屋、开利和苹果的新工厂承诺——强化再通胀工业资本开支主题，但对进口敞口和劳动密集型个股影响不一。",
+  "analysis": "The release is primarily a political messaging document, but it contains several concrete data points and corporate commitments that matter for markets. The 12.7% Q3 business investment growth — fastest in 15 years — and 9.4% rise in plant-and-equipment spending are real macro signals consistent with the reflation regime. The record share of capital goods in total imports (with consumer goods imports at a historic low) suggests the import mix is shifting from consumption to production capacity, a structurally bullish signal for domestic industrial equipment, automation, and construction-linked names.\n\nThe transmission mechanism runs through the industrial capex cycle: machine tool orders up 36% YoY, accelerating factory construction employment, and a pipeline of announced projects (Audi's $4B Georgia plant, U.S. Steel's $3B Pittsburgh mill, Westinghouse's $1B nuclear fuel facility, Carrier's $600M Fort Worth plant) imply sustained demand for construction materials, industrial machinery, electrical equipment, and specialty metals over a multi-year horizon.\n\nThe key uncertainty is attribution and durability. Many of these investments reflect multi-year corporate planning cycles and may have been underway before this administration. The release is framed to claim credit, but the market should focus on whether the capex trend is self-sustaining through the cycle. Labor cost pressure and import tariffs could compress margins even as revenue grows, which is why the read is mixed rather than a clean tailwind. Wage growth and tight manufacturing labor supply may push automation demand higher, benefiting robotics and process-control names but squeezing labor-heavy assemblers.",
+  "sectors": [
+    {"name": "Industrial machinery & automation", "impact": "tailwind", "rationale": "Record machine tool orders and plant-equipment spending signal multi-quarter demand for capital goods."},
+    {"name": "Steel & specialty metals", "impact": "tailwind", "rationale": "U.S. Steel's $3B expansion and Apple's titanium investment point to domestic metals capacity buildout."},
+    {"name": "Construction & engineering", "impact": "tailwind", "rationale": "Factory construction employment up 112k and a pipeline of announced plants sustain non-residential construction activity."},
+    {"name": "Electrical equipment & nuclear supply chain", "impact": "tailwind", "rationale": "Westinghouse's $1B nuclear fuel factory and electrification capex support grid and power-equipment demand."},
+    {"name": "Labor-intensive manufacturers", "impact": "headwind", "rationale": "Manufacturing wages up 5% YoY, outpacing inflation, compress margins for assemblers and processors with high labor share."},
+    {"name": "Import-exposed finished goods", "impact": "headwind", "rationale": "Consumer goods imports at historic lows signal substitution toward domestic production, potentially raising input costs for import-dependent firms."}
+  ],
+  "tickers": [
+    {"symbol": "X", "direction": "benefit", "rationale": "U.S. Steel's $3B hot strip mill expansion directly expands capacity and signals domestic steel demand momentum."},
+    {"symbol": "CAT", "direction": "benefit", "rationale": "Broad industrial capex acceleration and plant construction boom drive demand for heavy equipment."},
+    {"symbol": "ROK", "direction": "benefit", "rationale": "Factory automation and machine tool order surge support Rockwell's process-control and robotics exposure."},
+    {"symbol": "ETN", "direction": "benefit", "rationale": "Electrical equipment demand tied to factory electrification and Westinghouse nuclear supply chain."},
+    {"symbol": "CARR", "direction": "benefit", "rationale": "Carrier's own $600M Fort Worth advanced manufacturing facility signals capacity expansion and HVAC/industrial demand."},
+    {"symbol": "VMC", "direction": "benefit", "rationale": "Factory construction surge lifts aggregates and ready-mix demand for non-residential projects."},
+    {"symbol": "AAPL", "direction": "benefit", "rationale": "Up to $100M titanium investment deepens domestic supply-chain vertical integration for device casing."},
+    {"symbol": "BBDb.TO", "direction": "benefit", "rationale": "Bombardier's $270M U.S. manufacturing investment supports aerospace manufacturing footprint, though ADR liquidity limits direct trading."}
+  ],
+  "confidence": "medium"
+}
