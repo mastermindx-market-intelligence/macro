@@ -276,19 +276,12 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 # ---------------------------------------------------------------------------
 
 def test_basket_detail_diff_is_exactly_one_inserted_line():
-    """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
-    be exactly `1\\t0` — one inserted line, zero deleted lines.
-
-    This is the one assertion in this suite that needs *history* rather than
-    working-tree content. The added line and its position are already pinned
-    from the tree by ``test_common_template_has_exactly_one_aggregator_include
-    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
-    in a template frozen by #7669 moved. A checkout that does not carry
-    an integration base cannot evaluate that claim at all: git answers
-    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
-    reports as a template regression that did not happen. Resolve the base
-    first (see ``_integration_base``) and skip honestly when it is absent.
-    """
+    """The branch may change the basket template only by +1/-0 when it owns
+    the aggregator insertion. Later unrelated branches inherit that exact
+    insertion from the integration base. An empty diff is not a missing include;
+    recheck the existing L1 tree/position contract instead. Nonempty diffs
+    still require exactly one insertion and zero deletions. Absent history
+    remains an explicit skip.    """
     base = _integration_base()
     if base is None:
         pytest.skip(
@@ -306,10 +299,11 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
         f"git diff failed:\nSTDOUT={result.stdout}\nSTDERR={result.stderr}"
     )
     line = result.stdout.strip()
-    assert line, (
-        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
-        f"the aggregator include this suite exists to pin is absent from the diff"
-    )
+    if not line:
+        # A later unrelated PR inherits the already-installed aggregator include.
+        # Verify its tree semantics instead of claiming this PR added the line.
+        test_common_template_has_exactly_one_aggregator_include_outside_app()
+        return
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
     added, deleted = int(parts[0]), int(parts[1])
