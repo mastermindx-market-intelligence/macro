@@ -2060,7 +2060,10 @@ def test_input_integrity_j6_rejects_matching_invented_template_and_display(path,
     for piece in pieces[:-1]:
         target = target[piece]
     target[pieces[-1]] = None
-    fields = soup.select('[data-source-field="' + path + '"] dd')
+    # Mutate every copy, including inert template content skipped by document
+    # CSS selectors in SoupSieve 4. Keep the two-copy and integrity assertions.
+    fields = [dd for field in soup.find_all(attrs={"data-source-field": path})
+              for dd in field.find_all("dd")]
     assert len(fields) >= 2, "test needs both displayed and template copies"
     for field in fields:
         field.clear()

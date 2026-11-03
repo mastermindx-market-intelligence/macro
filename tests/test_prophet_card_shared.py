@@ -608,14 +608,16 @@ def test_setup_table_same_row_body_and_clock_match_card_presenter():
         row, '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
     card = BeautifulSoup(str(m.body(
         row, 'board', '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
-    assert str(table.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
-    assert str(table.select_one('.pvs-plan-relation')) == str(card.select_one('.pvs-plan-relation'))
+    source = table.select_one('template.pvs-body-source')
+    assert source is not None
+    assert str(source.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
+    assert str(source.select_one('.pvs-plan-relation')) == str(card.select_one('.pvs-plan-relation'))
     action = table.select_one('details.pv-setup-table')
     assert action['data-setup-ticker'] == 'SAME_SYMBOL'
     assert action['data-setup-asof'] == '2026-09-24'
-    assert table.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
-    assert table.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
-    assert table.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
+    assert source.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
+    assert source.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
+    assert source.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
 
 
 def test_board_entry_read_shows_owner_clock_separate_from_quote_clock():
@@ -664,7 +666,9 @@ def test_setup_table_chart_is_inert_text_until_display_guard():
     m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
     svg = '<svg viewBox="0 0 240 42"><polyline points="0,40 240,5"/></svg>'
     s = BeautifulSoup(str(m.table_action({'ticker': 'TEST', 'spark_svg': svg}, None)), 'html5lib')
-    assert not s.select('svg, script, img, [onerror]')
+    # Inspect inert content too; document CSS selectors exclude templates.
+    assert not s.find_all(['svg', 'script', 'img'])
+    assert not s.find_all(attrs={'onerror': True})
     assert s.select_one('template.pvs-chart-source').string == svg
     assert s.select_one('details')['data-setup-asof'] == ''
 
@@ -681,7 +685,8 @@ def test_setup_table_hostile_source_cannot_break_out_of_serialized_row():
     encoded = renderer.render(row=row, clock='2026-09-24')
     assert '</script>' not in encoded and '<img' not in encoded
     s = BeautifulSoup(json.loads(encoded)['setup_detail'], 'html5lib')
-    assert not s.select('script, img, iframe, [onerror]')
+    assert not s.find_all(['script', 'img', 'iframe'])
+    assert not s.find_all(attrs={'onerror': True})
     assert attack in s.get_text()
 
 
@@ -692,6 +697,8 @@ def test_setup_table_fallback_missing_values_never_enrich_from_other_population(
            'targets': [200.], 'plan_id': 'UNRELATED', 'price': None}
     s = BeautifulSoup(str(m.table_action(row, None)), 'html5lib')
     assert 'UNBOUND' not in s.text and 'UNRELATED' not in s.text
+    s = s.select_one('template.pvs-body-source')
+    assert s is not None
     assert 'Not supplied' in s.select_one('[data-source-field="price"] dd').text
     assert 'Not supplied' in s.select_one('[data-source-field="envelope.as_of"] dd').text
     assert s.select_one('[data-entry-status]')['data-entry-status'] == ''
