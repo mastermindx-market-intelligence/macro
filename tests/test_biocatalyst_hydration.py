@@ -471,6 +471,38 @@ def test_operational_check_clocks_do_not_relabel_registry_or_revision_dates(tmp_
     assert first["inspector"] == other_clock["inspector"]
 
 
+@needs_node
+def test_nonretained_failure_invalidates_a_later_selected_detail_response(tmp_path: Path) -> None:
+    # Reviewer's controlled two-trial population; no real clinical records.
+    payload = catalyst_radar_with_lineage()
+    other = json.loads(_json(payload["catalyst_radar"][0]))
+    other.update(event_id="nct:NCT00000002:primary_completion", nct_id="NCT00000002")
+    other["trial"].update(title="Beta Synthetic Study", brief_title="Beta Synthetic Study")
+    other["evidence"].update(record_id="NCT00000002", url="https://clinicaltrials.gov/study/NCT00000002")
+    payload["catalyst_radar"].append(other)
+    payload["pagination"]["total"] = 2
+    for key in ("trials_in_cohort", "trials_with_events", "events_total", "events_in_horizon"):
+        payload["coverage"]["radar"][key] = 2
+    detail = {"trial": {"nct_id": "NCT00000002", "title": "Beta Synthetic Study"}}
+    failure = _radar_failure()
+    failure["/api/biocatalyst/v1/catalyst-radar"]["holdKey"] = "list"
+    failure["/api/biocatalyst/v1/trials/NCT00000002"] = {
+        **_route(200, _json(detail)), "holdKey": "detail",
+    }
+    scene = _verified_refresh_scenario([
+        {"type": "trial", "id": "NCT00000001"},
+        {"type": "selection-race", "id": "NCT00000002", "routes": failure},
+    ])
+    scene["routes"]["/api/biocatalyst/v1/catalyst-radar"] = _route(200, _json(payload))
+    after = _run(tmp_path, scene)["snapshots"][-1]
+    before = after["beforeLateDetail"]
+    assert before["workspaceState"] == after["workspaceState"] == "source_outage"
+    assert "Beta Synthetic Study" not in before["inspector"]
+    assert after["inspector"] == before["inspector"]
+    assert not after["links"]
+    assert not after["inspectorOpen"]
+
+
 def _forbidden_machine_text(text: str) -> None:
     lowered = text.lower()
     for token in (

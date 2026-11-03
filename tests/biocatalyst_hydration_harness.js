@@ -369,7 +369,7 @@ function routeFor(url) {
   return { status: 503, body: '{"detail":"missing fixture"}', contentType: 'application/json' };
 }
 
-var fetchCalls = [];
+var fetchCalls = [], heldResponses = {};
 function fetch(url) {
   fetchCalls.push(String(url));
   var route = routeFor(url);
@@ -377,13 +377,15 @@ function fetch(url) {
   var body = route.body == null ? '' : String(route.body);
   var contentType = route.contentType || (status === 200 ? 'application/json' : 'application/json');
   var headers = { get: function (name) { return String(name).toLowerCase() === 'content-type' ? contentType : null; } };
-  return Promise.resolve({
+  var response = {
     ok: status >= 200 && status < 300,
     status: status,
     headers: headers,
     text: function () { return Promise.resolve(body); },
     json: function () { return Promise.resolve(JSON.parse(body)); }
-  });
+  };
+  if (route.holdKey) return new Promise(function (resolve) { heldResponses[route.holdKey] = function () { resolve(response); }; });
+  return Promise.resolve(response);
 }
 
 var authSubject = scenario.authSubject || '', authListeners = [];
@@ -469,7 +471,21 @@ waitFor(function () { return settled(workspace.dataset.state || workspace.getAtt
       return chain.then(function () {
         if (action.routes) scenario.routes = action.routes;
         if (action.clientNow) scenario.clientNow = action.clientNow;
-        if (action.type === 'trial') {
+        if (action.type === 'selection-race') {
+          byId['bci-refresh'].click();
+          document.querySelector('[data-trial-id="' + action.id + '"]').click();
+          return waitFor(function () { return heldResponses.list && heldResponses.detail; }).then(function () {
+            heldResponses.list();
+            return waitFor(function () { return settled(workspace.dataset.state || workspace.getAttribute('data-state')) && !byId['bci-refresh'].classList.contains('is-spinning'); });
+          }).then(function () {
+            var beforeLate = snapshot();
+            heldResponses.detail();
+            // Drain the resolved fetch/parse/callback microtasks before observing again.
+            return new Promise(function (resolve) { setTimeout(resolve, 0); }).then(function () {
+              var afterLate = snapshot(); afterLate.beforeLateDetail = beforeLate; snapshots.push(afterLate);
+            });
+          });
+        } else if (action.type === 'trial') {
           var row = document.querySelector('[data-trial-id="' + action.id + '"]');
           if (!row) throw Error('missing controlled trial row');
           row.click();

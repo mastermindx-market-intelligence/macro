@@ -2494,6 +2494,7 @@
       return;
     }
     state.retainedOutage = false;
+    closeInspector({ restoreFocus: false, writeUrl: false, render: false });
     state.loading = false; state.pageLoading = false; state.hasLoaded = true; state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = ''; state.selectedKey = ''; state.appendFailed = false; state.accessLocked = false;
     if (kind === 'integrity_block') {
       state.contractFailed = true;
@@ -2524,7 +2525,10 @@
     abort('listController'); var controller = new AbortController(), token = state.listToken + 1; state.listToken = token; state.listController = controller;
     state.loading = !append; state.pageLoading = append;
     if (!append) {
-      if (!retainVerified) { state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = ''; }
+      if (!retainVerified) {
+        abort('detailController'); state.detailToken += 1; state.detail = null; state.evidenceCell = null;
+        state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = '';
+      }
       state.retainedOutage = false; state.appendFailed = false; state.accessLocked = false; if (!options.restarted) state.restarted = false;
       state.contractFailed = false; state.workspaceDown = false; state.displayFailed = false;
       ui.workspace.dataset.state = options.restarted ? 'generation-restarted' : (state.hasLoaded ? 'loading' : 'first-load'); loadingQueue(false);
