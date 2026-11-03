@@ -472,11 +472,12 @@ waves:
     depends_on: [GD-RR-CENSUS-20261017]
   - id: EW-P1
     title: EW-P1 nightly publication repair - GH001 diagnosis (T1, done) and QLedger oversize carve-out parity for the engine and collect-tail commit paths (T2); acceptance = two natural sessions landing engine data
-    status: in_progress
+    status: done
     # T1 DONE by the seat 2026-10-31: claims.jsonl 104,857,394 B (206 B under 100 MiB); engine script and commit-tail step carry no carve-out; run 40803269874 engine job 123688873047 + collect_tail job 123688869633 GH001; last landed engine data commit ad6e5a824334 (10-21; a050d2c71647 22 min earlier last landed claims.jsonl).
     # T2 PR #10333 (head f095c641, two fabric APPROVEs) CLOSED 2026-10-31T20:14Z as SUPERSEDED by incumbent #10255 (two Opus review rounds, APPROVED, merge-on-green, superset scope). Seat ruling in #10333's closing comment; one note on #10255. Diagnosis retained at research/grey_deer/evidence/EW_P1_ENGINE_TAIL_GH001_DIAGNOSIS_2026-10-31.md.
     # Acceptance unchanged: two natural engine sessions after #10255 (merged c2772cc4, 2026-11-01T06:29:41Z) in which `engine: regime update <date>` lands on main and latest.json advances; seat watcher (hourly git read, never dispatch). CI budget #10341 merged dbaf1e07 (intl job 8->15 min).
     # 2026-11-02 records r6: FIRST natural session after the carve landed on main - b0a37dfbaff4 (10:20:35Z) and 9d7925b30a01 (10:40:00Z), both `engine: regime update 2026-11-02`, data/risk_envelope/latest.json advanced (previous landing 2026-10-21). The commits came from the delayed `daily.yml` scheduled run 41378879186 (the EST cron `30 23 * * *`, 23:30Z) (created 02:39:14Z; engine job 06:46:36Z-10:42:38Z; the engine job was cancelled at 10:42:38Z after both commits had landed and latest.json advanced, which is what acceptance counts), not from a seat dispatch: only daily.yml writes `engine: regime update` commits (scripts/ci/daily_engine_commit_outputs.sh), so this is the natural nightly session. A session lands one to five engine commits (per-day census since 2026-10-01), so commit count does not count sessions and this pair is ONE session of the two required; the seat's v2 watcher counted commits and was replaced by an hourly git read that counts distinct landing dates with latest.json advanced. PRODUCTION_PROOF is NOT recorded; status stays in_progress until the second natural session lands.
+    # 2026-11-03 records r7: SECOND natural session landed - 4e08d434708e (20:43:31Z) and dfeed92a98a8 (21:30:18Z), both `engine: regime update 2026-11-03` by dashboard-bot; data/risk_envelope/latest.json as_of advanced 2026-10-30 -> 2026-11-02 in the first commit (the second changed only observed_at/produced_at). Producer: daily.yml run 41634890986, a workflow_dispatch fired at 12:20:34Z by the repo's own prophet-rescue self-heal lane (its scheduled run 41634822528 at 12:20:05Z; actor github-actions[bot]) after the EST-cron run 41575308126's engine job failed (09:30:58Z-09:40:58Z); collect 12:20:44Z-15:29:53Z success, collect_tail success, engine job 17:05:41Z-21:38:14Z cancelled after both commits had landed. Not a seat or human dispatch. PRODUCTION_PROOF recorded for EW-P1: two natural engine sessions after the carve c2772cc4 (2026-11-02, 2026-11-03) landed `engine: regime update <date>` on main with latest.json advanced; the hourly git-only watcher exited EW_P1_TWO_SESSIONS_LANDED at 2026-11-03T21:43:35Z. Status -> done. The acceptance parenthetical in the handoff and receipts now says the run may be fired by daily.yml's own cron or by the repo's scheduled self-heal lanes; only a seat or human dispatch is excluded.
     depends_on: [EW-P0]
   - id: EW-P2
     title: EW-P2 rotation observation continuity - successor of orphaned #10104 rebased onto main, six conflicts resolved both-sides, recording stays default-off (T1)
@@ -535,6 +536,14 @@ waves:
     # Seat-found coverage candidates to verify independently: S08 (tests/test_risk_envelope.py null-law classes), S11 (three tests/test_rotation_risk_envelope.py module tests), U05 (two tests/test_risk_envelope_radar_integration.py tests). Mapping gaps are listed in the receipts census.
     depends_on: [EW-P4]
 next_action: >
+  2026-11-03 (CEO seat 00dea969, records r7): EW-P1 is DONE at PRODUCTION_PROOF: the second natural engine session landed on
+  2026-11-03 (4e08d434708e 20:43:31Z, dfeed92a98a8 21:30:18Z; latest.json as_of 2026-10-30 -> 2026-11-02) from daily.yml run
+  41634890986, dispatched by the repo's prophet-rescue self-heal lane after the EST-cron run's engine job failed, not by the
+  seat or a human. EW-P5 FU2 #10401 is render-covered: render.yml push run 41466419158 at eea8ad4d (a main descendant of the FU2 squash 20a05db0, verified with git merge-base) completed success at 2026-11-02T19:13:04Z (created 14:54:36Z); the run at the squash itself (41462692720) was cancelled by lane coalescing. Production reads stay 401 for the seat, so no browser
+  proof is claimed. Records r6 #10578 merged as 2feabec501c7 (2026-11-02T15:42:07Z, independent review PASS on 4a0a3e30).
+  Next: FU3 carve-outs as their own PR with a fresh review; the second named EW-P5 pack run at the new main head (adds
+  tests/test_qledger_carve.py, re-maps the stale rows); no flag flip, no live send, no Tier A grant.
+
   2026-11-02 (CEO seat 00dea969, records r6): EW-P4-ACT #10394 is MERGED (983c6b0798e2, exact head eff1a462fc45) and EW-P5 FU2 #10401 is
   MERGED (20a05db07376, exact head 60de0cbf2b4a); both rungs are MERGED only and the recording flag stays off, so production still
   renders the unavailable state. EW-P1: the first natural engine session after the carve landed on 2026-11-02 (b0a37dfbaff4 and
