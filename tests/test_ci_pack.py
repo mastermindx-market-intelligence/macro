@@ -5438,9 +5438,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_919),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_934),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_675),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5448,6 +5448,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-03 News #9612 after accepted main 19a896b / hosted base 135e3713:
+    hosted contract-delta run41592734870, job125773577428, exact merge
+    06b35e1adb2d of head26baacec5a00 into base135e371359aa, measures
+    index137/5919, free-content137/5934 and plan-book131/5675, ten packs.
+    The base measures5909/5924/5665; no job is newly selected and these
+    three weight overruns are the gate's only introduced findings.
+    Same-source/inventory manifest comparison isolates collector-registry
+    17 -> 27 for retained News coverage, with identical selected IDs.
+    Fund exactly the three measured ten-unit excesses:5909 -> 5919,
+    5924 -> 5934,5665 -> 5675. Preserve job ceilings137/138/131, ten packs,
+    commands, selectors, duration overrides and execution limits.
+    These are deterministic planner estimates, not execution durations.
+    Clean qualification and hosted logs: docs/evidence/news-cockpit-20261102/
+    late-clean-canonical-20261103.json and late-packing-admission-20261103.json.
 
     2026-11-03 News #9612 composition with accepted main 9f33cc8a:
     clean exact-commit planner on 11c6b0ff6ea0, inventory 80b105c14411,

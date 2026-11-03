@@ -1112,3 +1112,22 @@ Hosted run [41591289173](https://github.com/mastermindx-market-intelligence/macr
 The original review `news-9612-f07ba3-source-review-20261022` still reports verified terminal rc1, UNVERIFIED / EXECUTION_NOT_ELIGIBLE and RECONCILE_TERMINAL_FAILURE. Retry, dispatch and result-consumption authorization remain false. The exposed review controller has no lawful disposition writer for this failure, and GitHub formal reviews remain empty. This is the same held review, not a new review request. Bounded native analytical assistance did not provide independent approval.
 
 **Release state: design and implementation delivered on the original PR; not merged, not deployed, not SHIPPED.** The next release actions are current-head hosted CI acceptance, lawful reconciliation of the original review, independent final-source acceptance and non-author formal GitHub approval, followed by the normal protected merge, covering render/deploy and authenticated real-URL proof. Keep the original source-rights owners/holds unchanged.
+
+
+## 2026-11-03 exact admission for retained News test coverage
+
+Hosted contract-delta run [41592734870](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41592734870), job 125773577428, tested merge `06b35e1adb2dd65c7195e13ef02080e3fee6ae6c` of News head `26baacec5a00a8e904c0c8c52bd21eecca7f08b5` into actual base `135e371359aa612f6218ef319fedf42a1535473b`. It reported exactly three introduced findings and zero inherited findings: the three planning weights below. No job was newly selected. Its complete decoded log is preserved losslessly as gzip in `late-hosted-contract-delta-20261103.log.gz`; both raw and stored hashes are in `late-packing-admission-20261103.json`.
+
+A clean, detached comparison of immutable head 26baacec materialized all **11234 tracked Python, JavaScript, shell, template and YAML source inputs**. The original source workspace, its sparse configuration and its ignored AAPL sample were preserved. The comparison contains no ignored AAPL sample. On the exact **142769-path** tracked inventory (SHA-256 `1554a768fab048359e57efa91c24d34cdff9266d203ce58630f41e00132819ea`), **full exclusive dependency closure has zero findings**. The 379-job registry has no duplicate keys; all incoming jobs/paths are retained. Only collector-registry differs in run steps and estimator weight: **17 -> 27**, retaining the News coverage.
+
+| Probe | Selected jobs | Incoming-manifest weight | Candidate weight / exact new ceiling | Packs |
+| --- | ---: | ---: | ---: | ---: |
+| Index | 137 | 5909 | 5919 | 10 |
+| Free content | 137 | 5924 | 5934 | 10 |
+| Prophet plan book | 131 | 5665 | 5675 | 10 |
+
+The incoming-main manifest is measured on the **same candidate source and inventory**, not as a historical main-source execution. Each row has identical selected job IDs, and collector-registry appears exactly once. The clean figures reproduce the hosted findings and the earlier original-workspace diagnostic. These are deterministic planning estimates, not measured execution durations.
+
+The repair changes exactly **three executable integer constants** in PACKING_PROBES: 5909 -> 5919, 5924 -> 5934 and 5665 -> 5675, plus their measurement history. AST comparison proves no other executable test change. Job-count ceilings **137 / 138 / 131**, the **ten-pack** bound, selectors, commands, scopes, duration overrides and execution-time limits remain unchanged. The News application, Paper design and browser-tested artifact remain unchanged.
+
+Evidence: `late-clean-checkout-20261103.json`, `late-clean-canonical-20261103.json`, `late-packing-admission-20261103.json` and the hosted log. The clean qualification took 464.234 seconds. The affected contracts and canonical packing must next pass on the resulting immutable commit before the repair is published; this entry does not claim that later verification, hosted success, independent approval or production deployment.
