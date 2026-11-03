@@ -1,71 +1,71 @@
 {
   "schema": "ledger_heartbeat_state.v1",
-  "updated_utc": "2026-11-02T10:59:00Z",
-  "last_check_date": "2026-11-02",
+  "updated_utc": "2026-11-03T22:01:46Z",
+  "last_check_date": "2026-11-03",
   "ledgers": {
     "data/opex_windows/forward_log.jsonl": {
       "asof": "2026-10-17",
-      "last_check_date": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": "2026-10-19"
     },
     "data/risk_radar/forward_log.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": null,
       "lag_stalled_since": null,
       "sessions_behind": 0,
-      "expected_session": "2026-10-30"
+      "expected_session": "2026-11-02"
     },
     "data/market_state/forward_log.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/mag7_regime/ledger.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-03",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/leadership_crack/forward_log.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": null,
       "lag_stalled_since": null,
       "sessions_behind": 0,
-      "expected_session": "2026-10-30"
+      "expected_session": "2026-11-02"
     },
     "data/deterioration_cascade/forward_log.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-03",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/event_windows/forward_log.jsonl": {
       "asof": null,
-      "last_check_date": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/basket_turn/ledger.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-03",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/china_basket_turn/ledger.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
-      "stalled_since": "2026-10-30"
+      "asof": "2026-11-03",
+      "last_check_date": "2026-11-03",
+      "stalled_since": null
     },
     "data/us_basket_turn/ledger.jsonl": {
-      "asof": "2026-10-30",
-      "last_check_date": "2026-11-02",
+      "asof": "2026-11-03",
+      "last_check_date": "2026-11-03",
       "stalled_since": null
     },
     "data/grey_deer_pullback/forward_log.jsonl": {
       "asof": "2026-10-16",
-      "last_check_date": "2026-11-02",
+      "last_check_date": "2026-11-03",
       "stalled_since": "2026-10-19",
       "lag_stalled_since": "2026-10-22",
-      "sessions_behind": 10,
-      "expected_session": "2026-10-30"
+      "sessions_behind": 11,
+      "expected_session": "2026-11-02"
     }
   }
 }

@@ -1,0 +1,69 @@
+{
+  "scope": "Actual checked-out sector payload in shipped coverage, selected measured detail and Prophet context controllers; DOM harness and actual template composition, not browser acceptance",
+  "input_sha256": "47574f76c5795e46f982e3d48fe8a9fc0350f97a5bb986d6013ae96624ff3aad",
+  "source_as_of": "2026-10-16",
+  "generation": {
+    "id": "2026-10-16|SPY|us_sectors_11",
+    "cohort_id": "us_sectors_11",
+    "session_end": "2026-10-16",
+    "benchmark": "SPY",
+    "price_basis": "total_return",
+    "history_schema": "sector_cycles.rs_history.v1",
+    "history_as_of": "2026-10-16"
+  },
+  "coverage": {
+    "expected_n": 11,
+    "measured_n": 11,
+    "horizon": "rs_63d",
+    "window_sessions": 63,
+    "missing": []
+  },
+  "render_sha256": "7a1b170f459c96df943dcd0095a671d3b370ad51b3b7062ba1e8431f27e1d29a",
+  "controller_sha256": "e0f93fc403b01fd982748d0bd04e9f9e30549938e9ecabb7b140b15998adc5ab",
+  "results": {
+    "en": {
+      "status": "available",
+      "title": "11 of 11 sectors have qualified measurements",
+      "note": "Sector ETFs · 63-session read · S&P 500 · total return · Evidence date 2026-10-16",
+      "sourceUnchanged": true
+    },
+    "zh": {
+      "status": "available",
+      "title": "11 / 11 个板块具备实测数据",
+      "note": "板块 ETF · 63个交易日读数 · 相对标普500 · 含股息总回报 · 证据日期 2026-10-16",
+      "sourceUnchanged": true
+    }
+  },
+  "coverage_after_synchronous_payload": true,
+  "unique_hosts_and_native_evidence_target": true,
+  "canonical_prophet_link_present": true,
+  "basket_initializer_required": false,
+  "input_unchanged": true,
+  "selected_sector_handoff": {
+    "sector_id": "XLB",
+    "native_link": "us_stocks.html?si_sector=XLB#sector-prophet-context",
+    "prophet_subject": "Materials · XLB",
+    "return_href": "sector_central.html?g=XLB#map",
+    "board_unchanged": true,
+    "measurements_or_clock_from_url": false
+  },
+  "native_screener_handoff": {
+    "scope": "Shipped US source/view owner and native selection/filter/render functions with checked-out public preview rows in a DOM harness; not browser acceptance",
+    "us_page_input_sha256": "4f798e19a16aa18491d94935fd45128dd96b418a43f0308ad9fdd7bbb2d96837",
+    "stocktable_source_sha256": "4c6cb85454d10ef6466e231b1725d04df58048d3e35f3722c290c44b91ac01ff",
+    "sector_id": "XLB",
+    "canonical_sector": "Materials",
+    "loaded_rows": 3,
+    "matched_loaded_rows": 0,
+    "registered_sector_choices": 11,
+    "context_requires_explicit_click": true,
+    "source_mode": "candidates",
+    "view": "table",
+    "empty_loaded_result_message": "No matching stocks in the loaded table. Clear filters to widen the view.",
+    "input_unchanged": true,
+    "fetched_additional_rows": false,
+    "browser_acceptance": false
+  },
+  "browser_acceptance": false,
+  "production_published": false
+}

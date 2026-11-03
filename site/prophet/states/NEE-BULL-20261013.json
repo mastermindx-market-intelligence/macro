@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NEE-BULL-20261013",
-  "asof": "2026-11-02",
+  "asof": "2026-11-03",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 79.1,
-  "raw_confidence": 79.6,
-  "delta_vs_base": 19.1,
+  "management_confidence": 79.5,
+  "raw_confidence": 79.9,
+  "delta_vs_base": 19.5,
   "recommended_action": "hold",
   "human_state": "Advancing Cleanly",
   "components": {
     "validity": 100.0,
-    "progress": 54.7,
+    "progress": 57.0,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 58.9
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.121,
-    "dist_to_t1_r": 0.379,
-    "dist_to_t2_r": 1.879,
-    "horizon_pct_used": 31.1,
-    "p1": 0.7476,
-    "p2": 0.3738,
+    "dist_to_stop_r": 2.184,
+    "dist_to_t1_r": 0.316,
+    "dist_to_t2_r": 1.816,
+    "horizon_pct_used": 33.3,
+    "p1": 0.7895,
+    "p2": 0.3947,
     "p3": null,
-    "move_r": 1.121,
-    "mfe_r": 1.121,
+    "move_r": 1.184,
+    "mfe_r": 1.184,
     "mae_r": 0.0
   },
   "rr_ratio": 1.5,
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 5.5399990844726545,
+  "_mfe": 5.8499966430664045,
   "_mae": 0.0,
-  "_max_p1": 0.7476382030327472,
+  "_max_p1": 0.7894732311830509,
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 15,
+  "tau": 0.3333
 }

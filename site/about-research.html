@@ -49,7 +49,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="theme.css?v=9bd171a6"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/"},{"@type":"ListItem","position":2,"name":"Mastermind Research"}]}</script>
 
-<link rel="stylesheet" href="assets/css/3c29bc85.css?v=3c29bc85">
+<link rel="stylesheet" href="assets/css/bdb8adf8.css?v=bdb8adf8">
 
 <link rel="stylesheet" href="assets/css/17c15c21.css?v=17c15c21">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
@@ -190,8 +190,8 @@
     <path d="M2 11 C 40 11, 55 4, 90 7 S 150 3, 178 5 S 210 4, 218 3"/>
     <circle class="dot" cx="218" cy="3" r="2.6"/>
   </svg>
-  <h1 class="est-title">Mastermind Research</h1>
-  <p class="est-dek">How Mastermind produces nightly macro-regime, market-cycle, and per-stock intelligence across US, China, Hong Kong, and Canadian markets.</p>
+  <h1 class="est-title" lang="en">Mastermind Research</h1>
+  <p class="est-dek" lang="en">How Mastermind produces nightly macro-regime, market-cycle, and per-stock intelligence across US, China, Hong Kong, and Canadian markets.</p>
   <div class="est-meta">
     <span><span class="l-en">Published</span><span class="l-zh">发布</span> <span class="mono">2026-07-20</span></span>
     
@@ -200,14 +200,19 @@
 
 <div class="art-layout">
   
-  <nav class="art-toc" id="toc" aria-label="On this page">
-    <p class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></p>
-    <a href="#what-mastermind-covers">What Mastermind covers</a><a href="#how-content-is-produced">How content is produced</a><a href="#honesty-rules">Honesty rules</a><a href="#coverage-boundaries">Coverage boundaries</a><a href="#authorship">Authorship</a>
-  </nav>
+  <details class="art-outline" open>
+    <summary>
+      <span class="toc-h"><span class="l-en">On this page</span><span class="l-zh">本页目录</span></span>
+      <span class="toc-caret" aria-hidden="true"></span>
+    </summary>
+    <nav class="art-toc" id="toc" aria-label="On this page">
+      <a href="#what-mastermind-covers" lang="en">What Mastermind covers</a><a href="#how-content-is-produced" lang="en">How content is produced</a><a href="#honesty-rules" lang="en">Honesty rules</a><a href="#coverage-boundaries" lang="en">Coverage boundaries</a><a href="#authorship" lang="en">Authorship</a>
+    </nav>
+  </details>
   
 
   <div class="art-main">
-    <article class="est-prose">
+    <article class="est-prose" lang="en">
       <p>Mastermind Research is the editorial and analytical team behind the Mastermind market-intelligence platform. Every night, deterministic signal engines recompute macro-regime classifications, market-cycle readings, and per-stock assessments across US, Chinese, Hong Kong, and Canadian markets. The dashboards, articles, and tools on this site are produced from that nightly output.</p>
 
 <h2 id="what-mastermind-covers">What Mastermind covers</h2>
@@ -327,6 +332,18 @@
     function spy(){ var y=window.scrollY+96, act=0; hs.forEach(function(h,i){ if(h&&h.offsetTop<=y) act=i; });
       ls.forEach(function(a,i){ a.classList.toggle('active',i===act); }); }
     window.addEventListener('scroll',spy,{passive:true}); spy(); })();
+</script>
+<script>
+  /* TOC disclosure governance: one details, two regimes. Desktop rail stays
+     open (summary inert); mobile starts collapsed, user may expand. Same
+     900px boundary as the estate_css media query. */
+  (function(){ var d=document.querySelector('details.art-outline'); if(!d)return;
+    var mq=window.matchMedia('(max-width:900px)');
+    function sync(){ if(mq.matches) d.removeAttribute('open'); else d.setAttribute('open',''); }
+    if(mq.addEventListener) mq.addEventListener('change',sync);
+    else if(mq.addListener) mq.addListener(sync);
+    d.addEventListener('toggle',function(){ if(!mq.matches&&!d.open) d.setAttribute('open',''); });
+    sync(); })();
 </script>
 
 

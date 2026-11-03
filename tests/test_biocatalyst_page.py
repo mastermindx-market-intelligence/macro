@@ -129,6 +129,29 @@ def test_biocatalyst_shell_has_one_accessible_three_pane_trial_intelligence_work
     assert re.search(r"<option[^>]*>\s*<span", html) is None
 
 
+def _assert_operational_clock_boundary(js: str) -> None:
+    # This observed client clock is not a source, registry date or milestone calculator.
+    clock = "  function clientCheckTimestamp() {\n    return new Date().toISOString();\n  }"
+    assert js.count(clock) == 1
+    clinical_source = js.replace(clock, "")
+    assert "new Date" not in clinical_source
+    assert clinical_source.count("clientCheckTimestamp()") == 2
+    assert "state.failedCheckAt = clientCheckTimestamp();" in clinical_source
+    assert "state.lastSuccessAt = clientCheckTimestamp();" in clinical_source
+
+
+def test_operational_clock_boundary_rejects_clinical_clock_inference():
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    _assert_operational_clock_boundary(js)
+    for inferred in ("\nvar clinicalDate = new Date();", "\nvar sourceDate = clientCheckTimestamp();"):
+        try:
+            _assert_operational_clock_boundary(js + inferred)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("a client clock cannot originate clinical/source dates")
+
+
 def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dossiers_only():
     js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
     for token in (
@@ -198,7 +221,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
         ):
             assert token in js
     assert "innerHTML" not in js
-    assert "new Date" not in js
+    _assert_operational_clock_boundary(js)
     assert "fetchTrialPages" not in js
     assert "limit=250" not in js
     assert "localStorage" not in js
@@ -339,8 +362,8 @@ def test_biocatalyst_modes_default_to_milestones_and_preserve_verified_pages():
     assert "state.rows = []; state.nextCursor = ''; state.payload = null" in js
     assert "if (options.append && state.rows.length && kind !== 'integrity_block' && kind !== 'client_fault') { preserveAppendFailure(); return; }" in js
     load_body = js[js.index("function loadMilestones(") : js.index("function applyFilters()")]
-    assert "handleHydrationFailure(error, { append: append });" in load_body
-    assert "handleUnavailable(error, { append: append });" not in load_body
+    assert "handleHydrationFailure(error, { append: append," in load_body
+    assert "handleUnavailable(error," not in load_body
     assert "paintUnavailableWorkspace()" not in load_body
     assert "throw markHydration(contractError, 'integrity_block', 200);" in load_body
     assert "throw markHydration(displayError, 'client_fault', 200);" in load_body
