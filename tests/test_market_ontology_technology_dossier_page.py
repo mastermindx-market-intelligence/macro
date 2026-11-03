@@ -14,6 +14,8 @@ import re
 from collections.abc import Mapping
 from pathlib import Path
 
+import pytest
+
 import engine.market_ontology.technology_economic_change as tech
 import tests.test_market_ontology_technology_economic_change as econ
 from engine.market_ontology.technology_dossier_page import (
@@ -278,3 +280,20 @@ def test_fragment_does_not_read_files(monkeypatch) -> None:
         parts = {part.lower() for part in path.parts}
         assert "site" not in parts
         assert "data" not in parts
+
+
+@pytest.mark.parametrize("disposition", ["held", "rejected"])
+def test_f2_excluded_disposition_does_not_render_on_the_page(disposition) -> None:
+    """#9111 F2: a held or rejected assertion never reaches the fragment."""
+    dossier = tech.compose_technology_economic_change(
+        **econ._providers(business_assertions=[econ._with_disposition(disposition)])
+    )
+    html = render_technology_dossier_page(dossier, TEMPLATE)
+    assert 'data-field="predicate">product_workload_role<' not in html
+    assert "Synthetic attributed statement" not in html
+    accepted = tech.compose_technology_economic_change(
+        **econ._providers(business_assertions=[econ._with_disposition("accepted")])
+    )
+    assert 'data-field="predicate">product_workload_role<' in render_technology_dossier_page(
+        accepted, TEMPLATE
+    )

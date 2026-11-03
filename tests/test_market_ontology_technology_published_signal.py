@@ -78,3 +78,31 @@ def test_hand_built_row_without_curation_revision_is_refused() -> None:
     with pytest.raises(TechnologyPublishedSignalRefusal) as excinfo:
         publish_technology_dossier(dossier)
     assert excinfo.value.code == "no_published_row"
+
+
+# --- review disposition (#9111 F2: only accepted dispositions render or publish) ---
+
+
+@pytest.mark.parametrize("disposition", ["held", "rejected"])
+def test_f2_held_or_rejected_only_bundle_publishes_nothing(disposition) -> None:
+    dossier = econ._compose(business_assertions=[econ._with_disposition(disposition)])
+    assert dossier["business"]["rows"] == []
+    assert dossier["coverage"]["limitations"] == [f"{disposition}_present"]
+    with pytest.raises(TechnologyPublishedSignalRefusal) as excinfo:
+        publish_technology_dossier(dossier)
+    assert excinfo.value.code == "no_published_row"
+
+
+def test_f2_mixed_bundle_publishes_only_the_accepted_row() -> None:
+    accepted = econ._with_disposition("accepted")
+    alone = econ._compose(business_assertions=[accepted])
+    dossier = econ._compose(business_assertions=[
+        econ._with_disposition("held"), accepted, econ._with_disposition("rejected"),
+    ])
+    html = publish_technology_dossier(dossier)
+    assert html.count("product_workload_role") == 1
+    assert [row["row_id"] for row in dossier["business"]["rows"]] == [
+        alone["business"]["rows"][0]["row_id"]
+    ]
+    assert dossier["business"]["rows"][0]["row_id"] in html
+    assert html == publish_technology_dossier(alone)
