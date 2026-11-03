@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2173781,
+  "byte_start": 2173483,
+  "normalized": "Non-Exclusive Distributor Agreement dated as of July 27, 2010 between Alpha & Omega Semiconductor (Hong Kong) Limited and Promate Electronic Co., Ltd. (incorporated by reference to Exhibit 4.19 from Annual Report on Form 20-F (File No. 001-34717) filed with the Commission on September 2, 2010)",
+  "normalized_sha256": "39ffb9b2a0a8f5c4b25165c2845867c68ec61d4a914bb9faec87e69bbd2ff701",
+  "raw": "Non-Exclusive Distributor Agreement dated as of July 27, 2010 between Alpha &amp; Omega Semiconductor (Hong Kong) Limited and Promate Electronic Co., Ltd. (incorporated by reference to Exhibit 4.19 from Annual Report on Form 20-F (File No. 001-34717) filed with the Commission on September 2, 2010)",
+  "raw_sha256": "0153806d46682216d22b2d82a91403ea677aaad1bad0b70021fb221dc0f76e69"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

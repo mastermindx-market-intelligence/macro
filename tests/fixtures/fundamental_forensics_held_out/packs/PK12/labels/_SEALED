@@ -1,3 +1,13 @@
 sealed_by: fif-heldout-lab-c-20261031-r1
 sealed_at: 2026-10-31T07:00:00Z
 head_commit: 24ae12d64a91aee63edbb2b1be49e4c73078caca
+
+sealed_by: fif-heldout-lab2-pk12-20261031-r1
+sealed_at: 2026-10-31T18:48:51Z
+head_commit: c1012032960d67cb74125426110ccf0606f2bb75
+split_decision: 2
+
+sealed_by: fif-heldout-lab3-pk12-20261101-r7
+sealed_at: 2026-11-02T06:56:57Z
+head_commit: 75d7799015e1b861bd27a3f9f82d722540e608ba
+split_decision: 3

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-13T19:44:37Z",
+ "accession": "0000831259-26-000012",
+ "cik": "0000831259",
+ "doc_byte_length": 6347593,
+ "doc_sha256": "2987cd4a68a5767d8f3d8dbbb0778c86fbd438a36ed7694581bc01d50c360ced",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-13",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "fcx-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 607549,
+  "byte_start": 607017,
+  "normalized": "Our consolidated revenues for 2025 primarily included sales of copper (75%), gold (15%) and molybdenum (8%). For the three years ended December 31, 2025, the only customer that accounted for 10% or more of our consolidated revenues was Mitsubishi Materials Corporation, PTFI’s joint venture partner in PT Smelting (PTFI’s 66%-owned copper smelter and refinery), in 2024. Refer to Note 14 for a summary of our consolidated revenues by product and geographic area, and revenues and operating income by reportable segment.",
+  "normalized_sha256": "a772a172f2f75a69f5f60fd3fdbc3ab5330bb1adccb382b6dabb3f0b8ad178e6",
+  "raw": "Our consolidated revenues for 2025 primarily included sales of copper (75%), gold (15%) and molybdenum (8%). For the three years ended December 31, 2025, the only customer that accounted for 10% or more of our consolidated revenues was Mitsubishi Materials Corporation, PTFI&#8217;s joint venture partner in PT Smelting (PTFI&#8217;s 66%-owned copper smelter and refinery), in 2024. Refer to Note 14 for a summary of our consolidated revenues by product and geographic area, and revenues and operating income by reportable segment. ",
+  "raw_sha256": "848134b9d0c7f79dacf18d789916680776231da2648a0f63f976858ab40eafb9"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/831259/000083125926000012/fcx-20251231.htm",
+ "xbrl_contexts": []
+}

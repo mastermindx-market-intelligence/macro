@@ -1811,6 +1811,66 @@
       "at": "2026-10-20T06:01:05.114105+00:00",
       "activated": false,
       "importance": 30
+    },
+    "https://www.whitehouse.gov/?p=53802": {
+      "id": "wh-2026-11-01-presidential-message-on-all-saints-day-3b81",
+      "at": "2026-11-02T06:00:46.243334+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=53765": {
+      "id": "wh-2026-10-31-presidential-message-on-reformation-day",
+      "at": "2026-11-02T06:00:48.188788+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=53771": {
+      "id": "wh-2026-10-30-what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-a",
+      "at": "2026-11-02T06:00:49.910168+00:00",
+      "activated": false,
+      "importance": 45
+    },
+    "https://www.whitehouse.gov/?p=53727": {
+      "id": "wh-2026-10-29-president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-mul",
+      "at": "2026-11-02T06:00:51.423837+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=53706": {
+      "id": "wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
+      "at": "2026-11-02T06:01:22.256390+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=53707": {
+      "id": "wh-2026-10-29-president-trump-put-money-back-in-your-pockets-radical-democrats-want-it-back-an",
+      "at": "2026-11-02T06:01:39.739505+00:00",
+      "activated": false,
+      "importance": 8
+    },
+    "https://www.whitehouse.gov/?p=53790": {
+      "id": "wh-2026-11-02-president-trumps-second-term-promises-made-promises-kept-results-delivered",
+      "at": "2026-11-02T15:51:48.279767+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "tw-2026-10-09-tga-build": {
+      "id": "tw-2026-10-09-tga-build",
+      "at": "2026-11-02T15:52:02.222034+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=53936": {
+      "id": "wh-2026-11-02-president-trump-completes-historic-travel-blitz-30-events-20-states-32-days",
+      "at": "2026-11-02T23:32:07.300353+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "tw-2026-10-27-tga-release": {
+      "id": "tw-2026-10-27-tga-release",
+      "at": "2026-11-02T23:32:33.167433+00:00",
+      "activated": true,
+      "importance": 82
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

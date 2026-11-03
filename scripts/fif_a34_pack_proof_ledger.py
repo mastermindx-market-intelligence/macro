@@ -18,9 +18,16 @@ Measurement rules (frozen by the A34 lane packet):
                Producer tests are counted in ``calibration_tests`` but are NOT
                gold and never flip the state.
 - ``held_out`` present only when the sealed marker exists at
-               ``tests/fixtures/fundamental_forensics_held_out/packs/PKNN/labels/_SEALED``.
-               Only existence is checked — this generator never reads any
-               byte under the held-out root (Q0 "who may read").
+               ``tests/fixtures/fundamental_forensics_held_out/packs/PKNN/labels/_SEALED``
+               AND the pack's report in the current Q1 generation
+               (``Q1_REPORTS_REL``) carries ``quality_label``
+               ``held_out_measured``. A sealed split whose Q1 report is
+               ``underpowered`` or ``unavailable_research_only`` is a gap,
+               never a proof. The report's label and failed families
+               (``section_family`` + ``disposition``) are copied verbatim.
+               Only the marker's existence is checked — this generator never
+               reads any byte under the held-out root (Q0 "who may read");
+               the Q1 reports live outside it.
 - ``review``   present only with at least one PASS / PASS_WITH_NOTES row for
                the pack in ``FIF_A34_PACK_REVIEWS.json`` (rows are recorded
                verbatim; git history is never resolved).
@@ -51,6 +58,11 @@ LIVE_PROOFS_REL = "research/financial_intelligence_fabric/FIF_A34_PACK_LIVE_PROO
 PRODUCER_TESTS_REL = "tests/test_fif_specialist_packs.py"
 CALIBRATION_GOLD_REL = "tests/fixtures/fundamental_forensics/pack_gold"
 HELD_OUT_ROOT_REL = "tests/fixtures/fundamental_forensics_held_out"
+# The current Q1 generation. Move it, in the same change that regenerates the
+# ledger, whenever a newer generation directory lands (the A34 test fails
+# while a newer one exists).
+Q1_REPORTS_REL = "research/financial_intelligence_fabric/reports/q1_held_out_20261102_g4"
+Q1_MEASURED_LABEL = "held_out_measured"
 
 LEDGER_SCHEMA = "fif.a34_pack_proof_ledger.v1"
 MATRIX_ROW = "A34"
@@ -103,6 +115,24 @@ def _rows_for(rows: list[dict], pack_id: str, verdicts: tuple[str, ...] | None) 
     return matching
 
 
+def _q1_report(root: Path, pack_id: str) -> dict:
+    rel = f"{Q1_REPORTS_REL}/{pack_id}_pack_quality_report.json"
+    path = root / rel
+    if not path.is_file():
+        return {"quality_label": None, "quality_report": None, "failed_families": []}
+    report = _read_json(path)
+    if report.get("pack_id") != pack_id:
+        raise ValueError(f"{rel} reports pack_id {report.get('pack_id')!r}, expected {pack_id}")
+    return {
+        "quality_label": report.get("quality_label"),
+        "quality_report": rel,
+        "failed_families": [
+            {"section_family": family.get("section_family"), "disposition": family.get("disposition")}
+            for family in report.get("failed_families", [])
+        ],
+    }
+
+
 def _pack_entry(root: Path, q0_pack: dict, reviews: list[dict], live_proofs: list[dict]) -> dict:
     pack_id = q0_pack["pack_id"]
     contract_path = root / _contract_rel(pack_id)
@@ -117,7 +147,9 @@ def _pack_entry(root: Path, q0_pack: dict, reviews: list[dict], live_proofs: lis
 
     sealed_marker = root / HELD_OUT_ROOT_REL / "packs" / pack_id / "labels" / "_SEALED"
     sealed = os.path.exists(sealed_marker)
-    held_out_state = "present" if sealed else "missing"
+    q1 = _q1_report(root, pack_id)
+    measured = q1["quality_label"] == Q1_MEASURED_LABEL
+    held_out_state = "present" if sealed and measured else "missing"
 
     review_rows = _rows_for(reviews, pack_id, REVIEW_VERDICTS_PRESENT)
     live_rows = _rows_for(live_proofs, pack_id, None)
@@ -137,7 +169,9 @@ def _pack_entry(root: Path, q0_pack: dict, reviews: list[dict], live_proofs: lis
         "held_out": {
             "state": held_out_state,
             "sealed": sealed,
-            "quality_label": None,
+            "quality_label": q1["quality_label"],
+            "quality_report": q1["quality_report"],
+            "failed_families": q1["failed_families"],
         },
         "review": {
             "state": "present" if review_rows else "missing",

@@ -173,6 +173,9 @@ for (const [name, statements] of [['mixed', mixedStatements], ['all-refused', al
       'displayed_table_absent',
       'displayed_layout_unsupported',
       'statement_role_not_consolidated',
+      'displayed_cell_period_mismatch',
+      'displayed_column_period_unbound',
+      'statement_role_presentation_absent',
       'A35-W1',
       RAW_ROLE_URI,
       RAW_TITLE,
@@ -194,4 +197,102 @@ test('A35-W1 resolves through PEER_EXCLUSIONS in both languages', () => {
   const copy = api.peerExclusionCopy('A35-W1');
   assert.match(copy.en, /Statement not rebuilt from this filing/);
   assert.match(copy.zh, /未能从该财报重建此报表/);
+});
+
+// Defect (c): the filing's negated preferred label reverses the displayed
+// sign; the exact value and the drawer keep the reported fact bytes.
+const NEGATED_LABEL = 'http://www.xbrl.org/2009/role/negatedLabel';
+const NEGATED_TERSE_LABEL = 'http://www.xbrl.org/2009/role/negatedTerseLabel';
+const TOTAL_LABEL = 'http://www.xbrl.org/2003/role/totalLabel';
+
+function signedCell(value, id) {
+  return {
+    quality_state: 'available',
+    value,
+    unit: 'USD',
+    source_receipt: {
+      occurrence_id: 'occ-' + id,
+      root_cell_id: 'cell-' + id,
+      accession: '0000320193-25-000079',
+      source_span: { start: 10, end: 20 },
+    },
+  };
+}
+
+function cashFlowStatements() {
+  return [{
+    statement_type: 'cash_flow',
+    title: 'Cash flows',
+    columns: [{ label: 'FY2025', start: '2024-09-29', end: '2025-09-27' }],
+    rows: [
+      { as_reported_label: 'Purchases of marketable securities', preferred_label_role: NEGATED_LABEL,
+        cells: [signedCell('24407000000', 'purchases')] },
+      { as_reported_label: 'Inventories', preferred_label_role: NEGATED_LABEL,
+        cells: [signedCell('-1400000000', 'inventories')] },
+      { as_reported_label: 'Other', preferred_label_role: NEGATED_TERSE_LABEL,
+        cells: [signedCell('0', 'other')] },
+      { as_reported_label: 'Cash used in investing activities', preferred_label_role: TOTAL_LABEL,
+        cells: [signedCell('-15195000000', 'investing')] },
+      { as_reported_label: 'Proceeds from sales of marketable securities', preferred_label_role: null,
+        cells: [signedCell('11000000000', 'proceeds')] },
+    ],
+  }];
+}
+
+function compactByOccurrence(html) {
+  const out = {};
+  for (const match of html.matchAll(/data-occurrence-id="([^"]*)"[^>]*><span class="ff-compact tnum">([^<]*)<\/span>/g)) {
+    out[match[1]] = match[2];
+  }
+  return out;
+}
+
+test('negated preferred label reverses the displayed sign only', () => {
+  const { api, nodes } = harness();
+  api.state.statements = { phase: 'ready', statements: cashFlowStatements() };
+  api.renderStatementTree();
+  const compact = compactByOccurrence(nodes['ff-statements'].innerHTML);
+  assert.equal(compact['occ-purchases'], '−$24.4B');
+  assert.equal(compact['occ-inventories'], '$1.4B');
+  assert.equal(compact['occ-other'], '$0');
+  assert.equal(compact['occ-investing'], '−$15.2B');
+  assert.equal(compact['occ-proceeds'], '$11B');
+  const byOccurrence = Object.fromEntries(api.state.statementCells.map((entry) => [entry.occurrenceId, entry]));
+  assert.equal(byOccurrence['occ-purchases'].value, '24407000000');
+  assert.equal(byOccurrence['occ-purchases'].negatedLabel, true);
+  assert.equal(byOccurrence['occ-inventories'].value, '-1400000000');
+  assert.equal(byOccurrence['occ-investing'].negatedLabel, false);
+  assert.equal(byOccurrence['occ-proceeds'].negatedLabel, false);
+});
+
+test('drawer keeps the reported bytes and names the reversed sign', () => {
+  const { api, nodes } = harness();
+  api.state.statements = { phase: 'ready', statements: cashFlowStatements() };
+  api.renderStatementTree();
+  const evidenceBody = element();
+  api.ui.evidenceTitle = element();
+  api.ui.evidenceBody = evidenceBody;
+  const compact = compactByOccurrence(nodes['ff-statements'].innerHTML);
+  for (const [id, negated] of [['purchases', true], ['proceeds', false]]) {
+    const attrs = {
+      'data-source-kind': 'statement',
+      'data-occurrence-id': 'occ-' + id,
+      'data-root-cell-id': 'cell-' + id,
+      'data-accession': '0000320193-25-000079',
+      'data-span-start': '10',
+      'data-span-end': '20',
+    };
+    const control = {
+      getAttribute: (key) => (Object.prototype.hasOwnProperty.call(attrs, key) ? attrs[key] : null),
+      querySelector: () => ({ textContent: compact['occ-' + id] }),
+    };
+    const cell = api.cellEvidenceFromControl(control);
+    assert.equal(cell.negatedLabel, negated);
+    api.renderCellEvidence(cell);
+    const html = evidenceBody.innerHTML;
+    const reported = id === 'purchases' ? '24407000000' : '11000000000';
+    assert.match(html, new RegExp('<code class="ff-exact">' + reported + '</code>'));
+    assert.equal(html.includes('with its sign reversed'), negated);
+    assert.equal(html.includes('以相反符号列示'), negated);
+  }
 });

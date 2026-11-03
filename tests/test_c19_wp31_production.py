@@ -688,6 +688,7 @@ def test_read_revisions_retries_transient_then_returns(tmp_path: Path) -> None:
     assert slept == [0.5, 1.0]
     assert inputs.counts["revisions_reader_attempts"] == 3
     assert inputs.counts["revisions_reader_transient_failures"] == 2
+    assert inputs.counts["revisions_reader_final_failures"] == 0
     # run_kwargs wires this wrapper (not the bare incumbent) as the runner's
     # one reader call — checked on the source so no repo/network is touched.
     src = Path(prod.__file__).read_text(encoding="utf-8")
@@ -715,6 +716,7 @@ def test_read_revisions_final_failure_propagates_unchanged(tmp_path: Path) -> No
     assert n["calls"] == 2
     assert inputs.counts["revisions_reader_attempts"] == 2
     assert inputs.counts["revisions_reader_transient_failures"] == 1
+    assert inputs.counts["revisions_reader_final_failures"] == 1
     # attempts < 1 still performs exactly one attempt and raises.
     inputs2 = prod.ProductionInputs(
         repo=tmp_path, now=_NOW, revisions_reader=reader, reader_attempts=0,
@@ -724,3 +726,156 @@ def test_read_revisions_final_failure_propagates_unchanged(tmp_path: Path) -> No
     with pytest.raises(_Typed):
         inputs2.read_revisions(["X:2026Q1"])
     assert n["calls"] == before + 1
+
+
+def test_read_revisions_all_attempts_fail_counts_final_once(tmp_path: Path) -> None:
+    from scripts import c19_wp31_production as prod
+
+    raised: list[BaseException] = []
+
+    def reader(ids: Any, *, max_hops: int) -> Any:
+        exc = RuntimeError(f"down {len(raised)}")
+        raised.append(exc)
+        raise exc
+
+    inputs = prod.ProductionInputs(
+        repo=tmp_path, now=_NOW, revisions_reader=reader,
+        reader_attempts=3, sleeper=lambda _s: None,
+    )
+    with pytest.raises(RuntimeError) as info:
+        inputs.read_revisions(["X:2026Q1"])
+    # The LAST attempt's exception object propagates — not wrapped, not replaced.
+    assert info.value is raised[-1]
+    assert len(raised) == 3
+    assert inputs.counts["revisions_reader_attempts"] == 3
+    assert inputs.counts["revisions_reader_transient_failures"] == 2
+    assert inputs.counts["revisions_reader_final_failures"] == 1
+
+
+def test_read_revisions_third_attempt_succeeds_counts_no_final(tmp_path: Path) -> None:
+    from scripts import c19_wp31_production as prod
+
+    n = {"calls": 0}
+
+    def reader(ids: Any, *, max_hops: int) -> Any:
+        n["calls"] += 1
+        if n["calls"] < 3:
+            raise RuntimeError("transient")
+        return {}
+
+    inputs = prod.ProductionInputs(
+        repo=tmp_path, now=_NOW, revisions_reader=reader,
+        reader_attempts=3, sleeper=lambda _s: None,
+    )
+    assert inputs.read_revisions(["X:2026Q1"]) == {}
+    # Same attempts/transient pair as the all-fail case; only the final
+    # counter tells "succeeded on attempt 3" from "failed on attempt 3".
+    assert inputs.counts["revisions_reader_attempts"] == 3
+    assert inputs.counts["revisions_reader_transient_failures"] == 2
+    assert inputs.counts["revisions_reader_final_failures"] == 0
+
+
+# ---------------------------------------------------------------------------
+# case 13 — CLI: NOT_EVALUABLE reason breakdown (reason tokens only)
+# ---------------------------------------------------------------------------
+
+
+def test_not_evaluable_detail_empty() -> None:
+    from scripts import c19_wp31_evaluate as cli
+
+    assert cli._not_evaluable_detail([]) == {}
+
+
+def test_not_evaluable_detail_sorts_reasons_and_s_reasons() -> None:
+    from scripts import c19_wp31_evaluate as cli
+
+    detail = cli._not_evaluable_detail([
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "zz_late", "s": {"reason": "b_s"}},
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "aa_early", "s": {"reason": "z_s"}},
+        {"status": "NOT_EVALUABLE", "not_evaluable_reason": "aa_early", "s": {"reason": "a_s"}},
+    ])
+    assert list(detail) == ["aa_early", "zz_late"]
+    assert list(detail["aa_early"]) == ["a_s", "z_s"]
+
+
+def test_cli_payload_and_stdout_carry_not_evaluable_detail(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture
+) -> None:
+    inputs, repo, out_root = _build_inputs_with_repo(tmp_path)
+    exposure = out_root / "exposure.jsonl"
+    out = out_root / "report.json"
+    sentinel = "ZZ_SENTINEL_LABEL"
+    fake_result = {
+        "gates": [{"gate": "G-1", "detail": "ok"}],
+        "report": {"eligible": 1, "exposed": 0,
+                   "not_evaluable": {"pit_unrecoverable": 2, "unspecified": 1},
+                   "arms": {}, "n_common_support": 0, "n_clusters": 0,
+                   "delta": 0, "delta_exact": "0/0",
+                   "interval": [0.0, 0.0],
+                   "discordant": {"a2_right_minus_k_wrong": 0,
+                                 "k_right_minus_a2_wrong": 0},
+                   "verdict": "MONITORING", "verdict_reason": "",
+                   "look": "monitoring", "study_stopped": False,
+                   "secondaries": {}, "splits": {}, "costs": {},
+                   "family": gates.FAMILY, "budget": gates.BUDGET},
+        "label_pending": 0,
+        "exhibit_failures": [],
+        "episode_count": 4,
+        # Unsorted on purpose; the NOT_EVALUABLE episodes also carry the
+        # sentinel so a wrong-field read on them would leak it.
+        "episodes": [
+            {"issuer": "ZZWQ", "q": "2026Q2", "status": "NOT_EVALUABLE",
+             "label": sentinel, "a0": sentinel,
+             "not_evaluable_reason": None, "s": None},
+            {"issuer": "ZZWP", "q": "2026Q2", "status": "NOT_EVALUABLE",
+             "label": sentinel,
+             "not_evaluable_reason": "pit_unrecoverable",
+             "s": {"reason": "q_release_time_unresolved"}},
+            {"issuer": "ZZWP", "q": "2026Q1", "status": "NOT_EVALUABLE",
+             "not_evaluable_reason": "pit_unrecoverable",
+             "s": {"reason": "chain_unreadable"}},
+            {"issuer": "ZZWQ", "q": "2026Q3", "label": sentinel,
+             "status": "ELIGIBLE", "s": {"reason": None}},
+        ],
+    }
+    seen: dict[str, Any] = {}
+
+    def fake_run(**kw: Any) -> Any:
+        seen.update(kw)
+        return fake_result
+
+    monkeypatch.setattr(runner_mod, "run_evaluation", fake_run)
+    monkeypatch.setattr("scripts.c19_wp31_runner.run_evaluation", fake_run)
+
+    from scripts import c19_wp31_evaluate as cli
+    from scripts import c19_wp31_production as prod
+    rc = cli.main([
+        "--repo", str(repo),
+        "--exposure-path", str(exposure),
+        "--out", str(out),
+        "--now", "2026-10-30T12:00:00Z",
+    ])
+    assert rc == 0
+    # The CLI hands the runner the retrying wrapper, not None or the bare incumbent.
+    assert getattr(seen["revisions_reader"], "__func__", None) is prod.ProductionInputs.read_revisions
+    expected = {
+        "pit_unrecoverable": {"chain_unreadable": 1, "q_release_time_unresolved": 1},
+        "unspecified": {"none": 1},
+    }
+    text = out.read_text()
+    payload = json.loads(text)
+    assert payload["not_evaluable_detail"] == expected
+    assert "episodes" not in payload
+    assert sentinel not in text
+
+    captured = capsys.readouterr()
+    out_lines = captured.out.splitlines()
+    assert [ln for ln in out_lines if ln.startswith("not_evaluable_detail.")] == [
+        "not_evaluable_detail.pit_unrecoverable.chain_unreadable=1",
+        "not_evaluable_detail.pit_unrecoverable.q_release_time_unresolved=1",
+        "not_evaluable_detail.unspecified.none=1",
+    ]
+    assert "adapter_counts.revisions_reader_final_failures=0" in out_lines
+    assert sentinel not in captured.out
+    assert sentinel not in captured.err
+    assert "episodes" not in captured.out

@@ -274,3 +274,11 @@ def test_builder_sets_active_card_as_of_from_the_evaluation():
     i = lines.index(want)
     assert lines[i - 1] == '        card.update(CF.card_fields(sc, ev.get("oos")))'
     assert lines[i + 1] == '        cards_by_group.setdefault(m["group"], []).append(card)'
+
+
+def test_intro_oil_clause_names_the_dollar_not_inventories():
+    src = (_ROOT / "templates" / "commodity_strategies.html.j2").read_text(encoding="utf-8")
+    assert "oil on inventories" not in src
+    assert ("oil on the dollar and the futures curve "
+            "(inventories were tested and dropped, with no forward edge)") in src
+    assert "原油看美元与期货曲线（库存经检验后剔除，无前瞻性）" in src

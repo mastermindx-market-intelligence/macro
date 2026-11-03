@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-24T10:51:59Z",
+ "accession": "0001628280-26-026991",
+ "cik": "0001786909",
+ "doc_byte_length": 17263150,
+ "doc_sha256": "d7cc679b2a248cba7860d9fafa396859d4c941e2e5aa0a4bd63afe52fbad8da8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-24",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sbsw-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 7512632,
+  "byte_start": 7512487,
+  "normalized": "(Wheaton International) (Wheaton Stream) and the gold and platinum streaming arrangement with Franco-Nevada (Franco-Nevada stream) in the above.",
+  "normalized_sha256": "6179f2ac16300ab245391c8befccf1240d79845174615d4ccfae317df25d0080",
+  "raw": "(Wheaton International) (Wheaton Stream) and the gold and platinum streaming arrangement with Franco-Nevada (Franco-Nevada stream) in the above. ",
+  "raw_sha256": "a61b892162da08799aa720e63283aee80729ef3ef819b4cd23408f20898de6db"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1786909/000162828026026991/sbsw-20251231.htm",
+ "xbrl_contexts": []
+}

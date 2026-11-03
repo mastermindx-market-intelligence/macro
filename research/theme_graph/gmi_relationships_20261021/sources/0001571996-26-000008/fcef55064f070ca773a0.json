@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-16T20:12:39Z",
+ "accession": "0001571996-26-000008",
+ "cik": "0001571996",
+ "doc_byte_length": 3552749,
+ "doc_sha256": "f13e351f3d1e4723fd498a815d85e18ccccd45758597f41a924b7324cac812ef",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-16",
+ "form": "10-K",
+ "period_of_report": "2026-01-30",
+ "primary_document": "dell-20260130.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 627392,
+  "byte_start": 626732,
+  "normalized": "Relationship with VMware — In March 2024, following the acquisition of VMware by Broadcom, we terminated our Commercial Framework Agreement with VMware, whereby we acted as a distributor of VMware standalone products and services. We no longer act as a distributor of those products and services, although we continue to support customers that have purchased resale offerings sold in prior periods.",
+  "normalized_sha256": "415ef7dce5eaf16e5666c6f5dadb8d3f28337724fe9883daa8f67f2c005e2e66",
+  "raw": "Relationship with VMware</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-style:italic;font-weight:400;line-height:120%\"> </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">&#8212; In March 2024, following the acquisition of VMware by Broadcom, we terminated our Commercial Framework Agreement with VMware, whereby we acted as a distributor of VMware standalone products and services. We no longer act as a distributor of those products and services, although we continue to support customers that have purchased resale offerings sold in prior periods.",
+  "raw_sha256": "fcef55064f070ca773a0876507d43d702fc811144b493b08b5cf3f2a7f57b3c7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1571996/000157199626000008/dell-20260130.htm",
+ "xbrl_contexts": []
+}

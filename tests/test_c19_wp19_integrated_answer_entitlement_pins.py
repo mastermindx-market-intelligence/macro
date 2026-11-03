@@ -26,9 +26,14 @@ import app.integrated_answer as integrated_answer
 from app.forensics import _PRIVATE_HEADERS
 from app.integrated_answer import router as integrated_answer_router
 from engine.company_intelligence.contracts import ContractError, safe_ticker
-from tests.test_integrated_answer_v0 import _client, _page, _patch_all_seams
+from tests.test_integrated_answer_v0 import _client, _page, _patch_all_seams, pin_capital_structure_leg
 
 _PATH = "/api/integrated-answer/v1/AAPL"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _real_client(monkeypatch, *, flag_on: bool = True) -> TestClient:

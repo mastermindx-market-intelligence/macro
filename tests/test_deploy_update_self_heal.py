@@ -836,6 +836,12 @@ MUST_RESTART = [
     'engine/company_intelligence/h20_reported_event.py',
     'engine/earnings_release/__init__.py',
     'engine/earnings_release/receipts.py',
+    'engine/earnings_release/binding.py',
+    'engine/earnings_release/figures.py',
+    'engine/earnings_release/filing_key.py',
+    'collectors/sec_document_spine.py',
+    'collectors/sec_request_pacer.py',
+    'engine/marketing/attribution.py',
     'engine/theme_graph/native_disclosure_propagation.py',
     'lib/economic_propagation.py',
     'lib/economic_propagation_v2.py',
@@ -912,6 +918,26 @@ MUST_RESTART = [
     "engine/biocatalyst/trials.py",
     "engine/sector_intelligence/__init__.py",
     "engine/sector_intelligence/contracts.py",
+
+    # Paid theme-research serving closure, reached LAZILY. The registry binds
+    # the semiconductor loader inside `_load_semiconductor_owner_bundle`
+    # (function-local import, deliberate: the loader pulls the Company
+    # Intelligence reader's requests/pandas/pyarrow stack, which
+    # `test_registry_import_closure_stays_light` forbids the registry to drag
+    # into producers). So the chain enters macro-api's `sys.modules` on the
+    # FIRST SERVED REQUEST and stays there for the life of the process — every
+    # bit as import-cached as a module-level import, and invisible to
+    # `test_api_load_time_import_closure_is_covered_by_restart_regex`, which
+    # walks module-level imports only. That blind spot is why these three had
+    # to be found by hand; the Energy seat reported them at #7870
+    # issuecomment-5866433049 item 3. Pinned here so the regex keeps covering
+    # them, since no closure walk will ever re-derive them.
+    "engine/market_ontology/semiconductor_owner_bundle.py",
+    "engine/market_ontology/semiconductor_witness_scope.py",
+    "engine/market_ontology/workspace_projection.py",
+    # The canonical theme-id resolver: the research composer compares an
+    # assertion's `scope.canonical_theme_id` against it on every request.
+    "engine/theme_graph/identity.py",
 
     # Capital Structure serving closure — imported by app/capital_structure.py.
     "engine/capital_structure/__init__.py",
@@ -1039,6 +1065,13 @@ MUST_RESTART = [
     "engine/marketing/ledgers.py",
     "engine/marketing/opportunity_bus.py",
     "engine/marketing/publication.py",
+    # The catalyst public reader imports the source adapter and its store.
+    "engine/marketing/catalyst_source_adapter.py",
+    "engine/marketing/catalyst_source_store.py",
+    # The reader loads the pilot universe through the writer's load_universe and
+    # caches the rows for the process lifetime.
+    "engine/marketing/catalyst_source_cycle.py",
+    "config/catalyst_pilot_universe.json",
     # app/tape.py REST quotes, and lib modules on the chat path
     "engine/live_quotes.py",
     "lib/config.py",
@@ -1054,6 +1087,8 @@ MUST_NOT_RESTART = [
     'engine/price_pressure/artifact.py',
     'engine/entry_radar/live_eval.py',
     'engine/entry_radar/earnings_contexts.py',
+    # The catalyst SEC writer CLI runs as its own oneshot timer, never in macro-api.
+    'scripts/run_catalyst_source_cycle.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
     'scripts/entry_radar_live.py',
     'contracts/opportunity_evidence/vector.v1.schema.json.bak',

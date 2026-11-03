@@ -6,11 +6,12 @@ character carries the byte offset of the raw-document byte (or entity) it came
 from, plus the section locator every narrative pack (PK09 first, then PK07,
 PK08, PK10, PK12) reads ``text_span`` evidence through.
 
-Laws: standard library only (``html``/``re``); same bytes -> same
+Laws: standard library only (``html``/``re``/``bisect``); same bytes -> same
 ``NarrativeText``; no fuzzy matching, no NLP, no network.
 """
 from __future__ import annotations
 
+import bisect
 import html
 import re
 from dataclasses import dataclass
@@ -22,6 +23,20 @@ Span = tuple[int, int]
 # Subtrees dropped wholesale before any text is read. ``ix:header`` carries the
 # XBRL contexts; its local name is matched after namespace-prefix stripping.
 _DROP_SUBTREE_TAGS = frozenset({"script", "style", "ix:header"})
+# HTML elements that open or close a block: the same names as pk01_debt's
+# ``_BLOCK_TAGS`` (copied, not imported — each pack owns its own frozen
+# vocabulary). A space emitted for one of these tags is a block break: the
+# collapsed character run that contains it bounds a sentence in
+# ``block_sentence_span``. Inline markup (``span``, ``a``, ``b``, ``i``,
+# ``font``, ...) and namespaced wrappers (``ix:nonNumeric`` — any name
+# containing ``:``) sit mid-sentence and never break.
+_BLOCK_BREAK_TAGS = frozenset(
+    (
+        "address article aside blockquote body br caption center dd div dl dt"
+        " footer h1 h2 h3 h4 h5 h6 header hr html li ol p pre section table"
+        " tbody td tfoot th thead tr ul"
+    ).split()
+)
 # Semicolon-terminated entities only: a bare ``&`` stays literal.
 _ENTITY_RE = re.compile(rb"&(#\d+|#x[0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);")
 # TOC-line fingerprints for the skip rule (A.2).
@@ -38,11 +53,16 @@ class NarrativeText:
     (or entity start) that produced ``text[i]``. A tag-derived space cites the
     tag's first byte; a collapsed whitespace run cites its first byte; an
     entity-derived character cites the entity's ``&``.
+
+    ``block_breaks`` lists the ``text`` indices of the collapsed spaces that
+    carry a ``_BLOCK_BREAK_TAGS`` boundary (PK10's block-bounded sentence
+    rule); it is derived data — ``text`` and ``offsets`` are unchanged by it.
     """
 
     document_id: str
     text: str
     offsets: tuple[int, ...]
+    block_breaks: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -104,6 +124,10 @@ def narrative_text_from_bytes(raw: bytes, document_id: str) -> NarrativeText:
     """Build the frozen A.1 narrative text of one raw primary document."""
     chars: list[str] = []
     offsets: list[int] = []
+    # Input indices (into ``chars``) of tag spaces emitted for block-level
+    # tags: opening, closing and self-closing alike. A namespaced name
+    # (anything containing ``:``) never marks.
+    block_tag_spaces: set[int] = set()
     i = 0
     n = len(raw)
     while i < n:
@@ -116,36 +140,62 @@ def narrative_text_from_bytes(raw: bytes, document_id: str) -> NarrativeText:
         end = _tag_end(raw, lt)
         tag = raw[lt:end]
         name_match = re.match(rb"<\s*/?\s*([A-Za-z:][\w.:-]*)", tag)
-        name = name_match.group(1).lower() if name_match else b""
+        raw_name = name_match.group(1) if name_match else b""
+        # Decode before the compare: the drop set holds str names, while the
+        # closing-tag regex below keeps the raw bytes.
+        name = raw_name.decode("ascii", "ignore").lower()
         closing = re.match(rb"<\s*/", tag) is not None
         self_closing = tag.rstrip().endswith(b"/>")
         if name in _DROP_SUBTREE_TAGS and not closing and not self_closing:
             close = re.compile(
-                rb"</\s*" + re.escape(name) + rb"\s*>", re.IGNORECASE
+                rb"</\s*" + re.escape(raw_name) + rb"\s*>", re.IGNORECASE
             ).search(raw, end)
             if close is None:  # unterminated drop subtree: nothing more to read
                 break
             i = close.end()
             continue
         # Every other tag becomes one space citing the tag's first byte.
+        if ":" not in name and name in _BLOCK_BREAK_TAGS:
+            block_tag_spaces.add(len(chars))
         chars.append(" ")
         offsets.append(lt)
         i = end
     out_chars: list[str] = []
     out_offsets: list[int] = []
-    for ch, off in zip(chars, offsets):
+    # Output indices of collapsed spaces whose run held a block-tag space.
+    out_breaks: list[int] = []
+    space_at: int | None = None  # output index of the current collapsed space
+    space_marked = False
+    for idx, (ch, off) in enumerate(zip(chars, offsets)):
         if ch.isspace():
             if out_chars and out_chars[-1] == " ":
-                continue  # collapsed run keeps its first byte's offset
+                # collapsed run keeps its first byte's offset; a marked tag
+                # space dropped here still marks the run's kept space.
+                if idx in block_tag_spaces and not space_marked:
+                    space_marked = True
+                    out_breaks.append(space_at)
+                continue
             out_chars.append(" ")
             out_offsets.append(off)
+            space_at = len(out_chars) - 1
+            space_marked = idx in block_tag_spaces
+            if space_marked:
+                out_breaks.append(space_at)
         else:
+            space_at = None
+            space_marked = False
             out_chars.append(ch)
             out_offsets.append(off)
+    # A block break separates narrative text on both sides: the block-tag
+    # spaces at the very start or end of the document abut no text, so they
+    # are not breaks (B1: ``<p>alpha</p><p>beta</p>`` breaks exactly once,
+    # between "alpha" and "beta").
+    block_breaks = tuple(k for k in out_breaks if 0 < k < len(out_chars) - 1)
     return NarrativeText(
         document_id=document_id,
         text="".join(out_chars),
         offsets=tuple(out_offsets),
+        block_breaks=block_breaks,
     )
 
 
@@ -201,10 +251,34 @@ def sentence_span(text: str, start: int, end: int, bounds: Span) -> Span:
     return (sentence_start, min(sentence_end, hi))
 
 
+def block_sentence_span(
+    nt: NarrativeText, start: int, end: int, bounds: Span
+) -> Span:
+    """``sentence_span`` clipped to the nearest block breaks around ``[start, end)``.
+
+    The ``. ``-delimited sentence still comes from :func:`sentence_span`; a
+    block break then bounds it on both sides — the sentence starts after the
+    greatest break before ``start`` and ends at the least break at or after
+    ``end`` — so a cadence and a vote mention in different paragraphs or
+    table cells never share a sentence. With no recorded breaks the result
+    is exactly ``sentence_span``'s.
+    """
+    sentence_start, sentence_end = sentence_span(nt.text, start, end, bounds)
+    breaks = nt.block_breaks
+    left = bisect.bisect_left(breaks, start)
+    if left > 0 and breaks[left - 1] + 1 > sentence_start:
+        sentence_start = breaks[left - 1] + 1
+    right = bisect.bisect_left(breaks, end)
+    if right < len(breaks) and breaks[right] < sentence_end:
+        sentence_end = breaks[right]
+    return (sentence_start, sentence_end)
+
+
 __all__ = [
     "NarrativeText",
     "SectionSpec",
     "Span",
+    "block_sentence_span",
     "locate_section",
     "narrative_text_from_bytes",
     "primary_document_text",

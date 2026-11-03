@@ -422,12 +422,16 @@ def build_physical_context(series: dict, *, as_of: str, years: int = 5,
     for name in SERIES:
         raw = _weekly(series.get(name))
         clipped = None if raw is None else raw.loc[raw.index <= cutoff]
-        invalid_stock = (name.endswith("_stocks") and clipped is not None and (clipped < 0).any())
+        # A US aggregate stock at or below zero is impossible: refuse it, never publish a 0.0 Mb reading.
+        negative_stock = name.endswith("_stocks") and clipped is not None and bool((clipped < 0).any())
+        zero_stock = name.endswith("_stocks") and clipped is not None and bool((clipped == 0).any())
+        invalid_stock = negative_stock or zero_stock
         clean[name] = clipped if clipped is not None and not clipped.empty and not invalid_stock else None
         rows = [] if raw is None else [(d.date().isoformat(), float(v)) for d, v in raw.items()]
         sources[name] = {
             "path": f"data/eia/{name}.parquet",
-            "state": "invalid_negative_stock" if invalid_stock else "available" if clean[name] is not None else "missing",
+            "state": ("invalid_negative_stock" if negative_stock else "invalid_zero_stock" if zero_stock
+                      else "available" if clean[name] is not None else "missing"),
             "fingerprint": sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest(),
             "input_latest_observation": None if raw is None else raw.index[-1].date().isoformat(),
             "observation_at": None if clean[name] is None else clean[name].index[-1].date().isoformat(),

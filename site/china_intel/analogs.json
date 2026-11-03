@@ -1,21 +1,21 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-10-31T13:02:37Z",
-  "as_of": "2026-10-30",
+  "generated_utc": "2026-11-02T16:27:12Z",
+  "as_of": "2026-11-02",
   "coverage": {
     "start": "2006-03-30",
-    "end": "2026-10-30",
-    "n_candidate_days": 5372
+    "end": "2026-11-02",
+    "n_candidate_days": 5373
   },
   "query": {
-    "date": "2026-10-30",
+    "date": "2026-11-02",
     "quad": "Q3",
     "quad_name": "Stagflation",
     "liquidity": "contracting",
     "cycle": "mid",
-    "growth_z": -1.584,
-    "inflation_z": 1.2322
+    "growth_z": -1.5835,
+    "inflation_z": 1.2319
   },
   "analogs": [
     {
@@ -55,44 +55,26 @@
       }
     },
     {
-      "date": "2024-07-04",
+      "date": "2024-07-05",
       "distance": 0.1151,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.015233,
-        "h60": 0.168055,
-        "h120": 0.127704
+        "h20": -0.021357,
+        "h60": 0.108955,
+        "h120": 0.11009
       },
       "fwd_csi300": {
-        "h20": -0.003186,
-        "h60": 0.243638,
-        "h120": 0.151089
-      }
-    },
-    {
-      "date": "2024-02-01",
-      "distance": 0.2891,
-      "quad": "Q3",
-      "quad_name": "Stagflation",
-      "liquidity": "contracting",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.116817,
-        "h60": 0.142417,
-        "h120": 0.049008
-      },
-      "fwd_csi300": {
-        "h20": 0.116248,
-        "h60": 0.136702,
-        "h120": 0.066732
+        "h20": -0.0076,
+        "h60": 0.158053,
+        "h120": 0.129556
       }
     },
     {
       "date": "2023-10-04",
-      "distance": 0.2891,
+      "distance": 0.289,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -109,8 +91,26 @@
       }
     },
     {
+      "date": "2024-02-05",
+      "distance": 0.289,
+      "quad": "Q3",
+      "quad_name": "Stagflation",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.087261,
+        "h60": 0.111944,
+        "h120": 0.02842
+      },
+      "fwd_csi300": {
+        "h20": 0.073914,
+        "h60": 0.090052,
+        "h120": 0.027995
+      }
+    },
+    {
       "date": "2025-10-24",
-      "distance": 0.2891,
+      "distance": 0.289,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -127,26 +127,26 @@
       }
     },
     {
-      "date": "2025-01-17",
+      "date": "2025-01-16",
       "distance": 0.3111,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.030854,
-        "h60": 0.015894,
-        "h120": 0.098959
+        "h20": 0.039676,
+        "h60": 0.017714,
+        "h120": 0.093567
       },
       "fwd_csi300": {
-        "h20": 0.026205,
-        "h60": -0.008976,
-        "h120": 0.092304
+        "h20": 0.041212,
+        "h60": -0.005144,
+        "h120": 0.086638
       }
     },
     {
       "date": "2026-06-09",
-      "distance": 0.5755,
+      "distance": 0.5754,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -182,7 +182,7 @@
     },
     {
       "date": "2017-01-04",
-      "distance": 1.0118,
+      "distance": 1.0116,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
@@ -199,55 +199,55 @@
       }
     },
     {
-      "date": "2008-08-29",
+      "date": "2008-08-25",
       "distance": 1.0133,
       "quad": "Q3",
       "quad_name": "Stagflation",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.074671,
-        "h60": -0.207393,
-        "h120": -0.045786
+        "h20": -0.058381,
+        "h60": -0.213711,
+        "h120": -0.120713
       },
       "fwd_csi300": null
     },
     {
-      "date": "2019-05-24",
+      "date": "2019-04-29",
       "distance": 1.0409,
       "quad": "Q3",
       "quad_name": "Stagflation",
-      "liquidity": "expanding",
+      "liquidity": "neutral",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.03054,
-        "h60": -0.004289,
-        "h120": 0.006435
+        "h20": -0.005653,
+        "h60": 0.015661,
+        "h120": 0.011241
       },
       "fwd_csi300": {
-        "h20": 0.049406,
-        "h60": 0.056195,
-        "h120": 0.088707
+        "h20": -0.009025,
+        "h60": 0.066103,
+        "h120": 0.071947
       }
     }
   ],
   "fan": {
     "h20": {
-      "p25": -0.018526,
-      "median": 0.007042,
-      "p75": 0.030618,
+      "p25": -0.023119,
+      "median": -2.8e-05,
+      "p75": 0.018019,
       "n": 12
     },
     "h60": {
-      "p25": -0.006439,
-      "median": 0.01453,
+      "p25": 0.006194,
+      "median": 0.016688,
       "p75": 0.030265,
       "n": 12
     },
     "h120": {
       "p25": -0.026591,
       "median": 0.014749,
-      "p75": 0.058798,
+      "p75": 0.048504,
       "n": 11
     }
   },

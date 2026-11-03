@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HBAN-BULL-20260911",
-  "asof": "2026-10-31",
+  "asof": "2026-11-02",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 15.1,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -2.372,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 111.1,
+    "horizon_pct_used": 115.6,
     "p1": -2.2477,
     "p2": -1.1238,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 50,
-  "tau": 1.1111,
+  "days_elapsed": 52,
+  "tau": 1.1556,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
