@@ -249,9 +249,19 @@ def test_real_controller_upload_dispatch_binding_chain_with_seven_active(monkeyp
     demands=server.upload(s,'demands','ci-proof-demands-70-1')
     result=s.reserve(demands);assert result['prepared'] is True
     generation=result['generation']
+    # Demand comments retain age via the complete open-PR read, but are NOT
+    # outstanding proof reservations and must not receive the shared label.
+    assert server.labels == []
+    assert not any(path == '/issues/7/labels' for _,path,_ in server.writes)
+    records,pending=s.history(pull())
+    assert records == [] and len(pending) == 1
+    assert pending[0].demand_id == generation
     prepared=server.upload(s,'prepared',f'ci-proof-admission-70-1-{generation}-prepared')
     checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-70-1-7')
     assert s.dispatch(prepared,checkpoint)==dict(bound=True,generation=generation)
+    # Once the protected admission is actually indexed, the original lease
+    # association remains present for outstanding capacity and recovery.
+    assert mog.REFRESH_LEASE_LABEL in {row['name'] for row in server.labels}
     bound=server.upload(s,'bound',f'ci-proof-admission-70-1-{generation}-bound')
     assert s.finalize(bound)==dict(finalized=True)
     assert server.description=='a2 idle'

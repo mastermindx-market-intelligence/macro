@@ -209,6 +209,9 @@ class Stages:
         return dict(ready=True, changed=bool(changed), count=len(demands))
 
     def index(self, number, prefix, reference):
+        if prefix not in {mog.DEMAND_COMMENT_PREFIX, mog.ADMISSION_COMMENT_PREFIX,
+                          mog.CHECKPOINT_COMMENT_PREFIX}:
+            raise ValueError('unrecognized original receipt namespace')
         body = prefix + json.dumps(reference, sort_keys=True, separators=(',', ':'))
         root = f'{mog.GITHUB_API}/repos/{self.repo}'
         code, result = mog._request('POST', root + f'/issues/{number}/comments', self.read, {'body': body})
@@ -217,6 +220,12 @@ class Stages:
         code, observed = mog._request('GET', root + f"/issues/comments/{result['id']}", self.read)
         if code != 200 or observed.get('id') != result['id'] or observed.get('body') != body or not mog.admission_index_writer(observed):
             raise RuntimeError('UNKNOWN original receipt index readback')
+        # An unserved demand is recoverable through the complete open-PR census,
+        # not yet an admitted capacity lease. Label association here would
+        # falsely mark every pending PR as in-flight and exhaust the finite
+        # shared owner inventory before any proof slot has been reserved.
+        if prefix == mog.DEMAND_COMMENT_PREFIX:
+            return
         code, _ = mog._request('POST', root + f'/issues/{number}/labels', self.write, {'labels': [mog.REFRESH_LEASE_LABEL]})
         if code != 200:
             raise RuntimeError('UNKNOWN original receipt association')
