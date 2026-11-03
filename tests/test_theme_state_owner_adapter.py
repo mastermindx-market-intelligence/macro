@@ -950,3 +950,97 @@ def test_qualification_cannot_change_capture_dependencies(world, monkeypatch, ch
     with pytest.raises(ValueError, match="changed"):
         adapter.capture_owner_bundle(world[0], effective_at=EFFECTIVE,
                                      known_at=None, owner_readers=MutatingReader())
+
+
+THS = "ltheme:ths:900001"
+
+
+def _bind_ths_through_graph(world, peers, *, valid_to=None, direction="INCOMING", strip=(THS,)):
+    """Make subjects carry no source_meta basket (the actual build_ths_plane shape)
+    and express the THS concept only through owner graph edges."""
+    graph = world[0] / "data/theme_graph"
+    nodes = pd.read_parquet(graph / "nodes.parquet")
+    for node in strip:
+        local_id = node.rsplit(":", 1)[1]
+        nodes.loc[nodes["node_id"] == node, "source_meta"] = json.dumps(
+            {"source_family": node.split(":")[1], "source_local_id": local_id, "grain": "fixture"})
+    nodes.to_parquet(graph / "nodes.parquet", index=False)
+    edges = pd.read_parquet(graph / "edges.parquet").to_dict("records")
+    for i, (peer, target) in enumerate(peers):
+        src, dst = (peer, target) if direction == "INCOMING" else (target, peer)
+        edges.append({"edge_id": f"fixture-basket-expression-{i}", "type": "EXPRESSES", "src": src, "dst": dst,
+                      "valid_from": "2026-10-01", "valid_to": valid_to, "belief_time": "2026-10-01",
+                      "evidence_time": "2026-10-01", "computed_at": "2026-10-01T00:00:00Z",
+                      "source_class": "vendor_concept_map", "evidence_refs": "[]"})
+    pd.DataFrame(edges, columns=list(store.EDGE_COLUMNS)).to_parquet(graph / "edges.parquet", index=False)
+
+
+def _membership_read(bundle, node):
+    return bundle.snapshot()["subjects"][node]["native_reads"]["membership"]
+
+
+def test_ths_concept_binds_the_one_basket_its_owner_graph_says_expresses_it(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)])
+    bundle = capture(world)
+    raw = bundle.snapshot()["subjects"][THS]
+    assert raw["basket"] == {"basket_id": "thsc900001", "suite": "baskets_china_ths"}
+    assert raw["native_reads"]["membership"]["value"]["members"] == ["600001.SS"]
+    result = adapter.compose_from_owner_bundle(bundle, generated_at=EMITTED)
+    assert result["native_observations"][THS]["membership_owner_read"]["fact"]["members"] == ["600001.SS"]
+    subject = next(s for s in result["state"]["subjects"] if s["node_id"] == THS)
+    # A bound native read is not qualification: no receipt, no eligibility upgrade.
+    assert subject["eligibility"]["status"] == "NOT_QUALIFIED"
+    assert subject["owner_receipts"]["membership"] is None
+
+
+@pytest.mark.parametrize("peers,code", [
+    ([], "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"),
+    ([("basket:baskets_china_ths:thsc900001", THS), ("basket:baskets_china_ths:thsc900002", THS)],
+     "EXACT_LOCAL_BASKET_BINDING_AMBIGUOUS"),
+    # Another suite's basket is not this vendor concept's basket.
+    ([("basket:baskets:power_grid", THS)], "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"),
+])
+def test_ths_concept_without_exactly_one_expressing_basket_binds_nothing(world, peers, code):
+    _bind_ths_through_graph(world, peers)
+    bundle = capture(world)
+    read = _membership_read(bundle, THS)
+    assert bundle.snapshot()["subjects"][THS]["basket"] is None
+    assert read == {"availability": "UNAVAILABLE", "null_reason": code, "value": None}
+
+
+def test_retired_or_reversed_basket_expression_binds_nothing(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)], valid_to="2026-10-02")
+    assert _membership_read(capture(world), THS)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_outgoing_basket_expression_is_not_a_basket_identity(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)], direction="OUTGOING")
+    assert _membership_read(capture(world), THS)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_finviz_subtheme_is_never_bound_from_a_graph_edge(world):
+    # finviz carries no source-local basket identity; an edge must not invent one.
+    node = "ltheme:finviz:housing"
+    _bind_ths_through_graph(world, [("basket:baskets:housing", node)], strip=(node,))
+    bundle = capture(world)
+    assert bundle.snapshot()["subjects"][node]["basket"] is None
+    assert _membership_read(bundle, node)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+
+
+def test_source_meta_basket_still_takes_precedence_over_graph_expression(world):
+    # The fixture's THS node keeps its explicit source_meta binding; a conflicting
+    # graph edge does not replace it.
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900002", THS)], strip=())
+    assert capture(world).snapshot()["subjects"][THS]["basket"] == {"basket_id": "thsc900001", "suite": "baskets_china_ths"}
+
+
+def test_graph_derived_basket_is_rederived_from_the_captured_ontology_read(world):
+    _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)])
+    snapshot = capture(world).snapshot()
+    adapter._validate_bundle_derivations(copy.deepcopy(snapshot))
+    forged = copy.deepcopy(snapshot)
+    relations = forged["subjects"][THS]["native_reads"]["ontology"]["value"]["relations"]
+    forged["subjects"][THS]["native_reads"]["ontology"]["value"]["relations"] = [
+        r for r in relations if r["peer_node_id"] != "basket:baskets_china_ths:thsc900001"]
+    with pytest.raises(ValueError, match="derived subject scope differs"):
+        adapter._validate_bundle_derivations(forged)
