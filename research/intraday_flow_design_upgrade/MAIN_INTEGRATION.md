@@ -174,3 +174,29 @@ EVIDENCE.yml now points to that actual capture; prior matrices stay historical.
 Phone resting laboratory CLS0.00994–0.01105 and desktop0.67893–0.69153 are retained
 without a field-performance or independent visual-approval claim. Agent OS records
 in this PR link the same task tree and preserve PR-4's separate live-plane obligations.
+
+
+## 2026-11-03 · R3 recovery and current-main integration
+
+Original C2 source carrier recovered after an HTTP502 window. Read-only reconciliation
+PID97008 exit0 proved HEAD=5ad690329824a470529a235474d1f8eae3a18585, clean index/worktree, no MERGE_HEAD,
+no integration test log and no matching merge/pytest process. The interrupted request
+left no observed source effect; it was not replayed without this reconciliation.
+A separate read-only gateway diagnosis made no source, service, credential or restart change.
+
+Fresh upstream `19a896b97ae20f2c12475a0207678f92dc4f335b` was then read back from both origin/main and GitHub.
+Preflight tree09a8b7a4233b2f7cb25b05203356796a0265a20c showed exactly one conflict:
+site/intraday_flow.html. The controlled local integration and canonical page-only
+regeneration resolved it, retaining the GMI navigation and committed board snapshot
+2026-11-03T03:17:05.710885+00:00. No producer was run. Template and paired page CSS
+are byte-identical to the predecessor; all source-generation checks passed.
+
+Generated HTML SHA256: `f8e45d261e1e108a0ee017689311c2cbff3cca5600b247051ef9fb9933e3cd45`.
+- Scoped pytest:301passed,12warnings (26.01s), original process11881 exit0.
+- Existing anonymous-browser suite:515/515passed,0failures; sameprocess exit0.
+- Page bytes unchanged by verification; loopback preview closed.
+- This is local candidate compatibility proof, not independent review, hostedCI,
+  current-feed proof, protected integration or production acceptance.
+
+Original refused review/startup/vision and Paper ticker-row effects remain non-replayed.
+Draft/HOLD remains; no Ready, enqueue, un-draft, GitHub merge or deployment.
