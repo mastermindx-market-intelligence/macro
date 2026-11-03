@@ -10,6 +10,7 @@ A non-KEEP disposition here is a recorded owner decision only. Nothing in this c
 
 ## Method
 
+- Timestamps: `decided_at` values are UTC (`2026-11-03T01:01:17+00:00`), the same moment as 2026-11-02 local time (PDT). The file date follows local time.
 - Inputs: `config/theme_crosswalk.yml` at base commit `0e2ec04297a4ed4d1b18f16c57092e6ec8dc7165`, the read-only baseline coverage proof produced by `python3 scripts/gmi_coverage_proof.py --symbol-directory data/symbol_directory/snapshots/2026-10-31.parquet --out <scratch dir>`, and the activity probation lane `data/theme_graph/probation/activity_proposals.jsonl`.
 - Facts are computed by `research/theme_graph/micro_owner_review_2026_11_02_overlap.py`, not by eye. Its output is the companion `research/theme_graph/micro_owner_review_2026-11-02.json` (sha256 `2102f3d93cf2a66a08699ca0976cabb7e3a8419ce1c507ce1a6104882ca4e692`). It contains 68 frozen micros out of 371 crosswalk micros; the frozen id-set sha256 is `5feff3276eda4a07791a872208dc4c2cdd5fa06e7e99553ada1e01fd8f7ed878`, which equals the baseline proof's.
 - Each frozen micro is scored against every other crosswalk micro, frozen and expansion alike: token Jaccard on name+id (`name_jac`), token Jaccard on name+note (`def_jac`), character-trigram cosine on the EN name (`name_char3`), Jaccard on ZH-name bigrams (`zh_bigram`), shared parent, and shared member companies.
@@ -51,8 +52,8 @@ Confidence: HIGH means the scope, the flags and the referrers all agree. MEDIUM 
 | [`theme:cardiorenal_metabolic_indications`](#micro-cardiorenal_metabolic_indications) | KEEP | LOW | LOW-CONFIDENCE KEEP: issuers likely coincide with glp1_incretin_therapies; revisit as MERGE or RENAME once populated. |
 | [`theme:critical_mineral_mining_development`](#micro-critical_mineral_mining_development) | KEEP | LOW | LOW-CONFIDENCE KEEP: broad umbrella; per-commodity SPLIT considered and not proposed. |
 | [`theme:fill_finish_delivery_devices`](#micro-fill_finish_delivery_devices) | KEEP | LOW | LOW-CONFIDENCE KEEP: possible SPLIT (fill-finish capacity vs pen/autoinjector devices) if member sets diverge. |
-| [`theme:fuel_cycle`](#micro-fuel_cycle) | RENAME | MEDIUM | RENAME to EN 'Nuclear fuel front end (mining to enrichment)' / ZH '核燃料前端（铀矿开采至浓缩）'. Scope unchanged. |
-| [`theme:glp1_incretin_therapies`](#micro-glp1_incretin_therapies) | RENAME | MEDIUM | RENAME to EN 'Injectable GLP-1 & incretin therapies' / ZH '注射用 GLP-1 与肠促胰岛素疗法'. Scope unchanged. |
+| [`theme:fuel_cycle`](#micro-fuel_cycle) | RENAME | MEDIUM | RENAME to EN 'Nuclear fuel front end (mining to enrichment)' / ZH '核燃料循环前端（铀矿开采至浓缩）'. Scope unchanged. |
+| [`theme:glp1_incretin_therapies`](#micro-glp1_incretin_therapies) | RENAME | MEDIUM | RENAME to EN 'Injectable GLP-1 incretin therapies' / ZH '注射用 GLP-1 肠促胰岛素疗法'. Scope unchanged. |
 | [`theme:hbm_packaging`](#micro-hbm_packaging) | RENAME | MEDIUM | RENAME to EN 'HBM memory stacking & packaging' / ZH 'HBM 存储堆叠与封装'. Scope unchanged. Execution is deferred to a qualified C01 cutover that preserves generation 040b and D2E acceptance, and must re-bind actprop:287edbf7e04b8aba873b7493 (co:us:MU) to the new scope_version in the same act. |
 | [`theme:nand_enterprise_storage`](#micro-nand_enterprise_storage) | RENAME | LOW | LOW-CONFIDENCE RENAME to EN 'NAND flash & enterprise SSDs' / ZH 'NAND 闪存与企业级 SSD'. Scope unchanged. |
 | [`theme:precision_agriculture_platforms`](#micro-precision_agriculture_platforms) | KEEP | LOW | LOW-CONFIDENCE KEEP: scope coherent; placement under ag_fertilizer is questionable (re-parenting is outside the disposition rubric). |
@@ -62,7 +63,7 @@ Confidence: HIGH means the scope, the flags and the referrers all agree. MEDIUM 
 ## Follow-up rules
 
 - Execution of every non-KEEP row is a separate lane with its own review. It edits `config/theme_crosswalk.yml`, and it never changes the frozen 68-micro denominator: a renamed micro keeps its id and stays frozen-tier, and no micro enters or leaves the frozen set because of this review.
-- A RENAME changes the crosswalk entry, and with it the micro's `scope_version` (sha256 of the whole entry). Renaming `theme:hbm_packaging` must re-bind its admitted activity row (`actprop:287edbf7e04b8aba873b7493`, member `co:us:MU`) to the new `scope_version` in the same change. Otherwise the only populated frozen micro loses its admission.
+- A RENAME changes the crosswalk entry, and with it the micro's `scope_version` (sha256 of the whole entry). Renaming `theme:hbm_packaging` must re-bind its admitted activity row (`actprop:287edbf7e04b8aba873b7493`, member `co:us:MU`) to the new `scope_version`. That rename is therefore executed only at a qualified C01 cutover that preserves generation 040b and D2E acceptance, and the cutover re-binds the row in the same act. Otherwise the only populated frozen micro loses its admission.
 - After a RENAME executes, the owner updates that micro's contract row, normally to KEEP against the new names. Rows key on `micro_id`, not on `scope_version`, so the coverage gate stays closed throughout.
 - LOW-CONFIDENCE KEEPs to revisit once members exist: `theme:cardiorenal_metabolic_indications` (possible MERGE into `theme:glp1_incretin_therapies`), `theme:critical_mineral_mining_development` (possible per-commodity SPLIT), `theme:fill_finish_delivery_devices` (possible SPLIT), `theme:reactor_technology` (possible RENAME), `theme:structural_steel_electrification` (possible RENAME or RETIRE).
 - Parent placement is outside the disposition rubric: `theme:precision_agriculture_platforms` sits under `theme:ag_fertilizer`, which is questionable. It is recorded for a hierarchy follow-up.
@@ -610,7 +611,7 @@ Referenced by: none.
 
 - **Proposed disposition:** RENAME (confidence MEDIUM)
 - **Rationale:** The note scopes it to 'mining through enrichment', and three expansion rows (fuel_assembly_fabrication, haleu_advanced_fuel_supply, spent_fuel_management) carve fabrication, HALEU and the back end away from it. The name 'Fuel cycle / 核燃料循环' still claims the whole cycle. A SPLIT of mining from conversion and enrichment was considered (LOW-CONFIDENCE) and not proposed.
-- **Proposed names:** EN "Nuclear fuel front end (mining to enrichment)" / ZH "核燃料前端（铀矿开采至浓缩）" (scope unchanged)
+- **Proposed names:** EN "Nuclear fuel front end (mining to enrichment)" / ZH "核燃料循环前端（铀矿开采至浓缩）" (scope unchanged)
 - **Name quality:** Misleading. The EN and ZH names claim the whole fuel cycle, but the scope and every referrer treat it as the front end only.
 - **Parent paths:** `theme:energy_power>theme:nuclear_power>theme:fuel_cycle`
 - **Asserted on / nominated from:** 2026-10-08 / `research:research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md`
@@ -724,8 +725,8 @@ Referenced by: none.
 `theme:glp1_incretin_therapies`: GLP-1 incretin therapies / GLP-1肠促胰岛素疗法
 
 - **Proposed disposition:** RENAME (confidence MEDIUM)
-- **Rationale:** The scope is the injectable incretin drug class: its sibling oral_glp1_formulations is 'distinct from injectable incretin platforms'. But the class-wide name also covers oral GLP-1s, which is the only flag (0.301).
-- **Proposed names:** EN "Injectable GLP-1 & incretin therapies" / ZH "注射用 GLP-1 与肠促胰岛素疗法" (scope unchanged)
+- **Rationale:** The scope is the injectable incretin drug class: its sibling oral_glp1_formulations is 'distinct from injectable incretin platforms'. But the class-wide name also covers oral GLP-1s, which is the only flag (0.301). The expansion sibling `theme:multi_receptor_incretin_agonists` sets itself apart from "the single-receptor incretin therapy class", so the proposed name keeps the GLP-1-class meaning and must not read as "GLP-1 plus any incretin".
+- **Proposed names:** EN "Injectable GLP-1 incretin therapies" / ZH "注射用 GLP-1 肠促胰岛素疗法" (scope unchanged)
 - **Name quality:** Misleading. The class-wide name overlaps the oral sibling; the scope is injectable therapies.
 - **Parent paths:** `theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_incretin_therapies`; `theme:healthcare_lifesciences>theme:glp1_obesity>theme:glp1_therapy_products>theme:glp1_incretin_therapies`
 - **Asserted on / nominated from:** 2026-10-08 / `basket:baskets:obesity_glp1`
@@ -820,6 +821,7 @@ Referenced by:
 - **Proposed names:** EN "HBM memory stacking & packaging" / ZH "HBM 存储堆叠与封装" (scope unchanged)
 - **Name quality:** Misleading. 'advanced packaging / 先进封装' collides with the logic packaging row; the scope is HBM stacking.
 - **Parent paths:** `theme:semiconductors_hardware>theme:ai_semiconductors>theme:hbm_packaging`; `theme:semiconductors_hardware>theme:memory_storage>theme:hbm_packaging`; `theme:technology_software>theme:ai_semiconductors>theme:hbm_packaging`
+- **Execution deferral:** this RENAME changes `scope_version`, so it is executed only at a qualified C01 cutover that preserves generation 040b and D2E acceptance; that cutover re-binds `actprop:287edbf7e04b8aba873b7493` (`co:us:MU`) in the same act.
 - **Asserted on / nominated from:** 2026-10-08 / `research:config/theme_pathways.yml`
 - **Crosswalk note:** "Federated vertical slice; HBM stacking is distinct from generic accelerator silicon."
 - **scope_version:** `7b6bd278681b3ac55030fea6a3341e4bf9122b010c8fc947be17913cc128c1eb`

@@ -164,7 +164,7 @@ rows:
     reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
     decided_at: "2026-11-03T01:01:17+00:00"
     evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-fuel_cycle
-    note: "RENAME to EN 'Nuclear fuel front end (mining to enrichment)' / ZH '核燃料前端（铀矿开采至浓缩）'. Scope unchanged."
+    note: "RENAME to EN 'Nuclear fuel front end (mining to enrichment)' / ZH '核燃料循环前端（铀矿开采至浓缩）'. Scope unchanged."
   - micro_id: theme:gallium_germanium_supply_chain
     disposition: KEEP
     reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
@@ -188,7 +188,7 @@ rows:
     reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
     decided_at: "2026-11-03T01:01:17+00:00"
     evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-glp1_incretin_therapies
-    note: "RENAME to EN 'Injectable GLP-1 & incretin therapies' / ZH '注射用 GLP-1 与肠促胰岛素疗法'. Scope unchanged."
+    note: "RENAME to EN 'Injectable GLP-1 incretin therapies' / ZH '注射用 GLP-1 肠促胰岛素疗法'. Scope unchanged."
   - micro_id: theme:gpu_merchant_accelerators
     disposition: KEEP
     reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
