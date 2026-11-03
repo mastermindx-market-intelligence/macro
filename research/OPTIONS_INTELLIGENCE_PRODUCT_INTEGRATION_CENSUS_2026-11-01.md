@@ -46,7 +46,7 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC43 | OWNER_HELD | B1 L24. #804 fields; no reconcile receipt in #599. | L1A records this as GATED on an original-operation reconcile. That gate sits inside the incumbent's #804 lane, so per the commission it is OWNER_HELD. |
 | AC44 | OWNER_HELD | B1 L25. R70 comment 6382806783; the repair is not on master. | #804 |
 | AC45 | ACTIONABLE_NOW | B1 L26. R17 = #1144 comment 6539302833. `pinnedResearchSharingPreviewTruth.test.tsx`@db6168c2 → 404. | → L3 Series A (§4). |
-| AC46 | ACTIONABLE_NOW | B1 L27; ledger L1900. | The 4,214-portfolio rational oracle was run on `terminal/lib/optionsPayoff.ts` at #781 head 85d9f4ea. **That file is absent on master db6168c2** (observed). The live Plan engine is macro `engine/options_payoff.expiry_payoff`, and no Fraction oracle exists in macro tests (observed). The action is to port the existing oracle onto `expiry_payoff` single/vertical as a dated receipt. That is a port, not a redo. Not executed → GAPS. |
+| AC46 | EXECUTED | B1 L27; ledger L1900. Seat follow-up 2026-11-02, §9.1. | ORCH-2 finding (2026-11-01): the 4,214-portfolio rational oracle was run on `terminal/lib/optionsPayoff.ts` at #781 head 85d9f4ea; **that file is absent on master db6168c2** (observed); the live Plan engine is macro `engine/options_payoff.expiry_payoff`, and no Fraction oracle existed in macro tests (observed). Seat execution (2026-11-02): PASS with a recorded gap, by a **re-authored** exact-rational (Fraction) oracle, not a re-run of the #781 oracle, against `terminal/lib/optionsPlanPayoff.ts` at master e9994a50 and the macro engine. Details, counts and the gap in §9.1. |
 | AC47 | DO_NOT_REDO_ACCEPTED | B2 L9. TERM `terminal/app/api/options/plan/expiry/route.ts#L49-L51`. | |
 | AC48 | GATED | B2 L10. R35@820f33b5 L57-59 (private install, installation proof, independent review). | |
 | AC49 | DO_NOT_REDO_ACCEPTED | B2 L11. #1183 merged at fd010145. | Source and CI only; **not** PRODUCTION_PROOF. |
@@ -54,7 +54,7 @@ Each row has exactly one disposition. The evidence column cites the appendix lin
 | AC51 | OWNER_HELD | B2 L13. Macro #8920 head 23bd4769 is open. | |
 | AC52 | OWNER_HELD | B2 L14. R73@820f33b5; #599 comment 6333686799 is open. | ExposureMap `returnCheck` is not touched. |
 | AC53 | DO_NOT_REDO_ACCEPTED | B2 L15. `options-ia-responsive.spec.ts` (blob d3e5eb34). | The W3B question is AC40, not this row. |
-| AC54 | ACTIONABLE_NOW | B2 L16. Code search found `axe` in 6 e2e files, none of them options; `checkA11y` found 0. | W5 a11y. Not executed → GAPS. |
+| AC54 | EXECUTED | B2 L16 (corrected in §9.2). Seat follow-up 2026-11-02, §9.2. | W5 a11y. Correction: the ORCH-2 census line "`axe` in 6 e2e files" was a substring census (the hits were `axes`, `relaxed_filters` and `relaxed`); no spec used axe-core, and axe-core 4.12.1 was an indirect dev dependency only. Seat execution (2026-11-02): a full options a11y run on a non-git content copy of master e9994a50, 204 tests, 63 passed / 141 failed; real defects routed to terminal #1203 and the pre-existing display defects to terminal #1202. Details in §9.2. |
 | AC55 | DO_NOT_REDO_ACCEPTED | B2 L17. #599 R12 comment 6504497416. | The deployed tip b1ba8e7c lags master. The delta is covered by the standing deploy process. |
 | AC56 | OWNER_HELD | B2 L18. coo-fable (R06 L16); macro #7728 / #10065. | |
 | AC60 | GATED | B2 L19. R02@820f33b5 L95 `decided_by: ceo-sol`. | Closeout by the existing decision owner. |
@@ -251,7 +251,7 @@ The independent review of both PRs (and of this record) is the combined review l
 
 ## 5. L4 — P09 dossier
 
-See Appendix C. The four activation-OFF switches plus the fifth delivery gate are all OFF. The observed production value of `OPTIONS_FROZEN_DELIVERY_ENABLED` is UNKNOWN.
+See Appendix C. The four activation-OFF switches plus the fifth delivery gate are all OFF. The observed production value of `OPTIONS_FROZEN_DELIVERY_ENABLED` was UNKNOWN to ORCH-2. Seat read on the drain host, 2026-11-01 12:22:34Z (read-only; no host change): `OPTIONS_FROZEN_DELIVERY_ENABLED` and `ALERT_DRAIN_ENABLE` were both UNSET (observed OFF), and `macro-alert-drain.service` had LoadState=not-found (the drain unit is not installed). Recorded in Appendix C §C.5 and §9.3.
 
 ## 6. L5 — AC40 W3B memo
 
@@ -288,9 +288,9 @@ See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated 
   The repair diffs are therefore built (oi2-l3-r1) and opened by ORCH-2, but not independently reviewed, and the build lane stays NOT_ACCEPTED. The packet to reuse unchanged under a fresh id is `oi2-rv-r3.pkt` in ORCH-2's scratchpad, with 4.1–4.8, static review and READ_ONLY. Its blocker is capacity plus budget, not code. Resolution: a seat-granted lane budget once a router `preview` shows an eligible host and the remote temperature gate is clear, or a seat-commissioned read-only auditor.
 - **Series B recapture and repair have not run.** No lane remains. The blocker is at TERM db6168c2: `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` `layoutFiles` pins `FlowDeskView.tsx` at `7c4ee44e…`, and `eodHeatmapFlowdeskLoadFailureEvidence.test.ts:93` enforces that pin. Clearing it needs a run of `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs`, which starts next dev plus Playwright and is CPU-heavy. ORCH-2 does not run it on M2, which would route around the O-14 host-load refusal; it belongs on a Fabric lane.
 
-- AC46 oracle port: not executed because of capacity.
-- AC54 options axe coverage: not executed.
-- `OPTIONS_FROZEN_DELIVERY_ENABLED` observed value: UNKNOWN.
+- AC46 oracle port: EXECUTED by the seat on 2026-11-02 as a re-authored oracle → §1 row AC46 and §9.1.
+- AC54 options axe coverage: EXECUTED by the seat on 2026-11-02 → §1 row AC54 and §9.2.
+- `OPTIONS_FROZEN_DELIVERY_ENABLED` observed value: UNSET (OFF) on the drain host, read 2026-11-01 12:22:34Z → §5, §9.3 and Appendix C §C.5.
 - Terminal origin serving `/options`: unverified.
 - The Series B evidence lock (#1198) is red until a recapture with `terminal/e2e/tools/capture_eod_heatmap_flowdesk_load_failure.cjs` and a restamp of `terminal/docs/pr-crops/eod-heatmap-flowdesk-load-failure/EVIDENCE.yml` `layoutFiles`, which pin `FlowDeskView.tsx` at `7c4ee44e…` and `flowdeskStrings.ts` at `7b2a88ac…`, at TERM db6168c2.
 - `terminal/lib/__tests__/reportedOwnershipPanel.test.tsx:290` at TERM db6168c2 (blob 9ee56afd) is a wall-clock time bomb. `PAST_ACQUIRED = "2026-10-02T04:52:16Z"` (L35) crossed the panel's 30-day disclosure threshold on 2026-11-01. "Terminal unit + typecheck (shard)" is therefore red for #1197, #1198 and every other Terminal PR run today. This is outside ORCH-2's rows and files. The test-only repair is to pin the clock (`vi.useFakeTimers()` + `vi.setSystemTime`) or derive the fixture from `Date.now()`. No open Terminal PR touches the file (search 2026-11-01).
@@ -315,3 +315,48 @@ See Appendix D. Recommendation (interpreted): **B**, which anchors interpolated 
 - the AC40 ruling (made by the seat on 2026-11-01: **B**, [ruling](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6556677418));
 - any switch activation;
 - marking a PR ready, labelling, arming, merging, or approving a review.
+
+## 9. Seat follow-up records (2026-11-02)
+
+Records added by the seat after ORCH-2's census. They are records only: not a release, a production proof, or acceptance. §§1–8 above are ORCH-2's text, changed only where a row disposition, the §5 paragraph and three §8 lines now point here.
+
+### 9.1 AC46 — re-authored exact-rational oracle (EXECUTED; PASS with a recorded gap)
+
+- **What ran:** a re-authored exact-rational (Fraction) oracle, **not** a re-run of the #781 oracle. The original oracle (sha 6d459f9f) was not found; the copy in the #781 comment (afabea68) targets `terminal/lib/optionsPayoff.ts`, which is absent on master.
+- **Engine under test:** `terminal/lib/optionsPlanPayoff.ts` at master e9994a50, sha256 `7450dc51f7a4ead5f9445c083ef93f7e4d271277fae21a3b8f35b61e3ff420db`. The seat re-hashed the master blob on 2026-11-02 14:1xZ; it matches.
+- **Legs:**
+  - G 2000/0 fail (0 tie points); F 80/0; R 2000/0; V 2000/0.
+  - X: 101 spots, max P&L error 5.5e-12; cost, max gain, max loss and breakevens exact.
+  - E 2000/0 against macro `engine/options_payoff.py` (9123da75) and `options_plan_expiry.py` (699e5136): P&L error 2e-9, breakeven error 1.67e-12.
+- **Negative controls:** premium +1c and call/put swap were each rejected 300/300.
+- **Receipts:** seat-held scratch evidence, not committed: `receipt.json` sha256 `51542b15…`, `receipt_engine.json` `8dac6523…`, oracle `e3c1ba88…`.
+- **Gap (recorded, not a defect claim):** the Plan reader displays the payoff math it is given. Deliberately wrong upstream math passed the reader 2000/2000, so reader-side truth depends on the engine and has no independent check.
+
+### 9.2 AC54 — options a11y run (EXECUTED) and a correction to the census line
+
+- **Correction:** "`axe` in 6 e2e files" was a substring census. The hits were `axes`, `relaxed_filters` and `relaxed`; no spec used axe-core. axe-core 4.12.1 was an indirect dev dependency only.
+- **What ran:** a full options a11y run against a non-git content copy of master e9994a50, with a new `e2e/options-a11y.spec.ts` and axe-core pinned exact.
+- **Counts:** 204 tests (17 routes × 3 viewports × 4 checks), 63 passed and 141 failed. QQQ blocked: none.
+  - **axe:** 51/51 cells fail, 12 rules. Critical: `aria-valid-attr-value` (15 routes), `aria-required-parent` (desk), `select-name` (tape). Serious: `color-contrast` (15 routes, 1,182 nodes), `scrollable-region-focusable` (11), `nested-interactive` (desk, prophet), `aria-prohibited-attr` (prophet). Moderate: `region` (17), `page-has-heading-one` (12), `meta-viewport` (equity-replay, futures), `landmark-unique` (prophet). Minor: `empty-table-header` (positioning).
+  - **Keyboard:** 51/51 fail. Hidden shell-drawer links are reachable by Tab (510 hits), and 65 focus stops have no visible indicator. On four routes the whole tab order is only 5–13 stops and no product control is missed; that failure comes from the spec's `MIN_FOCUSABLES` floor, a spec defect (K3), not a product one.
+  - **Charts and colour:** 42 pass, 9 fail. surface and tide have no text alternative; the replay frame dots are colour-only. gex is a labelled slider with `aria-valuetext`; the spec heuristic flagged it, so whether it counts is a spec decision (C1).
+  - **Reflow at 720 CSS px:** no horizontal overflow on any route (scrollWidth equals the inner width). 30 of 51 fail because the primary panel has no heading, on 10 routes.
+- **Routing:** real defects are in terminal issue #1203, which attaches the spec (sha256 `622df77e…d6ce`). Pre-existing display defects found in the crop audit are in terminal #1202. Every fix path falls outside the OI-owned scope (flowdesk, workspaces/chrome, the shared shell, `globals.css`).
+
+### 9.3 Appendix C §C.5 (S5) — drain-host read
+
+Read on the droplet on 2026-11-01 at 12:22:34Z, read-only, no host change: `OPTIONS_FROZEN_DELIVERY_ENABLED` and `ALERT_DRAIN_ENABLE` were both UNSET (observed OFF), and `macro-alert-drain.service` had LoadState=not-found, so the drain unit is not installed. Recorded once, here and in Appendix C §C.5.
+
+### 9.4 Terminal rung — MERGED, not deployed
+
+| PR | Rung | Evidence |
+|---|---|---|
+| terminal #1199 | MERGED on master | merged 2026-11-01 |
+| terminal #1197 | MERGED on master | `e0f9d406`, 2026-11-01 14:12Z |
+| terminal #1198 | MERGED on master | `4d04fc16961f012199b31647562106b548394826`, 2026-11-02 13:58:45Z |
+| terminal #1200 | MERGED on master | `ed2e633852564dcd604afc26eb03eeed54954dee`, 2026-11-02 19:16:19Z; squash of head `4d6c65e0f135fe864e860ac1773565c502009e41`; the r1-w3 evidence lock was recaptured post-#1198 at `397b754d` |
+| terminal #1220 (master-side e2e fix, not a program deliverable) | MERGED on master | `c062a9e35805`, 2026-11-02 17:55:49Z; it fixed the `options-ia-responsive.spec.ts` guard that read a bare "120" and tripped on the fixture's 120-day age from 2026-11-02 14:34Z; reviewed read-only, record issuecomment-6580848411 |
+
+- **Not deployed.** Read-only droplet read on 2026-11-01 14:2xZ: `.next/BUILD_ID` mtime 2026-10-31T18:49:27Z; `terminal.service` active since 18:49:31Z. Terminal deploys only by a manual `bash /opt/terminal/terminal-build.sh` on the droplet; there is no workflow and no cron. PRODUCTION_PROOF for all four program PRs, and the Journey A signed-in render of §2, wait on that human step. These rows say MERGED and nothing higher.
+- **terminal #1202:** items 4 and 11 closed with #1200 and item 2 was released to a master fix (issuecomment-6586324270). Items 1, 2, 3, 5, 6, 7, 8, 9, 10 and 12 stay open there.
+- **Status change since §8:** the §8 gap "Independent review of #1197, #1198 and this record has not run" is historical. This record was reviewed ACCEPT at head 4893c1eb (comment of 2026-11-01 11:29Z on macro #10397); #1198 and #1200 carry read-only audit records on their PRs. §§9.1–9.4 postdate that review and are covered by a separate delta review recorded on #10397.
