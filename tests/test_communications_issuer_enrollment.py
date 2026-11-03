@@ -95,3 +95,27 @@ def test_homebuilder_lookup_unchanged() -> None:
     profile = profile_for_ticker("DHI")
     assert profile is not None
     assert profile.ticker == "DHI"
+
+
+def test_family_ticker_sets_are_disjoint() -> None:
+    """The four families are tried in a fixed order (homebuilder, Industrials,
+    semiconductor, Communications), so a ticker in two of them would silently
+    resolve to the earlier one. Each family's issuer and profile sets must name
+    the same tickers, no ticker may sit in two families, and AAPL and PG (which
+    profile_for_ticker answers before the chain) must sit in none."""
+    from engine.company_intelligence import issuer_profiles as ip
+
+    families = {
+        "homebuilder": (ip._HOMEBUILDER_ISSUER_FACTORIES, ip._HOMEBUILDER_PROFILE_FACTORIES),
+        "industrials": (ip._INDUSTRIALS_ISSUER_FACTORIES, ip._INDUSTRIALS_PROFILE_FACTORIES),
+        "semiconductor": (ip._SEMICONDUCTOR_ISSUER_FACTORIES, ip._SEMICONDUCTOR_PROFILE_FACTORIES),
+        "communications": (ip._COMMUNICATIONS_ISSUER_FACTORIES, ip._COMMUNICATIONS_PROFILE_FACTORIES),
+    }
+    owner: dict[str, str] = {}
+    for family, (issuers, profiles) in families.items():
+        assert set(issuers) == set(profiles), family
+        for ticker in issuers:
+            assert ticker not in owner, (ticker, owner.get(ticker), family)
+            owner[ticker] = family
+    assert {"GOOGL", "GOOG"} <= owner.keys()
+    assert not {"AAPL", "PG"} & owner.keys()
