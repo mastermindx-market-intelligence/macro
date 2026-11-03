@@ -1,0 +1,1119 @@
+{
+  "authority": {
+    "can_gate": false,
+    "can_open_entry": false,
+    "can_originate": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "authorized_coverage": {
+    "industry_total": null,
+    "input_refs": [
+      "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+      "gmirca_1696626237484198fb9078655e8e68ee",
+      "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+      "gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+      "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+    ],
+    "note": "counts only what this principal may know exists",
+    "selected": 5,
+    "status": "ready"
+  },
+  "companies": {
+    "input_refs": [
+      "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+      "gmirca_1696626237484198fb9078655e8e68ee",
+      "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+      "gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+      "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+    ],
+    "rows": [
+      {
+        "company_node_id": "co:synth_customer_epsilon",
+        "navigation": {
+          "href": null,
+          "reason": null,
+          "status": "ready"
+        },
+        "roles": [
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_0f6cd098eaf92b746c69be2774e6d581",
+            "relation_kind": "announced_agreement",
+            "role": "business",
+            "stage": "announced"
+          }
+        ],
+        "source_business_label": "Synthetic Compute Customer Epsilon"
+      },
+      {
+        "company_node_id": "co:synth_foundry_alpha",
+        "navigation": {
+          "href": null,
+          "reason": null,
+          "status": "ready"
+        },
+        "roles": [
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+            "relation_kind": null,
+            "role": "facility",
+            "stage": null
+          },
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_1696626237484198fb9078655e8e68ee",
+            "relation_kind": "contains",
+            "role": "facility",
+            "stage": "reported_operation"
+          },
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_0f6cd098eaf92b746c69be2774e6d581",
+            "relation_kind": "announced_agreement",
+            "role": "product",
+            "stage": "announced"
+          },
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+            "relation_kind": "documented_supply",
+            "role": "product",
+            "stage": "qualified"
+          },
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+            "relation_kind": "documented_supply",
+            "role": "product",
+            "stage": "reported_shipment"
+          }
+        ],
+        "source_business_label": "Synthetic Foundry Alpha"
+      },
+      {
+        "company_node_id": "co:synth_packaging_gamma",
+        "navigation": {
+          "href": null,
+          "reason": null,
+          "status": "ready"
+        },
+        "roles": [
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+            "relation_kind": "documented_supply",
+            "role": "product",
+            "stage": "reported_shipment"
+          }
+        ],
+        "source_business_label": "Synthetic Packaging Partner Gamma"
+      },
+      {
+        "company_node_id": "co:synth_substrate_delta",
+        "navigation": {
+          "href": null,
+          "reason": null,
+          "status": "ready"
+        },
+        "roles": [
+          {
+            "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+            "relation_kind": "documented_supply",
+            "role": "material",
+            "stage": "qualified"
+          }
+        ],
+        "source_business_label": "Synthetic Substrate Vendor Delta"
+      }
+    ],
+    "status": "ready"
+  },
+  "definition_version": "2026-09-24.1",
+  "economics": {
+    "input_refs": [
+      "evt_0000000001_2026q1_results",
+      "evt_0000000001_2026q2_results"
+    ],
+    "management": {
+      "authority": {
+        "can_gate": false,
+        "can_open_entry": false,
+        "can_originate": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "comparisons": {
+        "actual_vs_new_outlook": {
+          "reason": "different_period",
+          "relationship": "next_outlook",
+          "status": "not_comparable"
+        },
+        "prior_vs_actual": {
+          "position": "within_range",
+          "reason": null,
+          "status": "comparable"
+        }
+      },
+      "derived": {
+        "next_outlook_midpoint": {
+          "reason": "derivation_unowned",
+          "status": "unavailable"
+        },
+        "prior_midpoint": {
+          "owner": "financial-owner",
+          "receipt": {
+            "method": "owner_midpoint_receipt",
+            "store": "synthetic-derivations"
+          },
+          "status": "ready",
+          "value": 16.0
+        }
+      },
+      "display": {
+        "all_values_visible": true,
+        "refused_deltas": []
+      },
+      "limitations": [
+        "no_external_consensus"
+      ],
+      "roles": {
+        "actual": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "fiscal_period": "2026Q2",
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "event_id": "evt_0000000001_2026q2_results"
+          },
+          "unit": "USD_bn",
+          "value": 16.5
+        },
+        "new_outlook": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "high": 19.0,
+          "horizon": "2026Q3",
+          "low": 17.0,
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "document_id": "syn-q2-release",
+            "locator": "paragraph 6",
+            "synthetic": true
+          },
+          "status": "introduced",
+          "unit": "USD_bn"
+        },
+        "prior_outlook": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "high": 17.0,
+          "horizon": "2026Q2",
+          "low": 15.0,
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "document_id": "syn-q1-release",
+            "locator": "paragraph 4",
+            "synthetic": true
+          },
+          "status": "introduced",
+          "unit": "USD_bn"
+        }
+      },
+      "schema": "management_sequence_assessment.v1"
+    },
+    "status": "ready",
+    "witness_gate": "positive"
+  },
+  "evidence_refs": [
+    {
+      "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_0f6cd098eaf92b746c69be2774e6d581",
+      "curation_revision": "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+      "kind": "assertion"
+    },
+    {
+      "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_1696626237484198fb9078655e8e68ee",
+      "curation_revision": "gmirca_1696626237484198fb9078655e8e68ee",
+      "kind": "assertion"
+    },
+    {
+      "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+      "curation_revision": "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+      "kind": "assertion"
+    },
+    {
+      "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+      "curation_revision": "gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+      "kind": "assertion"
+    },
+    {
+      "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+      "curation_revision": "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+      "kind": "assertion"
+    },
+    {
+      "kind": "native",
+      "native_identity": {
+        "cik": "0000000001"
+      },
+      "owner_store": "synthetic-native-store",
+      "reference_id": "syn-native-alpha-1"
+    }
+  ],
+  "expectations": {
+    "external_consensus": {
+      "reason": "no_external_consensus",
+      "status": "unavailable"
+    },
+    "house_forecast": {
+      "reason": "not_authorized",
+      "status": "unavailable"
+    },
+    "management": {
+      "input_refs": [
+        "evt_0000000001_2026q1_results",
+        "evt_0000000001_2026q2_results"
+      ],
+      "roles": {
+        "actual": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "fiscal_period": "2026Q2",
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "event_id": "evt_0000000001_2026q2_results"
+          },
+          "unit": "USD_bn",
+          "value": 16.5
+        },
+        "new_outlook": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "high": 19.0,
+          "horizon": "2026Q3",
+          "low": 17.0,
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "document_id": "syn-q2-release",
+            "locator": "paragraph 6",
+            "synthetic": true
+          },
+          "status": "introduced",
+          "unit": "USD_bn"
+        },
+        "prior_outlook": {
+          "basis": "reported_gaap",
+          "currency": "USD",
+          "definition": "revenue_net_of_returns",
+          "high": 17.0,
+          "horizon": "2026Q2",
+          "low": 15.0,
+          "metric": "revenue_usd_bn",
+          "perimeter": "as_reported",
+          "source_span": {
+            "document_id": "syn-q1-release",
+            "locator": "paragraph 4",
+            "synthetic": true
+          },
+          "status": "introduced",
+          "unit": "USD_bn"
+        }
+      },
+      "status": "ready"
+    },
+    "market_incorporation": {
+      "reason": "not_authorized",
+      "status": "unavailable"
+    }
+  },
+  "generation": "gen_0d3061380e6f1e914516cf6e6acdc898",
+  "industrial_views": {
+    "capacity": {
+      "graph": {
+        "edges": [
+          {
+            "dst": "prd:hbm-module",
+            "kind": "contains",
+            "src": "fac:alpha-pack",
+            "width": null
+          },
+          {
+            "dst": "prd:hbm-module",
+            "kind": "documented_supply",
+            "src": "prd:gamma-interposer",
+            "width": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": "fac:alpha-pack",
+            "kind": "facility",
+            "label": "Alpha packaging campus"
+          },
+          {
+            "id": "prd:gamma-interposer",
+            "kind": "product",
+            "label": "Gamma silicon interposer"
+          },
+          {
+            "id": "prd:hbm-module",
+            "kind": "product",
+            "label": "HBM stack module"
+          }
+        ]
+      },
+      "input_refs": [
+        "gmirca_1696626237484198fb9078655e8e68ee",
+        "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+      ],
+      "limitations": [],
+      "rows": [
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_1696626237484198fb9078655e8e68ee",
+          "company_node_id": "co:synth_foundry_alpha",
+          "configuration": null,
+          "curation_revision": "gmirca_1696626237484198fb9078655e8e68ee",
+          "kind": "facility",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly packaging output",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_module_per_quarter",
+            "value": 12,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "contains",
+          "retrospective": false,
+          "selector": "fac:alpha-pack",
+          "source_business_label": "Synthetic Foundry Alpha",
+          "source_product_label": "Alpha packaging campus",
+          "stage": "reported_operation",
+          "stage_source_language": "the packaging campus operated through the quarter",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        },
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "company_node_id": "co:synth_packaging_gamma",
+          "configuration": null,
+          "curation_revision": "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "kind": "product",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly interposer shipment",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_unit_per_quarter",
+            "value": 240,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "documented_supply",
+          "retrospective": false,
+          "selector": "prd:gamma-interposer",
+          "source_business_label": "Synthetic Packaging Partner Gamma",
+          "source_product_label": "Gamma interposer",
+          "stage": "reported_shipment",
+          "stage_source_language": "interposer shipments into the module programme",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        }
+      ],
+      "status": "ready",
+      "total": {
+        "reason": null,
+        "value": null
+      }
+    },
+    "commercial": {
+      "graph": {
+        "edges": [
+          {
+            "dst": "prd:hbm-module",
+            "kind": "announced_agreement",
+            "src": "biz:epsilon",
+            "width": null
+          },
+          {
+            "dst": "prd:hbm-module",
+            "kind": "documented_supply",
+            "src": "mat:delta-substrate",
+            "width": null
+          },
+          {
+            "dst": "prd:hbm-module",
+            "kind": "documented_supply",
+            "src": "prd:gamma-interposer",
+            "width": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": "biz:epsilon",
+            "kind": "business",
+            "label": "Synthetic Compute Customer Epsilon"
+          },
+          {
+            "id": "mat:delta-substrate",
+            "kind": "material",
+            "label": "qualified substrate grade"
+          },
+          {
+            "id": "prd:gamma-interposer",
+            "kind": "product",
+            "label": "Gamma silicon interposer"
+          },
+          {
+            "id": "prd:hbm-module",
+            "kind": "product",
+            "label": "HBM stack module"
+          }
+        ]
+      },
+      "input_refs": [
+        "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+        "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+        "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+      ],
+      "limitations": [],
+      "rows": [
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_0f6cd098eaf92b746c69be2774e6d581",
+          "company_node_id": "co:synth_customer_epsilon",
+          "configuration": null,
+          "curation_revision": "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+          "kind": "business",
+          "measure_scope": null,
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "absolute",
+            "stock_flow": "flow",
+            "unit": null,
+            "value": null,
+            "value_high": null
+          },
+          "predicate": "ANNOUNCED_DEVELOPMENT_AGREEMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "announced_agreement",
+          "retrospective": false,
+          "selector": "biz:epsilon",
+          "source_business_label": "Synthetic Compute Customer Epsilon",
+          "source_product_label": "Epsilon compute agreement",
+          "stage": "announced",
+          "stage_source_language": "a multi-year supply arrangement was announced",
+          "statement_mode": "ANNOUNCED_ARRANGEMENT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        },
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+          "company_node_id": "co:synth_substrate_delta",
+          "configuration": null,
+          "curation_revision": "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+          "kind": "material",
+          "measure_scope": null,
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "absolute",
+            "stock_flow": "flow",
+            "unit": null,
+            "value": null,
+            "value_high": null
+          },
+          "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "documented_supply",
+          "retrospective": false,
+          "selector": "mat:delta-substrate",
+          "source_business_label": "Synthetic Substrate Vendor Delta",
+          "source_product_label": "Delta substrate grade",
+          "stage": "qualified",
+          "stage_source_language": "the substrate grade is qualified for volume supply",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        },
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "company_node_id": "co:synth_packaging_gamma",
+          "configuration": null,
+          "curation_revision": "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "kind": "product",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly interposer shipment",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_unit_per_quarter",
+            "value": 240,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "documented_supply",
+          "retrospective": false,
+          "selector": "prd:gamma-interposer",
+          "source_business_label": "Synthetic Packaging Partner Gamma",
+          "source_product_label": "Gamma interposer",
+          "stage": "reported_shipment",
+          "stage_source_language": "interposer shipments into the module programme",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        }
+      ],
+      "status": "ready"
+    },
+    "composition": {
+      "graph": {
+        "edges": [
+          {
+            "dst": "prd:hbm-module",
+            "kind": "contains",
+            "src": "fac:alpha-pack",
+            "width": null
+          },
+          {
+            "dst": "prd:hbm-module",
+            "kind": "documented_supply",
+            "src": "mat:delta-substrate",
+            "width": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": "fac:alpha-pack",
+            "kind": "facility",
+            "label": "Alpha packaging campus"
+          },
+          {
+            "id": "mat:delta-substrate",
+            "kind": "material",
+            "label": "qualified substrate grade"
+          },
+          {
+            "id": "prd:hbm-module",
+            "kind": "product",
+            "label": "HBM stack module"
+          }
+        ]
+      },
+      "input_refs": [
+        "gmirca_1696626237484198fb9078655e8e68ee",
+        "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+      ],
+      "limitations": [],
+      "rows": [
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_1696626237484198fb9078655e8e68ee",
+          "company_node_id": "co:synth_foundry_alpha",
+          "configuration": null,
+          "curation_revision": "gmirca_1696626237484198fb9078655e8e68ee",
+          "kind": "facility",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly packaging output",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_module_per_quarter",
+            "value": 12,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "contains",
+          "retrospective": false,
+          "selector": "fac:alpha-pack",
+          "source_business_label": "Synthetic Foundry Alpha",
+          "source_product_label": "Alpha packaging campus",
+          "stage": "reported_operation",
+          "stage_source_language": "the packaging campus operated through the quarter",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        },
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+          "company_node_id": "co:synth_substrate_delta",
+          "configuration": null,
+          "curation_revision": "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b",
+          "kind": "material",
+          "measure_scope": null,
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "absolute",
+            "stock_flow": "flow",
+            "unit": null,
+            "value": null,
+            "value_high": null
+          },
+          "predicate": "DOCUMENTED_PRODUCT_INCLUSION",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "documented_supply",
+          "retrospective": false,
+          "selector": "mat:delta-substrate",
+          "source_business_label": "Synthetic Substrate Vendor Delta",
+          "source_product_label": "Delta substrate grade",
+          "stage": "qualified",
+          "stage_source_language": "the substrate grade is qualified for volume supply",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        }
+      ],
+      "status": "ready"
+    },
+    "economics": {
+      "graph": {
+        "edges": [],
+        "nodes": [
+          {
+            "id": "fac:alpha-pack",
+            "kind": "facility",
+            "label": "Alpha packaging campus"
+          }
+        ]
+      },
+      "input_refs": [
+        "gmirca_c72de28ef1fe9602c1afb734bcd0a696"
+      ],
+      "limitations": [],
+      "rows": [
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+          "company_node_id": "co:synth_foundry_alpha",
+          "configuration": null,
+          "curation_revision": "gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+          "kind": "facility",
+          "measure_scope": {
+            "currency": "USD",
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "capital expenditure",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": null,
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "USD_m",
+            "value": 310,
+            "value_high": null
+          },
+          "predicate": "REPORTED_FINANCIAL_MEASURE",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": null,
+          "retrospective": false,
+          "selector": "fac:alpha-pack",
+          "source_business_label": "Synthetic Foundry Alpha",
+          "source_product_label": "Alpha packaging capex programme",
+          "stage": null,
+          "stage_source_language": null,
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        }
+      ],
+      "status": "ready"
+    },
+    "manufacturing": {
+      "graph": {
+        "edges": [
+          {
+            "dst": "prd:hbm-module",
+            "kind": "contains",
+            "src": "fac:alpha-pack",
+            "width": null
+          },
+          {
+            "dst": "prd:hbm-module",
+            "kind": "documented_supply",
+            "src": "prd:gamma-interposer",
+            "width": null
+          }
+        ],
+        "nodes": [
+          {
+            "id": "fac:alpha-pack",
+            "kind": "facility",
+            "label": "Alpha packaging campus"
+          },
+          {
+            "id": "prd:gamma-interposer",
+            "kind": "product",
+            "label": "Gamma silicon interposer"
+          },
+          {
+            "id": "prd:hbm-module",
+            "kind": "product",
+            "label": "HBM stack module"
+          }
+        ]
+      },
+      "input_refs": [
+        "gmirca_1696626237484198fb9078655e8e68ee",
+        "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+      ],
+      "limitations": [],
+      "rows": [
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_1696626237484198fb9078655e8e68ee",
+          "company_node_id": "co:synth_foundry_alpha",
+          "configuration": null,
+          "curation_revision": "gmirca_1696626237484198fb9078655e8e68ee",
+          "kind": "facility",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly packaging output",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_module_per_quarter",
+            "value": 12,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "contains",
+          "retrospective": false,
+          "selector": "fac:alpha-pack",
+          "source_business_label": "Synthetic Foundry Alpha",
+          "source_product_label": "Alpha packaging campus",
+          "stage": "reported_operation",
+          "stage_source_language": "the packaging campus operated through the quarter",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        },
+        {
+          "assertion_ref": "gmi-curation://ai_semiconductors/gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "company_node_id": "co:synth_packaging_gamma",
+          "configuration": null,
+          "curation_revision": "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+          "kind": "product",
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-03-31",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "quarterly interposer shipment",
+            "wafer_diameter_mm": null
+          },
+          "model": null,
+          "object_selector": "prd:hbm-module",
+          "observation": {
+            "estimate_status": "reported",
+            "gross_net_basis": null,
+            "precision": "integer",
+            "quantity_basis": "per_period",
+            "stock_flow": "flow",
+            "unit": "kilo_unit_per_quarter",
+            "value": 240,
+            "value_high": null
+          },
+          "predicate": "REPORTED_DEPLOYMENT",
+          "purchase_total": null,
+          "purchase_total_reason": null,
+          "relation_kind": "documented_supply",
+          "retrospective": false,
+          "selector": "prd:gamma-interposer",
+          "source_business_label": "Synthetic Packaging Partner Gamma",
+          "source_product_label": "Gamma interposer",
+          "stage": "reported_shipment",
+          "stage_source_language": "interposer shipments into the module programme",
+          "statement_mode": "REPORTED_FACT",
+          "utilization": {
+            "native_unit": null,
+            "native_value": null,
+            "quotient_reason": "not_computed",
+            "quotient_value": null
+          }
+        }
+      ],
+      "status": "ready"
+    }
+  },
+  "limitations": [],
+  "native_subjects": [
+    {
+      "company_node_id": "co:synth_customer_epsilon",
+      "kind": "business",
+      "selector": "biz:epsilon",
+      "source_label": "Synthetic Compute Customer Epsilon"
+    },
+    {
+      "company_node_id": "co:synth_foundry_alpha",
+      "kind": "facility",
+      "selector": "fac:alpha-pack",
+      "source_label": "Alpha packaging campus"
+    },
+    {
+      "company_node_id": "co:synth_substrate_delta",
+      "kind": "material",
+      "selector": "mat:delta-substrate",
+      "source_label": "qualified substrate grade"
+    },
+    {
+      "company_node_id": "co:synth_packaging_gamma",
+      "kind": "product",
+      "selector": "prd:gamma-interposer",
+      "source_label": "Gamma silicon interposer"
+    },
+    {
+      "company_node_id": "co:synth_foundry_alpha",
+      "kind": "product",
+      "selector": "prd:hbm-module",
+      "source_label": "HBM stack module"
+    }
+  ],
+  "request": {
+    "anchor_theme_id": "ai_semiconductors",
+    "expected_generation": null,
+    "limit": 50,
+    "offset": 0,
+    "recorded_cutoff": null,
+    "slice_key": "hbm_packaging",
+    "source_cutoff": null,
+    "time_mode": "latest",
+    "view": "economics"
+  },
+  "schema": "semiconductor_theme_research.v1",
+  "summary": {
+    "input_refs": [
+      "gmirca_0f6cd098eaf92b746c69be2774e6d581",
+      "gmirca_1696626237484198fb9078655e8e68ee",
+      "gmirca_7b364e92adb10cf8c90be6b97874a22d",
+      "gmirca_c72de28ef1fe9602c1afb734bcd0a696",
+      "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+    ],
+    "next_evidence": [
+      {
+        "input_refs": [
+          "gmirca_1696626237484198fb9078655e8e68ee",
+          "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+        ],
+        "label": "interpretation",
+        "text": "monthly substrate shipment volumes"
+      }
+    ],
+    "offset": [
+      {
+        "input_refs": [
+          "gmirca_1696626237484198fb9078655e8e68ee",
+          "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+        ],
+        "label": "interpretation",
+        "text": "a customer cancellation would remove the demand anchor"
+      }
+    ],
+    "status": "ready",
+    "what_changed": [
+      {
+        "input_refs": [
+          "gmirca_1696626237484198fb9078655e8e68ee"
+        ],
+        "label": "fact",
+        "text": "Synthetic Foundry Alpha \u2014 Alpha packaging campus \u2014 reported_operation"
+      },
+      {
+        "input_refs": [
+          "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+        ],
+        "label": "fact",
+        "text": "Synthetic Packaging Partner Gamma \u2014 Gamma interposer \u2014 reported_shipment"
+      },
+      {
+        "input_refs": [
+          "gmirca_c72de28ef1fe9602c1afb734bcd0a696"
+        ],
+        "label": "fact",
+        "text": "Synthetic Foundry Alpha \u2014 Alpha packaging capex programme \u2014 REPORTED_FINANCIAL_MEASURE"
+      },
+      {
+        "input_refs": [
+          "gmirca_faaf7e2c4cc6d425e1643e1e6b4b006b"
+        ],
+        "label": "fact",
+        "text": "Synthetic Substrate Vendor Delta \u2014 Delta substrate grade \u2014 qualified"
+      }
+    ],
+    "why_it_matters": [
+      {
+        "input_refs": [
+          "gmirca_1696626237484198fb9078655e8e68ee",
+          "gmirca_7b364e92adb10cf8c90be6b97874a22d"
+        ],
+        "label": "interpretation",
+        "text": "packaging output and interposer shipments rose together while the substrate stayed qualified"
+      }
+    ]
+  }
+}

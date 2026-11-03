@@ -216,10 +216,10 @@
   function heroSection(payload, ds) {
     var stats = universeStats(payload, ds);
     var e = stats.counts.entry_now;
-    var cov = stats.cov;
-    var honest = cov.n_gateable != null
-      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + cov.n_subsectors + '</span> ' + DS[ds].noun[0] + ' have enough data to time' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> thin (listed in the table, not timed)' : ''),
-        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + cov.n_subsectors + '</span> 个' + DS[ds].noun[1] + '有足够数据可计时' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个数据稀疏（列于表内，不计时）' : ''))
+    var cov = stats.cov; var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed; // per-universe denominator: sectors carry n_subsectors, baskets n_listed (SIC-D-B03) — never "of undefined" (R3A-66 / P20)
+    var honest = cov.n_gateable != null && covTotal != null
+      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + covTotal + '</span> ' + DS[ds].noun[0] + ' have enough data to time' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> thin (listed in the table, not timed)' : ''),
+        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + covTotal + '</span> 个' + DS[ds].noun[1] + '有足够数据可计时' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个数据稀疏（列于表内，不计时）' : ''))
       : '';
     return '<div class="isle sc-hero">'
       + '<div class="sc-eyebrow"><span class="dot"></span><span class="lbl">' + L('Rotation read', '轮动读数') + '</span>'

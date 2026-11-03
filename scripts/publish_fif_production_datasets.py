@@ -183,9 +183,12 @@ EXCLUSION_ONLY_EVENT_PACKAGES = "only_event_packages"
 # A0 repair (2026-10-14): an issuer whose DISPLAYED primary-statement layout the
 # statement reconstructor refuses is excluded for this run with a typed slug —
 # one issuer's unsupported filing layout never aborts every other issuer's
-# publication. Only the three adjudicated input-layout families below are
-# per-issuer exclusions; any other StatementGraphError is an unadjudicated
-# engine fault and still fails the WHOLE run (fail closed).
+# publication. The per-issuer exclusions are exactly the coded refusal families
+# listed in statement_graph.STATEMENT_REFUSAL_CODES (mirrored by the slug set
+# below); any other StatementGraphError is an unadjudicated engine fault and
+# still fails the WHOLE run (fail closed).
+# DEC:FIF-DISPLAYED-PARSE-REFUSAL-FAMILY-20261102 (2026-11-02) adds the
+# displayed_column_period_unbound and statement_role_presentation_absent families.
 EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED = "statement_reconstruction_refused"
 STATEMENT_REFUSAL_SLUGS = frozenset(
     {
@@ -193,6 +196,9 @@ STATEMENT_REFUSAL_SLUGS = frozenset(
         "displayed_table_absent",
         "displayed_columns_absent",
         "statement_role_not_consolidated",
+        "displayed_cell_period_mismatch",
+        "displayed_column_period_unbound",
+        "statement_role_presentation_absent",
     }
 )
 _STATEMENT_REFUSAL_PIN_PATH = (
@@ -2459,6 +2465,66 @@ def _run_publish(args: argparse.Namespace) -> int:
                 _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
                 continue
             issuer_rows = _readback_issuer_refusals(scratch_store, plan, registry=registry)
+            if (
+                getattr(args, "exclude_unpinned_first_publication_refusals", False)
+                and latest is None
+            ):
+                # DEC:FIF-PUBLISH-PER-ISSUER-REFUSAL-EXCLUSION-20261102: an
+                # opt-in coverage shape. An issuer with NO prior publication
+                # whose only unpinned statement refusals are first-publication
+                # refusals (every row pinned or first-publication-only) is
+                # excluded per issuer instead of failing the whole run. A
+                # golden-accession row or a pinned_code_changed row is neither
+                # class, so it falls through to _classify_statement_refusal
+                # below and still fails the run (fail closed).
+                first_publication_only = False
+                every_row_pinned_or_first_publication = True
+                for row in issuer_rows:
+                    if (row["accession"], row["statement_type"], row["code"]) in pin_triples:
+                        continue
+                    if (
+                        pin_by_pair.get((row["accession"], row["statement_type"])) is None
+                        and row["accession"] not in golden_accessions
+                    ):
+                        first_publication_only = True
+                        continue
+                    every_row_pinned_or_first_publication = False
+                    break
+                if first_publication_only and every_row_pinned_or_first_publication:
+                    ordered = sorted(issuer_rows, key=_refusal_row_order)
+                    first = ordered[0]
+                    reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{first['code']}"
+                    excluded.append(
+                        {
+                            "ticker": binding.ticker,
+                            "cik": binding.cik,
+                            "reason": reason,
+                            "detail": [
+                                {
+                                    "accession": row["accession"],
+                                    "statement_type": row["statement_type"],
+                                    "code": row["code"],
+                                }
+                                for row in ordered
+                            ],
+                        }
+                    )
+                    refused[binding.cik] = reason
+                    print(
+                        "::warning title=fif_production_datasets-"
+                        f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::"
+                        + _annotation_message(
+                            f"{binding.ticker} ({first['code']}): unpinned "
+                            "first-publication refusal(s) excluded; "
+                            f"first {first['accession']} {first['statement_type']}; "
+                            f"{len(ordered)} statement(s) across "
+                            f"{len({row['accession'] for row in ordered})} filing(s)"
+                        ),
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
+                    continue
             seen_triples = {
                 (row["accession"], row["statement_type"], row["code"]) for row in issuer_rows
             }
@@ -3049,6 +3115,13 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="The capture step's report; capture failures file as member_capture_failed:<code>",
+    )
+    publish.add_argument(
+        "--exclude-unpinned-first-publication-refusals",
+        action="store_true",
+        help="Exclude, per issuer, an issuer with no prior publication whose only "
+        "unpinned statement refusals are first-publication refusals, instead of "
+        "failing the run (default off)",
     )
 
     verify = subparsers.add_parser("verify", help="Re-verify a publish report against the store")

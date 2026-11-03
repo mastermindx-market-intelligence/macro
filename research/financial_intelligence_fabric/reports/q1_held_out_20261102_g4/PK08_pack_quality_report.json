@@ -1,0 +1,2352 @@
+{
+  "aapl_golden_used_as_held_out": false,
+  "builders_read_held_out": false,
+  "cells": [
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": false,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": false,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": false,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 5,
+      "n_predicted": 5,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "negative",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2024",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "AAPL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 12,
+      "n_predicted": 12,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "negative",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 12,
+      "n_predicted": 12,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "negative",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": false,
+      "n_excluded": 0,
+      "n_labeled": 1,
+      "n_predicted": 1,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "BAC",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 4,
+      "n_predicted": 4,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2020",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-K",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2021",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 9,
+      "n_predicted": 9,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2022",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 6,
+      "n_predicted": 6,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 3,
+      "n_predicted": 3,
+      "polarity": "positive",
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "exclusion_reasons": [],
+      "fiscal_year": "2023",
+      "form_type": "10-Q",
+      "format_class": "ixbrl_inline",
+      "issuer": "GOOGL",
+      "meets_minimum_n": true,
+      "n_excluded": 0,
+      "n_labeled": 2,
+      "n_predicted": 2,
+      "polarity": "positive",
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    }
+  ],
+  "evaluated_at": "2026-11-02T19:32:27Z",
+  "evaluator_role": "independent_q1",
+  "failed_families": [
+    {
+      "blocks": [
+        "PK08"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "3/22",
+        "false_positive_rate": null,
+        "precision": "8/19",
+        "recall": "8/22",
+        "source_fidelity_error": "0/19"
+      },
+      "pack_id": "PK08",
+      "reason_codes": [
+        "precision_below_floor"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "commitments_note"
+    },
+    {
+      "blocks": [
+        "PK08"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "42/82",
+        "false_positive_rate": "0/7",
+        "precision": "0/40",
+        "recall": "0/75",
+        "source_fidelity_error": "0/40"
+      },
+      "pack_id": "PK08",
+      "reason_codes": [
+        "precision_below_floor",
+        "underpowered"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "legal_proceedings"
+    },
+    {
+      "blocks": [
+        "PK08"
+      ],
+      "disposition": "unavailable_research_only",
+      "does_not_block": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ],
+      "numerator_denominator": {
+        "abstention": "87/104",
+        "false_positive_rate": "0/33",
+        "precision": "7/17",
+        "recall": "7/71",
+        "source_fidelity_error": "0/17"
+      },
+      "pack_id": "PK08",
+      "reason_codes": [
+        "precision_below_floor",
+        "underpowered"
+      ],
+      "relabel_forbidden": true,
+      "reopen_requires": "fresh held-out labels under a new Q0 split decision",
+      "section_family": "loss_contingency"
+    }
+  ],
+  "false_positives": [
+    {
+      "accession": "0000070858-21-000023",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000070858-21-000023|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20201231.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ ieceb0e955f72497b81a9307acda55db6_I20201231 | For the matters disclosed in this Note for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.3 billion in excess of the accrued liability, if any, as of December 31, 2020. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the Note)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20201231}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-21-000063",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-21-000063|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20210331.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i2ed56546e5eb44cd9abe4596e5d19b1d_I20210331 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure, for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.3 billion in excess of the accrued liability, if any, as of March 31, 2021. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20210331}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-21-000084",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-21-000084|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20210630.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i99c624a2c6844fb9b6a5787d6afc6ca5_I20210630 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure, for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.3 billion in excess of the accrued liability, if any, as of June 30, 2021. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20210630}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-21-000107",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-21-000107|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20210930.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i621bce9342784505b3efbcd2bbc10baf_I20210930 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure, for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.1 billion in excess of the accrued liability, if any, as of September 30, 2021. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20210930}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-22-000062",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000070858-22-000062|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20211231.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ ie1a0cf9d6f5c45c69170b813b19e7292_I20211231 | For any matter disclosed in this Note for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.0 billion in excess of the accrued liability, if any, as of December 31, 2021. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the Note)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20211231}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-22-000088",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-22-000088|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20220331.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ ie46826961b7947169ab7b1538cf1ec23_I20220331 | For any matter disclosed in the prior commitments and contingencies disclosure for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.0 billion in excess of the accrued liability, if any, as of March 31, 2022. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20220331}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-22-000112",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-22-000112|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20220630.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i6b7b2d5fb0c249d182de9bc2fb5243df_I20220630 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $1.0 billion in excess of the accrued liability, if any, as of June 30, 2022. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20220630}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-22-000131",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-22-000131|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20220930.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i6c384323195e451a94f5f16368d32e0e_I20220930 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $0.7 billion in excess of the accrued liability, if any, as of September 30, 2022. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20220930}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-23-000092",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000070858-23-000092|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20221231.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i96775b2297e44b7b85ddaedc75911a7f_I20221231 | For any matter disclosed in this Note for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $ 0 to $ 0.8 billion in excess of the accrued liability, if any, as of December 31, 2022. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the Note)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20221231}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000070858-23-000142",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000070858-23-000142|extract|contingency_nature",
+      "guarded_token_present": false,
+      "issuer": "BAC",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "bac-20230331.htm | us-gaap:LossContingencyEstimateOfPossibleLoss @ i15f7dd1a63214dffb9b058033e1c53d5_I20230331 | For any matter disclosed in this Note and in the prior commitments and contingencies disclosure for which a loss in future periods is reasonably possible and estimable (whether in excess of an accrued liability or where there is no accrued liability) and for representations and warranties exposures, the Corporation’s estimated range of possible loss is $0 to $0.8 billion in excess of the accrued liability, if any, as of March 31, 2023. | The estimate facts carry only srt:RangeAxis members (Minimum/Maximum), no matter-family axis; the matter family named with the disclosed range is representations and warranties exposures (plus any matter disclosed in the prior commitments and contingencies disclosure)."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": null,
+        "value_text": "{http://www.bankofamerica.com/20230331}RepresentationsAndWarrantiesObligationsAndCorporateGuaranteesMember"
+      },
+      "section_family": "loss_contingency",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000007",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000007|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20211225.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000007:1024591-1024881",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000007",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000007|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20211225.htm | untagged | The following table shows changes in the Company’s accrued warranties and related costs for the three months ended December 25, 2021 and December 26, 2020 (in millions): | First sentence of Note 8 – Commitments and Contingencies, under the Accrued Warranty heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000007:863769-864400",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000007",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000007|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20211225.htm | untagged | The Company filed a cross-appeal and has been granted a stay pending the appeal. | Status sentence of that Epic matter (cross-appeal and stay pending appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000007:1025201-1025396",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000059",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000059|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220326.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000059:1267674-1267964",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000059",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000059|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220326.htm | untagged | The following table shows changes in the Company’s accrued warranties and related costs for the three- and six-month periods ended March 26, 2022 and March 27, 2021 (in millions): | First sentence of Note 8 – Commitments and Contingencies, under the Accrued Warranty heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000059:1029962-1030908",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims. Apple Inc. | Q2 2022 Form 10-Q | 12"
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000059",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000059|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220326.htm | untagged | The Company filed a cross-appeal and has been granted a stay pending the appeal. | Status sentence of that Epic matter (cross-appeal and stay pending appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000059:1268284-1268479",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000070",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000070|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220625.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000070:1260905-1261195",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000070",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000070|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220625.htm | untagged | The following table shows changes in the Company’s accrued warranties and related costs for the three- and nine-month periods ended June 25, 2022 and June 26, 2021 (in millions): | First sentence of Note 8 – Commitments and Contingencies, under the Accrued Warranty heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000070:1023309-1024255",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims. Apple Inc. | Q3 2022 Form 10-Q | 12"
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000070",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-22-000070|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220625.htm | untagged | The Company filed a cross-appeal and has been granted a stay pending the appeal. | Status sentence of that Epic matter (cross-appeal and stay pending appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000070:1261515-1261710",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000108",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-22-000108|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220924.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Item 3. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000108:366793-367083",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000108",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-22-000108|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220924.htm | untagged | Although most components essential to the Company’s business are generally available from multiple sources, certain components are currently obtained from single or limited sources. | First sentence of Note 10 – Commitments and Contingencies, under the Concentrations in the Available Sources of Supply of Materials and Product heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000108:1782772-1783715",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims. Apple Inc. | 2022 Form 10-K | 48"
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000108",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-22-000108|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220924.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | First sentence of Item 3. Legal Proceedings (under the Epic Games heading), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000108:366547-367140",
+        "value_text": "Epic Games Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. The Company filed a counterclaim for breach of contract."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-22-000108",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-22-000108|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20220924.htm | untagged | The Company filed a cross-appeal and has been granted a stay pending the appeal. | Status sentence of that Epic matter (cross-appeal and stay pending appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-22-000108:367403-367598",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000006|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20221231.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000006:1019439-1019729",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000006|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20221231.htm | untagged | The Company has entered into certain off–balance sheet commitments that require the future purchase of goods or services (“unconditional purchase obligations”). | First sentence of Note 8 – Commitments and Contingencies, under the Unconditional Purchase Obligations heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000006:868336-868967",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000006|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20221231.htm | untagged | The Company filed a cross-appeal and has been granted a stay pending the appeal. | Status sentence of that Epic matter (cross-appeal and stay pending appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000006:1020049-1020244",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000064",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000064|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230401.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store®. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000064:1244390-1244975",
+        "value_text": "District Court for the Northern District of California (the “Northern California District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store ® ."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000064",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000064|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230401.htm | untagged | The Company has entered into certain off–balance sheet commitments that require the future purchase of goods or services (“unconditional purchase obligations”). | First sentence of Note 9 – Commitments and Contingencies, under the Unconditional Purchase Obligations heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000064:1026767-1027713",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims. Apple Inc. | Q2 2023 Form 10-Q | 12"
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000064",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000064|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230401.htm | untagged | On April 24, 2023, the U.S. Court of Appeals for the Ninth Circuit affirmed the Northern California District Court’s ruling. | Status sentence of that Epic matter (Ninth Circuit affirmance), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000064:1245295-1245490",
+        "value_text": "The Northern California District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000077",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000077|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230701.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000077:925475-925745",
+        "value_text": "District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000077",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000077|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230701.htm | untagged | The Company has entered into certain off–balance sheet commitments that require the future purchase of goods or services (“unconditional purchase obligations”). | First sentence of Note 9 – Commitments and Contingencies, under the Unconditional Purchase Obligations heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000077:729169-730115",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims. Apple Inc. | Q3 2023 Form 10-Q | 12"
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000077",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-23-000077|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230701.htm | untagged | On July 17, 2023, the Circuit Court granted Apple’s motion to stay enforcement of the injunction pending appeal to the U.S. Supreme Court. | Status sentence of that Epic matter (stay of the injunction pending U.S. Supreme Court appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000077:925893-926244",
+        "value_text": "The District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction enjoining the Company from prohibiting developers from including in their apps external links that direct customers to purchasing mechanisms other than Apple in-app purchasing."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000106",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-23-000106|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230930.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Item 3. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000106:313595-313865",
+        "value_text": "District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000106",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-23-000106|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230930.htm | untagged | The Company has entered into certain off–balance sheet commitments that require the future purchase of goods or services (“unconditional purchase obligations”). | First sentence of Note 12 – Commitments, Contingencies and Supply Concentrations, under the Unconditional Purchase Obligations heading, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000106:1304492-1305123",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000106",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-23-000106|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230930.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. | First sentence of Item 3. Legal Proceedings (under the Epic Games heading), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000106:313349-314012",
+        "value_text": "Epic Games Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store. On September 10, 2021, the District Court ruled in favor of the Company with respect to nine out of the ten counts included in Epic’s claim."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-23-000106",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-23-000106|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20230930.htm | untagged | On April 24, 2023, the U.S. Court of Appeals for the Ninth Circuit (the “Circuit Court”) affirmed the District Court’s ruling. | Status sentence of that Epic matter (Ninth Circuit affirmance), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-23-000106:314013-314364",
+        "value_text": "The District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction enjoining the Company from prohibiting developers from including in their apps external links that direct customers to purchasing mechanisms other than Apple in-app purchasing."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000006|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20231230.htm | untagged | Epic Games, Inc. (“Epic”) filed a lawsuit in the U.S. District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store®. | The issuer's own statement of the allegation in the most prominent matter (Epic Games antitrust suit, the first matter of Part II Item 1. Legal Proceedings), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000006:685383-685948",
+        "value_text": "District Court for the Northern District of California (the “District Court”) against the Company alleging violations of federal and state antitrust laws and California’s unfair competition law based upon the Company’s operation of its App Store ® ."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000006|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20231230.htm | untagged | The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. | First sentence of Note 9 – Contingencies, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000006:552846-553523",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000006",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000006|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20231230.htm | untagged | On January 16, 2024, the Supreme Court denied both the Company’s and Epic’s petitions and the stay terminated. | Status sentence of that Epic matter (Supreme Court denial of the petitions and termination of the stay), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000006:686096-686447",
+        "value_text": "The District Court found that certain provisions of the Company’s App Store Review Guidelines violate California’s unfair competition law and issued an injunction enjoining the Company from prohibiting developers from including in their apps external links that direct customers to purchasing mechanisms other than Apple in-app purchasing."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000069",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000069|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240330.htm | untagged | On March 21, 2024, the U.S. Department of Justice (the “DOJ”) and 16 state and district attorneys general filed a civil antitrust lawsuit in the U.S. District Court for the District of New Jersey against the Company alleging monopolization or attempted monopolization in the markets for “performance smartphones” and “smartphones” in violation of U.S. antitrust laws. | The issuer's own statement of the allegation in the most prominent matter (DOJ antitrust lawsuit, first disclosed in this 10-Q), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000069:843337-843562",
+        "value_text": "District Court for the District of New Jersey against the Company alleging monopolization or attempted monopolization in the markets for “performance smartphones” and “smartphones” in violation of U.S."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000069",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000069|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240330.htm | untagged | The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. | First sentence of Note 9 - Contingencies, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000069:650728-651405",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000069",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0000320193-24-000069|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240330.htm | untagged | The Company believes it has substantial defenses and intends to vigorously defend itself. | Status sentence of that DOJ matter, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000069:842424-842653",
+        "value_text": "Although any decision by the Commission can be appealed to the General Court of the EU, the effectiveness of the Commission’s order would apply immediately while the appeal is pending, unless a stay of the order is granted."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-24-000123|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | untagged | On March 21, 2024, the U.S. Department of Justice (the “DOJ”) and a number of state and district attorneys general filed a civil antitrust lawsuit in the U.S. District Court for the District of New Jersey against the Company alleging monopolization or attempted monopolization in the markets for “performance smartphones” and “smartphones” in violation of U.S. antitrust laws. | The issuer's own statement of the allegation in the most prominent matter (DOJ antitrust lawsuit, Item 3), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000123:310006-310404",
+        "value_text": "On June 24, 2024, the Commission announced its preliminary findings in the Article 5(4) investigation alleging that the Company’s App Store rules are in breach of the DMA and announced that it had opened a third formal investigation against the Company regarding whether the Company’s new contractual requirements for third-party app developers and app marketplaces may violate the DMA."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-24-000123|extract|commitments_text_block",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | untagged | The Company has entered into certain off–balance sheet commitments that require the future purchase of goods or services (“unconditional purchase obligations”). | First sentence of Note 12 - Commitments, Contingencies and Supply Concentrations, verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000123:1250052-1250683",
+        "value_text": "Contingencies The Company is subject to various legal proceedings and claims that have arisen in the ordinary course of business and that have not been fully resolved. The outcome of litigation is inherently uncertain. In the opinion of management, there was not at least a reasonable possibility the Company may have incurred a material loss, or a material loss greater than a recorded accrual, concerning loss contingencies for asserted legal and other claims."
+      },
+      "section_family": "commitments_note",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-24-000123|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | untagged | On March 25, 2024, the Commission announced that it had opened two formal noncompliance investigations against the Company under the DMA. | First sentence of Item 3. Legal Proceedings (under the Digital Markets Act Investigations heading), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000123:309263-309604",
+        "value_text": "Digital Markets Act Investigations On March 25, 2024, the Commission announced that it had opened two formal noncompliance investigations against the Company under the DMA."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0000320193-24-000123",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0000320193-24-000123|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "AAPL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "aapl-20240928.htm | untagged | The Company believes it has substantial defenses and intends to vigorously defend itself. | Status sentence of that DOJ matter (the Company intends to vigorously defend itself), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0000320193-24-000123:310604-310833",
+        "value_text": "Although any decision by the Commission can be appealed to the General Court of the EU, the effectiveness of the Commission’s order would apply immediately while the appeal is pending, unless a stay of the order is granted."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000010",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-21-000010|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20201231.htm | untagged | For a description of our material pending legal proceedings, please see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference. | First sentence of Item 3. Legal Proceedings (10-K), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000010:504026-504624",
+        "value_text": "ITEM 3. LEGAL PROCEEDINGS For a description of our material pending legal proceedings, please see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000010",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-21-000010|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20201231.htm | untagged | On September 11, 2017, we appealed the EC decision and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision. | Status sentence of that EC Shopping matter (appeal of the EC Shopping decision pending, product changes implemented), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000010:2580762-2580920",
+        "value_text": "After trial, final judgment was entered by the district court in favor of Google on June 8, 2016, and the court decided post-trial motions in favor of Google."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000020",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-21-000020|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20210331.htm | untagged | On September 11, 2017, we appealed the EC decision and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision. | Status sentence of that EC Shopping matter (appeal of the EC Shopping decision pending, product changes implemented), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000020:1449918-1450076",
+        "value_text": "After trial, final judgment was entered by the district court in favor of Google on June 8, 2016, and the court decided post-trial motions in favor of Google."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000047",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-21-000047|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20210630.htm | untagged | On June 27, 2017, the EC announced its decision that certain actions taken by Google regarding its display and ranking of shopping search results and ads infringed European competition law. | The issuer's own statement of the allegation in the most prominent matter (EC Shopping decision, the lead matter of the Legal Matters note), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000047:1819640-1819889",
+        "value_text": "On July 7, 2021, a number of state Attorneys General filed an antitrust complaint against us in the United States District Court for the Northern District of California, alleging that Google’s operation of Android and Google Play violated U.S."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000047",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-21-000047|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20210630.htm | untagged | On September 11, 2017, we appealed the EC decision and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision. | Status sentence of that EC Shopping matter (appeal of the EC Shopping decision pending, product changes implemented), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000047:1823113-1823271",
+        "value_text": "After trial, final judgment was entered by the district court in favor of Google on June 8, 2016, and the court decided post-trial motions in favor of Google."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000057",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-21-000057|extract|allegation_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20210930.htm | untagged | On June 27, 2017, the EC announced its decision that certain actions taken by Google regarding its display and ranking of shopping search results and ads infringed European competition law. | The issuer's own statement of the allegation in the most prominent matter (EC Shopping decision, the lead matter of the Legal Matters note), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000057:1822604-1822853",
+        "value_text": "On July 7, 2021, a number of state Attorneys General filed an antitrust complaint against us in the United States District Court for the Northern District of California, alleging that Google’s operation of Android and Google Play violated U.S."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-21-000057",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-21-000057|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20210930.htm | untagged | On September 11, 2017, we appealed the EC decision and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision. | Status sentence of that EC Shopping matter (appeal of the EC Shopping decision pending, product changes implemented), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-21-000057:1826077-1826235",
+        "value_text": "After trial, final judgment was entered by the district court in favor of Google on June 8, 2016, and the court decided post-trial motions in favor of Google."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-22-000019",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-22-000019|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20211231.htm | untagged | For a description of our material pending legal proceedings, see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference. | First sentence of Item 3. Legal Proceedings (10-K), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-22-000019:493773-494364",
+        "value_text": "ITEM 3. LEGAL PROCEEDINGS For a description of our material pending legal proceedings, see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-22-000019",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-22-000019|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20211231.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Status sentence of that EC Shopping matter (General Court rejection of the EC Shopping appeal and appeal to the European Court of Justice), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-22-000019:2399406-2399598",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-22-000029",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-22-000029|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20220331.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Status sentence of that EC Shopping matter (General Court rejection of the EC Shopping appeal and appeal to the European Court of Justice), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-22-000029:1446905-1447097",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-22-000071",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-22-000071|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20220630.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Status sentence of that EC Shopping matter (General Court rejection of the EC Shopping appeal and appeal to the European Court of Justice), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-22-000071:1815738-1817259",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into 26 Table of Contents Alphabet Inc."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-22-000090",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-22-000090|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20220930.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Status sentence of that EC Shopping matter (General Court rejection of the EC Shopping appeal and appeal to the European Court of Justice), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-22-000090:1838626-1838818",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-23-000016|extract|legal_proceedings_item3",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20221231.htm | untagged | For a description of our material pending legal proceedings, see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference. | First sentence of Item 3. Legal Proceedings (cross-reference to the Legal Matters note), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-23-000016:480705-481549",
+        "value_text": "ITEM 3. LEGAL PROCEEDINGS For a description of our material pending legal proceedings, see Legal Matters in Note 10 of the Notes to Consolidated Financial Statements included in Part II, Item 8 of this Annual Report on Form 10-K, which is incorporated herein by reference."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-K",
+      "fp_id": "PK08:PK08|0001652044-23-000016|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20221231.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Procedural status of that EC Shopping matter (General Court rejection and pending ECJ appeal), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-23-000016:2414560-2414752",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    },
+    {
+      "accession": "0001652044-23-000045",
+      "alternative_explanation": "none stated",
+      "display_copy_used": [],
+      "error_class": "wrong_span",
+      "form_type": "10-Q",
+      "fp_id": "PK08:PK08|0001652044-23-000045|extract|procedural_status_span",
+      "guarded_token_present": false,
+      "issuer": "GOOGL",
+      "label": {
+        "label_class": "extract_positive",
+        "reason": "goog-20230331.htm | untagged | On November 10, 2021, the General Court rejected our appeal, and we subsequently filed an appeal with the European Court of Justice on January 20, 2022. | Status sentence of that EC Shopping matter (General Court rejection of the EC Shopping appeal and appeal to the European Court of Justice), verbatim."
+      },
+      "pack_id": "PK08",
+      "predicted": {
+        "finding_id": null,
+        "kind": "extract",
+        "span_ref": "0001652044-23-000045:1494177-1494369",
+        "value_text": "On September 11, 2017, we appealed the EC decision to the General Court, and on September 27, 2017, we implemented product changes to bring shopping ads into compliance with the EC's decision."
+      },
+      "section_family": "legal_proceedings",
+      "split": "held_out"
+    }
+  ],
+  "head_commit": "34daed7ece7738df78d3c297b6f127fb0054d51a",
+  "language_gate": {
+    "guarded_token_count": 0,
+    "hyphen_guarded_count": 0
+  },
+  "metrics": {
+    "extraction": {
+      "abstention": {
+        "denominator": 208,
+        "exclusions": [
+          "insufficient_evidence:0",
+          "not_applicable:132"
+        ],
+        "numerator": 132,
+        "wilson95": [
+          0.5673,
+          0.6971
+        ]
+      },
+      "false_positive_rate": {
+        "denominator": 40,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.0876
+        ]
+      },
+      "precision": {
+        "denominator": 76,
+        "exclusions": [],
+        "numerator": 15,
+        "wilson95": [
+          0.1234,
+          0.3004
+        ]
+      },
+      "recall": {
+        "denominator": 168,
+        "exclusions": [],
+        "numerator": 15,
+        "wilson95": [
+          0.0549,
+          0.1421
+        ]
+      },
+      "source_fidelity_error": {
+        "denominator": 76,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.0481
+        ]
+      }
+    },
+    "findings": {
+      "abstention": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "false_positive_rate": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "precision": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      },
+      "recall": {
+        "denominator": 0,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": null
+      }
+    },
+    "refusal": {
+      "abstention": {
+        "denominator": 40,
+        "exclusions": [],
+        "numerator": 0,
+        "wilson95": [
+          0.0,
+          0.0876
+        ]
+      },
+      "precision": {
+        "denominator": 132,
+        "exclusions": [],
+        "numerator": 40,
+        "wilson95": [
+          0.2311,
+          0.3861
+        ]
+      },
+      "recall": {
+        "denominator": 40,
+        "exclusions": [],
+        "numerator": 40,
+        "wilson95": [
+          0.9124,
+          1.0
+        ]
+      }
+    }
+  },
+  "numerator_denominator_note": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage.",
+  "pack_id": "PK08",
+  "pack_name": "Legal contingencies",
+  "protocol_id": "fif-q0-quality-protocol/v1",
+  "quality_label": "underpowered",
+  "schema": "fundamental_forensics.pack_quality_report/v1",
+  "split_roots": {
+    "gold": "tests/fixtures/fundamental_forensics/",
+    "held_out": "tests/fixtures/fundamental_forensics_held_out/"
+  }
+}
