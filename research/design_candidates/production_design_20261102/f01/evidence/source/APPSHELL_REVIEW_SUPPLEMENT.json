@@ -1,0 +1,10 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "path": "terminal/components/chrome/AppShell.tsx",
+  "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/chrome/AppShell.tsx",
+  "blobSha": "fad76e11e24f02510854768878ef7ce7e0a063bf",
+  "bytes": 15722,
+  "sha256": "7054ce108b9701b29c8d608bc102f775858cb232b4289032d2afac66338cee43",
+  "scope": "Explicit supplemental input admitted by root after the bounded reviewer requested the cited AppShell binding. Original freeze-B manifest remains unchanged."
+}
