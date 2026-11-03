@@ -36227,6 +36227,7 @@ jobs:
       - name: install minimal deps
         # soupsieve 4.0 (2026-11-03) no longer matches selectors inside <template>
         # contents; the Prophet .pvs-body-source contracts select into them.
+        # Drop this pin once #10669 (template-scoped Prophet reads) is on main.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 soupsieve==2.9.2 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
