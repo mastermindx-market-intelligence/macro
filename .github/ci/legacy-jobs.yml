@@ -20094,6 +20094,11 @@ jobs:
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
       - "scripts/run_ci_pack.py"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/check_design_system.py"
+      - "scripts/check_ui_visual_evidence.py"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
       - "scripts/ci_*.py"
       - "scripts/audit_unrun_tests.py"
       - "scripts/check_ci_trigger_closure.py"
@@ -25712,10 +25717,22 @@ jobs:
         run: python3 scripts/check_runtime_style_injection.py
       - name: forward-only design ratchet (new forbidden decisions on changed lines)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the forward-only design ratchet has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
+          # Pin actual canonical main with the incumbent bounded acquisition.
+          # Acquire only missing fixed-guard/diff blobs in one bounded batch;
+          # the offline diff retains all added/deleted/renamed paths.
+          python - <<'PY_CANONICAL'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+              frozen_paths=("scripts/check_design_system.py",),
+              comparison_paths=("templates",),
+          )
+          PY_CANONICAL
+          export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=
           if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
             echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the forward-only design ratchet has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1
@@ -25724,10 +25741,22 @@ jobs:
           python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff
       - name: visual evidence required for a material UI change
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the visual-evidence gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
+          # Pin actual canonical main with the incumbent bounded acquisition.
+          # Acquire only missing fixed-guard/diff blobs in one bounded batch;
+          # the offline diff retains all added/deleted/renamed paths.
+          python - <<'PY_CANONICAL'
+          import os
+          from pathlib import Path
+          from scripts.run_ci_pack import prepare_canonical_main
+          prepare_canonical_main(
+              Path.cwd(),
+              tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+              base_ref="${{ github.base_ref || 'main' }}",
+              frozen_paths=("scripts/check_ui_visual_evidence.py",),
+              comparison_paths=("templates", "site"),
+          )
+          PY_CANONICAL
+          export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=
           if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
             echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the visual-evidence gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1

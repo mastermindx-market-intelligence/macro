@@ -339,8 +339,11 @@ def test_three_presenters_render_the_same_plan_relation_body():
         items=[row], sg_any=False, bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
         plan_rel=relation, plan_rel_by_ticker={"LFUS": relation["plans"]})
     table = str(module.table_action(row, None, plan_rel=relation))
-    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation") for fragment in
-                (expected, pool, board, table)]
+    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation")
+                for fragment in (expected, pool, board)]
+    table_source = BeautifulSoup(table, "html.parser").select_one("template.pvs-body-source")
+    assert table_source is not None
+    rendered.append(table_source.select_one(".pvs-plan-relation"))
     normalized = [" ".join(str(node).split()) for node in rendered]
     assert normalized[0] == normalized[1] == normalized[2] == normalized[3]
 

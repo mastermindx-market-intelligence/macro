@@ -3564,12 +3564,16 @@ INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
 def prepare_canonical_main(
     root: Path, *, tested_tree_sha: str, base_ref: str = "main",
     frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
+    comparison_paths: tuple[str, ...] | None = None,
 ) -> str:
     """Acquire actual main once, then deepen only its pinned history as needed.
 
     ``frozen_paths`` are the exact repository paths the calling job's frozen
     guard compares at the canonical base and the tested tree; every one must be
-    present offline at both before this returns.
+    present offline at both before this returns. Optional ``comparison_paths``
+    qualifies a dynamic diff: collect exact old/new blob identities without
+    rename/content reads, acquire missing guard/diff blobs in one batch, then
+    verify them offline. Added/deleted paths need only their existing side.
 
     The International frozen-file guard reads origin/main and its merge base
     with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
@@ -3595,6 +3599,13 @@ def prepare_canonical_main(
             isinstance(path, str) and path and not path.startswith("/")
             and ".." not in path.split("/") for path in frozen_paths)):
         raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
+    if comparison_paths is not None and (
+        not isinstance(comparison_paths, tuple) or not comparison_paths or not all(
+            isinstance(path, str) and path and not path.startswith(("/", ":"))
+            and ".." not in path.split("/") for path in comparison_paths
+        )
+    ):
+        raise RuntimeError("canonical-main preparation requires relative comparison paths")
 
     root = root.resolve()
     # Only the explicit acquisition may use transport. All readiness/object
@@ -3651,6 +3662,7 @@ def prepare_canonical_main(
                 raise RuntimeError("canonical-main required object identity unavailable")
             required("cat-file", "-e", f"{oid}^{{commit}}")
             required("cat-file", "-e", f"{oid}^{{tree}}")
+        required_blobs: set[str] = set()
         for ref in (canonical_base, tested_tree_sha):
             for path in frozen_paths:
                 entry = required("ls-tree", ref, "--", path)
@@ -3658,7 +3670,75 @@ def prepare_canonical_main(
                 if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
                         or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
                     raise RuntimeError("canonical-main required frozen object unavailable")
-                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+                required_blobs.add(fields[2])
+                if comparison_paths is None:
+                    required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+        if comparison_paths is None:
+            return
+
+        # Tree-only inventory: --no-renames avoids content reads while the
+        # historical blobs may still be absent from a promisor checkout.
+        raw_diff = required("diff", "--raw", "--no-renames", "--no-abbrev",
+                            "--no-ext-diff", "--no-textconv", "-z",
+                            canonical_base, tested_tree_sha, "--", *comparison_paths)
+        entries = raw_diff.split("\0")
+        if entries == [""]:
+            entries = []
+        elif entries[-1] == "":
+            entries.pop()
+        else:
+            raise RuntimeError("canonical-main comparison inventory is incomplete")
+        if len(entries) % 2:
+            raise RuntimeError("canonical-main comparison inventory is malformed")
+        for index in range(0, len(entries), 2):
+            fields = entries[index].split()
+            if (len(fields) != 5 or not fields[0].startswith(":")
+                    or not entries[index + 1]):
+                raise RuntimeError("canonical-main comparison entry is malformed")
+            for mode, oid in ((fields[0][1:], fields[2]), (fields[1], fields[3])):
+                if not re.fullmatch(r"[0-9a-f]{40}", oid):
+                    raise RuntimeError("canonical-main comparison identity is malformed")
+                if mode == "000000" and oid == "0" * 40:
+                    continue
+                if mode == "160000" and oid != "0" * 40:
+                    continue  # gitlink diffs name commits, not local blob contents
+                if mode not in {"100644", "100755", "120000"} or oid == "0" * 40:
+                    raise RuntimeError("canonical-main comparison mode is unsupported")
+                required_blobs.add(oid)
+
+        ordered = sorted(required_blobs)
+        def missing_blobs() -> list[str]:
+            probe = subprocess.run(
+                ["git", "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+                cwd=root, env=git_env, input="".join(oid + "\n" for oid in ordered),
+                capture_output=True, text=True, check=True,
+            )
+            rows = probe.stdout.splitlines()
+            if len(rows) != len(ordered):
+                raise RuntimeError("canonical-main comparison probe is incomplete")
+            missing = []
+            for oid, row in zip(ordered, rows):
+                if row == oid + " missing":
+                    missing.append(oid)
+                elif row != oid + " blob":
+                    raise RuntimeError("canonical-main comparison object is not a blob")
+            return missing
+
+        missing = missing_blobs()
+        if missing:
+            # One exact-object acquisition under the incumbent logical-job
+            # deadline. Never retry, fetch each object lazily, or alter refs.
+            subprocess.run(
+                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                 "--no-write-fetch-head", "--filter=blob:none", "origin", "--stdin"],
+                cwd=root, env=fetch_env, input="".join(oid + "\n" for oid in missing),
+                text=True, check=True,
+            )
+            check_bindings()
+            if commit("FETCH_HEAD") != canonical_sha:
+                raise RuntimeError("canonical-main comparison acquisition changed FETCH_HEAD")
+            if missing_blobs():
+                raise RuntimeError("canonical-main comparison blobs remained unavailable")
 
     for depth in _EXACT_TESTED_TREE_DEPTHS:
         check_bindings()

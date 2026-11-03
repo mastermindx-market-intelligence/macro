@@ -798,7 +798,10 @@ def _setup_source_bodies(soup: BeautifulSoup,
     displayed: list[Tag] = []
     templates: list[Tag] = []
     requested = ticker.upper()
-    for body in soup.select(".pv-setup-body"):
+    # This audit deliberately compares inert template copies with live bodies.
+    # Document CSS selectors skip template contents in SoupSieve 4; walk the
+    # parsed nodes explicitly so every copy still participates in reconciliation.
+    for body in soup.find_all(class_="pv-setup-body"):
         prefixed_wrapper = body.find_parent(
             attrs={"data-setup-ticker": lambda value: str(value).upper().startswith(requested + "-")})
         exact_wrapper = body.find_parent(attrs={"data-setup-ticker": ticker})
