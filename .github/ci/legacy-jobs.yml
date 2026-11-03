@@ -44323,6 +44323,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
