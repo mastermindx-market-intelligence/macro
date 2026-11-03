@@ -321,6 +321,53 @@ def test_system_replay_composes_with_as_known_identity(monkeypatch):
     assert payload["definition_version"] == reg.DEFINITION_VERSION
 
 
+def test_system_replay_reads_as_known_from_the_matched_row_only(monkeypatch):
+    # Another company's replay identity does not make this one replayable.
+    other = _identity_result("co:us:synth-omega", as_known={"cutoff": base.CUTOFF})
+    bundle = _bundle(identity_results=(other, RECEIPT_RESULT))
+    query = dataclasses.replace(QUERY, time_mode="system_replay")
+    _refusal(monkeypatch, query, bundle, "replay_identity_unavailable")
+    # The matched row carrying it composes, whatever the other rows hold.
+    matched = _identity_result(as_known={"cutoff": base.CUTOFF})
+    payload = _compose(monkeypatch, query, _bundle(identity_results=(_identity_result("co:us:synth-omega"), matched)))
+    assert payload["scope"]["company_ref"] == COMPANY
+
+
+def test_system_replay_resolves_the_company_before_the_replay_check(monkeypatch):
+    query = SyntheticQuery(
+        profile_id=reg.PROFILE_ID, company_ref="co:us:synth-omega", view="business",
+        time_mode="system_replay",
+    )
+    _refusal(monkeypatch, query, _bundle(), "company_ref_unresolved")
+
+
+def test_company_ref_matching_two_identity_rows_is_ambiguous(monkeypatch):
+    by_node = _identity_result("co:us:synth-alpha-holdings", node_id=COMPANY)
+    _refusal(monkeypatch, QUERY, _bundle(identity_results=(RECEIPT_RESULT, by_node)), "company_ref_ambiguous")
+    cik = "cik:0000320193"
+    first = _identity_result(cik=cik)
+    second = _identity_result("co:us:synth-alpha-holdings", cik=cik)
+    _refusal(
+        monkeypatch,
+        SyntheticQuery(profile_id=reg.PROFILE_ID, company_ref=cik, view="business"),
+        _bundle(identity_results=(first, second)),
+        "company_ref_ambiguous",
+    )
+
+
+def test_duplicate_identity_rows_are_ambiguous(monkeypatch):
+    _refusal(
+        monkeypatch, QUERY, _bundle(identity_results=(RECEIPT_RESULT, dict(RECEIPT_RESULT))),
+        "company_ref_ambiguous",
+    )
+    # One matching row among non-matching ones still resolves.
+    payload = _compose(
+        monkeypatch, QUERY,
+        _bundle(identity_results=(_identity_result("co:us:synth-omega"), RECEIPT_RESULT)),
+    )
+    assert payload["scope"]["company_ref"] == COMPANY
+
+
 def test_pagination_unsupported_refused(monkeypatch):
     _refusal(monkeypatch, dataclasses.replace(QUERY, offset=1), _bundle(), "pagination_unsupported")
     # cursor is as much a paging attempt as offset: the dossier declares
