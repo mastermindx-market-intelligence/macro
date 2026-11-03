@@ -96,12 +96,23 @@ The four renames give English and Chinese names:
 | theme:hbm_packaging | HBM memory stacking & packaging | HBM 存储堆叠与封装 | MEDIUM |
 | theme:nand_enterprise_storage | NAND flash & enterprise SSDs | NAND 闪存与企业级 SSD | LOW |
 
-Six KEEPs are LOW-CONFIDENCE. Each has a near neighbour, or a broad scope that a
-later lane may want to revisit: theme:cardiorenal_metabolic_indications,
-theme:critical_mineral_mining_development, theme:fill_finish_delivery_devices,
-theme:precision_agriculture_platforms, theme:reactor_technology,
-theme:structural_steel_electrification. The dossier gives the reason for every
-call, along with its neighbour table.
+Six KEEPs are LOW-CONFIDENCE. Each is a KEEP today, with a named reason a later,
+populated review might change it:
+- theme:cardiorenal_metabolic_indications: its issuers likely coincide with
+  glp1_incretin_therapies, so it might become a MERGE or RENAME.
+- theme:critical_mineral_mining_development: it is a broad umbrella. A
+  per-commodity SPLIT was considered and is not proposed.
+- theme:fill_finish_delivery_devices: it might SPLIT into fill-finish capacity
+  and pen/autoinjector devices if the member sets diverge.
+- theme:precision_agriculture_platforms: its placement under ag_fertilizer is
+  questionable, but re-parenting is outside this rubric.
+- theme:reactor_technology: the name is generic, and a RENAME could make the
+  designer scope explicit.
+- theme:structural_steel_electrification: the name says structural steel while the
+  note says steel plate, and there is little to invest in. It might become a RENAME
+  or a RETIRE.
+
+The dossier gives the reason for every call, along with its neighbour table.
 
 **Follow-up rule for non-KEEP rows.** A non-KEEP row is a recorded owner decision.
 It is not an execution. Renaming, merging, splitting or retiring a micro is a
