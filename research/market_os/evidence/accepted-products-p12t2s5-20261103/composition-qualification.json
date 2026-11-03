@@ -1,0 +1,156 @@
+{
+  "base": "12c551c2512fc57e12743fac17a2874e001cf6db",
+  "composed_source_head": "10e418c4c216d48714b7067a37225139fd278b84",
+  "accepted_source_blobs_and_modes": {
+    "Bonds": [
+      {
+        "path": "engine/intl_bonds.py",
+        "git_entry": "100644 blob e30591b0c2d5837dc2cd62feef09e5b81cd3e54e\tengine/intl_bonds.py",
+        "sha256": "11b25c47af4d0f1e01f494201e73d16bf0e54ce38d99aaf52cc3951122706119",
+        "accepted_exact": true
+      },
+      {
+        "path": "templates/bonds.html.j2",
+        "git_entry": "100644 blob 816f1038305914424278caad76d623b8dab505ea\ttemplates/bonds.html.j2",
+        "sha256": "6e113b18e708774179caca4fb2665bb50e839c38c0b1fcc4094cbb8bac55b335",
+        "accepted_exact": true
+      },
+      {
+        "path": "tests/test_bonds_glance_copy.py",
+        "git_entry": "100644 blob b07ae0c7e2ad742afcdf9dd72e138ecc6d4acea6\ttests/test_bonds_glance_copy.py",
+        "sha256": "3872baf53f92487ad9ca302ebd35e7c8f227c013c770cd2d9cbc655e2eaccf72",
+        "accepted_exact": true
+      }
+    ],
+    "Forensics": [
+      {
+        "path": "site/fundamental_forensics.js",
+        "git_entry": "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\tsite/fundamental_forensics.js",
+        "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3",
+        "accepted_exact": true
+      },
+      {
+        "path": "templates/fundamental_forensics.js",
+        "git_entry": "100644 blob 45ade618ae2ae78d1093bc23df98dd3ffc6f9fca\ttemplates/fundamental_forensics.js",
+        "sha256": "440fc840ad050a5b05f554db11692e10841c4d939fbca29798fcb92a485b27b3",
+        "accepted_exact": true
+      },
+      {
+        "path": "tests/fundamental_forensics_drawer_resume.test.mjs",
+        "git_entry": "100644 blob 703c119c384409f84b3d5437ea1bdc9daea84ea3\ttests/fundamental_forensics_drawer_resume.test.mjs",
+        "sha256": "47d8c4eb23f929f326da104f60d42327e456da26b4911d2ce3cdb1951cc0b985",
+        "accepted_exact": true
+      },
+      {
+        "path": "tests/test_fundamental_forensics_ui.py",
+        "git_entry": "100644 blob 1c50d2bd449975ebb21741d2dcabc254654cf235\ttests/test_fundamental_forensics_ui.py",
+        "sha256": "47d0674e3e8ef993735563072ca82bf64abcaa070889a5db44f25d5b7c81a9e6",
+        "accepted_exact": true
+      }
+    ],
+    "BusinessActivity": [
+      {
+        "path": "templates/_macro_suite_shell.html.j2",
+        "git_entry": "100644 blob c6f4f50623c0d80a772606da32ad8791be8825e7\ttemplates/_macro_suite_shell.html.j2",
+        "sha256": "e1965dfee6f62828eebc1d6441f11b22a6aa5f26a3294fd8fbfc04500e621d60",
+        "accepted_exact": true
+      },
+      {
+        "path": "templates/macro_business_activity.html.j2",
+        "git_entry": "100644 blob 35478ddfc09f6665895737297a27bf3caf4e540d\ttemplates/macro_business_activity.html.j2",
+        "sha256": "eda7c4a7723d764206d031ca8805ca07d89a1b8d6790697ab2c1ec0ba5b36fa1",
+        "accepted_exact": true
+      },
+      {
+        "path": "tests/test_macro_business_activity_depth.py",
+        "state": "CI_RELOCATED_SAME_ASSERTION_AST",
+        "source_commit": "01bb5dff41e1b0eef39c5ab639a010663bf74e23"
+      }
+    ],
+    "ChinaHub": [
+      {
+        "path": "templates/china_intel.html.j2",
+        "git_entry": "100644 blob 34e3b08bcfc6f7ef6edaad6ad93050185673c707\ttemplates/china_intel.html.j2",
+        "sha256": "27d5ebdd56dcae2cfbb545181f2ae20bd69cd6b24cfbb6f6052d02d5a6970b5d",
+        "accepted_exact": true
+      },
+      {
+        "path": "tests/test_china_intel_visits_render.py",
+        "git_entry": "100644 blob ba4151ecfabcd457687013fe15a5e8f6a4692b38\ttests/test_china_intel_visits_render.py",
+        "sha256": "45119ee7dcd96bf37fc4af6375b3997d3d24c328aadbf13fe4a84ccfdc7a8c95",
+        "accepted_exact": true
+      }
+    ]
+  },
+  "template_dependency_closure": {
+    "Bonds": {
+      "literal_template_paths": [
+        "_all_tools_menu.html.j2",
+        "_interfonts.html.j2",
+        "_navlinks.html.j2",
+        "_seo_head.html.j2",
+        "_site_nav.html.j2",
+        "_state_inks.html.j2",
+        "_vector_polish.html.j2",
+        "bonds.html.j2"
+      ],
+      "dynamic_or_missing": [],
+      "base_vs_accepted_preimage_dependency_drift": []
+    },
+    "Forensics": {
+      "literal_template_paths": [
+        "_all_tools_menu.html.j2",
+        "_navlinks.html.j2",
+        "_seo_head.html.j2",
+        "_site_nav.html.j2",
+        "fundamental_forensics.html.j2"
+      ],
+      "dynamic_or_missing": [],
+      "base_vs_accepted_preimage_dependency_drift": []
+    },
+    "BusinessActivity": {
+      "literal_template_paths": [
+        "_all_tools_menu.html.j2",
+        "_curve_panel.html.j2",
+        "_macro_suite_nav.html.j2",
+        "_macro_suite_shell.html.j2",
+        "_navlinks.html.j2",
+        "_seo_head.html.j2",
+        "_site_nav.html.j2",
+        "macro_business_activity.html.j2"
+      ],
+      "dynamic_or_missing": [],
+      "base_vs_accepted_preimage_dependency_drift": []
+    },
+    "ChinaHub": {
+      "literal_template_paths": [
+        "_all_tools_menu.html.j2",
+        "_navlinks.html.j2",
+        "_seo_head.html.j2",
+        "_site_nav.html.j2",
+        "china_intel.html.j2",
+        "report_base.html.j2"
+      ],
+      "dynamic_or_missing": [],
+      "base_vs_accepted_preimage_dependency_drift": []
+    }
+  },
+  "business_CI_locator": {
+    "actual_native_metrics": 31,
+    "all_selected_metadata_names_and_text_equal_old_parser": true,
+    "unsupported_selectors_fail_closed": true
+  },
+  "ChinaHub": {
+    "state": "NATIVE_RENDERER_REPLAY_ONLY_NOT_BUS_BUILD",
+    "interface": "scripts.build_china_intel._env().get_template(...).render(b,cmd_full)",
+    "input_briefing_sha256": "c5dbf73a9546226efd1f5bf8d071aefdd8bb3ddff5875ff8da8ea713540c67fa",
+    "input_command_sha256": "13fe83880fc517fa67568fb3ae626cb2f98a62bb5ded0c0e8feaee536f9ad6ab",
+    "output": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/china-native-renderer-replay.html",
+    "output_sha256": "b2bd494bf16584be5bdb2c3edd4839c06ae14a25a58263cc2d832020b5b03840",
+    "all_owner_payloads_unchanged": true,
+    "bus_or_collection_called": false,
+    "limitation": "Private unshimmed source/semantic replay only; no tracked generated China page, full upstream producer emission, source download, browser or serving claim."
+  },
+  "network_attempts": [],
+  "browser": "HELD_NOT_RUN"
+}

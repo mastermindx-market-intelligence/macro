@@ -1,0 +1,10 @@
+{
+  "original_task": "P12.T40",
+  "composition_task": "P12.T2.S5",
+  "old_suite": "tests/test_macro_business_activity_depth.py",
+  "owned_suite": "tests/test_macro_suite_pages.py",
+  "all_original_assertion_ASTs_preserved": true,
+  "assert_nodes": 6,
+  "product_source_unchanged": true,
+  "dependency_adaptation": "same-module stdlib locator limited to original4selectors; exact selected metadata names/text/order equivalence checked against both initial retained and corrected current-protected native31metric HTML; unsupported selectors fail closed; no bs4/job/workflow/budget change"
+}

@@ -1135,3 +1135,108 @@ console.log('suite candidate, standalone, fragment, history, scroll and keyboard
         capture_output=True, text=True, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+# P12.T40 / P12.T2.S5: dependency-free locator for the original definition-clock
+# regression. Supports only its four selectors; unknown selectors fail closed.
+from html.parser import HTMLParser as _BusinessHTMLParser
+
+
+class _BusinessNode:
+    def __init__(self, name='', attrs=()):
+        self.name, self.attrs, self.contents = name, dict(attrs), []
+
+    def _nodes(self):
+        for item in self.contents:
+            if isinstance(item, _BusinessNode):
+                yield item
+                yield from item._nodes()
+
+    def _class(self, name):
+        return name in self.attrs.get('class', '').split()
+
+    def select(self, selector):
+        if selector == '.mq-metric':
+            return [n for n in self._nodes() if n._class('mq-metric')]
+        if selector == '.mq-metric-meta > div':
+            return [child for n in self._nodes() if n._class('mq-metric-meta')
+                    for child in n.contents if isinstance(child, _BusinessNode) and child.name == 'div']
+        if selector == 'dd':
+            return [n for n in self._nodes() if n.name == 'dd']
+        if selector == 'dt .l-en':
+            return [span for n in self._nodes() if n.name == 'dt'
+                    for span in n._nodes() if span._class('l-en')]
+        raise ValueError('Unsupported Business definition test selector: ' + selector)
+
+    def select_one(self, selector):
+        found = self.select(selector)
+        return found[0] if found else None
+
+    def get_text(self, strip=False):
+        return ''.join(item.get_text(strip=strip) if isinstance(item, _BusinessNode)
+                       else item.strip() if strip else item for item in self.contents)
+
+
+class _BusinessParser(_BusinessHTMLParser):
+    VOID = frozenset('area base br col embed hr img input link meta param source track wbr'.split())
+
+    def __init__(self, html):
+        super().__init__(convert_charrefs=True)
+        self.root = _BusinessNode()
+        self.stack = [self.root]
+        self.feed(html)
+        self.close()
+
+    def handle_starttag(self, name, attrs):
+        node = _BusinessNode(name, attrs)
+        self.stack[-1].contents.append(node)
+        if name not in self.VOID:
+            self.stack.append(node)
+
+    def handle_startendtag(self, name, attrs):
+        self.stack[-1].contents.append(_BusinessNode(name, attrs))
+
+    def handle_endtag(self, name):
+        for i in range(len(self.stack) - 1, 0, -1):
+            if self.stack[i].name == name:
+                del self.stack[i:]
+                return
+
+    def handle_data(self, data):
+        self.stack[-1].contents.append(data)
+
+
+def _business_document(html, parser):
+    if parser != 'html.parser':
+        raise ValueError('Only the standard HTML parser is used for this regression')
+    return _BusinessParser(html).root
+
+
+def test_business_definition_version_does_not_invent_publication_date():
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    assert snapshot["metrics"]["items"][0]["reference_period"]
+    assert snapshot["metrics"]["items"][0]["released_at"] is None
+    view = macro_suite_view.build_view(
+        snapshot, page_built_at="2026-11-03T18:00:00Z", artifact=artifact,
+        layout=builder._layout_for(page.workspace_id),
+    )
+    before = json.dumps(view, sort_keys=True)
+    html = builder.render_page(builder._environment(ROOT), page, view)
+    cards = _business_document(html, "html.parser").select(".mq-metric")
+    assert len(cards) == len(view["metrics"])
+    for metric, card in zip(view["metrics"], cards):
+        definition = next(
+            row.select_one("dd") for row in card.select(".mq-metric-meta > div")
+            if row.select_one("dt .l-en").get_text(strip=True) == "Definition version"
+        )
+        # The owner supplies the version, but supplies no definition-release clock.
+        # Do not promote its economic reference period to publication evidence.
+        assert definition.get_text(strip=True) == (metric["definition_version"] or "—")
+        reference = next(
+            row.select_one("dd") for row in card.select(".mq-metric-meta > div")
+            if row.select_one("dt .l-en").get_text(strip=True) == "Reference period"
+        )
+        if metric["reference_period"]:
+            assert reference.get_text(strip=True) == metric["reference_period"]
+    assert json.dumps(view, sort_keys=True) == before

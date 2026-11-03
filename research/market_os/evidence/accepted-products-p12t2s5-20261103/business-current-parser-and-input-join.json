@@ -1,0 +1,9 @@
+{
+  "current_protected_base": "12c551c2512fc57e12743fac17a2874e001cf6db",
+  "actual_native_metric_count": 31,
+  "all_metadata_names_text_and_order_equal_previous_parser": true,
+  "current_native_artifact_digest_embedded_in_normal_output": true,
+  "artifact_sha256": "d1c1cbde31c074c74d88546da34a1531b49cdf0cd50b9d88f5ea4153aeec5393",
+  "output_sha256": "b6f1230f217d42f5b3fec9df8aa2ba52a1329e915940c406c23b793cafbf8f42",
+  "no_renderer_or_capture_rerun": true
+}

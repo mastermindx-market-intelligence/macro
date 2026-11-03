@@ -1,0 +1,67 @@
+{
+  "task": "P12.T2.S5",
+  "original_root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
+  "native_parent": "01a15e76-ed5a-72f1-8092-813b4e735bdc",
+  "qualification_at": "2026-11-03T22:05:54.821398+00:00",
+  "base": "12c551c2512fc57e12743fac17a2874e001cf6db",
+  "composed_accepted_source_head": "10e418c4c216d48714b7067a37225139fd278b84",
+  "accepted_commit_mapping": [
+    "b96054cb288740d7a346906e2bcb21f793e615b4 P12.T2.S1 retain sovereign observation dates and source depth",
+    "d17647171a7ceffa84a448877c75b973fbbf2956 P12.T2.S1 size new sovereign source controls for touch",
+    "91ca3a9723dfade1f24b6145808d3d2102b2d1c8 P12.T2.S2 bind frame rates to same-read observation receipts",
+    "1a6e8b23d76af70130d540a8c7b7ce68cc9431b2 fix(forensics): preserve exact source drawer return [P12.T39]",
+    "a633f41719e6a063c5382ed88a1be40d8961ddc5 fix(forensics): bind restored source to request vintage [P12.T39]",
+    "a76912db949cff3ed53ba0634c8ea57cb0047c39 fix(macro): P12.T40 preserve business definition clock and depth targets",
+    "10e418c4c216d48714b7067a37225139fd278b84 fix(china-hub): retain stale source records [P12.T41]"
+  ],
+  "review_receipt_references": {
+    "Bonds": {
+      "path": "/Volumes/Mastermind/evidence/bonds-combined-p12t2s3-20261103/root-acceptance.json",
+      "sha256": "39358b5861c2862a4ee1c5eb6a235e3205c143a748dcd2826df67884a6d97dc5",
+      "bytes": 787
+    },
+    "Forensics": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/forensics-t39-review-20261103/root-adjudication-cb48c508.json",
+      "sha256": "a3a23fe9a79ff082665537c7e960f8543f16d8bd8f512cf91ad1a8f3186436db",
+      "bytes": 875
+    },
+    "BusinessActivity": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/business-activity-t40-review-20261103/review.json",
+      "sha256": "ccdb53c8a7d264c265069c915727d96afa919167da606f3de38685edc3e8ce05",
+      "bytes": 4218
+    },
+    "ChinaHub": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-china-hub-depth-20261103/root-source-review.json",
+      "sha256": "4c510ca18485a42a62fbcdc842821f69161960bc12f194b1f6e339c77453e50a",
+      "bytes": 1620
+    }
+  },
+  "source_and_modes": "All4families exact accepted runtime blobs and modes; Business regression only relocated to its existing CI-owned suite with original6assertion ASTs preserved. Zero literal template dependency drift at this base.",
+  "new_integration_delta": "Two actual native HTML emissions, current-generation Business input join, dependency-free CI regression relocation and this bounded composition packet. No product source logic changes beyond the7accepted commits.",
+  "actual_checks": {
+    "affected_tests": "13 passed in4.38s",
+    "no_bs4": "CI-minimal dependency test import blocker active",
+    "CI": "4 actual named code-job suites, zero uncovered concrete closure paths; dynamic filesystem/subprocess ambiguity remains explicit in ci-ownership-closure.json, not falsely certified full dynamic closure",
+    "design_added": "PASS zero added blocking findings",
+    "new_seam_diff_check": "PASS",
+    "whole_composition_diff_check": "FAIL inherited exact accepted raw Business RED diagnostic log trailing whitespace at line27; retained original evidence bytes, not product/source whitespace",
+    "runtime_style_guard": "REFUSED sparse site, no bypass/retry",
+    "visual_evidence_guard": "REFUSED sparse mockups, no bypass/retry"
+  },
+  "input_and_emission_scope": {
+    "Forensics": "Native render_shell public summary only; real12c public counts1493/1058, no private rows or entitlement/source readback",
+    "BusinessActivity": "Native31metric build_page with matching current12c canonical manifest+snapshot, owner data/clocks unchanged; actual analyst mountability true. Prior accepted old snapshot output was detected as a wrong current input join, retained as negative and superseded through native builder, not HTML patch or data replacement.",
+    "ChinaHub": "Native production Jinja replay of exact real current briefing+command, unchanged inputs; no full upstream bus build/no tracked generated China output",
+    "Bonds": "Source-only: accepted component inputs do not close entire native full-page producer bundle; full normal emission not run"
+  },
+  "data_paths_changed": [],
+  "visual_obligations": [
+    "No new Chromium launch; actual CHILD sandbox Operation not permitted hold preserved.",
+    "Old accepted unchanged source/gauge/material/target/captured proof reused only within its scope.",
+    "Business current owner generation/analyst-present path and Forensics fresh unavailable/private/entitlement states need later qualified native/served proof.",
+    "China native stale source-body/return and Bonds full producer/render/served source clocks remain owed."
+  ],
+  "effect_boundary": "LOCAL_SOURCE_COMPOSITION_AND_QUALIFIED_EMISSION_ONLY; no PR/push/hostedCI/host/provider/serving/browser",
+  "release_readiness": "REVIEWABLE_LOCAL_INPUT_NOT_PROTECTED_OR_SERVED_ACCEPTANCE",
+  "smallest_next_release_action": "Root review exact final integration candidate, then at ordinary admitted Macro capacity reconcile this single carrier with actual protected base, lawfully satisfy sparse full-tree guards and inherited diagnostic whitespace without fabricating receipts, close only missing native producer inputs for covering normal emission, and use one normal protected source/CI/release path. No present release effect authorized."
+}

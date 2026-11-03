@@ -1,0 +1,58 @@
+{
+  "design": {
+    "command": [
+      "python3",
+      "scripts/check_design_system.py",
+      "--mode",
+      "enforce-added",
+      "--diff-file",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/composition-source.diff"
+    ],
+    "exit_code": 0,
+    "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/design-guard.log",
+    "output_last_lines": [
+      "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25321 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)",
+      "design-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25321)"
+    ]
+  },
+  "runtime_styles": {
+    "command": [
+      "python3",
+      "scripts/check_runtime_style_injection.py"
+    ],
+    "exit_code": 1,
+    "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/runtime_styles-guard.log",
+    "output_last_lines": [
+      "runtime style injection guard REFUSED: sparse worktree \u2014 site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full"
+    ]
+  },
+  "visual_evidence": {
+    "command": [
+      "python3",
+      "scripts/check_ui_visual_evidence.py",
+      "--diff-file",
+      "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/composition-source.diff",
+      "--repo-root",
+      "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9"
+    ],
+    "exit_code": 1,
+    "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/visual_evidence-guard.log",
+    "output_last_lines": [
+      "::error title=ui-visual-evidence::ui-visual-evidence guard REFUSED: sparse worktree \u2014 mockups not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full"
+    ]
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "12c551c2512fc57e12743fac17a2874e001cf6db"
+    ],
+    "exit_code": 2,
+    "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/diff_check-guard.log",
+    "output_last_lines": [
+      "mockups/evidence/business-activity-depth-20261103/regression-red.log:27: trailing whitespace.",
+      "+E             "
+    ]
+  }
+}
