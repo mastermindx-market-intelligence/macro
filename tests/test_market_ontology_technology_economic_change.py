@@ -452,13 +452,7 @@ def test_lazy_import_literal_equals_shared_contract_module():
     assert sorted(_import_module_string_literals(module_tree)) == sorted([assigned, helpers])
     assert set(_shared_contract_module_path_literals(module_tree)) == {assigned}
     test_tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
-    test_literals = _import_module_string_literals(test_tree)
-    assert assigned in test_literals
-    assert set(test_literals) <= {
-        assigned,
-        "engine.market_ontology.theme_research_binding",
-    }
-    assert "theme_research_registry" not in test_literals
+    assert _import_module_string_literals(test_tree) == [assigned]
     assert set(_shared_contract_module_path_literals(test_tree)) == {assigned}
 
 
@@ -492,25 +486,13 @@ def test_business_refused_when_shared_contract_unavailable(monkeypatch):
     _block_shared_contract(monkeypatch)
     dossier = _compose()
     business = dossier["business"]
-    if tech._load_shared_curation_contract() is None:
-        assert business["refused"] is True
-        assert business["reason_code"] == "shared_contract_unavailable"
-        assert business["explanation"]
-        assert dossier["counter_observations"] == []
-        assert dossier["coverage"]["assertion_counts_available"] is False
-        for key in ("unsupported_assertions", "invalid_assertions", "after_cutoff", "source_unavailable"):
-            assert dossier["coverage"]["counts"][key] is None
-    else:
-        assert business.get("reason_code") != "shared_contract_unavailable"
-        assert "rows" in business
-        assert dossier["coverage"]["assertion_counts_available"] is True
-        assert business["rows"] == []
-        assert dossier["counter_observations"] == []
-        assert dossier["coverage"]["counts"]["invalid_assertions"] == 3
-
-
-def _real_curation_module():
-    return importlib.import_module("engine.theme_graph.curation_assertion")
+    assert business["refused"] is True
+    assert business["reason_code"] == "shared_contract_unavailable"
+    assert business["explanation"]
+    assert dossier["counter_observations"] == []
+    assert dossier["coverage"]["assertion_counts_available"] is False
+    for key in ("unsupported_assertions", "invalid_assertions", "after_cutoff", "source_unavailable"):
+        assert dossier["coverage"]["counts"][key] is None
 
 
 def test_shared_assertion_roundtrip_through_pinned_contract():
@@ -913,11 +895,7 @@ def test_minimum_content_refusal_state_names_typed_refusals(monkeypatch):
     dossier = _compose()
     assert dossier["comparison"]["admission"] == "admitted"
     assert dossier["comparison"]["primary_limitation"]["text"]
-    if tech._load_shared_curation_contract() is None:
-        assert dossier["business"]["reason_code"] == "shared_contract_unavailable"
-    else:
-        assert dossier["business"]["rows"] == []
-        assert dossier["coverage"]["counts"]["invalid_assertions"] == 3
+    assert dossier["business"]["reason_code"] == "shared_contract_unavailable"
     assert dossier["source_version_vector"]["comparison_input_vector"] == _comparison()["input_vector"]
     assert dossier["bounds"]["pagination_supported"] is False
 

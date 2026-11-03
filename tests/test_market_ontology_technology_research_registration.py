@@ -261,12 +261,8 @@ def test_compose_without_the_shared_contract_still_identifies(monkeypatch):
     payload = reg.compose(QUERY, _bundle())
     assert payload["schema"] == reg.PROFILE_ID
     assert payload["definition_version"] == reg.DEFINITION_VERSION
-    if tech._load_shared_curation_contract() is None:
-        assert payload["business"]["refused"] is True
-        assert payload["business"]["reason_code"] == "shared_contract_unavailable"
-    else:
-        assert payload["business"].get("reason_code") != "shared_contract_unavailable"
-        assert "rows" in payload["business"]
+    assert payload["business"]["refused"] is True
+    assert payload["business"]["reason_code"] == "shared_contract_unavailable"
 
 
 # --- request refusals, each code by execution ---------------------------------------

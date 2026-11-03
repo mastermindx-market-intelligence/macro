@@ -259,10 +259,16 @@ class CoverageSpec:
 # --- small helpers ---------------------------------------------------------------
 
 
+def _import_shell_binding() -> Any:
+    """The shared binding module (canonical text and the cutoff clock helpers).
+
+    The one import of it in this module: a string literal so the exclusive
+    walker resolves the shell. Not the registry."""
+    return importlib.import_module("engine.market_ontology.theme_research_binding")
+
+
 def _load_shell_canonical_text():
-    # String literal so the exclusive walker resolves the shell. Not the registry.
-    module = importlib.import_module("engine.market_ontology.theme_research_binding")
-    return module.canonical_text
+    return _import_shell_binding().canonical_text
 
 
 _canonical_json = _load_shell_canonical_text()
@@ -373,9 +379,10 @@ def _load_shared_time_helpers() -> types.SimpleNamespace | None:
     absent or lacks any of them. Without them no cutoff can be read, so the
     composer refuses (``shared_contract_unavailable``) rather than admit
     undated content."""
-    # String literal for scripts/ci_scope_dependencies.py, as below.
+    # _import_shell_binding holds the string literal for
+    # scripts/ci_scope_dependencies.py, as below.
     try:
-        binding = importlib.import_module("engine.market_ontology.theme_research_binding")
+        binding = _import_shell_binding()
     except ImportError:
         return None
     helpers = {name: getattr(binding, name, None) for name in _SHARED_TIME_HELPER_NAMES}
