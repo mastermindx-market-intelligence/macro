@@ -1,0 +1,208 @@
+schema: mastermind.rig_proposal.v1
+reference_id: t35-whitehouse-editorial-reader-r2
+proposed_artifact:
+  frozen_sha: ff74c6a33d6af10125626cd20f82a7d37fdd5c36
+  paths:
+  - templates/whitehouse.html.j2
+  - scripts/build_whitehouse.py
+  - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader-r2/native-rendered-retained-fixture.html
+  screenshots: []
+  native_render_only: true
+  historical_after_images: Predecessor5e2070d8 images are historical, not evidence
+    for changed bytes.
+  visual_review_status: 'Not run: current local Chromium sandbox refusal preserved.'
+dispositions:
+- id: reports.retained-population
+  disposition: RETAIN
+  target: Original wh-/tw- report sections and ordered data iteration
+- id: reports.metadata-clocks
+  disposition: RETAIN
+  target: Report title row with publication/read/expiry/fallback/confidence labels
+- id: reports.original-body
+  disposition: IMPROVE
+  target: .wh-reading .wh-analysis; actual stored paragraphs remain expanded
+  rationale: Limit prose measure and add labeled section access without changing original
+    body, evidence, source or report identity.
+- id: reports.bilingual-summary
+  disposition: RETAIN
+  target: Original bilingual title and summary fields
+- id: reports.sector-evidence
+  disposition: RETAIN
+  target: .wh-reading sector-impact table, same rows and rationale
+- id: reports.ticker-evidence
+  disposition: RETAIN
+  target: .wh-reading named-instrument tables with original quote/rationale fields
+- id: reports.primary-source
+  disposition: RETAIN
+  target: Original source href/target/rel with existing independentT34 agency correction
+- id: reports.model-assessment
+  disposition: RELOCATE
+  destination: .wh-rail model assessment below outline; same integer out of100
+  reachability: Visible labeled outline/method summary; native disclosure keyboard/touch
+    support; source code and retained representative captures. Embedded outer-scroll/history
+    remains unproved.
+- id: treasury.snapshot
+  disposition: RETAIN
+  target: Incumbent Treasury snapshot values/units/date/chart/context
+- id: page.global-navigation
+  disposition: RETAIN
+  target: Inherited site nav/footer and existing theme/locale controls
+- id: page.explanation
+  disposition: RELOCATE
+  destination: Native .wh-method disclosure in existing header plus page disclaimer
+  reachability: Visible labeled outline/method summary; native disclosure keyboard/touch
+    support; source code and retained representative captures. Embedded outer-scroll/history
+    remains unproved.
+- id: reports.fragment-return
+  disposition: IMPROVE
+  target: Original report fragment IDs plus additive section suffix anchors and focused
+    targets
+  rationale: Limit prose measure and add labeled section access without changing original
+    body, evidence, source or report identity.
+additions:
+- Visible EN/ZH generated headline/summary attribution using actual producer field
+  semantics
+- View-only literal source-title fallback annotation; original record unchanged
+- Precise absent-full-analysis and surviving-field text with source-present-only guidance
+- Restore real recorded fallback count inside existing method disclosure
+user_tasks:
+- id: task.read-argument
+  critical: true
+  task: Read a retained argument and distinguish source from AI interpretation
+  production: Generated title/summary/body lack a precise point-of-use AI boundary;
+    original report body remains available.
+  proposal: Native-rendered DOM attributes generated headline/summary at point of
+    use, separates literal source-title fallback, names missing full analysis precisely,
+    preserves surviving fields, offers source guidance only with the original link.
+  verdict: UNKNOWN
+  notes: 17 causal old-byte failures; revised actual-render DOM casesPASS. Structural
+    semantic repair only; changed-state visual/task acceptance remains unqualified.
+- id: task.verify-source
+  critical: true
+  task: Reach the exact original source and identify its agency
+  production: Original source action when present; inheritedT34 agency-copy correction
+    is separate.
+  proposal: Native-rendered DOM attributes generated headline/summary at point of
+    use, separates literal source-title fallback, names missing full analysis precisely,
+    preserves surviving fields, offers source guidance only with the original link.
+  verdict: UNKNOWN
+  notes: 17 causal old-byte failures; revised actual-render DOM casesPASS. Structural
+    semantic repair only; changed-state visual/task acceptance remains unqualified.
+- id: task.compare-evidence
+  critical: true
+  task: Scan sector/ticker evidence and available quote fields
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Rows retained by source. Only table tails captured; PRC-003 notes ticker/direction
+    wrap. No complete table-density PASS.
+- id: task.find-report
+  critical: true
+  task: Find/return to the same retained report by its original fragment
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: EQUIVALENT
+  notes: Original IDs and ordered full77 input iteration retained; new section outline
+    is additive. Actual embedded Back/scroll remains unproved.
+- id: task.inspect-treasury
+  critical: false
+  task: Read Treasury values, units, dates and context
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: EQUIVALENT
+  notes: Retained actual values/units/dates/chart context unchanged; captured representative
+    Treasury panels, no scientific validation.
+- id: task.change-language
+  critical: true
+  task: Read known UI labels in EN/ZH without inventing body translations
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: EQUIVALENT
+  notes: Known UI labels localized and original body not rewritten. New headline/summary
+    authorship remains revision condition; no blanket bilingual parity claim.
+- id: task.inspect-method
+  critical: false
+  task: Find model/fallback/method and limitations
+  production: Page-level model/fallback/method explanation is visible as header prose.
+  proposal: Original method prose behind the existing disclosure; fallback-population
+    count restored using recordedn_fallback/alerts values.
+  verdict: WORSE
+  notes: One extra disclosure action for full method text. Supporting task, critical:false.
+    Explicit product tradeoff, not a silent deletion.
+authority_delta:
+- id: auth.retained-vs-complete
+  production_claim: Automatically monitors every market-moving White House report/current
+    watch.
+  proposal_claim: Dated retained reports and their verification sources.
+  direction: weaker
+  warranted: true
+  evidence: Header before/after source; no claim of full current coverage.
+- id: auth.model-relevance
+  production_claim: Market significanceN/100, confidence and stored model argument.
+  proposal_claim: AI relevanceN/100, explicitly not a probability; original argument
+    remains.
+  direction: weaker
+  warranted: true
+  evidence: Same supplied integer; no new calibration or investment authority.
+- id: auth.body-language
+  production_claim: Localized summary followed by original stored text without explicit
+    boundary.
+  proposal_claim: Original-language AI analysis shown without claiming verifiedEnglish
+    provenance.
+  direction: equal
+  warranted: true
+  evidence: No body-language metadata exists; no body translation or source-title
+    rewrite.
+- id: auth.direction-and-links
+  production_claim: Stored model tone/sector/ticker rationale and available quotes;
+    informational not recommendations.
+  proposal_claim: Same stored values, rationale, quote units/source/clock semantics
+    and disclaimer.
+  direction: equal
+  warranted: true
+  evidence: Builder/source/input facts and frozen table/source code.
+- id: auth.headline-point-of-use
+  production_claim: Generated title/summary visually precede lower-body AI label.
+  proposal_claim: Generated title and summary are identified as AI; literal source-title
+    display is identified separately.
+  direction: weaker
+  warranted: true
+  evidence: engine/whitehouse_brain.py:490,556-559 and native DOM regression cases;
+    no provider/original-body claims added.
+- id: auth.degraded-scope
+  production_claim: Whole AI read unavailable despite summary/score, then check possibly
+    absent source.
+  proposal_claim: Full analysis unavailable; name only surviving summary/assessment;
+    source guidance iff actual original link renders.
+  direction: weaker
+  warranted: true
+  evidence: Twelve actual-render missing-source/survivor combinations plus wholly
+    absent negative.
+information_economics:
+  words_per_card:
+    production: Stored body/table/rationale length depends on actual report; no single
+      invented average.
+    proposal: Same stored body/table/rationale, plus repeated section/outline labels.
+      Reading measure is narrower, so page is taller.
+  findings:
+  - Shorter prose lines trade vertical length for reading measure. Tables retain columns/rows
+    and may need horizontal scrolling on phone.
+  - Repeated AI analysis/original-language UI and outline labels are real extra words;
+    critics judge whether they earn space.
+  - Method text moves behind one disclosure. Model relevance moves to rail on desktop
+    and precedes reading on phone.
+  - New attribution labels necessarily add text; no claim that mobile density or Chinese
+    line breaks improved. Predecessor minor findings remain carried.
+  preserved:
+  - Full paragraph arguments and evidence rows remain; no chart-to-prose substitution.
+  - Existing Treasury chart/numeric units and dated context remain.
+revision_mandate:
+- PRC-001
+- PRC-002
+- VTC-001
+- task.read-argument
+- task.verify-source
+- C1-ai-title-summary-attribution
+- C2-precise-missing-analysis-guidance
+- C3-mobile-reading-and-table-check
+- C4-source-and-evidence-boundary

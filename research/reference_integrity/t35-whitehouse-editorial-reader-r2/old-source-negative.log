@@ -1,0 +1,326 @@
+FFFFFFFFFFFFFFFFF                                                        [100%]
+=================================== FAILURES ===================================
+___ test_editorial_generated_headline_and_summary_attributed_at_point_of_use ___
+
+    def test_editorial_generated_headline_and_summary_attributed_at_point_of_use():
+        from copy import deepcopy
+        row = _rec("wh-ai-origin", 4, 5, 72)
+        row.update(banner_title="Retained AI headline", banner_title_zh="保留AI标题",
+                   summary="Retained AI summary.", summary_zh="保留AI摘要。")
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        title_label = card.select_one(".wh-title-attribution")
+        summary_label = card.select_one(".wh-summary-attribution")
+>       assert title_label and "AI interpretation" in title_label.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:724: AssertionError
+______ test_editorial_verbatim_source_headline_is_not_relabelled_ai[None] ______
+
+banner_title = None
+
+    @pytest.mark.parametrize("banner_title", [None, "Exact original agency title"])
+    def test_editorial_verbatim_source_headline_is_not_relabelled_ai(banner_title):
+        row = _rec("wh-source-title", 4, 5, 72)
+        row.update(source_title="Exact original agency title", banner_title=banner_title,
+                   banner_title_zh=None, summary="Retained generated summary.")
+        card = _editorial_dom(row)
+        label = card.select_one(".wh-title-attribution")
+>       assert label and "Original source headline" in label.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:747: AssertionError
+_ test_editorial_verbatim_source_headline_is_not_relabelled_ai[Exact original agency title] _
+
+banner_title = 'Exact original agency title'
+
+    @pytest.mark.parametrize("banner_title", [None, "Exact original agency title"])
+    def test_editorial_verbatim_source_headline_is_not_relabelled_ai(banner_title):
+        row = _rec("wh-source-title", 4, 5, 72)
+        row.update(source_title="Exact original agency title", banner_title=banner_title,
+                   banner_title_zh=None, summary="Retained generated summary.")
+        card = _editorial_dom(row)
+        label = card.select_one(".wh-title-attribution")
+>       assert label and "Original source headline" in label.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:747: AssertionError
+_ test_editorial_generated_chinese_title_does_not_relabel_source_english_title _
+
+    def test_editorial_generated_chinese_title_does_not_relabel_source_english_title():
+        row = _rec("wh-translated-title", 4, 5, 72)
+        row.update(source_title="Exact source title", banner_title="Exact source title",
+                   banner_title_zh="模型生成的中文标题")
+        card = _editorial_dom(row)
+        label = card.select_one(".wh-title-attribution")
+>       assert label.select_one(".l-en").get_text(strip=True) == "Original source headline"
+               ^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'select_one'
+
+tests/test_whitehouse_build.py:760: AttributeError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-https://www.whitehouse.gov/retained-report/] _
+
+source_url = 'https://www.whitehouse.gov/retained-report/', has_summary = True
+importance = 72
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-None] _
+
+source_url = None, has_summary = True, importance = 72
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-] _
+
+source_url = '', has_summary = True, importance = 72
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-https://www.whitehouse.gov/retained-report/] _
+
+source_url = 'https://www.whitehouse.gov/retained-report/', has_summary = True
+importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-None] _
+
+source_url = None, has_summary = True, importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-] _
+
+source_url = '', has_summary = True, importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-https://www.whitehouse.gov/retained-report/] _
+
+source_url = 'https://www.whitehouse.gov/retained-report/', has_summary = False
+importance = 0
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-None] _
+
+source_url = None, has_summary = False, importance = 0
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-] _
+
+source_url = '', has_summary = False, importance = 0
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-https://www.whitehouse.gov/retained-report/] _
+
+source_url = 'https://www.whitehouse.gov/retained-report/', has_summary = False
+importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-None] _
+
+source_url = None, has_summary = False, importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-] _
+
+source_url = '', has_summary = False, importance = None
+
+    @pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+    @pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+    def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+        from copy import deepcopy
+        row = _rec("wh-partial-ai", 4, 5, 72)
+        row.update(analysis=None, source_url=source_url, importance=importance,
+                   summary="Retained AI summary." if has_summary else None,
+                   summary_zh="保留AI摘要。" if has_summary else None)
+        before = deepcopy(row)
+        card = _editorial_dom(row)
+        missing = card.select_one(".wh-missing-analysis")
+>       assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+E       assert (None)
+
+tests/test_whitehouse_build.py:777: AssertionError
+_ test_editorial_missing_every_ai_field_has_no_false_retained_or_source_guidance _
+
+    def test_editorial_missing_every_ai_field_has_no_false_retained_or_source_guidance():
+        row = _rec("wh-no-ai-fields", 0, 0, 0)
+        row.update(banner_title=None, banner_title_zh=None, summary=None, summary_zh=None,
+                   analysis=None, importance=None, sectors=[], tickers=[], source_url=None)
+        card = _editorial_dom(row)
+>       assert "The full AI analysis is unavailable" in card.get_text()
+E       assert 'The full AI analysis is unavailable' in '\n\n\nTailwind顺风\n\nPublished来源发布 Nov 3, 2026 · news白宫公告\n· read written解读撰写于 Nov 3, 2026\n· AI confidenceAI置信度: high...rative of plausible exposure, can be wrong, and are not recommendations. Verify against the linked primary source.\n\n'
+E        +  where '\n\n\nTailwind顺风\n\nPublished来源发布 Nov 3, 2026 · news白宫公告\n· read written解读撰写于 Nov 3, 2026\n· AI confidenceAI置信度: high...rative of plausible exposure, can be wrong, and are not recommendations. Verify against the linked primary source.\n\n' = get_text()
+E        +    where get_text = <section class="wh-card" id="wh-no-ai-fields">\n<div class="row1">\n<span class="wh-badge tone-tailwind">\n<span class="l...ure, can be wrong, and are not recommendations. Verify against the linked primary source.</div>\n</div></div>\n</section>.get_text
+
+tests/test_whitehouse_build.py:810: AssertionError
+
+NOTE: sparse worktree — data, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_whitehouse_build.py::test_editorial_generated_headline_and_summary_attributed_at_point_of_use
+FAILED tests/test_whitehouse_build.py::test_editorial_verbatim_source_headline_is_not_relabelled_ai[None]
+FAILED tests/test_whitehouse_build.py::test_editorial_verbatim_source_headline_is_not_relabelled_ai[Exact original agency title]
+FAILED tests/test_whitehouse_build.py::test_editorial_generated_chinese_title_does_not_relabel_source_english_title
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-https://www.whitehouse.gov/retained-report/]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-None]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-72-]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-https://www.whitehouse.gov/retained-report/]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-None]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[True-None-]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-https://www.whitehouse.gov/retained-report/]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-None]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-0-]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-https://www.whitehouse.gov/retained-report/]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-None]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_full_analysis_matches_surviving_fields_and_source[False-None-]
+FAILED tests/test_whitehouse_build.py::test_editorial_missing_every_ai_field_has_no_false_retained_or_source_guidance
+17 failed, 54 deselected in 4.40s

@@ -1,0 +1,10 @@
+reference-integrity --evaluate t35-whitehouse-editorial-reader-r2 (status=draft, scope=full): 8 finding(s)
+::error title=reference-integrity::missing-artifact-file: t35-whitehouse-editorial-reader-r2/verdict.yml — required by the approval-shape rule set (--evaluate) (RIG §3)
+::error title=reference-integrity::missing-artifact-file: t35-whitehouse-editorial-reader-r2/reviews/product_regression.yml — required by the approval-shape rule set (--evaluate) (RIG §3)
+::error title=reference-integrity::missing-artifact-file: t35-whitehouse-editorial-reader-r2/reviews/visual_taste.yml — required by the approval-shape rule set (--evaluate) (RIG §3)
+::error title=reference-integrity::missing-artifact-file: t35-whitehouse-editorial-reader-r2/approval.yml — required by the approval-shape rule set (--evaluate) (RIG §3)
+::error title=reference-integrity::missing-review-receipt: t35-whitehouse-editorial-reader-r2/reviews/product_regression.yml — the product_regression critic receipt is required — a new reference cannot approve itself (RIG §6)
+::error title=reference-integrity::missing-review-receipt: t35-whitehouse-editorial-reader-r2/reviews/visual_taste.yml — the visual_taste critic receipt is required — a new reference cannot approve itself (RIG §6)
+::error title=reference-integrity::approved-without-receipt: t35-whitehouse-editorial-reader-r2/approval.yml — approval requires an approval receipt — a migration may treat a reference as canonical only if it carries one (RIG §7)
+::error title=reference-integrity::approved-with-wrong-verdict: t35-whitehouse-editorial-reader-r2/verdict.yml — verdict '<missing>' is not in ['APPROVE_REFERENCE', 'APPROVE_WITH_CONDITIONS']
+reference-integrity: t35-whitehouse-editorial-reader-r2 is BLOCKED — not approvable-shape

@@ -1,0 +1,51 @@
+# Derived: python3 scripts/check_reference_integrity.py --mandate t35-whitehouse-editorial-reader-r2
+# Machine-complete closure set (RIG §13.5) — the WHOLE list, from the record.
+# Fill every disposition with one of CARRIED_BLOCK | OVERRIDDEN | RESOLVED_BY_CHANGE | SUPERSEDED
+# plus its mandatory fields.  <REQUIRED> is not a legal value: the checker
+# fires continuity-invalid-disposition until it is replaced.
+# Declared lineage (oldest → nearest): t35-whitehouse-editorial-reader
+# The closure obligation runs against the NEAREST only: t35-whitehouse-editorial-reader
+# Earlier entries are provenance — the chain is closed link by link.
+# 9 open item(s) derived from t35-whitehouse-editorial-reader/verdict.yml.
+schema: mastermind.rig_continuity.v1
+reference_id: t35-whitehouse-editorial-reader-r2
+predecessors:
+- reference_id: t35-whitehouse-editorial-reader
+  verdict: REVISE
+  source: on_disk
+  closure:
+  - id: PRC-001
+    kind: blocker
+    disposition: <REQUIRED>
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision required,
+      no override.
+  - id: PRC-002
+    kind: blocker
+    disposition: <REQUIRED>
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision required,
+      no override.
+  - id: VTC-001
+    kind: blocker
+    disposition: <REQUIRED>
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision required,
+      no override.
+  - id: task.read-argument
+    kind: blocker
+    disposition: <REQUIRED>
+    predecessor_note: Critical task deterioration is explicitly adjudicated as requiring revision.
+  - id: task.verify-source
+    kind: blocker
+    disposition: <REQUIRED>
+    predecessor_note: Critical task deterioration is explicitly adjudicated as requiring revision.
+  - id: C1-ai-title-summary-attribution
+    kind: condition
+    disposition: <REQUIRED>
+  - id: C2-precise-missing-analysis-guidance
+    kind: condition
+    disposition: <REQUIRED>
+  - id: C3-mobile-reading-and-table-check
+    kind: condition
+    disposition: <REQUIRED>
+  - id: C4-source-and-evidence-boundary
+    kind: condition
+    disposition: <REQUIRED>

@@ -1,0 +1,17 @@
+{
+  "source_commit": "ff74c6a33d6af10125626cd20f82a7d37fdd5c36",
+  "patch_base": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "paths": [
+    "scripts/build_whitehouse.py",
+    "templates/whitehouse.html.j2",
+    "tests/test_whitehouse_build.py"
+  ],
+  "patch": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/source-revision-vs-349e12c9.patch",
+  "patch_sha256": "cb81890f84a270801721753264f8dcc0def624a0ac3ffb45808dd07ac9a85409",
+  "patch_bytes": 16568,
+  "apply_check_exit": 0,
+  "frozen_predecessor_case": "1d04617423229e37871b1615a7fb05433b35a3b3",
+  "successor_case_status": "draft",
+  "current_visual_or_approval_claim": false,
+  "next": "Preserve completeT35hold; after actual capture route qualifies, capture only changed state/source witnesses and commission fresh quarantined review on ff74 source or its exact final composition. No held-browser replay or alternate host."
+}

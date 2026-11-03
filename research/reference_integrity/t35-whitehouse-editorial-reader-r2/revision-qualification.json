@@ -1,0 +1,49 @@
+{
+  "predecessor_case_head": "1d04617423229e37871b1615a7fb05433b35a3b3",
+  "runtime_source_before": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "source_revision": "ff74c6a33d6af10125626cd20f82a7d37fdd5c36",
+  "scope": "3 owned runtime/test paths; no global chrome/CSS/rights/data/schema changes",
+  "tests": {
+    "causal_old_source_failures": 17,
+    "revised_full_suite_passed": 69,
+    "revised_full_suite_skipped": 2,
+    "skips": "Existing omitteddata/site fixtures, no new skips",
+    "final_read_only_asset_guard_passed": 1,
+    "full_suite_reuse": "Only test Git-object read was tightened withGIT_NO_LAZY_FETCH after69PASS; that affected asset case rechecked, product source unchanged."
+  },
+  "baseline_failure_reconciliation": "Three tests fail on unchanged349: omittedsite asset stamping, lostfallback count, obsolete same-day read-clock suppression. Isolated actual committed asset fixture preserves assertion; restoredreal fallback count under method; date test now asserts intentionally preserved separate read date.",
+  "logs": {
+    "old-source-negative": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/old-source-negative.log",
+      "sha256": "e91b415bcf674b891ab4efbb18f2221cfe4f5ed5476ae73761d23251aa470a09"
+    },
+    "predecessor-existing-failures": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/predecessor-existing-failures.log",
+      "sha256": "3bcc9de639b0930465e5cfcaa502dfab095c38becda7c4b1cca4dbb264b27518"
+    },
+    "first-repair-suite": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/first-repair-suite.log",
+      "sha256": "58cba7952d454a8d99719f41b02b869c8757a5978d81faa540ed1bc6e0d98a48"
+    },
+    "final-suite": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/final-suite.log",
+      "sha256": "8afc18d3949bda4661d0c96822d43c3da29fb1e3b83c5919ce489ae621a4897d"
+    },
+    "final-asset-guard": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/final-asset-guard.log",
+      "sha256": "1c46746db687d113d6812c2e662f53bf1048e5b6f3d801452160ea51c341f8b0"
+    }
+  },
+  "fabric": {
+    "run_id": "t35-ai-boundary-revision-20261103-001",
+    "request": "FABRIC_NEW_MACRO_WORKTREE_SCOPE_REFUSED",
+    "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+    "execution_absence_proven": true,
+    "same_run_replay_allowed": false,
+    "reason": "Requested remote-worktree/artifact option combination not accepted. No worker/lease/effect; no dispatch replay or new ID. Authorized local source repair in previously admitted own tree is separate from refused remote mint."
+  },
+  "current_capture": false,
+  "fresh_critic_receipts": false,
+  "approval": false,
+  "parent_case_immutable": true
+}

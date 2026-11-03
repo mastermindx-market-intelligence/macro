@@ -1,0 +1,71 @@
+...........F.....FsF.s.................................................  [100%]
+=================================== FAILURES ===================================
+_________________ test_render_page_emits_current_asset_stamps __________________
+
+    def test_render_page_emits_current_asset_stamps() -> None:
+        # The hourly sentinel (whitehouse-sentinel.yml) commits this page straight to
+        # main with NO post-render optimize_assets pass, so the render itself must
+        # carry the ?v= stamps: before 2026-07-29 every alert update regressed the
+        # page to bare refs — the edge re-validated theme.css & co on every nav, and
+        # the page sat dirty under `python -m scripts.optimize_assets` in every clean
+        # checkout. Asserted against the real site/ tree, same as the render tests
+        # above use the real templates/ dir.
+        import re
+        html = bw._render_page(config.ROOT, [_rec("wh-stamp", 0, 5, 80)])
+        for asset in ("theme.css", "theme.js", "wh_banner.js"):
+>           assert re.search(re.escape(asset) + r"\?v=[0-9a-f]{8}", html), (
+                f"{asset} rendered without a ?v= stamp — the sentinel would commit it bare")
+E           AssertionError: theme.css rendered without a ?v= stamp — the sentinel would commit it bare
+E           assert None
+E            +  where None = <function search at 0x10615f270>(('theme\\.css' + '\\?v=[0-9a-f]{8}'), '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt...ipt src="theme.js" defer></script>\n<script defer data-whb data-root="" src="wh_banner.js"></script>\n</body>\n</html>')
+E            +    where <function search at 0x10615f270> = <module 're' from '/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/re/__init__.py'>.search
+E            +    and   'theme\\.css' = <function escape at 0x1061617a0>('theme.css')
+E            +      where <function escape at 0x1061617a0> = <module 're' from '/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/re/__init__.py'>.escape
+
+tests/test_whitehouse_build.py:170: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, site, verify_shots. If this failure is an artifact of that, sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+________ test_hero_and_footer_do_not_credit_claude_with_fallback_reads _________
+
+    def test_hero_and_footer_do_not_credit_claude_with_fallback_reads() -> None:
+        rows = [_served("wh-ds", "served_by:deepseek"), _served("wh-none", None)]
+        html = bw._render_page(config.ROOT, rows)
+        assert "Claude Opus writes the read below" not in html
+>       assert "1 of the 2 reads below were written by a fallback model" in html
+E       assert '1 of the 2 reads below were written by a fallback model' in '\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-widt...ipt src="theme.js" defer></script>\n<script defer data-whb data-root="" src="wh_banner.js"></script>\n</body>\n</html>'
+
+tests/test_whitehouse_build.py:249: AssertionError
+____________ test_live_card_says_until_when_and_late_read_is_dated _____________
+
+    def test_live_card_says_until_when_and_late_read_is_dated() -> None:
+        now = datetime.now(timezone.utc)
+        late = _rec("wh-late", 3, 5, 80)
+        late["generated_at"] = (now - timedelta(days=1)).isoformat()   # read 2 days after publish
+        same = _rec("wh-same", 0, 5, 80)
+        old = _rec("wh-old", 30, 3, 80)
+        cards = _cards(bw._render_page(config.ROOT, [late, same, old]))
+        exp = bw._expires_at(late)
+        assert f"live until</span>" in cards["wh-late"]
+        assert bw._date_display(exp.isoformat()) in cards["wh-late"]
+        assert "read written" in cards["wh-late"]
+        assert bw._date_display(late["generated_at"]) in cards["wh-late"]
+>       assert "read written" not in cards["wh-same"]
+E       assert 'read written' not in '\n      <di...</div>\n    '
+E         
+E         'read written' is contained here:
+E           ss="l-en">read written</span><span class="l-zh">解读撰写于</span> Nov 3, 2026</span>
+E         ?           ++++++++++++
+E                   <span class="wh-when">· <span class="l-en">AI confidence</span><span class="l-zh">AI置信度</span>: <span class="l-en">high</span><span class="l-zh">高</span></span>
+E                   
+E                 </div>...
+E         
+E         ...Full output truncated (94 lines hidden), use '-vv' to show
+
+tests/test_whitehouse_build.py:285: AssertionError
+
+NOTE: sparse worktree — data, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_whitehouse_build.py::test_render_page_emits_current_asset_stamps
+FAILED tests/test_whitehouse_build.py::test_hero_and_footer_do_not_credit_claude_with_fallback_reads
+FAILED tests/test_whitehouse_build.py::test_live_card_says_until_when_and_late_read_is_dated
+3 failed, 66 passed, 2 skipped in 7.31s

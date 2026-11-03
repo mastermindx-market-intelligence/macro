@@ -1,0 +1,35 @@
+schema: mastermind.rig_manifest.v1
+reference_id: t35-whitehouse-editorial-reader-r2
+scope: full
+status: draft
+surface:
+  route: /whitehouse.html
+  archetype: editorial
+author:
+  identity: Product Sol01a15e6d-f686-7362-8120-632a33dbdee0
+  role: designer
+case_authority:
+  identity: Product Sol 01a15e6d-f686-7362-8120-632a33dbdee0
+  delegation: Root01a15e6c scoped T35 design-authority commission,2026-11-03
+  scope: Only retained political-report editorial reference; not all archetypeF pages
+    or Paper adoption
+reference_files:
+- path: templates/whitehouse.html.j2
+  frozen_sha: ff74c6a33d6af10125626cd20f82a7d37fdd5c36
+- path: scripts/build_whitehouse.py
+  frozen_sha: ff74c6a33d6af10125626cd20f82a7d37fdd5c36
+- path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader-r2/native-rendered-retained-fixture.html
+  frozen_sha: ff74c6a33d6af10125626cd20f82a7d37fdd5c36
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  continuity: continuity.yml
+artifact_bindings: native-render-facts.json
+reference_origin: Source revision following actualREVISE; no current visual review
+  or approvedPaper status.
+lineage:
+  predecessors:
+  - t35-whitehouse-editorial-reader

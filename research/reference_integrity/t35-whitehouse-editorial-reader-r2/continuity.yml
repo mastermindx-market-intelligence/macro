@@ -1,0 +1,136 @@
+schema: mastermind.rig_continuity.v1
+reference_id: t35-whitehouse-editorial-reader-r2
+predecessors:
+- reference_id: t35-whitehouse-editorial-reader
+  verdict: REVISE
+  source: on_disk
+  closure:
+  - id: PRC-001
+    kind: blocker
+    disposition: RESOLVED_BY_CHANGE
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision
+      required, no override.
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: PRC-002
+    kind: blocker
+    disposition: RESOLVED_BY_CHANGE
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision
+      required, no override.
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: VTC-001
+    kind: blocker
+    disposition: RESOLVED_BY_CHANGE
+    predecessor_note: Unresolved major finding; exact artifact unchanged. Revision
+      required, no override.
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: task.read-argument
+    kind: blocker
+    disposition: RESOLVED_BY_CHANGE
+    predecessor_note: Critical task deterioration is explicitly adjudicated as requiring
+      revision.
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: task.verify-source
+    kind: blocker
+    disposition: RESOLVED_BY_CHANGE
+    predecessor_note: Critical task deterioration is explicitly adjudicated as requiring
+      revision.
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: C1-ai-title-summary-attribution
+    kind: condition
+    disposition: RESOLVED_BY_CHANGE
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: C2-precise-missing-analysis-guidance
+    kind: condition
+    disposition: RESOLVED_BY_CHANGE
+    evidence: 'Source/DOM scope only: current ff74c6a33 actual producer/template;17
+      new causal cases fail unchanged349 and pass revised; source fallback is not
+      falselyAI labeled, EN/ZH are present, full-analysis/source guidance matches
+      surviving fields. No changed visual acceptance inferred.'
+    changed_files:
+    - scripts/build_whitehouse.py
+    - templates/whitehouse.html.j2
+    - tests/test_whitehouse_build.py
+  - id: C3-mobile-reading-and-table-check
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: Unresolved changed-state visual evidence and/or minor polish. Current browser
+      sandbox refusal prevents new capture. Preserve earlier table grouping, mobile
+      hierarchy/ZH wrapping observations and inherited assistant limitation; do not
+      claim old images/receipts bind new source or require a page-specific chrome
+      workaround.
+  - id: C4-source-and-evidence-boundary
+    kind: condition
+    disposition: CARRIED_BLOCK
+    note: Unresolved changed-state visual evidence and/or minor polish. Current browser
+      sandbox refusal prevents new capture. Preserve earlier table grouping, mobile
+      hierarchy/ZH wrapping observations and inherited assistant limitation; do not
+      claim old images/receipts bind new source or require a page-specific chrome
+      workaround.
+additional_finding_dispositions:
+- id: PRC-001
+  disposition: RESOLVED_BY_CHANGE
+  note: Source fix covered by derived closure; visual confirmation pending.
+- id: PRC-002
+  disposition: RESOLVED_BY_CHANGE
+  note: Source fix covered by derived closure; visual confirmation pending.
+- id: PRC-003
+  disposition: CARRIED_BLOCK
+  note: Unchanged minor/advisory or inherited finding retained explicitly; no claim
+    of repair or new T35 regression. Covered by carriedC3/C4 condition.
+- id: VTC-001
+  disposition: RESOLVED_BY_CHANGE
+  note: Source fix covered by derived closure; visual confirmation pending.
+- id: VTC-002
+  disposition: CARRIED_BLOCK
+  note: Unchanged minor/advisory or inherited finding retained explicitly; no claim
+    of repair or new T35 regression. Covered by carriedC3/C4 condition.
+- id: VTC-003
+  disposition: CARRIED_BLOCK
+  note: Unchanged minor/advisory or inherited finding retained explicitly; no claim
+    of repair or new T35 regression. Covered by carriedC3/C4 condition.
+- id: VTC-004
+  disposition: CARRIED_BLOCK
+  note: Unchanged minor/advisory or inherited finding retained explicitly; no claim
+    of repair or new T35 regression. Covered by carriedC3/C4 condition.
