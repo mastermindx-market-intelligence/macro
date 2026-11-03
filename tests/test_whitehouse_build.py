@@ -653,6 +653,8 @@ def test_editorial_reader_missing_fields_do_not_become_source_or_freshness_claim
     assert 'An AI read is not available for this report.' in html
     assert 'Source date unavailable' in html and 'AI read date unavailable' in html
     assert 'href="None"' not in html
+    assert 'This AI read is shown in its original language.' not in html
+    assert 'data-ai-original' not in html
     assert 'banner live until' not in html
 
 
@@ -679,3 +681,26 @@ def test_editorial_reader_localizes_declared_ui_enums_only(section,section_zh,co
     assert 'aria-label="Report sections:' not in html
     assert 'Original retained English analysis.' in html
     assert row['section']==section and row['confidence']==confidence
+
+
+def test_treasury_context_uses_existing_bilingual_state_labels_without_rewriting_input():
+    from copy import deepcopy
+    fixture={"tga":{"level_bn":10,"asof":"2026-10-30","chg_1d_bn":None,"chg_20d_bn":None,"quarter_end":None,"chg_5d_bn":None},
+             "plumbing":{"headline_state":"neutral_hollow","rrp_buffer_state":"exhausted","reserve_scarcity_state":"tightening","headline_summary_en":"Retained context prose.","headline_summary_zh":None},
+             "market_context":{"quad_name":"Reflation","liquidity_overlay":"neutral"}}
+    before=deepcopy(fixture)
+    html=bw._render_page(config.ROOT,[],fixture)
+    for label in ('Neutral — Hollow','中性 — 缓冲耗尽','耗尽','趋紧','Retained context · original text','已保留背景 · 原文展示'):
+        assert label in html
+    assert 'Retained context prose.' in html
+    assert 'neutral_hollow' not in html
+    assert fixture==before
+
+
+def test_treasury_unknown_presentation_label_remains_escaped():
+    fixture={"tga":{"level_bn":10,"asof":"2026-10-30","chg_1d_bn":None,"chg_20d_bn":None,"quarter_end":None,"chg_5d_bn":None},
+             "plumbing":{"headline_state":"<script>unknown</script>","rrp_buffer_state":"<img src=x>","reserve_scarcity_state":"unrecognized"}}
+    html=bw._render_page(config.ROOT,[],fixture)
+    assert '<script>unknown</script>' not in html and '&lt;script&gt;unknown&lt;/script&gt;' in html
+    assert '<img src=x>' not in html and '&lt;img src=x&gt;' in html
+    assert 'unrecognized' in html

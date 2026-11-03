@@ -3,6 +3,14 @@
 <span class="l-en" lang="en">{{ en|safe }}</span><span class="l-zh" lang="zh-Hans">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}
 
+{# Existing liquidity-plumbing UI labels: canonical template owner committee.html.j2.
+   Copy only labels, never its internal route, controls or model authority. #}
+{% macro state_label(value, pairs) -%}
+{% if value is string and value in pairs %}{{ t(pairs[value][0], pairs[value][1]) }}{% else %}{{ value }}{% endif %}
+{%- endmacro %}
+{% set PL_STATE = {'benign_liquidity_tailwind':['Benign Tailwind','良性顺风'],'mechanical_liquidity_tailwind':['Mechanical Tailwind','机械性顺风'],'stress_liquidity_expansion':['Stress Expansion','压力扩张'],'neutral_with_buffer':['Neutral — Buffer Intact','中性 — 缓冲充足'],'neutral_hollow':['Neutral — Hollow','中性 — 缓冲耗尽'],'orderly_drain':['Orderly Drain','有序收缩'],'data_degraded':['Data Degraded','数据降级']} %}
+{% set RRP_STATE = {'abundant':['Abundant','充裕'],'adequate':['Adequate','充分'],'exhausted':['Exhausted','耗尽'],'unknown':['Unknown','未知']} %}
+{% set RESERVE_STATE = {'comfortable':['Comfortable','宽松'],'normalizing':['Normalizing','正常化'],'tightening':['Tightening','趋紧'],'scarce':['Scarce','稀缺'],'unknown':['Unknown','未知']} %}
 {% block title %}White House Watch{% endblock %}
 
 {%- block head_extra %}
@@ -138,21 +146,22 @@
     {% if pl and pl.rrp_buffer_state %}
     <div class="wh-stat">
       <div class="lab">{{ t('RRP buffer', '逆回购缓冲') }}{% if nl and nl.rrp_bn is number %} · ${{ '%.1f'|format(nl.rrp_bn) }}bn{% endif %}</div>
-      <div class="val" style="font-size:15px">{{ pl.rrp_buffer_state }}</div>
-      {% if pl.reserve_scarcity_state %}<div class="delta">{{ t('reserves', '准备金') }}: {{ pl.reserve_scarcity_state }}</div>{% endif %}
+      <div class="val" style="font-size:var(--fs-md)">{{ state_label(pl.rrp_buffer_state, RRP_STATE) }}</div>
+      {% if pl.reserve_scarcity_state %}<div class="delta">{{ t('reserves', '准备金') }}: {{ state_label(pl.reserve_scarcity_state, RESERVE_STATE) }}</div>{% endif %}
     </div>
     {% endif %}
 
     {% if hs %}
     <div class="wh-stat">
       <div class="lab">{{ t('Plumbing state', '流动性状态') }}</div>
-      <div class="val" style="font-size:13px;padding-top:3px"><span class="wh-chip {{ hcls }}">{{ hs }}</span></div>
+      <div class="val" style="font-size:var(--fs-sm);padding-top:4px"><span class="wh-chip {{ hcls }}">{{ state_label(hs, PL_STATE) }}</span></div>
     </div>
     {% endif %}
   </div>
   {% endif %}
 
   {% if pl and pl.headline_summary_en %}
+  {% if not pl.headline_summary_zh %}<p class="wh-language">{{ t('Retained context · original text', '已保留背景 · 原文展示') }}</p>{% endif %}
   <div class="impulse"><span class="l-en">{{ pl.headline_summary_en }}</span><span class="l-zh">{{ pl.headline_summary_zh or pl.headline_summary_en }}</span></div>
   {% endif %}
 
@@ -220,8 +229,9 @@
       {% endif %}
 
       </aside>
-      <div class="wh-reading" data-ai-original>
-      <p class="wh-language">{{ t('AI analysis · original text', 'AI解读 · 原文展示') }}<br>{{ t('This AI read is shown in its original language.', 'AI解读按生成时的原文展示。') }}</p>
+      {% set has_original = a.paragraphs or a.sectors or a.benefit or a.hurt %}
+      <div class="wh-reading"{% if has_original %} data-ai-original{% endif %}>
+      {% if has_original %}<p class="wh-language">{{ t('AI analysis · original text', 'AI解读 · 原文展示') }}<br>{{ t('This AI read is shown in its original language.', 'AI解读按生成时的原文展示。') }}</p>{% endif %}
       {% if a.paragraphs %}
       <h3 class="wh-sub-h" id="{{ a.id }}-analysis" tabindex="-1">{{ t('AI analysis', 'AI解读') }}</h3>
       <div class="wh-body">{% for p in a.paragraphs %}<p>{{ p }}</p>{% endfor %}</div>

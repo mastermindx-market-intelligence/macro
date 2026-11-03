@@ -36,7 +36,7 @@ Existing report IDs remain canonical. Add section IDs only as suffixes of that e
 
 ## Language/content law
 
-Translate UI labels only using ordinary EN/ZH twins in this scoped template, including known news/treasury section and low/medium/high confidence enums. These are presentation labels, not changes to the stored model assessment. Unknown enum text remains escaped and unchanged. Native outline navigation is labeled by its visible localized summary, never an internal report ID. Never translate/rewrite stored analysis, sector/ticker rationales, source titles or model disclaimers. The retained record has no verified body-language metadata: use honest `AI analysis · original text` / `AI解读 · 原文展示` framing, not fabricated verified-English provenance. The visible explanation says the AI read is shown in its original language. Explicit local UI spans carry their known EN/ZH language; original content is not relabeled with a guessed language. Existing bilingual title/summary fields stay exact.
+Translate UI labels only using ordinary EN/ZH twins in this scoped template, including known news/treasury section and low/medium/high confidence enums. These are presentation labels, not changes to the stored model assessment. Unknown enum text remains escaped and unchanged. Native outline navigation is labeled by its visible localized summary, never an internal report ID. Never translate/rewrite stored analysis, sector/ticker rationales, source titles or model disclaimers. The retained record has no verified body-language metadata: use honest `AI analysis · original text` / `AI解读 · 原文展示` framing, not fabricated verified-English provenance. The visible explanation says the AI read is shown in its original language only when original analysis or rationale content exists; an empty read must not claim it is being shown. Explicit local UI spans carry their known EN/ZH language; original content is not relabeled with a guessed language. Existing bilingual title/summary fields stay exact.
 
 Model score is labeled AI assessment and not a probability. Do not introduce trade stance, confidence calibration, forecast or new political assertion. Header copy describes dated reports and verification rather than claiming complete live monitoring. Full method/fallback explanation moves into a native disclosure. Actual source/read/banner clocks remain distinct and unchanged. LIVE continues to mean the incumbent banner lifetime, not a fresh event or validated model.
 
@@ -46,7 +46,7 @@ Model score is labeled AI assessment and not a probability. Do not introduce tra
 |---|---|
 | Global navigation/footer | RETAIN byte/source ownership; no styling override |
 | Long hero/monitoring prose | COMPRESS to plain reader job; model/date explanation DEMOTE to native method disclosure; no complete-feed claim |
-| Treasury snapshot | RETAIN every value/unit/date/chart; neutralize decorative frame/impulse rail only |
+| Treasury snapshot | RETAIN every value/unit/date/chart; neutralize decorative frame/impulse rail; reuse existing plumbing owner EN/ZH state labels and mark its untranslated context as original text |
 | Retained report list | RETAIN all records and canonical anchors |
 | Report title/summary/dates/fallback/banner state | RETAIN, organize as one title block |
 | Model significance meter | RETAIN exact value, relabel AI assessment, neutral supporting receipt |
