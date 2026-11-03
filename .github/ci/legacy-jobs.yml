@@ -25902,11 +25902,25 @@ jobs:
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
+    scope: exclusive
     # W-LIQ.1 state-only producer. Both suites are offline and use synthetic
     # inputs: the legacy global-liquidity calculations plus the new causal
     # release-alignment, missing-data, contract-envelope, immutable-hash,
     # historical-fixture, and walk-forward purge invariants. This lane has no
     # trading, alerting, routing, or downstream transmission authority.
+    #
+    # CURATED SCOPE (GLT T22, 2026-11-03). tests/test_global_liquidity_views.py
+    # exercises the display-only view rows end to end through the
+    # liquidity_central_banks workspace composer and the macro-suite view/label
+    # helpers, so its import closure reaches lib/macro_suite_view.py and
+    # scripts/build_macro_suite_pages.py. Under inference that closure widened
+    # this job's scan roots until an ordinary code PR touching
+    # templates/index.html selected it (138 jobs / 5,919 s against the 137 /
+    # 5,909 ceilings in tests/test_ci_pack.py PACKING_PROBES). `scope: exclusive`
+    # makes the paths below REPLACE inference: they are the exact non-wildcard
+    # closure (tests/test_ci_pack.py::
+    # test_curated_exclusive_scopes_cover_their_own_import_closure) and nothing
+    # under templates/. No ceiling moves.
     paths:
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity.py"
@@ -25922,6 +25936,47 @@ jobs:
       - "scripts/ci/daily_engine_commit_outputs.sh"
       - "site/liquiditydata/global_liquidity_transmission.json"
       - "engine/market_os/macro_workspaces/liquidity_central_banks.py"
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/global_liquidity_accounting.py"
+      - "engine/global_liquidity_knowledge_time.py"
+      - "engine/global_liquidity_outlook.py"
+      - "engine/market_os/macro_workspaces/__init__.py"
+      - "engine/market_os/macro_workspaces/contract.py"
+      - "engine/market_os/macro_workspaces/publication_prior.py"
+      - "engine/market_os/macro_workspaces/registry.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/macro_suite_disclosure.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
+      - "lib/macro_suite_zh_parity.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
+      - "research/GLT_T09_FORECAST_RESULT_2026-10-13.json"
+      - "scripts/__init__.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/count_macro_command_machine_text.py"
+      - "tests/test_macro_workspace_liquidity_central_banks.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
