@@ -1,6 +1,6 @@
 # F01 — Shared shell product and UX specification
 
-**Version: F01/1.0.0-candidate.1. Status: PARTIAL; RIG draft; not accepted for implementation.**
+**Version: F01/1.0.0-candidate.2. Status: PARTIAL; RIG draft; not accepted for implementation.**
 
 Source carrier: [Macro #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645). Sole source/canvas owner for this slice: the current F01 receiver, GitHub principal mastermidx4. F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The [joint candidate](JOINT_SHELL_SYSTEM_CONTRACT.md), [source contracts](SOURCE_AND_DATA_CONTRACT.md), [retention ledger](FEATURE_RETENTION_LEDGER.md), [acceptance cases](ACCEPTANCE_TESTS.md) and [evidence record](EVIDENCE_AND_REVIEW.md) are one bounded package under the supplied programme, not a new programme or runtime owner.
 
@@ -28,7 +28,7 @@ These are acceptance journeys, not measured usability results. The current live/
 
 **H: compact navigation is a user choice.** It retains named accessible controls and tooltips, including market shortcuts and account entry. It must never be forced merely because an inspector opened. Its discoverability cost makes it unsuitable as the default. Tooltip labels must work on keyboard focus as well as hover; the mobile drawer remains fully labeled.
 
-Recommendation is not acceptance. Independent product/regression and visual/taste qualification, F02 concurrence and QA01 integration review remain separate gates.
+Recommendation is not acceptance. Independent product/regression and visual/taste qualification and QA01 integration review remain separate gates.
 
 ## 3. Global hierarchy and exact destinations
 
@@ -72,7 +72,7 @@ An evidence trigger names its subject: “Evidence — Revenue, FY2024” or “
 
 The docked inspector is nonmodal and 320px wide, with a 24px gap. It is eligible only when at least 640px of useful primary content remains, or a larger minimum required by the actual domain object. Keyboard focus enters the requested evidence context intentionally, but Tab remains in normal page order. Closing restores the invoking control or a stable logical fallback in the selected row.
 
-When docking fails the width rule, use a modal sidepane up to 400px wide with an appropriate viewport inset; on phone it becomes a full-width evidence screen. The background becomes inert, body scroll is locked without a layout jump, focus stays within the dialog, and the close action remains reachable above the virtual keyboard and safe-area insets. Escape first closes a child menu; otherwise it closes the active modal. The application must not trap focus in a docked panel.
+When docking fails the width rule, use a 440px modal sidepane constrained to available viewport width at represented 768/1024 widths; at 600px and below it becomes a full-width evidence screen with internal padding. The 600px content-gutter boundary is separate from the 860px navigation boundary. The background becomes inert, body scroll is locked without a layout jump, focus stays within the dialog, and the close action remains reachable above the virtual keyboard and safe-area insets. Escape first closes a child menu; otherwise it closes the active modal. The application must not trap focus in a docked panel.
 
 Global navigation, All tools, company search, account dialogs and a modal inspector coordinate so only one top-level modal owns focus and scroll lock. Moving from drawer to directory replaces the drawer, not stacks it. Closing a transient view retains domain selection; it never declares an in-flight write cancelled. Actual D23 save/readback semantics govern pending and uncertain mutations.
 
@@ -112,4 +112,4 @@ Before implementation, reconcile overlapping Terminal #1188/#1191/#1228/#1236 an
 
 Recommended implementation sequence after qualification: (1) owner-agreed presentation mapping and exact-return invariants; (2) scoped shell geometry and retained navigation; (3) inspector coordination and focus; (4) three domain integrations at measured widths; (5) locale/theme and failure cases; (6) source-head-bound browser/keyboard/regression evidence. Each step retains its existing owner. Rollback restores presentation independently of data schemas, writes and route admission.
 
-Implementation entry requires frozen F01/F02 references, reconciled Paper effects, actual F02 concurrence, independent product/regression and visual/taste qualification, QA01 integration disposition and retained-feature coverage. This assignment performs design/research only. It authorizes no production implementation, merge, Ready transition, enqueue, relabel or deployment.
+Implementation entry requires frozen F01/F02 references, reconciled Paper effects, the recorded F02 candidate concurrence, independent product/regression and visual/taste qualification, QA01 integration disposition and retained-feature coverage. This assignment performs design/research only. It authorizes no production implementation, merge, Ready transition, enqueue, relabel or deployment.

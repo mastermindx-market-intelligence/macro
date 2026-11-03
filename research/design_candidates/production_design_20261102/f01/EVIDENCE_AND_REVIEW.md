@@ -1,7 +1,7 @@
 # F01 — Evidence, effect state and review record
 
-**Candidate:** F01/1.0.0-candidate.1 / F01-F02-SHELL/1.0.0-candidate.1.  
-**Current acceptance:** PARTIAL, RIG draft. No independent design qualification, F02 concurrence, implementation, deployment or served-production proof is claimed.
+**Candidate:** F01/1.0.0-candidate.2 / F01-F02-SHELL/1.0.0-candidate.2.  
+**Current acceptance:** PARTIAL, RIG draft. F02 candidate interface concurrence is source-bound; independent design qualification, implementation, deployment and served-production proof remain unestablished.
 
 ## 1. Immutable authority and source inputs
 
@@ -21,7 +21,7 @@ Current Terminal source inspected: mastermind-terminal3cc8da8432d8d2d4e4cb597f49
 
 Before creating the bounded source carrier, scoped GitHub title/branch searches, programme comments, relevant transport searches and the available session-target projection showed no conflicting active F01 writer. Empty projections do not establish universal external-session liveness. The user-delivered assignment binds this receiver; an exact conflicting incumbent/effect must still be respected if discovered.
 
-The existing F02 author and carrier were verified through GitHub. Coordination request [6596927050](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6596927050) asks for concurrence/objections on preserved F02 geometry and source/review evidence. The last inspected response set contained that request only; author silence is not concurrence. F02's branch, boards and owner remain unchanged by F01.
+The existing F02 author and carrier were verified through GitHub. Coordination request [6596927050](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6596927050) asks for concurrence/objections on preserved F02 geometry and source/review evidence. The later source read found F02's explicit [F01_HANDSHAKE_CANDIDATE.md](https://github.com/mastermindx-market-intelligence/macro/blob/f7c25c4b9870cff260c2a4b998be18d6c04d36d0/research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md), Git blob58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306. F01 candidate.2 accepts its 600px gutter cutoff, 440px tablet overlay, fractional-width coverage and focus-transition clarifications. Token-map blob a7ec801d3b559cc64f4fd57141c32f63098c6461 is unchanged at the two inspected F02 commits. This is explicit source concurrence, not an inferred reply or final visual approval. F02's branch, boards and owner remain unchanged by F01.
 
 F03's organizational work and the shared SESSION_RETURNS.md collision were preserved. F01 does not edit that ledger. Source writes are confined to f01/ on design/f01-shared-shell-v1-20261103-c4, draft [#10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), stacked under the existing programme source branch. The initial source-carrier commit is34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985. Immutable closeout evidence binds the later source commit separately.
 
@@ -61,6 +61,12 @@ Actual edit receipts established page/artboard creation, cloning of the retained
 
 Screenshots and JSX are supporting read exports from actual native nodes, not HTML-to-Paper claims. Their exact byte hashes are recorded in the manifest. Native page links remain mutable; hashes identify the captured review inputs. A snapshot guard is not a document revision, an ownership grant or an immutable visual freeze.
 
+### Candidate.2 source / native divergence
+
+Source candidate.2 records the F02 agreement. The frozen native Read me still says Candidate 1 / F02 concurrence required; the frozen D inspector is still 400px rather than the now-agreed 440px. A metadata-only request `F01-20261103-c4-readme-concurrence-v2` returned `DOCUMENT_CHANGED`, `retry_allowed:false`, with no applied response. It was not retried or re-keyed. The planned D width change was never dispatched. The subsequent exact-file read returned the intended p-27-0 boards and its guard, but that does not authorize replay or resolve the earlier state-8 effect. Further native content writes are paused under the Paper workflow's uncertain-effect rule. Candidate.2 source is authoritative for the proposed geometry; these two native discrepancies are explicit carried findings, not repaired evidence or an accepted final freeze.
+
+The latest successful screenshot readbacks show H's compact rail without the prior vertical-label overflow, explicit visible search icons on A/H, and C's complete five-row annual table. Those are the actual pixels frozen here. They do not close the remaining native divergence or interaction-proof gaps.
+
 ## 5. Uncertain Paper operation — preserve the original effect
 
 **EFFECT_UNKNOWN: F01-20261103-c4-state-8-v1.** The direct Paper write_html operation targeted Atlas_grid711X-0 in board710Z-0, intending the “Host/content changed” state row. Its reply began with a non-JSON McpServerE… error; the orchestration parse failed. The complete tool error/dispatch disposition was not retained, so no pre-dispatch or no-effect claim is made.
@@ -86,9 +92,9 @@ Independent closed-packet advisory critique, if obtained, is recorded in review/
 | UX/retention/state/data/implementation/test specifications | Authored candidate | F01 adjudicates actual review findings |
 | Native comparable directions and three domain stress compositions | Authored; visual QA and captures | Frozen hashes + independent review; not runtime proof |
 | Complete native exceptional-state atlas | PARTIAL, original effect unknown | Reconcile state-8; continue unattempted rows lawfully |
-| F01/F02 joint release | Candidate published; not released | Existing F02 author concurrence and current review evidence |
+| F01/F02 joint release | Reciprocal candidate interface concurrence; not released | Both final native identities, effect reconciliation, consumer and review evidence |
 | Independent product/taste and QA01 qualification | Not established | Qualified reviewers assess exact closed packet |
 | Complete live return/mobile/keyboard/locale proof | Not established | Future authorized implementation/re-audit path |
 | Production code, merge, Ready, queue, relabel, deployment | Not performed | Outside this assignment |
 
-Primary continuation is qualification of this exact existing F01 candidate, starting with the original Paper effect and F02 interface reconciliation. Source/retention research in other assigned domain sessions can continue independently; final composition/release remains governed by the programme's foundation hold.
+Primary continuation is qualification of this exact existing F01 candidate, starting with the original Paper effect and final artifact qualification under the recorded F02 interface agreement. Source/retention research in other assigned domain sessions can continue independently; final composition/release remains governed by the programme's foundation hold.

@@ -1,0 +1,149 @@
+{
+  "inspection": "source only; no executable tests or browser qualification",
+  "files": [
+    {
+      "path": "terminal/components/SymbolPicker.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "3f231d36064fcde54a986091f42b952230693693",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/SymbolPicker.tsx",
+      "characters": 8375
+    },
+    {
+      "path": "terminal/components/SearchModal.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "7057db8fd16559328d177b8f6907ad84de6967c6",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/SearchModal.tsx",
+      "characters": 60707
+    },
+    {
+      "path": "terminal/components/chrome/shared-shell/ShellSearch.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "083f01b5a8458107c622ae87266ae3d859129b70",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/chrome/shared-shell/ShellSearch.tsx",
+      "characters": 1070
+    },
+    {
+      "path": "terminal/app/api/shared-shell/status/route.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "214d3cf73abb5eca1fe19074bf8cf56d3dcddc30",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/shared-shell/status/route.ts",
+      "characters": 855
+    },
+    {
+      "path": "terminal/lib/dataCache.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "45d69380f97ae409a1cf8548f1def86b6197004f",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/dataCache.ts",
+      "characters": 38139
+    },
+    {
+      "path": "terminal/lib/searchCategory.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "c9736d7a4aa5517ded524e8b304127cd33f85147",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/searchCategory.ts",
+      "characters": 4372
+    },
+    {
+      "path": "terminal/lib/searchTrack.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "29fb4330eb2f0e197a7a4a2c0363dbf98e3aa675",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/searchTrack.ts",
+      "characters": 1401
+    },
+    {
+      "path": "terminal/app/api/track/search/route.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "775a5d38d4b8b3827bd0f09d716eaf8834c617de",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/api/track/search/route.ts",
+      "characters": 2905
+    },
+    {
+      "path": "terminal/lib/markets.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "6168662381b7d0a32af90eb262ae2c8862883a1b",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/markets.ts",
+      "characters": 19082
+    },
+    {
+      "path": "terminal/lib/useMarketPrefs.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "c6869a5b285cad80ff4004507d6d5633ba9e8c6d",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/useMarketPrefs.ts",
+      "characters": 36000
+    },
+    {
+      "path": "terminal/app/(shell)/options/page.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "70e91ea7abae80d0af18cfbf62737df9665a6b33",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/(shell)/options/page.tsx",
+      "characters": 2556
+    },
+    {
+      "path": "terminal/components/mounts/OptionsWorkspaceMount.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "019256c1f67b6a58a65c919dbbda8350c25bccd2",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/mounts/OptionsWorkspaceMount.tsx",
+      "characters": 462
+    },
+    {
+      "path": "terminal/components/workspaces/OptionsWorkspace.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "9ba9883fb5a37da7d0bf785eefd2a1f35f1cdcc1",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/workspaces/OptionsWorkspace.tsx",
+      "characters": 7021
+    },
+    {
+      "path": "terminal/lib/optionsIa.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "385821bff793ca49c62a7308e564b2a990c4d60a",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/optionsIa.ts",
+      "characters": 4237
+    },
+    {
+      "path": "terminal/lib/optionsWorkspaceCopy.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "d506ea0f90e396891e46636b2a7235db33b404ba",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/optionsWorkspaceCopy.ts",
+      "characters": 742
+    },
+    {
+      "path": "terminal/lib/futuresUiCopy.ts",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "7bc82db1567a60f981d509d4ac987ac32f9f0108",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/futuresUiCopy.ts",
+      "characters": 7631
+    },
+    {
+      "path": "terminal/components/chrome/WorkspaceTabs.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "cd49208a7c6d1b6e40b5d97cc77a942b2e209457",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/chrome/WorkspaceTabs.tsx",
+      "characters": 4859
+    },
+    {
+      "path": "terminal/lib/i18n.tsx",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "blobSha": "efd3688e2b4ca6bcd9e806d0096854158c1de214",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/i18n.tsx",
+      "characters": 170405
+    }
+  ]
+}

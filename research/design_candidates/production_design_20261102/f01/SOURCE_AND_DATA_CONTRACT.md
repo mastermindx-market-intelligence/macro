@@ -186,9 +186,9 @@ SharedShellRuntime registers parent-window `Ctrl/Command+K` and `/`, excluding e
 
 Candidate values, pending joint qualification:
 
-- Navigation: 224px at widths ≥1200; 196px at 861–1199; 72px when explicit compact is selected; overlay with zero consumed width at ≤860.
+- Navigation: 224px at widths ≥1200; 196px at widths >860 and <1200; 72px when explicit compact is selected; overlay with zero consumed width at ≤860.
 - Header: 64px above 860; 56px at ≤860.
-- Gutters: 16px each below 768; 20px each from 768–1199; 24px each at ≥1200.
+- Gutters: 16px each at ≤600; 20px each at >600 and <1200; 24px each at ≥1200. These are candidate.2 continuous rules accepted from F02; historical integer source media queries are not proof of fractional-width behavior.
 - Inspector: 320px plus 24px gap, docked only when remaining useful content is ≥640px. Otherwise modal.
 - Useful width = viewport − consumed navigation − two gutters. Docking requires useful width ≥984px.
 
@@ -204,7 +204,7 @@ Candidate values, pending joint qualification:
 
 At default expanded navigation, 1255px leaves 639px after docking and must use a modal; 1256px leaves 640px and permits docking.
 
-**Compact threshold precision:** with actual 20px gutters in the 861–1199 range, 1095/1096 is the compact docking boundary. The requested 1103/1104 pair is a separate arithmetic fixture with a forced 48px total inset: 639/640px after docking. Under actual responsive 40px total inset, both 1103 and 1104 permit docking. Do not label that forced-inset fixture as the live responsive breakpoint.
+**Compact threshold precision:** with actual 20px gutters at widths >860 and <1200, 1095/1096 is the compact docking boundary. The requested 1103/1104 pair is a separate arithmetic fixture with a forced 48px total inset: 639/640px after docking. Under actual responsive 40px total inset, both 1103 and 1104 permit docking. Do not label that forced-inset fixture as the live responsive breakpoint.
 
 The existing legacy wrapper has zero padding and native children may add their own padding. Future composition must avoid double-applying gutters and must verify actual usable widths across Macro, Company and Options. Navigation choice must not change silently merely to make an inspector fit.
 

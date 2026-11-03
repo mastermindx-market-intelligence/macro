@@ -125,7 +125,7 @@ Owner: [SharedShellPresentation](https://github.com/mastermindx-market-intellige
 
 ## 8. Exact geometry probes
 
-Candidate: 224px nav ≥1200;196px at861–1199;72px explicit compact;overlay≤860. Header64 above860/56 at≤860. Gutters16 each <768;20 each768–1199;24 each≥1200. Inspector320+gap24 only if remaining central content≥640.
+Candidate: 224px nav ≥1200;196px at >860 and <1200;72px explicit compact;overlay≤860. Header64 above860/56 at≤860. Gutters16 each ≤600;20 each >600 and <1200;24 each≥1200. Overlay440 at represented768/1024 widths, constrained to viewport; full width≤600. Inspector320+gap24 only if remaining central content≥640.
 
 | ID | Width/mode | Expected usable width / behavior |
 | --- | --- | --- |
@@ -135,7 +135,7 @@ Candidate: 224px nav ≥1200;196px at861–1199;72px explicit compact;overlay≤
 | G04 | 1255/1256 default224, actual48 total inset | Dock would leave639/640. Modal at1255; docking eligible at1256. |
 | G05 | 1095/1096 explicitcompact72, actual40 total inset | Dock would leave639/640. This is the actual compact threshold under the specified responsive gutters. |
 | G06 | 1103/1104 explicitcompact72, forced48 total inset fixture | Dock would leave639/640. This tests allocation arithmetic; it is not the live responsive breakpoint. At actual40 inset both widths permit docking. |
-| G07 | 860/861 and1199/1200 transitions; explicitcompact retained | Correct single nav owner/header height; no hidden focus or modal lock; layout choice does not silently overwrite the explicit nav preference. |
+| G07 | 600/600.5, 860/860.5/861 and1199/1199.5/1200 transitions; explicit compact retained | Continuous candidate cutoffs without fractional-width gaps; correct independent gutter/nav/header decisions; no hidden focus or modal lock; layout choice does not silently overwrite the explicit nav preference. |
 | G08 | 400% zoom/reflow and full inspector on small CSS viewport | Application reflows; component-scoped two-dimensional overflow only; close/action controls remain visible and reachable. |
 | G09 | Macro, Company and Options under every materially different content class | Actual primary task remains usable in the measured content slot. Standalone1440 screenshots do not satisfy shell integration. |
 

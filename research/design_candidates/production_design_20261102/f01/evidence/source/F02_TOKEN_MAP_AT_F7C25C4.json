@@ -1,0 +1,419 @@
+{
+  "schema": "f02.specimen_token_mapping.v1",
+  "status": "proposed; not an implemented CSS namespace",
+  "system_version": "1.0.0-candidate.2",
+  "source_contract": "SOURCE_AND_DATA_CONTRACT.md",
+  "paper_observed": {
+    "observed_at": "2026-11-03T01:24:00Z",
+    "observation_time_precision": "approximate minute from session; not a revision",
+    "file": {
+      "id": "01M312VSDSZFVT45674GDVJVZN",
+      "name": "Mastermind Product Design System — Canonical"
+    },
+    "contentHash": {
+      "tokens": "356191c3"
+    },
+    "tokens": [
+      {
+        "name": "--noir-canvas",
+        "type": "color",
+        "value": "#080808",
+        "description": "NOIR / Command base canvas. Zero blue bias."
+      },
+      {
+        "name": "--noir-sidebar",
+        "type": "color",
+        "value": "#0C0C0C",
+        "description": "NOIR / Command navigation and rail surface."
+      },
+      {
+        "name": "--noir-panel",
+        "type": "color",
+        "value": "#121212",
+        "description": "Primary structural panel surface."
+      },
+      {
+        "name": "--noir-raised",
+        "type": "color",
+        "value": "#191919",
+        "description": "Raised interaction surface."
+      },
+      {
+        "name": "--noir-hover",
+        "type": "color",
+        "value": "#222222",
+        "description": "Hover / emphasized neutral surface."
+      },
+      {
+        "name": "--noir-selected",
+        "type": "color",
+        "value": "#292929",
+        "description": "Selected neutral surface."
+      },
+      {
+        "name": "--noir-text-primary",
+        "type": "color",
+        "value": "#F3F3F3",
+        "description": "Primary text on dark surfaces."
+      },
+      {
+        "name": "--noir-text-secondary",
+        "type": "color",
+        "value": "#B8B8B8",
+        "description": "Secondary text on dark surfaces."
+      },
+      {
+        "name": "--noir-text-tertiary",
+        "type": "color",
+        "value": "#949494",
+        "description": "Tertiary labels and metadata."
+      },
+      {
+        "name": "--noir-champagne",
+        "type": "color",
+        "value": "#C9B99B",
+        "description": "Attention, premium focus, and selected-data accent; not a page background."
+      },
+      {
+        "name": "--noir-sage",
+        "type": "color",
+        "value": "#A8C2AD",
+        "description": "Verified / healthy / resolved semantic accent."
+      },
+      {
+        "name": "--noir-rose",
+        "type": "color",
+        "value": "#DEA4A5",
+        "description": "Risk / challenge / negative semantic accent."
+      },
+      {
+        "name": "--noir-steel",
+        "type": "color",
+        "value": "#A7B4C2",
+        "description": "Intelligence / context / active inquiry accent."
+      },
+      {
+        "name": "--noir-lilac",
+        "type": "color",
+        "value": "#BDB2CE",
+        "description": "Localized AI illumination and secondary intelligence accent."
+      },
+      {
+        "name": "--market-canvas",
+        "type": "color",
+        "value": "#0A0B0D",
+        "description": "NOIR / Market base: graphite with only a microscopic cool bias."
+      },
+      {
+        "name": "--market-panel",
+        "type": "color",
+        "value": "#111318",
+        "description": "Primary market workspace panel."
+      },
+      {
+        "name": "--market-raised",
+        "type": "color",
+        "value": "#181B20",
+        "description": "Raised market controls and data surfaces."
+      },
+      {
+        "name": "--market-line",
+        "type": "color",
+        "value": "#2B3038",
+        "description": "Hairline separator for dense market interfaces."
+      },
+      {
+        "name": "--intelligence-panel",
+        "type": "color",
+        "value": "#10131A",
+        "description": "NOIR / Intelligence shell: graphite first, cool atmosphere second."
+      },
+      {
+        "name": "--intelligence-active",
+        "type": "color",
+        "value": "#151B29",
+        "description": "Localized active-reasoning material; never the whole application ground."
+      }
+    ]
+  },
+  "source_pins": {
+    "macro": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "terminal": "b79b1e136290978ff7675087de979bb1b42b3713"
+  },
+  "roles": [
+    {
+      "role": "canvas",
+      "source_mapping": {
+        "macro": "--bg",
+        "terminal": "--bg"
+      },
+      "proposed_specimen": {
+        "dark": "#080808",
+        "light": "#f6f6f3"
+      },
+      "note": "Paper NOIR observed dark; light proposed"
+    },
+    {
+      "role": "navigation-surface",
+      "source_mapping": {
+        "macro": "scope-specific",
+        "terminal": "shared-shell --bg/panel"
+      },
+      "proposed_specimen": {
+        "dark": "#0c0c0c",
+        "light": "#efefec"
+      },
+      "note": "F01 composition, scoped"
+    },
+    {
+      "role": "panel",
+      "source_mapping": {
+        "macro": "--panel",
+        "terminal": "--panel"
+      },
+      "proposed_specimen": {
+        "dark": "#121212",
+        "light": "#ffffff"
+      },
+      "note": "No focused-chart global replacement"
+    },
+    {
+      "role": "raised",
+      "source_mapping": {
+        "macro": "--panel2",
+        "terminal": "--panel-2 / --panel-3"
+      },
+      "proposed_specimen": {
+        "dark": "#191919",
+        "light": "#f0f0ed"
+      },
+      "note": "Different source spellings/scopes"
+    },
+    {
+      "role": "selected",
+      "source_mapping": {
+        "macro": "domain scoped",
+        "terminal": "shared-shell scope"
+      },
+      "proposed_specimen": {
+        "dark": "#292929",
+        "light": "#e2e2dc"
+      },
+      "note": "Quiet fill, not health"
+    },
+    {
+      "role": "text-primary",
+      "source_mapping": {
+        "macro": "--text",
+        "terminal": "--text"
+      },
+      "proposed_specimen": {
+        "dark": "#f3f3f3",
+        "light": "#1a1c20"
+      },
+      "note": "text grade"
+    },
+    {
+      "role": "text-secondary",
+      "source_mapping": {
+        "macro": "--muted / estate --ink-2",
+        "terminal": "--text-2"
+      },
+      "proposed_specimen": {
+        "dark": "#b8b8b8",
+        "light": "#51555b"
+      },
+      "note": "preserve actual hierarchy"
+    },
+    {
+      "role": "text-tertiary",
+      "source_mapping": {
+        "macro": "estate --ink-3",
+        "terminal": "--muted / --text-dim"
+      },
+      "proposed_specimen": {
+        "dark": "#949494",
+        "light": "#5f6368"
+      },
+      "note": "not for essential caveat as sole emphasis"
+    },
+    {
+      "role": "neutral-divider",
+      "source_mapping": {
+        "macro": "--line / --line-quiet",
+        "terminal": "--line*"
+      },
+      "proposed_specimen": {
+        "dark": "#343434",
+        "light": "#cbccc7"
+      },
+      "note": "decorative divider; not sole control affordance"
+    },
+    {
+      "role": "control-boundary",
+      "source_mapping": {
+        "macro": "existing control owner",
+        "terminal": "existing control owner"
+      },
+      "proposed_specimen": {
+        "dark": "#6f6f6f",
+        "light": "#85877f"
+      },
+      "note": "proposed contrast-bearing neutral boundary"
+    },
+    {
+      "role": "accent-data",
+      "source_mapping": {
+        "macro": "existing chart-series owner",
+        "terminal": "existing chart-series owner"
+      },
+      "proposed_specimen": {
+        "dark": "#c9b99b",
+        "light": "#66543b"
+      },
+      "note": "proposed specimen series; no global semantic reassignment"
+    },
+    {
+      "role": "link",
+      "source_mapping": {
+        "macro": "--link / --ink-link",
+        "terminal": "--link"
+      },
+      "proposed_specimen": {
+        "dark": "#a7c9f1",
+        "light": "#235b8e"
+      },
+      "note": "underlined when in prose"
+    },
+    {
+      "role": "price-up-west",
+      "source_mapping": {
+        "macro": "--up / --ink-up",
+        "terminal": "--up + --up-rgb"
+      },
+      "proposed_specimen": {
+        "dark": "#b0d4b9",
+        "light": "#256341"
+      },
+      "note": "sign required; convention source-owned"
+    },
+    {
+      "role": "price-down-west",
+      "source_mapping": {
+        "macro": "--down / --ink-down",
+        "terminal": "--down + --down-rgb"
+      },
+      "proposed_specimen": {
+        "dark": "#efa6ad",
+        "light": "#a62d43"
+      },
+      "note": "sign required; convention source-owned"
+    },
+    {
+      "role": "warning",
+      "source_mapping": {
+        "macro": "--warn / --ink-warn",
+        "terminal": "--warn"
+      },
+      "proposed_specimen": {
+        "dark": "#e9be6a",
+        "light": "#82550d"
+      },
+      "note": "invariant health/severity, no stripe"
+    },
+    {
+      "role": "flow-buy",
+      "source_mapping": {
+        "macro": "no global equivalent",
+        "terminal": "--flow-buy"
+      },
+      "proposed_specimen": {
+        "dark": "#70cbdc",
+        "light": "#18687c"
+      },
+      "note": "proposed text-grade specimen colors; domain invariant"
+    },
+    {
+      "role": "flow-sell",
+      "source_mapping": {
+        "macro": "no global equivalent",
+        "terminal": "--flow-sell"
+      },
+      "proposed_specimen": {
+        "dark": "#d9a6ef",
+        "light": "#7c3d9b"
+      },
+      "note": "not price-down; no locale swap"
+    },
+    {
+      "role": "focus",
+      "source_mapping": {
+        "macro": "existing focus owner",
+        "terminal": "existing focus owner"
+      },
+      "proposed_specimen": {
+        "dark": "#c4d9f4",
+        "light": "#245c91"
+      },
+      "note": "2px visible outline; focus not selected"
+    }
+  ],
+  "collisions": [
+    {
+      "id": "space-8",
+      "observed": "Terminal and public estate --sp-8=32px",
+      "proposed_document": "canonical planned --sp-8=44px, --sp-7=32px",
+      "decision": "Do not alias by spelling; migrate same-scope consumers atomically with compatibility values."
+    },
+    {
+      "id": "provisional",
+      "observed": "Macro --prov-ink exists; --ink-prov absent at pin",
+      "decision": "Future alias must map text-grade --prov-ink; coordinate incumbent PR #7849."
+    },
+    {
+      "id": "radius-md",
+      "observed": "Terminal focused chart 6px; public estate 10px",
+      "decision": "Keep source-specific radii; introduce semantic scoped roles only after review."
+    },
+    {
+      "id": "type-number",
+      "observed": "Macro current --num UI differs from normative mono prescription; Terminal finance intentionally Inter/tabular",
+      "decision": "Separate financial-number and code faces; do not globally choose monospace."
+    },
+    {
+      "id": "language-direction",
+      "observed": "Macro convention follows data-lang=zh; Terminal explicit east/red-up",
+      "decision": "Preserve incumbent semantics until F01 migration; direction and language distinct in component model."
+    }
+  ],
+  "specimen_type": {
+    "analytical_body": 14,
+    "table_body": 13,
+    "reading_body": 17,
+    "section_title": 17,
+    "page_title": 28,
+    "metric": 32
+  },
+  "specimen_spacing": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    44
+  ],
+  "specimen_density": {
+    "dense_row": 40,
+    "comfortable_row": 52,
+    "mobile_row_min": 48,
+    "important_mobile_control_target": 44
+  },
+  "motion": {
+    "routine_ms": 120,
+    "reduced_motion": "static meaningful state; no auto numeric tween",
+    "refraction": "not promoted; historical top-strip-only conditions retained"
+  },
+  "no_product_imports_created": true
+}
