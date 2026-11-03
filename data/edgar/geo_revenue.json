@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-10-31T04:12:28.259351+00:00",
+"updated":"2026-11-03T14:41:21.385391+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -11700,11 +11700,11 @@
 ]
 },
 "AYI":{
-"foreign_pct":13.6,
-"asof":"2025-08-31",
-"source":"10-K 2025-08-31",
-"fy":2025,
-"accession":"0001144215-25-000082",
+"foreign_pct":12.7,
+"asof":"2026-08-31",
+"source":"10-K 2026-08-31",
+"fy":2026,
+"accession":"0001144215-26-000052",
 "method":"foreign_agg",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -11712,13 +11712,13 @@
 "key":"DomesticCountry",
 "label":"Domestic Country",
 "cls":"mixed",
-"pct":86.4
+"pct":87.3
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":13.6
+"pct":12.7
 }
 ]
 },
@@ -35765,11 +35765,11 @@
 },
 "meta":{
 "universe":2872,
-"attempted":2879,
+"attempted":2880,
 "parsed":1001,
 "skips":{
 "no_geo_axis":1373,
-"no_denominator":397,
+"no_denominator":398,
 "no_10k":72,
 "no_instance":27,
 "agg_no_total":3,
