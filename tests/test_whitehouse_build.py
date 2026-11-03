@@ -616,3 +616,53 @@ def test_treasury_display_disclaimer_preserves_custom_and_honest_missing_default
     html = bw._render_page(config.ROOT, [row])
     assert row == before
     assert (custom or 'primary-source U.S. Treasury event') in html
+
+
+def test_editorial_reader_outline_preserves_report_targets_and_original_content():
+    from html.parser import HTMLParser
+    class Elements(HTMLParser):
+        def __init__(self):
+            super().__init__(); self.ids=[];self.hrefs=[]
+        def handle_starttag(self, tag, attrs):
+            a=dict(attrs)
+            if 'id' in a:self.ids.append(a['id'])
+            if tag=='a' and a.get('href','').startswith('#wh-editorial-'):self.hrefs.append(a['href'][1:])
+    row=_rec('wh-editorial-proof',4,5,72)
+    row['analysis']='Exact retained first paragraph.\nExact retained second paragraph.'
+    html=bw._render_page(config.ROOT,[row])
+    parsed=Elements();parsed.feed(html)
+    assert 'wh-editorial-proof' in parsed.ids
+    assert len(parsed.ids)==len(set(parsed.ids))
+    assert len(parsed.hrefs)>=3
+    assert set(parsed.hrefs)<=set(parsed.ids)
+    assert 'Exact retained first paragraph.' in html
+    assert 'Exact retained second paragraph.' in html
+    assert '<details' in html and 'On this report' in html and '本篇目录' in html
+    assert 'AI analysis · original text' in html and 'AI解读 · 原文展示' in html
+    assert 'data-ai-original' in html
+    assert 'stock.html#NVDA' in html and 'stock.html#INTC' in html
+    assert row['source_url'] in html
+
+
+def test_editorial_reader_missing_fields_do_not_become_source_or_freshness_claims():
+    row=_rec('wh-editorial-missing',0,0,0)
+    row.update(analysis=None,sectors=[],tickers=[],source_url=None,published=None,generated_at=None)
+    html=bw._render_page(config.ROOT,[row])
+    assert 'Primary-source link unavailable.' in html
+    assert '暂无一手来源链接。' in html
+    assert 'An AI read is not available for this report.' in html
+    assert 'Source date unavailable' in html and 'AI read date unavailable' in html
+    assert 'href="None"' not in html
+    assert 'banner live until' not in html
+
+
+def test_editorial_reader_presentation_has_no_decorative_edges_or_local_palette():
+    import re
+    source=(config.ROOT/'templates'/'whitehouse.html.j2').read_text()
+    css=source.split('{% block base_css %}',1)[1].split('{% endblock %}',1)[0]
+    assert not re.search(r'#[0-9a-fA-F]{3,8}\b',css)
+    assert 'linear-gradient' not in css
+    assert 'border-left:' not in css
+    assert '.wh-hero::before' not in css and '.wh-tre::before' not in css
+    assert 'var(--panel)' in css and 'var(--fs-body)' in css
+    assert 'prefers-reduced-motion' in css or 'transition:' not in css
