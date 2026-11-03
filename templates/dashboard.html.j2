@@ -567,10 +567,9 @@
   .ab-shock-ic { color: var(--ink-warn, var(--warn)); }
   .ab-shock-ic .ic-svg { width: 14px; height: 14px; display: inline-block; vertical-align: -.17em; }
   #action-board .help .tip .ic-svg { width: 12px; height: 12px; display: inline-block; vertical-align: -.14em; }
-  /* Lane header — accent top bar via ::before (anv2-lane-hd idiom) */
+  /* Lane header — identity rides the icon + name ink, never an edge bar
+     (Chairman rule 2026-10-18, docs/DESIGN_DOCTRINE.md §3). */
   .acth { padding: 10px 13px 8px; border-bottom: 1px solid var(--line); position: relative; }
-  .acth::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-                  border-radius: 14px 14px 0 0; background: var(--act-accent); }
   .acth-title-row { display: flex; align-items: center; gap: 5px; }
   .acth-icon { display: flex; line-height: 1; flex: none; color: var(--act-accent-ink, var(--act-accent)); }
   .acth-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -1311,12 +1310,8 @@
                border: none; border-radius: 7px; background: var(--panel); color: var(--muted);
                font-size: 18px; line-height: 1; cursor: pointer; }
   .nb-more-x:hover { color: var(--text); background: color-mix(in srgb, var(--line) 55%, transparent); }
-  /* state accent as a TOP gradient stripe (RIPENING-shelf idiom) — not a left border */
-  .nbcard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; pointer-events: none;
-                    background: linear-gradient(90deg, var(--muted), transparent); opacity: .6; }
-  .nbcard.nb-up::before { background: linear-gradient(90deg, var(--up), color-mix(in srgb, var(--up) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-down::before { background: linear-gradient(90deg, var(--down), color-mix(in srgb, var(--down) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-caution::before { background: linear-gradient(90deg, var(--warn), color-mix(in srgb, var(--warn) 30%, transparent)); opacity: 1; }
+  /* No state stripe on any edge (Chairman rule 2026-10-18): state rides the
+     card's labeled semantic text, never a container edge. */
   .nb-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; row-gap: 3px; }
   .nb-tk { font-weight: 800; font-size: 14px; color: var(--text); letter-spacing: .01em; flex: none; }
   .nb-nm { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis;
@@ -1846,11 +1841,6 @@
   /* row accents by lane */
   .st-row-bottoming td { background:color-mix(in srgb,var(--up) 4%,transparent); }
   .st-row-bottoming td.st-sticky-col { background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .st-row-bottoming td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .st-row-continuation td:first-child { box-shadow:inset 3px 0 0 var(--link); }
-  .st-row-trend td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--link) 55%,var(--up)); }
-  .st-row-recovery td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--g-cold) 65%,var(--muted)); }
-  .st-row-watch td:first-child { box-shadow:inset 3px 0 0 var(--muted); }
   .st-row-watch td { color:var(--muted); }
   /* sort arrow */
   .st-sarrow { font-size:8px; margin-left:2px; opacity:.28; }
@@ -2177,8 +2167,7 @@
     transition: color .15s, background .15s, border-color .15s; }
   body.page-macro .cb-tab:hover { color: var(--ink-1); border-color: color-mix(in srgb, var(--link) 45%, var(--hair)); }
   body.page-macro .cb-radio:checked + .cb-tab { color: var(--ink-1); background: var(--tile);
-    border-color: color-mix(in srgb, var(--link) 55%, var(--hair));
-    box-shadow: inset 0 -2px 0 0 var(--link); }
+    border-color: color-mix(in srgb, var(--link) 55%, var(--hair)); }
   body.page-macro .cb-radio:focus-visible + .cb-tab { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset: 2px; }
   /* a full-width hairline divider that wraps right after the tab row, above the panes */
   body.page-macro .cb-tabs::after { content: ""; order: 1; flex-basis: 100%; height: var(--rule);
@@ -3613,7 +3602,6 @@ body.page-macro .sx-island{
   transform-style:preserve-3d;
   background:var(--panel);
   background-image:linear-gradient(160deg,rgba(255,255,255,.025) 0%,transparent 60%);
-  border-top-color:color-mix(in srgb,var(--isle-color,var(--info)) 55%,rgba(255,255,255,.6));
   box-shadow:none;
   transition:
     box-shadow .4s cubic-bezier(.34,1.08,.64,1),
@@ -3642,7 +3630,6 @@ body.page-macro .sx:not([data-open]) .sx-island{
   background:var(--panel);
   border-width:2px;
   border-color:color-mix(in srgb,var(--isle-color,var(--info)) 70%,transparent);
-  border-top-color:var(--isle-color,var(--info));
   box-shadow:
     var(--island-shadow-tight),
     var(--island-shadow-mid),
@@ -7323,8 +7310,6 @@ body.page-macro.mx4-grid .wnx-card{
   text-decoration:none;overflow:hidden;
   transition:transform .16s ease,border-color .2s ease,background .2s ease,box-shadow .25s ease;
 }
-body.page-macro.mx4-grid .wnx-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--wnx-c);opacity:.85;border-radius:0 2px 2px 0;}
 body.page-macro.mx4-grid .wnx-card:hover,
 body.page-macro.mx4-grid .wnx-card:focus-visible{
   transform:translateY(-2px);outline:none;
@@ -9269,8 +9254,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var(--panel2);
     border:1px solid color-mix(in srgb,var(--line) 82%,var(--text) 18%);border-radius:18px;
     box-shadow:0 28px 80px -30px rgba(2,8,23,.58),0 12px 30px -22px rgba(2,8,23,.5),inset 0 1px 0 color-mix(in srgb,#fff 58%,transparent)}
-  .rr-modal::before{content:"";position:absolute;z-index:-1;inset:0 0 auto;height:3px;
-    background:linear-gradient(90deg,var(--accent,var(--up)),color-mix(in srgb,var(--accent,var(--up)) 16%,transparent) 64%,transparent)}
   .rr-modal-hdr{position:relative;padding:24px 72px 17px 28px}
   .rr-modal-close{position:absolute;top:18px;right:20px;background:color-mix(in srgb,var(--panel) 78%,transparent);
     border:1px solid color-mix(in srgb,var(--line) 82%,transparent);font-size:18px;cursor:pointer;
