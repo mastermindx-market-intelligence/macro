@@ -74,7 +74,7 @@ Therefore “Ask about this bar” remains a proposed explicit bridge under D14/
 
 ## 6. Ownership and migration qualification matrix
 
-These are qualification facets, **specified rather than executed**. The live subset above is separately identified. They map to BRAIN01, HIST01, LAY02/LAY06, NAV08 and A11Y01–03 in the 71-case migration ledger; this matrix adds no separate case IDs.
+These are qualification facets, **specified rather than executed**. The live subset above is separately identified. They map to BRAIN01, HIST01, LAY02/LAY06, NAV08 and A11Y01–03 in the75-case migration ledger; this matrix adds no separate case IDs.
 
 | Qualification case | Existing owner(s) | Required proof / preserved boundary |
 | --- | --- | --- |
@@ -96,3 +96,9 @@ The source interface has been inspected and the exercised guest presentation rec
 For the design phase, existing owners qualify the supported lifecycle and context boundaries, F01/F02 freeze and qualify the joint foundation, and D06 obtains exact authoring admission before composing and independently reviewing the affected editable references. The migration cases remain specified. Their implementation-level execution belongs to a later separately authorized build; baseline cases that can be exercised now remain separately attributed observations. A source comment, candidate document, advisory consultation or Paper capability receipt cannot satisfy those gates.
 
 No production implementation, Paper mutation, external approval, merge, Ready transition, enqueue, relabel or deployment is claimed or authorized by this document.
+
+## Later reader/source correspondence
+
+At Terminal master2ded360882b9c721e690907ff363b553781fb920, the inspected Terminal typed bridge, BrainWidget, chart, reader and originNav blobs remain unchanged. The external Brain bytes remain unattested; the later responsive session did not dispatch a prompt or prove lifecycle acceptance.
+
+The [responsive audit](RESPONSIVE_AND_STATE_AUDIT.md) corrects any implication of an existing separate reader pin: crosshair and bar stepping share one current inspection cursor. AI lockedVLine remains independent. Retain current valid reader identity across presentation-only changes, but do not invent a committed-versus-hover store or attach a resize-generated sample to Ask without explicit validation. Focus restoration on both close and placement change remains conditional on the closing/removed surface legitimately owning focus.

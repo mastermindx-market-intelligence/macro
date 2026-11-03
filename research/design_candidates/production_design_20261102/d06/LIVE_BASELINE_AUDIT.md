@@ -4,6 +4,8 @@
 
 The useful result is concrete: the chart/context/Intelligence hierarchy is worth retaining; identity and named return worked in the exercised paths; reader scrolling and pointer resizing worked. Brain coordination, focus return, comparison attribution, focused-mode selection semantics, shared navigation intent, embed accessibility and Stage recovery copy need qualified owner changes.
 
+This document preserves the **earlier guest session**. The later signed-in-presentation viewport/state audit is [RESPONSIVE_AND_STATE_AUDIT.md](RESPONSIVE_AND_STATE_AUDIT.md), with seven additional raw captures and separately bound source/deployment identity. Its measurements supersede the earlier carrier's inability to resize a viewport, while leaving actual zoom/touch and full acceptance unproved.
+
 ## 1. Cohort, identity and evidence limits
 
 | Field | Observed identity / limit |
@@ -36,7 +38,7 @@ The available browser did not expose viewport resizing. A browser zoom shortcut 
 | Chart bench | `/dev/chart-bench` | Beta route returned the visible404 page; no flag changed; runtime mode/flag disposition unproved |
 | Theater | `/dev/theater` | Beta route returned the visible404 page; runtime cause unproved; no synthetic harness run |
 
-This is nine-family baseline coverage, not equivalent depth or a full route-regression pass. The machine-readable [coverage ledger](evidence/live_coverage.json) separates observed subsets from the 71 proposed migration cases, which remain specified, not executed.
+This is nine-family baseline coverage, not equivalent depth or a full route-regression pass. The machine-readable [coverage ledger](evidence/live_coverage.json) separates observed subsets from the original71 and later75 proposed migration cases, which all remain specified, not executed.
 
 ## 3. Terminal workflow evidence
 
@@ -74,9 +76,9 @@ Adding SPY through the actual comparison search and choosing Percent retained AA
 
 ### Focused chart and state ownership
 
-More → Fullscreen chart removed global chrome/rail and placed context below the chart across the available width. The observed chart canvas was approximately 1250×333 at (52,75), with context beginning near y563; symbol and interval remained attributable. Local reader accordion/scroll state reset on the transition. The immediate accessibility observation retained 2026-10-27, but the settled screenshot showed a 2025-09-25 hover/crosshair sample under the stationary pointer. **This does not prove committed historical selection was lost.**
+More → Fullscreen chart removed global chrome/rail and placed context below the chart across the available width. The observed chart canvas was approximately 1250×333 at (52,75), with context beginning near y563; symbol and interval remained attributable. Local reader accordion/scroll state reset on the transition. The immediate accessibility observation retained 2026-10-27, but the settled screenshot showed a 2025-09-25 hover/crosshair sample under the stationary pointer. **This does not establish a presentation-induced loss of the historical cursor.** Later source inspection confirms that a valid crosshair event and Previous/Next write the same reader selection; a separate committed/hover pin does not exist.
 
-The requirement is to distinguish committed reader selection, transient hover and AI locked selection, and to verify them with the pointer outside the plot before/after settled layout. Preserve owner-defined pinned state and make any disclosure reset deliberate. Escape did not exit in the bounded attempt; the visible exit control did, with BODY focus afterward. Keep a visible exit and qualify keyboard/focus behavior. [Focused capture](evidence/live/d06-focused-context-20261103.jpg); new LAY06 makes the selection-versus-hover oracle explicit.
+The corrected requirement is to preserve the existing valid inspection cursor through presentation-only changes, then permit legitimate crosshair/step/Latest events to update or clear it. AI locked state remains separate; an exact-bar Ask needs explicit binding. Verify settled transitions with the pointer outside the plot and retain valid disclosure/scroll inside the existing owner. Escape did not exit in this bounded guest attempt; the visible exit did, with BODY focus afterward. The later phone exit restored Fullscreen chart focus, a separate qualified path. [Focused capture](evidence/live/d06-focused-context-20261103.jpg); LAY06 now follows these actual source semantics.
 
 ### Named return and session origin
 
@@ -127,8 +129,12 @@ The Stage overview capture's filename contains “screener-partial”; it shows 
 
 ## 7. Decisions and next proof
 
-Keep the 76-capability ledger and every retained registry entry. These observations refine existing IMPROVE decisions and add **four meaningful migration specifications**: BRAIN01 for lifecycle coordination, LAY06 for committed/hover/locked selection, NAV10 for generic/named entry intent, and COMP01 for comparison attribution. Existing EMBED01, A11Y01–03, LAY02, HIST01 and STAGE04 are strengthened rather than duplicated. The resulting 71 cases remain specified, not executed.
+Keep the 76-capability ledger and every retained registry entry. These observations refine existing IMPROVE decisions and add **four meaningful migration specifications**: BRAIN01 for lifecycle coordination, LAY06 for current inspection cursor versus AI locked selection (corrected by later source inspection), NAV10 for generic/named entry intent, and COMP01 for comparison attribution. Existing EMBED01, A11Y01–03, LAY02, HIST01 and STAGE04 are strengthened rather than duplicated. That continuation produced71 specified cases. The later responsive/source continuation adds LAY07,NAV11,DATA09,SCRIPT06, giving75 specified cases and zero complete executions.
 
-The current practical gates are verified joint F01/F02 v1, exact D06/C4 Paper admission, editable after-composition and independent RIG review. Responsive/zoom/touch, authenticated/paid/operator state, positive snapshot, true source-generation/release attribution, save/race/access policy, performance and model-validation proofs remain separate. The browser fallback approval gate is **cleared**, not an outstanding user action.
+The current practical gates are verified joint F01/F02 v1, exact D06/C4 Paper admission, editable after-composition and independent RIG review. Full responsive/theme/locale acceptance, actual zoom/touch, authenticated/paid/operator state, positive snapshot, true source-generation/release attribution, save/race/access policy, performance and model-validation proofs remain separate. The browser fallback approval gate is **cleared**, not an outstanding user action.
 
 Full disposition and exact owner actions are in [Evidence and return](EVIDENCE_AND_RETURN.md). No production source, held PR status, deployment, source data or historical ledger was changed.
+
+## Historical navigation qualification
+
+The older Scripts navigation-current observation belongs to this guest deployment token. Later AppNav/MobileNav source distinguishes parent location from an exact page. [The source delta](SOURCE_DELTA_20261103.md) records that correction; the earlier screenshot is not evidence of a defect on the later served build. Exact current-route assistive semantics still require their own served-path check.

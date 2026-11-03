@@ -21,7 +21,7 @@ Reference inputs:
 - Refraction p-Z-0 original top-edge material only; rejected full-paneR2 stays historical.
 - Source-only p-G-0 is evidence, not an approved replacement.
 
-Shell/system: **joint F01/F02 v1 not verified**. Formal RIG: **draft; no approval receipt**. Implementation/deployment acceptance: **not performed by D06**. The package now includes real guest beta baseline observations and29 raw captures at1363×936, separately from16 predecessor Paper images. Neither set is an approved after-design; source/release mapping and market/model validation remain unproved.
+Shell/system: **joint F01/F02 v1 not verified**. Formal RIG: **draft; no approval receipt**. Implementation/deployment acceptance: **not performed by D06**. The package includes29 earlier guest beta captures at1363×936,seven later responsive chart/hub captures and16 predecessor Paper images. Its75 migration cases remain specified-not-executed. No image is an approved after-design; independent bundle/release attestation and market/model validation remain unproved.
 
 Important limits: reader-selected bar and AI locked bar differ today; exact incoming TF/bar and origin viewport restore need source-owned contracts; public shares are PNGs without restore/expiry/revoke metadata; source clocks and price basis can be unknown.
 
@@ -38,7 +38,7 @@ Review the committed source set. Later canvas changes require refreshed exports/
 | Ask about this bar | Explicitly bind symbol, TF, exact time basis, bar and generation through existing Brain owner. Reject stale context. | Action and stale-selection specimen. |
 | Reader close / focus | Nonmodal dock; modal sheet only when blocking. Restore recorded launcher with preventScroll. Preserve view and chart instance. Brain coordination requires actual lifecycle/focus qualification; no automatic evidence reopening. | Beside close control, Brain interaction and mobile specimen. |
 | Reader reset / settings / feedback | Latest resets inspection, not market freshness. Preserve re-enable, Hide and four layer switches through existing settings callbacks. Useful/Unclear uses existing click analytics and local acknowledgement. Candle settings transfers focus with close(false). | Beside these controls, including disabled-reader and acknowledgement specimens. |
-| Rail resize / focus | Coalesced resize; preserve logical range, active pane and drawings. Keyboard increments/reset with min/max/current semantics. Distinguish committed reader, hover and AI locked bar across focus transitions. | Handle plus compact/focus variant; record actual content width. |
+| Rail resize / focus | Coalesced resize; preserve logical range, active pane and drawings. Keyboard increments/reset with min/max/current semantics. Preserve the one current reader inspection cursor across presentation changes; valid hover/step/Latest events still own it. AI locked selection is separate; no invented reader pin. Keep requested/effective rail width distinct and retain valid disclosure/scroll. | Handle plus compact/focus variant; record actual content width. |
 | Intelligence stats | Mockup values illustrative. WR/CAGR fractions, PF ratio, trades count; source sample and validation qualifiers. Conviction/quality are not probabilities. | Adjacent to metric group and source drawer. |
 | Oracle / Research / Activity | Separate source clocks and identities; preserve independent readouts, all history and filters. No blend that fabricates agreement. | Tabs and empty/partial specimens. |
 | Return | Safe exact href owned by originNav. Exact origin viewport requires its originating owner, not history.back. | Return control and missing-origin variant. |
@@ -54,3 +54,15 @@ Review the committed source set. Later canvas changes require refreshed exports/
 Create only the materially changed variants needed to prove these tasks; use actual target IDs returned by Paper, not invented IDs. Cover320/390/tablet/narrow/wide available widths, light/dark, EN/ZH, keyboard/touch and400%zoom. Include normal-data density plus loading/partial/stale/error/access/uncertain-save specimens. Reuse unchanged elements only with their actual acceptance evidence; new shell compositions still need editable references.
 
 Before review, freeze exact file/page/artboard IDs and observation time, commit exports/captures plus these placed annotations and verification screenshots, then bind the actual RIG manifest/receipts to that immutable set. Current source captures are **before evidence** and do not satisfy proposed-after obligations.
+
+## Prepared addendum from measured responsive evidence — not placed in Paper
+
+Add to the future Read me and adjacent layout specimens only through the admitted D06 target writer:
+
+- Record viewport, document client width, actual price-data plot and occupied axis/tools/gaps. Provisional640px refers to price-data plot; F01's shared primary-content/dock arithmetic is a different candidate contract.
+- Preserve requested rail360/default and300–520 clamp independently of automatic effective fit. Test639/640 plot threshold and861/860 placement boundary; do not persist fit caps or remove selected panes.
+- Carry reader open intent, valid current inspection date, disclosure and scroll through dock/inline/focus changes. Transfer focus only if the disappearing/closing surface legitimately owns it; preserve settings/navigation transfers and visible phone fallbacks.
+- Keep the phone More→Analysis hub→Chart context route and bounded focused-reader scroll. Show measured small controls as repair requirements against the44px house target; do not label them automaticWCAGfailures.
+- Include the root Terminal zoom restriction as an unresolved accessibility requirement. Viewport proof is not touch, mobile-browser or400%zoom proof.
+
+Current exact-file depth3 summaries for1K9F-0 and19IC-1 match the frozen structure exports (token hash55dd37b7). This does not refresh all board screenshots or constitute after-design acceptance. No annotation, board or token was written.

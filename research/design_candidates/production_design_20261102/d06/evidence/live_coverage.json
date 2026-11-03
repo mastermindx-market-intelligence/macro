@@ -13,7 +13,7 @@
   "served_release_attested": false,
   "external_brain_url": "https://www.mastermind-x.com/mm_brain.js",
   "external_brain_bytes_attested": false,
-  "proposed_migration_cases": 71,
+  "proposed_migration_cases": 75,
   "full_proposed_migration_cases_executed": 0,
   "records": [
     {
@@ -27,7 +27,8 @@
         "NAV08"
       ],
       "limits": "Other listings/flags/access tiers and all tool operations unproved",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO02",
@@ -40,7 +41,8 @@
         "DATA08"
       ],
       "limits": "Replay, time zones and full derived-metric correctness unproved",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO03",
@@ -52,7 +54,8 @@
         "LAY05"
       ],
       "limits": "Keyboard splitter and persistence not proved; role lacks observed min/max/current and tabindex",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO04",
@@ -65,7 +68,8 @@
         "HIST01"
       ],
       "limits": "No prompt; no exact-bar attachment, lifecycle acknowledgement or request-state test",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO05",
@@ -76,7 +80,8 @@
         "COMP01"
       ],
       "limits": "No independent numeric oracle or producer diagnosis",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO06",
@@ -88,7 +93,8 @@
         "LAY06"
       ],
       "limits": "Escape did not exit in the bounded attempt; visible Exit did and focus became BODY. Committed selection loss was not established; this is not a whole-case result.",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO07",
@@ -100,7 +106,8 @@
         "NAV07"
       ],
       "limits": "Guest gate prevents row/scroll/selection return proof",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO08",
@@ -114,7 +121,8 @@
         "LAY06"
       ],
       "limits": "Event location does not bind latest reader automatically; no performance/model qualification",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO09",
@@ -128,7 +136,8 @@
         "NAV10"
       ],
       "limits": "No editor/CAS/save/owner/auth access path executed",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO10",
@@ -143,7 +152,8 @@
         "A11Y03"
       ],
       "limits": "No served source clock, positive parent/nativefullscreen or actual zoom/reflow proof",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO11",
@@ -154,7 +164,8 @@
         "SHARE03"
       ],
       "limits": "No valid snapshot, upload, storage or HEAD failure distinction exercised",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO12",
@@ -167,7 +178,8 @@
         "LAY05"
       ],
       "limits": "No source formula/model verification or full range matrix",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO13",
@@ -180,7 +192,8 @@
         "STAGE05"
       ],
       "limits": "Sibling-health copy contradicted observed failures; backend root cause and empty-versus-error not independently established",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO14",
@@ -194,7 +207,8 @@
         "SPV04"
       ],
       "limits": "No performance/authority/claim validation; no full synchronized range matrix",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO15",
@@ -205,7 +219,8 @@
         "DEV01"
       ],
       "limits": "Flag-on branch not executed Runtime environment/flag disposition and cause of exclusion not independently attested.",
-      "status": "observed_before_design_subset"
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
     },
     {
       "id": "LO16",
@@ -216,10 +231,126 @@
         "DEV01"
       ],
       "limits": "Synthetic theater not executed Runtime environment/flag disposition and cause of exclusion not independently attested.",
+      "status": "observed_before_design_subset",
+      "session_id": "d06-guest-20261103"
+    },
+    {
+      "id": "LO17",
+      "session_id": "d06-responsive-20261103",
+      "family": "terminal:terminal",
+      "action": "Supported viewport transitions from1440 to320 including861/860",
+      "observed": "Measured price-plot/reader/document widths; dock narrows plot to488px at1024 and326px at861",
+      "related_case_ids": [
+        "LAY02",
+        "LAY07",
+        "A11Y03"
+      ],
+      "limits": "No touch/zoom or complete control-reachability proof; provisional640plot rule unimplemented",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO18",
+      "session_id": "d06-responsive-20261103",
+      "family": "terminal:terminal",
+      "action": "Previous bar, dock/inline/focus changes, phone Close and Analysis hub return",
+      "observed": "Historical date retained; dock-to-inline focus becameBODY; phone close/reopen and focus exit have visible targets",
+      "related_case_ids": [
+        "LAY06",
+        "HIST01",
+        "A11Y01"
+      ],
+      "limits": "One current reader inspection cursor; no separate committed/hover pin or exact-bar AI attachment proved",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO19",
+      "session_id": "d06-responsive-20261103",
+      "family": "terminal:terminal",
+      "action": "360to460rail, open disclosure, scroll292, inline roundtrip",
+      "observed": "Requested460width and historical date retained; disclosure closed and scroll0; focused reader scrolled independently",
+      "related_case_ids": [
+        "LAY02",
+        "LAY06",
+        "LAY07"
+      ],
+      "limits": "Keyboard resize, all content anchors, touch and wider pane variants untested",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO20",
+      "session_id": "d06-responsive-20261103",
+      "family": "terminal:terminal",
+      "action": "Phone targets, hub modal semantics and root viewport metadata",
+      "observed": "Small controls measured; root Terminal zoom restriction observed and source matched",
+      "related_case_ids": [
+        "A11Y01",
+        "A11Y02",
+        "A11Y03"
+      ],
+      "limits": "House44target distinction retained; no automaticWCAGfailure, fullfocus trap, screenreader or actualzoom proof",
       "status": "observed_before_design_subset"
     }
   ],
-  "responsive_limit": "No viewport resize exposed; attempted zoom shortcut left1363x936/DPR1/scale1 unchanged; not responsive or400percent proof",
-  "raw_captures": 29,
-  "source_audit": "../LIVE_BASELINE_AUDIT.md"
+  "responsive_limit": "Actual supported viewport measurements now exist at1440/1024/861/860/768/390/320. Real touch, zoom, mobile browser/keyboard, full theme/locale and after-design responsive acceptance remain unproved. Earlier no-viewport limitation applies only to the original guest carrier.",
+  "raw_captures": 36,
+  "source_audit": "../LIVE_BASELINE_AUDIT.md",
+  "initial_session": {
+    "observed_date_local": "2026-11-03",
+    "timezone": "America/Chicago",
+    "access": "guest presentation; no authenticated principal established",
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "deployment_token_observed": "ac3762717ad150fd4f18614afd78072115a7c80a",
+    "id": "d06-guest-20261103"
+  },
+  "legacy_top_level_session_fields": "access/viewport/deployment token describe the original guest session only; later session is separately bound below",
+  "later_sessions": [
+    {
+      "id": "d06-responsive-20261103",
+      "access": "signed-in presentation; entitlement/backend authorization unverified",
+      "deployment_token_observed": "2ded360882b9c721e690907ff363b553781fb920",
+      "observations": "responsive_observations.json",
+      "viewport_css_px": [
+        [
+          1440,
+          900
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          861,
+          900
+        ],
+        [
+          860,
+          900
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          320,
+          844
+        ]
+      ],
+      "device_pixel_ratio": 1,
+      "theme": "dark",
+      "language": "en"
+    }
+  ],
+  "source_audits": [
+    "../LIVE_BASELINE_AUDIT.md",
+    "../RESPONSIVE_AND_STATE_AUDIT.md",
+    "../SOURCE_DELTA_20261103.md"
+  ]
 }

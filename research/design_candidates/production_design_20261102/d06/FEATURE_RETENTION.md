@@ -169,3 +169,11 @@ The [approved beta audit](LIVE_BASELINE_AUDIT.md) supplies before-design evidenc
 - Embed and Stage improvements now have concrete language/zoom and per-slice recovery-copy evidence. These are refinements of existing capabilities, not invented new datasets or coverage.
 
 Four additional migration cases cover real gaps; the six BLOCKED_DATA extensions and older Paper sizing field remain unchanged. No AI prompt, account save, public upload or model decision was exercised or accepted.
+
+## Later source and responsive qualification, without changing dispositions
+
+The existing76 groups and40 RETAIN/35 IMPROVE/1 BLOCKED_DATA disposition counts remain intact. [The current source delta](SOURCE_DELTA_20261103.md) attaches additional obligations to the same identities: company-search/listing context to TC03 and navigation, conservative cache acquisition cutoffs and honest missing-data outcomes to data provenance, and opt-in Pine reference receipt semantics to the existing Scripts/engine capability. No new customer export action is inferred from an internal runtime API.
+
+TC25/TC26 now have [measured responsive evidence](RESPONSIVE_AND_STATE_AUDIT.md): at1024 the360px reader leaves488px of price plot; at861 it leaves326px. The selected historical date and requested460px rail survived a dock/inline roundtrip, while disclosure and scroll reset. The proposed improvement preserves requested versus effective width, valid current inspection cursor and reader state within their existing owners. It does not introduce a separate committed/hover pin, remove panes, change source breakpoints without qualification or release F01/F02 geometry.
+
+NAV11, DATA09, SCRIPT06 and LAY07 extend the migration specification to75 cases, all specified-not-executed. Older navigation-current screenshots remain evidence of their earlier deployment; the later aria-current source correction is neither ignored nor promoted to a served-path pass.

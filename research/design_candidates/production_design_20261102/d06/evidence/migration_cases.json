@@ -11,8 +11,8 @@
     },
     {
       "id": "NAV02",
-      "input": "CN exchange suffix, HK leading zero, share classes and unsupported listing",
-      "expected": "Preserve exact listing or show unresolved/unsupported state; a region change never relabels cached US data.",
+      "input": "CN suffix, HK leading zero, share classes, listing currency/venue and unsupported listing",
+      "expected": "Preserve exact listing or explicit unknown/unsupported state; region changes never relabel cached US data; use matching quote_currency and usable exact manifest venue, not statement currency or guessed region.",
       "owner": "D07/data",
       "status": "specified_not_executed"
     },
@@ -46,8 +46,8 @@
     },
     {
       "id": "NAV07",
-      "input": "Return to origin after research and pane changes",
-      "expected": "Restore row/scroll/selection only through supported origin-owner state; do not claim unimplemented fidelity.",
+      "input": "Return to origin after research, pane changes and company-search entry",
+      "expected": "Keep exact safe accepted origin href; restore row/scroll/selection only through supported origin-owner state; company search query/history does not replace Terminal originNav or prove unimplemented return fidelity.",
       "owner": "D07/Macro/D08/D22",
       "status": "specified_not_executed"
     },
@@ -130,9 +130,9 @@
     },
     {
       "id": "DATA04",
-      "input": "Cold load, 404/410, transport failure, stale refresh and superseded generation",
-      "expected": "Distinguish absence from unavailability; label saved copies; separate cache freshness from observation and paint adoption.",
-      "owner": "dataCache",
+      "input": "Cold load, positive static data and missing GET/HEAD, 404/410, transport failure, stale refresh and superseded generation",
+      "expected": "Public static files win; absent data fallback is no-store GET 404 JSON and bodyless HEAD 404, not a proxy; distinguish absence/unavailability without assigning Stage root cause; separate cache, observation and paint clocks.",
+      "owner": "dataCache/Next public-data",
       "status": "specified_not_executed"
     },
     {
@@ -172,9 +172,9 @@
     },
     {
       "id": "LAY02",
-      "input": "Rail pointer/keyboard resize and reset, focus/maximize, rotation and640/860 breakpoint crossings",
-      "expected": "Preserve renderer, active pane, logical range and drawings; persist final width; expose focusable separator with correct min/max/current values; no unsolicited sheet reopening.",
-      "owner": "Chart",
+      "input": "Rail pointer/keyboard resize and reset; focus/maximize, rotation, 640/860 crossings and requested/effective width",
+      "expected": "Preserve renderer, active pane, logical range and drawings; persist only deliberate requested-width changes, never automatic fit caps; restore the request when space returns; expose keyboard separator min/max/current; no unsolicited sheet reopening.",
+      "owner": "Chart/Terminal rail",
       "status": "specified_not_executed"
     },
     {
@@ -424,9 +424,9 @@
     },
     {
       "id": "A11Y01",
-      "input": "Keyboard open/close, modal versus dock, missing launcher and nested Escape",
-      "expected": "Restore visible focus without scroll jump; use a valid fallback and correct event ownership.",
-      "owner": "D06/F02",
+      "input": "Keyboard open/close, dock-to-inline removal, modal versus dock, missing/hidden launcher, settings transfer and nested Escape",
+      "expected": "Restore or transfer focus only while the closing/removed surface legitimately owns it; use visible enabled equivalents/fallbacks without scroll jumps; do not steal deliberate navigation/settings focus; trap only blocking sheets.",
+      "owner": "D06/F02/reader",
       "status": "specified_not_executed"
     },
     {
@@ -438,9 +438,9 @@
     },
     {
       "id": "A11Y03",
-      "input": "400% zoom/320CSSpx, evidence panel/table and embed viewport restrictions",
-      "expected": "Reflow surrounding content; contain essential 2D overflow; resolve or explicitly retain the embed zoom gap.",
-      "owner": "D06/embed",
+      "input": "400% zoom/320CSSpx, evidence panel/table, root Terminal and embed viewport restrictions",
+      "expected": "Reflow surrounding content and contain essential 2D overflow; resolve root/widget zoom restrictions with the actual host owner; viewport resizing alone is not zoom or mobile-device proof.",
+      "owner": "D06/Terminal/embed",
       "status": "specified_not_executed"
     },
     {
@@ -480,8 +480,8 @@
     },
     {
       "id": "LAY06",
-      "input": "Commit historical reader selection with pointer outside plot; enter/exit focus, then hover another bar and move away",
-      "expected": "Distinguish committed reader, hover sample and AI locked bar; preserve owner-defined pinned state and logical range; make disclosure reset deliberate; hover cannot silently bind an exact Ask.",
+      "input": "Select a historical bar with pointer outside plot; cross dock/inline/focus; then issue a valid crosshair event and Latest",
+      "expected": "Retain the current valid inspection cursor across presentation changes; crosshair and bar stepping share that cursor, Latest clears it; preserve valid disclosure/scroll without inventing a pin/store; AI locked state stays separate and exact Ask requires explicit binding.",
       "owner": "Chart/reader/D14",
       "status": "specified_not_executed"
     },
@@ -498,7 +498,35 @@
       "expected": "Attribute both identities, common anchor, adjustment and covered dates; qualify readout interval/numeric oracle with comparison owner; never fabricate zero-return observations from missing history.",
       "owner": "Terminal comparison/data",
       "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY07",
+      "input": "Measured dock fit at 639/640 price-plot px; 861/860 boundary, scrollbar occupancy, 300–520 requested rail and multipane charts",
+      "expected": "Apply the proposed minimum to active price-data area after real occupied axes/tools/gaps; cap effective rail without overwriting requested width, use inline when minimum cannot fit, avoid mode oscillation and preserve panes/open intent.",
+      "owner": "Chart/Terminal rail/F01/F02",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV11",
+      "input": "Company preview versus Open/Enter, typing invalidation, company_query absent/empty/duplicate/control/overlength, history and exact listing",
+      "expected": "Preview commits only on explicit owner action; validate one trimmed query up to160 chars with canonical symbol, retain empty versus absent, reject invalid context; preserve mmxCompanySearch and exact owner route without inventing a Terminal selection store.",
+      "owner": "D07/Search/Company",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA09",
+      "input": "Network/header cutoff, memory/IDB/SWR hit, legacy record, exact versus cloned payload, invalid/future observedAtMs and cache eviction",
+      "expected": "Return cutoff only for the exact cached parsed object with valid conservative bounds; unknown stays null; preserve ts TTL/eviction and ordinary cache behavior; never label acquisition cutoff as market observation, publication, paint generation or live quote.",
+      "owner": "Terminal dataCache/IDB",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT06",
+      "input": "Opt-in Pine reference request, qualified worker output, unsupported probe/invalid binding/clock/warning/size/cancellation and sync fallback",
+      "expected": "Keep ordinary runs unchanged; accept only qualified six-series retained bytes and terminal.pine.reference_export.v1 receipt, preserve supplied_pair_unverified_derivation and explicit unavailable reasons; distinguish host byte limits from receipt bar limit; no full-Pine/parity/model or UI-export claim.",
+      "owner": "Pine worker/runtime",
+      "status": "specified_not_executed"
     }
   ],
-  "baseline_observation_note": "Actual current-product subsets are recorded separately in live_coverage.json. No entire proposed migration case is marked executed or passed."
+  "baseline_observation_note": "Actual guest and later signed-in-presentation current-product subsets are recorded separately in live_coverage.json and responsive_observations.json. None is a complete proposed migration execution or acceptance."
 }

@@ -3,7 +3,7 @@
   "current_state": "APPROVED_CONTINUATION_USED",
   "current_action_needed_from_user": null,
   "user_authorization_verbatim": "yes approved, resume and continue getting this fully finished and done",
-  "scope": "Approved cloud-browser continuation for the assigned real beta workflows; no new account, save, public upload or production implementation",
+  "scope": "Approved assigned beta workflows through existing browser carriers; viewport and reversible reader state inspection only; no new account, save, public upload or production implementation",
   "observed_at_local_date": "2026-11-03",
   "timezone": "America/Chicago",
   "historical_rejection": {
@@ -16,7 +16,9 @@
     "effect": "origin navigation denied; no live page proof",
     "next_required": "Explicit user approval before further beta-origin browser access; no workaround or alternate carrier"
   },
-  "recovery": "User explicitly cleared fallback approval. Same D06 owner used approved cloud Chrome and retained baseline proof separately from future migration tests.",
+  "recovery": "User cleared browser continuation. Original approved cloud guest proof remains; the connected Chrome extension later worked and exposed its supported viewport capability. No repeat approval requested.",
   "live_audit": "../LIVE_BASELINE_AUDIT.md",
-  "served_release_attested": false
+  "served_release_attested": false,
+  "current_observation": "../RESPONSIVE_AND_STATE_AUDIT.md",
+  "viewport_capability": "available and used; override reset after inspection"
 }

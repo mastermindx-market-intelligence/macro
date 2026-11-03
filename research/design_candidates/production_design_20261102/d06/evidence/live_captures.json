@@ -636,5 +636,208 @@
     "device_pixel_ratio": 1,
     "bytes": 15424,
     "sha256": "2fe7259674588645f01e8d9123f7b9bd0e49bb41142e9432fe51a99d143ec7df"
+  },
+  {
+    "id": "LC30",
+    "path": "evidence/live/d06-responsive-1024-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "1024px dock leaves488px price plot with360px reader",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:48:36.391830+00:00",
+    "persisted_at_chicago": "2026-11-03T15:48:36.391830-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      1024,
+      768
+    ],
+    "viewport_css_px": [
+      1024,
+      768
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 114390,
+    "sha256": "600690b7ab92e1258fc7271f8ac1722655971c825d336ff47ce32738ba098b95",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC31",
+    "path": "evidence/live/d06-responsive-768-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "768px tablet inline context retains selected historical date",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:50:41.338879+00:00",
+    "persisted_at_chicago": "2026-11-03T15:50:41.338879-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      759,
+      1012
+    ],
+    "viewport_css_px": [
+      768,
+      1024
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 83599,
+    "sha256": "de208c1f053b6853b04c49188b205d4b1cd7647462c26655df44ea351ae17e57",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC32",
+    "path": "evidence/live/d06-responsive-390-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "390px phone inline reader and roller controls",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:50:41.339161+00:00",
+    "persisted_at_chicago": "2026-11-03T15:50:41.339161-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      381,
+      825
+    ],
+    "viewport_css_px": [
+      390,
+      844
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 46831,
+    "sha256": "4cda659a87c3d5c9137b71c03b30790994d2c303178831028eae68e9d16b3ae5",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC33",
+    "path": "evidence/live/d06-responsive-320-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "320px phone inline context after document scroll",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:52:50.580295+00:00",
+    "persisted_at_chicago": "2026-11-03T15:52:50.580295-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      311,
+      820
+    ],
+    "viewport_css_px": [
+      320,
+      844
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 36799,
+    "sha256": "5116ad3f6df8eb40d541778350a59c82c9d09eb88bf3537d3235bc6d91796619",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC34",
+    "path": "evidence/live/d06-responsive-320-focus-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "320px focused chart with bounded independent reader scroll",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:52:50.580472+00:00",
+    "persisted_at_chicago": "2026-11-03T15:52:50.580472-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      320,
+      844
+    ],
+    "viewport_css_px": [
+      320,
+      844
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 49665,
+    "sha256": "2ef3475d2b0f7becb4af7cfed7fe3cb6e7b44ce6ffe1fe3ce785a3ced2e02b99",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC35",
+    "path": "evidence/live/d06-responsive-861-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "861px docked boundary leaves326px price plot",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:53:08.882662+00:00",
+    "persisted_at_chicago": "2026-11-03T15:53:08.882662-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      861,
+      900
+    ],
+    "viewport_css_px": [
+      861,
+      900
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 109242,
+    "sha256": "be3cd43546931ea4be1bb0be84960c57441244b6b0c7a447bca62db1084c7feb",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
+  },
+  {
+    "id": "LC36",
+    "path": "evidence/live/d06-phone-analysis-hub-20261103.jpg",
+    "session_id": "d06-responsive-20261103",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "caption": "Phone Analysis hub with retained advanced tool entries",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T21:52:50.580015+00:00",
+    "persisted_at_chicago": "2026-11-03T15:52:50.580015-06:00",
+    "timestamp_semantics": "local raw-payload file persistence, not exact browser capture, source observation, build or release time",
+    "mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "pixel_dimensions": [
+      381,
+      825
+    ],
+    "viewport_css_px": [
+      390,
+      844
+    ],
+    "device_pixel_ratio": 1,
+    "viewport_equals_image_dimensions_assumed": false,
+    "bytes_edited": false,
+    "bytes": 38978,
+    "sha256": "ee133ccf5e52e7208036ef09033e83a55a42c17df9f83a0e5fc23a127fe925a8",
+    "access": "signed-in presentation; entitlement/backend authorization unverified",
+    "theme": "dark",
+    "language": "en"
   }
 ]

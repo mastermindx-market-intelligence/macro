@@ -120,3 +120,14 @@ The live Analysis→AAPL Terminal→Analysis round trip preserved the exact acce
 The malformed public slug `d06-invalid` violates the actual [ten-character lowercase base36 validator](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/snapshotSlug.ts) and returned404. This is a negative route observation, not positive storage/image/HEAD proof. Both developer beta URLs returned404 without any flag change. Runtime environment/flag disposition and the cause of exclusion were not independently attested; the bench-enabled branch was not exercised.
 
 The live external script token `ac3762717ad150fd4f18614afd78072115a7c80a` is recorded only as a deployment hint. No Git-to-served release mapping or Brain byte hash was established. Source API contracts and current baseline presentation remain separate evidence classes.
+
+## Current Terminal source delta — separately qualified
+
+Later protected master **2ded360882b9c721e690907ff363b553781fb920** was inspected without changing the original source pin above. Ten core chart/reader/Brain/origin blobs were unchanged; [SOURCE_DELTA_20261103.md](SOURCE_DELTA_20261103.md) specifies the changed contracts and immutable source links.
+
+- Company preview/query handoff remains D07/Search-owned. Exact company_query validation and mmxCompanySearch history do not replace Terminal originNav or establish chart/return fidelity. Currency/venue are listing evidence, not language or statement-currency guesses.
+- observedAtMs is an optional conservative acquisition cutoff for the exact parsed cache object. It remains separate from TTL/eviction ts, market observation, source publication and painted generation. Legacy/invalid/unrelated objects yield unknown, not freshness.
+- Existing public files precede the absent-file fallback. Missing GET returns no-store404 JSON; missing HEAD returns a bodyless404 with matching headers. This is no proxy and no diagnosis of Stage's earlier failure.
+- Pine's optional worker reference output carries qualified bytes and a terminal.pine.reference_export.v1 receipt or a reason it is unavailable. supplied_pair_unverified_derivation explicitly leaves normalization derivation unproved. Preserve the source runtime owner and ordinary runs; no new customer export control, full Pine, parity or financial-validation claim follows.
+
+The later browser deployment token equals this source SHA, but no independent bundle attestation or external Brain hash exists. Current viewport/state observations are separately recorded in [the responsive audit](RESPONSIVE_AND_STATE_AUDIT.md). Source changes, observed behavior and eventual acceptance remain distinct.

@@ -1,9 +1,10 @@
 {
   "artifact": "D06 documentation/evidence integrity checks",
-  "checked_at_utc": "2026-11-03T08:38:21.949919+00:00",
+  "checked_at_utc": "2026-11-03T22:12:12.367293+00:00",
+  "status": "pass",
   "checks": [
     {
-      "check": "retained_registry_counts_and_drawing_uniqueness",
+      "check": "retained_registry_counts_and_uniqueness",
       "status": "pass",
       "counts": {
         "drawing_tools": 99,
@@ -16,10 +17,10 @@
       }
     },
     {
-      "check": "capability_counts_and_human_ledger_parity",
+      "check": "capability_disposition_and_table_parity",
       "status": "pass",
       "existing": 76,
-      "counts": {
+      "dispositions": {
         "RETAIN": 40,
         "IMPROVE": 35,
         "RELOCATE": 0,
@@ -31,71 +32,96 @@
     {
       "check": "migration_case_identity_status_and_table_parity",
       "status": "pass",
-      "cases": 71,
-      "full_proposed_migration_cases_executed": 0
+      "cases": 75,
+      "full_cases_executed": 0,
+      "new_cases": [
+        "LAY07",
+        "NAV11",
+        "DATA09",
+        "SCRIPT06"
+      ]
     },
     {
-      "check": "assigned_route_crosswalk_and_bounded_live_coverage",
+      "check": "route_coverage_case_mapping_and_distinct_sessions",
       "status": "pass",
-      "canonical_families": 9,
-      "observation_groups": 16,
-      "equivalent_depth_claimed": false
+      "families": 9,
+      "observation_groups": 20,
+      "equal_depth_claimed": false
     },
     {
-      "check": "raw_paper_exports_and_structure_preserved",
+      "check": "paper_payloads_preserved_and_fresh_scoped_structure_correspondence",
       "status": "pass",
-      "captures": 16,
-      "structure_reads": 2,
-      "changed_prior_paper_artifacts": 0,
+      "raw_images": 16,
+      "structure_exports": 2,
+      "unchanged_prior_artifacts": 18,
+      "fresh_matching_depth3_summaries": 2,
       "after_designs": 0
     },
     {
-      "check": "raw_live_captures_mime_dimensions_sha256_and_copy_identity",
+      "check": "live_payload_mime_dimensions_hash_and_raw_identity",
       "status": "pass",
-      "captures": 29,
-      "viewport_css_px": [
-        1363,
-        936
-      ],
+      "raw_images": 36,
+      "prior_images_preserved": 29,
+      "new_payload_bytes_equal": 7,
       "edited_images": 0,
-      "responsive_pass_claimed": false
+      "viewport_equals_image_size_assumed": false
     },
     {
-      "check": "all_json_parse",
+      "check": "responsive_measurement_capture_mapping_cleanup_and_proof_limits",
       "status": "pass",
-      "files": 14
+      "measured_normal_points": 7,
+      "focused_reader_scroll_observed": true,
+      "full_responsive_or_a11y_pass_claimed": false
+    },
+    {
+      "check": "source_pin_correspondence_and_current_f01_action_scope",
+      "status": "pass",
+      "assignment_unchanged": true,
+      "core_terminal_blobs_unchanged": 10,
+      "f01_independent_correction_scope_qualified": true
+    },
+    {
+      "check": "acceptance_grant_approval_and_effect_separation",
+      "status": "pass",
+      "browser_permission_cleared": true,
+      "joint_v1_released": false,
+      "paper_mutations": 0,
+      "d06_rig": "draft",
+      "production_implementation": false
+    },
+    {
+      "check": "json_parse",
+      "status": "pass",
+      "files": 15
     },
     {
       "check": "relative_markdown_links",
       "status": "pass",
-      "resolved_local": 80,
-      "verified_programme_parent": [
+      "resolved": 110,
+      "programme_parent": [
         "../RE_AUDIT_CHECKLIST.md"
       ]
     },
     {
-      "check": "acceptance_and_approval_separation",
+      "check": "superseded_selection_and_proof_claims_removed",
       "status": "pass",
-      "browser_approval_cleared": true,
-      "joint_v1_released": false,
-      "d06_authoring_grant_invented": false,
-      "d06_rig": "draft"
+      "historical_observations_preserved": true
     },
     {
-      "check": "planned_d06_documentation_evidence_scope",
+      "check": "d06_documentation_evidence_scope_and_private_intermediate_exclusion",
       "status": "pass",
-      "files": 71,
+      "files": 81,
       "production_files": 0,
-      "scope": "research/design_candidates/production_design_20261102/d06/",
-      "remote_pr_diff_verification": "separate post-publication receipt"
+      "source_root": "research/design_candidates/production_design_20261102/d06/",
+      "remote_diff_readback": "separate publication receipt"
     }
   ],
-  "status": "pass",
   "limitations": [
     "No complete proposed migration case executed or passed",
-    "Actual browser coverage is bounded guest/fixed-viewport before-design evidence",
-    "No source-to-served release or external Brain asset attestation",
-    "No proposed-after Paper composition or D06 RIG approval",
-    "No authenticated data-policy, performance or model/backtest validation"
+    "Actual guest route and later signed-in-presentation viewport observations are bounded before-design evidence",
+    "No real touch, zoom, full responsive/theme/locale, screen-reader, contrast or after-design acceptance",
+    "No independent bundle attestation or external Brain byte hash",
+    "No proposed-after Paper composition, write admission or D06 RIG approval",
+    "No authenticated data-policy/save/race, performance or model/backtest validation"
   ]
 }

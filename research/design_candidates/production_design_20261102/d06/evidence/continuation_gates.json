@@ -1,9 +1,9 @@
 {
   "artifact": "D06 separately observed foundation and authoring gates",
-  "assembled_at_utc": "2026-11-03T08:34:56.362208+00:00",
+  "assembled_at_utc": "2026-11-03T22:06:54.270963+00:00",
   "f01": {
     "pr": 10645,
-    "sha": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+    "sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
     "draft": true,
     "merged": false,
     "version": "F01-F02-SHELL/1.0.0-candidate.3",
@@ -12,7 +12,12 @@
     "unresolved_operation": "F01-20261103-c4-state-8-v1",
     "joint_contract_blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
     "product_spec_blob": "63418f0ec69d02c8c3a1a8d55caa58688a85a4f5",
-    "return_blob": "432ed78fd85f5764538d27daa4ea70cd911b949b"
+    "return_blob": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1",
+    "prior_consumed_head": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+    "active_continuation": "Original atlas I/grid, Readme operation and dependent/shared effects remain held; independently safe corrections on F01-owned A/C/D/E/F/H may proceed through its original direct app under exact guards. This does not grant D06 admission or release jointv1.",
+    "effect_scope_commit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+    "effect_boundary_blob": "144ba3cc3069cd7940d2f41e224b2436035571f2",
+    "joint_contract_unchanged_from_prior": true
   },
   "f02": {
     "pr": 10630,
@@ -38,28 +43,38 @@
   },
   "authoring": {
     "d06_c4_account_app_target_write_admission": "NOT_ESTABLISHED",
-    "current_native_reads": "prior accepted reads retained; no redo",
+    "current_native_reads": "Fresh exact-file get_basic_info and depth3 summaries of1K9F-0/19IC-1; parsed summaries equal frozen exports, token hash55dd37b7; no foreground change or mutation",
     "file_wide_exclusive_lock_required": false,
     "original_c4_sequence_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6596509579",
-    "later_hold_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6598834570",
-    "latest_owner_census": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6598862718",
-    "latest_owner_census_at_utc": "2026-11-03T08:25:36Z",
-    "conclusion": "Current source/host progress and C2 proof do not establish this D06/C4 exact write admission. No Paper mutation attempted.",
-    "census_evidence_scope": "Separate installed Studio host lifecycle; not the connected direct native app runtime or permission. Direct native hold rests on original acceptance sequence and absent exact account/app/target admission."
+    "later_hold_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419",
+    "latest_owner_census": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6604289465",
+    "latest_owner_census_at_utc": "2026-11-03T12:53Z",
+    "conclusion": "Current native schema readiness and source merges do not establish D06/C4 exact write admission; original C1 terminal result and per-seat conditions remain held. No Paper prepare/edit attempted.",
+    "census_evidence_scope": "Separate installed Studio host lifecycle; not the connected direct native app runtime or permission. Direct native hold rests on original acceptance sequence and absent exact account/app/target admission.",
+    "latest_owner_census_updated_at_utc": "2026-11-03T19:23Z",
+    "time_precision": "minute precision",
+    "catalog_sha": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "native_read_correspondence": "responsive_observations.json"
   },
   "browser": {
     "approval": "explicitly cleared by user",
     "used": true,
-    "details": "browser_gate.json"
+    "details": "browser_gate.json",
+    "current_carrier": "Connected Chrome extension with supported viewport override; original cloud guest proof retained separately",
+    "current_user_approval_needed": false
   },
   "d06": {
     "pr": 10655,
     "branch": "design/d06-terminal-phase2a-20261103-c4",
-    "prepublication_head": "217477f80a405af56778563535e5314813897b49",
+    "prepublication_head": "61d6762cdd417b00aae879bd411a8bb20c50ff63",
     "draft": true,
     "formal_rig": "draft",
     "editable_after_designs": 0,
     "production_changes": 0,
-    "mission_complete": false
+    "mission_complete": false,
+    "migration_cases": 75,
+    "full_proposed_cases_executed": 0,
+    "raw_beta_captures": 36,
+    "raw_paper_captures": 16
   }
 }
