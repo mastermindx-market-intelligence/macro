@@ -14607,10 +14607,6 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
-      - "templates/_prophet_card.html.j2"
-      - "templates/_track_record_dlg.html.j2"
-      - "templates/_lens.html.j2"
-      - "templates/sector_central_china.html.j2"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -14648,10 +14644,6 @@ jobs:
       - "site/factordata/china_standouts.json"
       - "tests/test_china_standout_track.py"
       - "tests/test_cn_board_lane_gate.py"
-      - "tests/test_china_prophet_shadow.py"
-      - "tests/test_cn_board_unified_grid.py"
-      - "templates/_cn_prophet_peer_context.html.j2"
-      - "templates/china.html.j2"
       - "tests/test_cn_entry_price_integrity.py"
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
@@ -14667,15 +14659,13 @@ jobs:
         # (exit 2) — locally invisible because dev envs carry it, and the sibling jobs that
         # import the builder (e.g. unrun-picks-boards) get it transitively via jinja2. With
         # it added, every suite in this job passes in a from-scratch minimal venv.
-        run: pip install pytest pandas numpy pyarrow pyyaml markupsafe jinja2
+        run: pip install pytest pandas numpy pyarrow pyyaml markupsafe
       - name: SA-W2 CN standout audit tests
         run: python -m pytest tests/test_cn_standout_audit.py tests/test_china_standout_track.py -v -q
       - name: CN entry-price integrity (corrupt-bar gate, PIT latch, fail-closed lane — PR 5000)
         run: python -m pytest tests/test_cn_entry_price_integrity.py -q
       - name: CN board-append lane gate (fail-closed CN_LANE — board/ripening/audit/event-latch)
         run: python -m pytest tests/test_cn_board_lane_gate.py -q
-      - name: A-share Prophet peer participation and bilingual disclosure
-        run: python -m pytest tests/test_china_prophet_shadow.py tests/test_cn_board_unified_grid.py -k peer -q
 
   ci-control-plane-contracts:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -34360,6 +34350,13 @@ jobs:
       - "engine/prophet_live/r2io.py"
       - "scripts/build_cn_live_pack.py"
       - "tests/test_cn_live_pack_archive.py"
+      - "templates/china.html.j2"
+      - "templates/_track_record_dlg.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/_cn_prophet_peer_context.html.j2"
+      - "templates/sector_central_china.html.j2"
+      - "tests/test_china_prophet_shadow.py"
+      - "tests/test_cn_board_unified_grid.py"
       - "site/china_intel/analogs.json"
       - "site/chinaaltdata/by_ticker.json"
       - "site/chinanews/by_ticker.json"
@@ -34965,6 +34962,8 @@ jobs:
         run: python -m pytest tests/test_us_candidate_episode_recorded_at_clock.py -q
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
+      - name: A-share Prophet peer participation and bilingual disclosure
+        run: python -m pytest tests/test_china_prophet_shadow.py tests/test_cn_board_unified_grid.py -k peer -q
 
       # ITP-ES wave 1: deterministic page builder contract.
       - name: expectation surface page builder contract (ITP-ES wave 1)
