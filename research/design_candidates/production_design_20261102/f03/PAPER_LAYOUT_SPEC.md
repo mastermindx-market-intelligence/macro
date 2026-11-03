@@ -1,6 +1,6 @@
 # F03 — editable Paper layout and annotation specification
 
-**Specification complete; composition not applied.** P00 qualification and exact current-target overlap checks are prerequisites to writing this material into Paper. The source HTML and this specification do not substitute for an editable Paper composition or screenshot acceptance.
+**Specification complete; first editable directory composition applied and screenshot-observed; full composition/review incomplete.** The original `5G0X-2` board now contains 27 product-family entries and four Options slices with preserved identity (see `paper/native-progress.json`). Its direct candidate/contract/status discovery, lineage/coverage boards, responsive specimens and independent acceptance remain open. Source HTML alone never substitutes for an editable and verified Paper experience.
 
 ## Existing anchors and intended content
 
