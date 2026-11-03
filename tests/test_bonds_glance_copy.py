@@ -315,7 +315,10 @@ def test_sovereign_us_source_uses_the_existing_fred_alias(monkeypatch):
 
     raw = pd.Series([4.94], index=pd.to_datetime(["2026-10-30"]))
     monkeypatch.setattr(ib, "_series", lambda spec, field, frame: raw if field == "y10" else None)
-    frame = pd.DataFrame(index=pd.to_datetime(["2026-10-30"]))
+    from engine import yield_momentum as origin_owner
+    frame = pd.DataFrame({"us10y": raw})
+    frame.attrs[origin_owner.ORIGIN_ATTR] = {"us10y": origin_owner.capture_rate_observations(
+        raw, frame.us10y, source_id="DGS10", source_column="us10y")}
     row = ib._country_row(next(s for s in ib.ROSTER if s["code"] == "US"), frame, 4.94)
     assert row["sources"][0]["source_url"] == "https://fred.stlouisfed.org/series/DGS10"
     assert row["observed_as_of"] == "2026-10-30" and row["stale"] is False
@@ -376,3 +379,114 @@ def test_sovereign_summary_does_not_relabel_daily_japan_as_oecd_monthly(monkeypa
     import re
     country_cell = re.search(r'<td class="cty">.*?</td>', html, re.S).group(0)
     assert "OECD monthly series" not in country_cell and "OECD月度序列" not in country_cell
+
+
+def _native_rate_frame(monkeypatch, cutoff="2026-10-16", *, override=False):
+    """Exercise actual inputs.put/capture; synthetic values control only the clock case."""
+    import warnings
+    import numpy as np
+    import pandas as pd
+    from engine import inputs
+
+    idx = pd.bdate_range("2026-09-01", "2026-10-30")
+    source_index = pd.bdate_range(idx[0], cutoff)
+    raw = pd.Series(np.linspace(4.0, 5.0, len(source_index)), index=source_index)
+    y2 = pd.Series(np.linspace(3.0, 4.0, len(idx) - 1), index=idx[:-1])
+    real = pd.Series(2.0, index=idx)
+    tickers = {t for group in inputs.config.load()["yahoo"]["tickers"].values() for t in group}
+    closes = pd.DataFrame({t: 100.0 for t in tickers}, index=idx)
+    monkeypatch.setattr(inputs, "yahoo_closes", lambda: closes)
+    monkeypatch.setattr(inputs, "_fred", lambda aliases: {"us10y": raw, "us2y": y2, "us10y_real": real})
+    monkeypatch.setattr(inputs.store, "read", lambda *args, **kwargs: None)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", pd.errors.PerformanceWarning)
+        frame = inputs.build_features(overrides={"us10y": raw} if override else None)
+    return frame, raw
+
+
+def _us_sovereign(frame):
+    from engine import intl_bonds as ib
+    return ib._country_row(next(s for s in ib.ROSTER if s["code"] == "US"), frame, None)
+
+
+def test_sovereign_frame_uses_actual_put_receipt_before_both_fill_layers(monkeypatch):
+    from engine import yield_momentum as owner
+
+    frame, raw = _native_rate_frame(monkeypatch)
+    assert str(raw.index[-1].date()) == "2026-10-16"
+    assert str(frame.us10y.dropna().index[-1].date()) == "2026-10-23"
+    assert str(frame.index[-1].date()) == "2026-10-30"
+    receipt = frame.attrs[owner.ORIGIN_ATTR]["us10y"]
+    assert receipt["source_id"] == "DGS10" and receipt["source_basis"] == "captured_source_rows"
+    row = _us_sovereign(frame)
+    assert row["observed_as_of"] == "2026-10-16" and row["stale"] is True
+    assert row["observation_qualified"] is True and row["y10"] == 5.0
+    assert row["sources"][0]["observed_as_of"] == "2026-10-16"
+    assert row["sources"][0]["source_url"] == "https://fred.stlouisfed.org/series/DGS10"
+    assert row["sources"][1]["observed_as_of"] == "2026-10-29"  # independent 2y observation
+    real = next(s for s in row["sources"] if s["label_en"] == "10y real yield")
+    assert real["observed_as_of"] is None and real["source_url"] is None  # not captured by this owner
+    assert row["real_10y"] == 2.0
+
+
+def test_sovereign_frame_fresh_receipt_preserves_measured_date(monkeypatch):
+    frame, _ = _native_rate_frame(monkeypatch, cutoff="2026-10-30")
+    row = _us_sovereign(frame)
+    assert row["observed_as_of"] == "2026-10-30" and row["stale"] is False
+    assert row["observation_qualified"] is True
+
+
+def test_sovereign_frame_missing_receipt_is_unknown_not_fresh_or_stale(monkeypatch):
+    from engine import yield_momentum as owner
+
+    frame, _ = _native_rate_frame(monkeypatch)
+    frame.attrs.pop(owner.ORIGIN_ATTR)
+    row = _us_sovereign(frame)
+    assert row["y10"] == 5.0 and row["observed_as_of"] is None
+    assert row["observation_qualified"] is False and row["stale"] is False
+    assert row["sources"][0]["source_url"] is None
+    intl = {"global": {"direction": "stable", "avg_10y": 5.0, "avg_10y_chg_63d_bp": 0},
+            "us_vs_world": {"us_premium_bp": None}, "countries": [row], "em": None,
+            "verdict_en": "Controlled fixture", "verdict_zh": "受控测试"}
+    html = _render_sovereign_fragment(intl)
+    assert "Observation date unavailable" in html and "观测日期未知" in html
+    assert "2026-10-23" not in html and "2026-10-30" not in html
+    assert "Observed" not in html  # unknown clock is not prefixed as a measured observation
+
+
+def test_sovereign_frame_wrong_source_or_alignment_cannot_qualify(monkeypatch):
+    import copy
+    from engine import yield_momentum as owner
+
+    frame, _ = _native_rate_frame(monkeypatch)
+    wrong_id = frame.copy(deep=True)
+    wrong_id.attrs = copy.deepcopy(frame.attrs)
+    wrong_id.attrs[owner.ORIGIN_ATTR]["us10y"]["source_id"] = "DGS2"
+    row = _us_sovereign(wrong_id)
+    assert row["observed_as_of"] is None and row["observation_qualified"] is False
+    edited = frame.copy(deep=True)
+    edited.loc[edited.us10y.last_valid_index(), "us10y"] += 0.25
+    row = _us_sovereign(edited)
+    assert row["y10"] == 5.25 and row["observed_as_of"] is None
+    assert row["observation_qualified"] is False
+    import numpy as np
+    malformed = frame.copy(deep=True)
+    malformed.attrs = copy.deepcopy(frame.attrs)
+    malformed.attrs[owner.ORIGIN_ATTR]["us10y"]["source_column"] = np.array(["us10y", "us2y"])
+    row = _us_sovereign(malformed)
+    assert row["y10"] == 5.0 and row["observed_as_of"] is None
+    assert row["observation_qualified"] is False
+
+
+def test_sovereign_frame_future_origin_and_caller_override_are_unqualified(monkeypatch):
+    from engine import yield_momentum as owner
+
+    frame, _ = _native_rate_frame(monkeypatch)
+    pos = frame.index.get_loc(frame.us10y.last_valid_index())
+    frame.attrs[owner.ORIGIN_ATTR]["us10y"]["origin_dates"][pos] = "2026-11-04"
+    assert _us_sovereign(frame)["observed_as_of"] is None
+    overridden, _ = _native_rate_frame(monkeypatch, cutoff="2026-10-30", override=True)
+    assert overridden.attrs[owner.ORIGIN_ATTR]["us10y"]["source_basis"] == "caller_override"
+    row = _us_sovereign(overridden)
+    assert row["observed_as_of"] is None and row["observation_qualified"] is False
+    assert row["sources"][0]["source_url"] is None

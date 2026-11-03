@@ -1,0 +1,10 @@
+{
+  "scope": "Existing retained7-country numeric/scoring/narrative parity preserved after binding native frame receipts; only original JP stale changes. Unsupported secondary frame clock now explicitly unknown additive metadata.",
+  "original_field_differences": [
+    {
+      "path": "/countries/2/stale",
+      "before": false,
+      "after": true
+    }
+  ]
+}
