@@ -1151,17 +1151,95 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     return grid
 
 
+_TITLE_FOLD_DASH = re.compile("[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]")
+_TITLE_FOLD_QUOTE = re.compile("[\u2018\u2019\u02bc\u2032]")
+# What may follow a folded title in a text node that arms the fold pass: an
+# optional plural "s" (never after a title that already ends in "s"), then
+# only these whole parenthesised qualifiers -- "(unaudited)", "(loss)", a
+# footnote marker 1-99, or a unit caption whose "except" (or "except for")
+# clause names only share, per-share, earnings-per-share, par-value,
+# stated-value, unit, ratio or percentage amounts -- shares may be counted
+# "in thousands" or "in millions" -- optionally closed by ", unaudited", such
+# as "(in thousands, except share data)" or "(in millions, except per share
+# data, unaudited)".  A sentence that merely names the statement ("We have
+# audited the accompanying consolidated balance sheets") never arms it, and
+# neither does an entity or continuation qualifier in the arming node
+# ("(parent company only)", "(guarantor subsidiaries)", "(continued)"):
+# those name a different table than the one the title declares.  A
+# continuation marker printed in a neighbouring node before the capture
+# holds any fact drops that capture (``_TITLE_FOLD_CONTINUED_RE``); an
+# entity qualifier printed in a neighbouring node is invisible here, and the
+# captured table's own contexts decide that case (``context_dimensions``).
+_TITLE_FOLD_EXCEPT_ITEM = (
+    r"(?:(?:earnings\s+)?per[\s-]share|shares?(?:\s+in\s+(?:thousands|millions))?"
+    r"|number\s+of\s+shares|par\s+value|stated\s+value|per[\s-]unit|units?|ratios?"
+    r"|percentages?)(?:\s+(?:data|amounts?|information|values?))?"
+)
+_TITLE_FOLD_UNIT_CAPTION = (
+    r"(?:(?:dollars|amounts)\s+in\s+|in\s+)?(?:millions|thousands|billions)(?:\s+of\s+dollars)?"
+    r"(?:(?:,\s*|\s+)except\s+(?:for\s+)?" + _TITLE_FOLD_EXCEPT_ITEM
+    + r"(?:(?:\s*,\s*and\s+|\s*,\s*|\s+and\s+)" + _TITLE_FOLD_EXCEPT_ITEM + r")*)?"
+    r"(?:\s*,\s*unaudited)?"
+)
+_TITLE_FOLD_QUALIFIER_RE = re.compile(
+    r"^s?(?:\s*\((?:unaudited|loss|[1-9][0-9]?|" + _TITLE_FOLD_UNIT_CAPTION + r")\))*$"
+)
+# A folded continuation marker, after any leading title is removed:
+# "(continued)", "continued", "- continued", ", continued:", the abbreviated
+# "(cont'd)", "(cont'd.)", "(contd.)", "(con't)", "cont." and "cont",
+# "continued from previous page" or "continued from page 45", or one after
+# whole parenthesised qualifiers ("(in millions) (continued)").  It never
+# matches "discontinued", "contingencies" or "(continued on next page)".
+_TITLE_FOLD_CONTINUED_RE = re.compile(
+    r"^s?(?:\s*\([^()]*\))*\s*[-,]?\s*\(?(?:continued|cont(?:'?d\.?|\.)?|con't\.?)"
+    r"(?:\s+from\s+(?:(?:the\s+)?(?:previous|prior|preceding)\s+page|page\s+[0-9]{1,4}))?"
+    r"\)?[.:]?$"
+)
+
+
+def _title_fold(text: str) -> str:
+    """Case, dash and quote fold for the second displayed-title pass."""
+    folded = re.sub(r"\s+", " ", text).strip().casefold()
+    folded = _TITLE_FOLD_QUOTE.sub("'", _TITLE_FOLD_DASH.sub("-", folded))
+    return re.sub(r"\s*-\s*", "-", folded)
+
+
+def _title_fold_suffix_arms(folded_title: str, suffix: str) -> bool:
+    """Whether ``suffix``, printed after a folded title, may arm the fold pass."""
+    if folded_title.endswith("s") and suffix.startswith("s"):
+        return False
+    return _TITLE_FOLD_QUALIFIER_RE.match(suffix) is not None
+
+
 class _StatementTableParser(HTMLParser):
     """Visible HTML table for one captured primary statement title.
 
     ``title`` is a single string (matched exactly as written -- the byte-pinned
     golden AAPL path) or a list of candidates tried in declared order
     case-insensitively over whitespace-normalised text; the first candidate
-    present in the filing locates the table.
+    present in the filing locates the table.  A single string is matched
+    exactly as written, and ``parse_displayed_primary_table`` retries a single
+    string once with ``fold=True`` (``_title_fold``: case, dashes, quotes)
+    when the exact search finds no table.  On that fold pass, when
+    ``context_dimensions`` maps the filing's context ids to their dimension
+    signatures, a capture is kept only if a strict majority of its value
+    facts sit in undimensioned contexts or it is an entity-grouped face
+    (``_capture_is_consolidated``), and a continuation marker seen before
+    the capture holds any fact drops that capture.
     """
 
-    def __init__(self, title: str | list[str]) -> None:
+    def __init__(
+        self,
+        title: str | list[str],
+        *,
+        fold: bool = False,
+        context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+    ) -> None:
         super().__init__(convert_charrefs=True)
+        self._fold = fold
+        self._context_dimensions = (
+            None if context_dimensions is None else dict(context_dimensions)
+        )
         if isinstance(title, str):
             self._titles: tuple[str, ...] = (title,)
             self._folded_titles: tuple[str, ...] | None = None
@@ -1193,9 +1271,23 @@ class _StatementTableParser(HTMLParser):
 
         After a factless capture has been discarded, a title only re-arms the
         capture when ``text`` is the title itself: a narrative sentence or a
-        note row that merely names the statement no longer qualifies.
+        note row that merely names the statement no longer qualifies.  The
+        fold pass never arms on containment, before or after a discard:
+        ``text`` must fold to the title, optionally followed by a plural "s"
+        and whole parenthesised qualifiers (``_TITLE_FOLD_QUALIFIER_RE``).
         """
         if self._folded_titles is None:
+            if self._fold:
+                folded_text = _title_fold(text)
+                for candidate in self._titles:
+                    folded_candidate = _title_fold(candidate)
+                    if not folded_candidate:
+                        continue
+                    if folded_text.startswith(folded_candidate) and _title_fold_suffix_arms(
+                        folded_candidate, folded_text[len(folded_candidate):]
+                    ):
+                        return candidate
+                return None
             stripped = re.sub(r"\s+", " ", text).strip()
             for candidate in self._titles:
                 if not candidate:
@@ -1241,6 +1333,28 @@ class _StatementTableParser(HTMLParser):
                 return hit
         return None
 
+    def _continued(self, text: str) -> bool:
+        """Whether ``text`` folds to a continuation marker, with or without
+        a leading declared title ("(Continued)", "Balance Sheets - Continued")."""
+        folded = _title_fold(text)
+        for candidate in self._titles:
+            folded_candidate = _title_fold(candidate)
+            if folded_candidate and folded.startswith(folded_candidate):
+                folded = folded[len(folded_candidate):]
+                break
+        return _TITLE_FOLD_CONTINUED_RE.match(folded.strip()) is not None
+
+    def _continuation_before_facts(self, texts: list[str]) -> bool:
+        # Fold pass only: a "(Continued)" marker printed with or next to the
+        # title before the capture holds any fact marks a later part of a
+        # statement whose first part did not arm the fold.  Serving it would
+        # serve that part as the whole statement, so the capture is dropped
+        # like a factless one; once facts are captured a marker changes
+        # nothing.
+        if not self._fold or self._capture_has_facts():
+            return False
+        return any(self._continued(text) for text in texts)
+
     def _finalize_grid(self) -> None:
         if self._grid_finalized:
             return
@@ -1250,10 +1364,85 @@ class _StatementTableParser(HTMLParser):
     def _capture_has_facts(self) -> bool:
         return any(cell.get("facts") for cells in self.rows for cell in cells)
 
+    def _capture_is_consolidated(self) -> bool:
+        # Fold pass only: an entity qualifier printed in a node next to the
+        # title (a "(Parent Company Only)" paragraph, a "GUARANTOR
+        # SUBSIDIARIES" row, a heading above it) is invisible to the title
+        # match.  Such a table is tagged on an entity axis, so its facts sit
+        # mostly in dimensioned contexts, while the consolidated statement's
+        # facts sit mostly in undimensioned ones.  An entity-grouped
+        # consolidated face (manufacturing-group and finance-group lines on
+        # one legal-entity axis, consolidated totals undimensioned) is kept
+        # too: it carries undimensioned facts, every row's served facts sit
+        # on a single signature, every dimensioned signature is one member of
+        # the same axis, and two or more members appear.  A row's served facts
+        # are the ones the line builder reads: those in cells after its label
+        # cell, so a label that prints an inline amount ("less accumulated
+        # depreciation of $X") does not split the row.  A consolidating schedule
+        # mixes members within a row and a parent-only table names one
+        # member, so both stay dropped.  A fact whose context has no known
+        # signature only counts against the majority.  The exact pass and a
+        # caller that supplies no contexts are unchanged.  The check reads the
+        # grid the line builder reads, so a label carried down by rowspan is
+        # its row's label; a layout that cannot expand is judged on its raw
+        # rows, and _finalize_grid refuses it as before.
+        if not self._fold or self._context_dimensions is None:
+            return True
+        try:
+            rows = _expand_displayed_statement_grid(self.rows)
+        except StatementGraphError:
+            rows = self.rows
+        total = plain = 0
+        entity_grouped = True
+        members: set[tuple[str, str]] = set()
+        for cells in rows:
+            row_signatures: set[frozenset[tuple[str, str]] | None] = set()
+            label_cell = next(
+                (cell for cell in cells if cell.get("text") and cell.get("text") != "$"),
+                None,
+            )
+            seen_label = False
+            for cell in cells:
+                served = seen_label and cell.get("text") != "$"
+                if cell is label_cell:
+                    seen_label = True
+                for fact in cell.get("facts") or []:
+                    total += 1
+                    signature = self._context_dimensions.get(fact.get("context_ref"))
+                    if served:
+                        row_signatures.add(signature)
+                    if signature is None:
+                        entity_grouped = False
+                    elif not signature:
+                        plain += 1
+                    elif len(signature) == 1:
+                        members |= signature
+                    else:
+                        entity_grouped = False
+            if len(row_signatures) > 1:
+                entity_grouped = False
+        if 2 * plain > total:
+            return True
+        return (
+            entity_grouped
+            and plain > 0
+            and len(members) >= 2
+            and len({axis for axis, _ in members}) == 1
+        )
+
+    def _close_capture(self) -> None:
+        if self._capture_has_facts() and self._capture_is_consolidated():
+            self._ended = True
+            self._finalize_grid()
+        else:
+            self._discard_factless_capture()
+
     def _discard_factless_capture(self) -> None:
         # A capture with zero inline-XBRL numeric facts is not the statement
-        # (a table of contents naming it carries none): drop it and keep
-        # parsing, so the next title hit starts a fresh capture.
+        # (a table of contents naming it carries none), and neither is a fold
+        # capture that fails ``_capture_is_consolidated`` or that a
+        # continuation marker precedes: drop it and keep parsing, so the next
+        # title hit starts a fresh capture.
         self.rows = []
         self.chrome_row_indices = set()
         self._capturing = False
@@ -1270,6 +1459,11 @@ class _StatementTableParser(HTMLParser):
         if self._hidden:
             return
         if tag == "table":
+            if not self._table_depth:
+                # A row left open before an outermost table belongs to no row;
+                # dropping it keeps handle_data from reading its facts.
+                self._in_row = False
+                self._row_cells = []
             self._table_depth += 1
             return
         if tag == "tr":
@@ -1336,6 +1530,10 @@ class _StatementTableParser(HTMLParser):
             if self._row_cells:
                 joined = " ".join(cell["text"] for cell in self._row_cells)
                 hit = self._row_title_hit(self._row_cells)
+                if hit is not None and self._continuation_before_facts(
+                    [cell["text"] for cell in self._row_cells]
+                ):
+                    hit = None
                 if hit is not None:
                     self._seen_title = True
                     self._capturing = True
@@ -1353,23 +1551,27 @@ class _StatementTableParser(HTMLParser):
                     self._capturing = True
                     if "see accompanying notes" in joined.lower():
                         self._row_cells = []
-                        if self._capture_has_facts():
-                            self._ended = True
-                            self._finalize_grid()
-                        else:
-                            self._discard_factless_capture()
+                        self._close_capture()
+                        return
+                    if not any(cell.get("facts") for cell in self._row_cells) and (
+                        self._continuation_before_facts(
+                            [cell["text"] for cell in self._row_cells]
+                        )
+                    ):
+                        self._row_cells = []
+                        self._discard_factless_capture()
                         return
                     self.rows.append(self._row_cells)
             self._row_cells = []
             return
         if tag == "table" and self._table_depth:
             self._table_depth -= 1
+            if not self._table_depth:
+                # A row whose </tr> never came ends with its outermost table.
+                self._in_row = False
+                self._row_cells = []
             if self._capturing and self._table_depth == 0:
-                if self._capture_has_facts():
-                    self._ended = True
-                    self._finalize_grid()
-                else:
-                    self._discard_factless_capture()
+                self._close_capture()
         if self._ix_open is not None and _is_ix_numeric(tag):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
@@ -1388,13 +1590,29 @@ class _StatementTableParser(HTMLParser):
             self._cell_text.append(data)
         elif self._titles and self._title_hit(data) is not None:
             self._seen_title = True
+        elif (
+            (self._seen_title or self._capturing)
+            and not any(cell.get("facts") for cell in self._row_cells)
+            and self._continuation_before_facts([data])
+        ):
+            self._discard_factless_capture()
 
 
-def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[str, Any]:
+def parse_displayed_primary_table(
+    html: str,
+    *,
+    title: str | list[str],
+    context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+) -> dict[str, Any]:
     """Source-backed composition of one captured primary filing table.
 
     ``title`` follows ``_StatementTableParser``: a single string matched exactly
-    as written, or a list of candidates tried in order. Columns come from a
+    as written -- and retried once through ``_title_fold`` (case, dashes,
+    quotes) when the exact search finds no table -- or a list of candidates
+    tried in order.  ``context_dimensions`` (each filing context id's
+    dimension signature, from ``_context_dimension_sets``) is used only by that
+    fold retry, which keeps a captured table only when most of its value facts
+    are undimensioned or it is an entity-grouped face. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
     banner over a bare-year row (fiscal-year statements) composes the
     columns and the output carries ``"columns_source": "composed_year_row"``;
@@ -1416,6 +1634,13 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser.feed(html)
     parser.close()
     parser._finalize_grid()
+    if not parser.rows and isinstance(title, str):
+        parser = _StatementTableParser(
+            title, fold=True, context_dimensions=context_dimensions
+        )
+        parser.feed(html)
+        parser.close()
+        parser._finalize_grid()
     if not parser.rows:
         raise StatementGraphError(
             f"displayed statement table is absent: {title_label}",
@@ -1543,6 +1768,34 @@ def resolve_label(labels: Mapping[tuple[str, str], str], concept: str, preferred
 def _undimensioned(context: Mapping[str, Any]) -> bool:
     dims = context.get("dimensions") or []
     return isinstance(dims, list) and len(dims) == 0
+
+
+def _context_dimension_sets(
+    contexts: Mapping[str, Any],
+) -> dict[str, frozenset[tuple[str, str]]]:
+    """Each context id's dimension signature: its (axis, member) pairs, a
+    typed dimension contributing its typed value, empty when undimensioned.
+    A context whose dimensions are not a list of mappings is left out, so
+    its facts carry no known signature."""
+    signatures: dict[str, frozenset[tuple[str, str]]] = {}
+    for context_id, context in contexts.items():
+        if not isinstance(context, Mapping):
+            continue
+        dims = context.get("dimensions") or []
+        if not isinstance(dims, list) or not all(isinstance(dim, Mapping) for dim in dims):
+            continue
+        signatures[context_id] = frozenset(
+            (
+                str(dim.get("dimension_qname")),
+                str(
+                    dim.get("member_qname")
+                    if dim.get("member_qname") is not None
+                    else dim.get("typed_value_xml")
+                ),
+            )
+            for dim in dims
+        )
+    return signatures
 
 
 def _unit_label(units: Mapping[str, Any], unit_ref: str | None) -> str | None:
@@ -2264,7 +2517,11 @@ def reconstruct_statement(
         if item.get("name") == primary and item.get("state") == "stored"
     )
     html = package.members[primary].decode("utf-8")
-    displayed = parse_displayed_primary_table(html, title=title_search)
+    displayed = parse_displayed_primary_table(
+        html,
+        title=title_search,
+        context_dimensions=_context_dimension_sets(contexts),
+    )
     table_facts: list[dict[str, Any]] = []
     for spec in displayed["rows"]:
         for item in spec["value_facts"]:
