@@ -21,3 +21,11 @@ The first-pass findings were committed unchanged at `71c5e0c7a59a15bf7dced545908
 Candidate 2's 53-file repair set froze at 02:33:00 UTC and was committed at `1253a647d193e1eacd1eb6f523a7a031529d2150`. Set SHA256 is `6c1f8ba6937c620a306644764d69d7adef5672d27f6c512a080dcb35063f9ca3`. Both critics independently validated all file lengths/hashes and recomputed the aggregate. Canonical aggregate encoding is UTF-8 of the lexically sorted relative-path + NUL + lowercase SHA256 + newline for each manifest entry; the manifest excludes itself.
 
 The Taste Critic froze its separate repair pass at 02:39:28 UTC, SHA256 `8bf57d9891d6f38aba45a3d6f840cfbd1e5211d92fcb633f432879d25671b3fd`, PASS_WITH_CONDITIONS for the bounded static reference. Original VTC-001–006 are resolved in static evidence; new minor VTC-007 requires the mobile overflow hint before the rows. That report remains unchanged. A separately frozen narrow correction and scoped follow-up will carry this remaining condition.
+
+The Product Critic froze its candidate 2 repair report at 02:46:30 UTC, SHA256 `524c34bdac1d21a881706c8cb82187a884a49a927c55476ff17330982d6802fc`: eight original defects resolved in source/static evidence, PRC-007 open major integration gap, new minor PRC-010 density-token defect. Both candidate 2 repair reports were frozen before their two new minor findings were edited.
+
+The narrow follow-up set froze at 02:48:47 UTC and was committed at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`. Its 55-member set hash is `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`.
+
+Taste final follow-up froze at 02:51:50 UTC, report SHA256 `feb021b733d8350a09bb9b987b16c0eed4621f86bda33004a91218c3db47701c`: VTC-007 resolved, bounded visual PASS_WITH_CONDITIONS retained. Product final follow-up froze at 02:52:53 UTC, report SHA256 `107e8c69940215809668275c9830409c711b5b764e9cc6e6742e4c0e9939ba69`: PRC-010 resolved in source policy, adoption BLOCK retained for PRC-007 and required qualification. Both independently validated all 55 members and the aggregate. All earlier reports remained unchanged.
+
+Root's final report, return/index and PR updates add review disposition and persistence records; they do not alter any member of the final 55-file reviewed source/static/contract set.

@@ -8,7 +8,7 @@ Status vocabulary for delivery: NOT_STARTED, IN_PROGRESS, PARTIAL, BLOCKED_RETUR
 | --- | --- | --- | --- | --- | --- |
 | P00 | Restore the qualified Paper writing and organization path | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | F01 | Shared shell, navigation and investor information architecture | NOT_STARTED | — | not submitted | user delivery / assigned session |
-| F02 | Design system and reusable product patterns | PARTIAL | [Source, specimens and exact gates](f02/README.md); Paper NOT_APPLIED_TO_PAPER | draft; no approval receipt | P00 writer; F01 joint contract; F02 editable/interaction proof; QA01 review |
+| F02 | Design system and reusable product patterns | PARTIAL | [Exact return](f02/RETURN_F02.md); [designs/specs](f02/README.md); [review history](f02/reviews/REVIEW_REPORT.md); Paper NOT_APPLIED_TO_PAPER | draft; no formal approval receipt | P00 writer; F01 joint contract; F02/QA01 interaction/Paper proof; named domain integration owners |
 | F03 | Paper organization, coverage and design integration | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | D01 | Today and personal market overview | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | D02 | Macro regimes, breadth, risk and market events | NOT_STARTED | — | not submitted | user delivery / assigned session |

@@ -27,7 +27,9 @@ Candidate 2 is frozen at `1253a647d193e1eacd1eb6f523a7a031529d2150`, with 53 rev
 
 The repair separates read/access/save state; preserves stale/partial warnings across saving; records exact evidence identity and separate Options observation/expiry context; resolves retained evidence triggers after rerender and requests nearest visibility; preserves English article language metadata; labels absolute dividend change; moves Macro/Options tables before secondary charts; restores Company historical depth; strengthens row legibility/selection; and replaces implementation-oriented state copy with clear outcomes. Architecture consultation additionally caught and closed incorrect editorial overview mapping, source details exposing loaded fixture values in unavailable states, an unsupported near-ask label, inaccurate sort restoration copy, and English instrumentation metadata.
 
-Exact independent repair dispositions and remaining critical tasks are in `reviews/REVIEW_REPORT.md` and each unmodified critic report. Native reviews are advisory and are not admitted Opus RIG receipts or a design-authority verdict.
+The narrow follow-up is frozen at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, 55 members, set SHA256 `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`. It fixes Options density-token wiring and places the mobile scroll cue before the first row. All prior source/review freezes remain unchanged.
+
+Exact independent repair dispositions and remaining critical tasks are in `reviews/REVIEW_REPORT.md` and each unmodified critic report. Native reviews are advisory and are not admitted Opus RIG receipts or a design-authority verdict. The final Product Critic verdict is BLOCK for PRC-007 and critical runtime/integration qualification; its concrete source/static defects are resolved. The final Taste Critic verdict is PASS_WITH_CONDITIONS; no VTC visual finding remains open. Their narrow follow-ups are bound to the final 55-member set above.
 
 ## Scoped verification
 

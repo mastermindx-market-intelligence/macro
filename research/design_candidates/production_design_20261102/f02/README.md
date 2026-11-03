@@ -1,10 +1,12 @@
 # F02 — Production design system candidate
 
 **System:** `F02-SYSTEM/1.0.0-candidate.2`  
-**Delivery:** `PARTIAL` — source/specification and supporting design artifact set prepared; editable Paper and qualification gates remain.  
+**Delivery:** `PARTIAL` — source/specification, reviewed supporting designs and exact return delivered; editable Paper and qualification gates remain.  
 **RIG projection:** `draft`; no approval receipt.  
 **Paper:** `NOT_APPLIED_TO_PAPER`;0 mutations.  
 **Product:** design/specification only; no implementation, merge or deployment.
+
+The exact completion/blocker record is [RETURN_F02.md](RETURN_F02.md), and finding-by-finding results are in [reviews/REVIEW_REPORT.md](reviews/REVIEW_REPORT.md). Durable carrier: [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630).
 
 This package executes the [F02 handoff](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md) under programme Draft PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). It proposes source-mapped reusable components and explicit chart/table/state contracts while preserving current domain capabilities. It does not create a new umbrella programme or route registry.
 
@@ -19,7 +21,7 @@ This package executes the [F02 handoff](https://github.com/mastermindx-market-in
 
 ## Reviewable artifacts
 
-- [pattern-lab.html](pattern-lab.html): standalone source specimen for Macro, Company, Options and public editorial; dark/light, EN/ZH chrome, density, analytical state examples, table/chart values and evidence patterns. It has no external dependencies or live save integration. Browser execution is not qualified.
+- [pattern-lab.html](pattern-lab.html): standalone source specimen for Macro, Company, Options and public editorial; dark/light, EN/ZH chrome, density, independent read/access/save axes, table/chart values and typed evidence patterns. It has no external dependencies or live save integration. Browser execution is not qualified.
 - [sheets/README.md](sheets/README.md):13 editable SVG **source illustrations**,11 PNG plates and reproducible direct-drawing generator. These are supporting static compositions, not editable Paper or browser screenshots.
 - [sheets/macro-dark-1440.png](sheets/macro-dark-1440.png), [sheets/company-light-1440.png](sheets/company-light-1440.png), [sheets/options-light-1440.png](sheets/options-light-1440.png), [sheets/editorial-light-1440.png](sheets/editorial-light-1440.png), [sheets/mobile-comparison.png](sheets/mobile-comparison.png), [sheets/states-and-semantics.png](sheets/states-and-semantics.png).
 - [token-map.json](token-map.json):18 proposed semantic role mappings,20 live observed Paper color tokens, exact source collisions and scoped migration decisions.
@@ -48,17 +50,23 @@ Canonical Paper: [01M312VSDSZFVT45674GDVJVZN](https://app.paper.design/file/01M3
 | F02.2 Shared contract | Completed candidate system/source/data/state/format/versioning contracts and36-capability ledger |
 | F02.3 Design specimens | Completed source prototype and static four-consumer/theme/mobile/state compositions; editable Paper application remains blocked |
 | F02.4 Builder package | Completed exact source integration, migration/rollback, component minimums, acceptance cases and ready Paper annotations |
-| F02.5 Review | Principal architecture and independent two-pass advisory critiques completed for candidate1; repaired candidate2 receives a separate frozen delta review; formal RIG admission/approval remains open |
-| F02.6 Persistence and return | Draft PR #10630 persists the work; candidate1 and first-pass findings are immutable ancestors; candidate2 repair freeze and final review return follow |
+| F02.5 Review | Completed independent first passes, later rationale passes, repaired-set reviews and narrow follow-ups. Native product adoption BLOCK remains for PRC-007/runtime qualification; static taste PASS_WITH_CONDITIONS. Formal RIG admission/approval remains open |
+| F02.6 Persistence and return | Completed immutable source/design freezes, unchanged critique history, Draft PR #10630, scoped return ledger and exact blocker/owner records; no merge or deployment |
 
 **Disposition totals:** capabilities16 RETAIN +20 IMPROVE; Paper25 RETAIN +42 IMPROVE.0 removals,0 relocations,0 invented blocked-data assertions. Existing domain semantics, source identities, exports, historical definitions, access controls and focused-chart behavior remain with their current owners.
 
 ## Concrete remaining actions
 
-1. **P00:** resolve the original Paper adapter catalog qualification and return actual admitted write/readback evidence. The current catalog mismatch is recorded exactly in the gate evidence; F02 did not attempt a mutation or alternate-carrier bypass.
+1. **P00:** resolve the original Paper adapter catalog qualification and return actual admitted write/readback evidence. The catalog mismatch was confirmed again at 02:39 UTC and is recorded exactly in evidence/closeout-gates.json; F02 did not attempt a mutation or alternate-carrier bypass.
 2. **F01/F02:** settle and version the joint shell/system composition. The proposed inspector rule is320px +24px gap only if at least640px primary content remains; all dimensions are explicitly baseline/proposed until joint review.
 3. **F02/QA01:** execute the candidate in an authorized reachable HTTP/HTTPS browser preview; prove keyboard/touch/focus, real400% zoom, all width classes, CJK typography and reduced-motion/forced-color behavior. The local preview was unreachable and inline data URLs were policy-blocked; no workaround or false browser proof is claimed.
 4. **F02 after P00/F01:** construct/read back the editable Paper references and in-Paper Read me/annotations, then freeze their exports with source artifacts and exact digests.
-5. **Existing review owner/QA01:** obtain admitted independent RIG critics and the design-authority verdict bound to that final set. Native advisory critique is useful but is not that receipt.
+5. **Existing review owner/QA01:** obtain admitted independent RIG critics and the design-authority verdict bound to that final set. Native advisory critique is useful but is not that receipt. The closeout roots reads returned INVALID_ARGUMENT for both declared request shapes, after the earlier backend_unavailable observation; no admission binding was established.
 
 D02/D07/D08/public editorial and D23 retain the explicitly named producer/identity/entitlement/mutation qualifications. Refraction, Sector and Prophet authority conditions are preserved in the continuity register. No product implementation is authorized by this source candidate.
+
+## Final reviewed artifact identity
+
+The final narrow follow-up source/static set is committed at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, with 55 members and set SHA256 `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`. It addresses the two new minor repair-review findings: Options density-token wiring and the mobile pre-table scroll hint. The HTML SHA256 is `f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4`.
+
+Earlier artifacts remain reachable at their own commits and manifests. The 53-file repair set is `1253a647d193e1eacd1eb6f523a7a031529d2150`; the 32-file original set is `6ee221069deba909b0f1eceee53869d4f4569ac9`. Review outcomes must be read with their scoped evidence and exact set identity. Final report/index/return updates do not imply new product or Paper effects.

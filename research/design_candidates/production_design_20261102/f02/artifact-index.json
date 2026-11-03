@@ -1,6 +1,6 @@
 {
   "schema": "f02.source_artifact_index.v1",
-  "generated_at": "2026-11-03T02:49:06.334815+00:00",
+  "generated_at": "2026-11-03T02:55:25.470611+00:00",
   "excludes_self": true,
   "files": [
     {
@@ -35,15 +35,15 @@
     },
     {
       "path": "README.md",
-      "bytes": 7732,
-      "sha256": "5f6430651f6141ef63994b6169c326ad27dddca482a79672e3125838bce2a2bc",
-      "git_blob_sha": "3facb1d9409a62d160d6725265f75d6aa0a2f5ce"
+      "bytes": 9135,
+      "sha256": "7bdf35160a8715d9e2b95561eed7d85c7a12fffa6c4749b45e920d4b61332a41",
+      "git_blob_sha": "18d9bd7fba045710c1435ba9ac66c44e78374941"
     },
     {
       "path": "RETURN_F02.md",
-      "bytes": 8924,
-      "sha256": "3b27a0a043b937abc07ea1f3dab1a51be8fa1cda11d9b03f1e166af63986cdee",
-      "git_blob_sha": "e494600743e76ca6414c62f6a839886a0c2b3723"
+      "bytes": 9548,
+      "sha256": "64d315e2fefc9bfbfb824a1a99ba09f2e44505b21fdf200012a14d749a3e8606",
+      "git_blob_sha": "3f78eee20ce3c8dd68c5a3c960f3d02390fdeed8"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -104,6 +104,12 @@
       "bytes": 143085,
       "sha256": "e379042f5bb1b06b639d005097a71ccaa36024e4ba997520eaa36b03655170fc",
       "git_blob_sha": "59cbe78621c055a4c1124d7a36e32f68bf8ec6a1"
+    },
+    {
+      "path": "evidence/final-artifact-readback.json",
+      "bytes": 1384,
+      "sha256": "f8cdb76e96bd7976f4f284ce605aeb5910d3d76e54c3fcaab594c5d9df456c81",
+      "git_blob_sha": "95634e054129e08fe40c05983aed880127f15bc4"
     },
     {
       "path": "evidence/followup-source-verification.json",
@@ -298,10 +304,16 @@
       "git_blob_sha": "377cdb9b06f08f4e5a2b01d58dfb6fed4209ff43"
     },
     {
+      "path": "reviews/REVIEW_REPORT.md",
+      "bytes": 10990,
+      "sha256": "70cc1cafe3cf292682b1f22f3a530cd0bf7f85bb5e6fef7e662e68474ad71a1c",
+      "git_blob_sha": "d2627ce2e707360778109e98fd0278ecb3c62676"
+    },
+    {
       "path": "reviews/REVIEW_SEQUENCE.md",
-      "bytes": 3029,
-      "sha256": "316a9700d42c3eaad31880eabf067b6c1414f44578066155ad49e4e6818aefd4",
-      "git_blob_sha": "ddcee3828b741b701a3bd73fac28b84af0deb88f"
+      "bytes": 4320,
+      "sha256": "67edfa9507a5380258d982c0ac3625707246ab843f538087b0c0484fe86a91cf",
+      "git_blob_sha": "03acf262a5eec94e1b8f7933f0ded6b84ad3c26c"
     },
     {
       "path": "reviews/architect-repair-check.md",
@@ -320,6 +332,12 @@
       "bytes": 5572,
       "sha256": "9cc39370f50e0b0c97614f3742f953d42a1453f89ec1d3f2a132829b489915a5",
       "git_blob_sha": "01a6e3ae6c1736328407244426e85f41d12dc675"
+    },
+    {
+      "path": "reviews/product-final-followup.md",
+      "bytes": 10617,
+      "sha256": "107e8c69940215809668275c9830409c711b5b764e9cc6e6742e4c0e9939ba69",
+      "git_blob_sha": "d11bd34f4699aef5b5f8bb1c08a2625957ff8563"
     },
     {
       "path": "reviews/product-first-pass.md",
@@ -344,6 +362,12 @@
       "bytes": 9171,
       "sha256": "638215e4a9f8cb7cc8f8bd58dc6c59d866a7ece046b4252b5ba283bab15352ea",
       "git_blob_sha": "b0122251ec515e21a94e24aa7aa1b79b08274fe2"
+    },
+    {
+      "path": "reviews/taste-final-followup.md",
+      "bytes": 6434,
+      "sha256": "feb021b733d8350a09bb9b987b16c0eed4621f86bda33004a91218c3db47701c",
+      "git_blob_sha": "99744c17832baefc7b3dc0198f021cf3377800ed"
     },
     {
       "path": "reviews/taste-first-pass.md",
