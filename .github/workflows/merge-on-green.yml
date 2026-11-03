@@ -177,6 +177,9 @@ jobs:
       # gate`) rather than merging on undated greens.
       - uses: actions/checkout@v4
         with:
+          # The sweep runs no git; it calls the API with its own tokens. Nothing is
+          # left in `.git/config` for the planner child, which runs beneath it.
+          persist-credentials: false
           filter: blob:none
           sparse-checkout: |
             scripts/merge_on_green.py

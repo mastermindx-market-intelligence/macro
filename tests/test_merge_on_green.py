@@ -11340,6 +11340,10 @@ def test_the_sweep_points_the_validator_at_its_credential_free_planner_checkout(
     assert planner["with"]["persist-credentials"] is False
     assert planner["with"]["filter"] == "blob:none"
     assert planner["with"]["sparse-checkout-cone-mode"] is False
+    # The child runs inside the sweeper's checkout, so neither may store a token.
+    checkouts = [step for step in steps if str(step.get("uses", "")).startswith("actions/checkout")]
+    assert len(checkouts) == 2
+    assert all(step["with"]["persist-credentials"] is False for step in checkouts)
 
 
 def test_the_real_manifest_is_admitted_against_this_checkouts_own_tree():
