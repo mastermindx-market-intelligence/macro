@@ -143,3 +143,16 @@ def test_new_acceleration_is_separate_from_established_hot(monkeypatch):
     assert len(accel) == 1
     assert "Recovery Theme" in accel[0].get_text(" ", strip=True)
     assert "Consumer Staples" not in accel[0].get_text(" ", strip=True)
+
+
+def test_mobile_layout_gives_missing_history_a_separate_row():
+    """Keep long theme names, bilingual ratings and missing-history text readable."""
+    from pathlib import Path
+
+    css_template = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text()
+    sector_styles = css_template[css_template.index("/* ── Sector Temperature — rotation ladder"):
+                                 css_template.index("/* ── News modal — Market Intelligence")]
+    assert "@media(max-width:600px)" in sector_styles
+    assert ".sct-trace{grid-column:2 / 4;grid-row:2;width:100%;height:24px;}" in sector_styles
+    assert ".sct-body{grid-column:2;grid-row:1;}" in sector_styles
+    assert ".sct-trace-na{min-height:20px;justify-content:flex-start;text-align:left;}" in sector_styles

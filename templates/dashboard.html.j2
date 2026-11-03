@@ -5545,8 +5545,8 @@ body.page-macro .rsx-dlg-footer{
 .sct-lane-head{display:flex;align-items:center;gap:8px;margin:0 0 11px;
   font:700 11px/1 var(--font-ui,inherit);letter-spacing:.09em;text-transform:uppercase;}
 .sct-lane-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 9px currentColor;}
-.sct-lane.lead .sct-lane-head{color:color-mix(in srgb,var(--up,#22d97a) 78%,var(--text));}
-.sct-lane.lag  .sct-lane-head{color:color-mix(in srgb,var(--down,#ef4444) 78%,var(--text));}
+.sct-lane.lead .sct-lane-head{color:var(--ink-1,rgba(255,255,255,.92));}
+.sct-lane.lag  .sct-lane-head{color:var(--ink-1,rgba(255,255,255,.92));}
 .sct-lane.lead .sct-lane-dot{color:var(--ink-up, var(--up,#22d97a));background:currentColor;}
 .sct-lane.lag  .sct-lane-dot{color:var(--ink-down, var(--down,#ef4444));background:currentColor;}
 .sct-lane-n{margin-left:auto;font:600 10.5px/1 var(--font-ui,inherit);letter-spacing:.01em;text-transform:none;color:var(--ink-3,rgba(255,255,255,.42));}
@@ -5578,9 +5578,16 @@ body.page-macro .rsx-dlg-footer{
 .sct-delta{display:flex;flex-direction:column;align-items:flex-end;}
 .sct-delta-v{font:800 16px/1 var(--font-ui,inherit);font-variant-numeric:tabular-nums;color:var(--sct-c,var(--up,#22d97a));letter-spacing:-.01em;}
 .sct-delta-k{margin-top:3px;font-size:9px;color:var(--ink-3,rgba(255,255,255,.4));letter-spacing:.02em;white-space:nowrap;}
-@media(max-width:430px){
-  .sct-rung{grid-template-columns:28px 1fr 82px 44px;gap:9px;padding:10px;}
-  .sct-trace{width:82px;}
+@media(max-width:600px){
+  /* At phone widths let long theme names and ratings use the full first row.
+     The second row owns movement/history; never squeeze unknown history into an 82px column. */
+  .sct-rung{grid-template-columns:28px minmax(0,1fr) 58px;grid-template-rows:auto auto;
+    align-items:center;column-gap:9px;row-gap:6px;padding:11px 10px;}
+  .sct-badge{grid-column:1;grid-row:1;width:28px;height:28px;}
+  .sct-body{grid-column:2;grid-row:1;}
+  .sct-delta{grid-column:3;grid-row:1;}
+  .sct-trace{grid-column:2 / 4;grid-row:2;width:100%;height:24px;}
+  .sct-trace-na{min-height:20px;justify-content:flex-start;text-align:left;}
   .sct-delta-v{font-size:15px;}
 }
 @media(prefers-reduced-motion:no-preference){
