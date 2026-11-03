@@ -1,0 +1,62 @@
+[
+  {
+    "path": "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
+    "sha": "a34cc02cab4cbd2bbe289489c1c8c56b9c2c2260"
+  },
+  {
+    "path": "site/macrodata/workspaces/business_activity/US/latest.json",
+    "sha": "075f1e78d5d918823cd8465e82cc6ab5705b8d9a"
+  },
+  {
+    "path": "site/macrodata/workspaces/capital_structure/US/latest.json",
+    "sha": "fe9a8f5124367b961562bda60fa62128b7236477"
+  },
+  {
+    "path": "site/macrodata/workspaces/consumer_payments/US/latest.json",
+    "sha": "26f2c05938a869571a376b3bd93b82e3a9ab06ae"
+  },
+  {
+    "path": "site/macrodata/workspaces/financial_conditions/US/latest.json",
+    "sha": "41cf6f62780cd9b79ac2f684f8cf6ee5c2d14f59"
+  },
+  {
+    "path": "site/macrodata/workspaces/growth_real_economy/US/latest.json",
+    "sha": "93f88b379900d764fb137bbdd811f6a442293b4e"
+  },
+  {
+    "path": "site/macrodata/workspaces/housing_real_estate/US/latest.json",
+    "sha": "c6c50b2b243bef041f1524979d4397e4e8ec48ed"
+  },
+  {
+    "path": "site/macrodata/workspaces/inflation_system/US/latest.json",
+    "sha": "438c818ffffef1b3a7a9b604dd3eecd9fdb8d5ac"
+  },
+  {
+    "path": "site/macrodata/workspaces/labor_markets/US/latest.json",
+    "sha": "379ec7219aa1985c40681d5af00410a7bd1b8670"
+  },
+  {
+    "path": "site/macrodata/workspaces/liquidity_central_banks/US/latest.json",
+    "sha": "7530ac46c91b2e02131b2f942f2b2caea04903ab"
+  },
+  {
+    "path": "site/macrodata/workspaces/liquidity_regime/US/latest.json",
+    "sha": "97b666287095ef7a0e497c8ec0a0b7a4cf3c3963"
+  },
+  {
+    "path": "site/macrodata/workspaces/monetary_policy/US/latest.json",
+    "sha": "5301a7af3b42fa53c75cf4304a4ef44e8909b1f8"
+  },
+  {
+    "path": "site/macrodata/workspaces/national_debt_liabilities/US/latest.json",
+    "sha": "de3c5acd371e4c8e98976d1417bd70a0d9392dcf"
+  },
+  {
+    "path": "site/macrodata/workspaces/rates_curves/US/latest.json",
+    "sha": "f948707b779f7515f53914147b8792f63126be37"
+  },
+  {
+    "path": "site/macrodata/workspaces/trade_flows/US/latest.json",
+    "sha": "fcfd1b701af0be1015516dd8f7f9d9f3d2b1daa8"
+  }
+]

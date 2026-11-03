@@ -1,0 +1,55 @@
+{
+  "classification": "PRINCIPAL_FACTUAL_CONSISTENCY_ADVICE_NOT_INDEPENDENT_RIG_REVIEW",
+  "reviewed_before_publication": true,
+  "formal_review_receipt": null,
+  "findings": [
+    {
+      "id": "PC01",
+      "finding": "Generic comparison refusal used one observed reason",
+      "resolution": "Root state contract now uses producer-qualified reason; reference_end copy retained for observed fixture",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC02",
+      "finding": "Future dates rule could reject legitimate targets",
+      "resolution": "Evidence cutoff admission separated from future projections/contracts/horizons/schedules; DA09 corrected",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC03",
+      "finding": "Source-rights block could be misread as user upgrade requirement",
+      "resolution": "Specific access/source-rights reason; sign-in/plan only when entitlement owner establishes it",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC04",
+      "finding": "Odds explicit controls and full CSV omitted",
+      "resolution": "L10, controls table, product spec and UX15 retain exact range/tolerance/filter/export jobs",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC05",
+      "finding": "Contextual Ask the analyst omitted",
+      "resolution": "C05, controls table, product spec and UX16 preserve existing Brain context/fallback",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC06",
+      "finding": "Cycle filter/focus/zoom controls too implicit",
+      "resolution": "Read cycle_app.js; L09 and UX17 specify exact focus hash, phases, source zoom domains and layers",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC07",
+      "finding": "F01/F02 dependency pin needed refresh",
+      "resolution": "Current21ec752 candidate concurrence and F01 34b4a52 bound; release remains unverified",
+      "status": "RESOLVED_IN_SPEC_ONLY"
+    },
+    {
+      "id": "PC08",
+      "finding": "Root source inference: multiple Cycle Escape listeners may close two layers",
+      "resolution": "Explicit later implementation/real-host test; no executed browser claim",
+      "status": "CARRIED_IMPLEMENTATION_QUALIFICATION"
+    }
+  ]
+}

@@ -1,0 +1,2010 @@
+{
+  "classification": "D02_ASSIGNMENT_CROSSWALK_NOT_NEW_CANONICAL_REGISTRY",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "source_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+  "rows": [
+    {
+      "canonical_id": "macro:anticipation",
+      "assigned_route": "/anticipation.html",
+      "assignment_row": {
+        "page_id": "macro:anticipation",
+        "repo": "macro",
+        "route": "/anticipation.html",
+        "route_kind": "page",
+        "source_template": "templates/anticipation.html.j2",
+        "builder": [
+          "scripts/build_anticipation.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_anticipation.py:117",
+          "site/anticipation.html",
+          "templates/anticipation.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Anticipation",
+      "template": "templates/anticipation.html.j2",
+      "builders": [
+        "scripts/build_anticipation.py"
+      ],
+      "shared_dependencies": [],
+      "data": "engine.anticipation; stocks/yahoo/breadth parquet; anticipation_gate.json → site/anticipationdata/anticipation.json and per-asset JSON",
+      "schema": null,
+      "behavior": "Existing asset/group/horizon controls; per-ticker filename escaping =/^ to _; preserve zero/missing",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cd80-717f-b506-afa04aea9d53"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "L01–L03",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:crossasset",
+      "assigned_route": "/crossasset.html",
+      "assignment_row": {
+        "page_id": "macro:crossasset",
+        "repo": "macro",
+        "route": "/crossasset.html",
+        "route_kind": "page",
+        "source_template": "templates/crossasset.html.j2",
+        "builder": [
+          "scripts/build_crossasset.py"
+        ],
+        "access_shell": "unknown",
+        "payload_tier": "internal",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "internal",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_crossasset.py:369",
+          "site/crossasset.html",
+          "templates/crossasset.html.j2"
+        ],
+        "notes": [
+          "config/site_access.yml deny: 404 even for an entitled user"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "retain access boundary; no automatic customer promotion",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Internal Cross Asset",
+      "template": "templates/crossasset.html.j2",
+      "builders": [
+        "scripts/build_crossasset.py"
+      ],
+      "shared_dependencies": [],
+      "data": "cross_asset_trend, correlation and crossasset_flows.v2",
+      "schema": null,
+      "behavior": "Internal 404; no public admission",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "INTERNAL_DENY_404",
+      "beta_read": {
+        "status": 404,
+        "outcome": "OBSERVED_404",
+        "scrape_id": "01a1a01f-3980-7792-9fbf-201680e5c15e"
+      },
+      "paper_reference": "No public reference proposed",
+      "retention_refs": "I01",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:cycle",
+      "assigned_route": "/cycle.html",
+      "assignment_row": {
+        "page_id": "macro:cycle",
+        "repo": "macro",
+        "route": "/cycle.html",
+        "route_kind": "page",
+        "source_template": "templates/cycle.html.j2",
+        "builder": [
+          "scripts/build_cycle.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "product_nav.research",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_cycle.py:603",
+          "site/cycle.html",
+          "templates/_navlinks.html.j2",
+          "templates/cycle.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Cycle Intelligence",
+      "template": "templates/cycle.html.j2",
+      "builders": [
+        "scripts/build_cycle.py"
+      ],
+      "shared_dependencies": [
+        "site/cycle_app.js"
+      ],
+      "data": "build_cycle.py measured engine plus seed, proxy_fitness and falsifiers → CYCLE_ENGINE",
+      "schema": null,
+      "behavior": "Phase groups; focused chip/card/chart selection; #<cycle-id> replaceState; Full/15y/8y/Cycle/reset zoom; mobile sheet/fullscreen; preserve FRAME distinction",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cd76-752b-a3a8-080efd2f20c0"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "L07–L09",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:demand",
+      "assigned_route": "/demand.html",
+      "assignment_row": {
+        "page_id": "macro:demand",
+        "repo": "macro",
+        "route": "/demand.html",
+        "route_kind": "page",
+        "source_template": "templates/demand.html.j2",
+        "builder": [
+          "scripts/build_demand.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "intelligence_desk",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_demand.py:211",
+          "site/demand.html",
+          "templates/demand.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Demand Desk",
+      "template": "templates/demand.html.j2",
+      "builders": [
+        "scripts/build_demand.py"
+      ],
+      "shared_dependencies": [],
+      "data": "demand_chain + demand_ledger; EDGAR, baskets, RPO, revisions and headcount; SSR",
+      "schema": null,
+      "behavior": "Divergence cohorts; stock.html#<ticker> company link",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-d40e-7158-9501-2f8a5208d857"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "Q01–Q02",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:impulse",
+      "assigned_route": "/impulse.html",
+      "assignment_row": {
+        "page_id": "macro:impulse",
+        "repo": "macro",
+        "route": "/impulse.html",
+        "route_kind": "page",
+        "source_template": "templates/impulse.html.j2",
+        "builder": [
+          "scripts/build_impulse.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "discovery_board",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_impulse.py:363",
+          "scripts/build_impulse.py:418",
+          "site/impulse.html",
+          "templates/impulse.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Impulse",
+      "template": "templates/impulse.html.j2",
+      "builders": [
+        "scripts/build_impulse.py"
+      ],
+      "shared_dependencies": [],
+      "data": "engine.impulse; aligned close/volume caches → payload/HTML",
+      "schema": null,
+      "behavior": "Five lanes, eligibility; stock.html?t=<ticker> company link",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cda1-730d-9ae0-4e38aa29ecef"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "Q03–Q04",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro",
+      "assigned_route": "/macro.html",
+      "assignment_row": {
+        "page_id": "macro:macro",
+        "repo": "macro",
+        "route": "/macro.html",
+        "route_kind": "page",
+        "source_template": "templates/dashboard.html.j2",
+        "builder": [
+          "scripts/build_site.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "product_nav.brand",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "P0",
+        "primary_user_question": "What is the macro regime right now?",
+        "source_evidence": [
+          "config/site_access.yml",
+          "config/site_access.yml:1",
+          "scripts/build_site.py:8147",
+          "site/macro.html",
+          "templates/_navlinks.html.j2",
+          "templates/dashboard.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "D03",
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "D02 common-template integration; D02 body.page-macro; D03 body.page-stocks",
+        "governed_regions": [
+          {
+            "region": "body.page-macro",
+            "template": "templates/dashboard.html.j2"
+          }
+        ],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Macro regime overview",
+      "template": "templates/dashboard.html.j2",
+      "builders": [
+        "scripts/build_site.py"
+      ],
+      "shared_dependencies": [
+        "scripts/build_site.py",
+        "templates/dashboard.html.j2",
+        "body.page-macro / body.page-stocks owner boundary"
+      ],
+      "data": "data/regime/latest.json; source-backed build_site.py VM incl. rates_command, market_state, risk_envelope, events/sentiment/markets",
+      "schema": null,
+      "behavior": "Existing dialog IDs/anchors; body.page-macro only; preserve cross-owner link/return contract",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "LOADING_SHELL_ONLY",
+        "scrape_id": "01a1a015-2180-7348-bd26-1fbea38ac5cc"
+      },
+      "paper_reference": "Risk Radar p-1-0 / pullback p-6-0; breadth p-13-1 is a reference with universe qualification",
+      "retention_refs": "M01–M32",
+      "owner": "D02",
+      "integration_dependencies": [
+        "D03",
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_family",
+      "assigned_route": "/macro/<id>.html",
+      "assignment_row": {
+        "page_id": "macro:macro_family",
+        "repo": "macro",
+        "route": "/macro/<id>.html",
+        "route_kind": "family",
+        "source_template": "unknown",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "site/macro/"
+        ],
+        "notes": [
+          "11 committed pages under site/macro/",
+          "no write_page() call site resolves to this directory; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "resolve unknown template from actual builder/source",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "INNER_HTML_FRAGMENT_FAMILY_NOT_DOCUMENT_ROUTE",
+      "product": "Macro Command fragment family",
+      "template": "templates/_macro_command_fragment.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "Same Command workspace snapshots/refusals; no independent clock",
+      "schema": null,
+      "behavior": "Fetch exact eleven /macro/fragments/ assets from macro_monetary.html; no document redirects",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Fragment assets; existing exporter excludes html_fragment",
+      "beta_read": null,
+      "paper_reference": "Command dependency; not a separate page",
+      "retention_refs": "C03–C04",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_business_activity",
+      "assigned_route": "/macro_business_activity.html",
+      "assignment_row": {
+        "page_id": "macro:macro_business_activity",
+        "repo": "macro",
+        "route": "/macro_business_activity.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_business_activity.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_business_activity.html",
+          "templates/macro_business_activity.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Business Activity",
+      "template": "templates/macro_business_activity.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/business_activity/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cec9-7186-ac87-3c127d450aac"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_capital_structure",
+      "assigned_route": "/macro_capital_structure.html",
+      "assignment_row": {
+        "page_id": "macro:macro_capital_structure",
+        "repo": "macro",
+        "route": "/macro_capital_structure.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_capital_structure.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_capital_structure.html",
+          "templates/macro_capital_structure.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Capital Structure",
+      "template": "templates/macro_capital_structure.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/capital_structure/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cd88-770b-af18-4f9c05117f1e"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_consumer_payments",
+      "assigned_route": "/macro_consumer_payments.html",
+      "assignment_row": {
+        "page_id": "macro:macro_consumer_payments",
+        "repo": "macro",
+        "route": "/macro_consumer_payments.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_consumer_payments.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_consumer_payments.html",
+          "templates/macro_consumer_payments.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Consumer & Payments",
+      "template": "templates/macro_consumer_payments.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/consumer_payments/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-cd8c-711a-8adb-32fb83579c63"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_context",
+      "assigned_route": "/macro_context.html",
+      "assignment_row": {
+        "page_id": "macro:macro_context",
+        "repo": "macro",
+        "route": "/macro_context.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_context.html.j2",
+        "builder": [
+          "scripts/build_macro_context.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "product_nav.research",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_macro_context.py:1727",
+          "site/macro_context.html",
+          "templates/_navlinks.html.j2",
+          "templates/macro_context.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Macro Weather / Context",
+      "template": "templates/macro_context.html.j2",
+      "builders": [
+        "scripts/build_macro_context.py"
+      ],
+      "shared_dependencies": [],
+      "data": "data/macro_snapshots/latest.json; data/neuralweb/world_state.json; data/regime/latest.json; transitions.jsonl; market_state_history.parquet",
+      "schema": null,
+      "behavior": "#hero #radar #board #quad #rates #matrix #timeline #census #footnote",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-dac2-7145-98fc-72cd7b83783e"
+      },
+      "paper_reference": "Risk Radar references; no accepted new composition",
+      "retention_refs": "X01–X04",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_financial_conditions",
+      "assigned_route": "/macro_financial_conditions.html",
+      "assignment_row": {
+        "page_id": "macro:macro_financial_conditions",
+        "repo": "macro",
+        "route": "/macro_financial_conditions.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_financial_conditions.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_financial_conditions.html",
+          "templates/macro_financial_conditions.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Financial Conditions",
+      "template": "templates/macro_financial_conditions.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/financial_conditions/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-daea-7166-8779-d31f713f11a3"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_growth_real_economy",
+      "assigned_route": "/macro_growth_real_economy.html",
+      "assignment_row": {
+        "page_id": "macro:macro_growth_real_economy",
+        "repo": "macro",
+        "route": "/macro_growth_real_economy.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_growth_real_economy.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_growth_real_economy.html",
+          "templates/macro_growth_real_economy.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Growth & Real Economy",
+      "template": "templates/macro_growth_real_economy.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/growth_real_economy/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-dac8-75ef-b9df-9c87ff30fb11"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_housing_real_estate",
+      "assigned_route": "/macro_housing_real_estate.html",
+      "assignment_row": {
+        "page_id": "macro:macro_housing_real_estate",
+        "repo": "macro",
+        "route": "/macro_housing_real_estate.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_housing_real_estate.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_housing_real_estate.html",
+          "templates/macro_housing_real_estate.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Housing & Real Estate",
+      "template": "templates/macro_housing_real_estate.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/housing_real_estate/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-dabc-727f-8d5b-d1ea71784431"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_inflation_system",
+      "assigned_route": "/macro_inflation_system.html",
+      "assignment_row": {
+        "page_id": "macro:macro_inflation_system",
+        "repo": "macro",
+        "route": "/macro_inflation_system.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_inflation_system.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_inflation_system.html",
+          "templates/macro_inflation_system.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Inflation System",
+      "template": "templates/macro_inflation_system.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/inflation_system/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "LOADING_SHELL_ONLY",
+        "scrape_id": "01a1a01f-dae7-75bb-b8de-f8b0f1dae247"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_labor_markets",
+      "assigned_route": "/macro_labor_markets.html",
+      "assignment_row": {
+        "page_id": "macro:macro_labor_markets",
+        "repo": "macro",
+        "route": "/macro_labor_markets.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_labor_markets.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_labor_markets.html",
+          "templates/macro_labor_markets.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Labor Markets",
+      "template": "templates/macro_labor_markets.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/labor_markets/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-dad7-713d-8a0a-044a3ca7f169"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_liquidity_central_banks",
+      "assigned_route": "/macro_liquidity_central_banks.html",
+      "assignment_row": {
+        "page_id": "macro:macro_liquidity_central_banks",
+        "repo": "macro",
+        "route": "/macro_liquidity_central_banks.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_liquidity_central_banks.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_liquidity_central_banks.html",
+          "templates/macro_liquidity_central_banks.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Liquidity & Central Banks",
+      "template": "templates/macro_liquidity_central_banks.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/liquidity_central_banks/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-dbdf-7267-a237-955dd329ca5c"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_liquidity_regime",
+      "assigned_route": "/macro_liquidity_regime.html",
+      "assignment_row": {
+        "page_id": "macro:macro_liquidity_regime",
+        "repo": "macro",
+        "route": "/macro_liquidity_regime.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_liquidity_regime.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_liquidity_regime.html",
+          "templates/macro_liquidity_regime.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Liquidity Regime Monitor",
+      "template": "templates/macro_liquidity_regime.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/liquidity_regime/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-3924-723a-9b93-a5167f014898"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_monetary",
+      "assigned_route": "/macro_monetary.html",
+      "assignment_row": {
+        "page_id": "macro:macro_monetary",
+        "repo": "macro",
+        "route": "/macro_monetary.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_monetary.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "command_center",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_monetary.html",
+          "templates/macro_monetary.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Macro Command",
+      "template": "templates/macro_monetary.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "Same fourteen workspace snapshots/refusals as deep pages",
+      "schema": null,
+      "behavior": "#<section>/<subtab>; replaceState; eleven lazy HTML fragments; contextual MMBrain.explain/open/boot with localized section/workspace and chat.html fallback",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-38ed-75df-b229-9dd31926cacb"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "C01–C05; W01–W06",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_monetary_policy",
+      "assigned_route": "/macro_monetary_policy.html",
+      "assignment_row": {
+        "page_id": "macro:macro_monetary_policy",
+        "repo": "macro",
+        "route": "/macro_monetary_policy.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_monetary_policy.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_monetary_policy.html",
+          "templates/macro_monetary_policy.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Monetary Policy",
+      "template": "templates/macro_monetary_policy.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/monetary_policy/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "LOADING_SHELL_ONLY",
+        "scrape_id": "01a1a01f-eb46-75c9-9a96-eea462c4c961"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_national_debt_liabilities",
+      "assigned_route": "/macro_national_debt_liabilities.html",
+      "assignment_row": {
+        "page_id": "macro:macro_national_debt_liabilities",
+        "repo": "macro",
+        "route": "/macro_national_debt_liabilities.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_national_debt_liabilities.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_national_debt_liabilities.html",
+          "templates/macro_national_debt_liabilities.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "National Debt & Liabilities",
+      "template": "templates/macro_national_debt_liabilities.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/national_debt_liabilities/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-ec3b-773b-9d5f-2fd6a2810d7d"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_rates_curves",
+      "assigned_route": "/macro_rates_curves.html",
+      "assignment_row": {
+        "page_id": "macro:macro_rates_curves",
+        "repo": "macro",
+        "route": "/macro_rates_curves.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_rates_curves.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_rates_curves.html",
+          "templates/macro_rates_curves.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Rates & Curves",
+      "template": "templates/macro_rates_curves.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/rates_curves/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-eb3f-7749-92dd-ddd1061825e7"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_signals",
+      "assigned_route": "/macro_signals.html",
+      "assignment_row": {
+        "page_id": "macro:macro_signals",
+        "repo": "macro",
+        "route": "/macro_signals.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_signals.html.j2",
+        "builder": [
+          "scripts/build_site.py"
+        ],
+        "access_shell": "unknown",
+        "payload_tier": "internal",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "internal",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_site.py:7671",
+          "site/macro_signals.html",
+          "templates/macro_signals.html.j2"
+        ],
+        "notes": [
+          "config/site_access.yml deny: 404 even for an entitled user"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "retain access boundary; no automatic customer promotion",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Internal Macro Signals",
+      "template": "templates/macro_signals.html.j2",
+      "builders": [
+        "scripts/build_site.py"
+      ],
+      "shared_dependencies": [],
+      "data": "build_site.py signal adapters; macrodata/macro_signals.json",
+      "schema": null,
+      "behavior": "Internal 404; #10485 evidence popup candidate preserved separately",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "INTERNAL_DENY_404",
+      "beta_read": {
+        "status": 404,
+        "outcome": "OBSERVED_404",
+        "scrape_id": "01a1a01f-390b-77d8-8607-2928bcc113c3"
+      },
+      "paper_reference": "Existing source candidate #10485; no admission",
+      "retention_refs": "I02; M07–M08",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:macro_trade_flows",
+      "assigned_route": "/macro_trade_flows.html",
+      "assignment_row": {
+        "page_id": "macro:macro_trade_flows",
+        "repo": "macro",
+        "route": "/macro_trade_flows.html",
+        "route_kind": "page",
+        "source_template": "templates/macro_trade_flows.html.j2",
+        "builder": [],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "regime_dashboard",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "site/macro_trade_flows.html",
+          "templates/macro_trade_flows.html.j2"
+        ],
+        "notes": [
+          "template attributed by name match; no write_page() call site names it",
+          "no write_page() call site resolves to this route; builder unknown"
+        ],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Trade Flows",
+      "template": "templates/macro_trade_flows.html.j2",
+      "builders": [
+        "scripts/build_macro_suite_pages.py"
+      ],
+      "shared_dependencies": [
+        "templates/_macro_suite_shell.html.j2",
+        "lib/macro_suite_view.py",
+        "engine/market_os/macro_workspaces/contract.py",
+        "site/macro_suite.js",
+        "site/macro_command.js"
+      ],
+      "data": "site/macrodata/workspaces/trade_flows/US/latest.json",
+      "schema": {
+        "contract": "mastermind.macro_workspace_snapshot.v1",
+        "version": "1.0.0"
+      },
+      "behavior": "#current #drivers #history; mmx:shell-location; evidence drawer; no-JS SSR",
+      "region": "US only (explicit registry)",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-eb3d-765b-8a3d-dc28cf43e58c"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "W01–W06 plus domain W07–W20",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:odds",
+      "assigned_route": "/odds.html",
+      "assignment_row": {
+        "page_id": "macro:odds",
+        "repo": "macro",
+        "route": "/odds.html",
+        "route_kind": "page",
+        "source_template": "templates/odds.html.j2",
+        "builder": [
+          "scripts/build_odds.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "none",
+        "archetype": "intelligence_desk",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_odds.py:499",
+          "site/odds.html",
+          "templates/odds.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Odds Lab",
+      "template": "templates/odds.html.j2",
+      "builders": [
+        "scripts/build_odds.py"
+      ],
+      "shared_dependencies": [],
+      "data": "engine.odds_lab; site/oddsdata/catalog.json and factor_match.json; existing R2 oddsmatrix/<T>.json",
+      "schema": null,
+      "behavior": "?t=<ticker>; #days #path #returns #fm; ?lang localStorage side effect requires F01/D25 decision; lookback5y/10y/20y/max; exact/±1/±2; condition inclusion; factor template/min-N/sector; full matching-days CSV",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-eb5d-72c8-a364-c1720bdf9ee2"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "L04–L06; L10",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    },
+    {
+      "canonical_id": "macro:radar",
+      "assigned_route": "/radar.html",
+      "assignment_row": {
+        "page_id": "macro:radar",
+        "repo": "macro",
+        "route": "/radar.html",
+        "route_kind": "page",
+        "source_template": "templates/radar.html.j2",
+        "builder": [
+          "scripts/build_radar_page.py"
+        ],
+        "access_shell": "anonymous",
+        "payload_tier": "public_shell_premium_payload",
+        "nav_family": "product_nav.research",
+        "archetype": "discovery_board",
+        "lifecycle": "live",
+        "priority": "unclassified",
+        "primary_user_question": "",
+        "source_evidence": [
+          "config/site_access.yml:1",
+          "scripts/build_radar_page.py:31",
+          "site/radar.html",
+          "templates/_navlinks.html.j2",
+          "templates/radar.html.j2"
+        ],
+        "notes": [],
+        "source_registry_generated_at": "2026-10-21T16:34:10Z",
+        "registry_read_pin": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+        "fresh_registry_no_id_delta_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+        "primary_session": "D02",
+        "consult_sessions": [
+          "F01",
+          "F02",
+          "F03"
+        ],
+        "delegated_design_slices": [],
+        "shared_archetype_owner": "assigned session; inspect actual shared imports before implementation",
+        "governed_regions": [],
+        "scope_disposition": "design/migration coverage required",
+        "paper_coverage": "domain references exist; route-to-board qualification required",
+        "source_contract_gap": "verify producer/schema and data clock; registry data_sources is not a data contract",
+        "implementation_status": "not assessed as ready by this audit"
+      },
+      "source_census_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "resolved_kind": "DOCUMENT",
+      "product": "Divergence Radar",
+      "template": "templates/radar.html.j2",
+      "builders": [
+        "scripts/build_radar_page.py"
+      ],
+      "shared_dependencies": [],
+      "data": "site/basketdata/radar.json + narrative_brain.json via radar_panel.js",
+      "schema": null,
+      "behavior": "Client loading/lifecycle and evidence; distinct from Risk Radar overlay",
+      "region": "Preserve current producer/route scope; no new regional parity",
+      "access": "Existing anonymous shell / payload access retained; beta body/entitlement interaction not proven",
+      "beta_read": {
+        "status": 200,
+        "outcome": "SHELL_ONLY_NO_DOMAIN_BODY",
+        "scrape_id": "01a1a01f-eb88-71c1-a8c2-74af9d1531f9"
+      },
+      "paper_reference": "No final composed D02 reference frozen",
+      "retention_refs": "Q05",
+      "owner": "D02",
+      "integration_dependencies": [
+        "F01",
+        "F02",
+        "F03"
+      ],
+      "acceptance": "CANDIDATE_SPECIFICATION_ONLY"
+    }
+  ]
+}

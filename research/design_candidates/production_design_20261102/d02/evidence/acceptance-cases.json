@@ -1,0 +1,525 @@
+{
+  "classification": "FUTURE_ACCEPTANCE_REQUIREMENTS_NOT_EXECUTED_TESTS",
+  "cases": [
+    {
+      "id": "SC01",
+      "area": "Assigned route set",
+      "fixture": "Compare exact immutable D02 rows to candidate crosswalk",
+      "expected": "All26 IDs retained;25 documents plus qualified historical fragment family; no added public route",
+      "owner": "D02/F03",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC02",
+      "area": "Internal access",
+      "fixture": "Anonymous and entitled requests to crossasset and macro_signals",
+      "expected": "Both preserve existing internal404 boundary; no payload leakage or public-nav admission",
+      "owner": "Access owner/F01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC03",
+      "area": "Shared template",
+      "fixture": "Render macro and stocks before/after scoped change",
+      "expected": "Macro behavior changes only as approved; D03 body.page-stocks and full S&P1500 board preserved",
+      "owner": "D02/D03",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC04",
+      "area": "Existing Signals candidate",
+      "fixture": "Compare intended evidence implementation with #10485 exact head and live writer",
+      "expected": "Reuse/reconcile existing owner; no parallel popup rewrite",
+      "owner": "D02/#10485",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC05",
+      "area": "Fragment family",
+      "fixture": "Run existing exporter over exact eleven fragments",
+      "expected": "Excluded as html_fragment; not standalone pages or synthesized redirects",
+      "owner": "F03",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC06",
+      "area": "Fragment fetch",
+      "fixture": "HTTP error, wrong content type, missing marker and timeout",
+      "expected": "Typed fallback/working deep workspace; no blank infinite loading or false zero",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC07",
+      "area": "Delayed fragment with subtab",
+      "fixture": "Open #growth/business and #credit/funding before fetch resolves",
+      "expected": "Selected subtab and link bases survive insertion; same source/refusal as host",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "SC08",
+      "area": "No JavaScript",
+      "fixture": "Open suite and Command with JS unavailable",
+      "expected": "Server-rendered answer/data and reachable deep links remain useful",
+      "owner": "D02/F01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA01",
+      "area": "Snapshot integrity",
+      "fixture": "Alter a metric without updating digest; use wrong schema/version or extra top key",
+      "expected": "Fail closed; retain verified prior or typed failure; never certify current",
+      "owner": "Producer/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA02",
+      "area": "Manifest mismatch",
+      "fixture": "Manifest generation differs from snapshot/fragment generation",
+      "expected": "No mixed new headline/old drivers; explicit incompatibility or compatible bundle",
+      "owner": "Producer/F01/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA03",
+      "area": "Same content new build",
+      "fixture": "Only built_at/code_version changes",
+      "expected": "Content digest and analytical change remain stable under documented contract",
+      "owner": "Workspace owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA04",
+      "area": "Prior publication",
+      "fixture": "Same-date rebuild then later publication",
+      "expected": "Compare against last strictly earlier publication; no double-counted daily change",
+      "owner": "Workspace owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA05",
+      "area": "Method change",
+      "fixture": "Same metric ID with different method_version",
+      "expected": "No numerical delta unless explicitly comparable; preserve prior identity",
+      "owner": "Workspace owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA06",
+      "area": "Mixed cadence",
+      "fixture": "Daily close on weekend plus weekly/monthly sources",
+      "expected": "Own dates/cadences preserved; weekend alone does not imply stale; build time never freshens source",
+      "owner": "D02/source owners",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA07",
+      "area": "True zero and false",
+      "fixture": "Rate=0, p_up=0, return=0, false gate; separate null/NaN/missing",
+      "expected": "Each valid zero/false retained; absent values not defaulted to another source or50%",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA08",
+      "area": "Missing sort",
+      "fixture": "Ascending and descending with negative, zero, positive and null values",
+      "expected": "Null last both directions; visible missing state; numeric order correct",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA09",
+      "area": "Unknown/future source time",
+      "fixture": "Missing evidence timestamp or observation/publication/availability after permitted cutoff; legitimate future targets separately",
+      "expected": "Unknown/mismatch for inadmissible evidence; valid future target dates retained; no today substitution or silent clipping",
+      "owner": "D02/producer",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA10",
+      "area": "Rights/region",
+      "fixture": "RIGHTS_BLOCKED or unsupported CN request to US suite",
+      "expected": "No hidden premium prefetch or US relabeling; truthful supported destination",
+      "owner": "Access owner/F01/D19",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA11",
+      "area": "Coverage contradiction",
+      "fixture": "coverage_ratio=1 with PARTIAL discovery; CURRENT plus contradiction",
+      "expected": "Both source meanings retained; ratio/current stamp cannot erase incompleteness/disagreement",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "DA12",
+      "area": "Series gaps",
+      "fixture": "Null series point or changed universe/adjustment basis",
+      "expected": "Visible discontinuity/qualification; no fabricated interpolation or comparable-history claim",
+      "owner": "Producer/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK01",
+      "area": "Canonical confidence",
+      "fixture": "Current0.22 and separate HMM posterior0.6774",
+      "expected": "Heuristic agreement wording; no22% regime probability; quantities remain separate",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK02",
+      "area": "Regime confirmation",
+      "fixture": "Raw differs from confirmed; pending0/7 vs actual non-null pending",
+      "expected": "Correct producer state; TRANSITIONING alone is not confirmation countdown",
+      "owner": "Regime owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK03",
+      "area": "Risk context cap",
+      "fixture": "caution + ungated risk-off + gate false",
+      "expected": "Explain absent broad-tape confirmation; no all-clear or UI recalculation",
+      "owner": "RiskRadar/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK04",
+      "area": "Unavailable scare",
+      "fixture": "raw100, reading_state UNAVAILABLE, display_score null",
+      "expected": "Unavailable in dashboard and Context; never100/current or calm0",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK05",
+      "area": "Model estimate / reconstructed cell",
+      "fixture": "22% h21; state-only16%; matching n66/events16 interval4.99–45.45",
+      "expected": "Conjunction estimate distinct; interval described as reconstructed observed-rate uncertainty, not predictive interval",
+      "owner": "RiskRadar/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK06",
+      "area": "Forward cohort",
+      "fixture": "Four issued/zero graded, validation false, publication timing false",
+      "expected": "Evidence accruing; no validated/precision/publication badge",
+      "owner": "Model owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK07",
+      "area": "Changed model evidence",
+      "fixture": "Old calibration cell with different config/surface/hash",
+      "expected": "Evidence unmatched; oldN not inherited; current estimate qualified/refused per producer",
+      "owner": "Model owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK08",
+      "area": "Different drawdown events",
+      "fixture": "Path rises then falls but never5% below issue close",
+      "expected": "RiskRadar issue-close target and slow63-day peak-to-trough target may differ; labels explain",
+      "owner": "Model owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK09",
+      "area": "HMM history",
+      "fixture": "Full-sample-smoothed retrospective sequence with future input",
+      "expected": "No claim it predicted historical turns; fit cutoff/description visible",
+      "owner": "HMM owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK10",
+      "area": "Pullback arithmetic",
+      "fixture": "Current loss, worst loss, rebound, further loss and total-depth fixture",
+      "expected": "Consistent episode peak; further loss not added as an identical percent basis; range not path/floor",
+      "owner": "Model owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK11",
+      "area": "China forecast absent",
+      "fixture": "Observed local drawdown with no qualified remaining-depth model",
+      "expected": "Observed facts retained, estimate unavailable; no US calibration transplant",
+      "owner": "D19/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "RK12",
+      "area": "Breadth fixture/universe",
+      "fixture": "128 highs67 lows and stated ratio; NYSE versus S&P1500",
+      "expected": "65.64 if that formula/window; otherwise explicit producer definition; no mixed denominator",
+      "owner": "Breadth owner/D02/D03",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD01",
+      "area": "Level versus change",
+      "fixture": "Path+58bp from current but20-session change−22.2bp",
+      "expected": "Can display both qualified meanings; no contradictory cut/hike shorthand",
+      "owner": "Rates owner/D15/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD02",
+      "area": "Basis refusal",
+      "fixture": "not_comparable/reference_end mismatch plus legacy numeric gap",
+      "expected": "Gap/takeaway withheld in every visible/accessible branch; valid independent observations retained",
+      "owner": "Rates owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD03",
+      "area": "Incomplete board",
+      "fixture": "board_generation.complete=false and d1_missing",
+      "expected": "Current stance refusal preserved; a legacy path cannot silently override it",
+      "owner": "Rates owner/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD04",
+      "area": "SEP alignment",
+      "fixture": "Same current-year dot in policy and Fed details",
+      "expected": "Actual target date/dated row; not arbitrary6m versus12m placement",
+      "owner": "D15/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD05",
+      "area": "Rate index change",
+      "fixture": "SOFR fallback where EFFR was expected",
+      "expected": "Visible basis change or refusal; no falsely unified curve",
+      "owner": "Rates owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "FD06",
+      "area": "Prediction-market price",
+      "fixture": "Outcome price and settlement condition",
+      "expected": "Market-implied benchmark copy; no percentage-of-traders survey claim",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX01",
+      "area": "Primary journey",
+      "fixture": "Regime→indicator history→sector/asset→exact company/chart→return",
+      "expected": "Identity, source cutoff, route/hash, scroll and focus preserved",
+      "owner": "D02/destination owners",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX02",
+      "area": "Risk journey",
+      "fixture": "Risk alert→changed axis→partial/calibration evidence→D23 condition seam",
+      "expected": "Useful reading first; source-qualified condition; no fake save when service unavailable",
+      "owner": "D02/D23",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX03",
+      "area": "Phone first fold",
+      "fixture": "320/390 with long EN/ZH labels and material caveat",
+      "expected": "Answer and path remain useful; metadata/gauge does not displace all time-series context",
+      "owner": "D02/F01-F02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX04",
+      "area": "Inspector return",
+      "fixture": "Open from scrolled table; change detail/horizon; close",
+      "expected": "Return to original surviving trigger/scroll; else relevant heading with change explanation",
+      "owner": "F01-F02/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX05",
+      "area": "Overlay arbitration",
+      "fixture": "Open risk evidence while global search/Brain layer exists",
+      "expected": "One active blocking layer under F01 policy; no nested unreachable modal or duplicated Brain",
+      "owner": "F01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX06",
+      "area": "Dock/overlay boundary",
+      "fixture": "Resize with evidence open and expanded/compact rail",
+      "expected": "Same evidence identity; proper modal/nonmodal roles; no hidden focused duplicate",
+      "owner": "F01-F02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX07",
+      "area": "Keyboard/focus set",
+      "fixture": "Tab/ShiftTab/Escape with buttons, links, inputs, selects and summaries",
+      "expected": "Complete reachable controls, visible focus and correct return; existing limited trap expanded if needed",
+      "owner": "F01-F02/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX08",
+      "area": "Deep anchor and history",
+      "fixture": "Direct suite hidden-panel anchor; Command tab; browser Back/Forward",
+      "expected": "Reveal right panel; retain existing history semantics and sticky offset; no double scroll",
+      "owner": "D02/F01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX09",
+      "area": "Odds invalid ticker",
+      "fixture": "Unknown ?t= plus valid fallback asset",
+      "expected": "Explicit substitution notice; no false requested-asset label",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX10",
+      "area": "Locale/navigation effects",
+      "fixture": "?lang=zh/en, theme/context switch, opening inspector",
+      "expected": "Follow approved local/persisted preference policy; no watchlist/portfolio/alert mutation",
+      "owner": "F01/D25/D23",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX11",
+      "area": "Save acknowledgment",
+      "fixture": "D23 pending then authoritative object readback",
+      "expected": "Saved only after confirmed identity; activation separate",
+      "owner": "D23",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX12",
+      "area": "Uncertain save",
+      "fixture": "Timeout/session expiry after submission; potential duplicate retry",
+      "expected": "Preserve original operation and reconcile before resend; do not assert definitive failure/success",
+      "owner": "D23",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX13",
+      "area": "Laboratory definitions",
+      "fixture": "Odds next-open returns; Anticipation5/42/189 windows; cycle FRAME",
+      "expected": "Exact definitions and evidence limitations visible; no universal probability styling",
+      "owner": "D02/model owners",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX14",
+      "area": "Queue empty versus failed",
+      "fixture": "Impulse no_data/no_scored versus0 eligible; Radar fetch fail; Demand empty cohort",
+      "expected": "Distinct reason and recovery; empty output not market conclusion",
+      "owner": "D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "AC01",
+      "area": "Zoom/reflow",
+      "fixture": "400% zoom and320CSS width with inspector open",
+      "expected": "Host permits zoom; page reflows; necessary2D overflow contained; close/actions reachable",
+      "owner": "F01-F02/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "AC02",
+      "area": "Target and contrast",
+      "fixture": "Important mobile controls, light/dark, all states",
+      "expected": "44px house target; actual WCAG24px/spacing assessment; measured contrast/focus/non-color cues",
+      "owner": "F02/QA01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "AC03",
+      "area": "Chart alternatives",
+      "fixture": "Keyboard-only/screen reader on path, rates and cone",
+      "expected": "Same value/target/date/qualification in summary and data view; no hover-only warning",
+      "owner": "D02/F02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "AC04",
+      "area": "Reduced motion",
+      "fixture": "Reduced-motion/forced-color settings",
+      "expected": "No decorative draw/pulse requirement; selected state/focus/meaning preserved",
+      "owner": "F02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "AC05",
+      "area": "Chinese financial semantics",
+      "fixture": "Long labels; price direction versus health/risk/positioning",
+      "expected": "Signs/text/legends consistent; language does not invert unrelated semantics",
+      "owner": "F02/D02/D19",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "PE01",
+      "area": "Real content widths",
+      "fixture": "320,390,768,1024,1280,1440,1600 plus fractional breakpoint edges",
+      "expected": "Measure actual shell content C and local chrome; dock only when released rule permits",
+      "owner": "F01-F02/D02",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "PE02",
+      "area": "Lazy mounting",
+      "fixture": "Initial overview then one selected Command section/inspector",
+      "expected": "No eager all-route/all-matrix/hidden-chart loads; no duplicate listeners/subscriptions",
+      "owner": "Builder",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "PE03",
+      "area": "Output integrity",
+      "fixture": "Nonfatal builder exception returning0",
+      "expected": "Missing/stale output detected by artifact/readback check; no successful-publication claim",
+      "owner": "Builder",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "PE04",
+      "area": "Performance",
+      "fixture": "Accepted deployed release, mobile/desktop p75",
+      "expected": "LCP≤2.5s, INP≤200ms, CLS≤0.1; actual measurements recorded separately",
+      "owner": "Release/QA01",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "PE05",
+      "area": "Rollback",
+      "fixture": "Introduce route, data-guard or modal regression in authorized staging",
+      "expected": "Revert same carrier to known-good compatible release; verify served identity and access",
+      "owner": "Release owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX15",
+      "area": "Odds exact controls and full export",
+      "fixture": "5y/10y/20y/max, exact/±1/±2, condition inclusion, template/min-N/sector, full-set CSV",
+      "expected": "Recompute/filter using selected criteria; no silent relaxation; unavailable conditions disabled; CSV includes full matched set rather than visible truncation",
+      "owner": "D02/Odds owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX16",
+      "area": "Contextual analyst",
+      "fixture": "Ask the analyst from Command section/workspace, mounted/unmounted/no-JS states",
+      "expected": "Existing localized section/workspace context to MMBrain singleton; real chat.html fallback; no duplicate Brain",
+      "owner": "D02/F01/Brain owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    },
+    {
+      "id": "UX17",
+      "area": "Cycle groups, focus, zoom and mobile layers",
+      "fixture": "Phase group filter, focus chip/card/line, hash restore, zoom presets/reset, full chart and full detail sheet, Escape",
+      "expected": "Preserve group filtering versus focus distinction; valid frame has no measured hero line; one Escape closes only top active layer; keep view/selection and actual scroll owner",
+      "owner": "D02/F01/cycle owner",
+      "status": "NOT_EXECUTED_FUTURE_ACCEPTANCE_CASE"
+    }
+  ]
+}

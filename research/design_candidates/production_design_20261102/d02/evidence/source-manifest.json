@@ -1,0 +1,691 @@
+{
+  "source_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+  "classification": "INSPECTED_SOURCE_IDENTITY_MANIFEST_NOT_RELEASE_OR_MODEL_VALIDATION",
+  "files": [
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "git_blob_sha": "4f133b388a58a8425105d4c1f476d31cd74bca9b",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/_macro_suite_shell.html.j2",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9fead5f2bc14a66e6234f56d7ac9573895ca58a180abb404fbebe6eb2d6f5eb2"
+    },
+    {
+      "path": "scripts/build_macro_suite_pages.py",
+      "git_blob_sha": "9b28eef2f1698181b99a233ab545db4892669c73",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_macro_suite_pages.py",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "150ddd0ab332669a18e399b4bb3037242fddaf4b3587c394963a72b9f13bc03e"
+    },
+    {
+      "path": "site/macro_command.js",
+      "git_blob_sha": "3f4869cfa7669c9d463256f6be3ef69cc8719296",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro_command.js",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "87fdd0b5270a4c91dd5cf1ae86be98373eb85bb926e5c82b54d540c2c6fe1a7b"
+    },
+    {
+      "path": "site/macro_suite.js",
+      "git_blob_sha": "7d2c5aac9e32c19da411aca5c2b834073858f738",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro_suite.js",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "66404d9bd3ce1c89be99b8b238b9c056fdd70227e1fa4f606deb2780a0bd923b"
+    },
+    {
+      "path": "site/odds.js",
+      "git_blob_sha": "50329a7f4af7b992d4ce8b6c12c30a7e437d6751",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/odds.js",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "28acb5c7a88a2c16cacf16886116c61242c8911749703078419ca1e500d51c03"
+    },
+    {
+      "path": "config/site_access.yml",
+      "git_blob_sha": "28a06a56f6452b975885793a08f3520913828fa4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/config/site_access.yml",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "7f5f03ea4c74e641b3cbc37433464f24b82c0e595b4a48df4b5be600b72eff87"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/contract.py",
+      "git_blob_sha": "0f2fd9be8b50c55d440176653138611a03d80dfb",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/market_os/macro_workspaces/contract.py",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "15e20260d511a10703ff21dc9596d833c89b5d3c52efea3459edb1581bf1ad99"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/registry.py",
+      "git_blob_sha": "48f2c4e4dc0ad8505d749324f2c65e11ad1a12f4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/market_os/macro_workspaces/registry.py",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "bcc23a73840f44aeddc29f7a3c934ed4dab2d13fb0e7e5e78bcc49decd0c5098"
+    },
+    {
+      "path": "lib/macro_suite_view.py",
+      "git_blob_sha": "21f7c14ba84bc20a178baeed36171fb9343922ed",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/lib/macro_suite_view.py",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e26619608af94976ce85203596fb1d9143ed47c20868cec5316fd55ddbd4d34a"
+    },
+    {
+      "path": "site/macrodata/workspaces/manifest.json",
+      "git_blob_sha": "826ed5953b18f98d43749d29fab5db50049d0871",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/manifest.json",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "52f33387da95501f6d70e8f1a144cdccae2d65e1ea431bf03c0f32495b4778fd"
+    },
+    {
+      "path": "templates/anticipation.html.j2",
+      "git_blob_sha": "a7814ceabc252e25ae4506c0a137533958f0476a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/anticipation.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "2c9c018bd5693c8cbb4664cd5a431aa1fe1783f156b63f155456b314a7d385bd"
+    },
+    {
+      "path": "scripts/build_anticipation.py",
+      "git_blob_sha": "151ba5c03113cac42f727186ac71709d49554531",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_anticipation.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "77e0d29d23a1bc53c704a10c321cf4878aaeaafb10fe503bd7586de0949daa4b"
+    },
+    {
+      "path": "templates/crossasset.html.j2",
+      "git_blob_sha": "8e55c5aadcbdb3a7f95e196e2f6746000c5e1ce6",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/crossasset.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9a69b3f3673b9c83cf35e558b0511b4b5ee022eb2b9cecd3aecf8a35c97e0e51"
+    },
+    {
+      "path": "scripts/build_crossasset.py",
+      "git_blob_sha": "da4d5c00f014d02dd1ea7b1bdaf0070ee2ace5ee",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_crossasset.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "db754ea2549e343a385e1008433960d12dfb22d57bc652a881ca966fcea62ecc"
+    },
+    {
+      "path": "templates/cycle.html.j2",
+      "git_blob_sha": "841187ce0d3954757a7cd9e3cae451cbcbc5ee57",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/cycle.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "ba6f4656ecf563afe012e10adc3fb6b63500afe5bfeb9ece7ef7056b25e06406"
+    },
+    {
+      "path": "scripts/build_cycle.py",
+      "git_blob_sha": "fdaa29ebc46a26a4a27ecf6bbf87c6220a931b67",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_cycle.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "ac73829056ee545e53560cfc0d32330c97a08b16336f9f86e15988d7accec410"
+    },
+    {
+      "path": "templates/demand.html.j2",
+      "git_blob_sha": "5059cdf7aa0f967496250f995c5f593ddc23643d",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/demand.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "cebac4376cb4ee2815d11b460bd90444fbba9d2760e045e5d0016f83a6d81fca"
+    },
+    {
+      "path": "scripts/build_demand.py",
+      "git_blob_sha": "e13de04966a3383ace8a1eb4fe50ee24eb3010ef",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_demand.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "ce31c37087149846029eec3bdb399e4a688ae762b5259bd9ef7e5ce719035a93"
+    },
+    {
+      "path": "templates/impulse.html.j2",
+      "git_blob_sha": "3fa2f12f3ba304aace72f6eb90c8c0c49078978b",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/impulse.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "2460c5bece8b60d31a9725d3a85d02187f1afa83b2eb4e4af49d2eae7eba58e3"
+    },
+    {
+      "path": "scripts/build_impulse.py",
+      "git_blob_sha": "0f5010cfefac05ae55e350c241c1f03eeec0a5e5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_impulse.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "1690a9cd49aef003f8fbd585b9ec330b5a2054d1542dd249b75f45bfac5e1dc9"
+    },
+    {
+      "path": "templates/dashboard.html.j2",
+      "git_blob_sha": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/dashboard.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "1566173af17972f7d7701bd59a8bae1fd3ae7bed8dddc4c912ec05871eb94667"
+    },
+    {
+      "path": "scripts/build_site.py",
+      "git_blob_sha": "9887008093816001f04b8c623267a316bacd9c82",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_site.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "4d62c6c8c761e54ead666d4b4a38d36502ce2e8e50c9daea0a7c1a8b77d7da83"
+    },
+    {
+      "path": "templates/macro_business_activity.html.j2",
+      "git_blob_sha": "b3cfcd2fcaa506cc3d5dc14ea0abc75f06ae7479",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_business_activity.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "2d01aff78c00bd074d6e0a845af5d6f57ba69cb9c2a8a69ecff4f2a718797dbb"
+    },
+    {
+      "path": "templates/macro_capital_structure.html.j2",
+      "git_blob_sha": "b5405d0e8fba04b1531af4c1e8e7104fa00d43ae",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_capital_structure.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "0e6811c745097b34edb3f7d31e562ea1018219ae82094b3b7c4fe70469a35140"
+    },
+    {
+      "path": "templates/macro_consumer_payments.html.j2",
+      "git_blob_sha": "40f167ef1858152706a0d109b5e5072a69373217",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_consumer_payments.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "5d5252d5eccb4d1f0dad6fcbc664b33239faf776a1d903569a0a31376faabb13"
+    },
+    {
+      "path": "templates/macro_context.html.j2",
+      "git_blob_sha": "b6ba9c553360d395d7a24f782ed536147faf3f52",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_context.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "b5a1a4ab79a06380b9134cb1276bb0038a0e273a1ab0dd8cdbe5aefe4386a486"
+    },
+    {
+      "path": "scripts/build_macro_context.py",
+      "git_blob_sha": "f2d953fb00425306568ae10c35ead707c29998a0",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_macro_context.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "22f6d9d885be8c1c853485aecad83b43a1c01816e0a4d146ea58bc65749084b9"
+    },
+    {
+      "path": "templates/macro_financial_conditions.html.j2",
+      "git_blob_sha": "ccf29ddebaa59f02954576ae5badc2bd74cc003d",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_financial_conditions.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "393adee5e82ec0fbe355cc6bf77709b7ae88cae0812b201915009918c72efd26"
+    },
+    {
+      "path": "templates/macro_growth_real_economy.html.j2",
+      "git_blob_sha": "9932b6b5983d55b7e066ffdb9cee6633785dde81",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_growth_real_economy.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "d58b8f6e8cd536842aac646db241473d5b52b5b64485ed77cd5baf2e6032f820"
+    },
+    {
+      "path": "templates/macro_housing_real_estate.html.j2",
+      "git_blob_sha": "2d840569eb66dda25cfd23f1ef8534b6f51da103",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_housing_real_estate.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "481bf7fa69f75447003675c7b5b3ad83974426894ef992558bec81329b281f90"
+    },
+    {
+      "path": "templates/macro_inflation_system.html.j2",
+      "git_blob_sha": "5581e5ec3cd8acbc5ed49cd39388aded6734c7fa",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_inflation_system.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "3df187293c9a98c02c8c260fc9fdd386eacb52cce75ebe00a199dca6c058c875"
+    },
+    {
+      "path": "templates/macro_labor_markets.html.j2",
+      "git_blob_sha": "ca389728b79e48110f433ed2904601aa0bdc0348",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_labor_markets.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "fa81e281cce6816494fcbcae0a44b000aea921c9b7281987cdd6a0a61d6493e9"
+    },
+    {
+      "path": "templates/macro_liquidity_central_banks.html.j2",
+      "git_blob_sha": "f8c7449cb2d95b0d8a4083c3273c0a8d8f4bf468",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_liquidity_central_banks.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "331fcbadefc6f4a087b896311973c4aff8f188071dea461cc2a9b9b5b557142c"
+    },
+    {
+      "path": "templates/macro_liquidity_regime.html.j2",
+      "git_blob_sha": "51d8d6617689255d6dce002127ffcfe2007563f1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_liquidity_regime.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "6e9c6fca4be9a282e3e2f063ddacb53b02b8e8de842c43020a6e011b9dbad7c3"
+    },
+    {
+      "path": "templates/macro_monetary.html.j2",
+      "git_blob_sha": "a4f2f92ef5b7255e6070645ea6472414731e3256",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_monetary.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "04d78bfa173465097764ea0890631cbf66dfc640ed92935248e8462a707e6d95"
+    },
+    {
+      "path": "templates/macro_monetary_policy.html.j2",
+      "git_blob_sha": "1c145be55c41dc0bd26679c8d18ce40fd68a636a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_monetary_policy.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "109dcde5fec2275d9da8abbaece6bf2acd6622c631abb5047486ca23e4d6dfe4"
+    },
+    {
+      "path": "templates/macro_national_debt_liabilities.html.j2",
+      "git_blob_sha": "8260c61c5bdfd7e7757d078b12d122ddb313d7e5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_national_debt_liabilities.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "fc3331d3f999ce72b4c5a90140e067076858348ce98b50ce984d63108e7e88c3"
+    },
+    {
+      "path": "templates/macro_rates_curves.html.j2",
+      "git_blob_sha": "067752d8f0f1a4bb2d10d851a9ea25becdeddb44",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_rates_curves.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "5f71c8c66a4d99113f1b179061c97e731840fc4c50e3fdb42a38feb54c0a2f07"
+    },
+    {
+      "path": "templates/macro_signals.html.j2",
+      "git_blob_sha": "e319818410efc0da4dd791ca0d5234a8521c58d5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_signals.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "480c7186645dd2a2c3405a00ea27c5cd02d9555636f5e9195e1ded4f3a99aef4"
+    },
+    {
+      "path": "templates/macro_trade_flows.html.j2",
+      "git_blob_sha": "57d73728003b0a43427edab4b65a0b4951b89df2",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/macro_trade_flows.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "b43ab172f40f4d813f13d285a11d75448ae9e0cd6057d42e63b6f02a42086e5e"
+    },
+    {
+      "path": "templates/odds.html.j2",
+      "git_blob_sha": "8e523865f014a4576a0b0b6fbf6558281ff4e894",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/odds.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "86e0d80210c4b28205bca877daf70c7933974d0cca8106344c565c29be5241f0"
+    },
+    {
+      "path": "scripts/build_odds.py",
+      "git_blob_sha": "2494ca61cbfb8002dabfa90f34134778bd095fa1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_odds.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e5fc6e1725f8b9dd4f6f13cb13450d34a5f079514c84b21c09536a3a2ab6736d"
+    },
+    {
+      "path": "templates/radar.html.j2",
+      "git_blob_sha": "a76dd9b8ba50db92d4997cb59096c8bf3b7787f6",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/radar.html.j2",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "b8dc3d0e552f0273f50231303c98fa17ee30957854d16f00c19ee39bf5e0a16c"
+    },
+    {
+      "path": "scripts/build_radar_page.py",
+      "git_blob_sha": "ed931ba803bb332c3ca7233dff024bf9fada5dc4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_radar_page.py",
+      "read_class": "ROOT_CACHED_TOOL_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "b5d504ac01df94eff37a91c8284da836e7d9f895f56d0c3000090066667cf023"
+    },
+    {
+      "path": "templates/_macro_command_fragment.html.j2",
+      "git_blob_sha": "5a0b38a9871b29711a698e61cd73199f2f33f52a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/_macro_command_fragment.html.j2",
+      "read_class": "ROOT_SHA_READ_WITH_SHARED_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e1b807e3f3b98c12b173dbcc14836da0e1edff9be8f0247f91444a5db1069682"
+    },
+    {
+      "path": "templates/_macro_command_figures.html.j2",
+      "git_blob_sha": "8f3be8cea800bab078b191838814b16ba01a528b",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/_macro_command_figures.html.j2",
+      "read_class": "ROOT_SHA_AND_HEADER_RECEIPT_ONLY_NOT_FULL_SOURCE_INSPECTION",
+      "local_cache_verification": "SOURCE_RECEIPT_ONLY"
+    },
+    {
+      "path": "site/cycle_app.js",
+      "git_blob_sha": "d34e4924395fa2b75fb596e4acf6865b02eaa0e5",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/cycle_app.js",
+      "read_class": "ROOT_FULL_SOURCE_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "97390aeaa9b3350ea505d7db914cce11f80ce3da2342d92a9e582fc9e90d9021"
+    },
+    {
+      "path": "engine/risk_radar.py",
+      "git_blob_sha": "94222d44ec102e728da5443e2082da73ad29f17f",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/risk_radar.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d"
+    },
+    {
+      "path": "engine/risk_radar_scorecard.py",
+      "git_blob_sha": "1d9d694104d26971d24642cadb6f793ec0d44fd8",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/risk_radar_scorecard.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "122025b98da098d1da8dc7f9a980fa2d31d5e4e29b128c1481725b9e73583634"
+    },
+    {
+      "path": "engine/risk_radar_backtest.py",
+      "git_blob_sha": "918327cb330504cd0e15112fbecdb5c47b0cd04a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/risk_radar_backtest.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "f61a2d2fbc406eae6f9410d5a966801169a15607b61fddfea8531fa7b047bda4"
+    },
+    {
+      "path": "engine/regime.py",
+      "git_blob_sha": "aede18b357e940d19fc26572f513f2f58a9bde58",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/regime.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9a1ad0d2857584cf3c807292759a1741493a0501fa19da036d4136fee7a4cd54"
+    },
+    {
+      "path": "engine/axes.py",
+      "git_blob_sha": "03dfda74c835c8c10c6a4140ac1fc72843593fa3",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/axes.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "4138dafc4dd08180b4bacca50a196118201321d3e71052e22abe157aab3eb536"
+    },
+    {
+      "path": "engine/fed_path.py",
+      "git_blob_sha": "fd72de0b80418aee5de9cf7236251fde70c38528",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/fed_path.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "bea2996929482d81ce8abbc3d61bdf795e540121a3668d684dad266820593e84"
+    },
+    {
+      "path": "engine/fed_stance.py",
+      "git_blob_sha": "20b84b95484a782edae89929d7b5f63a18e0e579",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/fed_stance.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "5750e729cf4f760fdab9d16f3fee75e5701d12cfec041f8893c7247938ea01df"
+    },
+    {
+      "path": "engine/conditions.py",
+      "git_blob_sha": "d5c657d300d9d3a19d28bbb1ccf9fb5a2101f898",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/conditions.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "2a19896a56cef3a8e3e128db2d806dd2be67b59633890784a963e32579e4797b"
+    },
+    {
+      "path": "engine/equity_alloc.py",
+      "git_blob_sha": "ced9b9e0610e550fb9841c423dabc1045c9196a4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/equity_alloc.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "1034757fb48a40b37fe686cae8ad52ff38f0ef8fa3be8009301b364c8c46542a"
+    },
+    {
+      "path": "engine/run.py",
+      "git_blob_sha": "2311ec6af7fd9c089cb8c1898ec8286f28086c06",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/run.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "5775f7cdab8b96953e1536fab7496c502ffbfce020b67b47d8251e1b4b7b3df6"
+    },
+    {
+      "path": "data/risk_radar/probability_evidence.json",
+      "git_blob_sha": "3fd3b0a514e9531e1586f221aba371abc960c7cd",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/data/risk_radar/probability_evidence.json",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "cdc8fe875225a4aa69a345e38ad8b179e9e970ab5380a5d4d2eec25021476381"
+    },
+    {
+      "path": "data/risk_radar/scorecard.json",
+      "git_blob_sha": "a8efb6aa0ef6279495f6c0a5ef3af32620c420d7",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/data/risk_radar/scorecard.json",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "68380e0322c31e150b17aef5d41266abe63690fdfa54ae7d2a821785809ba0f9"
+    },
+    {
+      "path": "data/regime/latest.json",
+      "git_blob_sha": "a41126475397740e36b9a5395bf44f82abf089c0",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/data/regime/latest.json",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "6cd0d2efcb3b4b280ee7faac9a4380193dd62e31cc22f6deb211807867279647"
+    },
+    {
+      "path": "data/rates_command/latest.json",
+      "git_blob_sha": "d973ed9a92ada1949ff39155a187b56fcef24939",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/data/rates_command/latest.json",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "c5f79c2360a5ca4f211f737964c26e171cdb0e184c4157a51d8329ef24d0d634"
+    },
+    {
+      "path": "engine/rates_command_outlook.py",
+      "git_blob_sha": "7cbc8c2e7f3b4b6756d9553488010318c8d81173",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/rates_command_outlook.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "fcce1fd5e1b44ea75248b4a7ed22a676ca609ee4e363cae179aa9ab5c302ed4c"
+    },
+    {
+      "path": "engine/rates_command_outlook_compose.py",
+      "git_blob_sha": "3c55ca8c0733285fb0429a918b25d56260a6ca80",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/rates_command_outlook_compose.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "ddd7eae932566e7b6f2bc61c0c1417c7cd95ed706fa2c37a29f99bd0f0ca67cc"
+    },
+    {
+      "path": "engine/rates_command_basis.py",
+      "git_blob_sha": "1345e4b4f1bc2121b0ce947e4d95c14243d922f2",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/rates_command_basis.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "0ab26693c004b202683b6637c99961cb4dd641036d6776cf0959c9e14efde3f5"
+    },
+    {
+      "path": "engine/rates_inflation_command.py",
+      "git_blob_sha": "80615675441075bce874b96ed3c82393c32728c9",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/rates_inflation_command.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e6ce7ab274295944acb9c9713d54ab50f4dc6741398f1725998a891d75c88e63"
+    },
+    {
+      "path": "scripts/build_rates_command.py",
+      "git_blob_sha": "c5a915e1998ffd5a56d2fd9f2ff3bf920e49dbe1",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_rates_command.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "81bf9747e273c6fb42f7dc4897ae52534e313c4c286f3e3107f35b4ef1895e1f"
+    },
+    {
+      "path": "engine/regime_hmm.py",
+      "git_blob_sha": "9d3f1d3a2a7453eb9d55494108908ff6faf16d2f",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/regime_hmm.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "243082a2d762465e88e30d59de884384517220ad5619f8e243c59fcac87c3dd9"
+    },
+    {
+      "path": "engine/anticipation.py",
+      "git_blob_sha": "83a614a41248cabae87517455d61bba213183d20",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/anticipation.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "ca263c513b504f17d110b4dd47e602fda202c382b87e1567c2adfb6a1f23921d"
+    },
+    {
+      "path": "engine/odds_lab.py",
+      "git_blob_sha": "38303fe8dea8b079b66c7e9feed539c520550f02",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/engine/odds_lab.py",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "3c2c9eaf1dc67f254d6363d664947407b8f0fef4ee5f05f3872ae180a1042aef"
+    },
+    {
+      "path": "data/regime/anticipation_gate.json",
+      "git_blob_sha": "606f22fbd654851c7d5409ac5dae904d1d8902c8",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/data/regime/anticipation_gate.json",
+      "read_class": "PRINCIPAL_SOURCE_READ_AND_CACHE_VERIFIED",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "6b2893a5ab29f67c8c18aeb35cf29f75628dfff20c7bf9e9d9f87580adc0df7c"
+    },
+    {
+      "path": "contracts/market_os/macro_workspace_snapshot.v1.schema.json",
+      "git_blob_sha": "a34cc02cab4cbd2bbe289489c1c8c56b9c2c2260",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/contracts/market_os/macro_workspace_snapshot.v1.schema.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9e8dd9fbb936c74f6266515bbea21abdb6f8f5636efec1b870a7ea84caff0cd8"
+    },
+    {
+      "path": "site/macrodata/workspaces/business_activity/US/latest.json",
+      "git_blob_sha": "075f1e78d5d918823cd8465e82cc6ab5705b8d9a",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/business_activity/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "90306290684a1f746d386f862c154167ab73e23b259c086fbd63eeb9a7be5af5"
+    },
+    {
+      "path": "site/macrodata/workspaces/capital_structure/US/latest.json",
+      "git_blob_sha": "fe9a8f5124367b961562bda60fa62128b7236477",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/capital_structure/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "0aafbb49e3c32ff20bbcbf9309890cca3d04057d9e8c85c1f10371f7e7784947"
+    },
+    {
+      "path": "site/macrodata/workspaces/consumer_payments/US/latest.json",
+      "git_blob_sha": "26f2c05938a869571a376b3bd93b82e3a9ab06ae",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/consumer_payments/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "04f6e3cb81615f71fba3660df638cad1ae2b2f0d29e5228a4c2175b0276caea4"
+    },
+    {
+      "path": "site/macrodata/workspaces/financial_conditions/US/latest.json",
+      "git_blob_sha": "41cf6f62780cd9b79ac2f684f8cf6ee5c2d14f59",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/financial_conditions/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "830c5759091fb9d50694fda0bab8256daa52916d1912b17caf5cc232fa0a39a8"
+    },
+    {
+      "path": "site/macrodata/workspaces/growth_real_economy/US/latest.json",
+      "git_blob_sha": "93f88b379900d764fb137bbdd811f6a442293b4e",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/growth_real_economy/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "bef4eaf8757bd76c1f65e3494fbdaba27d0a842ae5ef3dba50601b6d949e668d"
+    },
+    {
+      "path": "site/macrodata/workspaces/housing_real_estate/US/latest.json",
+      "git_blob_sha": "c6c50b2b243bef041f1524979d4397e4e8ec48ed",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/housing_real_estate/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9556a54d97b4c5415bf09db5d850a60d1458dfea6e2790490660d63e58bc1311"
+    },
+    {
+      "path": "site/macrodata/workspaces/inflation_system/US/latest.json",
+      "git_blob_sha": "438c818ffffef1b3a7a9b604dd3eecd9fdb8d5ac",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/inflation_system/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "d45bc8f60de5b6012af2ef217232e98d91c7e02244a4f5c98d78e5e33fcebdb1"
+    },
+    {
+      "path": "site/macrodata/workspaces/labor_markets/US/latest.json",
+      "git_blob_sha": "379ec7219aa1985c40681d5af00410a7bd1b8670",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/labor_markets/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "a1b6a084eba10bd69afb3cfa8980e15aa4a0e45b8cb330acc43cf5060f37df44"
+    },
+    {
+      "path": "site/macrodata/workspaces/liquidity_central_banks/US/latest.json",
+      "git_blob_sha": "7530ac46c91b2e02131b2f942f2b2caea04903ab",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/liquidity_central_banks/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "26ac17e7639344cf74279d3a88ff88c282bf61aaf3fe7692293b7ed1dadac479"
+    },
+    {
+      "path": "site/macrodata/workspaces/liquidity_regime/US/latest.json",
+      "git_blob_sha": "97b666287095ef7a0e497c8ec0a0b7a4cf3c3963",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/liquidity_regime/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e04e39862ee1b8fb5bcabe772e6aa49373b031c4a0fae127f4b1370c923f6663"
+    },
+    {
+      "path": "site/macrodata/workspaces/monetary_policy/US/latest.json",
+      "git_blob_sha": "5301a7af3b42fa53c75cf4304a4ef44e8909b1f8",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/monetary_policy/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "705ac99c19b8c6601782ddae8229d53648491e15fe1eda7e47ff54fa4f74dae1"
+    },
+    {
+      "path": "site/macrodata/workspaces/national_debt_liabilities/US/latest.json",
+      "git_blob_sha": "de3c5acd371e4c8e98976d1417bd70a0d9392dcf",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/national_debt_liabilities/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "9f8d043475ef5fb3fc7bcd1df860bc900476ec45b38872f2689f6b6c0913f789"
+    },
+    {
+      "path": "site/macrodata/workspaces/rates_curves/US/latest.json",
+      "git_blob_sha": "f948707b779f7515f53914147b8792f63126be37",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/rates_curves/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "bf95c0f4b12f9991ec9c195cc14fc49ee5499b983e722ec9a8c8f8bee0d58dc2"
+    },
+    {
+      "path": "site/macrodata/workspaces/trade_flows/US/latest.json",
+      "git_blob_sha": "fcfd1b701af0be1015516dd8f7f9d9f3d2b1daa8",
+      "source_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macrodata/workspaces/trade_flows/US/latest.json",
+      "read_class": "ROOT_SOURCE_SNAPSHOT_OR_SCHEMA_READ",
+      "local_cache_verification": "MATCHES_GIT_BLOB",
+      "local_cache_sha256": "e0e0a961c43d1cad4ee36954958a644ec1f137655b450f50f918d5b7bcb6390a"
+    }
+  ],
+  "cache_check": {
+    "matched": 84,
+    "checked": 84,
+    "unmatched": []
+  },
+  "historical_placeholder": "Literal unknown source entry omitted; macro family provenance resolved in appendix, original assignment row retained in route census."
+}

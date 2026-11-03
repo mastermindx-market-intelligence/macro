@@ -1,0 +1,112 @@
+{
+  "classification": "EXECUTED_ARTIFACT_CONSISTENCY_CHECKS_NOT_PRODUCT_TESTS",
+  "checks": [
+    {
+      "name": "all_26_assignment_ids_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_assignment_paths_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_resolved_builders_and_templates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "feature_ledger_81_unique_and_counts",
+      "passed": true,
+      "detail": {
+        "IMPROVE": 26,
+        "RETAIN": 44,
+        "RELOCATE": 5,
+        "BLOCKED_DATA": 6
+      }
+    },
+    {
+      "name": "no_removals",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_relocations_have_successor",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "human_and_machine_feature_ids_match",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "65_future_cases_unique_and_labelled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "human_machine_future_cases_match",
+      "passed": true,
+      "detail": {
+        "markdown": 65,
+        "json": 65
+      }
+    },
+    {
+      "name": "14_workspaces_321_metrics_101_sources_10_series",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_workspaces_US_context_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "source_integrity_14_digests_and_top_shapes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_full_schema_validation_overclaim",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "25_beta_paths_23_shell_2_404",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "denied_paths_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "5_paper_pages_26_boards_no_writes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "9_paper_captures_match_digests",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "84_cached_sources_match_receipts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "internal_document_links_resolve",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "passed": 19,
+  "total": 19,
+  "failures": [],
+  "scope": "D02 source packet structure, counts, references and captured/source integrity only; no production or browser interaction certification."
+}

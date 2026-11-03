@@ -1,0 +1,150 @@
+{
+  "classification": "SUPPORTING_EXISTING_REFERENCE_CAPTURES_NOT_FINAL_CANDIDATE_FREEZE",
+  "captures": [
+    {
+      "key": "risk-primary",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-1-0",
+      "artboardId": "1-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+      "path": "evidence/paper/risk-primary.jpg",
+      "observation_time": {
+        "start": "2026-11-03 06:57:44 UTC",
+        "end": "2026-11-03 06:57:54 UTC"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 219605,
+      "sha256": "ae555e5e7a1919b99a35775ffe0b61de118239adc4e195a1e6ed39230a14f720"
+    },
+    {
+      "key": "risk-mobile",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-1-0",
+      "artboardId": "8R6-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+      "path": "evidence/paper/risk-mobile.jpg",
+      "observation_time": {
+        "start": "2026-11-03 06:57:44 UTC",
+        "end": "2026-11-03 06:57:54 UTC"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 73859,
+      "sha256": "0f4f190e8c73ed2212d007d14fcba9c5170638bb26b249e5f48b030517ac4f06"
+    },
+    {
+      "key": "breadth-desktop",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-13-1",
+      "artboardId": "5J97-1",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-13-1",
+      "path": "evidence/paper/breadth-desktop.jpg",
+      "observation_time": {
+        "start": "2026-11-03 06:57:44 UTC",
+        "end": "2026-11-03 06:57:54 UTC"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 251619,
+      "sha256": "8c202dfc60b8263f26bfcfe68a22ac9b3871e95a9d11c8b560adde1914e3274f"
+    },
+    {
+      "key": "breadth-inspector",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-13-1",
+      "artboardId": "5K8V-1",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-13-1",
+      "path": "evidence/paper/breadth-inspector.jpg",
+      "observation_time": {
+        "start": "2026-11-03 06:57:44 UTC",
+        "end": "2026-11-03 06:57:54 UTC"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 159437,
+      "sha256": "416b04aca3fc414a7e6b0278cd291b6f8367a8f84235e520a9eb84246de874f3"
+    },
+    {
+      "key": "risk-evidence",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-1-0",
+      "artboardId": "8PS-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+      "path": "evidence/paper/risk-evidence.jpg",
+      "observation_time": {
+        "capture_group_completed_utc": "2026-11-03 06:37:22 UTC",
+        "precision": "group-completion timestamp; exact per-image time not returned"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 211804,
+      "sha256": "ce923984863e517eb4e0a6643d1b0597e29265b7ba2d7565cd7167086eac9975"
+    },
+    {
+      "key": "breadth-mobile",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-13-1",
+      "artboardId": "5JUZ-1",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-13-1",
+      "path": "evidence/paper/breadth-mobile.jpg",
+      "observation_time": {
+        "capture_group_completed_utc": "2026-11-03 06:37:22 UTC",
+        "precision": "group-completion timestamp; exact per-image time not returned"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 96032,
+      "sha256": "426c48a958744a8b06f64574eec1973850e8d6d4f7f0c76071674b3560fd0e3f"
+    },
+    {
+      "key": "pullback-us",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-6-0",
+      "artboardId": "9TH-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0",
+      "path": "evidence/paper/pullback-us.jpg",
+      "observation_time": {
+        "capture_group_completed_utc": "2026-11-03 06:37:22 UTC",
+        "precision": "group-completion timestamp; exact per-image time not returned"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 198544,
+      "sha256": "61d2b4bb6144dce5a29d318fd5f31300fc9504eb2dd7d1607e63aae1ef5f5b94"
+    },
+    {
+      "key": "pullback-cn",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-6-0",
+      "artboardId": "9WB-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-6-0",
+      "path": "evidence/paper/pullback-cn.jpg",
+      "observation_time": {
+        "capture_group_completed_utc": "2026-11-03 06:37:22 UTC",
+        "precision": "group-completion timestamp; exact per-image time not returned"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 194027,
+      "sha256": "02023e6da816d17bd9516e6a2c2cecc8aab23d594c598b769e1f90dc879973bf"
+    },
+    {
+      "key": "risk-light-zh",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-1-0",
+      "artboardId": "8YA-0",
+      "url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+      "path": "evidence/paper/risk-light-zh.jpg",
+      "observation_time": {
+        "capture_group_completed_utc": "2026-11-03 06:37:22 UTC",
+        "precision": "group-completion timestamp; exact per-image time not returned"
+      },
+      "visually_inspected": true,
+      "classification": "EXISTING_REFERENCE_CAPTURE_NOT_AFTER_DESIGN_OR_APPROVAL",
+      "bytes": 62391,
+      "sha256": "81b883cc0e4a2483a0688605a680e010f82fff469905e27a2e0a29ffc60cad97"
+    }
+  ],
+  "paper_write_effects": 0
+}

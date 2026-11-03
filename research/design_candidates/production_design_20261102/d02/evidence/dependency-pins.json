@@ -1,0 +1,40 @@
+{
+  "observed_at_utc": "2026-11-03 07:08:14 UTC",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "procedure_pin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "source_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+  "f01": {
+    "pr": 10645,
+    "pin": "34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985",
+    "status": "IN_PROGRESS_CANDIDATE_NOT_RELEASED"
+  },
+  "f02": {
+    "pr": 10630,
+    "pin": "21ec752c56222eb747d51950b29892d463c4398b",
+    "system_base": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+    "status": "CONCURRENCE_RECORDED_JOINT_QUALIFICATION_OPEN"
+  },
+  "f03": {
+    "pr": 10631,
+    "pin": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d",
+    "inventory_pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "status": "PARTIAL"
+  },
+  "macro_signals": {
+    "pr": 10485,
+    "pin": "f39f346c97faeb585bd95bf3927a48788bfdffbd",
+    "scope": "EXISTING_OWNER_PRESERVED_INTERNAL_ROUTE_NOT_ADMITTED"
+  },
+  "parent": {
+    "pr": 10617,
+    "pin": "d8ff43f6bf8cbadcf3a72bc6f47007b93d841910",
+    "changed_paths_ownership": [
+      "D03",
+      "D07"
+    ],
+    "preserved": true
+  },
+  "joint_contract_verified": false,
+  "paper_writes": 0,
+  "production_code_changes": 0
+}
