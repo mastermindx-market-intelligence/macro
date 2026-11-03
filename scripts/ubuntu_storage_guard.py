@@ -239,7 +239,7 @@ def run(args: argparse.Namespace) -> dict:
             health["gc_mode"] = "pytest_garbage_only"
             try:
                 from ubuntu_pytest_temp_reclaim import reclaim
-                result = reclaim(owner, apply=True, min_age_hours=24, max_dirs=6)
+                result = reclaim(owner, apply=True, min_age_hours=24, max_dirs=3)
                 health["pytest_reclaim"] = {"attempted": True, **result}
             except Exception as exc:
                 # A failed subordinate delete may already have moved a source
