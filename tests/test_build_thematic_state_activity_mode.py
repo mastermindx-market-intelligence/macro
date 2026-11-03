@@ -90,27 +90,50 @@ def _events_bytes(events):
     return b"".join(json.dumps(e, sort_keys=True).encode("utf-8") + b"\n" for e in events)
 
 
-FIXTURE_RULING = Path(
-    "research/theme_graph/fixture_ruling/F01_GRAPH_MEMBERSHIP_USE_RULING.json")
+FIXTURE_RULING_DIR = Path("research/theme_graph/fixture_ruling")
+
+
+def _fixture_ruling_bytes(event) -> bytes:
+    """A hermetic stand-in for the ruling REVISION the bridge cites. It GRANTS exactly
+    this event's own membership (subject, target, species, scope, proposal) for the
+    evidence edition the event carries, so the loader's read-time grant binding
+    (ACTIVITY_USE_GRANT_MISMATCH) passes and the FOLD is what decides the event."""
+    from engine.theme_graph import activity_history_bridge as bridge
+
+    lineage, scope = event["evidence_lineage"], event["scope"]
+    grant = dict(bridge._GRANT_REQUIRED,
+                 subject_node_id=event["endpoints"]["source_node_id"],
+                 target_node_id=event["endpoints"]["target_node_id"],
+                 species=event["species"],
+                 membership_scope={k: scope.get(k) for k in (
+                     "counterparty_issuer_id", "platform", "product")},
+                 proposal_ids=[lineage["proposal_id"]])
+    ruling = {"schema": bridge._SOURCE_PURPOSE_RULING_SCHEMA,
+              "fixture": "graph membership use ruling",
+              "revises_ruling_sha256": lineage["owner_bindings"]["purpose"],
+              "source": {"sha256": lineage["source_sha256"]},
+              "graph_membership_use_grant": grant}
+    return json.dumps(ruling, sort_keys=True).encode("utf-8") + b"\n"
 
 
 def _bind_events(root, events):
     """What scripts/bridge_activity_history.py leaves beside each event it writes: one
     bridge receipt row (outcome = the event's action, identical event_id/event_sha256),
     the curation receipt bytes the event's ``curation.receipt_sha256`` names, and a real
-    ruling file the row's ``use_ruling_sha256`` content-addresses. The rows copy the
-    event's own claims, so a tampered digest still reaches the fold and is refused
-    there (the fold-refusal case below)."""
+    ruling file the row's ``use_ruling_sha256`` content-addresses whose grant names the
+    event's own membership. The rows copy the event's own claims, so a tampered digest
+    still reaches the fold and is refused there (the fold-refusal case below)."""
     import hashlib
 
     from engine.theme_graph import activity_history_bridge as bridge
 
-    ruling = root / FIXTURE_RULING
-    ruling.parent.mkdir(parents=True, exist_ok=True)
-    ruling.write_bytes(b'{"fixture": "graph membership use ruling"}\n')
-    ruling_sha = hashlib.sha256(ruling.read_bytes()).hexdigest()
     rows = []
-    for event in events:
+    for index, event in enumerate(events, start=1):
+        rel = FIXTURE_RULING_DIR / f"F{index:02d}_GRAPH_MEMBERSHIP_USE_RULING.json"
+        ruling = root / rel
+        ruling.parent.mkdir(parents=True, exist_ok=True)
+        ruling.write_bytes(_fixture_ruling_bytes(event))
+        ruling_sha = hashlib.sha256(ruling.read_bytes()).hexdigest()
         pid = event["evidence_lineage"]["proposal_id"]
         curation = event["curation"]["receipt_sha256"]
         # tests/test_theme_graph_activity_membership_history.py::_curation hashes these.
@@ -125,7 +148,7 @@ def _bind_events(root, events):
             "graph_membership_use": event["use_qualification"]["graph_membership_use"],
             "event_id": event["event_id"], "event_sha256": event["event_sha256"],
             "curation_receipt_sha256": curation,
-            "use_ruling_path": FIXTURE_RULING.as_posix(), "use_ruling_sha256": ruling_sha,
+            "use_ruling_path": rel.as_posix(), "use_ruling_sha256": ruling_sha,
             "ruling_refusals": [], "recorded_at": ACT_STAMP})
     path = root / bridge.DEFAULT_BRIDGE_RECEIPTS_PATH
     path.parent.mkdir(parents=True, exist_ok=True)

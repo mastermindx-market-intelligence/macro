@@ -530,6 +530,93 @@ def test_fixture_grant_appends_and_the_fold_accepts_current_belief(rig):
     assert len(bridge.read_bridge_receipts(rig.receipts_path)) == 1
 
 
+# ---------------------------------------------------------------------------
+# Crash recovery: apply_plan appends events FIRST, receipts SECOND
+# ---------------------------------------------------------------------------
+
+def _die_on_the_receipts_append(monkeypatch, rig):
+    """Kill apply_plan AFTER its events append landed and BEFORE its receipts append
+    writes a byte: the window a process kill or a full disk opens between the two."""
+    real = bridge._append_jsonl
+
+    def append(path, rows, *, code):
+        if Path(path) == rig.receipts_path and rows:
+            raise OSError("injected: died between the events and receipts appends")
+        return real(path, rows, code=code)
+
+    monkeypatch.setattr(bridge, "_append_jsonl", append)
+    return real
+
+
+def _binding_code(rig):
+    with pytest.raises(bridge.BridgeRefusal) as refusal:
+        bridge.load_bound_activity_events(
+            events_path=rig.events_path, bridge_receipts_path=rig.receipts_path,
+            receipts_dir=rig.receipts_dir, ruling_root=rig.tmp_path, target_tiers={})
+    return refusal.value.code
+
+
+@pytest.mark.parametrize("rerun_at", ["2026-10-21T23:00:00Z", "2026-10-22T09:30:00Z"],
+                         ids=["same_recorded_at", "later_recorded_at"])
+def test_a_crash_between_the_two_appends_heals_exactly_once_on_rerun(rig, monkeypatch,
+                                                                    rerun_at):
+    # The clean run's bytes, at the same paths, are what the healed files must equal.
+    [decision] = rig.plan()
+    rig.apply([decision])
+    clean_events = rig.events_path.read_bytes()
+    clean_receipts = rig.receipts_path.read_bytes()
+    rig.events_path.unlink()
+    rig.receipts_path.unlink()
+
+    real = _die_on_the_receipts_append(monkeypatch, rig)
+    with pytest.raises(OSError, match="injected"):
+        rig.apply([decision])
+    monkeypatch.setattr(bridge, "_append_jsonl", real)
+    [stranded] = bridge.read_events(rig.events_path)
+    assert stranded["event_sha256"] == decision["event"]["event_sha256"]
+    assert bridge.read_bridge_receipts(rig.receipts_path) == []
+    # The stranded event is exactly what the loader refuses: no APPEND receipt binds it.
+    assert _binding_code(rig) == "ACTIVITY_EVENT_UNBOUND"
+
+    # The rerun (at either clock) sees the event on file and owes the missing row.
+    [rerun] = rig.plan(existing=bridge.read_events(rig.events_path), recorded_at=rerun_at)
+    assert (rerun["outcome"], rerun["reason_code"]) == ("SKIPPED", "ALREADY_BRIDGED")
+    assert rig.apply([rerun], recorded_at=rerun_at) == {
+        "appended_events": 0, "receipt_rows": 1, "skipped": 0}
+    [event] = bridge.read_events(rig.events_path)
+    [row] = bridge.read_bridge_receipts(rig.receipts_path)
+    assert row["outcome"] == "APPEND"
+    assert (row["event_id"], row["event_sha256"]) == (event["event_id"],
+                                                      event["event_sha256"])
+    # The owed row is stamped with the event's own clock, never the rerun's.
+    assert row["recorded_at"] == event["clocks"]["recorded_at"] == RECORDED_AT
+    assert rig.events_path.read_bytes() == clean_events
+    assert rig.receipts_path.read_bytes() == clean_receipts
+    # Bound now: the loader passes (a) UNBOUND and (b) curation, and stops only at (c)
+    # because this rig's FIXTURE ruling sits outside the committed ruling glob.
+    assert _binding_code(rig) == "ACTIVITY_USE_RULING_UNBOUND"
+
+    # Healed is healed: a further rerun writes nothing.
+    [again] = rig.plan(existing=bridge.read_events(rig.events_path), recorded_at=rerun_at)
+    assert rig.apply([again], recorded_at=rerun_at) == {
+        "appended_events": 0, "receipt_rows": 0, "skipped": 1}
+    assert rig.receipts_path.read_bytes() == clean_receipts
+
+
+def test_a_heal_re_passes_the_curation_gate_before_writing_its_row(rig, monkeypatch):
+    [decision] = rig.plan()
+    real = _die_on_the_receipts_append(monkeypatch, rig)
+    with pytest.raises(OSError, match="injected"):
+        rig.apply([decision])
+    monkeypatch.setattr(bridge, "_append_jsonl", real)
+    pid = rig.proposed["proposal_id"]
+    (rig.receipts_dir / (pid.replace(":", "_") + ".json")).unlink()
+    [rerun] = rig.plan(existing=bridge.read_events(rig.events_path))
+    assert (rerun["outcome"], rerun["reason_code"]) == ("REFUSED", "RECEIPT_MISSING")
+    assert rig.apply([rerun]) == {"appended_events": 0, "receipt_rows": 0, "skipped": 1}
+    assert bridge.read_bridge_receipts(rig.receipts_path) == []
+
+
 def test_tampered_existing_event_for_the_same_key_conflicts(rig):
     [first] = rig.plan()
     rig.apply([first])
