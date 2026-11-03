@@ -1,286 +1,102 @@
-{#
-  _aibrief_body.html.j2 — the ONE shared AI-brief body renderer (ABX v2).
+{# ABX3: one context-free escaped renderer for all lenses and dialogs. #}
+{% macro _split(s) -%}{% autoescape true %}
+{%- if s is string -%}
+{%- if ':' in s -%}<b>{{ s.split(':', 1)[0] }}</b>:{{ s.split(':', 1)[1] }}
+{%- elif '：' in s -%}<b>{{ s.split('：', 1)[0] }}</b>：{{ s.split('：', 1)[1] }}
+{%- else -%}{{ s }}{%- endif -%}{%- endif -%}
+{% endautoescape %}{%- endmacro %}
+{% macro _copy(en, zh=none, split=false) -%}{% autoescape true %}
+<span class="l-en">{% if split %}{{ _split(en) }}{% elif en is string %}{{ en }}{% endif %}</span><span class="l-zh">{% set z = zh if zh is string and zh|trim else en %}{% if split %}{{ _split(z) }}{% elif z is string %}{{ z }}{% endif %}</span>
+{% endautoescape %}{%- endmacro %}
+{% macro _items(values, translations=none, watch=false) -%}{% autoescape true %}
+{%- if values is sequence and values is not string and values is not mapping -%}
+<ul class="{{ 'aib2-watch' if watch else 'aib2-items' }}">
+{%- for value in values -%}{%- if value is string and value|trim -%}
+{%- set z = translations[loop.index0] if translations is sequence and translations is not string and loop.index0 < translations|length else none -%}
+<li class="{{ 'aib2-watch-row' if watch else 'aib2-item' }}">{{ _copy(value, z, true) }}</li>
+{%- endif -%}{%- endfor -%}</ul>{%- endif -%}
+{% endautoescape %}{%- endmacro %}
 
-  Used by all four surfaces: macro dlg-aibrief, china cnx-dlg-aibrief, hk
-  hkx-dlg-aibrief, and aibrief.html (server-rendered lens tabs). Pairs with the
-  shared stylesheet templates/_aibrief_css.j2 (namespace .aib2-*).
-
-  Contract (SPEC §8, layout order is law):
-    1. header strip (icon + title + cadence chip + as-of) + mandatory house-law
-       badge — the badge TEXT is HOUSE LAW, never altered.
-    2. "The gist / 要点" — tldr tick-list; last item ("What to do:") renders as
-       the STANCE PILL (the one bold move). Falls back to `summary` as the lead
-       when tldr is absent (v1 payloads).
-    3. "Key readings / 关键读数" — key_facts tone-tinted chip rail.
-    4. confidence 3-seg meter + ONE as-of.
-    5. "The full read / 完整解读" — regime_read prose.
-    6. two-up grid: "Where signals disagree" (amber) · "Chain reactions" (blue).
-    7. "Playbook check / 剧本对照" — ONLY when rotation_check present.
-    8. "What to watch / 关注事项" — checklist.
-    9. Upcoming catalysts — ONLY when show_catalysts and forward_watch present.
-   10. degraded notice + footer slot (caller passes `footer` via {% call %}).
-
-  BACK-COMPAT (SPEC §9): every v2 element fails open to absent. The committed
-  brief JSONs are still v1-shaped (no tldr / key_facts / refresh_days), so a v1
-  payload renders cleanly — gist falls back to summary, no rail, no cadence chip.
-
-  Rules: dual l-en/l-zh spans read brief.zh.<field> with EN fallback; NO
-  translated text in title= (CI); no t() inside <svg><text>; renderer never
-  ellipsis-clips Tier-1 copy (wrap, don't clip — word budgets enforced upstream).
-
-  Call it as a {% call %} block so each surface can inject its own footer
-  (link-out / receipt line), which lands in the caller() slot:
-
-    {% call aibrief_body(master_brief, 'macro', show_catalysts=True) %}
-      <div class="isle-aibrief-footer">…link-out…</div>
-    {% endcall %}
-#}
-
-{#-- STANCE VOCAB: the doctrine's six-word stance ladder (Law 1). The engine's
-     final tldr line restates the deterministic posture in these words; we detect
-     which stance the line leads with so the pill can carry a matching tone tint.
-     Detection is display-only cosmetics — the words themselves come from the
-     brief; a miss just yields the neutral accent tint. --#}
-{%- macro _stance_tone(text) -%}
-{#-- match the stance VERB — the first word after the "What to do:" colon — not a
-     substring anywhere in the line ('act' as a substring green-tints softening
-     prose like "no action needed" on a Watch stance). A miss yields accent. --#}
-{%- set _t = (text or '') | lower -%}
-{%- set _rest = (_t.split(':', 1)[1] if ':' in _t else _t) | trim -%}
-{%- set _verb = (_rest.split(' ') | first | default('')) | trim('.,;—–-') -%}
-{%- if _verb in ('protect', 'stand') -%}warn
-{%- elif _verb == 'ignore' -%}muted
-{%- elif _verb == 'act' -%}go
-{%- else -%}accent
-{%- endif -%}
-{%- endmacro -%}
-
-{#-- bold-split a "Head: rest" string on the first ':' (EN) or '：'/':' (ZH),
-     emitting <b>Head</b>: rest. Mirrors the ratified watch-row splitting idiom.
-     No colon → whole string, unbolded (never raises). --#}
-{%- macro _split_en(s) -%}
-{%- if s and ':' in s -%}<b>{{ s.split(':',1)[0] }}</b>:{{ s.split(':',1)[1] }}{%- else -%}{{ s }}{%- endif -%}
-{%- endmacro -%}
-{%- macro _split_zh(s) -%}
-{%- if s and '：' in s -%}<b>{{ s.split('：',1)[0] }}</b>：{{ s.split('：',1)[1] }}{%- elif s and ':' in s -%}<b>{{ s.split(':',1)[0] }}</b>:{{ s.split(':',1)[1] }}{%- else -%}{{ s }}{%- endif -%}
-{%- endmacro -%}
-
-{% macro aibrief_body(brief, lens='macro', show_catalysts=False) %}
-{%- set b = brief or {} -%}
-{%- set bzh = b.get('zh') or {} -%}
-{%- set _asof = b.get('state_asof') -%}
-{#-- header title varies per lens so the reader knows which market this reads --#}
-{%- set _titles = {
-  'macro': ['AI Daily Brief · cross-asset synthesis', 'AI 每日简报 · 跨资产综合'],
-  'china': ['AI Daily Brief · China &amp; HK synthesis', 'AI 每日简报 · 中港综合'],
-  'btc':   ['AI Daily Brief · Bitcoin synthesis', 'AI 每日简报 · 比特币综合']
-} -%}
-{%- set _title = _titles.get(lens, _titles['macro']) -%}
-<div class="aib2" data-lens="{{ lens }}">
-
-  {#-- 1 · HEADER STRIP — icon plate, title, as-of + cadence chip, house-law badge --#}
-  <div class="aib2-hdr">
-    <div class="aib2-icon" aria-hidden="true">AI</div>
+{% macro aibrief_body(brief, lens='macro', show_catalysts=false) %}{% autoescape true %}
+{%- set b = brief if brief is mapping else {} -%}
+{%- set zh = b.get('zh') if b.get('zh') is mapping else {} -%}
+{%- set titles = {'macro': ['Cross-asset outlook', '跨资产观察'], 'china': ['China & Hong Kong', '中国与香港'], 'btc': ['Bitcoin outlook', '比特币观察']} -%}
+{%- set title = titles.get(lens, titles['macro']) -%}
+{%- set source = b.get('state_asof') if b.get('state_asof') is string else '' -%}
+{%- set generated = b.get('generated_at') if b.get('generated_at') is string else '' -%}
+{%- set cadence = b.get('refresh_days') if b.get('refresh_days') is number and b.get('refresh_days') is not boolean and 1 <= b.get('refresh_days') <= 7 else none -%}
+{%- set tldr = b.get('tldr') if b.get('tldr') is sequence and b.get('tldr') is not string and b.get('tldr') is not mapping else [] -%}
+{%- set tldr_zh = zh.get('tldr') if zh.get('tldr') is sequence and zh.get('tldr') is not string else [] -%}
+{%- set ns = namespace(stance=none, stance_zh=none, stance_index=-1) -%}
+{%- for line in tldr -%}{%- if line is string and line.startswith('What to do:') -%}
+{%- set rest = line.split(':', 1)[1]|trim -%}
+{%- if rest in ['Act','Get ready',"Watch — don't chase",'Protect gains','Stand aside','Ignore'] or rest.startswith(('Act ', 'Act·', 'Get ready ', 'Watch ', 'Protect gains ', 'Stand aside ', 'Ignore ')) -%}
+{%- set ns.stance = rest -%}{%- set ns.stance_index = loop.index0 -%}
+{%- set ns.stance_zh = tldr_zh[loop.index0] if loop.index0 < tldr_zh|length else none -%}
+{%- endif -%}{%- endif -%}{%- endfor -%}
+<div class="aib2" data-lens="{{ lens }}" data-aib-source="{{ source }}" data-aib-generated="{{ generated }}" data-aib-cadence="{{ cadence or '' }}">
+  <header class="aib2-hdr">
     <div class="aib2-hdr-meta">
-      <div class="aib2-hdr-title"><span class="l-en">{{ _title[0] | safe }}</span><span class="l-zh">{{ _title[1] | safe }}</span></div>
+      <div class="aib2-kicker">{{ _copy('RESEARCH BRIEF', '研究简报') }}</div>
+      <h3 class="aib2-hdr-title">{{ _copy(title[0], title[1]) }}</h3>
       <div class="aib2-hdr-sub">
-        {%- if _asof %}<span class="aib2-hdr-date num">{{ _asof }}</span>{%- endif -%}
-        {#-- cadence micro-chip from refresh_days; absent → no chip (v1 fail-open) --#}
-        {%- set _rd = b.get('refresh_days') -%}
-        {%- if _rd %}
-        <span class="aib2-cadence">
-          {%- if _rd == 1 -%}<span class="l-en">Updated daily</span><span class="l-zh">每日更新</span>
-          {%- else -%}<span class="l-en">Updated every {{ _rd }} days</span><span class="l-zh">每{{ _rd }}天更新</span>{%- endif -%}
-        </span>
-        {%- endif -%}
+        <span>{{ _copy('Source date', '数据日期') }} <time>{{ source or '—' }}</time></span>
+        {% if generated %}<span>{{ _copy('Written', '撰写于') }} <time data-aib-written>{{ generated }}</time></span>{% endif %}
+        {% if cadence %}<span class="aib2-cadence">{{ _copy('Scheduled daily' if cadence == 1 else 'Scheduled every ' ~ cadence ~ ' days', '计划每日更新' if cadence == 1 else '计划每' ~ cadence ~ '天更新') }}</span>{% endif %}
       </div>
     </div>
-    {#-- HOUSE LAW: badge text is fixed — never delete or alter. --#}
-    <span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
-  </div>
-
-  {%- set _tldr = b.get('tldr') or [] -%}
-  {%- set _tldr_zh = bzh.get('tldr') or [] -%}
-  {%- set _summary = b.get('summary') -%}
-
-  {#-- 2 · THE GIST — glance tick-list (v2). Last item = "What to do:" → stance pill.
-       v1 fall-back: no tldr → the summary becomes the lead voice. --#}
-  {%- if _tldr %}
-  {#-- split the list: all-but-last are gist ticks; the last is the stance line. --#}
-  {%- set _n = _tldr | length -%}
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
-  <div class="aib2-gist">
-    <ul class="aib2-gist-list">
-      {%- for _gi in _tldr[:_n-1] -%}
-      {%- set _gi_zh = _tldr_zh[loop.index0] if _tldr_zh and loop.index0 < _tldr_zh|length else _gi -%}
-      <li><span class="l-en">{{ _split_en(_gi) }}</span><span class="l-zh">{{ _split_zh(_gi_zh) }}</span></li>
-      {%- endfor -%}
-    </ul>
-    {#-- STANCE PILL — the signature. The final tldr item ("What to do: <stance>")
-         rendered as an accent-tinted directive; the stance verb is bold. --#}
-    {%- set _stance = _tldr[_n-1] -%}
-    {%- set _stance_zh = _tldr_zh[_n-1] if _tldr_zh and (_n-1) < _tldr_zh|length else _stance -%}
-    {%- set _tone = _stance_tone(_stance) | trim -%}
-    <div class="aib2-stance aib2-stance--{{ _tone }}">
-      <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
-      <span class="aib2-stance-body">
-        <span class="l-en">{{ _split_en(_stance) }}</span>
-        <span class="l-zh">{{ _split_zh(_stance_zh) }}</span>
-      </span>
-    </div>
-  </div>
-  {%- elif _summary %}
-  {#-- v1 lead card — the summary as the single loud voice (accent-tinted). --#}
-  <div class="aib2-lead">
-    <span class="l-en">{{ _summary }}</span>
-    <span class="l-zh">{{ bzh.get('summary') or _summary }}</span>
-  </div>
-  {%- endif -%}
-
-  {#-- 3 · KEY READINGS — deterministic key_facts chip rail, tone-tinted. Absent
-       on v1 payloads → no rail. Each chip: fixed label + engine value + tone. --#}
-  {%- set _kf = b.get('key_facts') or [] -%}
-  {%- if _kf %}
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Key readings</span><span class="l-zh">关键读数</span></span></div>
-  <div class="aib2-kf-rail">
-    {%- for _f in _kf -%}
-    {%- set _tone = _f.get('tone') or 'neutral' -%}
-    <span class="aib2-kf aib2-kf--{{ _tone }}">
-      <span class="aib2-kf-k"><span class="l-en">{{ _f.get('label_en') or '' }}</span><span class="l-zh">{{ _f.get('label_zh') or _f.get('label_en') or '' }}</span></span>
-      {%- set _ven = _f.get('value_en') or '' -%}
-      {%- set _vraw = _f.get('value_zh') or _ven -%}
-      {%- set _vzh = '增长恐慌' if _vraw in ['Growth-Scare', 'Growth-scare', 'Growth scare'] else _vraw -%}
-      <span class="aib2-kf-v"><span class="l-en">{{ _ven }}</span><span class="l-zh">{{ _vzh }}</span></span>
-    </span>
-    {%- endfor -%}
-  </div>
-  {%- endif -%}
-
-  {#-- 4 · CONFIDENCE — 3-segment meter + ONE as-of stamp for the panel. --#}
-  {%- set _conf = b.get('confidence') -%}
-  {%- if _conf %}
-  {%- set _cn = 3 if _conf == 'high' else (2 if _conf == 'medium' else 1) -%}
-  {%- set _cz = '高' if _conf == 'high' else ('中' if _conf == 'medium' else '低') -%}
-  {%- set _ce = 'High' if _conf == 'high' else ('Medium' if _conf == 'medium' else 'Low') -%}
-  <div class="aib2-conf">
-    <div class="aib2-conf-bar" role="img"
-         data-tip-en="Confidence {{ _ce }} — how firmly the read holds, from the AI synthesis."
-         data-tip-zh="置信度 {{ _cz }} — 该解读的把握程度，来自 AI 综合。">
-      <span class="aib2-conf-seg{% if _cn >= 1 %} on{% endif %}"></span>
-      <span class="aib2-conf-seg{% if _cn >= 2 %} on{% endif %}"></span>
-      <span class="aib2-conf-seg{% if _cn >= 3 %} on{% endif %}"></span>
-    </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: {{ _ce }}</span><span class="l-zh">置信度：{{ _cz }}</span></span>
-    {#-- dual-span literal, NOT t(): this macro is imported WITHOUT context, and
-         build_site's env registers no t global — a t() call here crashes the
-         macro/us_stocks render. Keep this file context-free. --#}
-    {%- if _asof %}<span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> {{ _asof }}</span>{%- endif -%}
-  </div>
-  {%- endif -%}
-
-  {#-- 5 · THE FULL READ — regime prose (unchanged type scale). --#}
-  {%- if b.get('regime_read') %}
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
-  <div class="aib2-regime">
-    <span class="l-en">{{ b.get('regime_read') }}</span>
-    <span class="l-zh">{{ bzh.get('regime_read') or b.get('regime_read') }}</span>
-  </div>
-  {%- endif -%}
-
-  {#-- 6 · TWO-UP GRID — Where signals disagree (amber) · Chain reactions (blue).
-       Auto-fit so a lone card spans full width (no half-width orphan). --#}
-  {%- set _conf_items = b.get('conflicts') or [] -%}
-  {%- set _tx_items = b.get('transmission') or [] -%}
-  {%- if _conf_items or _tx_items %}
-  <div class="aib2-grid">
-    {%- if _conf_items -%}
-    {%- set _conf_zh = bzh.get('conflicts') or [] -%}
-    <div class="aib2-card aib2-card--conflicts">
-      <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items">
-        {%- for _ci in _conf_items -%}
-        {%- set _ci_zh = _conf_zh[loop.index0] if _conf_zh and loop.index0 < _conf_zh|length else _ci -%}
-        <li><span class="l-en">{{ _split_en(_ci) }}</span><span class="l-zh">{{ _split_zh(_ci_zh) }}</span></li>
-        {%- endfor -%}
-      </ul>
-    </div>
-    {%- endif -%}
-    {%- if _tx_items -%}
-    {%- set _tx_zh = bzh.get('transmission') or [] -%}
-    <div class="aib2-card aib2-card--tx">
-      <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items">
-        {%- for _ti in _tx_items -%}
-        {%- set _ti_zh = _tx_zh[loop.index0] if _tx_zh and loop.index0 < _tx_zh|length else _ti -%}
-        <li><span class="l-en">{{ _split_en(_ti) }}</span><span class="l-zh">{{ _split_zh(_ti_zh) }}</span></li>
-        {%- endfor -%}
-      </ul>
-    </div>
-    {%- endif -%}
-  </div>
-  {%- endif -%}
-
-  {#-- 7 · PLAYBOOK CHECK — full-width card, ONLY when rotation_check present. --#}
-  {%- if b.get('rotation_check') %}
-  <div class="aib2-card aib2-card--full aib2-card--playbook">
-    <div class="aib2-eyebrow"><span class="l-en">&#x267B;&#xFE0E; Playbook check</span><span class="l-zh">&#x267B;&#xFE0E; 剧本对照</span></div>
-    <div class="aib2-prose">
-      <span class="l-en">{{ b.get('rotation_check') }}</span>
-      <span class="l-zh">{{ bzh.get('rotation_check') or b.get('rotation_check') }}</span>
-    </div>
-  </div>
-  {%- endif -%}
-
-  {#-- 8 · WHAT TO WATCH — checklist, bold-split "Trigger: meaning". --#}
-  {%- set _watch = b.get('watch_items') or [] -%}
-  {%- if _watch %}
-  {%- set _watch_zh = bzh.get('watch_items') or [] -%}
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
-  <div class="aib2-card aib2-card--full">
-    <ul class="aib2-watch">
-      {%- for _wi in _watch -%}
-      {%- set _wi_zh = _watch_zh[loop.index0] if _watch_zh and loop.index0 < _watch_zh|length else _wi -%}
-      <li class="aib2-watch-row">
-        <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
-        <span class="aib2-watch-body">
-          <span class="l-en">{{ _split_en(_wi) }}</span>
-          <span class="l-zh">{{ _split_zh(_wi_zh) }}</span>
-        </span>
-      </li>
-      {%- endfor -%}
-    </ul>
-  </div>
-  {%- endif -%}
-
-  {#-- 9 · UPCOMING CATALYSTS — macro only (show_catalysts), forward_watch chips. --#}
-  {%- set _fw = b.get('forward_watch') or [] -%}
-  {%- if show_catalysts and _fw %}
-  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Upcoming catalysts</span><span class="l-zh">即将到来的催化剂</span></span></div>
-  <div class="aib2-card aib2-card--full">
-    <div class="aib2-cat-rail">
-      {%- for _c in _fw -%}
-      {%- set _cd = _c.get('date','') -%}
-      {%- set _cl = _c.get('label','') -%}
-      <span class="aib2-cat"><span class="aib2-cat-d num">{{ _cd[5:10] if _cd|length >= 10 else _cd }}</span> {{ _cl }}</span>
-      {%- endfor -%}
-    </div>
-    {%- if b.get('forward_read') %}
-    <div class="aib2-cat-read">
-      <span class="l-en">{{ b.get('forward_read') }}</span>
-      <span class="l-zh">{{ bzh.get('forward_read') or b.get('forward_read') }}</span>
-    </div>
-    {%- endif -%}
-  </div>
-  {%- endif -%}
-
-  {#-- 10 · DEGRADED NOTICE + FOOTER SLOT --#}
-  {%- if b.get('degraded_reason') %}
-  <div class="aib2-degraded">
-    <span class="l-en">Today's brief ran degraded: {{ b.get('degraded_reason') }}</span>
-    <span class="l-zh">今日简报为降级运行：{{ b.get('degraded_reason') }}</span>
-  </div>
-  {%- endif -%}
-  {#-- caller() footer: each surface injects its own link-out / receipt line. --#}
+    <span class="aib2-badge">{{ _copy('A read-through of existing signals — not a signal source', '仅为现有信号的汇总解读 — 非独立信号源') }}</span>
+  </header>
+  <div class="aib2-freshness" role="status" data-aib-freshness>{{ _copy('Freshness not verified. Check the source date before using this read.', '时效性尚未核实，请先查看数据日期。') }}</div>
+  {% set attempt = b.get('last_attempt') if b.get('last_attempt') is mapping else {} %}
+  {% if attempt.get('status') == 'retained' %}
+  <div class="aib2-degraded">{{ _copy('The latest refresh did not produce a usable brief. This is the last valid edition, with its original dates.', '最新更新未生成可用简报，当前保留上期有效版本及原日期。') }}</div>
+  {% elif b.get('degraded_reason') %}
+  <div class="aib2-degraded">{{ _copy('This edition is incomplete. Available research remains below; verify it against the source dashboards.', '本期内容不完整，以下保留可用研究，请对照源看板核实。') }}</div>
+  {% endif %}
+  <section class="aib2-opening">
+    <h3 class="aib2-sec-label">{{ _copy('The market read', '今日判断') }}</h3>
+    {% if b.get('summary') is string and b.get('summary')|trim %}<p class="aib2-lead">{{ _copy(b.get('summary'), zh.get('summary')) }}</p>{% endif %}
+    <ul class="aib2-gist-list">{% for line in tldr %}{% if line is string and line|trim and loop.index0 != ns.stance_index %}
+      <li>{{ _copy(line, tldr_zh[loop.index0] if loop.index0 < tldr_zh|length else none, true) }}</li>
+    {% endif %}{% endfor %}</ul>
+    {% if ns.stance %}<div class="aib2-stance aib2-stance--neutral"><span class="aib2-eyebrow">{{ _copy('Research posture', '研究立场') }}</span><div class="aib2-stance-body">{{ _copy(ns.stance, ns.stance_zh) }}</div></div>{% endif %}
+    {% if not b.get('summary') and not tldr and not b.get('regime_read') %}<p class="aib2-empty">{{ _copy('A usable synthesis is not available. Open the source dashboards for the underlying readings.', '暂无可用综合解读，请打开源看板查看底层读数。') }}</p>{% endif %}
+    {% set conf = b.get('confidence') %}
+    {% set conf_en = {'low':'Low','medium':'Medium','high':'High'}.get(conf) if conf is string else none %}
+    {% set conf_zh = {'low':'低','medium':'中','high':'高'}.get(conf) if conf is string else none %}
+    <div class="aib2-conf"><span>{{ _copy('Synthesis confidence', '综合判断把握') }}</span><strong>{{ _copy(conf_en or 'Not assessed', conf_zh or '未评估') }}</strong><span class="aib2-conf-note">{{ _copy('Qualitative assessment, not a probability', '定性评价，非概率') }}</span></div>
+  </section>
+  {% set change = b.get('reading_changes') if b.get('reading_changes') is mapping else {} %}
+  <section class="aib2-section"><h3 class="aib2-sec-label">{{ _copy('What changed', '与上期相比') }}</h3>
+    {% if change.get('status') == 'compared' and change.get('rows') is sequence and change.get('rows') is not string %}
+    <p class="aib2-meta">{{ change.get('previous_asof') }} → {{ change.get('current_asof') }}</p>
+    {% if change.get('rows') %}<ul class="aib2-items">{% for row in change.get('rows') %}{% if row is mapping %}<li><b>{{ _copy(row.get('label_en'), row.get('label_zh')) }}</b> {{ _copy(row.get('previous_en'), row.get('previous_zh')) }} → {{ _copy(row.get('value_en'), row.get('value_zh')) }}</li>{% endif %}{% endfor %}</ul>
+    {% else %}<p class="aib2-meta">{{ _copy('The comparable underlying readings are unchanged. This does not mean the market is unchanged.', '可比底层读数未变，不代表市场没有变化。') }}</p>{% endif %}
+    {% else %}<p class="aib2-meta">{{ _copy('No comparable previous edition is available. Changes cannot be established.', '缺少可比上期简报，无法确认变化。') }}</p>{% endif %}
+  </section>
+  {% set facts = b.get('key_facts') if b.get('key_facts') is sequence and b.get('key_facts') is not string else [] %}
+  {% if facts %}<section class="aib2-section"><h3 class="aib2-sec-label">{{ _copy('Underlying readings', '底层读数') }}</h3>
+    <dl class="aib2-kf-rail">{% for fact in facts %}{% if fact is mapping and fact.get('value_en') is string %}
+      {% set tone = fact.get('tone') if fact.get('tone') in ['good','warn','bad','neutral','info'] else 'neutral' %}
+      <div class="aib2-kf aib2-kf--{{ tone }}"><dt class="aib2-kf-k">{{ _copy(fact.get('label_en'), fact.get('label_zh')) }}</dt><dd class="aib2-kf-v">{% set legacy_zh = {'Normal':'正常','Risk-On':'偏积极','Risk-Off':'避险','Banks':'银行','AI / semis':'人工智能 / 半导体','Growth-Scare':'增长恐慌','Growth-scare':'增长恐慌','Growth scare':'增长恐慌'} %}{% set vz = fact.get('value_zh') %}{{ _copy(fact.get('value_en'), legacy_zh.get(fact.get('value_en'), vz) if not vz or vz == fact.get('value_en') else vz) }}</dd></div>
+    {% endif %}{% endfor %}</dl>
+  </section>{% endif %}
+  {% if b.get('watch_items') is sequence and b.get('watch_items') is not string and b.get('watch_items') %}
+  <section class="aib2-section aib2-watch-section"><h3 class="aib2-sec-label">{{ _copy('What to watch', '接下来关注') }}</h3>{{ _items(b.get('watch_items'), zh.get('watch_items'), true) }}</section>{% endif %}
+  <section class="aib2-section"><h3 class="aib2-sec-label">{{ _copy('Test the thesis', '检验判断') }}</h3>
+    <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts"><h4 class="aib2-eyebrow">{{ _copy('Where signals disagree', '信号分歧') }}</h4>
+      {% if b.get('conflicts') is sequence and b.get('conflicts') is not string and b.get('conflicts') %}{{ _items(b.get('conflicts'), zh.get('conflicts')) }}{% else %}<p class="aib2-meta">{{ _copy('No disagreement analysis is available. Agreement is not established.', '暂无分歧分析，不能据此认定信号一致。') }}</p>{% endif %}
+    </div>{% if b.get('transmission') is sequence and b.get('transmission') is not string and b.get('transmission') %}<div class="aib2-card aib2-card--tx"><h4 class="aib2-eyebrow">{{ _copy('Possible spillovers', '可能传导') }}</h4>{{ _items(b.get('transmission'), zh.get('transmission')) }}</div>{% endif %}</div>
+    {% if b.get('rotation_check') is string and b.get('rotation_check')|trim %}<div class="aib2-card aib2-card--playbook"><h4 class="aib2-eyebrow">{{ _copy('Playbook check', '剧本对照') }}</h4><p class="aib2-prose">{{ _copy(b.get('rotation_check'), zh.get('rotation_check')) }}</p></div>{% endif %}
+  </section>
+  {% if b.get('regime_read') is string and b.get('regime_read')|trim %}<details class="aib2-details"><summary>{{ _copy('Read the reasoning', '查看完整推理') }}<span>{{ _copy('Regime, drivers and uncertainty', '周期、驱动与不确定性') }}</span></summary><div class="aib2-regime">{{ _copy(b.get('regime_read'), zh.get('regime_read')) }}</div></details>{% endif %}
+  {% set events = b.get('forward_watch') if b.get('forward_watch') is sequence and b.get('forward_watch') is not string else [] %}
+  {% if show_catalysts and events %}<details class="aib2-details"><summary>{{ _copy('Edition calendar', '本期日程') }}<span>{{ _copy('Dates recorded when this brief was written', '简报撰写时记录的日期') }}</span></summary>
+    <ul class="aib2-events">{% for event in events %}{% if event is mapping and event.get('date') is string and event.get('label') is string %}<li data-aib-event-date="{{ event.get('date') }}"><time>{{ event.get('date') }}</time><span>{{ event.get('label') }}</span><span class="aib2-event-state"></span></li>{% endif %}{% endfor %}</ul>
+    {% if b.get('forward_read') is string %}<p class="aib2-prose">{{ _copy(b.get('forward_read'), zh.get('forward_read')) }}</p>{% endif %}
+  </details>{% endif %}
+  {% if b.get('degraded_reason') is string %}<details class="aib2-details"><summary>{{ _copy('Edition limitations', '本期限制') }}</summary><p class="aib2-meta">{{ b.get('degraded_reason') }}</p></details>{% endif %}
   {{ caller() if caller is defined else '' }}
 </div>
-{% endmacro %}
+{% endautoescape %}{% endmacro %}

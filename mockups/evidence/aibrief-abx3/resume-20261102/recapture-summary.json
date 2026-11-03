@@ -1,0 +1,13 @@
+{
+  "fixture_render": "python3 scripts/render_stock_dashboard_fixture.py --market all --out-dir /tmp/ai-daily-brief-revamp-20261101-sol-001/p0b-rendered --receipt mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+  "browser_verifier": "scripts/verify_stock_dashboard_mobile_layout.cjs, exact existing Chromium149.0.7827.55/Playwright1.61.1/darwin-arm64/font pin, both markets; full command in SPEC milestone",
+  "scope": "Actual browser fixture recapture; no canonical production build or live content claim",
+  "source_head": "b5ea33ee0edb4982c3d121df084d21f665dae6f8",
+  "integrated_main": "90e0644f9f08ab37115dfffedce2ba7939b0835d",
+  "artifacts": {
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": "b3caaa289c2911be3cae055a3f10d57b9646058bbde3367af75c0168dd8a242f",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": "16d7acb03450db56e16f5014936362baec73a947cae3d48aceed6eba024dc644",
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": "9ac4bfbcd44256acb8e650486f0d3c67486d7a868ae45f567e73dccab59f785a",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": "c54b4b63e1f867e208de2cea9fd050119195912b3f699792526ad68b9156f64a"
+  }
+}

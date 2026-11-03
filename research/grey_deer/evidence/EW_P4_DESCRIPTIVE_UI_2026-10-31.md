@@ -228,3 +228,7 @@ live served data (an `unavailable`/stale observation); the state matrix above re
 fixture-driven probe receipt. Because the comment rewording changed bound render inputs,
 the 68-shot receipt was re-rendered at the repair commit and re-bound (31 inputs, all blob
 ids equal; 303 passed, 1 skipped across the two suites).
+
+### AI Daily Brief cross-host recapture — 2026-11-02
+
+Macro PR #10486 changes the shared dashboard template, invalidating this receipt's full-source binding without changing the early-warning engine or authority. Its original operation ai-daily-brief-revamp-20261101-sol-001 re-ran the unmodified 68-state browser probe against staged candidate source: all screenshots were captured with zero page exceptions. All but sc-stale-en-dark-390.png are byte-identical to the retained set; that screenshot differs at six edge pixels, and its contact sheet was regenerated. The receipt records exact working-tree input blob IDs, NOT a claim that checkout anchor 6f529c23 already committed the changed dashboard. Production authentication and deployment remain unproven. Final source publication and exact-head review are required before treating this as release evidence.

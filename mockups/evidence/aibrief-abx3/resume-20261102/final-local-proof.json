@@ -1,0 +1,44 @@
+{
+  "scope": "exact final local source and actual parent verification; not a commit, native review or deployment",
+  "last_durable_commit": "6f529c23fb1788c51e150a2a41ed973b7f15daa0",
+  "publication_state": "NOT_CANONICALLY_PERSISTED_AFTER_PARENT",
+  "current_source_sha256": {
+    "engine/master_brain.py": "791dfbb30d902aef1a446603a139aa3266c2ec56f3d4a24ba3c53f9a2b8d7652",
+    "tests/test_master_brain.py": "dea9af3333dbddeb0159e4cca0953f9652b8ec62a92e925f99222f43e144986b",
+    "tests/test_aibrief_page.py": "591be2e9e7c614dcd75d540306c3204780a88770fa721d3644854ffc860c33e9",
+    ".github/ci/legacy-jobs.yml": "419c22e320febc3ab668913e01cdf5e040c2e221fda90a9cdf7c49871ac1550b",
+    "templates/_aibrief_body.html.j2": "3626de3390345244304b95e37f164b9c63d63de237163586df9694c37a9f621f",
+    "templates/_aibrief_css.j2": "01b91f1ce8fb1c805195461ccecab5dd14f7d547fc5f1c17bbb07409a3876d0e",
+    "templates/aibrief.html.j2": "5451f62fc6cf1bafe144b9a29a8ae0f666e340f4aedc75cadadd18cff31b6a5c",
+    "templates/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
+    "site/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
+    "scripts/build_aibrief.py": "ae79a687cd2cf520bbcb93449cc141a7a794ed4b683a3024d792c08a54125027",
+    "research/aibrief_v2/verify_browser.py": "f136691a984517c03b4744fcd84211a9fdad803252e4dc247c5f22b9e958e582",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+  },
+  "worker": {
+    "run_id": "aibrief-producer-retention-hardening-20261102-03",
+    "response_sha256": "aa1e550574b7b5f26f3361008b0dcd994503d620708007c407b3f6342a5ffd8b",
+    "original_postimages_verified_before_parent_clock_fix": true,
+    "pinned_worker_skill_loading_verified": false,
+    "artifact_export": "REFUSED; no retry; consumed already-returned inline patch instead",
+    "native_review": false
+  },
+  "checks": {
+    "integration_before_final_clock_fix": 243,
+    "final_changed_risk_suite": 210,
+    "counts_overlap": true,
+    "pinned_first_frame_suite": 120,
+    "pinned_owner_projection_cases": 128,
+    "current_host_fixture_states": 24,
+    "dedicated_capture_states": 16,
+    "dedicated_browser_assertions": 15,
+    "current_ci_contract_tests": 2
+  },
+  "remaining": [
+    "Reconnect original Studio Direct connection, re-read same operation and publish through exact-head typed owner",
+    "Genuine non-author review and required hosted checks on actual successor",
+    "Current generation and live/browser acceptance"
+  ]
+}

@@ -1,0 +1,16 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+___________ test_abx3_empty_model_reply_has_no_confidence_assessment ___________
+tests/test_master_brain.py:820: in test_abx3_empty_model_reply_has_no_confidence_assessment
+    assert result['confidence'] is None
+E   AssertionError: assert 'low' is None
+________ test_abx3_accepted_rewrite_missing_confidence_stays_unassessed ________
+tests/test_master_brain.py:836: in test_abx3_accepted_rewrite_missing_confidence_stays_unassessed
+    assert result['confidence'] is None
+E   AssertionError: assert 'low' is None
+
+NOTE: sparse worktree — verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_master_brain.py::test_abx3_empty_model_reply_has_no_confidence_assessment
+FAILED tests/test_master_brain.py::test_abx3_accepted_rewrite_missing_confidence_stays_unassessed
+2 failed, 55 deselected in 9.82s

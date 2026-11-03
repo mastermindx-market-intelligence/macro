@@ -1,0 +1,104 @@
+{
+  "aibrief-countdown-pr": [
+    "lib/aibrief_contract.py"
+  ],
+  "bea-gvc-current-descriptive-consumer": [
+    "lib/aibrief_contract.py"
+  ],
+  "c19-wp22-dhi-traversal": [
+    "lib/aibrief_contract.py"
+  ],
+  "c19-wp32-integrated-answer-correction-denial-pins": [
+    "lib/aibrief_contract.py"
+  ],
+  "catalyst-loop-integrated": [
+    "lib/aibrief_contract.py"
+  ],
+  "cn-standout-audit": [
+    "lib/aibrief_contract.py"
+  ],
+  "coiled-mtf-anchor-era": [
+    "lib/aibrief_contract.py"
+  ],
+  "conviction-profile": [
+    "lib/aibrief_contract.py"
+  ],
+  "crypto-assistant-context": [
+    "lib/aibrief_contract.py"
+  ],
+  "crypto-vector-r2-organs": [
+    "lib/aibrief_contract.py"
+  ],
+  "eval-os-a1": [
+    "lib/aibrief_contract.py"
+  ],
+  "fif-kernel-guards": [
+    "lib/aibrief_contract.py"
+  ],
+  "flow-surface": [
+    "scripts/build_aibrief.py"
+  ],
+  "intelligence-registry": [
+    "lib/aibrief_contract.py"
+  ],
+  "international-dislocation-explorer": [
+    "lib/aibrief_contract.py"
+  ],
+  "international-transmission-board": [
+    "lib/aibrief_contract.py"
+  ],
+  "international-transmission-evidence": [
+    "lib/aibrief_contract.py"
+  ],
+  "international-workspace-browser": [
+    "lib/aibrief_contract.py"
+  ],
+  "international-workspace-foundation": [
+    "lib/aibrief_contract.py"
+  ],
+  "itr-turn-rotation": [
+    "lib/aibrief_contract.py"
+  ],
+  "leadership-rotation-countercases": [
+    "lib/aibrief_contract.py"
+  ],
+  "nw-lobe-unfreeze": [
+    "lib/aibrief_contract.py"
+  ],
+  "ontology-explorer": [
+    "lib/aibrief_contract.py"
+  ],
+  "options-matrix-code": [
+    "lib/aibrief_contract.py"
+  ],
+  "options-r1-rotation-relative-trend": [
+    "lib/aibrief_contract.py"
+  ],
+  "options-r1-sector-holdings-coverage": [
+    "lib/aibrief_contract.py"
+  ],
+  "qledger-cluster-honest-ci": [
+    "lib/aibrief_contract.py"
+  ],
+  "research-price-panel": [
+    "lib/aibrief_contract.py"
+  ],
+  "research-vault": [
+    "lib/aibrief_contract.py"
+  ],
+  "ric-e0-retrospective-runners": [
+    "lib/aibrief_contract.py"
+  ],
+  "sni-acceptance-evidence": [
+    "lib/aibrief_contract.py"
+  ],
+  "sni-shared-and-drafts": [
+    "lib/aibrief_contract.py"
+  ],
+  "ticker-news-qbus": [
+    "lib/aibrief_contract.py"
+  ],
+  "washout-turn-organ": [
+    "lib/aibrief_contract.py"
+  ]
+}

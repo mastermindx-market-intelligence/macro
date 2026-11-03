@@ -1,0 +1,413 @@
+{
+  "scope": "real full templates + incumbent synthetic host view-model fixtures + committed dated briefs; NOT production or full producer builds",
+  "states": [
+    {
+      "host": "macro",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "macro-1440-dark-en.png",
+      "geometry": {
+        "left": 230,
+        "right": 1210,
+        "width": 980,
+        "viewport": 1440,
+        "scroll": 978,
+        "client": 978
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "macro-1440-dark-zh.png",
+      "geometry": {
+        "left": 230,
+        "right": 1210,
+        "width": 980,
+        "viewport": 1440,
+        "scroll": 978,
+        "client": 978
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "macro-1440-light-en.png",
+      "geometry": {
+        "left": 230,
+        "right": 1210,
+        "width": 980,
+        "viewport": 1440,
+        "scroll": 978,
+        "client": 978
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "macro-1440-light-zh.png",
+      "geometry": {
+        "left": 230,
+        "right": 1210,
+        "width": 980,
+        "viewport": 1440,
+        "scroll": 978,
+        "client": 978
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "macro-390-dark-en.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "macro-390-dark-zh.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "macro-390-light-en.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "macro",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "macro-390-light-zh.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "china-1440-dark-en.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "china-1440-dark-zh.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "china-1440-light-en.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "china-1440-light-zh.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "china-390-dark-en.png",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "width": 358,
+        "viewport": 390,
+        "scroll": 356,
+        "client": 356
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "china-390-dark-zh.png",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "width": 358,
+        "viewport": 390,
+        "scroll": 356,
+        "client": 356
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "china-390-light-en.png",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "width": 358,
+        "viewport": 390,
+        "scroll": 356,
+        "client": 356
+      },
+      "page_errors": []
+    },
+    {
+      "host": "china",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "china-390-light-zh.png",
+      "geometry": {
+        "left": 16,
+        "right": 374,
+        "width": 358,
+        "viewport": 390,
+        "scroll": 356,
+        "client": 356
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "hk-1440-dark-en.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "hk-1440-dark-zh.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 1440,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "hk-1440-light-en.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 1440,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "hk-1440-light-zh.png",
+      "geometry": {
+        "left": 270,
+        "right": 1170,
+        "width": 900,
+        "viewport": 1440,
+        "scroll": 898,
+        "client": 898
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 390,
+      "theme": "dark",
+      "language": "en",
+      "passed": true,
+      "file": "hk-390-dark-en.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "passed": true,
+      "file": "hk-390-dark-zh.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 390,
+      "theme": "light",
+      "language": "en",
+      "passed": true,
+      "file": "hk-390-light-en.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    },
+    {
+      "host": "hk",
+      "width": 390,
+      "theme": "light",
+      "language": "zh",
+      "passed": true,
+      "file": "hk-390-light-zh.png",
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 366,
+        "viewport": 390,
+        "scroll": 364,
+        "client": 364
+      },
+      "page_errors": []
+    }
+  ]
+}
