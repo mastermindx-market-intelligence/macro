@@ -3,11 +3,11 @@
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
   "kind": "Cumulative persistence inventory, not a final repaired-native review freeze",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; do not interpret a moving branch name as the receipt",
-  "parent_before_package": "09742de176f553bb30e89a0ade95643d76416c30",
+  "parent_before_package": "d6ebeefcba90387b42817f8e87792e630d5862eb",
   "files_excluding_self": 83,
-  "total_member_bytes": 3795457,
+  "total_member_bytes": 3801501,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "e10893bba427a4cfd267cdcd12884501b658a5dd737975538d4ff02e350fcc3f",
+  "aggregate_sha256": "8381e641699b80315a451b3f1f6eeea2c7d0338efa31b1949f24eabaac282b43",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -77,9 +77,9 @@
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 15591,
-      "sha256": "ff0762d67fdf58c62bf1fbb5ea92a8e5259b5d9713ac53125f77bea5ee504dfa",
-      "gitBlobSha1": "432ed78fd85f5764538d27daa4ea70cd911b949b"
+      "bytes": 16835,
+      "sha256": "cecd2dbdd3ac47b7929f91e3fe15b1422e08ec38af3aad9352e0da08cffe5b68",
+      "gitBlobSha1": "44e5d73c5ddd990acc852bc4b25ad137cf4fd8c1"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -95,9 +95,9 @@
     },
     {
       "path": "evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md",
-      "bytes": 5472,
-      "sha256": "250c83839a587520e2c3ba00ba9745e0fec9280be2bd322914ef3a26b7f6b824",
-      "gitBlobSha1": "6d5b0bdc550147cd61e94625779adf2313e44a6d"
+      "bytes": 10272,
+      "sha256": "6334902c5fc2bd697ef26bbcee7b1a015afc54d3e0dca675643e595e875aa9ac",
+      "gitBlobSha1": "144ba3cc3069cd7940d2f41e224b2436035571f2"
     },
     {
       "path": "evidence/CAPTURE_CONTEXT.json",

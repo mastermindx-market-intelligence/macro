@@ -4,6 +4,12 @@
 **F01:** F01/1.0.0-candidate.3. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.3.  
 **Source carrier:** [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645), branch `design/f01-shared-shell-v1-20261103-c4`, under existing [programme #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The enclosing immutable Git commit identifies this cumulative return. [PACKAGE_MANIFEST.json](evidence/PACKAGE_MANIFEST.json) hashes its members except the manifest itself.
 
+## Active continuation — 2026-11-03
+
+The Chairman resumed this same F01 receiver/carrier. The [effect boundary](evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md#2026-11-03-continuation-narrow-the-author-imposed-pause) now explicitly corrects the prior overbroad native pause: independently safe corrections on existing A/C/D/E/F/H boards may proceed through the original direct app with exact target guards and readback. The original I/grid operation remains EFFECT_UNKNOWN; the separate Readme operation, shared token/page effects and all dependent atlas work remain held. This is an action-scope correction, not native acceptance or a released shell contract. The prior all-lanes disposition below is historical and no longer describes the newly available disjoint correction phase.
+
+Current protected source pin: Mastermind `9f65957e29eba92245d78609f032aaea523b7cb4`, compatible INDEX1.0.1/bootstrap1. F01 source head was verified at d6ebeefcba90387b42817f8e87792e630d5862eb before this continuation. The source/qualification status remains PARTIAL / REQUEST_CHANGES / RIG draft. D06's newer Brain/return handshake at `61d6762cdd417b00aae879bd411a8bb20c50ff63` is being reconciled through its existing owner; no D06/F02 acceptance is inferred.
+
 ## Capability delta and scope
 
 **Before:** F01 had its immutable assignment, real shell code and strong existing Paper references, but lacked a unified source-bound navigation/width/state/return package and a qualified joint foundation.
