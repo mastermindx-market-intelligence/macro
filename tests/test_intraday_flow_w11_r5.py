@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "intraday_flow.html.j2"
 EVIDENCE = ROOT / "mockups" / "evidence" / "intraday-flow-w11"
 
-HOST_IDS = ("ift-hero-copy", "spot-grid", "ift-board-skel")
+HOST_IDS = ("ift-hero-copy", "ift-board-skel")
 
 
 def _open_tag(src: str, ident: str) -> str:
@@ -33,9 +33,9 @@ def _host_inner(src: str, ident: str, end: str) -> str:
 
 
 def _page_css(src: str) -> str:
-    i = src.index("<style>")
-    j = src.index("</style>", i)
-    return src[i + 7 : j]
+    """The page stylesheet is now an explicit paired asset, with the same gates."""
+    assert 'href="intraday-flow.css"' in src
+    return (ROOT / "templates/intraday-flow.css").read_text(encoding="utf-8")
 
 
 def _render_stamp(as_of_display) -> str:
@@ -64,44 +64,31 @@ def _parse_rgba(value: str) -> tuple[int, int, int, float]:
 
 # ── m-2 light Tape chips ─────────────────────────────────────────────────────
 
-def test_light_tape_chips_are_ghost_hairline_in_post_stack():
-    src = _src()
-    assert "post-stack: consolidate" in src
-    light = src[src.index("post-stack: consolidate") :]
-    assert "html[data-theme=\"light\"] body.page-intraday-flow .badge-blue" in light
-    rule = _region(
-        light,
-        'html[data-theme="light"] body.page-intraday-flow .badge-blue',
-        "body.page-intraday-flow .lens-pop",
-    )
+def test_light_tape_chips_are_ghost_hairline_and_dark_stays_filled():
+    css = _page_css(_src())
+    light = re.search(r'html\[data-theme="light"\] body\.page-intraday-flow \.badge-blue\s*\{([^}]+)\}',css)
+    assert light
+    rule = light.group(1)
     assert "background:transparent" in rule
     assert "font-weight:500" in rule
-    assert "border-color" in rule
-    assert "color-mix(in srgb, var(--info)" not in rule
-    # Dark filled treatment is unchanged and lives before the light override.
-    dark = src[: src.index("post-stack: consolidate")]
-    assert ".badge-blue { color:var(--ink-info, var(--info,#5b9bf0)); border-color:color-mix(in srgb,var(--info) 45%,transparent); background:color-mix(in srgb,var(--info) 10%,transparent); }" in dark
+    assert "border-color:var(--line)" in rule
+    assert "color:var(--muted)" in rule
+    dark = re.search(r'\.page-intraday-flow \.badge-blue\s*\{([^}]+)\}',css)
+    assert dark and "background:var(--panel2,var(--panel))" in dark.group(1)
 
 
-def test_light_post_stack_uses_theme_tokens_not_color_functions():
-    """TOKENIZE-7070: added light post-stack lines must not carry color-mix/rgba/hex.
-
-    Fails on head f4f17de018db: the W11 light block still inlines 11 color-mix()
-    colour decisions (stamp mix, hairline mixes, skeleton wash, chip ink, tip
-    shadow). Passes once those lines bind existing theme.css tokens only.
-    """
-    src = _src()
-    light = src[src.index("post-stack: consolidate") : src.index("</style>")]
-    assert "color-mix(" not in light
-    assert re.search(r"\brgba?\s*\(", light) is None
-    assert re.search(r"#[0-9a-fA-F]{3,8}\b", light) is None
-    assert re.search(r"border-radius\s*:", light) is None
-    assert "color:var(--ink-link, var(--link))" in light
-    assert "color:var(--muted)" in light
-    assert "border-color:var(--line)" in light
-    assert "box-shadow:var(--card-shadow)" in light
-    assert "background:transparent" in light
-    assert "box-shadow:var(--popover-shadow)" in light or "box-shadow:none" in light
+def test_page_styles_use_theme_tokens_not_color_functions():
+    """The stronger external-asset gate applies to both art directions."""
+    css = _page_css(_src())
+    assert "color-mix(" not in css
+    assert re.search(r"\brgba?\s*\(",css) is None
+    assert re.search(r"#[0-9a-fA-F]{3,8}\b",css) is None
+    assert "var(--ink-link" in css
+    assert "color:var(--muted)" in css
+    assert "border-color:var(--line)" in css
+    assert "box-shadow:var(--card-shadow)" in css
+    assert "background:transparent" in css
+    assert "box-shadow:var(--popover-shadow)" in css
 
 
 def test_light_tape_chip_computed_style_probe():
@@ -264,27 +251,22 @@ def test_field_guide_colored_circles_are_regime_dots_not_emoji():
     assert "<b>观望——勿追</b>" in body
 
 
-def test_hero_ctx_watch_has_no_compass_iconography():
-    """TOKENIZE-7070-R2: decorative compass is removed; words stay.
-
-    Fails on head 45e7dc759e: `<span class="ctx-ic">🧭</span>` wraps the
-    ctx-watch row. Passes once that span is gone and the bilingual sentence
-    remains.
-    """
+def test_summary_uses_clear_words_without_compass_or_duplicate_rank():
     src = _src()
     assert "\U0001F9ED" not in src
-    watch = _region(src, 'id="ctx-watch"', "</div>")
-    assert "The board below carries every name" in watch
-    assert "下方看板列出每只标的及其结论依据。" in watch
-    ctx = _region(src, 'class="hero-ctx"', 'id="ift-stamp"')
-    assert "ctx-ic" not in ctx.split("ctx-watch")[1]
+    assert 'id="ctx-watch"' not in src
+    assert 'id="ctx-strong"' not in src
+    summary = _region(src,"function buildHero","function iftSkelDone")
+    assert "Current prices are unavailable." in summary
+    assert "Recorded classifications" in summary
+    assert "Most ready for the open" not in src
 
 
 # ── m-4 guarded empty stamp ──────────────────────────────────────────────────
 
 def test_empty_stamp_dict_renders_wordless_skeleton_not_dangling_prefix():
     html = _render_stamp({})
-    stamp = _region(html, 'id="ift-stamp"', "</header>")
+    stamp = _region(html, 'id="ift-stamp"', "</section>")
     assert "Board built" not in stamp
     assert "看板构建于" not in stamp
     assert "Board can't load right now" not in stamp
@@ -298,32 +280,27 @@ def test_empty_stamp_dict_renders_wordless_skeleton_not_dangling_prefix():
 
 def test_formed_stamp_still_prints_the_absolute_prefix():
     html = _render_stamp({"en": "10 Sep 11:34pm UTC", "zh": "9月10日 23:34 UTC"})
-    stamp = _region(html, 'id="ift-stamp"', "</header>")
+    stamp = _region(html, 'id="ift-stamp"', "</section>")
     assert "Board built 10 Sep 11:34pm UTC" in stamp
     assert "看板构建于9月10日 23:34 UTC" in stamp
 
 
 # ── n-1 skeleton a11y ────────────────────────────────────────────────────────
 
-def test_three_skeleton_hosts_carry_aria_busy_and_one_sr_only_each():
+def test_two_scan_skeleton_hosts_carry_busy_and_one_loading_announcement_each():
     src = _src()
     for ident in HOST_IDS:
-        tag = _open_tag(src, ident)
-        assert 'aria-busy="true"' in tag, ident
-        assert "ift-skel-host" in tag, ident
-
-    hero = _host_inner(src, "ift-hero-copy", 'class="hero-grid"')
-    spot = _region(src, 'id="spot-grid"', "</section>")
-    board = _region(src, 'id="ift-board-skel"', 'id="count-label"')
-    for name, blob in (("hero", hero), ("spot", spot), ("board", board)):
-        assert blob.count("sr-only") == 1, (name, blob.count("sr-only"))
-        assert "Loading" in blob, name
-        assert "加载中" in blob, name
-        assert 'aria-hidden="true"' in blob, name
-        # Decorative bars stay hidden; the sr-only text is not.
-        assert re.search(r'class="sr-only"[^>]*aria-hidden', blob) is None, name
-
-    assert src.count('aria-busy="true"') == 3
+        tag = _open_tag(src,ident)
+        assert 'aria-busy="true"' in tag
+        assert "ift-skel-host" in tag
+    hero = _host_inner(src,"ift-hero-copy",'id="ift-refresh"')
+    board = _region(src,'id="ift-board-skel"','id="count-label"')
+    for name,blob in (("hero",hero),("board",board)):
+        assert blob.count("{{ t('Loading','加载中') }}")==1,name
+        assert 'aria-hidden="true"' in blob,name
+        assert re.search(r'class="sr-only"[^>]*aria-hidden',blob) is None,name
+    assert src.count('aria-busy="true"')==2
+    assert 'id="spot-grid"' not in src
 
 
 # ── n-2 subordinated degraded row ────────────────────────────────────────────

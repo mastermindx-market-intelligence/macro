@@ -1,0 +1,1464 @@
+{
+  "evidence_kind": "isolated_lab_layout_shift_trace",
+  "method": "Anonymous Playwright Chromium; theme and EN locale set before load; network idle plus 1500ms; sum of layout-shift values excluding hadRecentInput; no field-performance claim.",
+  "candidate_commit": "43c31bf5888bdeb71c56873e8064d5d43254ce51",
+  "baseline_html_commit": "f754bdee6b803b18191841863c35527c0a74571e",
+  "asset_basis": "Both use the candidate checkout shared assets, which were unchanged from baseline in the scoped compatibility check.",
+  "candidate": [
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "sum": 0.692168809821151,
+      "shifts": [
+        {
+          "value": 0.0008594328703703704,
+          "time": 263.7000000476837,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1158.6875,
+                "y": 94.75,
+                "width": 265.3125,
+                "height": 34,
+                "top": 94.75,
+                "right": 1424,
+                "bottom": 128.75,
+                "left": 1158.6875
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 93,
+                "width": 157.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1424,
+                "bottom": 133,
+                "left": 1266.640625
+              }
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "cls": "ai-brief-link terminal-link",
+              "previous": {
+                "x": 1155.640625,
+                "y": 93,
+                "width": 113.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1269,
+                "bottom": 133,
+                "left": 1155.640625
+              },
+              "current": {
+                "x": 1263.640625,
+                "y": 94,
+                "width": 113.359375,
+                "height": 40,
+                "top": 94,
+                "right": 1377,
+                "bottom": 134,
+                "left": 1263.640625
+              }
+            },
+            {
+              "tag": "BUTTON",
+              "id": "ift-refresh",
+              "cls": "gbtn ift-refresh",
+              "previous": {
+                "x": 1301.71875,
+                "y": 197.984375,
+                "width": 98.28125,
+                "height": 38,
+                "top": 197.984375,
+                "right": 1400,
+                "bottom": 235.984375,
+                "left": 1301.71875
+              },
+              "current": {
+                "x": 1301.71875,
+                "y": 200.984375,
+                "width": 98.28125,
+                "height": 38,
+                "top": 200.984375,
+                "right": 1400,
+                "bottom": 238.984375,
+                "left": 1301.71875
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.6910857364523721,
+          "time": 302.39999997615814,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 16,
+                "y": 149,
+                "width": 1384,
+                "height": 751,
+                "top": 149,
+                "right": 1400,
+                "bottom": 900,
+                "left": 16
+              },
+              "current": {
+                "x": 16,
+                "y": 100,
+                "width": 1384,
+                "height": 800,
+                "top": 100,
+                "right": 1400,
+                "bottom": 900,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 86.25,
+                "width": 496,
+                "height": 53.5,
+                "top": 86.25,
+                "right": 504,
+                "bottom": 139.75,
+                "left": 8
+              },
+              "current": {
+                "x": 1128.640625,
+                "y": 43,
+                "width": 128,
+                "height": 40,
+                "top": 43,
+                "right": 1256.640625,
+                "bottom": 83,
+                "left": 1128.640625
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1266.640625,
+                "y": 93,
+                "width": 157.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1424,
+                "bottom": 133,
+                "left": 1266.640625
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 43,
+                "width": 157.359375,
+                "height": 40,
+                "top": 43,
+                "right": 1424,
+                "bottom": 83,
+                "left": 1266.640625
+              }
+            },
+            {
+              "tag": "::after",
+              "id": "",
+              "cls": "",
+              "previous": {
+                "x": 801.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 943.34375,
+                "bottom": 84,
+                "left": 801.109375
+              },
+              "current": {
+                "x": 795.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 937.34375,
+                "bottom": 84,
+                "left": 795.109375
+              }
+            },
+            {
+              "tag": "::after",
+              "id": "",
+              "cls": "",
+              "previous": {
+                "x": 664.328125,
+                "y": 42,
+                "width": 139.78125,
+                "height": 42,
+                "top": 42,
+                "right": 804.109375,
+                "bottom": 84,
+                "left": 664.328125
+              },
+              "current": {
+                "x": 659.328125,
+                "y": 42,
+                "width": 139.78125,
+                "height": 42,
+                "top": 42,
+                "right": 799.109375,
+                "bottom": 84,
+                "left": 659.328125
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.00014525236906828704,
+          "time": 325.2000000476837,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "ift-source-times",
+              "cls": "ctx-stamp",
+              "previous": {
+                "x": 344.46875,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 656.453125,
+                "bottom": 209.984375,
+                "left": 344.46875
+              },
+              "current": {
+                "x": 394.390625,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 706.375,
+                "bottom": 209.984375,
+                "left": 394.390625
+              }
+            }
+          ]
+        },
+        {
+          "value": 7.838812934027777e-05,
+          "time": 407.10000002384186,
+          "sources": [
+            {
+              "tag": "P",
+              "id": "hero-sub",
+              "cls": "hero-sub",
+              "previous": {
+                "x": 272.921875,
+                "y": 162.609375,
+                "width": 387,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 659.921875,
+                "bottom": 181.359375,
+                "left": 272.921875
+              },
+              "current": {
+                "x": 252.953125,
+                "y": 162.609375,
+                "width": 383.140625,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 636.09375,
+                "bottom": 181.359375,
+                "left": 252.953125
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "sum": 0.6812942358113774,
+      "shifts": [
+        {
+          "value": 0.0008594328703703704,
+          "time": 204,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1158.6875,
+                "y": 94.75,
+                "width": 265.3125,
+                "height": 34,
+                "top": 94.75,
+                "right": 1424,
+                "bottom": 128.75,
+                "left": 1158.6875
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 93,
+                "width": 157.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1424,
+                "bottom": 133,
+                "left": 1266.640625
+              }
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "cls": "ai-brief-link terminal-link",
+              "previous": {
+                "x": 1155.640625,
+                "y": 93,
+                "width": 113.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1269,
+                "bottom": 133,
+                "left": 1155.640625
+              },
+              "current": {
+                "x": 1263.640625,
+                "y": 94,
+                "width": 113.359375,
+                "height": 40,
+                "top": 94,
+                "right": 1377,
+                "bottom": 134,
+                "left": 1263.640625
+              }
+            },
+            {
+              "tag": "BUTTON",
+              "id": "ift-refresh",
+              "cls": "gbtn ift-refresh",
+              "previous": {
+                "x": 1301.71875,
+                "y": 197.984375,
+                "width": 98.28125,
+                "height": 38,
+                "top": 197.984375,
+                "right": 1400,
+                "bottom": 235.984375,
+                "left": 1301.71875
+              },
+              "current": {
+                "x": 1301.71875,
+                "y": 200.984375,
+                "width": 98.28125,
+                "height": 38,
+                "top": 200.984375,
+                "right": 1400,
+                "bottom": 238.984375,
+                "left": 1301.71875
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.6802111624425985,
+          "time": 231.29999995231628,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 40,
+                "y": 149,
+                "width": 1360,
+                "height": 751,
+                "top": 149,
+                "right": 1400,
+                "bottom": 900,
+                "left": 40
+              },
+              "current": {
+                "x": 40,
+                "y": 100,
+                "width": 1360,
+                "height": 800,
+                "top": 100,
+                "right": 1400,
+                "bottom": 900,
+                "left": 40
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 86.25,
+                "width": 496,
+                "height": 53.5,
+                "top": 86.25,
+                "right": 504,
+                "bottom": 139.75,
+                "left": 8
+              },
+              "current": {
+                "x": 1128.640625,
+                "y": 43,
+                "width": 128,
+                "height": 40,
+                "top": 43,
+                "right": 1256.640625,
+                "bottom": 83,
+                "left": 1128.640625
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1266.640625,
+                "y": 93,
+                "width": 157.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1424,
+                "bottom": 133,
+                "left": 1266.640625
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 43,
+                "width": 157.359375,
+                "height": 40,
+                "top": 43,
+                "right": 1424,
+                "bottom": 83,
+                "left": 1266.640625
+              }
+            },
+            {
+              "tag": "::after",
+              "id": "",
+              "cls": "",
+              "previous": {
+                "x": 801.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 943.34375,
+                "bottom": 84,
+                "left": 801.109375
+              },
+              "current": {
+                "x": 795.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 937.34375,
+                "bottom": 84,
+                "left": 795.109375
+              }
+            },
+            {
+              "tag": "::after",
+              "id": "",
+              "cls": "",
+              "previous": {
+                "x": 664.328125,
+                "y": 42,
+                "width": 139.78125,
+                "height": 42,
+                "top": 42,
+                "right": 804.109375,
+                "bottom": 84,
+                "left": 664.328125
+              },
+              "current": {
+                "x": 659.328125,
+                "y": 42,
+                "width": 139.78125,
+                "height": 42,
+                "top": 42,
+                "right": 799.109375,
+                "bottom": 84,
+                "left": 659.328125
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.00014525236906828704,
+          "time": 252.29999995231628,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "ift-source-times",
+              "cls": "ctx-stamp",
+              "previous": {
+                "x": 344.46875,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 656.453125,
+                "bottom": 209.984375,
+                "left": 344.46875
+              },
+              "current": {
+                "x": 394.390625,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 706.375,
+                "bottom": 209.984375,
+                "left": 394.390625
+              }
+            }
+          ]
+        },
+        {
+          "value": 7.838812934027777e-05,
+          "time": 333.59999990463257,
+          "sources": [
+            {
+              "tag": "P",
+              "id": "hero-sub",
+              "cls": "hero-sub",
+              "previous": {
+                "x": 272.921875,
+                "y": 162.609375,
+                "width": 387,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 659.921875,
+                "bottom": 181.359375,
+                "left": 272.921875
+              },
+              "current": {
+                "x": 252.953125,
+                "y": 162.609375,
+                "width": 383.140625,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 636.09375,
+                "bottom": 181.359375,
+                "left": 252.953125
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "sum": 0.27525341021814687,
+      "shifts": [
+        {
+          "value": 0.23015167488034313,
+          "time": 159.39999997615814,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 13,
+                "y": 139.5,
+                "width": 364,
+                "height": 704.5,
+                "top": 139.5,
+                "right": 377,
+                "bottom": 844,
+                "left": 13
+              },
+              "current": {
+                "x": 0,
+                "y": 100,
+                "width": 390,
+                "height": 744,
+                "top": 100,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 78,
+                "width": 374,
+                "height": 53.5,
+                "top": 78,
+                "right": 382,
+                "bottom": 131.5,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 37.25,
+                "width": 211.640625,
+                "height": 53.5,
+                "top": 37.25,
+                "right": 219.640625,
+                "bottom": 90.75,
+                "left": 8
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 16,
+                "y": 36,
+                "width": 358,
+                "height": 34,
+                "top": 36,
+                "right": 374,
+                "bottom": 70,
+                "left": 16
+              },
+              "current": {
+                "x": 219.640625,
+                "y": 44,
+                "width": 154.359375,
+                "height": 40,
+                "top": 44,
+                "right": 374,
+                "bottom": 84,
+                "left": 219.640625
+              }
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "cls": "ai-brief-link terminal-link",
+              "previous": {
+                "x": 111.640625,
+                "y": 34,
+                "width": 113.359375,
+                "height": 40,
+                "top": 34,
+                "right": 225,
+                "bottom": 74,
+                "left": 111.640625
+              },
+              "current": {
+                "x": 216.640625,
+                "y": 45,
+                "width": 113.359375,
+                "height": 40,
+                "top": 45,
+                "right": 330,
+                "bottom": 85,
+                "left": 216.640625
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.045101735337803706,
+          "time": 182,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 0,
+                "y": 100,
+                "width": 390,
+                "height": 744,
+                "top": 100,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              },
+              "current": {
+                "x": 0,
+                "y": 140,
+                "width": 390,
+                "height": 704,
+                "top": 140,
+                "right": 390,
+                "bottom": 844,
+                "left": 0
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 37.25,
+                "width": 211.640625,
+                "height": 53.5,
+                "top": 37.25,
+                "right": 219.640625,
+                "bottom": 90.75,
+                "left": 8
+              },
+              "current": {
+                "x": 16,
+                "y": 84,
+                "width": 358,
+                "height": 40,
+                "top": 84,
+                "right": 374,
+                "bottom": 124,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 219.640625,
+                "y": 44,
+                "width": 154.359375,
+                "height": 40,
+                "top": 44,
+                "right": 374,
+                "bottom": 84,
+                "left": 219.640625
+              },
+              "current": {
+                "x": 227.3125,
+                "y": 36,
+                "width": 146.6875,
+                "height": 40,
+                "top": 36,
+                "right": 374,
+                "bottom": 76,
+                "left": 227.3125
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "sum": 0.2522467633260723,
+      "shifts": [
+        {
+          "value": 0.2109876398585528,
+          "time": 161.10000002384186,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 18,
+                "y": 139.5,
+                "width": 354,
+                "height": 704.5,
+                "top": 139.5,
+                "right": 372,
+                "bottom": 844,
+                "left": 18
+              },
+              "current": {
+                "x": 18,
+                "y": 100,
+                "width": 354,
+                "height": 744,
+                "top": 100,
+                "right": 372,
+                "bottom": 844,
+                "left": 18
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 78,
+                "width": 374,
+                "height": 53.5,
+                "top": 78,
+                "right": 382,
+                "bottom": 131.5,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 37.25,
+                "width": 211.640625,
+                "height": 53.5,
+                "top": 37.25,
+                "right": 219.640625,
+                "bottom": 90.75,
+                "left": 8
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 16,
+                "y": 36,
+                "width": 358,
+                "height": 34,
+                "top": 36,
+                "right": 374,
+                "bottom": 70,
+                "left": 16
+              },
+              "current": {
+                "x": 219.640625,
+                "y": 44,
+                "width": 154.359375,
+                "height": 40,
+                "top": 44,
+                "right": 374,
+                "bottom": 84,
+                "left": 219.640625
+              }
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "cls": "ai-brief-link terminal-link",
+              "previous": {
+                "x": 111.640625,
+                "y": 34,
+                "width": 113.359375,
+                "height": 40,
+                "top": 34,
+                "right": 225,
+                "bottom": 74,
+                "left": 111.640625
+              },
+              "current": {
+                "x": 216.640625,
+                "y": 45,
+                "width": 113.359375,
+                "height": 40,
+                "top": 45,
+                "right": 330,
+                "bottom": 85,
+                "left": 216.640625
+              }
+            }
+          ]
+        },
+        {
+          "value": 0.041259123467519504,
+          "time": 182.70000004768372,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 18,
+                "y": 100,
+                "width": 354,
+                "height": 744,
+                "top": 100,
+                "right": 372,
+                "bottom": 844,
+                "left": 18
+              },
+              "current": {
+                "x": 18,
+                "y": 140,
+                "width": 354,
+                "height": 704,
+                "top": 140,
+                "right": 372,
+                "bottom": 844,
+                "left": 18
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 37.25,
+                "width": 211.640625,
+                "height": 53.5,
+                "top": 37.25,
+                "right": 219.640625,
+                "bottom": 90.75,
+                "left": 8
+              },
+              "current": {
+                "x": 16,
+                "y": 84,
+                "width": 358,
+                "height": 40,
+                "top": 84,
+                "right": 374,
+                "bottom": 124,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 219.640625,
+                "y": 44,
+                "width": 154.359375,
+                "height": 40,
+                "top": 44,
+                "right": 374,
+                "bottom": 84,
+                "left": 219.640625
+              },
+              "current": {
+                "x": 227.3125,
+                "y": 36,
+                "width": 146.6875,
+                "height": 40,
+                "top": 36,
+                "right": 374,
+                "bottom": 76,
+                "left": 227.3125
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "baseline": [
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "sum": 0.7307129464692376,
+      "shifts": [
+        {
+          "value": 0.7307129464692376,
+          "time": 376.6999999284744,
+          "sources": [
+            {
+              "tag": "SECTION",
+              "id": "",
+              "cls": "panel glass reveal reveal-1",
+              "previous": {
+                "x": 8,
+                "y": 363.15625,
+                "width": 1424,
+                "height": 420.34375,
+                "top": 363.15625,
+                "right": 1432,
+                "bottom": 783.5,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 303.703125,
+                "width": 1424,
+                "height": 420.34375,
+                "top": 303.703125,
+                "right": 1432,
+                "bottom": 724.046875,
+                "left": 8
+              }
+            },
+            {
+              "tag": "HEADER",
+              "id": "ift-hero",
+              "cls": "ift-hero glass reveal",
+              "previous": {
+                "x": 7,
+                "y": 119,
+                "width": 1425,
+                "height": 244.15625,
+                "top": 119,
+                "right": 1432,
+                "bottom": 363.15625,
+                "left": 7
+              },
+              "current": {
+                "x": 7,
+                "y": 76,
+                "width": 1425,
+                "height": 227.703125,
+                "top": 76,
+                "right": 1432,
+                "bottom": 303.703125,
+                "left": 7
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": "spotlight-panel",
+              "cls": "panel glass reveal reveal-2",
+              "previous": {
+                "x": 8,
+                "y": 783.5,
+                "width": 1424,
+                "height": 116.5,
+                "top": 783.5,
+                "right": 1432,
+                "bottom": 900,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 724.046875,
+                "width": 1424,
+                "height": 175.953125,
+                "top": 724.046875,
+                "right": 1432,
+                "bottom": 900,
+                "left": 8
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 61,
+                "width": 496,
+                "height": 50,
+                "top": 61,
+                "right": 504,
+                "bottom": 111,
+                "left": 8
+              },
+              "current": {
+                "x": 1128.640625,
+                "y": 19,
+                "width": 128,
+                "height": 40,
+                "top": 19,
+                "right": 1256.640625,
+                "bottom": 59,
+                "left": 1128.640625
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1140.640625,
+                "y": 69,
+                "width": 283.359375,
+                "height": 34,
+                "top": 69,
+                "right": 1424,
+                "bottom": 103,
+                "left": 1140.640625
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 19,
+                "width": 157.359375,
+                "height": 40,
+                "top": 19,
+                "right": 1424,
+                "bottom": 59,
+                "left": 1266.640625
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "sum": 0.7307129464692376,
+      "shifts": [
+        {
+          "value": 0.7307129464692376,
+          "time": 244.30000007152557,
+          "sources": [
+            {
+              "tag": "SECTION",
+              "id": "",
+              "cls": "panel glass reveal reveal-1",
+              "previous": {
+                "x": 8,
+                "y": 363.15625,
+                "width": 1424,
+                "height": 420.34375,
+                "top": 363.15625,
+                "right": 1432,
+                "bottom": 783.5,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 303.703125,
+                "width": 1424,
+                "height": 420.34375,
+                "top": 303.703125,
+                "right": 1432,
+                "bottom": 724.046875,
+                "left": 8
+              }
+            },
+            {
+              "tag": "HEADER",
+              "id": "ift-hero",
+              "cls": "ift-hero glass reveal",
+              "previous": {
+                "x": 7,
+                "y": 119,
+                "width": 1425,
+                "height": 244.15625,
+                "top": 119,
+                "right": 1432,
+                "bottom": 363.15625,
+                "left": 7
+              },
+              "current": {
+                "x": 7,
+                "y": 76,
+                "width": 1425,
+                "height": 227.703125,
+                "top": 76,
+                "right": 1432,
+                "bottom": 303.703125,
+                "left": 7
+              }
+            },
+            {
+              "tag": "SECTION",
+              "id": "spotlight-panel",
+              "cls": "panel glass reveal reveal-2",
+              "previous": {
+                "x": 8,
+                "y": 783.5,
+                "width": 1424,
+                "height": 116.5,
+                "top": 783.5,
+                "right": 1432,
+                "bottom": 900,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 724.046875,
+                "width": 1424,
+                "height": 175.953125,
+                "top": 724.046875,
+                "right": 1432,
+                "bottom": 900,
+                "left": 8
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 61,
+                "width": 496,
+                "height": 50,
+                "top": 61,
+                "right": 504,
+                "bottom": 111,
+                "left": 8
+              },
+              "current": {
+                "x": 1128.640625,
+                "y": 19,
+                "width": 128,
+                "height": 40,
+                "top": 19,
+                "right": 1256.640625,
+                "bottom": 59,
+                "left": 1128.640625
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1140.640625,
+                "y": 69,
+                "width": 283.359375,
+                "height": 34,
+                "top": 69,
+                "right": 1424,
+                "bottom": 103,
+                "left": 1140.640625
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 19,
+                "width": 157.359375,
+                "height": 40,
+                "top": 19,
+                "right": 1424,
+                "bottom": 59,
+                "left": 1266.640625
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "sum": 0.23337465638514582,
+      "shifts": [
+        {
+          "value": 0.23337465638514582,
+          "time": 233.70000004768372,
+          "sources": [
+            {
+              "tag": "SECTION",
+              "id": "",
+              "cls": "panel glass reveal reveal-1",
+              "previous": {
+                "x": 8,
+                "y": 498.15625,
+                "width": 374,
+                "height": 345.84375,
+                "top": 498.15625,
+                "right": 382,
+                "bottom": 844,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 447.703125,
+                "width": 374,
+                "height": 396.296875,
+                "top": 447.703125,
+                "right": 382,
+                "bottom": 844,
+                "left": 8
+              }
+            },
+            {
+              "tag": "HEADER",
+              "id": "ift-hero",
+              "cls": "ift-hero glass reveal",
+              "previous": {
+                "x": 7,
+                "y": 118,
+                "width": 375,
+                "height": 380.15625,
+                "top": 118,
+                "right": 382,
+                "bottom": 498.15625,
+                "left": 7
+              },
+              "current": {
+                "x": 7,
+                "y": 138,
+                "width": 375,
+                "height": 309.703125,
+                "top": 138,
+                "right": 382,
+                "bottom": 447.703125,
+                "left": 7
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 60,
+                "width": 374,
+                "height": 50,
+                "top": 60,
+                "right": 382,
+                "bottom": 110,
+                "left": 8
+              },
+              "current": {
+                "x": 16,
+                "y": 82,
+                "width": 358,
+                "height": 40,
+                "top": 82,
+                "right": 374,
+                "bottom": 122,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 16,
+                "y": 18,
+                "width": 358,
+                "height": 34,
+                "top": 18,
+                "right": 374,
+                "bottom": 52,
+                "left": 16
+              },
+              "current": {
+                "x": 227.3125,
+                "y": 18,
+                "width": 146.6875,
+                "height": 56,
+                "top": 18,
+                "right": 374,
+                "bottom": 74,
+                "left": 227.3125
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "sum": 0.23337465638514582,
+      "shifts": [
+        {
+          "value": 0.23337465638514582,
+          "time": 231.20000004768372,
+          "sources": [
+            {
+              "tag": "SECTION",
+              "id": "",
+              "cls": "panel glass reveal reveal-1",
+              "previous": {
+                "x": 8,
+                "y": 498.15625,
+                "width": 374,
+                "height": 345.84375,
+                "top": 498.15625,
+                "right": 382,
+                "bottom": 844,
+                "left": 8
+              },
+              "current": {
+                "x": 8,
+                "y": 447.703125,
+                "width": 374,
+                "height": 396.296875,
+                "top": 447.703125,
+                "right": 382,
+                "bottom": 844,
+                "left": 8
+              }
+            },
+            {
+              "tag": "HEADER",
+              "id": "ift-hero",
+              "cls": "ift-hero glass reveal",
+              "previous": {
+                "x": 7,
+                "y": 118,
+                "width": 375,
+                "height": 380.15625,
+                "top": 118,
+                "right": 382,
+                "bottom": 498.15625,
+                "left": 7
+              },
+              "current": {
+                "x": 7,
+                "y": 138,
+                "width": 375,
+                "height": 309.703125,
+                "top": 138,
+                "right": 382,
+                "bottom": 447.703125,
+                "left": 7
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 60,
+                "width": 374,
+                "height": 50,
+                "top": 60,
+                "right": 382,
+                "bottom": 110,
+                "left": 8
+              },
+              "current": {
+                "x": 16,
+                "y": 82,
+                "width": 358,
+                "height": 40,
+                "top": 82,
+                "right": 374,
+                "bottom": 122,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 16,
+                "y": 18,
+                "width": 358,
+                "height": 34,
+                "top": 18,
+                "right": 374,
+                "bottom": 52,
+                "left": 16
+              },
+              "current": {
+                "x": 227.3125,
+                "y": 18,
+                "width": 146.6875,
+                "height": 56,
+                "top": 18,
+                "right": 374,
+                "bottom": 74,
+                "left": 227.3125
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "finding": "Largest entries contain shared nav-search/nav-controls movement and the resulting vertical movement of main-content. This is outstanding shared-navigation startup behavior, not a performance acceptance. No shared navigation source or script position was changed."
+}

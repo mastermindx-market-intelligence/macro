@@ -1,0 +1,490 @@
+{
+  "evidence_kind": "anonymous_lab_cold_load_geometry",
+  "head": "0886fff3dbbe46445ba253758c2d873e1973c945",
+  "page_sha256": "3c54090283722829c42dd6068ce4e5362c6d58bc47ee098b97268acb4e1f3fdc",
+  "working_tree_note": "HTML includes canonical make_optimizer asset-version/defer/preload normalization after the head commit; no product stylesheet or model change.",
+  "cases": [
+    {
+      "geometry": [
+        {
+          "t": 85.80000007152557,
+          "ready": "loading",
+          "fonts": "loaded",
+          "nav": {
+            "x": 16,
+            "y": 42,
+            "w": 1408,
+            "h": 42,
+            "b": 84,
+            "cls": "site-nav"
+          },
+          "search": null,
+          "main": null,
+          "header": null,
+          "stages": null
+        },
+        {
+          "t": 320.2000000476837,
+          "ready": "loading",
+          "fonts": "loading",
+          "nav": {
+            "x": 16,
+            "y": 42,
+            "w": 1408,
+            "h": 88.5,
+            "b": 130.5,
+            "cls": "site-nav"
+          },
+          "search": {
+            "x": 16,
+            "y": 93,
+            "w": 480,
+            "h": 37.5,
+            "b": 130.5,
+            "cls": "nav-search"
+          },
+          "main": {
+            "x": 40,
+            "y": 146.5,
+            "w": 1360,
+            "h": 1014.984375,
+            "b": 1161.484375,
+            "cls": "ift-workspace"
+          },
+          "header": {
+            "x": 40,
+            "y": 146.5,
+            "w": 1360,
+            "h": 47.984375,
+            "b": 194.484375,
+            "cls": "ift-page-header"
+          },
+          "stages": {
+            "x": 40,
+            "y": 265.484375,
+            "w": 1360,
+            "h": 45.5,
+            "b": 310.984375,
+            "cls": "ift-overview"
+          }
+        },
+        {
+          "t": 391.5,
+          "ready": "interactive",
+          "fonts": "loading",
+          "nav": {
+            "x": 16,
+            "y": 42,
+            "w": 1408,
+            "h": 91,
+            "b": 133,
+            "cls": "site-nav has-nav-toggle"
+          },
+          "search": {
+            "x": 16,
+            "y": 93,
+            "w": 128,
+            "h": 40,
+            "b": 133,
+            "cls": "nav-search ticker-search"
+          },
+          "main": {
+            "x": 40,
+            "y": 149,
+            "w": 1360,
+            "h": 1010.984375,
+            "b": 1159.984375,
+            "cls": "ift-workspace"
+          },
+          "header": {
+            "x": 40,
+            "y": 149,
+            "w": 1360,
+            "h": 47.984375,
+            "b": 196.984375,
+            "cls": "ift-page-header"
+          },
+          "stages": {
+            "x": 40,
+            "y": 263.984375,
+            "w": 1360,
+            "h": 45.5,
+            "b": 309.484375,
+            "cls": "ift-overview"
+          }
+        },
+        {
+          "t": 400.60000002384186,
+          "ready": "interactive",
+          "fonts": "loading",
+          "nav": {
+            "x": 16,
+            "y": 42,
+            "w": 1408,
+            "h": 42,
+            "b": 84,
+            "cls": "site-nav has-nav-toggle"
+          },
+          "search": {
+            "x": 1128.640625,
+            "y": 43,
+            "w": 128,
+            "h": 40,
+            "b": 83,
+            "cls": "nav-search ticker-search"
+          },
+          "main": {
+            "x": 40,
+            "y": 100,
+            "w": 1360,
+            "h": 1010.984375,
+            "b": 1110.984375,
+            "cls": "ift-workspace"
+          },
+          "header": {
+            "x": 40,
+            "y": 100,
+            "w": 1360,
+            "h": 47.984375,
+            "b": 147.984375,
+            "cls": "ift-page-header"
+          },
+          "stages": {
+            "x": 40,
+            "y": 214.984375,
+            "w": 1360,
+            "h": 45.5,
+            "b": 260.484375,
+            "cls": "ift-overview"
+          }
+        }
+      ],
+      "shifts": [
+        {
+          "t": 394.2000000476837,
+          "value": 0.6912944042650596,
+          "sources": [
+            {
+              "tag": "MAIN",
+              "id": "main-content",
+              "cls": "ift-workspace",
+              "previous": {
+                "x": 35,
+                "y": 146.5,
+                "width": 1365,
+                "height": 753.5,
+                "top": 146.5,
+                "right": 1400,
+                "bottom": 900,
+                "left": 35
+              },
+              "current": {
+                "x": 16,
+                "y": 100,
+                "width": 1384,
+                "height": 800,
+                "top": 100,
+                "right": 1400,
+                "bottom": 900,
+                "left": 16
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-search ticker-search",
+              "previous": {
+                "x": 8,
+                "y": 85,
+                "width": 496,
+                "height": 53.5,
+                "top": 85,
+                "right": 504,
+                "bottom": 138.5,
+                "left": 8
+              },
+              "current": {
+                "x": 1128.640625,
+                "y": 43,
+                "width": 128,
+                "height": 40,
+                "top": 43,
+                "right": 1256.640625,
+                "bottom": 83,
+                "left": 1128.640625
+              }
+            },
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 1158.6875,
+                "y": 94.75,
+                "width": 265.3125,
+                "height": 34,
+                "top": 94.75,
+                "right": 1424,
+                "bottom": 128.75,
+                "left": 1158.6875
+              },
+              "current": {
+                "x": 1266.640625,
+                "y": 43,
+                "width": 157.359375,
+                "height": 40,
+                "top": 43,
+                "right": 1424,
+                "bottom": 83,
+                "left": 1266.640625
+              }
+            },
+            {
+              "tag": "A",
+              "id": "",
+              "cls": "ai-brief-link terminal-link",
+              "previous": {
+                "x": 1155.640625,
+                "y": 93,
+                "width": 113.359375,
+                "height": 40,
+                "top": 93,
+                "right": 1269,
+                "bottom": 133,
+                "left": 1155.640625
+              },
+              "current": {
+                "x": 1263.640625,
+                "y": 44,
+                "width": 113.359375,
+                "height": 40,
+                "top": 44,
+                "right": 1377,
+                "bottom": 84,
+                "left": 1263.640625
+              }
+            },
+            {
+              "tag": "::after",
+              "id": "",
+              "cls": "",
+              "previous": {
+                "x": 801.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 943.34375,
+                "bottom": 84,
+                "left": 801.109375
+              },
+              "current": {
+                "x": 795.109375,
+                "y": 42,
+                "width": 142.234375,
+                "height": 42,
+                "top": 42,
+                "right": 937.34375,
+                "bottom": 84,
+                "left": 795.109375
+              }
+            }
+          ]
+        },
+        {
+          "t": 435,
+          "value": 0.00014525236906828704,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "ift-source-times",
+              "cls": "ctx-stamp",
+              "previous": {
+                "x": 339.203125,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 651.1875,
+                "bottom": 209.984375,
+                "left": 339.203125
+              },
+              "current": {
+                "x": 389.125,
+                "y": 194.984375,
+                "width": 311.984375,
+                "height": 15,
+                "top": 194.984375,
+                "right": 701.109375,
+                "bottom": 209.984375,
+                "left": 389.125
+              }
+            }
+          ]
+        },
+        {
+          "t": 528.6000000238419,
+          "value": 7.838812934027777e-05,
+          "sources": [
+            {
+              "tag": "P",
+              "id": "hero-sub",
+              "cls": "hero-sub",
+              "previous": {
+                "x": 272.921875,
+                "y": 162.609375,
+                "width": 387,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 659.921875,
+                "bottom": 181.359375,
+                "left": 272.921875
+              },
+              "current": {
+                "x": 252.953125,
+                "y": 162.609375,
+                "width": 383.140625,
+                "height": 18.75,
+                "top": 162.609375,
+                "right": 636.09375,
+                "bottom": 181.359375,
+                "left": 252.953125
+              }
+            }
+          ]
+        }
+      ],
+      "viewport": 1440,
+      "cls_sum": 0.6915180447634682
+    },
+    {
+      "geometry": [
+        {
+          "t": 183.69999992847443,
+          "ready": "loading",
+          "fonts": "loading",
+          "nav": {
+            "x": 16,
+            "y": 36,
+            "w": 358,
+            "h": 87.5,
+            "b": 123.5,
+            "cls": "site-nav"
+          },
+          "search": {
+            "x": 16,
+            "y": 86,
+            "w": 358,
+            "h": 37.5,
+            "b": 123.5,
+            "cls": "nav-search"
+          },
+          "main": {
+            "x": 18,
+            "y": 139.5,
+            "w": 354,
+            "h": 2192.890625,
+            "b": 2332.390625,
+            "cls": "ift-workspace"
+          },
+          "header": {
+            "x": 18,
+            "y": 139.5,
+            "w": 354,
+            "h": 91.296875,
+            "b": 230.796875,
+            "cls": "ift-page-header"
+          },
+          "stages": {
+            "x": 18,
+            "y": 368.890625,
+            "w": 354,
+            "h": 78,
+            "b": 446.890625,
+            "cls": "ift-overview"
+          }
+        },
+        {
+          "t": 242.59999990463257,
+          "ready": "interactive",
+          "fonts": "loading",
+          "nav": {
+            "x": 16,
+            "y": 36,
+            "w": 358,
+            "h": 88,
+            "b": 124,
+            "cls": "site-nav has-nav-toggle"
+          },
+          "search": {
+            "x": 16,
+            "y": 84,
+            "w": 358,
+            "h": 40,
+            "b": 124,
+            "cls": "nav-search ticker-search"
+          },
+          "main": {
+            "x": 18,
+            "y": 140,
+            "w": 354,
+            "h": 2192.890625,
+            "b": 2332.890625,
+            "cls": "ift-workspace"
+          },
+          "header": {
+            "x": 18,
+            "y": 140,
+            "w": 354,
+            "h": 91.296875,
+            "b": 231.296875,
+            "cls": "ift-page-header"
+          },
+          "stages": {
+            "x": 18,
+            "y": 369.390625,
+            "w": 354,
+            "h": 78,
+            "b": 447.390625,
+            "cls": "ift-overview"
+          }
+        }
+      ],
+      "shifts": [
+        {
+          "t": 243.59999990463257,
+          "value": 0.009929315174083794,
+          "sources": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "nav-ctrls",
+              "previous": {
+                "x": 16,
+                "y": 36,
+                "width": 358,
+                "height": 34,
+                "top": 36,
+                "right": 374,
+                "bottom": 70,
+                "left": 16
+              },
+              "current": {
+                "x": 227.3125,
+                "y": 36,
+                "width": 146.6875,
+                "height": 40,
+                "top": 36,
+                "right": 374,
+                "bottom": 76,
+                "left": 227.3125
+              }
+            }
+          ]
+        }
+      ],
+      "viewport": 390,
+      "cls_sum": 0.009929315174083794
+    }
+  ]
+}

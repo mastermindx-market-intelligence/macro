@@ -440,7 +440,7 @@ def test_the_lean_words_follow_the_call_only_series(path):
     assert "~偏看涨" not in src and "~偏看跌" not in src
     lines = src.splitlines()
     hits = [i for i, ln in enumerate(lines) if "~call buying" in ln]
-    assert len(hits) == 2, "spotlight card + board row"
+    assert len(hits) == 2, "board row + full evidence"
     for i in hits:
         assert "~call selling" in lines[i] and "~买入看涨" in lines[i] and "~卖出看涨" in lines[i]
         # The branch that emits these words — its guard and the sign it switches on.
@@ -453,7 +453,7 @@ def test_the_lean_words_follow_the_call_only_series(path):
 def test_the_unknown_side_is_disclosed_in_plain_words(path):
     """A name carrying only the net total is not a quiet tape — say what is unknown."""
     src = path.read_text(encoding="utf-8")
-    assert src.count("lz('side unknown','方向未知')") == 2, "spotlight card + board row"
+    assert src.count("lz('side unknown','方向未知')") == 2, "board row + full evidence"
 
 
 @PAGES

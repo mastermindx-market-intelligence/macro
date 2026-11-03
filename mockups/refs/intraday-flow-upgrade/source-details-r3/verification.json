@@ -1,0 +1,1501 @@
+{
+  "evidence_kind": "isolated_source_details_browser_test",
+  "html_sha256": "c47d76bb22886c74dbf65f9d0a885a1d88359ad5261f3a213a24a237d4b45b96",
+  "fixtures": "explicit synthetic transport observations; no feed writes or live-market proof",
+  "checks": [
+    {
+      "check": "1440/light/en/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/expanded",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/price-received",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "1440/light/en/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/language-label",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/light/zh/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/expanded",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/price-received",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "1440/light/zh/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/language-label",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/dark/en/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/expanded",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/price-received",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "1440/dark/en/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/language-label",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/dark/zh/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/expanded",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/price-received",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 1440,
+        "top": 149.84375,
+        "bottom": 750.15625,
+        "left": 490,
+        "right": 950,
+        "height": 900,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 929,
+            "bottom": 215.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 929,
+            "bottom": 677.15625
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 929,
+            "bottom": 729.15625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "1440/dark/zh/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/language-label",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/light/en/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/expanded",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/price-received",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/assistant-clearance",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "390/light/en/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/language-label",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/light/zh/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/expanded",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/price-received",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/assistant-clearance",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "390/light/zh/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/language-label",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/dark/en/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/expanded",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/price-received",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/assistant-clearance",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "390/dark/en/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/language-label",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/dark/zh/observed-zero-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/labelled-dialog",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/expanded",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/initial-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/three-independent-feeds",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/price-received",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/volume-stale",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/options-unavailable",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/clock-not-invented",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/volume-clock-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/viewport-fit",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/44px-actions",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/assistant-clearance",
+      "passed": true,
+      "bounds": {
+        "pageWidth": 390,
+        "top": 122.1875,
+        "bottom": 721.8125,
+        "left": 16,
+        "right": 374,
+        "height": 844,
+        "actions": [
+          {
+            "id": "ift-source-close",
+            "height": 44,
+            "right": 353,
+            "bottom": 187.1875
+          },
+          {
+            "id": "ift-source-refresh",
+            "height": 44,
+            "right": 309,
+            "bottom": 648.8125
+          },
+          {
+            "id": "ift-source-back",
+            "height": 44,
+            "right": 309,
+            "bottom": 700.8125
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/escape-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-existing-handler",
+      "passed": true,
+      "counts": {
+        "quotes": 3,
+        "volume": 2,
+        "options": 6
+      },
+      "before": {
+        "quotes": 2,
+        "volume": 1,
+        "options": 3
+      }
+    },
+    {
+      "check": "390/dark/zh/refresh-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-keeps-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/scan-query-preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/language-keeps-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/language-label",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/back-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/close-focus-return",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/light-dismiss",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filter-retained-after-close",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/partial/truthful-price-state",
+      "passed": true
+    },
+    {
+      "check": "fixture/partial/separate-options-state",
+      "passed": true
+    },
+    {
+      "check": "fixture/partial/zero-price-retained",
+      "passed": true
+    },
+    {
+      "check": "fixture/missing/truthful-price-state",
+      "passed": true
+    },
+    {
+      "check": "fixture/missing/separate-options-state",
+      "passed": true
+    }
+  ],
+  "images": [
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-1440-dark-en.png",
+      "sha256": "bed328f94a89d4b3486c2e0b5871007ab8d5397f5e93f77aad5b98694220fa30",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-1440-dark-zh.png",
+      "sha256": "79aa832209613685d6c9d9ede48bf9ab4a439554a799fa48f3a475876fb6b482",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-1440-light-en.png",
+      "sha256": "c7292e20718a04af9e7be8cee4cb78ec8f08858d022f636aab53c5ae34f12128",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-1440-light-zh.png",
+      "sha256": "6b1d19b1f3d7d6abb19b865e887de4fefa55f15a9e87fe22798e0b5c2294270a",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-390-dark-en.png",
+      "sha256": "3e401beee61e78e1159e7b20f7120b3788205bce6bd3e97120702ce5f9591988",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-390-dark-zh.png",
+      "sha256": "86055cd567e163257da2a0656cc38b571dd009f11ea5131962b3ceb576e0618e",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-390-light-en.png",
+      "sha256": "c6ee1c425cdd951b930bfd3c899f34d94f8db0a087f3dc818df2349ccba4b616",
+      "explicit_test_fixture": true
+    },
+    {
+      "path": "mockups/refs/intraday-flow-upgrade/source-details-r3/fixture-390-light-zh.png",
+      "sha256": "e3580c57d8855c1f9c6bf46c62a5cb29e682208bdb0362c2a88aaef18ad36d0c",
+      "explicit_test_fixture": true
+    }
+  ]
+}

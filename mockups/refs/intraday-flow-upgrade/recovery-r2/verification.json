@@ -1,0 +1,1757 @@
+{
+  "kind": "isolated_browser_recovery_r2",
+  "fixture_note": "Missing watchlist is a synthetic TEST FIXTURE served only inside isolated browser; filtered query uses committed recorded board. No feed or producer writes.",
+  "source_page_sha256": "a25bcf188e95ac9ac8705d6ae776fb10e52a214ee74344abd1d93b8abc4ce60b",
+  "checks": [
+    {
+      "check": "1440/light/en/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "1440/light/en/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 605.390625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 605.390625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/en/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "1440/light/zh/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 604.875
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 604.875
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/light/zh/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "1440/dark/en/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 542.484375
+          },
+          {
+            "height": 44,
+            "right": 669.890625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 605.390625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 605.390625
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/en/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "1440/dark/zh/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 537.375
+          },
+          {
+            "height": 44,
+            "right": 647.125
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 604.875
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "actions": [
+          {
+            "height": 44,
+            "right": 604.875
+          }
+        ]
+      }
+    },
+    {
+      "check": "1440/dark/zh/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "390/light/en/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/long-query/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/no-watchlist/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/en/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "390/light/zh/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/long-query/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/no-watchlist/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/light/zh/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "390/dark/en/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/long-query/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/no-watchlist/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/en/no-watchlist/reload-same-page",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/starting-population",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/distinct-query-action",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/full-reset-action",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/not-watchlist-failure",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/refresh-focus/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/refresh-focus/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" id=\"ift-empty-clear-search\" class=\"gbtn ift-empty-primary\" data-clear-search=\"\"><span class=\"l-en\">Clear search</span><span class=\"l-zh\">清除搜索</span></button>"
+    },
+    {
+      "check": "390/dark/zh/filtered/refresh-focus/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/clear-query",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/focus-search",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/theme-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/setup-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/sort-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/population-restored",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/html-escaped",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/long-query/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/long-query/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/long-query/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          },
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/filtered/reset-all",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/filtered/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/unknown-counts",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/no-filter-reset",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/reload-offered",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/no-permanent-loading-row",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/truthful-footer",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/truthful-inspector",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/no-overflow",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/44px-targets",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/launcher-clearance",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "actions": [
+          {
+            "height": 44,
+            "right": 299
+          }
+        ]
+      }
+    },
+    {
+      "check": "390/dark/zh/no-watchlist/reload-same-page",
+      "passed": true
+    }
+  ],
+  "images": [
+    {
+      "file": "filtered-1440-dark-en.png",
+      "sha256": "2c2964da365685cefc4994f5862d823f2256a65ba945302fbdc456e151f2cb3b"
+    },
+    {
+      "file": "filtered-1440-dark-zh.png",
+      "sha256": "b68f941b22e7a4f97ae571167fa94a536183afe8d0117df3d15382c5e9512a36"
+    },
+    {
+      "file": "filtered-1440-light-en.png",
+      "sha256": "042f3ed706c7d002b1bfcdc2e3f1db379dfda9cbd4ade1f3203cf5895a0f6fcf"
+    },
+    {
+      "file": "filtered-1440-light-zh.png",
+      "sha256": "06defe059cc6494c0c4d2834847a58ce9bf1ab9449f5a500ae889a0c02331cac"
+    },
+    {
+      "file": "filtered-390-dark-en.png",
+      "sha256": "9e33dab160e6c080b3defcd2247abd8da20269fa858d6622e15aa154e5bc61d0"
+    },
+    {
+      "file": "filtered-390-dark-zh.png",
+      "sha256": "eedd838c79209bff0976740279f2b1c468331a6932de1e25c3d0de3a72bdcdb7"
+    },
+    {
+      "file": "filtered-390-light-en.png",
+      "sha256": "e1ac26f88c8bd3d7a0c159313a5ca033dc1fd272248eb4d349eb24e49d2cca6a"
+    },
+    {
+      "file": "filtered-390-light-zh.png",
+      "sha256": "becc4fb21d119b2e8b97afb02c30518ff1fc9dd8d014845d359dfa96e06ba61b"
+    },
+    {
+      "file": "unavailable-1440-dark-en.png",
+      "sha256": "496e90a11e03419249af7e680da84788fd5d95a87718634cf195ef53cb09ec7d"
+    },
+    {
+      "file": "unavailable-1440-dark-zh.png",
+      "sha256": "d468f381d72b9fa6bb1eb1be3625caa824ef575f26b7666ef8df7926b64f5448"
+    },
+    {
+      "file": "unavailable-1440-light-en.png",
+      "sha256": "f165ed3fc45173107332c13f93a8e6d894f05c85e389ae39718dd0b2f5bda98c"
+    },
+    {
+      "file": "unavailable-1440-light-zh.png",
+      "sha256": "ff9abb6dd9717dc1b547337b7e6aed8882900cd3c6388b1611561c8f262a3f2f"
+    },
+    {
+      "file": "unavailable-390-dark-en.png",
+      "sha256": "0e3389464023b6859d5ee0ebba2d82d0333dbb5eb5fa72dbc2b6e6db79af47f8"
+    },
+    {
+      "file": "unavailable-390-dark-zh.png",
+      "sha256": "31b46b306d5e0c820f1c7c777281d7b7386f711bcc94320e0aef2079ceb47ef0"
+    },
+    {
+      "file": "unavailable-390-light-en.png",
+      "sha256": "46965fe97f2b08bc700ce1bd130b9d283afd46b5a8799145465f93b7e503a049"
+    },
+    {
+      "file": "unavailable-390-light-zh.png",
+      "sha256": "71f83451821c905a7c147e0f2d4c3403b2fcbce8c16ce231d6fa334d5283a46f"
+    }
+  ]
+}

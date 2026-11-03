@@ -76,7 +76,7 @@ def test_dealer_compact_render_has_no_relative_day_words():
 def test_r2_stamp_banned_word_sweep_extends_to_dealer_line():
     """Same instrument as r2's stamp sweep, pointed at dealerCompact."""
     src = _src()
-    stamp = _region(src, 'id="ift-stamp"', "</header>")
+    stamp = _region(src, 'id="ift-stamp"', "</section>")
     dealer = _dealer_region(src)
     for word in DEALER_BANNED:
         assert word not in stamp

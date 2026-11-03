@@ -1,0 +1,1144 @@
+{
+  "captured_at_utc": "2026-11-03T08:13:07.190853+00:00",
+  "baseline_commit": "703f3c9c230730cf9f0f5dbb99c7bd416b85859b",
+  "worktree_head_during_capture": "703f3c9c230730cf9f0f5dbb99c7bd416b85859b",
+  "capture_status": "R4 candidate source before its material commit; exact file hashes bind these observations",
+  "independent_review": false,
+  "production_acceptance": false,
+  "browser": "151.0.7922.34",
+  "source_identity": {
+    "templates/intraday_flow.html.j2": {
+      "sha256": "9dd9a11896db3c75b8ca48c782dc5976d85170ff1a2809f64b323923e5003f69",
+      "script_elements": 4,
+      "outside_guide_identical": true
+    },
+    "site/intraday_flow.html": {
+      "sha256": "aa82b215294514edd929bce48512d56fc44b6aaa1604e8079032c2314de70fc9",
+      "script_elements": 10,
+      "outside_guide_identical": true
+    },
+    "templates/intraday-flow.css": {
+      "sha256": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+      "byte_identical": true
+    },
+    "site/intraday-flow.css": {
+      "sha256": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+      "byte_identical": true
+    },
+    "site/flowtracker/base.json": {
+      "sha256": "76f8f28816e347866a59b90e3d8c2ee1654786e9dbec13eddcdc750e0bf3fe18",
+      "byte_identical": true
+    }
+  },
+  "checks": [
+    {
+      "check": "templates/intraday_flow.html.j2/outside-guide-identical",
+      "passed": true
+    },
+    {
+      "check": "templates/intraday_flow.html.j2/all-script-elements-identical",
+      "passed": true
+    },
+    {
+      "check": "templates/intraday_flow.html.j2/six-bilingual-labels-and-markers-identical",
+      "passed": true
+    },
+    {
+      "check": "site/intraday_flow.html/outside-guide-identical",
+      "passed": true
+    },
+    {
+      "check": "site/intraday_flow.html/all-script-elements-identical",
+      "passed": true
+    },
+    {
+      "check": "site/intraday_flow.html/six-bilingual-labels-and-markers-identical",
+      "passed": true
+    },
+    {
+      "check": "templates/intraday-flow.css/byte-identical",
+      "passed": true
+    },
+    {
+      "check": "site/intraday-flow.css/byte-identical",
+      "passed": true
+    },
+    {
+      "check": "site/flowtracker/base.json/byte-identical",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "1440/light/en/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 1440,
+      "document_width": 1440,
+      "guide_width": 1360,
+      "guide_scroll_width": 1358,
+      "guide_client_width": 1358,
+      "left": 40,
+      "right": 1400,
+      "overflowing": []
+    },
+    {
+      "check": "1440/light/en/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 74,
+      "final_height": 74
+    },
+    {
+      "check": "1440/light/en/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AAPL",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AAPL"
+        ],
+        "expanded": [
+          "AAPL"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AAPL",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AAPL"
+        ],
+        "expanded": [
+          "AAPL"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "1440/light/en/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "1440/light/zh/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "1440/light/zh/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 1440,
+      "document_width": 1440,
+      "guide_width": 1360,
+      "guide_scroll_width": 1358,
+      "guide_client_width": 1358,
+      "left": 40,
+      "right": 1400,
+      "overflowing": []
+    },
+    {
+      "check": "1440/light/zh/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 74,
+      "final_height": 74
+    },
+    {
+      "check": "1440/light/zh/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "1440/light/zh/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "1440/dark/en/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "1440/dark/en/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 1440,
+      "document_width": 1440,
+      "guide_width": 1360,
+      "guide_scroll_width": 1358,
+      "guide_client_width": 1358,
+      "left": 40,
+      "right": 1400,
+      "overflowing": []
+    },
+    {
+      "check": "1440/dark/en/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 74,
+      "final_height": 74
+    },
+    {
+      "check": "1440/dark/en/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "1440/dark/en/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "1440/dark/zh/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "1440/dark/zh/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 1440,
+      "document_width": 1440,
+      "guide_width": 1360,
+      "guide_scroll_width": 1358,
+      "guide_client_width": 1358,
+      "left": 40,
+      "right": 1400,
+      "overflowing": []
+    },
+    {
+      "check": "1440/dark/zh/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 74,
+      "final_height": 74
+    },
+    {
+      "check": "1440/dark/zh/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "1440/dark/zh/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "390/light/en/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "390/light/en/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 390,
+      "document_width": 390,
+      "guide_width": 354,
+      "guide_scroll_width": 352,
+      "guide_client_width": 352,
+      "left": 18,
+      "right": 372,
+      "overflowing": []
+    },
+    {
+      "check": "390/light/en/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 66,
+      "final_height": 66
+    },
+    {
+      "check": "390/light/en/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "390/light/en/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "390/light/zh/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "390/light/zh/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 390,
+      "document_width": 390,
+      "guide_width": 354,
+      "guide_scroll_width": 352,
+      "guide_client_width": 352,
+      "left": 18,
+      "right": 372,
+      "overflowing": []
+    },
+    {
+      "check": "390/light/zh/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 66,
+      "final_height": 66
+    },
+    {
+      "check": "390/light/zh/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "390/light/zh/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "390/dark/en/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "390/dark/en/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 390,
+      "document_width": 390,
+      "guide_width": 354,
+      "guide_scroll_width": 352,
+      "guide_client_width": 352,
+      "left": 18,
+      "right": 372,
+      "overflowing": []
+    },
+    {
+      "check": "390/dark/en/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 66,
+      "final_height": 66
+    },
+    {
+      "check": "390/dark/en/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "390/dark/en/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    },
+    {
+      "check": "390/dark/zh/native-guide-starts-closed",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/selected-evidence-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/enter-opens-native-guide",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/all-four-subsections-keyboard-operable",
+      "passed": true,
+      "transitions": [
+        {
+          "index": 0,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 1,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 2,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        },
+        {
+          "index": 3,
+          "space_toggled": true,
+          "expanded": true,
+          "body_visible": true,
+          "focus_retained": true
+        }
+      ]
+    },
+    {
+      "check": "390/dark/zh/only-requested-language-visible",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/six-classifications-visible",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/opened-guide-wraps-without-horizontal-overflow",
+      "passed": true,
+      "viewport": 390,
+      "document_width": 390,
+      "guide_width": 354,
+      "guide_scroll_width": 352,
+      "guide_client_width": 352,
+      "left": 18,
+      "right": 372,
+      "overflowing": []
+    },
+    {
+      "check": "390/dark/zh/enter-closes-and-retains-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/closed-guide-height-restored",
+      "passed": true,
+      "initial_height": 66,
+      "final_height": 66
+    },
+    {
+      "check": "390/dark/zh/filters-selection-and-expanded-evidence-retained",
+      "passed": true,
+      "before": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      },
+      "after": {
+        "query": "AMZN",
+        "basket": [
+          "mag7"
+        ],
+        "stance": [],
+        "selected": [
+          "AMZN"
+        ],
+        "expanded": [
+          "AMZN"
+        ],
+        "sort": null,
+        "grouping": null
+      }
+    },
+    {
+      "check": "390/dark/zh/space-reopens-with-subsection-state-retained",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/no-page-errors-or-failed-responses",
+      "passed": true,
+      "errors": [],
+      "failed_responses": []
+    }
+  ],
+  "check_count": 105,
+  "passed": true,
+  "captures": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "locale": "en",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-1440-light-en.png",
+      "sha256": "b3ce0fe7db8000bdefb67806984c3de4dc77eae97abceffb4cf6db07d83f8791"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "locale": "zh",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-1440-light-zh.png",
+      "sha256": "5e662217e070a0cb4b4ef14d164cea7b4065cb66950b91194c5e3913d8039de5"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "locale": "en",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-1440-dark-en.png",
+      "sha256": "5f3939e7486876827bcbf381ee8ad664c76b4201a4660f4f4d38d35c6015c146"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "locale": "zh",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-1440-dark-zh.png",
+      "sha256": "cfd1525a10725e739fd893f02c4ca78ac32ef5c1f0cb58f631a018ec90948122"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "locale": "en",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-390-light-en.png",
+      "sha256": "1a7d3e3be1f2e33bc8c27d90e4c6090df335ed86c44d352f0c6f6f2bcb8acaab"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "locale": "zh",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-390-light-zh.png",
+      "sha256": "d438af2c85a570da7670d229a4949193b197d07ef3bd03512e5a88f0dcebabd5"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "locale": "en",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-390-dark-en.png",
+      "sha256": "353c128375732c2d8abe28172ce71aea13e82b1da8c737c9679cd5e90bc9a6b2"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "locale": "zh",
+      "state": "native guide and all four sections opened by keyboard",
+      "capture_scope": "actual page guide element",
+      "source": "unmodified local feed files",
+      "path": "mockups/refs/intraday-flow-upgrade/guide-r4/guide-390-dark-zh.png",
+      "sha256": "d11dea9a9a988fdb5e9691dbde12d212d4c04a926d405de51a0f2e4fe5312fee"
+    }
+  ],
+  "limits": [
+    "Static local page and existing local data only; no authenticated or production proof.",
+    "No startup diagnosis, new freshness policy, denied reviewer replay or denied Paper row batch.",
+    "R3 source/recovery/model proof retained through exact identity of all script elements."
+  ]
+}

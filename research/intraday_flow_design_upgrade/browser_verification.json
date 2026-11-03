@@ -1,0 +1,2965 @@
+{
+  "evidence_kind": "isolated_browser_regression",
+  "source": "actual candidate plus explicit synthetic transport fixtures",
+  "checks": [
+    {
+      "check": "1440/light/en/language",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/theme",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "1440/light/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.143922 0.459373 0.325882)",
+      "act": "color(srgb 0.143922 0.459373 0.325882)",
+      "favour": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+      "check": "1440/light/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
+    },
+    {
+      "check": "1440/light/en/no-overflow",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/en/scan-proximity",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/en/six-rows",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/en/activity-help-keyboard",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/activity-help-does-not-sort",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/activity-help-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/reset",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/themes-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "1440/light/en/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "1440/light/en/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 538.484375,
+      "viewport": 900
+    },
+    {
+      "check": "1440/light/en/selected-name",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/side-evidence-opens",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/side-evidence-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/side-evidence-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
+      "check": "1440/light/en/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "1440/light/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: time unavailable\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n—\n~Net premium (calls+puts)\n—\nFlow durability\n—\nApproximate call lean\nUnavailable\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n·\n~Options leaning in\nUnavailable\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
+    },
+    {
+      "check": "1440/light/en/refresh-ift-open-evidence/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-ift-open-evidence/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"gbtn ift-inspect-action\" id=\"ift-open-evidence\" data-exp=\"AAPL\" aria-controls=\"ift-evidence-AAPL\" aria-expanded=\"true\"><span class=\"l-en\">Hide evidence</span><span class=\"l-zh\">收起依据</span> <span aria-hidden=\"tru"
+    },
+    {
+      "check": "1440/light/en/refresh-ift-open-evidence/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-ift-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-ift-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"ift-stock-link\" id=\"ift-stock-overview\" href=\"stock.html#AAPL\" aria-label=\"AAPL stock overview\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"></path"
+    },
+    {
+      "check": "1440/light/en/refresh-ift-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "1440/light/en/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/collapse",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "1440/light/en/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "1440/light/en/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "1440/light/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/light/zh/language",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/theme",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "1440/light/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.710745 0.246588 0.26102)",
+      "act": "color(srgb 0.710745 0.246588 0.26102)",
+      "favour": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+      "check": "1440/light/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
+    },
+    {
+      "check": "1440/light/zh/no-overflow",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/zh/scan-proximity",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/zh/six-rows",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/light/zh/activity-help-keyboard",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/activity-help-does-not-sort",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/activity-help-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/reset",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/themes-open",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "1440/light/zh/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "1440/light/zh/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 538.484375,
+      "viewport": 900
+    },
+    {
+      "check": "1440/light/zh/selected-name",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/side-evidence-opens",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/side-evidence-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/side-evidence-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
+      "check": "1440/light/zh/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "未满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "1440/light/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-11-02 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n317.95 (+7.7%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.7%\n隐含波动\n昂贵 (27.4)\n偏斜\n下行恐慌买盘\n数据质量\n过时\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.77%\n买入区间\n$342.10–$342.10\n仅供参考——不构成交易建议。"
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-open-evidence/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-open-evidence/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"gbtn ift-inspect-action\" id=\"ift-open-evidence\" data-exp=\"AAPL\" aria-controls=\"ift-evidence-AAPL\" aria-expanded=\"true\"><span class=\"l-en\">Hide evidence</span><span class=\"l-zh\">收起依据</span> <span aria-hidden=\"tru"
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-open-evidence/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"ift-stock-link\" id=\"ift-stock-overview\" href=\"stock.html#AAPL\" aria-label=\"AAPL 股票概览\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"></path></svg></a"
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "1440/light/zh/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/collapse",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "1440/light/zh/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "1440/light/zh/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/light/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "1440/light/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/dark/en/language",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/theme",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "1440/dark/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.270588 0.721569 0.45098)",
+      "act": "color(srgb 0.270588 0.721569 0.45098)",
+      "favour": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+      "check": "1440/dark/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
+    },
+    {
+      "check": "1440/dark/en/no-overflow",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/en/scan-proximity",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/en/six-rows",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/en/activity-help-keyboard",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/activity-help-does-not-sort",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/activity-help-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/reset",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/themes-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "1440/dark/en/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "1440/dark/en/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 538.484375,
+      "viewport": 900
+    },
+    {
+      "check": "1440/dark/en/selected-name",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/side-evidence-opens",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/side-evidence-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/side-evidence-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
+      "check": "1440/dark/en/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "1440/dark/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-open-evidence/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-open-evidence/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"gbtn ift-inspect-action\" id=\"ift-open-evidence\" data-exp=\"AAPL\" aria-controls=\"ift-evidence-AAPL\" aria-expanded=\"true\"><span class=\"l-en\">Hide evidence</span><span class=\"l-zh\">收起依据</span> <span aria-hidden=\"tru"
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-open-evidence/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"ift-stock-link\" id=\"ift-stock-overview\" href=\"stock.html#AAPL\" aria-label=\"AAPL stock overview\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"></path"
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "1440/dark/en/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/collapse",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "1440/dark/en/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "1440/dark/en/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "1440/dark/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "1440/dark/zh/language",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/theme",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "1440/dark/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.878431 0.392157 0.392157)",
+      "act": "color(srgb 0.878431 0.392157 0.392157)",
+      "favour": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+      "check": "1440/dark/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
+    },
+    {
+      "check": "1440/dark/zh/no-overflow",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/zh/scan-proximity",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/zh/six-rows",
+      "passed": true,
+      "width": 1440,
+      "scrollWidth": 1440,
+      "navBottom": 84,
+      "firstTop": 382.984375,
+      "visibleRows": 7
+    },
+    {
+      "check": "1440/dark/zh/activity-help-keyboard",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/activity-help-does-not-sort",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/activity-help-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/reset",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/themes-open",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "1440/dark/zh/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "1440/dark/zh/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 538.484375,
+      "viewport": 900
+    },
+    {
+      "check": "1440/dark/zh/selected-name",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/side-evidence-opens",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/side-evidence-closes",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/side-evidence-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "innerWidth": 986,
+      "innerScroll": 986,
+      "left": 61,
+      "right": 1047
+    },
+    {
+      "check": "1440/dark/zh/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "未满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "1440/dark/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-11-02 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n317.95 (+7.7%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.7%\n隐含波动\n昂贵 (27.4)\n偏斜\n下行恐慌买盘\n数据质量\n过时\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.77%\n买入区间\n$342.10–$342.10\n仅供参考——不构成交易建议。"
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-open-evidence/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-open-evidence/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"gbtn ift-inspect-action\" id=\"ift-open-evidence\" data-exp=\"AAPL\" aria-controls=\"ift-evidence-AAPL\" aria-expanded=\"true\"><span class=\"l-en\">Hide evidence</span><span class=\"l-zh\">收起依据</span> <span aria-hidden=\"tru"
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-open-evidence/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"ift-stock-link\" id=\"ift-stock-overview\" href=\"stock.html#AAPL\" aria-label=\"AAPL 股票概览\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M7 17 17 7M7 7h10v10\"></path></svg></a"
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "1440/dark/zh/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/collapse",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "1440/dark/zh/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "1440/dark/zh/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "1440/dark/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "1440/dark/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/light/en/language",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/theme",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "390/light/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.143922 0.459373 0.325882)",
+      "act": "color(srgb 0.143922 0.459373 0.325882)",
+      "favour": "color(srgb 0.143922 0.459373 0.325882)"
+    },
+    {
+      "check": "390/light/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
+    },
+    {
+      "check": "390/light/en/no-overflow",
+      "passed": true,
+      "width": 390,
+      "scrollWidth": 390,
+      "navBottom": 124,
+      "firstTop": 592.390625,
+      "visibleRows": 1
+    },
+    {
+      "check": "390/light/en/metric-labels",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/touch-target",
+      "passed": true,
+      "boxes": [
+        {
+          "x": 35,
+          "y": 719.015625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 902.640625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1086.265625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1269.890625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1453.515625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1673.140625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1856.765625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 2040.390625,
+          "width": 124,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "check": "390/light/en/evidence-clear-of-assistant",
+      "passed": true,
+      "box": {
+        "x": 35,
+        "y": 719.015625,
+        "width": 124,
+        "height": 44
+      }
+    },
+    {
+      "check": "390/light/en/metrics-clear-of-assistant",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 304.390625,
+      "lensTop": 305.390625
+    },
+    {
+      "check": "390/light/en/status-help-attached",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 304.390625,
+      "lensTop": 305.390625
+    },
+    {
+      "check": "390/light/en/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
+      "check": "390/light/en/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/reset",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/themes-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "390/light/en/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "390/light/en/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 779.390625,
+      "viewport": 844
+    },
+    {
+      "check": "390/light/en/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
+      "check": "390/light/en/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "390/light/en/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/light/en/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen AAPL overview\n↗\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
+    },
+    {
+      "check": "390/light/en/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "390/light/en/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/collapse",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "390/light/en/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "390/light/en/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "390/light/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/light/zh/language",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/theme",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "390/light/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.710745 0.246588 0.26102)",
+      "act": "color(srgb 0.710745 0.246588 0.26102)",
+      "favour": "color(srgb 0.710745 0.246588 0.26102)"
+    },
+    {
+      "check": "390/light/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
+    },
+    {
+      "check": "390/light/zh/no-overflow",
+      "passed": true,
+      "width": 390,
+      "scrollWidth": 390,
+      "navBottom": 124,
+      "firstTop": 573.640625,
+      "visibleRows": 1
+    },
+    {
+      "check": "390/light/zh/metric-labels",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/touch-target",
+      "passed": true,
+      "boxes": [
+        {
+          "x": 35,
+          "y": 700.265625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 883.890625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1067.515625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1251.140625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1434.765625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1654.390625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1838.015625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 2021.640625,
+          "width": 124,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "check": "390/light/zh/evidence-clear-of-assistant",
+      "passed": true,
+      "box": {
+        "x": 35,
+        "y": 700.265625,
+        "width": 124,
+        "height": 44
+      }
+    },
+    {
+      "check": "390/light/zh/metrics-clear-of-assistant",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 285.640625,
+      "lensTop": 286.640625
+    },
+    {
+      "check": "390/light/zh/status-help-attached",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 285.640625,
+      "lensTop": 286.640625
+    },
+    {
+      "check": "390/light/zh/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
+      "check": "390/light/zh/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/reset",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/themes-open",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "390/light/zh/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "390/light/zh/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 760.640625,
+      "viewport": 844
+    },
+    {
+      "check": "390/light/zh/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
+      "check": "390/light/zh/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "未满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "390/light/zh/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/light/zh/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-11-02 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开AAPL概览\n↗\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n317.95 (+7.7%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.7%\n隐含波动\n昂贵 (27.4)\n偏斜\n下行恐慌买盘\n数据质量\n过时\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.77%\n买入区间\n$342.10–$342.10\n仅供参考——不构成交易建议。"
+    },
+    {
+      "check": "390/light/zh/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "390/light/zh/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/collapse",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "390/light/zh/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "390/light/zh/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/light/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "390/light/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/dark/en/language",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/theme",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "390/dark/en/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.270588 0.721569 0.45098)",
+      "act": "color(srgb 0.270588 0.721569 0.45098)",
+      "favour": "color(srgb 0.270588 0.721569 0.45098)"
+    },
+    {
+      "check": "390/dark/en/localized-feed-label",
+      "passed": true,
+      "label": "Feed status"
+    },
+    {
+      "check": "390/dark/en/no-overflow",
+      "passed": true,
+      "width": 390,
+      "scrollWidth": 390,
+      "navBottom": 124,
+      "firstTop": 592.390625,
+      "visibleRows": 1
+    },
+    {
+      "check": "390/dark/en/metric-labels",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/touch-target",
+      "passed": true,
+      "boxes": [
+        {
+          "x": 35,
+          "y": 719.015625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 902.640625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1086.265625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1269.890625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1453.515625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1673.140625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1856.765625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 2040.390625,
+          "width": 124,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "check": "390/dark/en/evidence-clear-of-assistant",
+      "passed": true,
+      "box": {
+        "x": 35,
+        "y": 719.015625,
+        "width": 124,
+        "height": 44
+      }
+    },
+    {
+      "check": "390/dark/en/metrics-clear-of-assistant",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 304.390625,
+      "lensTop": 305.390625
+    },
+    {
+      "check": "390/dark/en/status-help-attached",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 304.390625,
+      "lensTop": 305.390625
+    },
+    {
+      "check": "390/dark/en/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
+      "check": "390/dark/en/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/reset",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/themes-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "390/dark/en/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "390/dark/en/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 779.390625,
+      "viewport": 844
+    },
+    {
+      "check": "390/dark/en/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
+      "check": "390/dark/en/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "390/dark/en/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/dark/en/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/localized-dealer-bands",
+      "passed": true,
+      "text": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-07-27 22:32 UTC\nOptions feed: 2026-10-30 20:11 UTC\n\nNightly package built: 2026-11-02 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen AAPL overview\n↗\nTape & volume\nRelative volume\n—\nVol durability\n—\nSession VWAP\n—\nPrice vs VWAP\n—\nHigher lows\n—\n~Net call premium\n~+10.5M\n~Net premium (calls+puts)\n~+20.6M\nFlow durability\n48%\nApproximate call lean\n~call buying\nbig block×2\nsize vs open interest×53\nrepeat buyer×244\n1 of 7 recorded checks aligned\n✗\nRecent washout\nNot met\n·\nReclaimed above VWAP\nUnavailable\n·\nVolume elevated\nUnavailable\n·\nVolume holding\nUnavailable\n✗\n~Options leaning in\nNot met\n✗\nTrend turning up\nNot met\n✓\nClean leader (no trap)\nMet\nDealer map (options chains)\nDealer regime\nLong gamma · pins / mean-reverts\nRegime line\n317.95 (+7.7%)\nCeiling (call wall)\n~$360 very strong, hard\nFloor (put wall)\n~$310 weak\nMax pain\n~$300\nExpected move (day)\n±1.7%\nImplied vol\nrich (27.4)\nSkew tone\ndownside fear bid\nEvidence\nstale\n\nLong gamma — dealers dampen moves, so price tends to pin / mean-revert toward the nearby levels; fading extremes beats chasing breakouts, and tighter stops are reasonable.\n\nDaily options chains — a levels + timing map. Context for stops, never a direction call. Single-name regime is a near-constant product trait, not a live signal.\nReference levels\nStop (nightly)\n$329.40\nDealer ceiling\n~$360\nDealer floor\n~$310\nDaily range (ATR)\n0.77%\nBuy zone\n$342.10–$342.10\nReference only — not trade advice."
+    },
+    {
+      "check": "390/dark/en/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "390/dark/en/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/collapse",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "390/dark/en/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "390/dark/en/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/en/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "390/dark/en/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "390/dark/zh/language",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/theme",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/cap",
+      "passed": true,
+      "count": 8
+    },
+    {
+      "check": "390/dark/zh/localized-direction-colors",
+      "passed": true,
+      "up": "color(srgb 0.878431 0.392157 0.392157)",
+      "act": "color(srgb 0.878431 0.392157 0.392157)",
+      "favour": "color(srgb 0.878431 0.392157 0.392157)"
+    },
+    {
+      "check": "390/dark/zh/localized-feed-label",
+      "passed": true,
+      "label": "数据源状态"
+    },
+    {
+      "check": "390/dark/zh/no-overflow",
+      "passed": true,
+      "width": 390,
+      "scrollWidth": 390,
+      "navBottom": 124,
+      "firstTop": 573.640625,
+      "visibleRows": 1
+    },
+    {
+      "check": "390/dark/zh/metric-labels",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/touch-target",
+      "passed": true,
+      "boxes": [
+        {
+          "x": 35,
+          "y": 700.265625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 883.890625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1067.515625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1251.140625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1434.765625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1654.390625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 1838.015625,
+          "width": 124,
+          "height": 44
+        },
+        {
+          "x": 35,
+          "y": 2021.640625,
+          "width": 124,
+          "height": 44
+        }
+      ]
+    },
+    {
+      "check": "390/dark/zh/evidence-clear-of-assistant",
+      "passed": true,
+      "box": {
+        "x": 35,
+        "y": 700.265625,
+        "width": 124,
+        "height": 44
+      }
+    },
+    {
+      "check": "390/dark/zh/metrics-clear-of-assistant",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 285.640625,
+      "lensTop": 286.640625
+    },
+    {
+      "check": "390/dark/zh/status-help-attached",
+      "passed": true,
+      "maxRight": 311,
+      "stampTop": 285.640625,
+      "lensTop": 286.640625
+    },
+    {
+      "check": "390/dark/zh/mobile-sort-focus-visible",
+      "passed": true,
+      "id": "ift-mobile-sort",
+      "width": 2,
+      "style": "solid"
+    },
+    {
+      "check": "390/dark/zh/empty-filter",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/reset",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/reset-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/themes-open",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/themes-escape",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/theme-filter",
+      "passed": true,
+      "baskets": [
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense",
+        "defense"
+      ]
+    },
+    {
+      "check": "390/dark/zh/theme-menu-closes",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/name-sort",
+      "passed": true,
+      "names": [
+        "AAPL",
+        "ACLS",
+        "ADBE",
+        "AEIS",
+        "AEP",
+        "ALAB",
+        "AMAT",
+        "AMD"
+      ]
+    },
+    {
+      "check": "390/dark/zh/sort-aria",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/short-result-menu",
+      "passed": true,
+      "visible": true,
+      "bottom": 760.640625,
+      "viewport": 844
+    },
+    {
+      "check": "390/dark/zh/keyboard-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/full-evidence",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/expanded-evidence-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "viewport": 390,
+      "innerWidth": 320,
+      "innerScroll": 320,
+      "left": 39,
+      "right": 359
+    },
+    {
+      "check": "390/dark/zh/seven-explicit-states",
+      "passed": true,
+      "states": [
+        "未满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "未满足",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "390/dark/zh/mobile-stock-overview",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/focused-before-response",
+      "passed": true,
+      "active": "<a class=\"gbtn ift-evidence-overview\" id=\"ift-evidence-stock-AAPL\" href=\"stock.html#AAPL\"><span class=\"l-en\">Open AAPL overview</span><span class=\"l-zh\">打开AAPL概览</span> <span aria-hidden=\"true\">↗</span></a>"
+    },
+    {
+      "check": "390/dark/zh/refresh-mobile-stock-overview/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/localized-dealer-bands",
+      "passed": true,
+      "text": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-07-27 22:32 UTC\n期权数据源：2026-10-30 20:11 UTC\n\n夜间数据包构建于：2026-11-02 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开AAPL概览\n↗\n盘口与量能\n相对成交量\n—\n量能持续\n—\n当日VWAP\n—\n价格对VWAP\n—\n更高低点\n—\n~净看涨权利金\n~+10.5M\n~净权利金（看涨+看跌）\n~+20.6M\n资金持续\n48%\n近似看涨期权倾向\n~买入看涨\n大单×2\n规模对比未平仓×53\n重复买入×244\n7项已有检查中1项一致\n✗\n近期洗盘\n未满足\n·\n收复VWAP上方\n不可用\n·\n放量\n不可用\n·\n量能持稳\n不可用\n✗\n~期权偏多\n未满足\n✗\n趋势转强\n未满足\n✓\n干净领涨（无陷阱）\n已满足\n做市商地图（期权链）\n做市商体制\n多头Gamma · 磁吸/均值回归\n体制分界\n317.95 (+7.7%)\n天花板（看涨墙）\n~$360 很强, 硬\n地板（看跌墙）\n~$310 弱\n最大痛点\n~$300\n预期波动（日）\n±1.7%\n隐含波动\n昂贵 (27.4)\n偏斜\n下行恐慌买盘\n数据质量\n过时\n\n多头Gamma —— 做市商抑制波动，价格倾向于在邻近价位附近被钉住/均值回归；逢极端回落优于追突破，止损可更紧。\n\n每日期权链——价位与择时地图。仅作止损背景，非方向判断。单只标的体制为产品近乎恒定的属性，非实时信号。\n参考价位\n止损（夜间）\n$329.40\n做市商天花板\n~$360\n做市商地板\n~$310\n日均波幅(ATR)\n0.77%\n买入区间\n$342.10–$342.10\n仅供参考——不构成交易建议。"
+    },
+    {
+      "check": "390/dark/zh/refresh-ift-evidence-AAPL/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-ift-evidence-AAPL/focused-before-response",
+      "passed": true,
+      "active": "<tr id=\"ift-evidence-AAPL\" class=\"detail-row open\" tabindex=\"-1\" data-detail=\"AAPL\"><td colspan=\"7\"><div class=\"detail-inner\"><div class=\"ift-evidence-context\"><p class=\"ift-eyebrow\"><span class=\"l-en\">Recorded evidence · source times</span"
+    },
+    {
+      "check": "390/dark/zh/refresh-ift-evidence-AAPL/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/data-refresh-preserves-filter",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/data-refresh-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/data-refresh-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/language-preserves-expansion",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/language-preserves-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/collapse",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/see-all",
+      "passed": true,
+      "count": 116
+    },
+    {
+      "check": "390/dark/zh/see-all-focuses-next-name",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/see-all-tab-order",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/collapse-cap",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/collapse-focus",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-count-control/requested",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-count-control/focused-before-response",
+      "passed": true,
+      "active": "<button type=\"button\" class=\"ift-see-all\" id=\"ift-see-all\"><span class=\"l-en\">See all 116</span><span class=\"l-zh\">查看全部 116 只</span></button>"
+    },
+    {
+      "check": "390/dark/zh/refresh-count-control/preserved",
+      "passed": true
+    },
+    {
+      "check": "390/dark/zh/refresh-count-control/unchanged-count-silent",
+      "passed": true,
+      "mutations": 0
+    },
+    {
+      "check": "390/dark/zh/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/empty",
+      "passed": true,
+      "title": "The scan is unavailable."
+    },
+    {
+      "check": "fixture/empty/menu-not-clipped",
+      "passed": true,
+      "visible": true,
+      "bottom": 536.484375,
+      "viewport": 900
+    },
+    {
+      "check": "fixture/empty/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/empty/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/loading",
+      "passed": true,
+      "title": "Checking the latest observations."
+    },
+    {
+      "check": "fixture/loading/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/loading/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/missing",
+      "passed": true,
+      "title": "Current prices are unavailable."
+    },
+    {
+      "check": "fixture/missing/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/missing/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/partial",
+      "passed": true,
+      "title": "Current prices are unavailable."
+    },
+    {
+      "check": "fixture/partial-preserves-price",
+      "passed": true
+    },
+    {
+      "check": "fixture/partial/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/partial/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/stale",
+      "passed": true,
+      "title": "Price observations received. Confirmation is incomplete."
+    },
+    {
+      "check": "fixture/stale/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/stale/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/populated",
+      "passed": true,
+      "title": "The latest received observations, in one view."
+    },
+    {
+      "check": "fixture/zero-is-observed",
+      "passed": true,
+      "activity": "0.0× normal · holding\nhigher lows ×2"
+    },
+    {
+      "check": "fixture/populated/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/populated/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/populated/mobile-no-overflow",
+      "passed": true,
+      "scrollWidth": 390,
+      "maxMetricRight": 311
+    },
+    {
+      "check": "fixture/populated/mobile-metrics-clear",
+      "passed": true,
+      "scrollWidth": 390,
+      "maxMetricRight": 311
+    },
+    {
+      "check": "fixture/populated",
+      "passed": true,
+      "title": "The latest received observations, in one view."
+    },
+    {
+      "check": "fixture/zero-is-observed",
+      "passed": true,
+      "activity": "Activity\n0.0× normal · holding\nhigher lows ×2"
+    },
+    {
+      "check": "fixture/populated/no-current-action-claim",
+      "passed": true
+    },
+    {
+      "check": "fixture/populated/no-script-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Unavailable",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "degraded",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_MISSING overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_MISSING/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Not met",
+        "Not met",
+        "Not met",
+        "Unavailable",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: time unavailable\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_OBSERVED overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/synthetic-clock-excluded",
+      "passed": true,
+      "price": "Price: time unavailable"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_OBSERVED/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Unavailable",
+        "Not met",
+        "Unavailable",
+        "Unavailable",
+        "Not met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "1"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:15 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_FALLBACK overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_FALLBACK/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/availability",
+      "passed": true,
+      "states": [
+        "Met",
+        "Met",
+        "Met",
+        "Met",
+        "Unavailable",
+        "Met",
+        "Met"
+      ]
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "6",
+        "stance": "act",
+        "rvol": "1.5"
+      }
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/source-context",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:14 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_PRESENT overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/actual-quote-clock",
+      "passed": true,
+      "context": "RECORDED EVIDENCE · SOURCE TIMES\n\nPrice: 2026-11-02 15:14 UTC\nVolume feed: 2026-11-02 15:15 UTC · marked stale\nOptions feed: time unavailable\n\nNightly package built: 2026-10-30 · Dealer-chain source time unavailable. Source clocks do not establish current confirmation.\n\nOpen TEST_PRESENT overview\n↗"
+    },
+    {
+      "check": "fixture/evidence/en/TEST_PRESENT/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/counts-reconcile",
+      "passed": true,
+      "total": 4,
+      "noRead": 1,
+      "classified": 3
+    },
+    {
+      "check": "fixture/evidence/en/no-read-visible",
+      "passed": true,
+      "text": "1 of 4 names have no current read. They remain in the scan."
+    },
+    {
+      "check": "fixture/evidence/en/untagged-excluded-from-theme",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/en/untagged-visible-in-all",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "不可用",
+        "不可用",
+        "不可用",
+        "不可用",
+        "不可用",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "degraded",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_MISSING概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_MISSING/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "未满足",
+        "未满足",
+        "未满足",
+        "不可用",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "0"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：时间不可用\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_OBSERVED概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/synthetic-clock-excluded",
+      "passed": true,
+      "price": "价格：时间不可用"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_OBSERVED/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "不可用",
+        "未满足",
+        "不可用",
+        "不可用",
+        "未满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "2",
+        "stance": "stand_aside",
+        "rvol": "1"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:15 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_FALLBACK概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_FALLBACK/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/availability",
+      "passed": true,
+      "states": [
+        "已满足",
+        "已满足",
+        "已满足",
+        "已满足",
+        "不可用",
+        "已满足",
+        "已满足"
+      ]
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/model-unchanged",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/recorded-aligned-count",
+      "passed": true,
+      "observed": {
+        "k": "6",
+        "stance": "act",
+        "rvol": "1.5"
+      }
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/seven-rules",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/source-context",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:14 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_PRESENT概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/actual-quote-clock",
+      "passed": true,
+      "context": "已有依据 · 来源时间\n\n价格：2026-11-02 15:14 UTC\n成交量数据源：2026-11-02 15:15 UTC · 已标记过期\n期权数据源：时间不可用\n\n夜间数据包构建于：2026-10-30 · 做市商期权链来源时间不可用。来源时间不代表当前确认。\n\n打开TEST_PRESENT概览\n↗"
+    },
+    {
+      "check": "fixture/evidence/zh/TEST_PRESENT/phone-no-overflow",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/counts-reconcile",
+      "passed": true,
+      "total": 4,
+      "noRead": 1,
+      "classified": 3
+    },
+    {
+      "check": "fixture/evidence/zh/no-read-visible",
+      "passed": true,
+      "text": "4只标的中，1只暂无当前解读，仍保留在扫描看板中。"
+    },
+    {
+      "check": "fixture/evidence/zh/untagged-excluded-from-theme",
+      "passed": true
+    },
+    {
+      "check": "fixture/evidence/zh/untagged-visible-in-all",
+      "passed": true
+    }
+  ]
+}

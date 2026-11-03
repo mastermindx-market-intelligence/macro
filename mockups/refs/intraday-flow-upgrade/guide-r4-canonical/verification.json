@@ -1,0 +1,159 @@
+{
+  "material_source": "d3665db28f34737ddbe7b712a3e48a0e41f1f93b",
+  "captured_at": "2026-11-03T08:19:07Z",
+  "all_image_hashes_match": true,
+  "states": 24,
+  "resting_geometries_equal_r3": true,
+  "source_hashes": {
+    "templates/intraday_flow.html.j2": "9dd9a11896db3c75b8ca48c782dc5976d85170ff1a2809f64b323923e5003f69",
+    "site/intraday_flow.html": "aa82b215294514edd929bce48512d56fc44b6aaa1604e8079032c2314de70fc9",
+    "templates/intraday-flow.css": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+    "site/intraday-flow.css": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+    "site/flowtracker/base.json": "76f8f28816e347866a59b90e3d8c2ee1654786e9dbec13eddcdc750e0bf3fe18"
+  },
+  "console_errors": [],
+  "failed_responses": [],
+  "viewport_metrics": {
+    "desktop": {
+      "document_height_px": 1135,
+      "elements_wider_than_viewport": 0,
+      "horizontal_overflow": false
+    },
+    "mobile": {
+      "document_height_px": 2351,
+      "elements_wider_than_viewport": 0,
+      "horizontal_overflow": false
+    }
+  },
+  "detector_flags": {
+    "asof_present": false,
+    "source_present": false
+  },
+  "resting": [
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "file": "79bc75b9292cc57b.png",
+      "width": 1440,
+      "height": 1135,
+      "cls": 0.6915269176927941
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "file": "1b84e4680b690d11.png",
+      "width": 1440,
+      "height": 1135,
+      "cls": 0.680654676079979
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "file": "fcb4741ffeb1ef52.png",
+      "width": 1440,
+      "height": 1135,
+      "cls": 0.6900963646824633
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "file": "29f4fbbefadc8c09.png",
+      "width": 1440,
+      "height": 1135,
+      "cls": 0.678931860803675
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "file": "5aaad5e74a011afa.png",
+      "width": 390,
+      "height": 2351,
+      "cls": 0.009941680030966371
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "file": "0d1a5000d818a5e6.png",
+      "width": 390,
+      "height": 2351,
+      "cls": 0.009942996573318324
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "file": "dce8b11d55da4720.png",
+      "width": 390,
+      "height": 2334,
+      "cls": 0.02439770032177266
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "file": "f666d1a915f1faa2.png",
+      "width": 390,
+      "height": 2334,
+      "cls": 0.0234640085757571
+    }
+  ],
+  "resting_cls": {
+    "desktop": {
+      "min": 0.678931860803675,
+      "max": 0.6915269176927941
+    },
+    "mobile": {
+      "min": 0.009941680030966371,
+      "max": 0.02439770032177266
+    }
+  },
+  "verified_at_utc": "2026-11-03T08:29:12.193293+00:00",
+  "principal_visual_inspection": {
+    "canonical_resting_cells": 8,
+    "opened_guide_cells": 8,
+    "paper_nodes": [
+      "71UJ-0",
+      "720J-0"
+    ],
+    "independent_acceptance": false,
+    "findings": "Complete EN/ZH text and focus outlines inspected; closed scan and source disclosure retained. Existing shared-navigation startup shift remains unresolved."
+  },
+  "retained_r3_checkpoint": "703f3c9c230730cf9f0f5dbb99c7bd416b85859b",
+  "material_commit": "d3665db28f34737ddbe7b712a3e48a0e41f1f93b",
+  "production_acceptance": false,
+  "limits": [
+    "Anonymous local static page; authenticated/live/production acceptance is not implied.",
+    "Generic source/as-of probes remain false although labels visibly render; raw values retained.",
+    "CLS is a lab observation, not a causal improvement claim or field-performance acceptance.",
+    "Denied reviewer, startup diagnosis, GLM helper and Paper row effects were not replayed."
+  ],
+  "guards": {
+    "design_system_added_diff": {
+      "exit_code": 0,
+      "new_blocking_findings": 0,
+      "process_id": 13125
+    },
+    "visual_receipt": {
+      "exit_code": 0,
+      "diff_base": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+      "process_id": 66221
+    },
+    "agent_os": {
+      "exit_code": 0,
+      "records": 2,
+      "errors": 0,
+      "warnings": 0,
+      "process_id": 66122
+    },
+    "whitespace": {
+      "exit_code": 0
+    },
+    "product_diff_from_material": []
+  }
+}
