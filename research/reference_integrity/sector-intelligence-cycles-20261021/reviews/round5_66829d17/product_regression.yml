@@ -1,0 +1,283 @@
+# RIG round 5 receipt — normalized from critic_return/*_product_regression.md (byte-exact agent returns) by the seat's rig_normalize5.py; values copied, not rewritten.
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: product_regression
+artifact_sha: 66829d178798f9226be7f668e82fe7c15e38b5e4
+review_round: 5
+supersedes:
+  artifact_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
+  receipt: reviews/round4_1ad748c8/product_regression.yml
+reviewer:
+  identity: opus-auditor-product-regression-sic-20261021-r5
+  model: 'claude-opus-5-5 (native reviewer agent a29cc1ceb621c5201, ROUTE: review, MODE: READ_ONLY; the round-4
+    agent resumed by message, no re-spawn)'
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (42 frozen boards 0-41 incl. HTML specimen boards 23-41 + design_refs/sector-paper-20261021
+    at 66829d17)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-4 receipt (reviews/round4_1ad748c8/<role>.yml)
+  - the round-4 verdict conditions SIC-V4-C01..C10 (compressed) and the adjudications SIC-ADJ-02 / SIC-ADJ-01a /
+    SIC-ADJ-01 as stated in the commission
+  first_pass_path: critic_return/first_pass_product_regression.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-11-02T02:17:13.586Z'
+  verdict: BLOCK
+  round4_dispositions:
+  - id: PRC-036
+    r4_severity: major
+    status: partially_cured
+    evidence:
+    - engine/cycle_ontology.py:143-149 DOCTRINE_STANCES = 行动 / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望 / 忽略. The new asserts
+      reject any doctrine ZH equal to a STANCES zh and reject 观望 in the watch ZH.
+    - 'tests/test_cycle_ontology.py ~:1043: the EN must equal DESIGN_DOCTRINE.md:44. Each ZH must be a substring
+      of its cited production line. The only uncited key is ''act''.'
+    - 'tests/test_sector_paper_copy_deck.py ~:308: stance rows must equal the engine. copy_deck.json:256-260 and
+      :278 hold the same strings.'
+    - 'Cited production lines checked: china_altdata.html.j2:227 (做好准备), stage_analysis.html.j2:1497/:1499/:1500,
+      options.html.j2:3630, _market_regime_strip.html.j2:8.'
+    - 'Boards 34 and 41: XLF and XLK show 观察 —— 别追 in warn ink; XLC shows 保护利润. Board 38: the Brief lanes read 行动
+      / 做好准备 / 观察 —— 别追 / 保护利润 / 暂时观望. The reference no longer uses 观望 for Watch.'
+    residual: Inside the reference the fork is cured. The production-drift declaration that SIC-ADJ-02 requires
+      is incomplete. Carried as PRC-042.
+  - id: PRC-037
+    r4_severity: minor
+    status: partially_cured
+    evidence:
+    - engine/cycle_ontology.py:159-164 now says HOLD sits on every RALLY ON row (clean Recovery/Expansion/Peak and
+      divergent Trough/Downturn) and on Recovery × TOP WATCH. It says the warn ink is intended. cycles_ia.md:157
+      and COMPONENTS.md:141 carry the same sentence.
+    - The sentence omits the Peak extended-uptrend HOLD that C06 names. engine/cycle_ontology.py:1060-1063 sets
+      stance HOLD for trend_up AND Peak AND ladder in (BOTTOM WATCH, TURN SIGNALED, FRESH BUY), with note_key extended_uptrend.
+    - Those cells are neither RALLY ON nor TOP WATCH, so the comment is still inaccurate by omission in all three
+      places.
+    residual: Add the Peak extended-uptrend override clause to engine :159-164, cycles_ia.md:157 and COMPONENTS.md:141,
+      using the same sentence in all three.
+  - id: PRC-038
+    r4_severity: minor
+    status: cured
+    evidence:
+    - cycles.html contains six 下行 tokens, at byte offsets 62357, 65952, 75030, 93222, 96817 and 105895. Every one
+      falls inside a <details class=cyc-prov> range (61262-66250, 70750-75328, 92127-97115, 101615-106193).
+    - Board 34 card faces read 回落中 in the chip and 处于回落中阶段 in the read, one phase word per card. build_cycles.py:99
+      PHASE_FACE_ZH comes from the deck phase_*_chip rows; the replacement is at :210.
+  - id: PRC-039
+    r4_severity: minor
+    status: cured
+    evidence:
+    - 'build_cycles.py:89-96: LEG_OF and leg_family come from the phase_v2 family, with no clocks.agree input; the
+      comment cites cycle_ontology.py:614-629. hazard() :151-157 and rhythm() :181-187 draw the mismatch state and
+      withhold the cells. The per-sector drawer row is at :232; there are 6 leg_family drawer rows in cycles.html.'
+    - 'Board 28: XLC shows ''Hazard clock disagrees — hazard clock says an up leg toward a peak · phase clock says
+      Rolling over, next turn a trough''. XLF''s hazard agrees (35/40/59 MODEL), while its rhythm disagrees. XLK
+      keeps its hazard gap cells, and its rhythm disagrees. All three match C02.'
+  - id: PRC-040
+    r4_severity: minor
+    status: cured
+    evidence:
+    - 'Board 28 and board 34 show four distinct labels: Ladder disagrees / 阶梯分歧, Hazard clock disagrees / 风险时钟分歧,
+      Rhythm clock disagrees / 节律时钟分歧, Read disagrees / 读数分歧. Each names its own clock and the phase clock.'
+    - The ladder state is glossed through LADDER_DISPLAY (build_cycles.py:102 and :258-261). Board 28 reads 'timing
+      ladder says uptrend' and board 34 reads 上涨趋势. RALLY ON appears only in the drawers (byte offsets 62109 and
+      92974). XLF shows no read mismatch.
+  - id: PRC-041
+    r4_severity: minor
+    status: partially_cured
+    evidence:
+    - 41-cycles-desk-desktop-light-zh.png is 1440×3267 per sips, which matches the manifest. It is light/ZH and
+      carries the 深色主题截图 chip.
+    - The caption states legacy now.phase versus phase_v2 (build_cycles.py:366).
+    - boards_manifest.yml :1179 and :1210 declare the desk a review instrument rather than a coverage cell.
+    residual: The language of the production crop on the ZH board is not declared. Carried as PRC-043.
+  - id: PRC-031
+    r4_severity: minor
+    status: cured
+    evidence:
+    - The components.stance_* rows cite exact production file:line pairs, each verified to contain the ZH string,
+      and stance_act is declared NEW (copy_deck.json:256-260, :278).
+  - id: PRC-027
+    r4_severity: minor
+    status: upheld
+    evidence:
+    - 'Carried unchanged from round 4 pass 2. Not re-verified: my round-4 receipt was not found at the expected
+      path within budget. Boards 28, 34 and 41 show no new regression.'
+  - id: PRC-025
+    r4_severity: minor
+    status: cured
+    evidence:
+    - Cured in round 4. Boards 28 and 34 show no regression.
+  - id: PRC-022
+    r4_severity: minor
+    status: cured
+    evidence:
+    - Cured in round 4. Boards 28 and 34 show no regression.
+  findings:
+  - id: PRC-042
+    severity: major
+    title: The production ZH Watch-stance drift declaration is incomplete and therefore inaccurate
+    finding: "COMPONENTS.md:128-136 declares only rotation_events.js:200, _ignition_radar_card.html.j2:170 and _mag7_tape_strip.html.j2:227.\n\
+      Confirmed undeclared Watch-stance renderings that use 观望:\n  templates/market_structure.html.j2:563: <span\
+      \ class=\"stance-chip watch\">Watch — don't chase …</span> / 观望——勿追涨\n  templates/_prophet_receipts.html.j2:137:\
+      \ t(\"Watch — don't chase. …\", '观望，不要追。…')\n  templates/china_altdata.html.j2:227: t(\"Watch — don't chase\"\
+      ,'观望，别追'). The reference cites this same line as its 做好准备 source.\nFurther candidates: lines where a 'Watch\
+      \ … chase' EN string sits beside a 观望…追 ZH string, with stance role not individually confirmed: canada:2205,\
+      \ dashboard:13086/14490, index.html:1935, _risk_radar_dlg:114, intraday_flow:445/630/1222, macro_signals:1019,\
+      \ intl:1387, market_structure:668/790, ipo:409, transmission:630.\nA fourth production variant does not use\
+      \ 观望 but still differs from the doctrine string: dashboard.html.j2:7852 renders 观察 — 不要追."
+    cure: Replace the three-line inventory with a complete census of the Watch-stance ZH renderings, produced by
+      a reproducible grep the record states. Or narrow the claim to a stated, bounded scope. Remove the word 'three'
+      unless it is true.
+  - id: PRC-043
+    severity: minor
+    title: Board 41 (ZH) shows an English-language production crop without declaring its locale
+    finding: 'Board 41, desk region: the crop reads ''Sector rotation overlay'', ''WHERE THEY STAND Topping/Trending/Rolling
+      over/Prime entry/Bottoming'', ''Select all visible'', and the tooltip ''High = stretched · low = washed-out
+      — tap any line, chip or card for its story''.
+
+      The face chips declare only 生产截图 / 深色主题截图 / 截至 2026-10-20. boards_manifest.yml:1210 declares the theme but
+      not the language.'
+    cure: Capture the ZH production crop, or add a declared locale chip and manifest line, for example 英文界面截图.
+  - id: PRC-044
+    severity: minor
+    severity_as_filed: nit
+    title: Doctrine EN apostrophe differs from the cited production line
+    finding: The engine watch EN uses a straight apostrophe ("Watch — don't chase"). stage_analysis.html.j2:1497
+      uses a curly one ('Watch — don’t chase'). No test covers the difference.
+  - id: PRC-045
+    severity: minor
+    severity_as_filed: nit
+    title: zh_latin_grep skips <code>, so zh-latin=0 does not mean 'no Latin on the face'
+    finding: 'components/zh_latin_grep.py:15 has SKIP_TAGS including ''code''. Board 41''s ZH caption shows now.phase
+      and phase_v2. This is declared in the manifest (:1210) and C08 requires those identifiers.
+
+      The tokenizer at :32 now catches W5.1, GLP-1 and lone letters. The ALLOW regex at :16 is unchanged.
+
+      The zh_face_latin_allow.txt diff re-spells GLP- as GLP-1 one-for-one, with no entry added or removed.'
+  strengths: []
+  round1_residuals: []
+  user_tasks:
+  - task: 'Brief: act / get ready / watch / protect / stand aside today'
+    rating: BETTER
+    note: Board 38 lane titles equal the engine doctrine; 观望 now means only stand-aside.
+  - task: 'Cycles: cycle position and clock trust'
+    rating: BETTER
+    note: No clock on the face contradicts the phase chip; disagreements are labeled and name both clocks; hazard
+      qualification, PRIOR/MODEL badges, sizing 1.0, lead-lag STOP and hit-rate grader wording are intact.
+  - task: Dossier
+    rating: EQUIVALENT
+  - task: Rotation
+    rating: EQUIVALENT
+  - task: Other workflows
+    rating: UNKNOWN
+  conditions:
+  - 'PRC-042: complete the Watch-stance drift census, or bound its scope explicitly; correct the count ''three''
+    in COMPONENTS.md:128-136.'
+  - 'PRC-037 / C06: name the Peak extended-uptrend HOLD override (engine/cycle_ontology.py:1060-1063) in engine
+    :159-164, cycles_ia.md:157 and COMPONENTS.md:141.'
+  - 'PRC-043: declare or replace the English-language production crop on ZH board 41.'
+  quarantine_breaches: []
+second_pass:
+  amended_at: '2026-11-02T04:04:56.783Z'
+  rationale_received: true
+  amendments:
+  - finding: PRC-027
+    action: upheld
+    action_as_filed: reworded
+    note: 'Pass 1 marked this row upheld by mistake. My own round-4 second pass (critic_return/second_pass_product_regression.md:36-38
+      and :52) shows the round-4 ''upheld'' kept the CURED disposition: board 27 states 16 drawn and 0 gaps, and
+      the png_px values were checked. Disposition is now cured. Boards 28, 34 and 41 show no regression.'
+  - finding: PRC-042
+    action: upheld
+    note: 'The author accepts the defect, and the seat''s own census makes it larger, not smaller: 298 candidate
+      lines and at least six distinct Watch renderings. Nothing is cured at 66829d17; COMPONENTS.md:128-136 still
+      claims three. Answer to the author''s question: the bounded-scope statement is an acceptable cure, and a full
+      per-line inventory in the record is not required, provided four things hold: (a) the census command, its line
+      count and the commit SHA are stated exactly, and the count reproduces at that SHA; (b) the census is labeled
+      a candidate census, not an inventory. The seat''s command `grep "观望\|观察" | grep -i watch` only matches lines
+      where the EN and ZH sit on the same line, so it cannot prove completeness; (c) the confirmed stance-chip renderings
+      are listed by file:line with their ZH strings; (d) the record says plainly that 观望 renders Watch on live production
+      surfaces, so 观望 meaning both Watch and Stand aside is a live production fork owned by those surfaces. "Not
+      unified" alone does not say that. Bound as SIC-V5-C01.'
+  - finding: PRC-037
+    action: upheld
+    action_as_filed: reworded
+    note: Upheld, with the evidence strengthened. In revision_mandate_round4, the PRC-037 row's own cure lists the
+      Peak extended-uptrend override among the HOLD cells (cited there at stale :1035-1041). Its proof then claims
+      engine :159-164 'names the HOLD cells truthfully' while omitting that cell. So the wave-4 proof overclaims
+      its cure, as well as the comment omitting the cell. The planned cure is accepted. It must also re-cite the
+      proof against the actual lines (engine/cycle_ontology.py:1060-1063). Bound as SIC-V5-C02.
+  - finding: PRC-043
+    action: upheld
+    note: 'The planned cure is accepted: declare the locale on the face and in the manifest and proposal; re-capturing
+      in ZH is not required. Not done at 66829d17: proposal.yml:313-317 and boards_manifest row 41 declare the theme
+      only. Bound as SIC-V5-C03.'
+  - finding: PRC-044
+    action: upheld
+    note: Stays a nit. A record note in the COMPONENTS stance rows that production spells the apostrophe both ways
+      (stage_analysis.html.j2:1497 is curly) is an adequate cure. No condition.
+  - finding: PRC-045
+    action: upheld
+    action_as_filed: reworded
+    note: 'Stays a nit; the planned cure is accepted. Closing pass-1 gap C09 widened the scope: boards_manifest.yml
+      rows 32 and 33 (states_shown, relative lines 17 and 47 of the row block) still describe the allowlist as ''AI,
+      GLP-, ETF''. The wave-4 allowlist file now spells the entry GLP-1. That stale state must be corrected along
+      with the <code> exemption statements. Bound as SIC-V5-C04.'
+  - finding: conditions_check.C01
+    action: upheld
+    action_as_filed: reworded
+    note: The C01 string propagation, a gap in pass 1, is now verified. stamp_doctrine.py:16 and :33 import and
+      call engine doctrine_for, so no literal strings are expected there. example_dataset.json doctrine_stance_zh
+      = 观察 —— 别追 (two rows) and 保护利润. site/cycle_ontology.js carries 观察 —— 别追, 暂时观望 and 做好准备, with no 观望-for-Watch
+      variant. C01 stays partially met only because of the drift record (PRC-042).
+  - finding: conditions_check.C09
+    action: upheld
+    action_as_filed: reworded
+    note: Partially verified. Rows 32 and 33 are consistent with the wave-4 doctrine vocabulary but carry the stale
+      'GLP-' allowlist text (see PRC-045). The PNGs for 32 and 33 were not re-read.
+  verdict: BLOCK
+  conditions:
+  - 'SIC-V5-C01: the stance-chip drift paragraph in components/COMPONENTS.md (currently :128-136) contains no count
+    word (''three'') and no completeness claim. It states the exact census command, its matched line count and the
+    commit SHA it was run at, and the count reproduces at that SHA. It calls the census a candidate census that
+    only matches same-line EN/ZH pairs. It lists, by file:line with the ZH string, at least: rotation_events.js:200,
+    _ignition_radar_card.html.j2:170, _mag7_tape_strip.html.j2:227, market_structure.html.j2:563, _prophet_receipts.html.j2:137,
+    china_altdata.html.j2:227 and dashboard.html.j2:7852. It states that 观望 renders the Watch stance on live production
+    surfaces, so 观望 meaning Watch and Stand aside is a production fork owned by those surfaces and outside this
+    reference. No production template is changed.'
+  - 'SIC-V5-C02: the HOLD sentence names the Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM
+    WATCH / TURN SIGNALED / FRESH BUY, note_key extended_uptrend, engine/cycle_ontology.py:1060-1063) alongside
+    every RALLY ON row and Recovery × TOP WATCH. The sentence is identical in the engine comment (currently :159-164),
+    cycles_ia.md:157 and components/COMPONENTS.md:141. The proposal.yml PRC-037 proof cites those lines and no longer
+    claims more than they say.'
+  - 'SIC-V5-C03: board 41 shows the chip 英文界面截图 beside 生产截图 and 深色主题截图 on the face. boards_manifest.yml row 41 states_shown
+    and the proposal.yml screenshots entry 41 both declare the production crop''s locale as EN, with the theme as
+    dark.'
+  - 'SIC-V5-C04: every zh-latin=0 claim (the zh_latin_grep.py docstring, each capture.log probe line, the boards_manifest
+    rows and the C05 wording) states the skipped tags, including <code>, and lists the exempted tokens. The board
+    41 face caption names both clocks in plain ZH, with now.phase and phase_v2 only in <code> inside the drawer.
+    boards_manifest.yml rows 32 and 33 describe the allowlist entry as GLP-1, not GLP-. The ALLOW regex at zh_latin_grep.py:16
+    is unchanged.'
+  inputs_opened_pass2:
+  - research/reference_integrity/sector-intelligence-cycles-20261021/reviews/round4_1ad748c8/product_regression.yml
+    (grep for PRC-027; no match)
+  - research/reference_integrity/sector-intelligence-cycles-20261021/reviews/round4_1ad748c8/critic_return/second_pass_product_regression.md
+    (PRC-027 rows)
+  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml :313-317 (screenshots entry 41)
+    and the PRC-036 and PRC-037 rows of revision_mandate_round4 (from :1980)
+  - design_refs/sector-paper-20261021/cycles_repair/stamp_doctrine.py (import and doctrine_for lines)
+  - design_refs/sector-paper-20261021/cycles_repair/example_dataset.json (doctrine_stance_zh values)
+  - site/cycle_ontology.js (string counts)
+  - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml rows 32 and
+    33
+  - 'Not opened: verdict.yml, continuity.yml, wave4_summary'
+  quarantine_breaches: []
+  second_pass_path: critic_return/second_pass_product_regression.md
+  disposition_notes: 'Judged as frozen at 66829d17; the pass-2 grant revealed proposal.yml revision_mandate_round4
+    + wave4_summary, verdict.yml (round 4: SIC-V4-C01..C10, SIC-ADJ-02, SIC-ADJ-01a) and continuity.yml only. Amendment
+    actions are normalized to the checker vocabulary (upheld/downgraded/withdrawn); the critic''s own wording is
+    kept in action_as_filed and a raised severity in severity_after_pass2.'

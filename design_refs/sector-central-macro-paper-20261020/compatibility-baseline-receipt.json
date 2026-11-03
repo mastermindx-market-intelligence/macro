@@ -1,0 +1,49 @@
+{
+  "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "baseline_exit_code": 1,
+  "baseline_summary": [
+    "9 failed, 51 passed in 2.65s"
+  ],
+  "baseline_failures": [
+    "tests/test_p_mp1_shell_nonus_byte_parity.py::test_non_us_templates_are_byte_pinned_post_rollout",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_jinja_renders_valid_json",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_all_required_keys_present_on_every_row",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_system_order_not_mutated",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_lane_to_stage_mapping",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_nullable_fields_serialize_as_null",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_serializes_without_error",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_all_keys_present",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_order_preserved"
+  ],
+  "candidate_failures": [
+    "tests/test_p_mp1_shell_nonus_byte_parity.py::test_non_us_templates_are_byte_pinned_post_rollout",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_jinja_renders_valid_json",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_all_required_keys_present_on_every_row",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_system_order_not_mutated",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_lane_to_stage_mapping",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableDataBlock::test_nullable_fields_serialize_as_null",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_serializes_without_error",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_all_keys_present",
+    "tests/test_us_stocks_w8g_table.py::TestUSStocktableRealData::test_real_data_order_preserved"
+  ],
+  "identical_failure_nodeids": true,
+  "base_source_sha256": {
+    "tests/test_p_mp1_shell_nonus_byte_parity.py": "f3e0bdf3836773fa0f0ef2048b9f4a00334617a2fcc65e166cf22048faeec1cc",
+    "tests/test_us_stocks_w8g_table.py": "8ac8fb8ec6f9802b7aa59149962286c8a441f7916b7cf7e5c7b27281444b5c33",
+    "tests/test_stocktable_load_order.py": "f71c4c1df3b7ef6d522d5eb3b821971e0d732091ffcb6f7b1859400103e2259a",
+    "templates/hk.html.j2": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8",
+    "templates/china.html.j2": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
+    "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
+    "templates/intl.html.j2": "6a847cf08c409f6fa4966489bc265a8cefa3e3df342a23e9f900c7a641c5b932",
+    "templates/dashboard.html.j2": "4ca2792ba11af1f3bcc1d976fc28f5a4b4dca23909cf5ba4bf2ae116df8515c5",
+    "templates/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
+    "templates/_prophet_card.html.j2": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27",
+    "templates/_prophet_setup_detail.html.j2": "9b9c70fd66564acd382d5b4879736e21bf3c39c537b07493eae021dbff2055e6",
+    "site/us_stocks.html": "4f798e19a16aa18491d94935fd45128dd96b418a43f0308ad9fdd7bbb2d96837",
+    "site/hk_stocks.html": "68858ed4543ff60e4ec3b6ab63255b75b11e1731c959341752492efda68bbca8",
+    "site/china_stocks.html": "d4f7914d44076bd0d9ca93c08ccbcc0fc88a3858bd315eca00036efb7f1b7fe9",
+    "site/canada_stocks.html": "6c0d9f3adf2dcb1dd7d486578bdaeb07e3d0c2320411601d01c176617cdf12c5",
+    "site/factordata/us_standouts.json": "3806f8f7b7ca89f0dcc828fb7777f3f67a2d429212ef9fc4ec7427180abab703"
+  },
+  "candidate_test_source_replaced": false
+}
