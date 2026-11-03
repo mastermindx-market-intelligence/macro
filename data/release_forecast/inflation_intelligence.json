@@ -1201,7 +1201,7 @@
           "first_public_evidence_unknown"
         ],
         "measure": "market_price",
-        "observation_date": "2026-10-14",
+        "observation_date": "2026-10-16",
         "qualified": {
           "admitted_at": null,
           "authority": "display_only",
@@ -1218,13 +1218,13 @@
             "first_public_evidence_unknown"
           ],
           "model_id": null,
-          "obs_id": "7f8820ae5c767912",
+          "obs_id": "0bbe367a2bd2c15e",
           "observation_precision": "day",
-          "observation_time": "2026-10-14",
+          "observation_time": "2026-10-16",
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2036-10-14",
-          "reference_start": "2026-10-14",
+          "reference_end": "2036-10-16",
+          "reference_start": "2026-10-16",
           "rights": "public_official",
           "seasonal_treatment": "n/a",
           "source": "fred:T10YIE",
@@ -1239,8 +1239,8 @@
           "vintage": null
         },
         "reference_period": {
-          "end": "2036-10-14",
-          "start": "2026-10-14"
+          "end": "2036-10-16",
+          "start": "2026-10-16"
         },
         "scope": "all_items_compensation",
         "series_id": "T10YIE",
@@ -1381,7 +1381,7 @@
           "first_public_evidence_unknown"
         ],
         "measure": "market_price",
-        "observation_date": "2026-10-14",
+        "observation_date": "2026-10-16",
         "qualified": {
           "admitted_at": null,
           "authority": "display_only",
@@ -1398,13 +1398,13 @@
             "first_public_evidence_unknown"
           ],
           "model_id": null,
-          "obs_id": "08819a9ea990a485",
+          "obs_id": "2f26cd26a196092a",
           "observation_precision": "day",
-          "observation_time": "2026-10-14",
+          "observation_time": "2026-10-16",
           "quality": [],
           "rate_index": "n/a",
-          "reference_end": "2036-10-14",
-          "reference_start": "2031-10-14",
+          "reference_end": "2036-10-16",
+          "reference_start": "2031-10-16",
           "rights": "public_official",
           "seasonal_treatment": "n/a",
           "source": "fred:T5YIFR",
@@ -1414,13 +1414,13 @@
           "target_epoch": null,
           "tenor": "5y5y",
           "unit": "pct_ann_rate",
-          "value": 2.34,
+          "value": 2.33,
           "value_state": "present",
           "vintage": null
         },
         "reference_period": {
-          "end": "2036-10-14",
-          "start": "2031-10-14"
+          "end": "2036-10-16",
+          "start": "2031-10-16"
         },
         "scope": "all_items_compensation",
         "series_id": "T5YIFR",
@@ -1428,7 +1428,7 @@
         "source_class": "market_price",
         "transform": "pct_ann_rate",
         "unit": "pct_ann_rate",
-        "value": 2.34,
+        "value": 2.33,
         "value_state": "present"
       },
       "model_cleveland_expected_inflation_10y": {

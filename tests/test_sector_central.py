@@ -184,6 +184,9 @@ def test_compute_is_fail_soft_and_well_formed():
     assert out["meta"]["board_order"] == (
         "fast-lens (XSR-R2)" if out["market"]["rotation_board_order"] == "fast-lens"
         else "conviction")
+    # The sentence under the board reads this: fresh only when the lens really set the order.
+    assert (out["market"]["fast_lens"]["state"] == "fresh") == (
+        out["market"]["rotation_board_order"] == "fast-lens")
     if out["market"]["rotation_board_order"] == "fast-lens":
         # rotation-matched records come first, ascending by per-kind ordinal (1..n) …
         ordinals = [(s.get("rotation") or {}).get("ordinal") for s in out["sectors"]]
@@ -225,3 +228,169 @@ def test_grader_append_keeps_first_and_grade_accrues(tmp_path, monkeypatch):
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+# ---------------------------------------------------------------------------
+# Fast-lens honesty: the page must say what order the board is in and why a card has no rank.
+# Production 2026-10-31: the sentence under the board said "ordered by the fast rotation lens"
+# while the payload said board_order=conviction, and all 60 cards said "awaiting tonight's data".
+# ---------------------------------------------------------------------------
+import datetime as _dt  # noqa: E402
+import json as _json  # noqa: E402
+import pathlib as _pathlib  # noqa: E402
+import re as _re  # noqa: E402
+import shutil as _shutil  # noqa: E402
+import subprocess as _subprocess  # noqa: E402
+
+import jinja2 as _jinja2  # noqa: E402
+
+_ROOT = _pathlib.Path(__file__).resolve().parents[1]
+_TEMPLATE = (_ROOT / "templates" / "sector_central.html.j2").read_text(encoding="utf-8")
+_BUILDER = (_ROOT / "scripts" / "build_sector_central.py").read_text(encoding="utf-8")
+_needs_node = pytest.mark.skipif(_shutil.which("node") is None, reason="node not on PATH")
+_NOTE_RE = _re.compile(r'<p class="rvx-sec-sub" id="board-order-note".*?\{% endif %\}', _re.S)
+_T_MACRO = "{% macro t(en, zh='') -%}<en>{{ en }}</en><zh>{{ zh if zh else en }}</zh>{%- endmacro %}"
+
+
+def _write_artifact(monkeypatch, tmp_path, body):
+    monkeypatch.setattr(sc.config, "data_dir", lambda: tmp_path)
+    if body is None:
+        return
+    d = tmp_path / "us_sector_rotation"
+    d.mkdir(parents=True)
+    text = body if isinstance(body, str) else _json.dumps(body)
+    (d / "latest.json").write_text(text, encoding="utf-8")
+
+
+def _ts(hours_ago):
+    now = _dt.datetime.now(_dt.timezone.utc)
+    return (now - _dt.timedelta(hours=hours_ago)).isoformat()
+
+
+_INST = [{"kind": "sector", "id": "xlk", "ticker": "XLK", "rotation_rank": 1}]
+
+
+def _status(monkeypatch, tmp_path, body):
+    _write_artifact(monkeypatch, tmp_path, body)
+    raw = sc._load_rotation_artifact()
+    return sc._fast_lens_status(bool(raw and raw.get("instruments")), raw)
+
+
+def test_fast_lens_status_fresh_artifact(monkeypatch, tmp_path):
+    body = {"asof": "2026-10-30", "ts": _ts(2), "instruments": _INST}
+    assert _status(monkeypatch, tmp_path, body) == {"state": "fresh", "asof": "2026-10-30"}
+
+
+def test_fast_lens_status_stale_artifact_names_its_own_date(monkeypatch, tmp_path):
+    body = {"asof": "2026-10-16", "ts": _ts(49), "instruments": _INST}
+    assert _status(monkeypatch, tmp_path, body) == {"state": "stale", "asof": "2026-10-16"}
+
+
+def test_fast_lens_status_stale_without_asof_falls_back_to_the_timestamp_date(monkeypatch, tmp_path):
+    ts = _ts(100)
+    body = {"ts": ts, "instruments": _INST}
+    assert _status(monkeypatch, tmp_path, body) == {"state": "stale", "asof": ts[:10]}
+
+
+@pytest.mark.parametrize("body", [
+    None,
+    "{not json",
+    "[1, 2]",
+    {"asof": "2026-10-16", "ts": _ts(100), "instruments": []},
+    {"asof": "2026-10-30", "ts": _ts(1), "instruments": []},
+])
+def test_fast_lens_status_nothing_to_rank_is_absent(monkeypatch, tmp_path, body):
+    assert _status(monkeypatch, tmp_path, body) == {"state": "absent", "asof": None}
+
+
+def test_fast_lens_status_never_passes_a_hostile_date_through(monkeypatch, tmp_path):
+    ts = _ts(100)
+    body = {"asof": "<img src=x onerror=alert(1)>", "ts": ts, "instruments": _INST}
+    assert _status(monkeypatch, tmp_path, body) == {"state": "stale", "asof": ts[:10]}
+
+
+def test_compute_block_publishes_the_status_beside_the_board_order():
+    # Slice compute(): the status must be derived from the same armed flag as the order.
+    assert 'mkt["fast_lens"] = _fast_lens_status(rotation_armed, rotation_raw)' in (
+        _ROOT / "engine" / "sector_central.py").read_text(encoding="utf-8")
+
+
+def test_builder_hands_the_status_to_the_page():
+    assert 'fast_lens=(data.get("market") or {}).get("fast_lens") or {},' in _BUILDER
+
+
+def _note(fast_lens):
+    block = _NOTE_RE.search(_TEMPLATE)
+    assert block, "board-order note is missing its id or its branch"
+    env = _jinja2.Environment(autoescape=True)
+    out = env.from_string(_T_MACRO + block.group(0)).render(fast_lens=fast_lens)
+    en = " ".join(_re.findall(r"<en>(.*?)</en>", out, _re.S))
+    zh = " ".join(_re.findall(r"<zh>(.*?)</zh>", out, _re.S))
+    return en, zh
+
+
+def test_note_keeps_the_fast_lens_sentence_only_when_the_lens_ordered_the_board():
+    en, zh = _note({"state": "fresh", "asof": "2026-10-30"})
+    assert "ordered by the fast rotation lens" in en
+    assert "卡片按快速轮动视角排序" in zh
+
+
+def test_note_says_conviction_and_names_the_date_when_stale():
+    en, zh = _note({"state": "stale", "asof": "2026-10-16"})
+    assert en.startswith("Cards are ordered by conviction.") and "2026-10-16" in en
+    assert zh.startswith("卡片按信念排序。") and "2026-10-16" in zh
+    assert "ordered by the fast rotation lens" not in en
+    assert "按快速轮动视角排序" not in zh
+
+
+@pytest.mark.parametrize("fast_lens", [{"state": "absent", "asof": None}, {}, None])
+def test_note_says_conviction_with_no_date_when_nothing_was_published(fast_lens):
+    en, zh = _note(fast_lens)
+    assert en.startswith("Cards are ordered by conviction.") and "not published" in en
+    assert zh.startswith("卡片按信念排序。") and "尚未发布" in zh
+    assert "ordered by the fast rotation lens" not in en
+
+
+def _rail_copy(fl):
+    """Run the page's own copy function: L joins both languages so each arm is visible."""
+    m = _re.search(r"function fastLensNoRankCopy\(fl\)\{.*?\n    \}\n", _TEMPLATE, _re.S)
+    assert m, "fastLensNoRankCopy is gone"
+    src = ("var L=function(e,z){return e+'|'+z};"
+           "var esc=function(s){return String(s).replace(/</g,'&lt;')};"
+           + m.group(0)
+           + "process.stdout.write(fastLensNoRankCopy(%s));" % _json.dumps(fl))
+    res = _subprocess.run(["node", "-e", src], capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, res.stderr
+    return res.stdout
+
+
+@_needs_node
+def test_rail_stale_names_the_date_in_both_languages():
+    assert _rail_copy({"state": "stale", "asof": "2026-10-16"}) == \
+        "no ranks since 2026-10-16|2026-10-16 后无排名"
+
+
+@_needs_node
+def test_rail_fresh_says_this_row_is_not_covered():
+    # A proxy basket has no rank even on a fresh lens. It will not get one tonight either.
+    assert _rail_copy({"state": "fresh", "asof": "2026-10-30"}) == "not ranked on this lens|不在此视角排名内"
+
+
+@_needs_node
+@pytest.mark.parametrize("fl", [{"state": "absent", "asof": None}, {}, {"state": "stale", "asof": None}])
+def test_rail_without_a_date_promises_nothing(fl):
+    assert _rail_copy(fl) == "no ranks published|尚未发布排名"
+
+
+@_needs_node
+def test_rail_escapes_the_date():
+    assert "<img" not in _rail_copy({"state": "stale", "asof": "<img src=x>"})
+
+
+def test_card_rail_uses_the_copy_function_and_the_payload_status():
+    assert "fastLensNoRankCopy((D.market&&D.market.fast_lens)||{})" in _TEMPLATE
+
+
+def test_the_page_no_longer_promises_data_tonight():
+    assert "awaiting tonight" not in _TEMPLATE
+    assert "等待今晚数据" not in _TEMPLATE

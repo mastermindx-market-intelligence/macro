@@ -481,6 +481,10 @@ def to_worker_quotes(
         if q.get("quote_ts_synthetic"):
             entry["tsSynthetic"] = True
         if include_private_provenance:
+            from lib.quote_native_metadata import copy_response_identity
+            identity = copy_response_identity(q.get("native_quote_identity"))
+            if identity is not None:
+                entry["native_quote_identity"] = identity
             synthetic = q.get("quote_ts_synthetic")
             entry["quote_ts"] = q.get("quote_ts")
             entry["quote_ts_synthetic"] = (

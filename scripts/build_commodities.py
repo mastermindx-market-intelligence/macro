@@ -410,71 +410,44 @@ def backtest(close: pd.Series, alloc: pd.Series) -> dict:
 # --------------------------------------------------------------------------- #
 # view-model
 # --------------------------------------------------------------------------- #
-def _oil_supply_read() -> dict | None:
-    """EIA Weekly Petroleum Status physical-BALANCE read for the oil page.
+def _petroleum_flow_read(as_of: str) -> dict:
+    """Read existing weekly stores only; independent of the inventory panel.
 
-    DISPLAY-ONLY context (engine.commodity_supply_context): each inventory is shown as
-    a SEASONAL-ANOMALY z (deviation from its 5y same-week-of-year norm — a winter draw
-    is normal), plus days-of-supply, Cushing (WTI delivery point) and SPR. Physical
-    balance is NOT a price-direction signal, so it is neutral-colored and never fed to
-    conviction / alerts / latest.json."""
+    Publication is a display boundary: no collection, scoring, allocation, or
+    machine-state publication. A missing/malformed series stays unknown.
+    """
+    from engine.commodity_supply_context import petroleum_flow_context
+
+    series = {}
+    for name in ("crude_production", "refinery_inputs",
+                 "gasoline_supplied", "distillate_supplied"):
+        try:
+            frame = store.read("eia", name)
+            series[name] = (frame[name] if frame is not None
+                            and not frame.empty and name in frame.columns else None)
+        except Exception as exc:  # optional source must not prevent the page build
+            log.warning("petroleum flow source %s unavailable (%s)", name, type(exc).__name__)
+            series[name] = None
+    return petroleum_flow_context(series, as_of=as_of)
+
+
+def _oil_supply_read(as_of: str | None = None) -> dict | None:
+    """Read the existing EIA owner once for both display surfaces; never score it."""
     from lib import store
     from engine import commodity_supply_context as _sc
 
-    def col(name: str) -> pd.Series | None:
-        d = store.read("eia", name)
-        return None if d is None or d.empty else d.iloc[:, 0]
-
-    def rz(v: float | None) -> float | None:
-        return None if v is None else round(v, 2)
-
-    crude = col("crude_stocks")
-    if crude is None or _sc.last_value(crude) is None:
+    series = {}
+    for name in _sc.SERIES:
+        frame = store.read("eia", name)
+        series[name] = None if frame is None or frame.empty else frame.iloc[:, 0]
+    if _sc.last_value(series["crude_stocks"]) is None:
         return None
     scfg = config.load()["eia"]["supply"]
-    yrs, dosw = scfg.get("seasonal_years", 5), scfg.get("dos_window_weeks", 4)
-
-    cushing, gasoline, distillate = col("cushing_stocks"), col("gasoline_stocks"), col("distillate_stocks")
-    zmap = {"crude": _sc.seasonal_z(crude, yrs), "cushing": _sc.seasonal_z(cushing, yrs),
-            "gasoline": _sc.seasonal_z(gasoline, yrs), "distillate": _sc.seasonal_z(distillate, yrs)}
-    bz = _sc.balance_z(zmap)
-
-    out = {"crude_stocks_mb": round(_sc.last_value(crude) / 1000, 1),
-           "crude_z": rz(zmap["crude"]),
-           "balance_z": rz(bz), "balance_word": _sc.balance_word(bz),
-           "caveat_en": _sc.SUPPLY_CAVEAT["en"], "caveat_zh": _sc.SUPPLY_CAVEAT["zh"]}
-    d4 = _sc.delta_4w(crude)
-    if d4 is not None:
-        out["crude_chg_4w_mb"], out["draw"] = round(d4 / 1000, 1), d4 < 0
-    # Cushing — WTI delivery-point stress
-    if zmap["cushing"] is not None:
-        out["cushing_mb"], out["cushing_z"] = round(_sc.last_value(cushing) / 1000, 1), rz(zmap["cushing"])
-    # product inventories (seasonal-z) + product days-of-cover
-    if zmap["gasoline"] is not None:
-        out["gasoline_z"] = rz(zmap["gasoline"])
-    if zmap["distillate"] is not None:
-        out["distillate_z"] = rz(zmap["distillate"])
-    for k, st, dm in (("days_supply", crude, col("refinery_inputs")),
-                      ("gasoline_days", gasoline, col("gasoline_supplied")),
-                      ("distillate_days", distillate, col("distillate_supplied"))):
-        dos = _sc.days_of_supply(st, dm, dosw)
-        if dos is not None:
-            out[k] = dos
-    # production + refinery throughput
-    prod = col("crude_production")
-    if prod is not None and _sc.last_value(prod) is not None:
-        out["production_mbd"] = round(_sc.last_value(prod) / 1000, 2)
-        pc = _sc.delta_4w(prod)
-        if pc is not None:
-            out["production_chg_4w"] = round(pc / 1000, 2)
-    util = col("refinery_util")
-    if util is not None and _sc.last_value(util) is not None:
-        out["refinery_util"] = round(_sc.last_value(util), 1)
-    # SPR 4-week change — government supply add (release) / withdraw (refill)
-    spr_d = _sc.delta_4w(col("spr_stocks"))
-    if spr_d is not None:
-        out["spr_chg_4w_mb"] = round(spr_d / 1000, 1)
-    return out
+    # Legacy callers may omit a cutoff; use the latest stored observation, never now.
+    as_of = as_of or pd.Timestamp(series["crude_stocks"].index.max()).date().isoformat()
+    return _sc.build_physical_context(
+        series, as_of=as_of, years=scfg.get("seasonal_years", 5),
+        dos_weeks=scfg.get("dos_window_weeks", 4))
 
 
 def _carry_read(asset: str) -> dict | None:
@@ -556,7 +529,7 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
     if cy:
         vm["carry"] = cy
     if asset == "oil":
-        sup = _oil_supply_read()
+        sup = _oil_supply_read(df.index.max().date().isoformat())
         if sup:
             vm["supply"] = sup
 
@@ -1542,6 +1515,19 @@ def _attach_china_gold_premium(
 # --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
+def _decision_workspace(index_snap: dict, asof: str, physical_context: dict | None = None) -> dict | None:
+    """Render-only consumer of existing data; never invoke a collector or score."""
+    try:
+        from engine.commodity_workspace_adapter import workspace_from_publications
+        snapshot = {"asof": asof, "members": index_snap.get("members", []),
+                    "index": index_snap.get("index", {}), "breadth": index_snap.get("breadth", {})}
+        return workspace_from_publications(snapshot, root=config.ROOT, data_root=config.data_dir(),
+                                           physical_context=physical_context)
+    except Exception as exc:  # preserve the accepted legacy page if an optional projection fails
+        log.warning("Commodity decision workspace unavailable (%s)", type(exc).__name__)
+        return None
+
+
 def main() -> int:
     from engine import commodity_signals, commodity_inputs, commodity_conviction
     from engine import commodity_alerts
@@ -1684,7 +1670,8 @@ def main() -> int:
                     annotated += 1
 
     as_of = results["gold"].index.max().strftime("%b %d, %Y")
-    built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    build_time = datetime.now(timezone.utc)
+    built = build_time.strftime("%Y-%m-%d %H:%M UTC")
     span = calib.get("meta", {}).get("split", "")
     cal_span = (f"{results['gold'].index.min().date()}..{results['gold'].index.max().date()}")
 
@@ -1733,6 +1720,13 @@ def main() -> int:
         coverage = compute_coverage_matrix()
     except Exception as _cve:  # noqa: BLE001 — coverage panel must never crash the build
         log.warning("coverage matrix read failed (%s); panel hidden", _cve)
+    # Consume only the already-produced annual artifact. Source acquisition stays
+    # with daily.collect_tail; it must never run on the rendering critical path.
+    from engine.critical_minerals_display import load_critical_minerals_context
+    critical_minerals = load_critical_minerals_context(
+        config.ROOT / "data" / "neuralweb" / "critical_minerals_supply.json"
+    )
+    petroleum_flow = _petroleum_flow_read(build_time.date().isoformat())
     try:
         html = env.get_template("commodities.html.j2").render(
             C=C, as_of=as_of, built=built, cal_span=cal_span, complex=cx,
@@ -1740,7 +1734,11 @@ def main() -> int:
             timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
             catalysts=catalysts_resolved,
             vm=vm, idx_ew_spark=idx_ew_spark, oil_episode=oil_episode,
-            conviction_labels=CONVICTION_LABELS, coverage=coverage)
+            conviction_labels=CONVICTION_LABELS, coverage=coverage,
+            critical_minerals=critical_minerals, petroleum_flow=petroleum_flow,
+            commodity_workspace=_decision_workspace(
+                index_snap, _build_date.isoformat(),
+                next((a.get("supply") for a in assets if a["key"] == "oil"), None)))
     except Exception as _re:  # noqa: BLE001 — never crash the whole site build
         log.error("commodities template render failed (%s); skipping page write", _re)
         return 0

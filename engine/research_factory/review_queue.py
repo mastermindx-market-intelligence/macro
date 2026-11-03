@@ -618,10 +618,15 @@ def build_queue(
     return packets
 
 
-def diagnostic_review_packet(public: dict, *, engineering_evidence=None) -> dict:
+def diagnostic_review_packet(public: dict, *, engineering_evidence=None,
+                             engineering_receipts=None) -> dict:
     """Closed compiled display attachment; never a canonical candidate row."""
     from engine.research_codegen.bridge import validate_public_projection
     public = validate_public_projection(public)
+    if engineering_receipts is not None:
+        if engineering_evidence is not None:
+            raise ValueError("AMBIGUOUS_DIAGNOSTIC_ENGINEERING_INPUT")
+        engineering_evidence = _compose_diagnostic_receipts(public, engineering_receipts)
     packet = {
         "schema": "research_factory.review_packet.v1", "authority": "display_only",
         "is_research_diagnostic": True, "diagnostic_id": public["diagnostic_id"],
@@ -636,7 +641,160 @@ def diagnostic_review_packet(public: dict, *, engineering_evidence=None) -> dict
     if engineering_evidence is not None:
         packet["engineering_evidence"] = _diagnostic_engineering_evidence(
             public, engineering_evidence)
+    if engineering_receipts is not None:
+        packet["note"] += (" Synthetic/scripted source plumbing; receipt types and digests "
+                           "do not authenticate a producer or establish temporal-bias "
+                           "detection, a numerical oracle or a physical boundary.")
     return packet
+
+
+def _compose_diagnostic_receipts(public, receipts):
+    """Pure typed receipt join into the incumbent advisory display schema.
+
+    These are structural provenance inputs, never authenticated owner evidence.
+    No original expectation descriptor binds a good/bad control to a variant in
+    the current generation contract, so output-control adjudication stays NOT_RUN.
+    """
+    import hashlib
+    import json
+    from dataclasses import replace
+    from engine.research_codegen import accounting_contract as accounting
+    from engine.research_codegen import bridge, prefix_driver, staging_accounting
+
+    def require(ok):
+        if not ok:
+            raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_RECEIPTS")
+
+    require(type(receipts) is dict and set(receipts) == {
+        "run", "commission", "source", "staged", "outcome"})
+    run, commission, source, staged, outcome = (receipts[key] for key in
+        ("run", "commission", "source", "staged", "outcome"))
+    require(type(run) is bridge.SyntheticRun
+            and type(staged) is staging_accounting.StagedAccountingReadback
+            and type(outcome) is prefix_driver.PrefixDriverOutcome)
+    prepared = bridge.prepare_synthetic_inputs(run, commission=commission)
+    staging_accounting._bound(source, "source")
+    require(source.sha256 == public["source_sha256"]
+            and source.size <= prefix_driver.MAX_SOURCE_BYTES)
+    require(type(prepared.identity) is bridge.PreparedIdentity
+            and type(outcome.identity) is bridge.PreparedIdentity
+            and outcome.identity == prepared.identity)
+    for key in bridge._IDENTITY:
+        require(getattr(prepared.identity, key) == public[key])
+    require(outcome.source_sha256 == public["source_sha256"]
+            and outcome.config_sha256 == public["config_sha256"])
+
+    # Existing bounded, duplicate-key rejecting reader validates exact bytes.
+    expected, trial, writer, durable = (
+        staging_accounting._load_bound_json(getattr(staged, key), key)
+        for key in ("expected_generation", "trial_readback", "writer_observation",
+                    "durable_readback_observation"))
+    staging_accounting._bound(staged.raw_snapshot, "snapshot")
+    require(run.expected_generation == staged.expected_generation
+            and run.trial_readback == staged.trial_readback)
+    require(accounting.assess_accounting_references(
+        expected, trial_readback=trial)["status"] == "STRUCTURALLY_COMPLETE_DISABLED")
+    require(expected["original_root_id"] == public["original_root_id"]
+            and expected["protocol_sha256"] == public["protocol_sha256"])
+    selected = [v for v in expected["variants"]
+                if v["source_sha256"] == outcome.source_sha256
+                and v["config_sha256"] == outcome.config_sha256]
+    require(len(selected) == 1)
+    require(trial["snapshot_sha256"] == staged.raw_snapshot.sha256
+            and trial["snapshot_bytes"] == staged.raw_snapshot.size
+            and trial["writer_receipt_sha256"] == staged.writer_observation.sha256
+            and trial["durable_readback_receipt_sha256"] == staged.durable_readback_observation.sha256)
+    for observation in (writer, durable):
+        require(observation.get("original_root_id") == expected["original_root_id"]
+                and observation.get("family") == expected["family"]
+                and observation.get("scope") == "SYNTHETIC_ENGINEERING_ONLY"
+                and observation.get("authority") == "display_only"
+                and observation.get("uncertainty") == "none")
+    require(writer.get("run_id") == durable.get("run_id")
+            and writer.get("sha256_after") == staged.raw_snapshot.sha256
+            and durable.get("snapshot_sha256") == staged.raw_snapshot.sha256)
+
+    require(type(prepared.decisions) is tuple and len(prepared.decisions) <= 4096
+            and type(outcome.attempts) is tuple and len(outcome.attempts) <= len(prepared.decisions)
+            and type(outcome.completed) is bool and type(outcome.refusal_reasons) is tuple)
+    keys = ("operation_id", "plan_sha256", "input_sha256", "output_sha256", "output_bytes",
+            "state", "workload_confirmed", "workload_returncode", "execution_uncertain",
+            "reconciliation_required", "cleanup_confirmed")
+    attempts, adopted = [], []
+    for attempt, task in zip(outcome.attempts, prepared.decisions):
+        require(type(attempt) is prefix_driver.PrefixAttempt
+                and type(task) is bridge.PreparedDecisionInput)
+        staging_accounting._bound(task.input_bytes, "input")
+        argv, _, carrier = prefix_driver.build_carrier(source.raw, task.input_bytes.raw)
+        require((attempt.fold_id, attempt.entity_id, attempt.decision_id, attempt.input_sha256)
+                == (task.fold_id, task.entity_id, task.decision_id, task.input_bytes.sha256))
+        plan, raw = attempt.transport_plan, attempt.transport_attempt
+        require(type(plan) is prefix_driver.transport_module.TransportPlan
+                and type(raw) is prefix_driver.transport_module.TransportAttempt
+                and type(raw.state) is prefix_driver.transport_module.AttemptState
+                and type(raw.workload_output) is bytes
+                and len(raw.workload_output) <= plan.output_cap_bytes)
+        require(attempt.operation_id == plan.operation_id == raw.operation_id
+                == prefix_driver.decision_operation_id(prepared, task, carrier)
+                and plan.argv == argv
+                and attempt.plan_sha256 == raw.plan_sha256
+                == prefix_driver.transport_module.plan_identity(plan)
+                and attempt.container_id == raw.container_id
+                and attempt.state == raw.state.value)
+        for key in ("workload_confirmed", "workload_returncode", "execution_uncertain",
+                    "reconciliation_required", "cleanup_confirmed"):
+            require(getattr(attempt, key) == getattr(raw, key)
+                    and type(getattr(attempt, key)) is type(getattr(raw, key)))
+        require(attempt.output_bytes == len(raw.workload_output)
+                and attempt.output_sha256 == (hashlib.sha256(raw.workload_output).hexdigest()
+                                             if raw.workload_output else None))
+        row = {key: getattr(attempt, key) for key in keys}
+        row["state"] = row["state"].upper()
+        attempts.append(row)
+        try:
+            adopted.append((task, prefix_driver._adopt(
+                raw, plan, prepared.identity, task, plan.output_cap_bytes)))
+        except prefix_driver.PrefixDriverRefused:
+            require(not outcome.completed and len(attempts) == len(outcome.attempts))
+    if outcome.completed:
+        require(bool(attempts) and len(attempts) == len(prepared.decisions)
+                and not outcome.refusal_reasons
+                and all(row["state"] == "CLEANED_SUCCESS" for row in attempts)
+                and public["status"] == "DIAGNOSTIC_ONLY")
+        require(type(outcome.outputs) is tuple and len(outcome.outputs) == len(prepared.schedules))
+        for group, output in zip(prepared.schedules, outcome.outputs):
+            staging_accounting._bound(output, "output")
+            expected_output = {"schema": prefix_driver.OUTPUT_SCHEMA,
+                "candidate_id": prepared.identity.candidate_id,
+                "fold_id": group.fold_id, "entity_id": group.entity_id,
+                "input_policy_sha256": prepared.identity.input_policy_sha256,
+                "rows": [row for task, row in adopted
+                         if (task.fold_id, task.entity_id) == (group.fold_id, group.entity_id)]}
+            require(output.raw == prefix_driver._canonical(expected_output))
+        diagnostic = prefix_driver.connect_prepared_outputs(run, outcome, commission=commission)
+    else:
+        require(public["status"] == "REFUSED" and outcome.outputs == ())
+        # An incomplete attempt cannot borrow pre-existing successful outputs.
+        require(run.outputs == ())
+        diagnostic = bridge.compute_synthetic_diagnostic(run, commission=commission)
+    binding = replace(run.identity, artifact_sha256=hashlib.sha256(diagnostic).hexdigest(),
+                      artifact_bytes=len(diagnostic))
+    derived = bridge.public_diagnostic(bridge.decode_bound_artifact(
+        diagnostic, expected=binding, commission=commission))
+    require(derived == public)
+    encoded = json.dumps(attempts, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    controls = [{"id": "accounting_declaration", "status": "MATCHED_EXPECTATION",
+                 "evidence_sha256": staged.trial_readback.sha256},
+                {"id": "prefix_schedule", "status": "MATCHED_EXPECTATION" if outcome.completed else "NOT_RUN",
+                 "evidence_sha256": hashlib.sha256(encoded).hexdigest() if outcome.completed else None}]
+    controls.extend({"id": key, "status": "NOT_RUN", "evidence_sha256": None}
+                    for key in ("output_contract", "physical_boundary", "resource_overload"))
+    return {"schema": "research_codegen.engineering_evidence.v1",
+            "identity": {key: public[key] for key in (*bridge._IDENTITY, "artifact_sha256")},
+            "accounting": {"expected_generation_sha256": staged.expected_generation.sha256,
+                           "trial_readback_sha256": staged.trial_readback.sha256,
+                           "durable_observation_sha256": staged.durable_readback_observation.sha256},
+            "attempts": attempts, "controls": controls}
 
 
 def _diagnostic_engineering_evidence(public, evidence):

@@ -630,3 +630,149 @@ def test_declared_budget_helper_resolves_system_temp_alias(tmp_path, monkeypatch
     assert first.path == second.path
     assert second.effective_n() == 8
     assert len(first.path.read_text().splitlines()) == 1
+
+
+def _legacy_lines():
+    import json
+    rows = (
+        # a foreign prereg-registry record: no ledger identity key, only its own trial_id
+        {"trial_id": "x", "hypothesis": "h", "fdr_family": "z", "ts": "2026-01-01T00:00:00Z"},
+        # annotations: family + a non-budget kind, never a config_hash or config
+        {"family": "f", "kind": "amendment", "note": "n", "ts": "2026-01-01T00:00:00Z"},
+        {"family": "f", "kind": "filing_budget", "filing_week": "w", "mechanism_id": "m",
+         "ts": "2026-01-01T00:00:00Z"},
+    )
+    return "".join(json.dumps(r) + "\n" for r in rows)
+
+
+def test_legacy_identityless_records_do_not_block_appends(tmp_path):
+    from engine.trial_ledger import register_trials
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+    fresh = TrialLedger(p, family="f")
+    assert fresh.corrupt_lines == 0
+    assert fresh.legacy_rows == 3
+    assert fresh.load_error is None
+    assert fresh.literal_n("f") == 1
+    before = p.read_bytes()
+    assert fresh.log_trial({"w": 40}) is True
+    assert fresh.log_declared_budget(3) is True
+    with register_trials("g", 2, ledger=fresh):
+        pass
+    after = p.read_bytes()
+    assert after.startswith(before)
+    assert len(after.splitlines()) == len(before.splitlines()) + 3
+    assert fresh.literal_n("f") == 2
+    assert fresh.declared_budget("g") == 2
+    reloaded = TrialLedger(p, family="f")
+    assert (reloaded.corrupt_lines, reloaded.legacy_rows) == (0, 3)
+    assert reloaded.literal_n("f") == 2
+
+
+def test_unreadable_lines_still_block_appends_beside_legacy_records(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+        fh.write("not json at all\n")
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (1, 3)
+    before = p.read_bytes()
+    with pytest.raises((OSError, ValueError)):
+        fresh.log_trial({"w": 40})
+    assert p.read_bytes() == before
+
+
+def test_identity_bearing_or_shapeless_rows_stay_corrupt(tmp_path):
+    import json
+    import pytest
+    for i, bad in enumerate(({"family": 1, "kind": "amendment"},
+                {"family": "f", "config": {}},
+                {"config_hash": "0" * 16},
+                {"family": "f", "kind": "declared_budget", "n": 2},
+                {"family": "f", "kind": "amendment", "config": {}},
+                {"family": "f", "kind": ""},
+                {"kind": "amendment"},
+                {"trial_id": "x", "family": "f"},
+                {"trial_id": ""},
+                {"trial_id": "x", "whatever": 1},
+                {"family": "f", "kind": 1},
+                {"family": "", "kind": "amendment"},
+                {"family": "f", "kind": "Declared_Budget"},
+                {"family": "f", "kind": "declared-budget"},
+                {"family": "f", "kind": "other"},
+                {"family": "f", "kind": ["amendment"]},
+                {})):
+        p = tmp_path / f"t{i}.jsonl"
+        TrialLedger(p, family="f").log_trial({"w": 20})
+        with p.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(bad) + "\n")
+        fresh = TrialLedger(p, family="f")
+        assert (fresh.corrupt_lines, fresh.legacy_rows) == (1, 0), bad
+        before = p.read_bytes()
+        with pytest.raises((OSError, ValueError)):
+            fresh.log_trial({"w": 40})
+        assert p.read_bytes() == before, bad
+
+
+def test_live_causal_filing_budget_rows_do_not_block_appends(tmp_path, monkeypatch):
+    # scripts/causal_ingest_brainstorm.py used to append a filing_budget row for every card
+    # it filed straight into the ledger; those historical rows stay in the file and must
+    # never wedge it. The live writer (#9585) now targets its own budget file only.
+    import json
+    from scripts import causal_ingest_brainstorm as causal
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        for mech in ("mech-1", "mech-2"):
+            fh.write(json.dumps({"ts": "2026-10-13T00:00:00+00:00", "kind": "filing_budget",
+                                 "family": "causal_scan", "filing_week": "2026-W42",
+                                 "mechanism_id": mech}) + "\n")
+    budget = tmp_path / "budget.jsonl"
+    monkeypatch.setattr(causal, "_TRIAL_LEDGER", p)
+    monkeypatch.setattr(causal, "_FILING_BUDGET", budget)
+    before = p.read_bytes()
+    causal._log_filing_budget("mech-3", "2026-W42")
+    causal._log_filing_budget("mech-4", "2026-W42")
+    assert p.read_bytes() == before
+    assert len(budget.read_text().splitlines()) == 2
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (0, 2)
+    assert fresh.literal_n("f") == 1
+    assert fresh.literal_n("causal_scan") == 0
+    assert fresh.log_trial({"w": 40}) is True
+    assert TrialLedger(p, family="f").literal_n("f") == 2
+
+
+def test_annotation_kind_with_config_hash_counts_as_a_trial(tmp_path):
+    import json
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(_legacy_lines())
+        fh.write(json.dumps({"family": "f", "kind": "amendment",
+                             "config_hash": "0123456789abcdef",
+                             "ts": "2026-01-01T00:00:00Z"}) + "\n")
+    fresh = TrialLedger(p, family="f")
+    assert (fresh.corrupt_lines, fresh.legacy_rows) == (0, 3)
+    assert fresh.literal_n("f") == 2
+    assert fresh.log_trial({"w": 40}) is True
+    assert fresh.literal_n("f") == 3
+
+
+def test_strict_transaction_still_refuses_legacy_records(tmp_path):
+    import pytest
+    p = tmp_path / "t.jsonl"
+    TrialLedger(p, family="f").log_trial({"w": 20})
+    clean = p.read_bytes()
+    for line in _legacy_lines().splitlines(keepends=True):
+        p.write_bytes(clean + line.encode())
+        fresh = TrialLedger(p, family="f")
+        assert fresh.legacy_rows == 1
+        with pytest.raises((OSError, ValueError)):
+            with fresh.owner_transaction(strict=True):
+                pass
+        assert p.read_bytes() == clean + line.encode()

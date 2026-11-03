@@ -1,0 +1,429 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/capital_structure_state_bundle.v1.schema.json",
+  "title": "Capital Structure Intelligence V2 — published state bundle (capital_structure.state_bundle.v1)",
+  "description": "One published Capital Structure state generation (SPEC_U1_API §2). The bundle is the nightly producer's single artifact: every issuer state inside it carries the same generation identity, the same three input generations and the same as_of, or the whole bundle is withheld. Each issuers[] entry is a capital_structure.state.v2 CapitalState record and is validated against that frozen schema by engine.capital_structure.state_bundle.validate_state_bundle; this schema pins only the bundle envelope and the reader's side index. Facts and historical knowledge only: no supply, no cash number, no rank, size, entry, score, probability or recommendation. The evidence index publishes retained-byte locators and digests joined to the source ledger, never an excerpt, and an anchor only when it is accession-specific.",
+  "type": "object",
+  "additionalProperties": false,
+  "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+  "required": [
+    "schema",
+    "contract_version",
+    "bundle_version",
+    "generation_id",
+    "as_of",
+    "generated_at",
+    "projection_generation_id",
+    "input_generations",
+    "rule_pack",
+    "horizons",
+    "coverage",
+    "unavailable",
+    "capabilities_proven",
+    "issuers",
+    "issuer_index",
+    "evidence_index",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "capital_structure.state_bundle.v1"},
+    "contract_version": {
+      "type": "string",
+      "pattern": "^capital-structure-state-contracts/[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "bundle_version": {"const": "capital-structure-state-bundle/1.0.0"},
+    "generation_id": {
+      "type": "string",
+      "pattern": "^state_bundle:cs:[A-Fa-f0-9]{32}$"
+    },
+    "as_of": {"$ref": "#/$defs/timestamp"},
+    "generated_at": {"$ref": "#/$defs/timestamp"},
+    "projection_generation_id": {
+      "type": "string",
+      "pattern": "^projection:cs:[A-Fa-f0-9]{24}$"
+    },
+    "input_generations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/generation_binding"}
+    },
+    "rule_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_pack_id", "rule_pack_version", "rule_pack_digest"],
+      "properties": {
+        "rule_pack_id": {"$ref": "#/$defs/identifier"},
+        "rule_pack_version": {"type": "string", "minLength": 1},
+        "rule_pack_digest": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "horizons": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_observation_horizon",
+        "material_filing_horizon",
+        "generation_age_seconds",
+        "freshness_sla_hours"
+      ],
+      "properties": {
+        "source_observation_horizon": {
+          "anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]
+        },
+        "material_filing_horizon": {
+          "anyOf": [{"$ref": "#/$defs/date"}, {"type": "null"}]
+        },
+        "generation_age_seconds": {"type": "integer", "minimum": 0},
+        "freshness_sla_hours": {"type": "number", "minimum": 0}
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_count", "families"],
+      "properties": {
+        "issuer_count": {"type": "integer", "minimum": 0},
+        "families": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["registration"],
+          "properties": {
+            "registration": {"$ref": "#/$defs/family_coverage"}
+          }
+        }
+      }
+    },
+    "unavailable": {"$ref": "#/$defs/unique_string_array"},
+    "capabilities_proven": {"type": "array", "maxItems": 0},
+    "issuers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["schema", "state_id", "request", "families", "receipt"],
+        "properties": {
+          "schema": {"const": "capital_structure.state.v2"},
+          "state_id": {
+            "type": "string",
+            "pattern": "^state:cs:[A-Fa-f0-9]{32}$"
+          },
+          "request": {
+            "type": "object",
+            "required": ["issuer_id", "as_of", "view_mode", "input_generations"],
+            "properties": {
+              "issuer_id": {"$ref": "#/$defs/identifier"},
+              "as_of": {"$ref": "#/$defs/timestamp"},
+              "view_mode": {"const": "current"},
+              "input_generations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"$ref": "#/$defs/generation_binding"}
+              }
+            }
+          },
+          "families": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["family", "provenance"],
+              "properties": {
+                "family": {"const": "registration"}
+              }
+            }
+          },
+          "receipt": {
+            "type": "object",
+            "required": [
+              "input_digest",
+              "rule_digest",
+              "implementation_digest",
+              "computed_at"
+            ],
+            "properties": {
+              "input_digest": {"$ref": "#/$defs/sha256"},
+              "rule_digest": {"$ref": "#/$defs/sha256"},
+              "implementation_digest": {"$ref": "#/$defs/sha256"},
+              "computed_at": {"$ref": "#/$defs/timestamp"},
+              "scenario_id": {"type": "null"}
+            }
+          }
+        }
+      }
+    },
+    "issuer_index": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_count",
+          "edge_count",
+          "coverage",
+          "ticker_observations",
+          "path_evidence",
+          "registration_receipt"
+        ],
+        "properties": {
+          "event_count": {"type": "integer", "minimum": 0},
+          "edge_count": {"type": "integer", "minimum": 0},
+          "coverage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["registration"],
+            "properties": {
+              "registration": {"$ref": "#/$defs/route_coverage"}
+            }
+          },
+          "ticker_observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["ticker", "first_observed_at", "event_id", "accession"],
+              "properties": {
+                "ticker": {"type": "string", "minLength": 1},
+                "first_observed_at": {"$ref": "#/$defs/timestamp"},
+                "event_id": {"$ref": "#/$defs/identifier"},
+                "accession": {
+                  "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+                }
+              }
+            }
+          },
+          "path_evidence": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1},
+              "uniqueItems": true
+            }
+          },
+          "registration_receipt": {
+            "type": "object",
+            "required": [
+              "input_digest",
+              "rule_digest",
+              "implementation_digest",
+              "computed_at"
+            ]
+          }
+        }
+      }
+    },
+    "evidence_index": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/evidence_entry"}
+    },
+    "authority": {"$ref": "#/$defs/authority"}
+  },
+  "$defs": {
+    "safe_property_name": {
+      "type": "string",
+      "not": {
+        "pattern": "^(?:object_?keys?|raw_?(?:docs?|documents?)|scores?|probabilit(?:y|ies)|capacities|capacity|runway|overhang|fully_?diluted(?:_[a-z_]+)?|ranks?|ranking|sizing|position_?size|entry|prophet(?:_(?!authority$)[a-z_]+)?|likelihood|expected_dilution)$"
+      }
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9:._/-]{0,199}$"
+    },
+    "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "unique_string_array": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "generation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_family",
+        "schema",
+        "support",
+        "generation_id",
+        "artifact_sha256",
+        "as_of"
+      ],
+      "properties": {
+        "input_family": {
+          "enum": ["events", "event_edges", "event_projection"]
+        },
+        "schema": {"type": "string", "minLength": 1},
+        "support": {"enum": ["partial", "unavailable", "not_built"]},
+        "generation_id": {
+          "anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]
+        },
+        "artifact_sha256": {
+          "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+        },
+        "as_of": {
+          "anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]
+        }
+      }
+    },
+    "family_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["support", "examined", "total", "unexamined_reason_codes"],
+      "properties": {
+        "support": {"enum": ["partial", "unavailable"]},
+        "examined": {"type": "integer", "minimum": 0},
+        "total": {"type": "integer", "minimum": 0},
+        "unexamined_reason_codes": {"$ref": "#/$defs/unique_string_array"}
+      }
+    },
+    "route_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support",
+        "examined",
+        "total",
+        "routes",
+        "unexamined_reason_codes",
+        "no_active_path"
+      ],
+      "properties": {
+        "support": {"enum": ["partial", "unavailable"]},
+        "examined": {"type": "integer", "minimum": 0},
+        "total": {"type": "integer", "minimum": 0},
+        "routes": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "unexamined_reason_codes": {"$ref": "#/$defs/unique_string_array"},
+        "no_active_path": {"type": "boolean"}
+      }
+    },
+    "evidence_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "not": {"required": ["excerpt"]},
+      "required": [
+        "manifest_id",
+        "span_id",
+        "text_sha256",
+        "ledger_text_sha256",
+        "filing",
+        "document",
+        "anchor",
+        "reason",
+        "grade",
+        "issuer_id",
+        "event_ids",
+        "path_ids",
+        "available_at"
+      ],
+      "properties": {
+        "manifest_id": {"type": "string", "minLength": 1},
+        "span_id": {"type": "string", "minLength": 1},
+        "text_sha256": {
+          "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+        },
+        "ledger_text_sha256": {
+          "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+        },
+        "filing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["accession", "form", "filed_at"],
+          "properties": {
+            "accession": {
+              "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+            },
+            "form": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+            "filed_at": {
+              "anyOf": [{"$ref": "#/$defs/date"}, {"type": "null"}]
+            }
+          }
+        },
+        "document": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sequence", "filename"],
+          "properties": {
+            "sequence": {
+              "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+            },
+            "filename": {
+              "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+            }
+          }
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^https://[^/]+/(?:.*/)?Archives/.+$"
+            },
+            {"type": "null"}
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "anchor_not_accession_specific",
+                "manifest_unresolved"
+              ]
+            },
+            {"type": "null"}
+          ]
+        },
+        "grade": {"type": "string", "minLength": 1},
+        "issuer_id": {
+          "anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]
+        },
+        "event_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "path_ids": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "available_at": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["system"],
+          "properties": {
+            "system": {
+              "anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]
+            }
+          }
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "is_context_only",
+        "rank_authority",
+        "sizing_authority",
+        "entry_authority",
+        "prophet_authority"
+      ],
+      "properties": {
+        "is_context_only": {"const": true},
+        "rank_authority": {"const": false},
+        "sizing_authority": {"const": false},
+        "entry_authority": {"const": false},
+        "prophet_authority": {"const": false}
+      }
+    }
+  }
+}

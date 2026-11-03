@@ -530,3 +530,76 @@ def test_unreaped_timeout_reports_reconciliation_required(case, monkeypatch):
     assert response["run"]["failure_code"] == "LAB_PROCESS_RECONCILIATION_REQUIRED"
     status = case.runs / response["run"]["run_id"] / "status.json"
     assert json.loads(status.read_text()) == response["run"]
+
+
+# --- U03 (DATA-OS-COMPLETION): the view rides on the existing read action -----------------------------------
+def _u03_api_view(**changes):
+    view = {"mode": "CURRENT",
+            "contract": {"purpose": "U03 synthetic transport read",
+                         "identity": {"security_id": "SEC-FIX", "listing_id": "US-XNAS-FIX"},
+                         "field_units": {"ClosePx": "USD"}, "adjustment_reference": {"basis": "raw"},
+                         "coverage": "synthetic fixture rows local to this suite"}}
+    view.update(changes)
+    return view
+
+
+def test_U03_dispatch_read_with_a_view_is_repeatable_and_serves_the_legacy_rows(case):
+    request = {"action": "read", "ref": "fixture:prices.parquet", "columns": ["Session", "ClosePx"], "limit": 4}
+    legacy = web_api.dispatch(case.ws, dict(request), config_path=case.config)
+    one = web_api.dispatch(case.ws, dict(request, view=_u03_api_view()), config_path=case.config)
+    two = web_api.dispatch(case.ws, dict(request, view=_u03_api_view()), config_path=case.config)
+    assert legacy["action"] == "read" and one["action"] == "read_view"
+    assert one["result"] == legacy["result"]
+    assert one["view_digest_sha256"] == two["view_digest_sha256"]
+    assert one["view"]["evidence"]["source_revision"] == "d" * 40
+    assert not case.runs.exists()
+
+
+@pytest.mark.parametrize("api_request", [
+    {"action": "describe", "ref": "fixture:prices.parquet", "view": _u03_api_view()},
+    {"action": "browse", "root": "fixture", "view": _u03_api_view()},
+    {"action": "search", "query": "prices", "view": _u03_api_view()},
+    {"action": "lab_plan", "signal_id": "golden_cross_7_35", "refs": ["fixture:prices.parquet"],
+     "view": _u03_api_view()},
+    {"action": "capabilities", "view": _u03_api_view()},
+    {"action": "read", "view": _u03_api_view()},
+    {"action": "read", "ref": "fixture:prices.parquet", "view": _u03_api_view(), "mode": "CURRENT"},
+])
+def test_U03_a_view_is_accepted_only_on_read_with_a_ref(case, api_request):
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, api_request, config_path=case.config)
+    assert error.value.code == "INVALID_REQUEST_FIELDS"
+    assert not case.runs.exists()
+
+
+def test_U03_capabilities_declare_the_view_without_widening_the_cap(case):
+    caps = web_api.dispatch(case.ws, {"action": "capabilities"}, config_path=case.config)
+    assert caps["read_view"]["modes"] == ["CURRENT"]
+    assert caps["read_view"]["refused_modes"] == ["RECONSTRUCT", "REPLAY"]
+    assert caps["read_view"]["generation_token"] == "statv1"
+    assert caps["max_response_bytes"] == 131072 == web_api.MAX_RESPONSE_BYTES
+    # The seven canonical actions lead the list unchanged and U03 adds NO action of its own —
+    # the view rides on `read`. Sibling programs may append their own actions after them, so
+    # this pins the invariant U03 owns rather than the whole list.
+    canonical = ["search", "browse", "describe", "read", "lab_signals", "lab_plan", "lab_run"]
+    assert caps["actions"][: len(canonical)] == canonical
+    assert "read_view" not in caps["actions"]
+    assert len(caps["actions"]) == len(set(caps["actions"]))
+
+
+def test_U03_an_oversized_view_is_REQUEST_TOO_LARGE(case):
+    view = _u03_api_view()
+    view["contract"]["purpose"] = "x" * 20000
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, {"action": "read", "ref": "fixture:prices.parquet", "view": view},
+                         config_path=case.config)
+    assert error.value.code == "REQUEST_TOO_LARGE"
+
+
+def test_U03_dispatch_replay_refuses_NO_RETAINED_OUTPUT(case):
+    with pytest.raises(WorkspaceError) as error:
+        web_api.dispatch(case.ws, {"action": "read", "ref": "fixture:prices.parquet",
+                                   "view": _u03_api_view(mode="REPLAY", output_id="out-1")},
+                         config_path=case.config)
+    assert error.value.code == "VIEW_REFUSED_NO_RETAINED_OUTPUT"
+    assert not case.runs.exists()

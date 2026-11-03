@@ -390,6 +390,34 @@ def test_rs_benchmark_ffill_is_bounded():
     assert sc.RS_BENCH_FFILL_LIMIT == 5
 
 
+def test_sector_page_says_rs_rank_is_rebuilt_from_price():
+    """The sector page says the RS rank is rebuilt, from the record."""
+    import re
+
+    root = Path(__file__).resolve().parents[1]
+    page = root / "templates" / "sector_cycles.html.j2"
+    text = page.read_text(encoding="utf-8")
+    guard = "naturally_observed === false"
+    assert guard in text
+    en = "RS rank is rebuilt from total-return price history against "
+    zh = "相对强度排名由总回报价格历史重建，基准 "
+    assert en in text
+    assert ". It is not an observed record." in text
+    assert zh in text
+    assert "。并非当时观察到的记录。" in text
+    assert 'basis === "tr"' in text
+    en_at = text.find(en)
+    zh_at = text.find(zh)
+    assert "l-en" in text[max(0, en_at - 200):en_at]
+    assert "l-zh" in text[max(0, zh_at - 200):zh_at]
+    assert "h.benchmark" in text
+    assert "h.as_of" in text
+    piece = text[text.find(guard):]
+    piece = piece[:piece.find("</script>")]
+    assert re.search(r"\d{4}-\d{2}-\d{2}", piece) is None
+    assert "SPY" not in piece
+
+
 def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
     panel = _rs_history_panel(520)
     monkeypatch.setattr(sc, "yahoo_closes", lambda basis="tr": panel.copy())
@@ -444,3 +472,131 @@ def test_compute_declares_reconstructed_rs_history_contract(monkeypatch):
     assert data["sectors"][0]["rs_history"]
     assert data["sectors"][0]["rs_history"][-1]["rs_21d"] == data["sectors"][0]["now"]["rs_21d"]
     assert data["sectors"][0]["rs_history"][-1]["rs_63d"] == data["sectors"][0]["now"]["rs_63d"]
+
+
+def _run_page_date_scripts(meta, template="sector_cycles.html.j2"):
+    """Runs the page's date scripts the way a browser orders them: parse, deferred data, DOMContentLoaded."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "templates" / template).read_text(encoding="utf-8")
+    scripts = [b for b in re.findall(r"<script>(.*?)</script>", text, re.S) if "sc-asof" in b]
+    assert scripts
+    source = """
+var listeners = {};
+var kids = [];
+var asofEl = {textContent: 'PARSED', parentNode: {appendChild: function (c) { kids.push(c); }}};
+var document = {
+  getElementById: function (id) { return id === 'sc-asof' ? asofEl : null; },
+  createElement: function (tag) { return {tag: tag, className: '', textContent: ''}; },
+  addEventListener: function (ev, fn) { (listeners[ev] = listeners[ev] || []).push(fn); },
+};
+var window = {};
+""" + "\n".join(scripts) + """
+var atParse = asofEl.textContent;
+window.SECTOR_CYCLES = {meta: """ + json.dumps(meta) + """};
+(listeners.DOMContentLoaded || []).forEach(function (f) { f(); });
+console.log(JSON.stringify({atParse: atParse, date: asofEl.textContent, kids: kids}));
+"""
+    done = subprocess.run([node, "-e", source], capture_output=True, text=True, timeout=30, check=True)
+    return json.loads(done.stdout)
+
+
+@pytest.mark.parametrize(
+    "template",
+    ["sector_cycles.html.j2", "sector_cycles_china.html.j2", "country_cycles.html.j2"],
+)
+def test_cycle_page_prints_its_date_after_the_deferred_data(template):
+    out = _run_page_date_scripts({"asOf": "2026-10-30"}, template)
+    assert out["atParse"] == "PARSED"
+    assert out["date"] == "2026-10-30"
+    assert out["kids"] == []
+
+
+def test_sector_page_prints_the_rs_sentence_from_the_record():
+    out = _run_page_date_scripts({
+        "asOf": "2026-10-30",
+        "rs_history": {"naturally_observed": False, "basis": "tr", "benchmark": "SPY", "as_of": "2026-10-29"},
+    })
+    assert [k["tag"] for k in out["kids"]] == ["br", "span", "span"]
+    en, zh = out["kids"][1], out["kids"][2]
+    assert en["className"] == "l-en"
+    assert en["textContent"] == (
+        "RS rank is rebuilt from total-return price history against SPY, through 2026-10-29."
+        " It is not an observed record."
+    )
+    assert zh["className"] == "l-zh"
+    assert zh["textContent"] == "相对强度排名由总回报价格历史重建，基准 SPY，截至 2026-10-29。并非当时观察到的记录。"
+
+
+@pytest.mark.parametrize(
+    "history",
+    [
+        {"naturally_observed": True, "basis": "tr", "benchmark": "SPY", "as_of": "2026-10-29"},
+        {"naturally_observed": False, "basis": "pr", "benchmark": "SPY", "as_of": "2026-10-29"},
+    ],
+)
+def test_sector_page_prints_no_rs_sentence_when_it_would_be_wrong(history):
+    assert _run_page_date_scripts({"asOf": "2026-10-30", "rs_history": history})["kids"] == []
+
+
+def _template_text(name):
+    """A page source by name, for the tests that run a shipped function in node."""
+    return (Path(__file__).resolve().parents[1] / "templates" / name).read_text(encoding="utf-8")
+
+
+def _hz_tip(hz, key, passed, lang):
+    """Run the shipped tooltip function in node with the page's picker for one language."""
+    import json
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    text = _template_text("sector_cycles.js")
+    match = re.search(r"\n  function _hzTip\(hz, key, pass\) \{\n(?:.*\n)*?  \}\n", text)
+    assert match is not None
+    source = "\n".join([
+        "function L(en, zh) { return " + json.dumps(lang) + ' === "zh" ? zh : en; }',
+        match.group(0),
+        "console.log(_hzTip(" + json.dumps(hz) + ", " + json.dumps(key) + ", " + json.dumps(passed) + "));",
+    ])
+    done = subprocess.run([node, "-e", source], capture_output=True, text=True, timeout=30, check=True)
+    return done.stdout.strip()
+
+
+@pytest.mark.parametrize(
+    "passed,lang,present,absent",
+    [
+        (True, "en", ["PASSED the W4.2 gate", "UP/13w", "Epoch: 2031-Q1.", "Cohort still accruing.", "Not checked against later outcomes."], ["validated", "live", "校准"]),
+        (True, "zh", ["校准模型概率", "UP/13w", "Epoch: 2031-Q1。", "样本仍在累积。", "未用之后的结果核对。"], ["validated", "live", "Calibrated", "Not checked"]),
+        (False, "en", ["did NOT pass the W4.2 gate", "UP/13w", "not a model output.", "Not checked against later outcomes."], ["validated", "live", "Cohort still", "基准率"]),
+        (False, "zh", ["KM 基准率先验", "UP/13w", "不是模型输出。", "未用之后的结果核对。"], ["validated", "live", "样本仍在累积", "base-rate", "Not checked"]),
+    ],
+)
+def test_hazard_tooltip_says_what_the_figure_is_in_the_readers_language(passed, lang, present, absent):
+    got = _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", passed, lang)
+    assert [p for p in present if p not in got] == []
+    assert [a for a in absent if a in got] == []
+
+
+@pytest.mark.parametrize(
+    "lang,want,other",
+    [
+        ("en", " · revision-optimistic (quad not PIT-vintaged)", "结果可能偏乐观"),
+        ("zh", " · 结果可能偏乐观（象限未按当时版本回放）", "revision-optimistic"),
+    ],
+)
+def test_hazard_tooltip_revision_clause_reads_in_the_readers_language(lang, want, other):
+    hz = {"epoch": "2031-Q1", "direction": "UP", "revision_optimistic": True}
+    got = _hz_tip(hz, "13w", True, lang)
+    assert want in got and other not in got
+    assert want not in _hz_tip({"epoch": "2031-Q1", "direction": "UP"}, "13w", True, lang)

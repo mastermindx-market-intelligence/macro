@@ -60,12 +60,17 @@ def _stub_auth(monkeypatch, *, require_user, enforce_site_full) -> None:
 
 
 def _forbid_compose(monkeypatch) -> None:
-    """Any attempt to build a page during a denial test is a hard failure."""
+    """Any attempt to build a page during a denial test is a hard failure.
+
+    The route calls ``_compose_page_with_receipts`` directly, so patching only
+    ``_compose_page`` would never fire; both seams are forbidden.
+    """
 
     def _forbidden(*_args, **_kwargs):
         raise AssertionError("composed")
 
     monkeypatch.setattr(integrated_answer, "_compose_page", _forbidden)
+    monkeypatch.setattr(integrated_answer, "_compose_page_with_receipts", _forbidden)
 
 
 def _allowing_stubs(monkeypatch):

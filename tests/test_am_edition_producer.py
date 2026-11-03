@@ -1580,11 +1580,11 @@ def _parse_documented_keysets(producer_doc: str) -> dict[str, dict[str, frozense
         "research_watch": {
             "current": frozenset({
                 "condition_en", "condition_zh", "condition_zh_disclosed_why",
-                "since", "as_of", "source_ref",
+                "since", "as_of", "check_by", "source_ref",
             }),
             "base": frozenset({
                 "condition_en", "condition_zh", "condition_zh_disclosed_why",
-                "since", "as_of", "source_ref",
+                "since", "as_of", "check_by", "source_ref",
             }),
         },
         "owner_links": {
@@ -2664,8 +2664,9 @@ def test_emitted_row_key_set_matches_docstring(tmp_path):
         NOT_COVERED, UNAVAILABLE}. A CURRENT row has 9 keys; any other
         state has 11.
       - research_watch rows: {condition_en, condition_zh,
-        condition_zh_disclosed_why, since, as_of, source_ref}. Fixed
-        6-key set on every row; rows carry no per-row state.
+        condition_zh_disclosed_why, since, as_of, check_by,
+        source_ref}. Fixed 7-key set on every row; rows carry no
+        per-row state.
       - owner_links rows: {plane, label_en, label_zh, href, kind}.
         Fixed 5-key set on every row; static-link block has no per-row
         state, and reference rows carry plane=None.
@@ -3065,3 +3066,137 @@ def test_research_watch_emits_real_schema_row_in_block(tmp_path):
     assert rw["state"] == "CURRENT", rw
     assert len(rw["rows"]) == 1, rw
     assert "real-schema watch condition" in rw["rows"][0]["condition_en"]
+
+
+# ── W25-L20 / F3: research_watch rows carry the owner's `check_by` ───────
+
+
+def test_research_watch_row_carries_the_owner_check_by_date(tmp_path):
+    """F3: `_load_theses_row` reads the owner's whitelisted `check_by`
+    field, and the emitted research_watch row carries it through the
+    full block. The committed record's five visible rows all carry
+    `check_by` dates yet the block printed none. The fixture's
+    `state_asof` (2026-07-30) differs from `check_by` (2026-08-28), so
+    a copy-from-state_asof mutant cannot pass this pin."""
+    import scripts.build_am_edition as mod
+
+    row = {
+        "id": "mb-x",
+        "status": "open",
+        "state_asof": "2026-07-30",
+        "logged_at": "2026-07-31T03:23:23Z",
+        "falsifier": {"text": "If semis relative strength rises back above "
+                              "its 20-day average."},
+        "check_by": "2026-08-28",
+    }
+    loaded = mod._load_theses_row(row)
+    assert loaded is not None
+    assert loaded["check_by"] == "2026-08-28"
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _full_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08",
+        transmission_asof="2026-09-08", commodity_asof="2026-09-08",
+        intl_asof="2026-09-08", with_credit=True, theses_rows=[row],
+    )
+    payload = build_payload(site, data, now=now)
+    rw = _new_block(payload, "research_watch")
+    assert len(rw["rows"]) == 1, rw
+    assert rw["rows"][0]["check_by"] == "2026-08-28", rw["rows"][0]
+    assert rw["rows"][0]["since"][:10] == "2026-07-30", rw["rows"][0]
+
+
+def test_research_watch_check_by_is_a_normalised_date_or_none():
+    """F3: the loader stores `check_by` only as a `_norm_clock`-
+    normalised `YYYY-MM-DD` string, else None — raw owner junk (int,
+    free prose) and absent keys never leak into the emitted row."""
+    import scripts.build_am_edition as mod
+
+    def _row(**kw):
+        base = {
+            "id": "mb-n", "status": "open", "state_asof": "2026-07-30",
+            "logged_at": "2026-07-31T03:23:23Z",
+            "falsifier": {"text": "A normalisation probe condition."},
+        }
+        base.update(kw)
+        return base
+
+    out = mod._load_theses_row(_row(check_by="2026-08-28T12:00:00Z"))
+    assert out["check_by"] == "2026-08-28"
+    out = mod._load_theses_row(_row(check_by=20260828))
+    assert out["check_by"] is None
+    out = mod._load_theses_row(_row(check_by="soon"))
+    assert out["check_by"] is None
+    out = mod._load_theses_row(_row())
+    assert out["check_by"] is None
+
+
+def test_research_watch_loader_still_never_reads_a7_keys(tmp_path):
+    """F3 guard: the A7 read whitelist stays CLOSED at exactly the six
+    keys — `check_by` was already a member (the docstring always said it
+    is read; the code now agrees). A row carrying `lean`,
+    `conviction`, `entry_levels`, `outcome`, `realized` is still
+    accepted with NO forbidden key read, and the loader still surfaces
+    `check_by` from a get-guarded sentinel row."""
+    import scripts.build_am_edition as mod
+
+    assert mod._THESIS_ROW_KEYS == frozenset({
+        "id", "status", "state_asof", "logged_at", "falsifier", "check_by",
+    })
+
+    real_row = {
+        "id": "mb-real-2",
+        "status": "open",
+        "state_asof": "2026-09-08",
+        "logged_at": "2026-09-08T10:00:00Z",
+        "falsifier": {"text": "A guarded real-schema row."},
+        "check_by": "2026-09-22",
+        "lean": "long",
+        "entry_levels": [0.95, 1.05],
+        "conviction": "high",
+        "outcome": "pending",
+        "realized": 0.012,
+    }
+
+    class _SentinelDict(dict):
+        # The loader reads through ``dict.get`` (C-level, never dispatches
+        # to ``__getitem__``), so the guard MUST intercept ``get`` too --
+        # a ``__getitem__``-only guard was vacuous (round-3 MAJOR 1).
+        def _check(self, k):
+            if k not in mod._THESIS_ROW_KEYS:
+                raise AssertionError(f"forbidden key read: {k!r}")
+
+        def __getitem__(self, k):
+            self._check(k)
+            return super().__getitem__(k)
+
+        def get(self, k, default=None):
+            self._check(k)
+            return super().get(k, default)
+
+        def __contains__(self, k):
+            self._check(k)
+            return super().__contains__(k)
+
+    out = mod._load_theses_row(_SentinelDict(real_row))
+    assert out is not None
+    assert out["cond_text"] == "A guarded real-schema row."
+    assert out["check_by"] == "2026-09-22"
+
+
+def test_research_watch_row_keyset_is_the_documented_seven():
+    """F3: the producer module docstring's `research_watch.rows[i]`
+    bullet names all seven emitted keys — including `check_by` — before
+    the `owner_links.rows[i]` bullet. Whole-word regex search so a
+    dropped key fails loudly."""
+    import scripts.build_am_edition as mod
+
+    doc = mod.__doc__ or ""
+    start = doc.index("`research_watch.rows[i]` keys:")
+    stop = doc.index("`owner_links.rows[i]` keys:")
+    bullet = doc[start:stop]
+    for key in ("condition_en", "condition_zh",
+                "condition_zh_disclosed_why", "since", "as_of",
+                "check_by", "source_ref"):
+        assert re.search(rf"\b{key}\b", bullet), (
+            f"docstring research_watch bullet does not name {key!r}"
+        )

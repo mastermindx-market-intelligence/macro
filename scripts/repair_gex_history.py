@@ -47,6 +47,7 @@ import logging
 import os
 import sys
 import time
+from datetime import date as calendar_date
 from pathlib import Path
 
 import pandas as pd
@@ -69,6 +70,7 @@ _RECOMPUTED = (
     "spot_ref", "net_gex_bn", "gamma_flip", "profile", "call_wall", "put_wall",
     "by_strike", "by_strike_full_n", "by_delta", "by_delta_full_n",
     "by_expiry", "convention", "coverage", "schema",
+    "net_gex_known_bn", "exposure_projection",
 )
 
 #: A flip further than this from spot cannot come from the repaired estimator, which
@@ -88,20 +90,31 @@ def _read_year(tier: str, root: str, year: int, store) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def _norm_dates(df: pd.DataFrame) -> pd.DataFrame:
+def _norm_dates(df: pd.DataFrame, *, preserve_expiration: bool = False) -> pd.DataFrame:
     if df.empty:
         return df
     out = df.copy()
-    for c in ("date", "expiration"):
+    for c in (("date",) if preserve_expiration else ("date", "expiration")):
         if c in out.columns:
             out[c] = pd.to_datetime(out[c], errors="coerce").dt.date.astype(str)
     return out
 
 
-def repair_root(root: str, store, *, apply: bool) -> dict:
+def repair_root(root: str, store, *, apply: bool, source_date: str | None = None,
+                exposure_context: dict | None = None) -> dict:
     """Recompute every dated snapshot for one root. Returns a per-root tally."""
     root_dir = HIST_DIR / root
     snaps = sorted(p for p in root_dir.glob("*.json") if p.name != "dates.json")
+    if source_date is not None:
+        calendar_date.fromisoformat(source_date)
+        snaps = [p for p in snaps if p.stem == source_date]
+    if exposure_context is not None:
+        # This repair is a full native-book recomputation, never a selected-window
+        # substitute. The incumbent loader has already bound any file descriptors.
+        if (source_date is None or exposure_context.get("root") != root
+                or (exposure_context.get("clocks") or {}).get("source_session") != source_date
+                or "_projection_inputs" in exposure_context or "source_inputs" in exposure_context):
+            raise ValueError("Archive context requires one matching full native source session")
     tally = {"root": root, "n": len(snaps), "changed": 0, "impossible": 0,
              "skipped": 0, "paths": []}
     if not snaps:
@@ -112,10 +125,10 @@ def repair_root(root: str, store, *, apply: bool) -> dict:
     # root's snapshots all live in the same year or two.
     greeks = _norm_dates(pd.concat(
         [_read_year("greeks", root, y, store) for y in years], ignore_index=True,
-    )) if years else pd.DataFrame()
+    ), preserve_expiration=exposure_context is not None) if years else pd.DataFrame()
     oi_all = _norm_dates(pd.concat(
         [_read_year("oi", root, y, store) for y in years], ignore_index=True,
-    )) if years else pd.DataFrame()
+    ), preserve_expiration=exposure_context is not None) if years else pd.DataFrame()
 
     if greeks.empty or oi_all.empty:
         tally["skipped"] = len(snaps)
@@ -126,6 +139,16 @@ def repair_root(root: str, store, *, apply: bool) -> dict:
         try:
             old = json.loads(path.read_text())
         except Exception:  # noqa: BLE001
+            tally["skipped"] += 1
+            continue
+        if old.get("root") != root or old.get("asof") != date:
+            tally["skipped"] += 1
+            continue
+        previous_projection = old.get("exposure_projection")
+        if (exposure_context is None and isinstance(previous_projection, dict)
+                and previous_projection.get("kind") in {"dated_provider_approximation", "modeled_exposure"}):
+            # Recomputing legacy math is not permission to erase or reuse a
+            # qualified receipt. Supply its matching explicit native context.
             tally["skipped"] += 1
             continue
 
@@ -142,7 +165,14 @@ def repair_root(root: str, store, *, apply: bool) -> dict:
             tally["skipped"] += 1
             continue
 
-        fresh = compute_gex(g, o, date, root)
+        if exposure_context is not None:
+            from engine.options_exposure_projection import compose_native_exposure_context, exposure_input_digest
+            if exposure_input_digest(g, o, date, root) != exposure_context.get("input_sha256"):
+                raise ValueError("Archive source rows do not match explicit exposure context")
+            composed = compose_native_exposure_context(g, o, date, root, context=exposure_context)
+            fresh = compute_gex(g, o, date, root, exposure_context=composed)
+        else:
+            fresh = compute_gex(g, o, date, root)
         if not fresh.get("by_strike"):
             tally["skipped"] += 1
             continue
@@ -151,13 +181,21 @@ def repair_root(root: str, store, *, apply: bool) -> dict:
         for k in _RECOMPUTED:
             if k in fresh:
                 new[k] = fresh[k]
+        # Include preserved history/other legacy fields in the same whole-event
+        # transport guard as the nightly. No contract or denominator truncation.
+        from engine.options_exposure_projection import fit_gex_transport
+        fits, new = fit_gex_transport(new)
+        if not fits:
+            tally["skipped"] += 1
+            continue
 
         if new == old:
             continue
         tally["changed"] += 1
         tally["paths"].append(path)
         if apply:
-            path.write_text(json.dumps(new, separators=(",", ":")), encoding="utf-8")
+            from scripts.build_options_hub_nightly import _write_json
+            _write_json(path, new)
 
     return tally
 
@@ -171,7 +209,19 @@ def main(argv: list[str] | None = None) -> int:
                     help="rewrite the snapshots (default is a dry run)")
     ap.add_argument("--publish", action="store_true", help="upload repaired snapshots to R2")
     ap.add_argument("--theta-store", default=None, metavar="PATH")
+    ap.add_argument("--date", default=None, metavar="YYYY-MM-DD",
+                    help="repair only this existing dated archive; never writes current boards")
+    ap.add_argument("--exposure-context", default=None, metavar="JSON",
+                    help="explicit full native-book receipt bundle; requires --date and --roots")
     args = ap.parse_args(argv)
+    from scripts.build_options_hub_nightly import load_exposure_contexts
+    contexts = load_exposure_contexts(args.exposure_context)
+    if args.date is not None:
+        calendar_date.fromisoformat(args.date)
+    if args.exposure_context and (not args.date or not args.roots):
+        ap.error("--exposure-context requires explicit --date and --roots")
+    if any(root.upper() not in contexts for root in (args.roots or [])) and args.exposure_context:
+        ap.error("every selected root requires its own exposure context")
 
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -186,13 +236,16 @@ def main(argv: list[str] | None = None) -> int:
     log.info("repair: %d roots, apply=%s, store=%s", len(roots), args.apply, store)
     totals = {"n": 0, "changed": 0, "impossible": 0, "skipped": 0}
     repaired: list[tuple[str, Path]] = []
+    failures = 0
 
     for root in roots:
         t0 = time.time()
         try:
-            t = repair_root(root, store, apply=args.apply)
+            t = repair_root(root, store, apply=args.apply, source_date=args.date,
+                            exposure_context=contexts.get(root))
         except Exception as exc:  # noqa: BLE001
             log.warning("repair: %s FAILED — %s", root, exc)
+            failures += 1
             continue
         for k in totals:
             totals[k] += t[k]
@@ -210,15 +263,15 @@ def main(argv: list[str] | None = None) -> int:
              totals["n"], totals["changed"], totals["impossible"], totals["skipped"])
 
     if args.publish and args.apply and repaired:
-        _publish(repaired)
+        _publish(repaired, store=store)
     elif args.publish and not args.apply:
         log.warning("repair: --publish ignored on a dry run")
-    return 0
+    return 1 if failures else 0
 
 
-def _publish(repaired: list[tuple[str, Path]]) -> None:
+def _publish(repaired: list[tuple[str, Path]], *, store=None) -> None:
     try:
-        from scripts.build_options_hub_nightly import _r2_client, _upload_r2
+        from scripts.build_options_hub_nightly import _r2_client, _upload_r2, publish_gex_history_index
     except Exception as exc:  # noqa: BLE001
         log.warning("repair: publish unavailable — %s", exc)
         return
@@ -228,9 +281,16 @@ def _publish(repaired: list[tuple[str, Path]]) -> None:
         log.warning("repair: R2 creds absent — snapshots repaired locally only")
         return
     ok = 0
+    published: dict[str, list[str]] = {}
     for root, path in repaired:
         if _upload_r2(s3, bucket, path, f"{R2_PREFIX}{root}/{path.name}"):
             ok += 1
+            published.setdefault(root, []).append(path.stem)
+    # Only dated objects and their truthful LIST-derived index. Zero heal budget
+    # prevents unrelated archive writes; current gex/vol/boards are never touched.
+    for root, days in published.items():
+        publish_gex_history_index(root, max(days), store, None, HIST_DIR.parent,
+                                  s3, bucket, heal_budget=0)
     log.info("repair: published %d/%d repaired snapshots to R2", ok, len(repaired))
 
 

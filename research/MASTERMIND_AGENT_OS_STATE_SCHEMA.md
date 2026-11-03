@@ -364,6 +364,23 @@ A discovery is written **only if both hold**. This is the anti-hoarding mechanis
 | `cited_by` | ◻ | list | Auto-maintained by the generator. Drives GC. |
 | `superseded_by` | ◻ | `DSC:` | |
 | `expires` | ◻ | date | Default: `verified_at` + 90d if never cited. Flagged, never auto-deleted. |
+| `evaluation_finding` | ◻ | object | Optional six-field Evaluation OS evidence; no discovery admission is inferred. |
+
+An `evaluation_finding` has exactly `engine`, `metric`, `observed_change`,
+`segment`, `evidence_link`, and `suggested_tier`. Engine, metric, segment and
+link are non-empty valid UTF-8 strings of at most 2,048 bytes each. The link is
+an authored locator; drafting and validation do not fetch or verify its contents.
+`observed_change` is explicit null, bounded non-empty qualitative text, or exactly
+`{baseline, current, unit}`. Baseline/current are finite numbers or explicit null;
+unit is bounded non-empty text. Zero remains zero. Qualitative snapshot findings
+need not invent a numerical or temporal comparison. `suggested_tier` is T0–T4 or
+explicit null; it never means a tier was executed or passed. Existing discovery
+admission, falsifier, verification, scope and confidence are still mandatory and
+caller-authored. Both `draft-discovery` and raw record validation enforce this
+shape. The drafter prints the finding in YAML to stdout; it does not publish,
+prioritise, schedule or route an issue. Knowledge excerpts retain their existing
+claim/so_what/falsifier projection with the record locator. This optional DSC
+emission path does not make every research finding a verified discovery.
 
 ### Example
 

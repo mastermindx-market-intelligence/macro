@@ -525,3 +525,89 @@ def test_r1_section_6_2_a_resolution_row_referencing_the_canonical_row_does_not_
         },
     ])
     assert not any("security-axis-superseded" in x for x in _breaches(root, breaks))
+
+
+# ---------------------------------------------------------------------------
+# B1 fold-seam (r6): the curated activity-history fold (engine.theme_graph.
+# materialize, ACTIVITY_HISTORY_CONFIDENCE_BASIS) is the ONE owned path that may
+# emit a company→theme MEMBER_OF — admitted per ROW by its exact provenance
+# triple, never by pair.
+# ---------------------------------------------------------------------------
+
+ACTIVITY_PROVENANCE = {"source_class": "curated",
+                       "date_provenance": "activity_history",
+                       "confidence_basis": "activity_history.v1"}
+
+
+def test_an_activity_history_member_of_company_to_theme_passes(tmp_path, breaks):
+    """The fold emits company→theme MEMBER_OF rows; a row carrying the exact
+    provenance triple must pass cleanly — no pairing breach, no §9.6 tag breach,
+    nothing."""
+    root = _write_store(
+        tmp_path / "activity_ok",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", **ACTIVITY_PROVENANCE)])
+    assert not _breaches(root, breaks)
+
+
+def test_a_company_to_theme_member_of_with_other_provenance_still_breaches(
+    tmp_path, breaks,
+):
+    """Same pair, other provenance: admission is per row, so a crosswalk
+    company→theme MEMBER_OF is still the refused derived edge."""
+    root = _write_store(
+        tmp_path / "crosswalk_member",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:crosswalk_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:crosswalk_fixture@2024-01-01",
+            dst="theme:crosswalk_fixture", date_provenance="crosswalk")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))
+
+
+def test_activity_history_admission_is_per_row_not_per_pair(tmp_path, breaks):
+    """One admitted activity row AND one non-activity company→theme row in the
+    SAME store: exactly the non-activity row is reported."""
+    root = _write_store(
+        tmp_path / "mixed",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+                dst="theme:activity_fixture", **ACTIVITY_PROVENANCE),
+            _edge_row(
+                edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-02",
+                dst="theme:activity_fixture", date_provenance="crosswalk"),
+        ])
+    breaches = _breaches(root, breaks)
+    assert breaches, "the non-activity company→theme row must breach"
+    assert not any("@2024-01-01" in x for x in breaches), \
+        f"the admitted activity row must not be reported: {breaches}"
+    assert any("@2024-01-02" in x and "is not a pairing this type may carry" in x
+               for x in breaches)
+
+
+def test_activity_history_admission_requires_the_exact_confidence_basis(
+    tmp_path, breaks,
+):
+    """Right date_provenance, wrong confidence_basis: the triple is exact or the
+    row is just another company→theme smuggle."""
+    root = _write_store(
+        tmp_path / "wrong_basis",
+        nodes=[_node_row(),
+               _node_row(node_id="theme:activity_fixture", kind="theme",
+                         tier="theme")],
+        edges=[_edge_row(
+            edge_id="member_of:co:us:AAA->theme:activity_fixture@2024-01-01",
+            dst="theme:activity_fixture", date_provenance="activity_history",
+            confidence_basis="activity_history.v2")])
+    assert any("is not a pairing this type may carry" in x
+               for x in _breaches(root, breaks))

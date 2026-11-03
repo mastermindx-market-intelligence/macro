@@ -127,3 +127,7 @@
 {"date":"2026-10-14","theme":"Space Tech","donor":"spacesatellites","receiver":"spacedefense","confidence":0.35,"both_confirmed":false}
 {"date":"2026-10-14","theme":"Digital Entertainment","donor":"entertainmentinfrastructure","receiver":"entertainmentgambling","confidence":0.33,"both_confirmed":false}
 {"date":"2026-10-14","theme":"Wearables","donor":"wearablessoftware","receiver":"wearablessport","confidence":0.22,"both_confirmed":false}
+{"date":"2026-10-20","theme":"Software","donor":"softwaresecurity","receiver":"softwarevsaas","confidence":0.329,"both_confirmed":false}
+{"date":"2026-10-20","theme":"Digital Entertainment","donor":"entertainmentinfrastructure","receiver":"entertainmentbetting","confidence":0.308,"both_confirmed":false}
+{"date":"2026-10-20","theme":"Big Data","donor":"bigdatainfrastructure","receiver":"bigdataproviders","confidence":0.304,"both_confirmed":false}
+{"date":"2026-10-20","theme":"Healthcare & Biotech","donor":"healthcaregenomics","receiver":"healthcaremetabolic","confidence":0.247,"both_confirmed":false}

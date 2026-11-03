@@ -187,7 +187,16 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
   <!-- ===================== COUNTRY COMPARISON ===================== -->
   <div class="section-title">{{ t('Major countries — strategic reserves & national crude stocks', '主要国家 — 战略储备与国家原油库存') }}</div>
   <div class="card">
-    <div class="sub" style="margin-bottom:12px">{{ t('Strategic reserve = government-held (curated, dated, sourced — only the US & Japan publish a clean government breakout). Total crude stocks = live JODI national inventory (government + industry + commercial), lagged ~1-2 months.', '战略储备 = 政府持有（人工整理、注明日期与来源——仅美国与日本公布清晰的政府拆分）。原油总库存 = JODI 实时国家库存（政府+行业+商业），滞后约1-2个月。') }}</div>
+    <div class="sub" style="margin-bottom:12px">{{ t(
+        'Strategic reserve = government-held (curated, dated, sourced — only the US & Japan '
+        ~ 'publish a clean government breakout). Total crude stocks = JODI national inventory '
+        ~ '(government + industry + commercial), reported monthly with a ~2-3 month publication '
+        ~ 'lag; each row and the Global picture tile below show their latest reported month.',
+        '战略储备 = 政府持有（人工整理、注明日期与来源'
+        ~ '——仅美国与日本公布清晰的政府拆分）。'
+        ~ '原油总库存 = JODI 各国原油库存（政府+行业+商业），'
+        ~ '按月披露，发布滞后约2-3个月；'
+        ~ '各行及下方“全球概览”注明最新报送月份。') }}</div>
     <div class="tbl-scroll">
     <table class="catbl">
       <thead><tr>
@@ -209,8 +218,18 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
           {% else %}—{% endif %}
         </td>
         <td class="r">
-          {% if c.jodi_total_mb is not none %}<span class="num">{{ '{:,.0f}'.format(c.jodi_total_mb) }}</span> <span class="sm">M</span>{% if c.jodi_assess %}<span class="qbadge q{{ c.jodi_assess }}">{{ t(assess_word.get(c.jodi_assess,''), '') }}</span>{% endif %}
+          {% if c.jodi_total_mb is not none %}<span class="num">{{
+          '{:,.0f}'.format(c.jodi_total_mb) }}</span> <span class="sm">M</span>
+          {%- if c.jodi_assess %}<span class="qbadge q{{ c.jodi_assess }}">{{ t(
+          assess_word.get(c.jodi_assess,''), assess_word_zh.get(c.jodi_assess,'')) }}</span>
+          {%- endif %}
             {% if c.jodi_mom_mb is not none %}<div class="sm {{ 'up' if c.jodi_mom_mb > 0 else ('down' if c.jodi_mom_mb < 0 else '') }}">{{ '%+.1f'|format(c.jodi_mom_mb) }}M/mo · {{ c.jodi_as_of }}</div>{% endif %}
+            {% if c.jodi_yoy_pct is not none %}<div class="sm {{ 'up'
+            if c.jodi_yoy_pct > 0 else ('down' if c.jodi_yoy_pct < 0 else '') }}">
+            {{ t('12m','近12个月') }} {{ '%+.1f'|format(c.jodi_yoy_pct) }}%
+            {%- if c.jodi_trend in ('rising', 'falling', 'flat') %} · {{
+            t(c.jodi_trend, {'rising': '上升', 'falling': '下降', 'flat': '持平'}[c.jodi_trend]) }}
+            {%- endif %}</div>{% endif %}
             {% if c.net_imports_kbd is not none %}<div class="sm">{{ t('net imp','净进口') }} {{ (c.net_imports_kbd / 1000)|round(2) }}M/d{% if c.stock_cover_days is not none %} · ~{{ c.stock_cover_days|round|int }}d {{ t('cover','覆盖') }}{% endif %}</div>{% endif %}
           {% elif c.curated_total_mb %}<span class="num">~{{ '{:,.0f}'.format(c.curated_total_mb) }}</span> <span class="sm">M {{ t('est','估算') }}</span>{% else %}<span class="sm">{{ t('not reported to JODI','未向 JODI 报送') }}</span>{% endif %}
         </td>
@@ -231,7 +250,17 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
     <div class="iea-row">
       <div class="ie"><div class="k">{{ t('IEA public emergency','IEA 公共应急储备') }}</div><div class="v">{{ '{:,.0f}'.format(scfg.iea_public_mb) }}</div><div class="h">{{ t('MMbbl · government-held','百万桶 · 政府持有') }}</div></div>
       <div class="ie"><div class="k">{{ t('Industry-mandated','行业强制储备') }}</div><div class="v">{{ '{:,.0f}'.format(scfg.iea_industry_mb) }}</div><div class="h">{{ t('MMbbl · on call by governments','百万桶 · 政府可调用') }}</div></div>
-      {% if agg.total_mb %}<div class="ie"><div class="k">{{ t('JODI reporters — total crude','JODI 报送国 — 原油合计') }}</div><div class="v">{{ '{:,.0f}'.format(agg.total_mb) }}</div><div class="h">{{ agg.n_reporting }} {{ t('countries · all stock types','国 · 含各类库存') }}</div></div>{% endif %}
+      {% if agg.total_mb %}<div class="ie"><div class="k">{{ t(
+        'JODI reporters — total crude',
+        'JODI 报送国 — 原油合计') }}</div><div class="v">{{
+        '{:,.0f}'.format(agg.total_mb) }}</div><div class="h">{{ agg.n_reporting }} {{
+        t('countries · all stock types','国 · 含各类库存') }}</div>
+        {%- if agg.as_of %}<div class="h">{{ t('latest reports','最新报送') }} {% if
+        agg.oldest and agg.oldest != agg.as_of %}{{ agg.oldest }} → {% endif %}
+        {{- agg.as_of }}</div>{%- endif %}
+        {%- if agg.n_excluded %}<div class="h">{{ t('excluded as stale',
+        '已剔除停报') }}: {{ agg.excluded|join(', ') }}</div>{%- endif %}</div>
+      {%- endif %}
       <div class="ie"><div class="k">{{ t('IEA obligation','IEA 义务') }}</div><div class="v">{{ scfg.iea_min_days }}<small style="font-size:13px"> {{ t('days','天') }}</small></div><div class="h">{{ t('min net-import cover per member','成员国净进口最低覆盖') }}</div></div>
     </div>
   </div>
@@ -245,7 +274,11 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
       {% if gold.global_tonnes %}<div class="ie"><div class="k">{{ t('Global official gold','全球官方黄金') }}</div><div class="v">~{{ '{:,.0f}'.format(gold.global_tonnes) }}</div><div class="h">{{ t('tonnes · all central banks','吨 · 全部央行') }}</div></div>{% endif %}
       <div class="ie" style="flex:2;min-width:240px"><div class="k">{{ t('The structural bid','结构性买盘') }}</div><div class="h" style="font-size:13px;color:var(--text);margin-top:5px">{{ t(gold.note_en, gold.note_zh) }}</div></div>
     </div>
-    <div class="sub" style="margin:8px 0 12px">{{ t('Tonnes = curated (World Gold Council / IMF IFS, as of','吨位 = 人工整理（世界黄金协会／IMF IFS，截至') }} {{ gold.as_of }}{{ t('). Gold value & share of reserves = live World Bank','）。黄金价值与占储备比例 = 世界银行实时数据') }}{% if gold.wb_year %} ({{ gold.wb_year }}){% endif %}{{ t(', valued at market.','，按市价计。') }}</div>
+    <div class="sub" style="margin:8px 0 12px">{{ t(
+     'Tonnes = curated (World Gold Council / IMF IFS, as of','吨位 = 人工整理（世界黄金协会／IMF IFS，截至') }}
+    {{ gold.as_of }}{{ t(
+    '). Gold value & share of reserves = World Bank annual data (each row shows its year)',
+    '）。黄金价值与占储备比例 = 世界银行年度披露数据（各行注明年份）') }}{{ t(', valued at market.','，按市价计。') }}</div>
     <div class="tbl-scroll">
     <table class="catbl">
       <thead><tr>
@@ -261,7 +294,13 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
         <td class="a">{{ r.flag }} {{ t(r.name, r.name_zh) }}</td>
         <td class="r"><span class="num">{{ '{:,.0f}'.format(r.tonnes) if r.tonnes is not none else '—' }}</span> <span class="sm">t</span></td>
         <td>{% if r.trend %}<span class="trd trd-{{ r.trend }}">{{ t(r.trend_en, r.trend_zh) }}</span>{% else %}—{% endif %}</td>
-        <td class="r">{% if r.value_usd is not none %}<span class="num">${{ '{:,.0f}'.format(r.value_usd / 1e9) }}B</span>{% if r.value_yoy_pct is not none %}<div class="sm {{ 'up' if r.value_yoy_pct > 0 else ('down' if r.value_yoy_pct < 0 else '') }}">{{ '%+.0f'|format(r.value_yoy_pct) }}%/yr</div>{% endif %}{% else %}<span class="sm">{{ t('n/a','无') }}</span>{% endif %}</td>
+        <td class="r">{% if r.value_usd is not none %}<span class="num">${{
+            '{:,.0f}'.format(r.value_usd / 1e9) }}B</span>
+        {%- if r.value_yoy_pct is not none %}<div class="sm {{ 'up'
+            if r.value_yoy_pct > 0 else ('down' if r.value_yoy_pct < 0 else '') }}">
+        {{- '%+.0f'|format(r.value_yoy_pct) }}%/yr</div>{% endif %}
+        {%- if r.wb_year %}<div class="sm">{{ t('as of','截至') }} {{ r.wb_year }}</div>{% endif %}
+        {%- else %}<span class="sm">{{ t('n/a','无') }}</span>{% endif %}</td>
         <td>{% if r.share_pct is not none %}<span class="num">{{ r.share_pct }}%</span><div class="sharebar"><div class="sf" style="width:{{ r.share_pct }}%"></div></div>{% else %}—{% endif %}</td>
       </tr>
       {% endfor %}
@@ -274,7 +313,7 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
 
   <div class="foot">
     {{ t('Strategic Reserves · built','战略储备 · 生成于') }} {{ built }} · {{ t('data as of','数据截至') }} {{ as_of }}.
-    {{ t('Sources: US SPR — EIA Weekly Petroleum Status Report (live). National crude stocks — JODI-Oil World Database (monthly, total stocks, reconciled to barrels). Strategic-reserve figures — EIA, IEA & national agencies (ISPRL, METI), each dated above. Official gold — World Bank (value & share of reserves, live) + World Gold Council / IMF IFS (tonnes, curated).','数据来源：美国战略储备 — EIA 每周石油状况报告（实时）。各国原油库存 — JODI 石油世界数据库（月度，总库存，已换算为桶）。战略储备数据 — EIA、IEA 及各国机构（ISPRL、METI），均在上表注明日期。官方黄金 — 世界银行（价值与占储备比例，实时）+ 世界黄金协会／IMF IFS（吨位，人工整理）。') }}
+    {{ t('Sources: US SPR — EIA Weekly Petroleum Status Report (live). National crude stocks — JODI-Oil World Database (monthly, total stocks, reconciled to barrels). Strategic-reserve figures — EIA, IEA & national agencies (ISPRL, METI), each dated above. Official gold — World Bank (value & share of reserves, annual) + World Gold Council / IMF IFS (tonnes, curated).','数据来源：美国战略储备 — EIA 每周石油状况报告（实时）。各国原油库存 — JODI 石油世界数据库（月度，总库存，已换算为桶）。战略储备数据 — EIA、IEA 及各国机构（ISPRL、METI），均在上表注明日期。官方黄金 — 世界银行（价值与占储备比例，年度）+ 世界黄金协会／IMF IFS（吨位，人工整理）。') }}
     {{ t('Display-only and never scored — strategic reserves are a policy lever, not a forecasting signal. Not investment advice.','仅供展示，从不计入评分——战略储备是政策杠杆，而非预测信号。非投资建议。') }}
     {{ t('Limitations:','局限性：') }} {{ t('stated on the methodology page.','见方法论页面。') }}
   </div>

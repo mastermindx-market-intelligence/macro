@@ -1,0 +1,109 @@
+{
+  "schema": "critical_minerals_supply.v1",
+  "as_of": "2026-10-19",
+  "generated_at": "2026-10-19T18:30:51Z",
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_escalate": false,
+    "is_context_only": true,
+    "framing": "critical_minerals_supply_context",
+    "rotation_calls": false,
+    "short_calls": false,
+    "fused_obs_z_fence": "SEPARATE_DISPLAY_LEG — never fold into fused_obs_z"
+  },
+  "honesty_header": {
+    "en": "These figures come from the USGS Mineral Commodity Summaries, an annual public report. They are context only. They do not rank, size, or gate any position.",
+    "zh": "这些数字来自美国地质调查局《矿产商品摘要》年度公开报告。仅作背景披露，不用于排名、仓位或门槛。"
+  },
+  "edition": {
+    "year": 2026,
+    "item_id": "696a75d5d4be0228872d3bf8",
+    "published": "2026-02-06"
+  },
+  "coverage_stats": {
+    "commodities_configured": 4,
+    "commodities_with_rows": 4,
+    "parquet_absent": false
+  },
+  "source_note": "USGS Mineral Commodity Summaries via ScienceBase NMIC. Public-domain US Government work. Display-only context. Leading-producer share uses T7 Leading_source_precent_world; top-3 import share sums the three largest named-country shares, excluding Other/其他 rows, sorted by (-pct, name) for ties; China share of world production is China divided by World total from Commodities_Data for the same period.",
+  "commodities": {
+    "rare_earths": {
+      "label_en": "Rare earths",
+      "label_zh": "稀土",
+      "read_en": "China mined about 69% of the world's rare earths in 2025, and the US imported about 67 percent of what it used.",
+      "read_zh": "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。",
+      "nulls": [],
+      "leading_producer": {
+        "country": "China",
+        "share_pct": 69.0,
+        "world_total": 390000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      }
+    },
+    "lithium": {
+      "label_en": "Lithium",
+      "label_zh": "锂",
+      "read_en": "Australia mined about 32% of the world's lithium in 2025, and the US imported more than 50 percent of what it used.",
+      "read_zh": "澳大利亚在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。",
+      "nulls": [],
+      "leading_producer": {
+        "country": "Australia",
+        "share_pct": 32.0,
+        "world_total": 290000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      }
+    },
+    "cobalt": {
+      "label_en": "Cobalt",
+      "label_zh": "钴",
+      "read_en": "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025, and the US imported about 79 percent of what it used.",
+      "read_zh": "刚果（金）在2025年开采了全球约74%的钴，美国进口了其用量的约79%。",
+      "nulls": [],
+      "leading_producer": {
+        "country": "Congo (Kinshasa)",
+        "share_pct": 74.0,
+        "world_total": 310000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      }
+    },
+    "gallium": {
+      "label_en": "Gallium",
+      "label_zh": "镓",
+      "read_en": "China produced about 100% of the world's gallium in 2025, and the US imported about 100 percent of what it used.",
+      "read_zh": "中国在2025年生产了全球约100%的镓，美国进口了其用量的约100%。",
+      "nulls": [],
+      "leading_producer": {
+        "country": "China",
+        "share_pct": 100.0,
+        "world_total": 900.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      }
+    }
+  }
+}

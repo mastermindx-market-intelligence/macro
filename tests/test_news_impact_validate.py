@@ -481,6 +481,8 @@ def test_project_display_r2_over_cap_nulled_never_truncated():
     "Guidance raised." + chr(0x200B) + " Margins steady.",
     "www.example.com",
     "data:text/html,<h1>Quarterly revenue up 10 percent</h1>",  # rule S7
+    "da\tta:text/html,<h1>Quarterly revenue up 10 percent</h1>",  # rule S7, NOTE-A split
+    '<a href="java\tscript:x">Quarterly revenue up 10 percent</a>',  # rule S7, NOTE-A split
 ])
 def test_project_display_r1_any_text_safe_failure_nulled(text):
     event = _w1_with_span(_mint_text("doc_unsafe", text))
@@ -489,6 +491,19 @@ def test_project_display_r1_any_text_safe_failure_nulled(text):
     assert projected["action_span"]["span"]["display_excerpt"] is None
     assert V.validate_event(projected, contract=CONTRACT).ok
     assert event["action_span"]["span"]["display_excerpt"] == text  # input untouched
+
+
+@pytest.mark.parametrize("text", [
+    "Source data\t: Bloomberg",
+    "Key data\n: revenue up 3 percent",
+    "see java\tscript:x after a plain space",
+])
+def test_project_display_keeps_a_benign_tab_or_line_break_excerpt(text):
+    """NOTE-A: a tab or line break in running prose, not right after an opener, begins no URL (rule S7)."""
+    event = _w1_with_span(_mint_text("doc_benign_tab", text))
+    assert V.validate_event(event, contract=CONTRACT).ok
+    projected = V.project_display(event, contract=CONTRACT)
+    assert projected["action_span"]["span"]["display_excerpt"] == text
 
 
 def test_project_display_no_invented_fields():

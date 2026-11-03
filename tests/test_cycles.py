@@ -103,6 +103,85 @@ def test_decline_on_breakdown() -> None:
     assert st["state"] in ("DECLINE", "ROLLING OVER"), st["state"]
 
 
+_FAILED_WHY = (
+    "Failed cycle — price broke below the low that started this cycle. "
+    "How often the larger trend then rolls over has not been measured here."
+)
+_FAILED_WHY_ZH = (
+    "失败周期——价格跌破了启动本周期的低点。"
+    "此后更大趋势掉头向下的频率，本站尚未测算。"
+)
+_OLD_FAILED_WHY = "which historically means the larger trend is rolling over (~80% of cases)."
+_OLD_FAILED_WHY_ZH = "历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）。"
+
+
+def _assert_failed_cycle_why(lad: dict) -> None:
+    """The DECLINE failed-cycle strings name the broken start-low and cite no rate."""
+    why, why_zh = lad["why"], lad["why_zh"]
+    assert "80" not in why and "80" not in why_zh
+    assert "low" in why and "低点" in why_zh
+    assert _FAILED_WHY in why and _FAILED_WHY_ZH in why_zh
+    assert _OLD_FAILED_WHY not in why and _OLD_FAILED_WHY_ZH not in why_zh
+    assert "historically" not in why.lower()
+    assert "约 80" not in why_zh
+
+
+def test_failed_cycle_ladder_why_names_the_low_without_a_rate() -> None:
+    """Drive the failed-cycle DECLINE branch and the sector-page block.
+
+    The ladder path is the below-MA10 snapshot this file already builds, with
+    the failed-cycle flag that branch requires, plus the price break
+    ``test_failed_cycle_flag`` already uses. The old ~80% sentence must fail.
+    """
+    cyc, mtf = _below_ma10_turn_signaled_snapshot()
+    assert cyc["above_ma10"] is False
+    cyc["failed_cycle"] = True
+    lad = ladder_state(cyc, mtf)
+    assert lad["state"] == "DECLINE", lad["state"]
+    assert lad["why"] == _FAILED_WHY
+    assert lad["why_zh"] == _FAILED_WHY_ZH
+    assert lad["next"] == "Stand aside until a new daily cycle low forms and confirms."
+    assert lad["next_zh"] == "观望，直至新的日线周期低点形成并确认。"
+    _assert_failed_cycle_why(lad)
+
+    series = synth_cycles(period=40)
+    series.iloc[-3:] = series.min() * 0.95
+    broken = cycle_state(series)
+    assert broken["failed_cycle"] is True
+    assert broken["above_ma10"] is False
+    lived = ladder_state(broken, mtf_snapshot(series))
+    assert lived["state"] == "DECLINE", lived["state"]
+    _assert_failed_cycle_why(lived)
+
+    src = (Path(__file__).resolve().parent.parent / "templates" / "sector.html.j2").read_text()
+    block = next(line for line in src.splitlines() if "s.cycle.failed_cycle" in line)
+    assert "{% if s.cycle.failed_cycle %}" in block
+    assert '<p class="neg" style="margin:6px 0 0">⚠ ' in block
+    assert "80%" not in block and "约 80" not in block
+    assert ("Failed cycle: price is below the low that started this cycle. "
+            "How often the larger trend then rolls over has not been measured here.") in block
+    assert "周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。" in block
+    assert "historically the larger trend is rolling over" not in block
+
+
+_FAILED_FLAG_PAGES = ("stock", "canada_stock", "china_lookup", "hk_lookup", "intl_stock")
+
+
+def test_failed_cycle_flag_says_what_happened_without_a_frequency() -> None:
+    """The analyzer's red flag sits beside the ladder sentence saying the rollover rate
+    has not been measured, so the flag itself must not claim one, in either language."""
+    templates = Path(__file__).resolve().parent.parent / "templates"
+    for name in _FAILED_FLAG_PAGES:
+        src = (templates / f"{name}.html.j2").read_text(encoding="utf-8")
+        flags = [line for line in src.splitlines() if "failed: '" in line]
+        assert len(flags) == 2, (name, flags)
+        joined = "\n".join(flags)
+        assert "failed: '⚠ Failed cycle — price is below the low that started this cycle.'" in joined, name
+        assert "failed: '⚠ 失败周期 — 价格已跌破启动本周期的低点。'" in joined, name
+        for claim in ("usually", "rolling over", "通常", "转向下行"):
+            assert claim not in joined, (name, claim)
+
+
 def test_signal_age_detects_recent_cross() -> None:
     """A series engineered to flip its state in the last few bars should report
     a small, non-capped age and name the state it switched away from."""
@@ -149,10 +228,76 @@ def test_signal_age_fields_prose() -> None:
     assert fresh["strength"] == "strong" and "+80" in fresh["age_line"]
     today = signal_age_fields("FRESH BUY", 80, {"days": 0, "capped": False,
                                                 "prev_state": None, "date": "2026-06-13"})
-    assert "today" in today["age_line"] and today["age_short"] == "today"
+    assert "13 Jun 2026" in today["age_line"] and "today" not in today["age_line"]
+    assert "2026年6月13日" in today["age_line_zh"] and "今日" not in today["age_line_zh"]
+    assert today["age_short"] == "13 Jun" and today["age_short_zh"] == "6月13日"
     capped = signal_age_fields("RALLY ON", 55, {"days": 45, "capped": True,
                                                 "prev_state": None, "date": None})
     assert "45+" in capped["age_line"] and "established" in capped["age_line"]
+
+
+def test_signal_age_fields_same_day_names_the_session() -> None:
+    """A zero-day line is frozen into the page, so it names the session.
+
+    The line must not say the cross happened today. A missing or unparsable
+    date names the latest session instead. A two-day line is untouched.
+    """
+    hit = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": "TURN SIGNALED",
+         "date": "2026-10-30"})
+    assert hit["age_line"] == (
+        "⏱ BUY ZONE signal triggered on 30 Oct 2026 (fresh cross from BOTTOMING). "
+        "Signal strength: strong (score +80/100).")
+    assert hit["age_line_zh"] == (
+        "⏱ 买入区信号于2026年10月30日刚刚触发（全新交叉，自筑底中翻转）。 "
+        "信号强度：强（评分 +80/100）。")
+    assert "today" not in hit["age_line"]
+    assert "今日" not in hit["age_line_zh"]
+    assert hit["age_short"] == "30 Oct" and hit["age_short_zh"] == "10月30日"
+    assert hit["age_days"] == 0
+
+    bare = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": "2026-06-05"})
+    assert "5 Jun 2026" in bare["age_line"] and "05 Jun" not in bare["age_line"]
+    assert "2026年6月5日" in bare["age_line_zh"]
+    assert "2026年06月" not in bare["age_line_zh"]
+    assert "today" not in bare["age_line"] and "今日" not in bare["age_line_zh"]
+
+    missing = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": None})
+    assert missing["age_line"] == (
+        "⏱ BUY ZONE signal triggered at the latest session (fresh cross). "
+        "Signal strength: strong (score +80/100).")
+    assert missing["age_line_zh"] == (
+        "⏱ 买入区信号于最新交易日刚刚触发（全新交叉）。 "
+        "信号强度：强（评分 +80/100）。")
+    assert "today" not in missing["age_line"] and "今日" not in missing["age_line_zh"]
+    assert missing["age_short"] == "latest session"
+    assert missing["age_short_zh"] == "最新交易日"
+
+    junk = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 0, "capped": False, "prev_state": None, "date": "today"})
+    assert "at the latest session" in junk["age_line"]
+    assert "于最新交易日" in junk["age_line_zh"]
+    assert "today" not in junk["age_line"] and "今日" not in junk["age_line_zh"]
+    assert junk["age_short"] == "latest session"
+
+    two = signal_age_fields(
+        "FRESH BUY", 80,
+        {"days": 2, "capped": False, "prev_state": "TURN SIGNALED",
+         "date": "2026-06-05"})
+    assert two["age_line"] == (
+        "⏱ BUY ZONE signal triggered 2 trading days ago (~2026-06-05), "
+        "switching from BOTTOMING. Signal strength: strong (score +80/100).")
+    assert two["age_line_zh"] == (
+        "⏱ 买入区信号于 2 个交易日前触发（约 2026-06-05），自筑底中切换而来。 "
+        "信号强度：强（评分 +80/100）。")
+    assert two["age_short"] == "2d ago" and two["age_short_zh"] == "2天前"
+    assert two["age_days"] == 2
 
 
 def test_analyze_attaches_age() -> None:
@@ -797,8 +942,11 @@ def test_below_ma10_no_3d_key_does_not_gate_on_curl() -> None:
 if __name__ == "__main__":
     for fn in [test_trough_spacing, test_translation_right, test_translation_left,
                test_failed_cycle_flag, test_ladder_states_sane, test_decline_on_breakdown,
+               test_failed_cycle_ladder_why_names_the_low_without_a_rate,
+               test_failed_cycle_flag_says_what_happened_without_a_frequency,
                test_signal_age_detects_recent_cross, test_signal_age_contract_holds,
                test_signal_age_thin_history, test_signal_age_fields_prose,
+               test_signal_age_fields_same_day_names_the_session,
                test_analyze_attaches_age, test_eq_proximity_peaks_near_the_low,
                test_eq_grade_bands, test_eq_sign_anchored_to_state,
                test_eq_every_state_classified, test_eq_thin_history_bows_out,

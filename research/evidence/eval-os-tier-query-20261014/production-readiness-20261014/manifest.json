@@ -1,0 +1,31 @@
+{
+  "purpose": "Pre-release normal-updater readiness; not A1 deployment or final binding",
+  "records": [
+    {
+      "file": "normal-updater-readiness-20261014-1631.json",
+      "sha256": "bae699a48f46773b7a1e6e5351e14e87db82c1377bc9346991a59710068278cf",
+      "bytes": 1109
+    },
+    {
+      "file": "normal-updater-dirty-path-census-20261014-1631.json",
+      "sha256": "1d73d6981f3df597078cce93102dc76782aa2305e7d87c6c502a1c9f4cc49571",
+      "bytes": 537
+    },
+    {
+      "file": "normal-updater-source-parity-20261014-1632.json",
+      "sha256": "0dc44a41f7d80e15c441a557e55a305992a13a83d8347a62ce54f781cae8ffdd",
+      "bytes": 446
+    },
+    {
+      "file": "browser-readiness-recovery-20261014.json",
+      "sha256": "a5980eadec7d90cdba61bfaf576d7fb1975e46d14dbb71321cb39976e2ab7b68",
+      "bytes": 1541
+    },
+    {
+      "file": "normal-owner-verification-contract-20261014.json",
+      "sha256": "6405422f8cfdfdc7304e211f8e0ec7e23f849de2a667ebfbe31165495efd00f7",
+      "bytes": 3310
+    }
+  ],
+  "production_proven": false
+}
