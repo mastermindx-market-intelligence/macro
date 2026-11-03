@@ -21092,6 +21092,12 @@ jobs:
       # (pytest is the whole closure here — the suite imports only re/pathlib).
       - name: design-system foundations (site type ramp at :root + shared .mx-* primitives)
         run: python -m pytest tests/test_design_system_foundations.py -q
+      # Chairman rule 2026-10-18 (docs/DESIGN_DOCTRINE.md §3): no colored container
+      # edge stripe. Static scan of templates/theme.css, dashboard.html.j2 and
+      # intraday_flow.html.j2 (pseudo bars, inset stripes, shrink-only rail ratchet).
+      # Same job because templates/theme.css is its subject; imports only re/pathlib.
+      - name: container edge-stripe guard (no pseudo bars / inset stripes; rail ratchet)
+        run: python -m pytest tests/test_container_edge_stripes.py -q
 
   data-base-shim:
     if: ${{ false }}
