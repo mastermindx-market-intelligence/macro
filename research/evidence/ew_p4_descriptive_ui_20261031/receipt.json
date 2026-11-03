@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "915af4624daf28c25ce08bb17270918d035cbbd2",
+  "source_revision": "5370b9f51740fe87d25da33d46552cd33b628596",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,15 +1992,44 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The repository browser probe ran on this source revision. All 68 screenshots and the five contact sheets match the preceding capture byte for byte. Each listed input matched the working tree at capture.",
+    "note": "All 68 screenshots and five contact sheets were genuinely regenerated with the canonical tests/probe_ew_p4_descriptive_ui_browser.py at source_revision, in local anonymous synthetic Playwright contexts. The render inputs below were checked against the committed source before and after capture. The pending evidence-only commit retains those exact blobs. Prophet includes newly consumed by the dashboard are bound explicitly. This is not production or authenticated product acceptance.",
     "pr_branch": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
-    "pr_parent_of_evidence_commit": "915af4624daf28c25ce08bb17270918d035cbbd2",
-    "all_equal": true,
+    "pr_parent_of_evidence_commit": "5370b9f51740fe87d25da33d46552cd33b628596",
     "render_files": [
       {
         "path": "site/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "equal": true
+      },
+      {
+        "path": "site/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "site/si_workspace.js",
+        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "equal": true
+      },
+      {
+        "path": "site/theme.css",
+        "blob_at_source_revision": "e15b8b432f7157ef025d7b0064ee2330b49b9a3b",
+        "blob_on_pr_branch": "e15b8b432f7157ef025d7b0064ee2330b49b9a3b",
+        "equal": true
+      },
+      {
+        "path": "templates/_prophet_opportunity_card.html.j2",
+        "blob_at_source_revision": "471edb16457dcbdb8bcf56f5219380e729a4e336",
+        "blob_on_pr_branch": "471edb16457dcbdb8bcf56f5219380e729a4e336",
+        "equal": true
+      },
+      {
+        "path": "templates/_prophet_page.css.j2",
+        "blob_at_source_revision": "f73b33b9dcae329f0c97ae7ee5e82aebdcb7638a",
+        "blob_on_pr_branch": "f73b33b9dcae329f0c97ae7ee5e82aebdcb7638a",
         "equal": true
       },
       {
@@ -2016,9 +2045,45 @@
         "equal": true
       },
       {
+        "path": "templates/_risk_radar_workspace.html.j2",
+        "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "equal": true
+      },
+      {
+        "path": "templates/dashboard.html.j2",
+        "blob_at_source_revision": "65375f83e2812252f3dc64594c63fdc3d984af83",
+        "blob_on_pr_branch": "65375f83e2812252f3dc64594c63fdc3d984af83",
+        "equal": true
+      },
+      {
         "path": "templates/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
+        "equal": true
+      },
+      {
+        "path": "templates/rotation_glance.css",
+        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
+        "equal": true
+      },
+      {
+        "path": "templates/sector_central.html.j2",
+        "blob_at_source_revision": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
+        "blob_on_pr_branch": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
+        "equal": true
+      },
+      {
+        "path": "templates/si_workspace.js",
+        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+        "equal": true
+      },
+      {
+        "path": "templates/theme.css",
+        "blob_at_source_revision": "e15b8b432f7157ef025d7b0064ee2330b49b9a3b",
+        "blob_on_pr_branch": "e15b8b432f7157ef025d7b0064ee2330b49b9a3b",
         "equal": true
       },
       {
@@ -2052,6 +2117,18 @@
         "equal": true
       },
       {
+        "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
+        "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
+        "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+        "equal": true
+      },
+      {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
         "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
         "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
@@ -2061,6 +2138,12 @@
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
         "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
         "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
+        "equal": true
+      },
+      {
+        "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
+        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
         "equal": true
       },
       {
@@ -2110,84 +2193,13 @@
         "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
         "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
         "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
-        "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
-        "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "equal": true
-      },
-      {
-        "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
-        "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "equal": true
-      },
-      {
-        "path": "templates/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
-      },
-      {
-        "path": "site/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
-      },
-      {
-        "path": "templates/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
-      },
-      {
-        "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "65375f83e2812252f3dc64594c63fdc3d984af83",
-        "blob_on_pr_branch": "65375f83e2812252f3dc64594c63fdc3d984af83",
-        "equal": true
-      },
-      {
-        "path": "templates/_risk_radar_workspace.html.j2",
-        "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "equal": true
-      },
-      {
-        "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
-        "blob_on_pr_branch": "2f02586b5177d1cc1bdba0a2dd9c105480bdd9bb",
-        "equal": true
-      },
-      {
-        "path": "templates/si_workspace.js",
-        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "equal": true
-      },
-      {
-        "path": "site/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
-      },
-      {
-        "path": "site/si_workspace.js",
-        "blob_at_source_revision": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
-        "equal": true
       }
-    ]
+    ],
+    "all_equal": true
   },
   "previous_capture": {
-    "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
-    "receipt_git_blob": "99dfdfcecf535dd17d4e8e307da03a9dd0fb19ac",
-    "receipt_sha256": "69a25cfabc3448c2302b2cbfb3c303cd9f601935eeb911c6390940fa0ada7729"
+    "source_revision": "915af4624daf28c25ce08bb17270918d035cbbd2",
+    "receipt_git_blob": "8b5a92d64755b09abfc2e4fc8704b2c62ce185d2",
+    "receipt_sha256": "cdf80473f7dd29be21a9e8de7997d27247c568593fdf1cd8846e3a00c6c0c3e6"
   }
 }

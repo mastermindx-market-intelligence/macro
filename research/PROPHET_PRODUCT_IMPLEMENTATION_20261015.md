@@ -4,6 +4,14 @@ Status: active implementation specification; no design acceptance or release cla
 Commission: Chris's rejection of the deployed replacement cards and request for the complete Paper-informed Prophet system. Original root/parent: 01a11e89-b35d-7a81-9404-5fce2c6170cb.
 Canonical programme: macro#6817/comment6107291350. This specification refines the existing R6 mission; it does not replace its research, source, or scientific contracts.
 
+## Verified design and native build continuation — 3 November 2026
+
+The established Prophet Paper page p-C-0 now has three completed native R8 artboards: 1440 light English YW1-0, 390 light English ZRL-0, and 390 dark Chinese 1092-0. Native screenshots, JSX and an independent visual review are recorded at mockups/evidence/prophet-opportunity-workspace/full-page-20261103/paper-r8/. Dark desktop ZE5-0 has an unresolved original palette edit and is held.
+
+The incumbent source is at local 5370b9f51740fe87d25da33d46552cd33b628596. A full four-module native build at 39dca322 and two exact CSS-only asset follow-ups have generated its final public and protected files. Browser evidence at the final SHA covers 16 responsive state combinations, 16 canonical two-page manifest cells, 53/53 navigation checks, six unforced CLS measurements, twelve public/protected publication checks, and 68 EW screenshots with 163 passing tests and one skip. The product's first mobile card remains below the initial viewport and the session strip produces measurable shift; these are remaining UX issues, not a signed-off R8 replacement.
+
+Original Fabric run prophet-page-revamp-20261102-ux-refinement has EFFECT_UNKNOWN and may overlap native page/assistant/Turn Setups scope. Its effect must be reconciled before overlapping changes or re-dispatch. The current PR is #9495; source commits remain local until push validation. A separate eligible operator owns protected release; this account is excluded. Anonymous offline checks do not satisfy signed-in Sources to Plan to same-candidate return proof.
+
 ## Current full-page continuation — 2 November 2026
 
 Chris has explicitly commissioned a full Paper redesign and production replacement of

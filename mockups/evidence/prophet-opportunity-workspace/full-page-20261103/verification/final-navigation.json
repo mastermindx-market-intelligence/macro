@@ -1,0 +1,2269 @@
+{
+  "source_head": "5370b9f51740fe87d25da33d46552cd33b628596",
+  "completed_at": 1793682598.587376,
+  "html_sha256": {
+    "us_stocks.html": "12da851f12dea2570ec24291cbc59a513bd1fcb32ee82c964875dfbd9c5447af",
+    "chat.html": "bb755ece46f49c9c0331383a2b46fe1177a9c7e793c847d4a53dffa7c61fb506",
+    "vector.html": "f8b546f9d47f4100c25285fe07e762a42ad1a9e3e702d9133c375bc99dd39e65"
+  },
+  "scope": "Offline anonymous native publication paths. No account preference or authenticated entitlement acceptance. Controlled short-inventory cases test layout geometry only.",
+  "results": [
+    {
+      "case": "native-768",
+      "scope": "Native anonymous inventory, no DOM changes",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 768
+        },
+        {
+          "name": "tablet search fills navigation",
+          "passed": true,
+          "details": {
+            "x": 16,
+            "y": 85,
+            "width": 736,
+            "height": 40,
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        },
+        {
+          "name": "search accepts input",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "search advertises expanded",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape closes search",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape restores trigger focus",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "mobile menu opens",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "mobile menu closes",
+          "passed": true,
+          "details": null
+        }
+      ],
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 36,
+          "width": 736,
+          "height": 89,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 85,
+          "width": 736,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 596.640625,
+          "y": 36,
+          "width": 155.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "\n      \n        \n          \n            \n            \n      ",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      United States美国 ▾\n      United States美国Macro context,",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      China中国 ▾\n      China中国A-shares, policy, capital flow",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      Hong Kong香港 ▾\n      Hong Kong香港HSI context, southboun",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      Canada加拿大 ▾\n      Canada加拿大TSX context, commodity sen",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      International国际 ▾\n      International国际Compare major ",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      Other Assets其他资产 ▾\n      Other Assets其他资产Digital asse",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "\n      Research研究 ▾\n      \n        \n          \n            C",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "0.45"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "native-1000",
+      "scope": "Native anonymous inventory, no DOM changes",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1000
+        },
+        {
+          "name": "search accepts input",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "search advertises expanded",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape closes search",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape restores trigger focus",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "short inventory chooses one row",
+          "passed": true,
+          "details": "single"
+        },
+        {
+          "name": "short inventory restores wordmark",
+          "passed": true,
+          "details": {
+            "x": 57,
+            "y": 50.25,
+            "width": 117.109375,
+            "height": 13.5,
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        },
+        {
+          "name": "short inventory stays within viewport",
+          "passed": true,
+          "details": null
+        }
+      ],
+      "metrics": {
+        "viewport": 1000,
+        "documentWidth": 1000,
+        "layout": "stacked",
+        "nav": {
+          "x": 16,
+          "y": 36,
+          "width": 968,
+          "height": 90,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 688.640625,
+          "y": 86,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 826.640625,
+          "y": 86,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 39.5,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 66,
+              "y": 36,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 206.84375,
+              "y": 36,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 301.09375,
+              "y": 36,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 426.921875,
+              "y": 36,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 532.21875,
+              "y": 36,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 667,
+              "y": 36,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 804.234375,
+              "y": 36,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "controlled_short_inventory": {
+        "viewport": 1000,
+        "documentWidth": 1000,
+        "layout": "single",
+        "nav": {
+          "x": 16,
+          "y": 36,
+          "width": 968,
+          "height": 42,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 688.640625,
+          "y": 37,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 826.640625,
+          "y": 37,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 57,
+          "y": 50.25,
+          "width": 117.109375,
+          "height": 13.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "MASTERMINDX",
+            "rect": {
+              "x": 16,
+              "y": 39.5,
+              "width": 168.109375,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 192.109375,
+              "y": 36,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "native-1100",
+      "scope": "Native anonymous inventory, no DOM changes",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1100
+        },
+        {
+          "name": "search accepts input",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "search advertises expanded",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape closes search",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape restores trigger focus",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "short inventory chooses one row",
+          "passed": true,
+          "details": "single"
+        },
+        {
+          "name": "short inventory restores wordmark",
+          "passed": true,
+          "details": {
+            "x": 57,
+            "y": 58.25,
+            "width": 117.109375,
+            "height": 13.5,
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        },
+        {
+          "name": "short inventory stays within viewport",
+          "passed": true,
+          "details": null
+        }
+      ],
+      "metrics": {
+        "viewport": 1100,
+        "documentWidth": 1100,
+        "layout": "stacked",
+        "nav": {
+          "x": 16,
+          "y": 44,
+          "width": 1068,
+          "height": 90,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 788.640625,
+          "y": 94,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 926.640625,
+          "y": 94,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 47.5,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 66,
+              "y": 44,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 206.84375,
+              "y": 44,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 301.09375,
+              "y": 44,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 426.921875,
+              "y": 44,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 532.21875,
+              "y": 44,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 667,
+              "y": 44,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 804.234375,
+              "y": 44,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "controlled_short_inventory": {
+        "viewport": 1100,
+        "documentWidth": 1100,
+        "layout": "single",
+        "nav": {
+          "x": 16,
+          "y": 44,
+          "width": 1068,
+          "height": 42,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 788.640625,
+          "y": 45,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 926.640625,
+          "y": 45,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 57,
+          "y": 58.25,
+          "width": 117.109375,
+          "height": 13.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "MASTERMINDX",
+            "rect": {
+              "x": 16,
+              "y": 47.5,
+              "width": 168.109375,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 192.109375,
+              "y": 44,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "native-1101",
+      "scope": "Native anonymous inventory, no DOM changes",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1101
+        },
+        {
+          "name": "search accepts input",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "search advertises expanded",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape closes search",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape restores trigger focus",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "short inventory chooses one row",
+          "passed": true,
+          "details": "single"
+        },
+        {
+          "name": "short inventory restores wordmark",
+          "passed": true,
+          "details": {
+            "x": 57,
+            "y": 58.25,
+            "width": 117.109375,
+            "height": 13.5,
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        },
+        {
+          "name": "short inventory stays within viewport",
+          "passed": true,
+          "details": null
+        }
+      ],
+      "metrics": {
+        "viewport": 1101,
+        "documentWidth": 1101,
+        "layout": "stacked",
+        "nav": {
+          "x": 16,
+          "y": 44,
+          "width": 1069,
+          "height": 90,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 789.640625,
+          "y": 94,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 927.640625,
+          "y": 94,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 57,
+          "y": 58.25,
+          "width": 117.109375,
+          "height": 13.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "MASTERMINDX",
+            "rect": {
+              "x": 16,
+              "y": 47.5,
+              "width": 168.109375,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 192.109375,
+              "y": 44,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 333.953125,
+              "y": 44,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 429.203125,
+              "y": 44,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 556.03125,
+              "y": 44,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 662.328125,
+              "y": 44,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 798.109375,
+              "y": 44,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 936.34375,
+              "y": 44,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "controlled_short_inventory": {
+        "viewport": 1101,
+        "documentWidth": 1101,
+        "layout": "single",
+        "nav": {
+          "x": 16,
+          "y": 44,
+          "width": 1069,
+          "height": 42,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 789.640625,
+          "y": 45,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 927.640625,
+          "y": 45,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 57,
+          "y": 58.25,
+          "width": 117.109375,
+          "height": 13.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "MASTERMINDX",
+            "rect": {
+              "x": 16,
+              "y": 47.5,
+              "width": 168.109375,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 192.109375,
+              "y": 44,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "native-1440",
+      "scope": "Native anonymous inventory, no DOM changes",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1440
+        },
+        {
+          "name": "search accepts input",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "search advertises expanded",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape closes search",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Escape restores trigger focus",
+          "passed": true,
+          "details": null
+        }
+      ],
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "layout": "single",
+        "nav": {
+          "x": 16,
+          "y": 44,
+          "width": 1408,
+          "height": 42,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 1128.640625,
+          "y": 45,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 1266.640625,
+          "y": 45,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 57,
+          "y": 58.25,
+          "width": 117.109375,
+          "height": 13.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "MASTERMINDX",
+            "rect": {
+              "x": 16,
+              "y": 47.5,
+              "width": 168.109375,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 192.109375,
+              "y": 44,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 333.953125,
+              "y": 44,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 429.203125,
+              "y": 44,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 556.03125,
+              "y": 44,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 662.328125,
+              "y": 44,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 798.109375,
+              "y": 44,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 936.34375,
+              "y": 44,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "no-js-us_stocks-390",
+      "scope": "Native emitted HTML with browser JavaScript disabled",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 390
+        },
+        {
+          "name": "market inventory displayed",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Stock Dashboard reachable by Tab",
+          "passed": true,
+          "details": {
+            "tag": "A",
+            "href": "us_stocks.html",
+            "text": "Stock Dashboard",
+            "visible": true
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 36,
+          "width": 358,
+          "height": 6315.96875,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 84,
+          "width": 358,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 117.515625,
+          "y": 36,
+          "width": 256.484375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 132,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾\nMacro Dashboard\nStock Dashboard\nIntraday Flo",
+            "rect": {
+              "x": 16,
+              "y": 170,
+              "width": 358,
+              "height": 971,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾\nMacro Dashboard\nStock Dashboard\nSector Intelligence\n",
+            "rect": {
+              "x": 16,
+              "y": 1144,
+              "width": 358,
+              "height": 1091,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾\nMacro Dashboard\nStock Dashboard\nMarket Heatmap\nC",
+            "rect": {
+              "x": 16,
+              "y": 2238,
+              "width": 358,
+              "height": 414,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾\nMacro Dashboard\nStock Dashboard\nMarket Heatmap\nThem",
+            "rect": {
+              "x": 16,
+              "y": 2655,
+              "width": 358,
+              "height": 354,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾\nMacro Dashboard\n🌐 Country Dashboards\n▸\n🇯🇵",
+            "rect": {
+              "x": 16,
+              "y": 3012,
+              "width": 358,
+              "height": 535.5,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾\nCommodities\n▸\nCommodity Dashboard\nStrategies\n",
+            "rect": {
+              "x": 16,
+              "y": 3550.5,
+              "width": 358,
+              "height": 431,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾\nCORE RESEARCH\nIntelligence Hub\nYour complete mark",
+            "rect": {
+              "x": 16,
+              "y": 3984.5,
+              "width": 358,
+              "height": 2367.46875,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "keyboard_path": [
+        {
+          "tag": "A",
+          "href": "start.html",
+          "text": "",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "United States\n▾",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "Macro Dashboard",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "us_stocks.html",
+          "text": "Stock Dashboard",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "case": "no-js-us_stocks-1000",
+      "scope": "Native emitted HTML with browser JavaScript disabled",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1000
+        },
+        {
+          "name": "market inventory displayed",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Stock Dashboard reachable by Tab",
+          "passed": true,
+          "details": {
+            "tag": "A",
+            "href": "us_stocks.html",
+            "text": "Stock Dashboard\nProphet · sectors · flows",
+            "visible": true
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 1000,
+        "documentWidth": 1000,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 36,
+          "width": 968,
+          "height": 87.5,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 86,
+          "width": 480,
+          "height": 37.5,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 718.6875,
+          "y": 87.75,
+          "width": 265.3125,
+          "height": 34,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 39.5,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 66,
+              "y": 36,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 206.84375,
+              "y": 36,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 301.09375,
+              "y": 36,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 426.921875,
+              "y": 36,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 532.21875,
+              "y": 36,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 667,
+              "y": 36,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 804.234375,
+              "y": 36,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "keyboard_path": [
+        {
+          "tag": "A",
+          "href": "start.html",
+          "text": "",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "United States\n▾",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "Macro Dashboard\nRegime · growth · inflation · nowcast",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "us_stocks.html",
+          "text": "Stock Dashboard\nProphet · sectors · flows",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "case": "no-js-chat-390",
+      "scope": "Native emitted HTML with browser JavaScript disabled",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 390
+        },
+        {
+          "name": "market inventory displayed",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Stock Dashboard reachable by Tab",
+          "passed": true,
+          "details": {
+            "tag": "A",
+            "href": "us_stocks.html",
+            "text": "Stock Dashboard",
+            "visible": true
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 42,
+          "width": 358,
+          "height": 6326.46875,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 90,
+          "width": 358,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 117.515625,
+          "y": 42,
+          "width": 256.484375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 138,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾\nMacro Dashboard\nStock Dashboard\nIntraday Flo",
+            "rect": {
+              "x": 16,
+              "y": 176,
+              "width": 358,
+              "height": 971,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾\nMacro Dashboard\nStock Dashboard\nSector Intelligence\n",
+            "rect": {
+              "x": 16,
+              "y": 1150,
+              "width": 358,
+              "height": 1091,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾\nMacro Dashboard\nStock Dashboard\nMarket Heatmap\nC",
+            "rect": {
+              "x": 16,
+              "y": 2244,
+              "width": 358,
+              "height": 414,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾\nMacro Dashboard\nStock Dashboard\nMarket Heatmap\nThem",
+            "rect": {
+              "x": 16,
+              "y": 2661,
+              "width": 358,
+              "height": 354,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾\nMacro Dashboard\n🌐 Country Dashboards\n▸\n🇯🇵",
+            "rect": {
+              "x": 16,
+              "y": 3018,
+              "width": 358,
+              "height": 546,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾\nCommodities\n▸\nCommodity Dashboard\nStrategies\n",
+            "rect": {
+              "x": 16,
+              "y": 3567,
+              "width": 358,
+              "height": 431,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾\nCORE RESEARCH\nIntelligence Hub\nYour complete mark",
+            "rect": {
+              "x": 16,
+              "y": 4001,
+              "width": 358,
+              "height": 2367.46875,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "keyboard_path": [
+        {
+          "tag": "A",
+          "href": "start.html",
+          "text": "",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "United States\n▾",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "Macro Dashboard",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "us_stocks.html",
+          "text": "Stock Dashboard",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "case": "no-js-chat-1000",
+      "scope": "Native emitted HTML with browser JavaScript disabled",
+      "checks": [
+        {
+          "name": "no page overflow",
+          "passed": true,
+          "details": 1000
+        },
+        {
+          "name": "market inventory displayed",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "Stock Dashboard reachable by Tab",
+          "passed": true,
+          "details": {
+            "tag": "A",
+            "href": "us_stocks.html",
+            "text": "Stock Dashboard\nProphet · sectors · flows",
+            "visible": true
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 1000,
+        "documentWidth": 1000,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 42,
+          "width": 968,
+          "height": 84,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 92,
+          "width": 480,
+          "height": 34,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 718.6875,
+          "y": 92,
+          "width": 265.3125,
+          "height": 34,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 45.5,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 66,
+              "y": 42,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 206.84375,
+              "y": 42,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 301.09375,
+              "y": 42,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 426.921875,
+              "y": 42,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 532.21875,
+              "y": 42,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 667,
+              "y": 42,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 804.234375,
+              "y": 42,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      },
+      "keyboard_path": [
+        {
+          "tag": "A",
+          "href": "start.html",
+          "text": "",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "United States\n▾",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "macro.html",
+          "text": "Macro Dashboard\nRegime · growth · inflation · nowcast",
+          "visible": true
+        },
+        {
+          "tag": "A",
+          "href": "us_stocks.html",
+          "text": "Stock Dashboard\nProphet · sectors · flows",
+          "visible": true
+        }
+      ]
+    },
+    {
+      "case": "vector-390",
+      "scope": "Self-contained vector family, native enhancement",
+      "checks": [
+        {
+          "name": "navigation exists",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "navigation stays within viewport",
+          "passed": true,
+          "details": {
+            "x": 16,
+            "y": 42,
+            "width": 358,
+            "height": 88,
+            "display": "flex",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "layout": null,
+        "nav": {
+          "x": 16,
+          "y": 42,
+          "width": 358,
+          "height": 88,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 16,
+          "y": 90,
+          "width": 358,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 227.3125,
+          "y": 42,
+          "width": 146.6875,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "                      MASTERMINDX ",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " United States美国 ▾ United States美国Macro context, stocks, sec",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " China中国 ▾ China中国A-shares, policy, capital flows and fast-m",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " Hong Kong香港 ▾ Hong Kong香港HSI context, southbound flows and ",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " Canada加拿大 ▾ Canada加拿大TSX context, commodity sensitivity and",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " International国际 ▾ International国际Compare major markets, glo",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " Other Assets其他资产 ▾ Other Assets其他资产Digital assets, commodit",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": " Research研究 ▾    Core Research核心研究  Intelligence Hub情报中心Your",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "block",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "0.45"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "vector-1000",
+      "scope": "Self-contained vector family, native enhancement",
+      "checks": [
+        {
+          "name": "navigation exists",
+          "passed": true,
+          "details": null
+        },
+        {
+          "name": "navigation stays within viewport",
+          "passed": true,
+          "details": {
+            "x": 16,
+            "y": 42,
+            "width": 968,
+            "height": 90,
+            "display": "grid",
+            "visibility": "visible",
+            "opacity": "1"
+          }
+        }
+      ],
+      "metrics": {
+        "viewport": 1000,
+        "documentWidth": 1000,
+        "layout": "stacked",
+        "nav": {
+          "x": 16,
+          "y": 42,
+          "width": 968,
+          "height": 90,
+          "display": "grid",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "search": {
+          "x": 688.640625,
+          "y": 92,
+          "width": 128,
+          "height": 40,
+          "display": "block",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "controls": {
+          "x": 826.640625,
+          "y": 92,
+          "width": 157.359375,
+          "height": 40,
+          "display": "flex",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "wordmark": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "display": "none",
+          "visibility": "visible",
+          "opacity": "1"
+        },
+        "links": [
+          {
+            "text": "",
+            "rect": {
+              "x": 16,
+              "y": 45.5,
+              "width": 43,
+              "height": 35,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "United States\n▾",
+            "rect": {
+              "x": 66,
+              "y": 42,
+              "width": 139.84375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "China\n▾",
+            "rect": {
+              "x": 206.84375,
+              "y": 42,
+              "width": 93.25,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Hong Kong\n▾",
+            "rect": {
+              "x": 301.09375,
+              "y": 42,
+              "width": 124.828125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Canada\n▾",
+            "rect": {
+              "x": 426.921875,
+              "y": 42,
+              "width": 104.296875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "International\n▾",
+            "rect": {
+              "x": 532.21875,
+              "y": 42,
+              "width": 133.78125,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Other Assets\n▾",
+            "rect": {
+              "x": 667,
+              "y": 42,
+              "width": 136.234375,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          },
+          {
+            "text": "Research\n▾",
+            "rect": {
+              "x": 804.234375,
+              "y": 42,
+              "width": 114.421875,
+              "height": 42,
+              "display": "flex",
+              "visibility": "visible",
+              "opacity": "1"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
