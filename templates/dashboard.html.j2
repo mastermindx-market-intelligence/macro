@@ -11828,7 +11828,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _shv5_cold = (sector_heat.get('cooling') or [])[:3] %}
     {% set _sh_hot_n = (sector_heat.get('leaders') or []) | length %}
     {% set _sh_pos = sector_heat.get('positive_hot') %}
-    {% if _sh_hot_n > 0 %}
+    {% if sector_heat.get('snapshot_state') == 'invalid' %}
+      {% set _sh_stance_en = "Theme observation date is unverified — current leadership unavailable." %}
+      {% set _sh_stance_zh = "主题观测日期未核验——当前领涨信息不可用。" %}
+    {% elif sector_heat.get('snapshot_state') == 'stale' %}
+      {% set _sh_stance_en = "Last recorded theme leadership only — daily update pending." %}
+      {% set _sh_stance_zh = "仅供回看上次主题领涨记录——等待当日数据更新。" %}
+    {% elif _sh_hot_n > 0 %}
       {% set _sh_stance_en = "Established theme leadership is active — separate from new acceleration." %}
       {% set _sh_stance_zh = "主题领涨态势持续，需与新近加速区分。" %}
     {% elif _shv5_accel %}
@@ -11857,7 +11863,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% endif %}
     {% if _sh_pos %}
     <div class="mx5-sector-row">
-      <div class="mx5-sector-sub-label"><span class="l-en">Positive theme rating</span><span class="l-zh">积极主题评级</span></div>
+      <div class="mx5-sector-sub-label">
+        {% if sector_heat.get('snapshot_state') == 'stale' %}
+        <span class="l-en">Dated theme rating</span><span class="l-zh">历史主题评级</span>
+        {% else %}
+        <span class="l-en">Positive theme rating</span><span class="l-zh">积极主题评级</span>
+        {% endif %}
+      </div>
       <div class="mx5-sector-chips">
         <span class="mx5-sector-chip hot">
           <span class="l-en">{{ _sh_pos.get('name','') }} · {{ _sh_pos.get('reco','')|capitalize }}</span>
@@ -15347,6 +15359,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="l-en">Established leaders and newly accelerating themes are different signals. These are nightly relative-strength and theme-rating observations, not measured fund flows or stock entry calls.</span>
           <span class="l-zh">持续领涨与新近加速是不同信号。本页显示夜间相对强弱与主题评级，并非实测资金流或个股入场指令。</span>
         </div>
+        {% if sector_heat.get('snapshot_state') == 'invalid' %}
+        <div class="sct-history-note" role="status">
+          <span class="l-en">Theme snapshot clock is invalid or unverified. Displayed rows cannot be treated as current leadership or entry guidance.</span>
+          <span class="l-zh">主题快照时间无效或未经核验。所示记录不能作为当前领涨或入场依据。</span>
+        </div>
+        {% elif sector_heat.get('snapshot_state') == 'stale' %}
+        <div class="sct-history-note" role="status">
+          <span class="l-en">Outdated theme snapshot ({{ sector_heat.get('as_of') or 'date unavailable' }}). Rankings and ratings below are historical observations, not today's leadership or entry instructions.</span>
+          <span class="l-zh">主题快照已过期（{{ sector_heat.get('as_of') or '日期不可用' }}）。以下排名及评级仅为历史观察，不代表今日领涨或个股入场指令。</span>
+        </div>
+        {% endif %}
         {% if _sh_expected5 and _sh_observed5 != _sh_expected5 %}
         <div class="sct-history-note" role="status">
           <span class="l-en">5-session comparison unavailable: the {{ _sh_expected5 }} observation is missing. Current rankings remain valid for {{ sector_heat.as_of }}; missing movement is not zero.</span>

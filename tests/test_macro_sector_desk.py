@@ -298,11 +298,22 @@ def _temperature_snapshot():
     }
 
 
-def _temperature_view(monkeypatch, payload):
+def _temperature_view(monkeypatch, payload, *, observed_at=None):
     from engine import sector_pulse
+    from lib import sector_desk_view
     from scripts import build_site
 
+    # Deterministic NYSE freshness for this October snapshot. The older desk
+    # tests in this module deliberately pin a September clock instead.
+    stamp = observed_at or datetime(2026, 11, 2, 23, 0, tzinfo=timezone.utc)
+
+    class SourceClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return stamp.astimezone(tz or timezone.utc)
+
     before = deepcopy(payload)
+    monkeypatch.setattr(sector_desk_view, "datetime", SourceClock)
     monkeypatch.setattr(sector_pulse, "build_pulse", lambda region: payload)
     view = build_site._sector_heat_view()
     assert payload == before  # read-only projection
@@ -409,3 +420,46 @@ def test_mobile_layout_gives_missing_history_a_separate_row():
     assert ".sct-trace{grid-column:2 / 4;grid-row:2;width:100%;height:24px;}" in sector_styles
     assert ".sct-body{grid-column:2;grid-row:1;}" in sector_styles
     assert ".sct-trace-na{min-height:20px;justify-content:flex-start;text-align:left;}" in sector_styles
+
+def test_theme_freshness_reuses_completed_nyse_sessions(monkeypatch):
+    # Friday's finished snapshot is still the most recent available Monday evening.
+    view = _temperature_view(monkeypatch, _temperature_snapshot())
+    assert view["snapshot_state"] == "current"
+    assert view["sessions_behind"] == 1
+    doc = _temperature_render(view)
+    assert "Established theme leadership is active" in doc.select_one("#sx-v5-sector").get_text(" ", strip=True)
+    assert "Outdated theme snapshot" not in doc.select_one("#dlg-sector").get_text(" ", strip=True)
+
+
+def test_stale_theme_snapshot_is_historical_not_current_recommendation(monkeypatch):
+    view = _temperature_view(
+        monkeypatch, _temperature_snapshot(),
+        observed_at=datetime(2026, 11, 5, 23, tzinfo=timezone.utc),
+    )
+    assert view["snapshot_state"] == "stale"
+    assert view["sessions_behind"] > 1
+    assert view["positive_hot"]["id"] == "consumer_staples"
+    doc = _temperature_render(view)
+    face = doc.select_one("#sx-v5-sector").get_text(" ", strip=True)
+    modal = doc.select_one("#dlg-sector").get_text(" ", strip=True)
+    assert "Last recorded theme leadership only" in face
+    assert "Dated theme rating" in face
+    assert "Established theme leadership is active" not in face
+    assert "Outdated theme snapshot (2026-10-30)" in modal
+    assert "not today's leadership or entry instructions" in modal
+    assert "Theme rating: Accumulate" in modal
+
+
+def test_future_or_invalid_theme_clock_cannot_advertise_current_leadership(monkeypatch):
+    for bad in ("2026-11-03", "not-a-date", None):
+        pulse = _temperature_snapshot()
+        pulse["as_of"] = bad
+        view = _temperature_view(monkeypatch, pulse)
+        assert view["snapshot_state"] == "invalid"
+        assert view["sessions_behind"] is None
+        doc = _temperature_render(view)
+        face = doc.select_one("#sx-v5-sector").get_text(" ", strip=True)
+        modal = doc.select_one("#dlg-sector").get_text(" ", strip=True)
+        assert "Theme observation date is unverified" in face
+        assert "Theme snapshot clock is invalid or unverified" in modal
+        assert "Established theme leadership is active" not in face

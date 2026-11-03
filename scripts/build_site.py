@@ -2631,14 +2631,26 @@ def _sector_heat_view() -> dict | None:
             rotation.append(row)
         if not leaders and not heating and not cooling and not rotation:
             return None
+        # Reuse the established NYSE-completed-session freshness clock. A dated
+        # historical snapshot remains inspectable, but must not claim live
+        # leadership or an actionable current theme rating after the buffer.
+        desk = opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history"))
+        sessions_behind = desk.get("sessions_behind")
+        if desk.get("as_of") is None:
+            snapshot_state = "invalid"  # future/malformed/non-session observation date
+        else:
+            snapshot_state = ("current" if isinstance(sessions_behind, int)
+                              and sessions_behind <= 1 else "stale")
         return {
             "as_of": pulse.get("as_of"),
+            "snapshot_state": snapshot_state,
+            "sessions_behind": sessions_behind,
             "leaders": [_row(t) for t in leaders],
             "n_leaders": len(leaders),
             "positive_hot": _row(positive_hot) if positive_hot else None,
             "history": pulse.get("history") or {},
             "heating": [_row(t) for t in heating[:4]],
-            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
+            "desk": desk,
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
