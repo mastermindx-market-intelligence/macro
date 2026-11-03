@@ -284,3 +284,16 @@ Review focus: combined query/theme/setup filters; nonexistent watchlist versus e
 query results; escaped long Unicode/HTML-like queries; refresh/language keyboard focus;
 small viewport and dark/light contrast. Existing main conflict and shared-navigation
 startup remain distinct dependencies; no merge, rebase, deployment or release-state change here.
+
+
+### R3 bounded continuation — source details (Chairman continuation, 2026-11-03)
+- [x] Reconcile original C2 gateway interruption on the same source carrier.
+- [x] Integrate main19a896b97ae20f2c12475a0207678f92dc4f335b in original branch;
+  regenerated page passed301scoped tests and515browser assertions (d992e30...).
+- [x] Apply/inspect/release editable light-EN6ZVB-0 and dark-ZH6ZYE-0 source details.
+- [x] Freeze R3 specification above; reuse native-popover and existing source state.
+- [ ] Add failing source-details contracts, implement the scoped disclosure, regenerate
+  with canonical writer/optimizer, then pass old/new scoped and browser tests.
+- [ ] Commit/publish exact source+visual proof and cumulative handoff on original PR.
+- [ ] Resolve original independent-review/visual-placement gates without denied replay;
+  latest-head CI, shared-nav stability and genuine production proof remain required.

@@ -200,3 +200,10 @@ Generated HTML SHA256: `f8e45d261e1e108a0ee017689311c2cbff3cca5600b247051ef9fb99
 
 Original refused review/startup/vision and Paper ticker-row effects remain non-replayed.
 Draft/HOLD remains; no Ready, enqueue, un-draft, GitHub merge or deployment.
+
+Integration commit: d992e30aac5f012f0f7aa70428e49dd0758f8e59.
+The broad staged whitespace check reported inherited upstream whitespace in unrelated
+sector/government/other generated files. The shell proceeded to the merge commit after
+that diagnostic failed; no claim of a global whitespace pass is made. A subsequent
+expected-head check proved the owned Intraday/template/styles/integration-record delta
+passes git diff --check. Inherited unrelated files were not rewritten.

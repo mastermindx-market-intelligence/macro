@@ -198,3 +198,58 @@ query escaping, locale/theme parity, focus retention during refresh and zero
 horizontal overflow at 390/1440. Retain the prior 280 tests and 515 browser checks.
 Paper state samples are editable specifications, not implemented interactions or
 independent visual acceptance. Keep original PR10498 Draft/HOLD and release gates.
+
+
+## R3 · Source details without losing the scan (2026-11-03)
+
+Chairman continued autonomous design-to-implementation; this bounded refinement keeps
+Draft/HOLD and existing release gates. Paper references: file01M2WGNCX9475G79JRKJTCM08P,
+pagep-26-1, light/EN6ZVB-0 and dark/ZH6ZYE-0. Both are verified editable390×844
+illustrative specimens, not observed market data or qualified independent acceptance.
+
+### Chosen approach and alternatives
+Keep the existing concise three-feed LENS explanation and all current source clocks.
+Add one explicit Sources action beside the existing Refresh, opening a native popover
+using the page's already-established native-popover mechanism. A permanently expanded
+status dashboard would crowd the scan; putting interactive buttons inside the shared
+LENS tooltip would require a shared-system rewrite and violate tooltip semantics.
+The native disclosure is page-scoped, nonmodal, keyboard-operable, and consumes no
+closed-state layout height. It shares the existing status variables and refresh handler.
+
+### Frozen presentation and interaction
+- Title: Source details / 数据来源. Scope note: Board-wide availability; individual
+  names can differ / 看板整体可用性；各标的可能不同. Never imply per-name confirmation.
+- Price: received/delayed only when the incumbent quotesStatus says live; limited
+  coverage is distinct from unavailable when canonical coverage is partial.
+- Volume: literal producer stale===true is Marked stale / 已标记过期. Do not invent
+  an age rule, calendar rule, threshold or confidence score. Otherwise use existing
+  pulseStatus and canonical coverage; availability does not mean current confirmation.
+- Options: received/approximate, connecting or unavailable using incumbent flowStatus.
+  Missing options infer no direction and do not suppress a valid price.
+- Source clocks pass through displaySourceTime; invalid/absent clocks stay unavailable.
+  No Date.now substitution and no static specimen timestamp in product source.
+- Each row carries a name, plain status, source time and one short meaning line.
+  The static dialog header/actions survive asynchronous source renders. The body
+  updates independently; a focused Refresh or Back control is never replaced.
+- Refresh available data / 刷新可用数据 invokes the existing page refresh handler;
+  no new request loop, timer, queue, store or retry policy. Back to scan / 返回扫描,
+  Close and Escape preserve filters, selection and scroll; focus returns to invoker.
+- Native popover uses role=dialog, aria-labelledby, explicit controls and44px actions.
+  Small-screen layout scrolls inside viewport when needed; no page overflow.
+- Dark: graphite panel, raised summary, strong essential text, restrained semantic ink.
+  Light: white panel on cool canvas, canonical shadow and neutral borders. All styles
+  remain in paired intraday-flow.css using canonical tokens; no runtime stylesheet.
+
+### Implementation and acceptance contract
+Template owns static panel and pure sourceDetailStatus(lane,status,stale,coverage)
+returning bilingual status/meaning plus semantic class. renderSourceDetails() reads
+existing state and updates only the body. updateSourceTimes() also refreshes details
+without deleting the old clocks or trigger. The15protected functions remain identical.
+
+Red-first source tests cover states, literal-stale flag, partial coverage, invalid
+clocks, canonical data mapping, static accessible controls, unchanged pollers and
+44px styles. Browser tests cover1440/390×light/dark×EN/ZH, open/close/Escape/focus,
+refresh while open, stale/missing/partial fixtures and viewport geometry. Retain
+all prior regression assertions; do not weaken the515browser or301pytest proof.
+
+No independent source/visual review or release acceptance is granted by this packet.
