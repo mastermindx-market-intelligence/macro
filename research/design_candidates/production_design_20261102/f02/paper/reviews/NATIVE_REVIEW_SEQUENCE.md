@@ -24,3 +24,14 @@ The author is preparing versioned repairs and additional native boards. Those ch
 After these first-pass reports are durably committed, each critic may receive the author rationale and constraints separately. Each must save a second-pass amendment without rewriting the first report or seeing the peer's report. A later repaired artifact set must be frozen with exact bytes, native IDs, capture times and aggregate digest before repair review. Its evidence and any final findings remain distinct from formal RIG admission and the design-authority verdict.
 
 At the time of this record, the rationale and repaired-set reviews have not yet occurred. No approval is claimed.
+
+## Rationale pass — later event
+
+After commit `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` preserved both first-pass reports, each critic separately received `NATIVE_AUTHOR_RATIONALE.md`, SHA256 `798575f8549862a1dee9d1752bf8e28ae6933e5df3d18b645413382ed6eb2fd1`. They did not receive the peer report, new working captures or repair inputs. The first reports and original 44-member artifact set were reverified unchanged.
+
+| Critic | Separate supplement | Frozen UTC | SHA256 | Effect on first pass |
+| --- | --- | --- | --- | --- |
+| Product | product-native-rationale-pass.md | 2026-11-03T06:00:51+00:00 | `ec344300bd2e7c6a3bc05fa5b8bd77563bff6338f6528fdb3868ad9ac4041975` | BLOCK and NPRC-001–008 unchanged; intended repairs are not observed fixes |
+| Taste | taste-native-rationale-pass.md | 2026-11-03T06:02:33+00:00 | `8398d4840713f25823d8155d8d5678869c0c444d893102656ec39bcc4ac6acd0` | BLOCK and NVTC-001–004 unchanged; missing design proof remains missing from the first freeze |
+
+The product supplement clarifies the distinction between native reference completeness and future real-path integration/QA. Both supplements leave all T01–T12 judgments unchanged. A repaired-set review remains to be performed against its own immutable native artifact set.

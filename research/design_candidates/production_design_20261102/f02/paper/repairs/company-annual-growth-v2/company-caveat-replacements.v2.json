@@ -1,0 +1,64 @@
+{
+  "schema": "f02.paper.company-annual-growth-caveat-addendum.v2",
+  "status": "PREPARED_NOT_APPLIED",
+  "target_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "depends_on_row_patch_sha256": "4a31896fa786402f3f19c3b7224c6646e4f4347c05f81331cbcecd611dc4260d",
+  "copy": "Each annual amount is paired with change versus the prior fiscal year. Margin changes use pp; dividend changes are absolute USD/share (relative growth from zero is undefined). Missing prior or current values remain unavailable. FY2021 baselines use the retained history where supplied; FY2026 diluted EPS is unavailable.",
+  "operations": [
+    {
+      "board_key": "company-dark",
+      "board_id": "56L-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-caveat",
+      "operation": "replace_owned_paragraph_group",
+      "target_node_id": "5HN-0",
+      "expected_parent_id": "57R-0",
+      "expected_old_text": "— Current diluted EPS field is missing. Dividend change is absolute USD/share; relative growth from a zero base is undefined.",
+      "source_export_sha256": "f27986e2f23acdc0ce083a621d58266d866d6c7d07c11d9ff6a662245f8277a5",
+      "html": "<div layer-name=\"Annual change and absence policy\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1168px;padding:12px 0 18px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--noir-text-secondary);width:1168px;overflow-wrap:anywhere;\">Each annual amount is paired with change versus the prior fiscal year. Margin changes use pp; dividend changes are absolute USD/share (relative growth from zero is undefined). Missing prior or current values remain unavailable. FY2021 baselines use the retained history where supplied; FY2026 diluted EPS is unavailable.</div></div>",
+      "html_sha256": "a58a2a3e395df7ba58422fff6823110f02dde3117a06200c0aa86536b7d7bf31",
+      "new_root_id": null,
+      "guard": "Re-read current owned caveat and parent; replace in place only if identity/text still match. Capture new root ID and update step mapping."
+    },
+    {
+      "board_key": "company-light",
+      "board_id": "5HV-0",
+      "page_id": "p-6-0",
+      "step_key": "statement-caveat",
+      "operation": "replace_owned_paragraph_group",
+      "target_node_id": "5I2-0",
+      "expected_parent_id": "5HX-0",
+      "expected_old_text": "— Current diluted EPS field is missing. Dividend change is absolute USD/share; relative growth from a zero base is undefined.",
+      "source_export_sha256": "fe59fa8bdd76ad719eff7599ad30f38cf9ac4e96c5683e987eb93263b8dd4e20",
+      "html": "<div layer-name=\"Annual change and absence policy\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1168px;padding:12px 0 18px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:#51555b;width:1168px;overflow-wrap:anywhere;\">Each annual amount is paired with change versus the prior fiscal year. Margin changes use pp; dividend changes are absolute USD/share (relative growth from zero is undefined). Missing prior or current values remain unavailable. FY2021 baselines use the retained history where supplied; FY2026 diluted EPS is unavailable.</div></div>",
+      "html_sha256": "cae8b804ea68f82f3ee24a12532233eb69c01480a2acf4c4d7b8563de92c662f",
+      "new_root_id": null,
+      "guard": "Re-read current owned caveat and parent; replace in place only if identity/text still match. Capture new root ID and update step mapping."
+    }
+  ],
+  "source_overrides": [
+    {
+      "board_key": "company-dark",
+      "step_key": "statement-caveat",
+      "accepted_before_overlay_html_sha256": [
+        "93233d43a93ac00c4d59f56ed5fabce84f60da56aebf51cd69ece6f3646818f8"
+      ],
+      "replacement_html_sha256": "a58a2a3e395df7ba58422fff6823110f02dde3117a06200c0aa86536b7d7bf31",
+      "replacement_html": "<div layer-name=\"Annual change and absence policy\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1168px;padding:12px 0 18px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--noir-text-secondary);width:1168px;overflow-wrap:anywhere;\">Each annual amount is paired with change versus the prior fiscal year. Margin changes use pp; dividend changes are absolute USD/share (relative growth from zero is undefined). Missing prior or current values remain unavailable. FY2021 baselines use the retained history where supplied; FY2026 diluted EPS is unavailable.</div></div>"
+    },
+    {
+      "board_key": "company-light",
+      "step_key": "statement-caveat",
+      "accepted_before_overlay_html_sha256": [
+        "865ecdfd001bfed9702e489e9aa3fb3d9bd8335a75e9451a11f4ee3539af6c6e"
+      ],
+      "replacement_html_sha256": "cae8b804ea68f82f3ee24a12532233eb69c01480a2acf4c4d7b8563de92c662f",
+      "replacement_html": "<div layer-name=\"Annual change and absence policy\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1168px;padding:12px 0 18px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:#51555b;width:1168px;overflow-wrap:anywhere;\">Each annual amount is paired with change versus the prior fiscal year. Margin changes use pp; dividend changes are absolute USD/share (relative growth from zero is undefined). Missing prior or current values remain unavailable. FY2021 baselines use the retained history where supplied; FY2026 diluted EPS is unavailable.</div></div>"
+    }
+  ],
+  "latest_FY26_FY25_column_preserved": true,
+  "statement_caption_and_header_untouched": true,
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_reviewed": false
+}

@@ -295,6 +295,38 @@ PRC-007 may be closed only when **every applicable row below has a source-bound 
 
 Separately, source review cannot close focus/scroll/keyboard/touch/zoom proof. In particular, identity-based focus restoration must leave the matched trigger visible after sorting, filtering and a dock-to-overlay transition; restoring an old scroll offset and calling `focus({preventScroll:true})` alone does not establish that result. Responsive SVG width/text construction is not a measured font-size or CJK-rendering receipt. F01 joint freeze, editable Paper delivery, admitted independent reviews and served-production qualification remain separate gates.
 
+## 12. Native continuation fixture and implementation authority
+
+The current native construction uses versioned authoring inputs and actual Paper exports under `paper/`. The standalone `pattern-lab.html`, the original construction packets and the original `sheets/` remain the historical source/static candidate reviewed at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`. Their exact bytes and review findings are retained; they are not the current authority for the repaired native breadth figures or annual Company change layout. Do not combine their older fixture values with the new native source identities.
+
+For the native candidate, use `paper/repairs/fixture-coherence-v1/fixture-contract.json`, its arithmetic receipt and its six complete effective input packets for participation examples. Use `paper/repairs/company-annual-growth-v2/company-source-overrides.v2.json` and its row/companion packets for the repaired Company presentation. An effective input packet describes intended design construction; only the final `paper/native-board-index.json`, native exports, capture receipts and immutable review manifest establish which version was actually applied. None of these files is a production component import or an implemented API.
+
+### 12.1 Count-first participation examples
+
+The native Macro example namespace advances to `f02.fixture.v3/macro`. Company and Options `f02.fixture.v2` identities remain unchanged because their raw fixture records are unchanged. These are synthetic design fixtures, not verified live market populations.
+
+| Fixture cohort | Current / prior count | Covered / eligible | Displayed rate and change |
+| --- | --- | --- | --- |
+| Independent Universe |709 /697 above, each out of 1063 covered |1063 /1063 securities;7 /8 available history sessions |66.70% /65.57%; raw calculation rounds to+1.13pp,+113bps,+1.72% relative |
+| Component Information technology |742 /721 above, each out of 1000 covered |1000 /1006 |74.20% /72.10%;+2.10pp |
+| Component Utilities |132 /133 above, each out of 250 covered |250 /250 |52.80% /53.20%;−0.40pp |
+| Macro Communication services |118 /116 above, each out of 177 covered |177 /177 |66.67% /65.54%;+1.13pp. The one-decimal table displays66.7%. |
+| Energy unavailable |Above count and rate unavailable |0 /82 covered/eligible |No0% rate or invented delta |
+
+The component-sector examples, Macro sector samples and Universe have separate cohort identities. The repaired chart-grammar demonstration uses the same Universe counts and 23 Oct gap as the Macro history, with its own explicitly labeled 50–80% display scale. The Macro sector denominators do not partition the Universe. Security coverage and available historical-session coverage are different denominators. The complete ten-sector count table, cohort identities, raw fractions and history counts are in the fixture contract; do not infer counts from a displayed percent or transplant a selected sector's exact values into the Universe receipt.
+
+Calculate rates from integer above/covered counts. Calculate pp, bps and relative change from the unrounded current and prior rates; round only the final display using the declared policy. Never subtract formatted strings. Sort the raw current rate descending with unavailable values last and a stable entity tie-break; show the active direction. Energy retains its original entity/step identity when its visual order changes. The Universe chart retains its missing 23 Oct observation as a gap.
+
+### 12.2 Annual Company change and exact evidence
+
+Every one of the five visible annual values retains a subordinate annual comparison. The 17-year income fixture supplies FY2021 baselines for revenue, gross profit, operating income, pretax income and net income; their FY2022 changes therefore remain calculable. Operating margin uses raw operating-income/revenue ratios, including the supplied FY2021 baseline, and displays pp change. FY2022 EPS, dividend and free-cash-flow comparisons state `Prior unavailable` because their FY2021 metric records are absent; no earlier share or cash-flow record is invented. Subsequent relative changes use the prior raw finite amount. Zero dividend changes are absolute `0.00 USD/share`; a relative change from zero is undefined. FY2026 EPS and its comparison remain unavailable. All 45 visible annual amounts,17-year×5-series income history, statement currency and exact entity/field/period keys remain unchanged.
+
+Multiline annual comparison rows use 52px height to accommodate amount and change at 13px/12px, with meaningful unit text at 12px. A dense one-line 40px row is not permission to remove a primary comparison or shrink meaningful units. Numeric values and changes align on the cell's end edge at the frame level. Evidence triggers retain the exact historical period rather than silently selecting the newest observation. The historical FY2025 EPS receipt uses 2.07 USD/share against FY2024's1.20USD/share and shows +72.5%, with both source identities and return context.
+
+### 12.3 Builder consumption rule
+
+The future builder must take the exact reviewed native export/capture set, these source contracts and the versioned fixture contract together, then map them to the actual source owners in sections 2–5. Paper JSX is a design export and is not an instruction to paste fixed desktop geometry into production. Reuse current semantic tables, EvidenceRail/LENS, icon assets, route/query parsers, entitlement gates and mutation owners; qualify adaptation within the actual F01 slots. A native screenshot proves a rendered design at its observed dimensions, not keyboard, virtualization, touch, browser reflow, producer correctness or an authenticated save.
+
 ## Source links
 
 [A1]: https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md

@@ -1,0 +1,116 @@
+{
+  "schema": "f02.fixture-effective-validation.v1",
+  "status": "SOURCE_CHECKS_PASS_NATIVE_EFFECTS_NOT_ASSERTED",
+  "method": "Independent Decimal arithmetic from integer tuples plus actual effective HTML labels/order/point coordinates; no import of the generator.",
+  "table_boards": [
+    {
+      "board": "macro-dark",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "macro-light",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "macro-dark-en-390",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "macro-light-zh-390",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "macro-docked-1280",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "width-768-overlay",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "width-1024-overlay",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    },
+    {
+      "board": "width-1600-docked",
+      "raw_rate_descending_energy_last": true,
+      "visible_sort_arrow": true,
+      "all_ten_coverage_and_rate_labels_match": true
+    }
+  ],
+  "chart_boards": [
+    {
+      "board": "macro-dark",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "macro-light",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "grammar",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "macro-dark-en-390",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "macro-light-zh-390",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "macro-docked-1280",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    },
+    {
+      "board": "width-1600-docked",
+      "points": 7,
+      "data_segments": 5,
+      "gap_date": "23 Oct",
+      "coordinates_match_integer_counts": true
+    }
+  ],
+  "original_source_hashes_unchanged": true,
+  "effective_hashes_match_manifest": true,
+  "company320_and_options320_subtrees_unchanged": true,
+  "universe_and_communication_rounding_distinct": true,
+  "core_math": {
+    "it": "742/1000=74.20%;721/1000=72.10%;+2.10pp;coverage1000/1006",
+    "utilities": "132/250=52.80%;133/250=53.20%;-0.40pp;coverage250/250"
+  },
+  "paper_calls": 0,
+  "browser_calls": 0
+}

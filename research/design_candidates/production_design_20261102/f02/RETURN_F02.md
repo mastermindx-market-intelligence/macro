@@ -1,5 +1,11 @@
 # F02 ownership return
 
+## Current native continuation
+
+Editable Paper authoring is now applied through the qualified direct app. The checkpoint `0da8c968b6c01f168ea7386d0d1dbbc32140075e` records 19 observed boards and 337 confirmed operations, including three completed 320px evidence views. Further boards, native review repairs, final bindings and repaired-set review are in progress. Read the current [README](README.md), [native index](paper/NATIVE_BOARD_INDEX.md) and [native review record](paper/reviews/NATIVE_REVIEW_REPORT.md). Formal RIG remains draft; F01/runtime/domain integration gates remain open. The initial zero-Paper return below is historical and does not describe current effects.
+
+## Initial source/static return — historical
+
 **Delivery:** PARTIAL. **System:** F02-SYSTEM/1.0.0-candidate.2. **Formal RIG:** draft; no approval receipt. **Paper:** NOT_APPLIED_TO_PAPER; zero mutations. **Carrier:** [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630), under programme Draft PR #10617.
 
 ## Completed work

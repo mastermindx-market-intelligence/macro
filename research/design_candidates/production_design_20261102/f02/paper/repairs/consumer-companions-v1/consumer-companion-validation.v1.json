@@ -1,0 +1,65 @@
+{
+  "schema": "f02.paper.consumer-companion-validation.v1",
+  "status": "PASS_LOCAL_SOURCE_ARITHMETIC_HTML_ONLY",
+  "boards": [
+    {
+      "board": "company-fy2025-eps-evidence-390",
+      "steps": 13,
+      "sequential_parents": true,
+      "valid_single_root_html": true,
+      "fit_content": true
+    },
+    {
+      "board": "editorial-calculation-evidence-390",
+      "steps": 15,
+      "sequential_parents": true,
+      "valid_single_root_html": true,
+      "fit_content": true
+    },
+    {
+      "board": "editorial-reading-390",
+      "steps": 29,
+      "sequential_parents": true,
+      "valid_single_root_html": true,
+      "fit_content": true
+    },
+    {
+      "board": "density-40-52-comparison",
+      "steps": 15,
+      "sequential_parents": true,
+      "valid_single_root_html": true,
+      "fit_content": true
+    }
+  ],
+  "historical_eps_change_percent": "72.5",
+  "calculation": {
+    "balances": [
+      10000,
+      15000,
+      7500
+    ],
+    "total_percent": -25,
+    "cagr_percent_unrounded": -13.397459621556141,
+    "cagr_display_percent": -13.4
+  },
+  "editorial_body_paragraphs_preserved": 5,
+  "density_same_rows": 3,
+  "numeric_frame_and_child_wrapper_end_alignment_pairs": 40,
+  "fixed_width_row_sums_checked": 16,
+  "originals_unchanged": true,
+  "source_hashes": {
+    "/workspace/scratch/55964f568673/f02/paper/consumer-inputs/consumer-boards.json": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+    "/workspace/scratch/55964f568673/f02/fixtures/company-history.json": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/product-native-first-pass.md": "a5d3bbfdb1a77eedb45a6c91a9c9a7fffedd4858babba53fe12d9eb2498f6b43",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/taste-native-first-pass.md": "981f6774fba5af4218c50d6ec2eaa879a6c1119feea9729aaaad7f7e0e5e0d92",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/company-annual-growth-v2/company-row-replacements.v2.json": "4a31896fa786402f3f19c3b7224c6646e4f4347c05f81331cbcecd611dc4260d"
+  },
+  "native_applied": false,
+  "native_fit_reviewed": false,
+  "browser_verified": false,
+  "limits": [
+    "Actual import/editability/geometry and all new native IDs require the sole writer.",
+    "Historical-cell and article focus/scroll return are proposed behavior, not browser proof.",
+    "No real Company filing, article publication pipeline or source/mutation authority is qualified."
+  ]
+}

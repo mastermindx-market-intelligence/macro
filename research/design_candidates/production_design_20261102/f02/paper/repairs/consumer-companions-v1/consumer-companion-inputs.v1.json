@@ -1,0 +1,738 @@
+{
+  "schema": "f02.paper.consumer-companions.v1",
+  "version": "F02-consumer-evidence-reading-density-companions/1.0.0",
+  "status": "PREPARED_NOT_APPLIED",
+  "target_file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "boards": [
+    {
+      "key": "company-fy2025-eps-evidence-390",
+      "name": "F02 · Company historical EPS evidence & return · 390 · Repair v1",
+      "pageId": "p-5-0",
+      "width": 390,
+      "height": 900,
+      "theme": "dark",
+      "language": {
+        "body": "en",
+        "chrome": "en"
+      },
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "390px",
+        "height": "fit-content",
+        "padding": "0px",
+        "gap": "0px",
+        "backgroundColor": "var(--noir-canvas)",
+        "fontFamily": "Inter",
+        "color": "var(--noir-text-primary)"
+      },
+      "steps": [
+        {
+          "key": "artifact",
+          "parent": "board",
+          "html": "<div layer-name=\"Candidate source identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:9px 20px;background-color:var(--noir-raised);\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">F02 · ILLUSTRATIVE HISTORICAL CELL · REPAIR v1</div></div>",
+          "variant": "Provenance/versioned-companion"
+        },
+        {
+          "key": "dialog-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Evidence header / Close starts focus\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:390px;min-height:64px;padding:10px 20px;gap:16px;align-items:center;background-color:var(--noir-panel);border-bottom:1px solid #343434;\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:var(--noir-text-primary);width:258px;flex-shrink:0;overflow-wrap:anywhere;\">Company evidence</div><div layer-name=\"Close\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:76px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #6f6f6f;border-radius:6px;background-color:var(--noir-panel);outline:2px solid #c4d9f4;outline-offset:2px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);width:52px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Close</div></div></div>",
+          "variant": "EvidenceInspector/close-44"
+        },
+        {
+          "key": "body",
+          "parent": "board",
+          "html": "<div layer-name=\"Historical EPS inspector\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:16px;\"></div>",
+          "variant": "EvidenceInspector/historical-body"
+        },
+        {
+          "key": "identity",
+          "parent": "body",
+          "html": "<div layer-name=\"Selected field and period\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:6px;\"><div style=\"font-family:Inter;font-size:17px;line-height:25px;font-weight:600;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">EXM · Example Industries</div><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Diluted earnings per share</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Selected observation: FY 2025 · USD/share</div></div>",
+          "variant": "EvidenceInspector/field-period-identity"
+        },
+        {
+          "key": "selected-value",
+          "parent": "body",
+          "html": "<div layer-name=\"FY 2025 reported value\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:6px;\"><div style=\"font-family:Inter;font-size:30px;line-height:38px;font-weight:600;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">2.07 USD/share</div><div style=\"font-family:Inter;font-size:16px;line-height:24px;font-weight:500;color:#b0d4b9;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">+72.5% versus FY 2024</div></div>",
+          "variant": "MetricValue/known-historical-cell"
+        },
+        {
+          "key": "comparison",
+          "parent": "body",
+          "html": "<div layer-name=\"Exact adjacent annual comparison\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:12px;\"><div layer-name=\"Comparator · FY 2024\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Comparator · FY 2024</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">1.20 USD/share</div></div><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:500;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">(2.07 / 1.20 − 1) × 100 = +72.5%</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Relative change between the two stated fiscal years. Currency and per-share definition are unchanged within this illustrative fixture.</div></div>",
+          "variant": "ChangeValue/historical-relative-percent"
+        },
+        {
+          "key": "source-identity",
+          "parent": "body",
+          "html": "<div layer-name=\"Exact fixture source scope\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:12px;\"><div layer-name=\"Source identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Source identity</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">f02.fixture.v2/company/EXM/diluted_eps/FY2022-FY2026</div></div><div layer-name=\"Record scope / selected observation\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Record scope / selected observation</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">FY 2022–FY 2026 / FY 2025</div></div><div layer-name=\"Raw field\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Raw field</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">company-history.json · rows[6][5] = 2.07</div></div></div>",
+          "variant": "EvidenceInspector/historical-source-binding"
+        },
+        {
+          "key": "clocks",
+          "parent": "body",
+          "html": "<div layer-name=\"Fiscal period and document clocks\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:12px;\"><div layer-name=\"Observed period\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Observed period</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Fiscal year 2025; no calendar timestamp inferred</div></div><div layer-name=\"Published\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Published</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">30 Oct 2026 · 20:02 UTC</div></div><div layer-name=\"Retrieved\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Retrieved</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">30 Oct 2026 · 20:03 UTC</div></div></div>",
+          "variant": "FreshnessReceipt/fiscal-period-and-clocks"
+        },
+        {
+          "key": "limitation",
+          "parent": "body",
+          "html": "<div layer-name=\"Historical evidence caveat\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:14px 0;gap:6px;border-top:1px solid #343434;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">FY 2026 remains unavailable.</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">The missing current field does not erase the supplied FY 2025 value. These are illustrative statement inputs, not a real filing or producer receipt.</div></div>",
+          "variant": "Callout/historical-known-current-unknown"
+        },
+        {
+          "key": "return-action",
+          "parent": "body",
+          "html": "<div layer-name=\"Return to FY 2025 EPS\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #6f6f6f;border-radius:6px;background-color:var(--noir-panel);\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);width:326px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Return to FY 2025 EPS</div></div>",
+          "variant": "EvidenceInspector/historical-return",
+          "return_binding": {
+            "board_keys": [
+              "company-dark",
+              "company-light"
+            ],
+            "step_key": "statement-row-7",
+            "column_index": 4,
+            "field": "diluted_eps",
+            "period": 2025,
+            "value": "2.07",
+            "new_native_id": null
+          }
+        },
+        {
+          "key": "return-state-heading",
+          "parent": "board",
+          "html": "<div layer-name=\"Explicit companion return state\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px 20px 12px;gap:6px;background-color:var(--noir-raised);\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">RETURN STATE · SAME FY 2025 CELL</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-primary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Diluted EPS · USD/share · FY 2025</div></div>",
+          "variant": "EvidenceInspector/returned-cell-context"
+        },
+        {
+          "key": "returned-historical-cell",
+          "parent": "board",
+          "html": "<div layer-name=\"Restored historical cell focus\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:390px;padding:0 20px 20px;align-items:center;background-color:var(--noir-raised);\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:var(--noir-text-secondary);width:225px;flex-shrink:0;overflow-wrap:anywhere;\">FY 2025 selected</div><div layer-name=\"Diluted earnings per share / FY 2025 / value and annual change\" style=\"display:flex;flex-shrink:0;box-sizing:border-box;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;width:125px;padding:0 10px;text-align:right;min-height:52px;background-color:var(--noir-selected);outline:2px solid #c4d9f4;outline-offset:2px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">2.07</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#b0d4b9;font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap;width:max-content;flex-shrink:0;\">+72.5%</div></div></div>",
+          "variant": "DataRow/historical-cell-return",
+          "source_replacement_hash": "c6cef8585f3ec7c27dc4d652cb24c6d0cb56c47a928d7c54fef51089448faef0"
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Historical inspector source and interaction contract\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:8px;border-top:1px solid #343434;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · NOT A COMPLETED INTERACTION</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">The source record retains the existing five-year identity; selection adds FY 2025 context without inventing a producer ID. Restore the same field/period cell after closing, by stable identity, and make it visible. The normal row replacement must supply its new native IDs first; old Company descendant IDs are stale.</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Modal focus containment, Escape, touch, scroll preservation, real caller/receipt mapping and keyboard activation of a historical cell still need browser and D07 integration proof.</div></div>",
+          "variant": "Build/historical-evidence-boundary"
+        }
+      ],
+      "fixture_binding": {
+        "entity": "EXM",
+        "field": "diluted_eps",
+        "source_identity": "f02.fixture.v2/company/EXM/diluted_eps/FY2022-FY2026",
+        "selected_period": 2025,
+        "selected_value": "2.07",
+        "selected_unit": "USD/share",
+        "prior_period": 2024,
+        "prior_value": "1.20",
+        "relative_change_percent": "72.5",
+        "source_json_path": "rows[6][5]",
+        "comparison_json_path": "rows[6][4]",
+        "record_identity_unchanged": true,
+        "return_native_binding": "Resolve the current statement-row-7 replacement root and FY2025 cell; no old descendant may be reused."
+      }
+    },
+    {
+      "key": "editorial-calculation-evidence-390",
+      "name": "F02 · Editorial calculation evidence & return · 390 · Repair v1",
+      "pageId": "p-5-0",
+      "width": 390,
+      "height": 900,
+      "theme": "light",
+      "language": {
+        "body": "en",
+        "chrome": "en"
+      },
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "390px",
+        "height": "fit-content",
+        "padding": "0px",
+        "gap": "0px",
+        "backgroundColor": "#f6f6f3",
+        "fontFamily": "Inter",
+        "color": "#1a1c20"
+      },
+      "steps": [
+        {
+          "key": "artifact",
+          "parent": "board",
+          "html": "<div layer-name=\"Candidate source identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:9px 20px;background-color:#f0f0ed;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">F02 · ILLUSTRATIVE CALCULATION EVIDENCE · v1</div></div>",
+          "variant": "Provenance/versioned-companion"
+        },
+        {
+          "key": "dialog-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Evidence header / Close starts focus\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:390px;min-height:64px;padding:10px 20px;gap:16px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:#1a1c20;width:258px;flex-shrink:0;overflow-wrap:anywhere;\">Calculation evidence</div><div layer-name=\"Close\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:76px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #85877f;border-radius:6px;background-color:#fff;outline:2px solid #245c91;outline-offset:2px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:52px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Close</div></div></div>",
+          "variant": "EvidenceInspector/close-44"
+        },
+        {
+          "key": "body",
+          "parent": "board",
+          "html": "<div layer-name=\"Public calculation inspector\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:16px;\"></div>",
+          "variant": "EvidenceInspector/editorial-body"
+        },
+        {
+          "key": "identity",
+          "parent": "body",
+          "html": "<div layer-name=\"Calculation identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:6px;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Compound-growth example</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Two annual periods · USD balances · no cash flows</div></div>",
+          "variant": "EvidenceInspector/editorial-identity"
+        },
+        {
+          "key": "calculation-header",
+          "parent": "body",
+          "html": "<div layer-name=\"Contiguous calculation table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:0px;\"><div layer-name=\"Calculation column headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:40px;align-items:center;background-color:#f0f0ed;\"><div layer-name=\"Period\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:76px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Period</div></div><div layer-name=\"Return\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:104px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Return</div></div><div layer-name=\"Balance · USD\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:122px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Balance · USD</div></div></div></div>",
+          "variant": "TableFrame/calculation-header"
+        },
+        {
+          "key": "calculation-row-0",
+          "parent": "calculation-header",
+          "html": "<div layer-name=\"Start\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Start\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Start</div></div><div layer-name=\"Not applicable\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Not applicable</div></div><div layer-name=\"10,000\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">10,000</div></div></div>",
+          "variant": "DataRow/calculation-0"
+        },
+        {
+          "key": "calculation-row-1",
+          "parent": "calculation-header",
+          "html": "<div layer-name=\"Year 1\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 1\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Year 1</div></div><div layer-name=\"+50%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#256341;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+50%</div></div><div layer-name=\"15,000\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">15,000</div></div></div>",
+          "variant": "DataRow/calculation-1"
+        },
+        {
+          "key": "calculation-row-2",
+          "parent": "calculation-header",
+          "html": "<div layer-name=\"Year 2\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 2\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Year 2</div></div><div layer-name=\"−50%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#a62d43;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">−50%</div></div><div layer-name=\"7,500\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">7,500</div></div></div>",
+          "variant": "DataRow/calculation-2"
+        },
+        {
+          "key": "total-return",
+          "parent": "body",
+          "html": "<div layer-name=\"Exact total-return arithmetic\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:6px;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Total return · two years</div><div style=\"font-family:Inter;font-size:17px;line-height:25px;font-weight:500;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">(7,500 / 10,000) − 1 = −25%</div></div>",
+          "variant": "MetricValue/total-return"
+        },
+        {
+          "key": "annualized-return",
+          "parent": "body",
+          "html": "<div layer-name=\"Exact compound annual arithmetic\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:6px;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Compound annual return</div><div style=\"font-family:Inter;font-size:16px;line-height:24px;font-weight:500;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">(7,500 / 10,000)^(1/2) − 1</div><div style=\"font-family:Inter;font-size:19px;line-height:27px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">≈ −13.4% per year</div></div>",
+          "variant": "MetricValue/annualized-return"
+        },
+        {
+          "key": "source-and-dates",
+          "parent": "body",
+          "html": "<div layer-name=\"Source and article calendar dates\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:12px;\"><div layer-name=\"Source identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Source identity</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">f02.fixture.v2/editorial/compound_growth/two_annual_periods</div></div><div layer-name=\"Published\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Published</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">2026-07-20</div></div><div layer-name=\"Example updated\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Example updated</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">2026-10-30</div></div><div style=\"font-family:Inter;font-size:12px;line-height:19px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">These dates describe the document, not a live market observation.</div></div>",
+          "variant": "EvidenceInspector/editorial-source-dates"
+        },
+        {
+          "key": "assumptions",
+          "parent": "body",
+          "html": "<div layer-name=\"Calculation assumptions\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:14px 0;gap:8px;border-top:1px solid #cbccc7;\"><div style=\"font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">What the example assumes</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">No deposits, withdrawals, fees or taxes. Returns apply to changing balances. The arithmetic average is 0%; it is a different measure from total or compound annual return. This calculation is not a forecast.</div></div>",
+          "variant": "Callout/calculation-limits"
+        },
+        {
+          "key": "return-action",
+          "parent": "body",
+          "html": "<div layer-name=\"Return to the calculation\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #85877f;border-radius:6px;background-color:#fff;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:326px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Return to the calculation</div></div>",
+          "variant": "EvidenceInspector/editorial-return"
+        },
+        {
+          "key": "return-context",
+          "parent": "board",
+          "html": "<div layer-name=\"Returned public calculation trigger\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:10px;background-color:#f0f0ed;\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">RETURN STATE · FOLLOW THE CALCULATION</div><div layer-name=\"Inspect the calculation →\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #85877f;border-radius:6px;background-color:#fff;outline:2px solid #245c91;outline-offset:2px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:326px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Inspect the calculation →</div></div></div>",
+          "variant": "EvidenceTrigger/editorial-restored-context"
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Public evidence implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:8px;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · PUBLIC READING CONTEXT</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Keep the article route, #arithmetic anchor and scroll. Close/Escape restores its calculation trigger; the public reading surface keeps its own shell. Modal trap, inert background, accessible name and actual focus return remain browser requirements.</div></div>",
+          "variant": "Build/editorial-evidence"
+        }
+      ],
+      "fixture_binding": {
+        "source_identity": "f02.fixture.v2/editorial/compound_growth/two_annual_periods",
+        "source_function": "pattern-lab.html evidenceRecord(article)",
+        "balances_usd": [
+          10000,
+          15000,
+          7500
+        ],
+        "returns_percent": [
+          50,
+          -50
+        ],
+        "total_return_percent": -25,
+        "annualized_return_percent": -13.397459621556141,
+        "publication": "2026-07-20",
+        "example_updated": "2026-10-30",
+        "anchor": "#arithmetic",
+        "existing_return_targets": [
+          {
+            "board_key": "editorial-dark",
+            "board_id": "6JX-0",
+            "step_key": "calculation-evidence",
+            "observed_node_id": "6MH-0",
+            "source_export_sha256": "83f99b054efe81ee5d4e0f36c879e9e8168bd951d981896a52b2d3e4b2eeb916",
+            "status": "Frozen observed return-target reference; writer/browser must resolve current target before use."
+          },
+          {
+            "board_key": "editorial-light",
+            "board_id": "6NG-0",
+            "step_key": "calculation-evidence",
+            "observed_node_id": "6O7-0",
+            "source_export_sha256": "e3f809b3996bd5943426ecc719830f9d4749b201b3c2268605adfabd2eac1ba3",
+            "status": "Frozen observed return-target reference; writer/browser must resolve current target before use."
+          }
+        ],
+        "new_mobile_return_target": {
+          "board_key": "editorial-reading-390",
+          "step_key": "calculation-evidence",
+          "native_id": null
+        }
+      }
+    },
+    {
+      "key": "editorial-reading-390",
+      "name": "F02 · Public editorial reading · 390 · Repair v1",
+      "pageId": "p-5-0",
+      "width": 390,
+      "height": 900,
+      "theme": "light",
+      "language": {
+        "body": "en",
+        "chrome": "en"
+      },
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "390px",
+        "height": "fit-content",
+        "padding": "0px",
+        "gap": "0px",
+        "backgroundColor": "#f6f6f3",
+        "fontFamily": "Inter",
+        "color": "#1a1c20"
+      },
+      "steps": [
+        {
+          "key": "artifact",
+          "parent": "board",
+          "html": "<div layer-name=\"Candidate source identity\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:9px 20px;background-color:#f0f0ed;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:500;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">F02 · PUBLIC READING · 390 · CANDIDATE REPAIR v1</div></div>",
+          "variant": "Provenance/versioned-companion"
+        },
+        {
+          "key": "public-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Public masthead\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:390px;height:56px;padding:0 20px;gap:20px;align-items:center;background-color:#efefec;border-bottom:1px solid #cbccc7;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:700;color:#1a1c20;width:230px;flex-shrink:0;overflow-wrap:anywhere;letter-spacing:0.1em;\">MASTERMIND</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:#51555b;width:100px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;\">EN / 中文</div></div>",
+          "variant": "SectionHeader/public-masthead"
+        },
+        {
+          "key": "public-navigation",
+          "parent": "board",
+          "html": "<div layer-name=\"Existing public navigation labels\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:390px;padding:4px 20px;gap:10px;align-items:center;background-color:#efefec;\"><div layer-name=\"Research\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:110px;height:44px;align-items:center;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:100px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Research</div></div><div layer-name=\"Tools\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:110px;height:44px;align-items:center;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:100px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Tools</div></div><div layer-name=\"Learn\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:110px;height:44px;align-items:center;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:100px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Learn</div></div></div>",
+          "variant": "Action/public-navigation"
+        },
+        {
+          "key": "main",
+          "parent": "board",
+          "html": "<div layer-name=\"Narrow English reading surface\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:24px 20px;gap:18px;\"></div>",
+          "variant": "Editorial/390-reading-column"
+        },
+        {
+          "key": "article-title",
+          "parent": "main",
+          "html": "<div layer-name=\"Article title and dek\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:10px;\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#66543b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">FROM THE DESK</div><div style=\"font-family:Inter;font-size:30px;line-height:36px;font-weight:700;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Compound Growth for Traders</div><div style=\"font-family:Inter;font-size:16px;line-height:25px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Read the calculation, compare the measures, and keep the assumptions in view.</div></div>",
+          "variant": "SectionHeader/narrow-article"
+        },
+        {
+          "key": "publication",
+          "parent": "main",
+          "html": "<div layer-name=\"Article publication dates\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:4px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Published 2026-07-20</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Example updated 2026-10-30</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#5f6368;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Illustrative article excerpt · English body</div></div>",
+          "variant": "FreshnessReceipt/document-dates"
+        },
+        {
+          "key": "toc",
+          "parent": "main",
+          "html": "<div layer-name=\"Visible narrow table of contents\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:0px;\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">ON THIS PAGE</div></div>",
+          "variant": "Editorial/narrow-toc-container"
+        },
+        {
+          "key": "toc-0",
+          "parent": "toc",
+          "html": "<a layer-name=\"Follow the calculation\" href=\"#arithmetic\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Follow the calculation</a>",
+          "variant": "Action/editorial-anchor",
+          "destination": "#arithmetic"
+        },
+        {
+          "key": "toc-1",
+          "parent": "toc",
+          "html": "<a layer-name=\"Compare the averages\" href=\"#difference\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Compare the averages</a>",
+          "variant": "Action/editorial-anchor",
+          "destination": "#difference"
+        },
+        {
+          "key": "toc-2",
+          "parent": "toc",
+          "html": "<a layer-name=\"Where this example stops\" href=\"#limits\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Where this example stops</a>",
+          "variant": "Action/editorial-anchor",
+          "destination": "#limits"
+        },
+        {
+          "key": "toc-3",
+          "parent": "toc",
+          "html": "<a layer-name=\"Explore the assumptions\" href=\"#next\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Explore the assumptions</a>",
+          "variant": "Action/editorial-anchor",
+          "destination": "#next"
+        },
+        {
+          "key": "lede",
+          "parent": "main",
+          "html": "<div style=\"font-family:Inter;font-size:18px;line-height:28px;font-weight:400;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">A gain of 50% followed by a loss of 50% leaves less than you started with. The second return acts on a different base.</div>",
+          "variant": "Editorial/lede"
+        },
+        {
+          "key": "calculation-heading",
+          "parent": "main",
+          "html": "<div layer-name=\"Article heading arithmetic\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:8px 0 0;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Follow the calculation</div></div>",
+          "variant": "SectionHeader/editorial-calculation",
+          "anchor_id": "arithmetic"
+        },
+        {
+          "key": "calculation-copy",
+          "parent": "main",
+          "html": "<div style=\"font-family:Inter;font-size:16px;line-height:26px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Start with USD 10,000. The first period raises the balance to USD 15,000. Losing half of that balance in the next period leaves USD 7,500. There are no deposits, withdrawals, fees or taxes in this example.</div>",
+          "variant": "Editorial/calculation-paragraph"
+        },
+        {
+          "key": "calculation-table",
+          "parent": "main",
+          "html": "<div layer-name=\"Three-column calculation table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;gap:0px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Illustrative calculation · currency USD</div></div>",
+          "variant": "TableFrame/editorial-calculation-container"
+        },
+        {
+          "key": "calculation-header",
+          "parent": "calculation-table",
+          "html": "<div layer-name=\"Calculation column headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:40px;align-items:center;background-color:#f0f0ed;\"><div layer-name=\"Period\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:76px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Period</div></div><div layer-name=\"Return\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:104px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Return</div></div><div layer-name=\"Balance · USD\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:#51555b;width:122px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Balance · USD</div></div></div>",
+          "variant": "TableFrame/editorial-calculation-header"
+        },
+        {
+          "key": "calculation-row-0",
+          "parent": "calculation-table",
+          "html": "<div layer-name=\"Start\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Start\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Start</div></div><div layer-name=\"Not applicable\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#51555b;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Not applicable</div></div><div layer-name=\"10,000\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">10,000</div></div></div>",
+          "variant": "DataRow/editorial-calculation-0"
+        },
+        {
+          "key": "calculation-row-1",
+          "parent": "calculation-table",
+          "html": "<div layer-name=\"Year 1\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 1\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Year 1</div></div><div layer-name=\"+50%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#256341;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+50%</div></div><div layer-name=\"15,000\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">15,000</div></div></div>",
+          "variant": "DataRow/editorial-calculation-1"
+        },
+        {
+          "key": "calculation-row-2",
+          "parent": "calculation-table",
+          "html": "<div layer-name=\"Year 2\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:350px;height:44px;align-items:center;background-color:#fff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Year 2\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:92px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:76px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Year 2</div></div><div layer-name=\"−50%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:120px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#a62d43;width:104px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">−50%</div></div><div layer-name=\"7,500\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:138px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:122px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">7,500</div></div></div>",
+          "variant": "DataRow/editorial-calculation-2"
+        },
+        {
+          "key": "calculation-evidence",
+          "parent": "main",
+          "html": "<div layer-name=\"Inspect the calculation →\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;min-height:44px;padding:10px 12px;justify-content:center;align-items:center;border:1px solid #85877f;border-radius:6px;background-color:#fff;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;width:326px;flex-shrink:0;overflow-wrap:anywhere;text-align:center;\">Inspect the calculation →</div></div>",
+          "variant": "EvidenceTrigger/editorial-390",
+          "evidence_key": "article",
+          "companion_board_key": "editorial-calculation-evidence-390"
+        },
+        {
+          "key": "averages-heading",
+          "parent": "main",
+          "html": "<div layer-name=\"Article heading difference\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:8px 0 0;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Compare the averages</div></div>",
+          "variant": "SectionHeader/editorial-averages",
+          "anchor_id": "difference"
+        },
+        {
+          "key": "averages-copy",
+          "parent": "main",
+          "html": "<div style=\"font-family:Inter;font-size:16px;line-height:26px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">The arithmetic average is 0%. The total return is −25% over two years. The compound annual return is about −13.4% per year. These measures answer different questions, so the period and unit stay beside the number.</div>",
+          "variant": "Editorial/averages-paragraph"
+        },
+        {
+          "key": "equations",
+          "parent": "main",
+          "html": "<div layer-name=\"Exact return formulas\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:16px;gap:6px;background-color:#f0f0ed;border-radius:8px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#1a1c20;width:318px;flex-shrink:0;overflow-wrap:anywhere;\">Total return</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:318px;flex-shrink:0;overflow-wrap:anywhere;\">(7,500 / 10,000) − 1 = −25%.</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:600;color:#1a1c20;width:318px;flex-shrink:0;overflow-wrap:anywhere;\">CAGR</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:#1a1c20;width:318px;flex-shrink:0;overflow-wrap:anywhere;\">(7,500 / 10,000)^(1/2) − 1 ≈ −13.4% per year.</div></div>",
+          "variant": "MetricValue/editorial-equations"
+        },
+        {
+          "key": "limits-heading",
+          "parent": "main",
+          "html": "<div layer-name=\"Article heading limits\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:8px 0 0;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Where this example stops</div></div>",
+          "variant": "SectionHeader/editorial-limits",
+          "anchor_id": "limits"
+        },
+        {
+          "key": "limits-copy",
+          "parent": "main",
+          "html": "<div style=\"font-family:Inter;font-size:16px;line-height:26px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Reordering the same returns does not change the final balance when no cash enters or leaves. Contributions and withdrawals change that relationship. A fixed-rate calculator describes assumptions; it does not predict future returns.</div>",
+          "variant": "Editorial/limits-paragraph"
+        },
+        {
+          "key": "next-heading",
+          "parent": "main",
+          "html": "<div layer-name=\"Article heading next\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:8px 0 0;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#1a1c20;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Explore the assumptions</div></div>",
+          "variant": "SectionHeader/editorial-next",
+          "anchor_id": "next"
+        },
+        {
+          "key": "next-copy",
+          "parent": "main",
+          "html": "<div style=\"font-family:Inter;font-size:16px;line-height:26px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Use the existing tools to examine an annualized return or a contribution schedule. Keep the period, currency and cash-flow assumptions in view.</div>",
+          "variant": "Editorial/next-paragraph"
+        },
+        {
+          "key": "continuation-links",
+          "parent": "main",
+          "html": "<div layer-name=\"Existing public continuation destinations\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:350px;padding:12px 0 0;border-top:1px solid #cbccc7;\"><a layer-name=\"CAGR calculator ↗\" href=\"https://www.mastermind-x.com/tools/calculators/cagr.html\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">CAGR calculator ↗</a><a layer-name=\"Compounding calculator ↗\" href=\"https://www.mastermind-x.com/tools/calculators/compounding.html\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Compounding calculator ↗</a><a layer-name=\"Back to the desk ↗\" href=\"https://www.mastermind-x.com/blog/index.html\" style=\"display:flex;align-items:center;width:350px;min-height:44px;font-family:Inter;font-size:14px;line-height:22px;color:#235b8e;text-decoration:underline;overflow-wrap:anywhere;\">Back to the desk ↗</a></div>",
+          "variant": "Action/public-continuation",
+          "urls": [
+            "https://www.mastermind-x.com/tools/calculators/cagr.html",
+            "https://www.mastermind-x.com/tools/calculators/compounding.html",
+            "https://www.mastermind-x.com/blog/index.html"
+          ]
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Narrow reading implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:8px;background-color:#f0f0ed;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · NATIVE READING COMPOSITION</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">The existing English body, calculation, publication dates and continuation URLs remain. The TOC uses the supporting specimen’s #arithmetic, #difference, #limits and #next anchors. This is a candidate composition; bind the actual emitted article’s canonical route and original heading slugs through its public owner.</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">No investor rail. Public navigation destinations remain with seo_base.html.j2. Actual 390px/400% browser reflow, anchors, link behavior, focus and CJK chrome still need their own receipt.</div></div>",
+          "variant": "Build/public-reading-boundary"
+        }
+      ],
+      "source_binding": {
+        "source_consumer_board": "editorial-dark",
+        "body_copy_keys": [
+          "lede",
+          "calculation-copy",
+          "averages-copy",
+          "limits-copy",
+          "next-copy"
+        ],
+        "source_body_unchanged": true,
+        "source_anchors": [
+          "arithmetic",
+          "difference",
+          "limits",
+          "next"
+        ],
+        "continuation_urls": [
+          "https://www.mastermind-x.com/tools/calculators/cagr.html",
+          "https://www.mastermind-x.com/tools/calculators/compounding.html",
+          "https://www.mastermind-x.com/blog/index.html"
+        ],
+        "canonical_route": "Existing public article owner; not invented by this companion",
+        "density": "Comfortable reading:16px/26 body,18px/28 lede,22px/30 sections,30px/36 title",
+        "column_width": 350
+      }
+    },
+    {
+      "key": "density-40-52-comparison",
+      "name": "F02 · Dense40 / Comfortable52 · Same three rows · Repair v1",
+      "pageId": "p-4-0",
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "language": {
+        "body": "en",
+        "chrome": "en"
+      },
+      "artboardStyles": {
+        "display": "flex",
+        "flexDirection": "column",
+        "width": "1440px",
+        "height": "fit-content",
+        "padding": "48px",
+        "gap": "24px",
+        "backgroundColor": "var(--noir-canvas)",
+        "fontFamily": "Inter",
+        "color": "var(--noir-text-primary)"
+      },
+      "steps": [
+        {
+          "key": "artifact-header",
+          "parent": "board",
+          "html": "<div layer-name=\"Density comparison provenance\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;gap:8px;\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-secondary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">F02 · ILLUSTRATIVE DENSITY COMPARISON · REPAIR v1</div><div style=\"font-family:Inter;font-size:28px;line-height:36px;font-weight:600;color:var(--noir-text-primary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">Change spacing. Keep the data and the tasks.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;font-weight:400;color:var(--noir-text-secondary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">The same three Company metrics, periods, units, changes and evidence actions appear in both modes. Font sizes and precision stay the same.</div></div>",
+          "variant": "Density/same-data-comparison"
+        },
+        {
+          "key": "comparison",
+          "parent": "board",
+          "html": "<div layer-name=\"Two density modes\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:1344px;gap:32px;align-items:flex-start;\"></div>",
+          "variant": "Density/comparison-container"
+        },
+        {
+          "key": "dense",
+          "parent": "comparison",
+          "html": "<div layer-name=\"Dense table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:16px;gap:0px;background-color:var(--noir-panel);\"></div>",
+          "variant": "TableFrame/dense-container"
+        },
+        {
+          "key": "dense-heading",
+          "parent": "dense",
+          "html": "<div layer-name=\"Dense context\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:624px;padding:0 0 16px;gap:6px;\"><div style=\"font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">Dense · 40px rows</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">EXM · Annual income metrics · USD bn</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">FY 2025 / FY 2026 · 3 same rows · source 30 Oct 2026</div></div>",
+          "variant": "Density/dense-label"
+        },
+        {
+          "key": "dense-header",
+          "parent": "dense",
+          "html": "<div layer-name=\"dense headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:40px;align-items:center;background-color:var(--noir-raised);\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:184px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Metric</div></div><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">FY 2025</div></div><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">FY 2026</div></div><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Change</div></div><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:108px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Source</div></div></div>",
+          "variant": "TableFrame/dense-headers"
+        },
+        {
+          "key": "dense-row-1",
+          "parent": "dense",
+          "html": "<div layer-name=\"dense / Operating income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:40px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-panel);\"><div layer-name=\"Operating income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Operating income</div></div><div layer-name=\"8.39\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">8.39</div></div><div layer-name=\"11.76\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">11.76</div></div><div layer-name=\"+40.2%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+40.2%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:32px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/dense",
+          "field_values": [
+            "Operating income",
+            "8.39",
+            "11.76",
+            "+40.2%",
+            "Evidence"
+          ],
+          "row_height": 40
+        },
+        {
+          "key": "dense-row-2",
+          "parent": "dense",
+          "html": "<div layer-name=\"dense / Pretax income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:40px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-selected);\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Pretax income</div></div><div layer-name=\"7.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">7.10</div></div><div layer-name=\"10.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">10.10</div></div><div layer-name=\"+42.3%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+42.3%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:32px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/dense",
+          "field_values": [
+            "Pretax income",
+            "7.10",
+            "10.10",
+            "+42.3%",
+            "Evidence"
+          ],
+          "row_height": 40
+        },
+        {
+          "key": "dense-row-3",
+          "parent": "dense",
+          "html": "<div layer-name=\"dense / Net income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:40px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-panel);\"><div layer-name=\"Net income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Net income</div></div><div layer-name=\"6.20\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">6.20</div></div><div layer-name=\"8.90\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">8.90</div></div><div layer-name=\"+43.5%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+43.5%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:32px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/dense",
+          "field_values": [
+            "Net income",
+            "6.20",
+            "8.90",
+            "+43.5%",
+            "Evidence"
+          ],
+          "row_height": 40
+        },
+        {
+          "key": "comfortable",
+          "parent": "comparison",
+          "html": "<div layer-name=\"Comfortable table\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:656px;padding:16px;gap:0px;background-color:var(--noir-panel);\"></div>",
+          "variant": "TableFrame/comfortable-container"
+        },
+        {
+          "key": "comfortable-heading",
+          "parent": "comfortable",
+          "html": "<div layer-name=\"Comfortable context\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:624px;padding:0 0 16px;gap:6px;\"><div style=\"font-family:Inter;font-size:21px;line-height:29px;font-weight:600;color:var(--noir-text-primary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">Comfortable · 52px rows</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:500;color:var(--noir-text-secondary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">EXM · Annual income metrics · USD bn</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:624px;flex-shrink:0;overflow-wrap:anywhere;\">FY 2025 / FY 2026 · 3 same rows · source 30 Oct 2026</div></div>",
+          "variant": "Density/comfortable-label"
+        },
+        {
+          "key": "comfortable-header",
+          "parent": "comfortable",
+          "html": "<div layer-name=\"comfortable headers\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:40px;align-items:center;background-color:var(--noir-raised);\"><div layer-name=\"Metric\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:184px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Metric</div></div><div layer-name=\"FY 2025\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">FY 2025</div></div><div layer-name=\"FY 2026\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">FY 2026</div></div><div layer-name=\"Change\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:84px;flex-shrink:0;overflow-wrap:anywhere;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">Change</div></div><div layer-name=\"Source\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--noir-text-secondary);width:108px;flex-shrink:0;overflow-wrap:anywhere;text-align:left;\">Source</div></div></div>",
+          "variant": "TableFrame/comfortable-headers"
+        },
+        {
+          "key": "comfortable-row-1",
+          "parent": "comfortable",
+          "html": "<div layer-name=\"comfortable / Operating income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:52px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-panel);\"><div layer-name=\"Operating income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Operating income</div></div><div layer-name=\"8.39\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">8.39</div></div><div layer-name=\"11.76\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">11.76</div></div><div layer-name=\"+40.2%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+40.2%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:44px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/comfortable",
+          "field_values": [
+            "Operating income",
+            "8.39",
+            "11.76",
+            "+40.2%",
+            "Evidence"
+          ],
+          "row_height": 52
+        },
+        {
+          "key": "comfortable-row-2",
+          "parent": "comfortable",
+          "html": "<div layer-name=\"comfortable / Pretax income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:52px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-selected);\"><div layer-name=\"Pretax income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Pretax income</div></div><div layer-name=\"7.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">7.10</div></div><div layer-name=\"10.10\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">10.10</div></div><div layer-name=\"+42.3%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+42.3%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:44px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/comfortable",
+          "field_values": [
+            "Pretax income",
+            "7.10",
+            "10.10",
+            "+42.3%",
+            "Evidence"
+          ],
+          "row_height": 52
+        },
+        {
+          "key": "comfortable-row-3",
+          "parent": "comfortable",
+          "html": "<div layer-name=\"comfortable / Net income\" style=\"display:flex;flex-direction:row;flex-shrink:0;box-sizing:border-box;width:624px;height:52px;align-items:center;border-bottom:1px solid #343434;background-color:var(--noir-panel);\"><div layer-name=\"Net income\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:200px;padding:0 8px;align-items:flex-start;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:184px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Net income</div></div><div layer-name=\"6.20\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">6.20</div></div><div layer-name=\"8.90\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:var(--noir-text-primary);width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">8.90</div></div><div layer-name=\"+43.5%\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:100px;padding:0 8px;align-items:flex-end;justify-content:center;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#b0d4b9;width:84px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;display:flex;flex-direction:column;align-items:flex-end;\">+43.5%</div></div><div layer-name=\"Evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:124px;padding:0 8px;align-items:flex-start;justify-content:center;height:44px;\"><div style=\"font-family:Inter;font-size:13px;line-height:20px;font-weight:400;color:#a7c9f1;width:108px;flex-shrink:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;\">Evidence</div></div></div>",
+          "variant": "DataRow/comfortable",
+          "field_values": [
+            "Net income",
+            "6.20",
+            "8.90",
+            "+43.5%",
+            "Evidence"
+          ],
+          "row_height": 52
+        },
+        {
+          "key": "build-contract",
+          "parent": "board",
+          "html": "<div layer-name=\"Density implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:1344px;padding:16px 0 0;gap:8px;border-top:1px solid #343434;\"><div style=\"font-family:Inter;font-size:11px;line-height:17px;font-weight:600;color:var(--noir-text-secondary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · REAL NATIVE SPACING, NOT AN EXECUTED TOGGLE</div><div style=\"font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">Each dense row is 40px; each comfortable row is 52px. Both keep the same 13px values, 12px headers/units, column widths, source actions and selected Pretax-income row. Only row/desktop hit-area spacing changes. Important phone controls retain the separate 44px policy.</div><div style=\"font-family:Inter;font-size:13px;line-height:21px;font-weight:400;color:var(--noir-text-secondary);width:1344px;flex-shrink:0;overflow-wrap:anywhere;\">The host density preference and persistence remain source-owned. Apply the actual row token without removing fields, changes or evidence; browser switching, touch, focus and export scope remain unverified.</div></div>",
+          "variant": "Build/density-boundary"
+        }
+      ],
+      "density_binding": {
+        "same_fixture_rows": [
+          2,
+          4,
+          5
+        ],
+        "column_widths": [
+          200,
+          100,
+          100,
+          100,
+          124
+        ],
+        "font_sizes": {
+          "value": 13,
+          "header": 12,
+          "unit": 12
+        },
+        "row_heights": {
+          "dense": 40,
+          "comfortable": 52
+        },
+        "selected_metric": "Pretax income",
+        "same_data": true
+      }
+    }
+  ],
+  "append_to_existing": [],
+  "source_hashes": {
+    "/workspace/scratch/55964f568673/f02/paper/consumer-inputs/consumer-boards.json": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+    "/workspace/scratch/55964f568673/f02/fixtures/company-history.json": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/product-native-first-pass.md": "a5d3bbfdb1a77eedb45a6c91a9c9a7fffedd4858babba53fe12d9eb2498f6b43",
+    "/workspace/scratch/55964f568673/f02/paper/reviews/taste-native-first-pass.md": "981f6774fba5af4218c50d6ec2eaa879a6c1119feea9729aaaad7f7e0e5e0d92",
+    "/workspace/scratch/55964f568673/f02/paper/repairs/company-annual-growth-v2/company-row-replacements.v2.json": "4a31896fa786402f3f19c3b7224c6646e4f4347c05f81331cbcecd611dc4260d"
+  },
+  "dependent_row_patch": {
+    "path": "../company-annual-growth-v2/company-row-replacements.v2.json",
+    "sha256": "4a31896fa786402f3f19c3b7224c6646e4f4347c05f81331cbcecd611dc4260d",
+    "return_binding": "Historical FY2025 cell resolves through the newly replaced Company row; old descendants must not be used."
+  },
+  "native_ids": "New boards/steps intentionally unbound; existing editorial return IDs are frozen observations only.",
+  "paper_calls": 0,
+  "browser_calls": 0
+}

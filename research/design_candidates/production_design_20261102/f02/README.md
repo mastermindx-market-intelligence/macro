@@ -1,14 +1,15 @@
-# F02 — Production design system candidate
+# F02 — Native design system candidate
 
 **System:** `F02-SYSTEM/1.0.0-candidate.2`  
-**Delivery:** `PARTIAL` — source/specification, reviewed supporting designs and exact return delivered; editable Paper and qualification gates remain.  
-**RIG projection:** `draft`; no approval receipt.  
-**Paper:** `NOT_APPLIED_TO_PAPER`;0 mutations.  
-**Product:** design/specification only; no implementation, merge or deployment.
+**Current phase:** `NATIVE_AUTHORING_IN_PROGRESS` — editable Paper construction, review repairs and final evidence binding.  
+**Formal RIG:** `draft`; no approval receipt or released F01/F02 foundation.  
+**Scope:** design and implementation specifications; no product implementation, merge or deployment.
 
-The exact completion/blocker record is [RETURN_F02.md](RETURN_F02.md), and finding-by-finding results are in [reviews/REVIEW_REPORT.md](reviews/REVIEW_REPORT.md). Durable carrier: [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630).
+[Open the actual Paper Read me & Build contract](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) · [Draft PR #10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) · [Native board index](paper/NATIVE_BOARD_INDEX.md) · [Native review record](paper/reviews/NATIVE_REVIEW_REPORT.md).
 
-This package executes the [F02 handoff](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md) under programme Draft PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). It proposes source-mapped reusable components and explicit chart/table/state contracts while preserving current domain capabilities. It does not create a new umbrella programme or route registry.
+The updated direct Paper app is qualified for the canonical file. The persisted checkpoint `0da8c968b6c01f168ea7386d0d1dbbc32140075e` includes 19 observed F02 boards and their completed captures where available: the core kit, all four consumer compositions in both themes, the in-progress state atlas, Company320 unknown/zero receipts and Options320 full-print evidence. Additional narrow/locale/width/state and review repairs are in progress. Actual IDs and operations are in `paper/native-progress.json` and the later `paper/writer-continuation-progress.json`; a completed local phase is not reference approval.
+
+The exact immutable assignment is `6e1862867193ec6486a22001a0e4fb515da20448`, under programme Draft PR #10617. The served website, actual Macro/Terminal source and all 67 assigned Paper identities were inspected in the initial phase. The source ownership, data boundaries, migration and acceptance contract remain part of this package.
 
 ## Read in this order
 
@@ -16,57 +17,32 @@ This package executes the [F02 handoff](https://github.com/mastermindx-market-in
 2. [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md) — exact current source owners, token collisions, actual read paths/schemas, entity/unit/time/access semantics, migration and rollback.
 3. [INTERACTION_STATES.md](INTERACTION_STATES.md) — copy, independent state axes, control transitions, keyboard/touch/focus/scroll and saved-state outcomes.
 4. [CAPABILITY_LEDGER.md](CAPABILITY_LEDGER.md) and [PAPER_RETENTION_LEDGER.md](PAPER_RETENTION_LEDGER.md) —36 shared/consumer capabilities and every one of67 assigned Paper boards.
-5. [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md) — exact existing targets,12 bounded construction items, ready-to-place Read me and adjacent annotations; successor IDs remain uncreated.
+5. [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md) — original construction intent and current native continuation references; actual returned IDs are indexed under paper/.
 6. [VERIFICATION.md](VERIFICATION.md) and [CONTINUITY_AND_GATES.md](CONTINUITY_AND_GATES.md) — completed evidence, exact limits, inherited conditions and named remaining owners.
 
-## Reviewable artifacts
+## Native design and source authority
 
-- [pattern-lab.html](pattern-lab.html): standalone source specimen for Macro, Company, Options and public editorial; dark/light, EN/ZH chrome, density, independent read/access/save axes, table/chart values and typed evidence patterns. It has no external dependencies or live save integration. Browser execution is not qualified.
-- [sheets/README.md](sheets/README.md):13 editable SVG **source illustrations**,11 PNG plates and reproducible direct-drawing generator. These are supporting static compositions, not editable Paper or browser screenshots.
-- [sheets/macro-dark-1440.png](sheets/macro-dark-1440.png), [sheets/company-light-1440.png](sheets/company-light-1440.png), [sheets/options-light-1440.png](sheets/options-light-1440.png), [sheets/editorial-light-1440.png](sheets/editorial-light-1440.png), [sheets/mobile-comparison.png](sheets/mobile-comparison.png), [sheets/states-and-semantics.png](sheets/states-and-semantics.png).
-- [token-map.json](token-map.json):18 proposed semantic role mappings,20 live observed Paper color tokens, exact source collisions and scoped migration decisions.
-- `evidence/`: committed production/Paper before captures, live identity/tree observations, source lineage records and mechanical verification results.
-- [reviews/REVIEW_SEQUENCE.md](reviews/REVIEW_SEQUENCE.md): unchanged first-pass reports, later rationale reveal and separate repair review. The first-pass artifact list identifies commit `6ee221069deba909b0f1eceee53869d4f4569ac9`; later versions do not replace those original bytes.
-- [reviews/REPAIR_REVIEW_PACKET.md](reviews/REPAIR_REVIEW_PACKET.md): unchanged critical-task criteria and exact repair-set review instructions.
-- [fixtures/company-history.json](fixtures/company-history.json): typed illustrative EXM history and statements, shared by source and drawings.
+- `paper/screenshots/` contains actual Paper JPEG captures. `paper/exports/` contains actual native JSX with returned node IDs. These are distinct from the older generated static plates.
+- `paper/native-role-bindings.json` maps 21 contracted roles to observed design evidence, while retaining the four domain/source roles that require their existing owners and runtime qualification.
+- `paper/native-predecessor-bindings.json` maps all 67 originals to retained references or scoped shared-anatomy companions. Originals are not deleted or silently promoted.
+- `paper/repairs/fixture-coherence-v1/` supplies count-first synthetic participation fixtures and effective construction packets. `f02.fixture.v3/macro` is a design fixture namespace, not a production API.
+- `paper/repairs/company-annual-growth-v2/` preserves raw values and the full history while restoring annual comparison labels and legible units. Applied repair versions and actual replacement IDs will be recorded separately from prepared inputs.
+- The original `pattern-lab.html`, original authoring packets and `sheets/` are historical source/static evidence. Their reviewed bytes remain unchanged. They are not the authority for the repaired native fixtures; see SOURCE_AND_DATA_CONTRACT §12.
 
-## Exact inputs and working source
+## Independent review
 
-| Input | Immutable revision |
-| --- | --- |
-| Assignment package | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
-| Protected Mastermind procedures | `c57adacb338fe837c7d585f1e372c64d9b0118ec`; protected master verified; compatible skillpack1.0.1 |
-| Current Macro evidence | `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` |
-| Current Terminal evidence | `b79b1e136290978ff7675087de979bb1b42b3713` |
-| Isolated source branch | `design/f02-system-v1-20261102-c2`, from the immutable assignment package |
+The first native freeze is `245d70bbd3ac773f3074277c771095264b31269d`, with 44 members and aggregate SHA256 `98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b`. Both independent critics verified every member and visually inspected all 25 actual images. Their unchanged first-pass BLOCK reports were preserved at `d3c24ceae3f234ce6eb756596367b2045f8ae3c6` before rationale reveal.
 
-Canonical Paper: [01M312VSDSZFVT45674GDVJVZN](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0),8pages/48boards. Supporting MASTERMIND PAGES: [p-1Q-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1Q-0),10boards, and [p-5-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0),9boards. All are live observed identities; neither names nor token/snapshot hashes prove approval.
+Observable repairs address numeric cell alignment, Macro missing-last sorting, coherent count/rate fixtures, Company annual change visibility and unit size. New native evidence must be frozen and independently reviewed before these findings can be closed. The earlier source/static reports under `reviews/` retain their original artifact scope. Native advisory reports do not supply formal RIG admission or the designated design-authority verdict.
 
-## Completed local phases
+## Preservation and remaining qualification
 
-| Task node | Current result |
-| --- | --- |
-| F02.1 Baseline and ownership | Completed relevant live/source/Paper inspection,67-board identity inventory, source pins and collision analysis |
-| F02.2 Shared contract | Completed candidate system/source/data/state/format/versioning contracts and36-capability ledger |
-| F02.3 Design specimens | Completed source prototype and static four-consumer/theme/mobile/state compositions; editable Paper application remains blocked |
-| F02.4 Builder package | Completed exact source integration, migration/rollback, component minimums, acceptance cases and ready Paper annotations |
-| F02.5 Review | Completed independent first passes, later rationale passes, repaired-set reviews and narrow follow-ups. Native product adoption BLOCK remains for PRC-007/runtime qualification; static taste PASS_WITH_CONDITIONS. Formal RIG admission/approval remains open |
-| F02.6 Persistence and return | Completed immutable source/design freezes, unchanged critique history, Draft PR #10630, scoped return ledger and exact blocker/owner records; no merge or deployment |
+The capability ledger remains 16 RETAIN +20 IMPROVE across 36 capabilities, with zero removals or relocations. The Paper ledger remains 25 RETAIN +42 IMPROVE across 67 originals. The new Read me page is `p-9-0`, with F02 board `47Q-0`; no original board was moved to create it. Final live retention/token readback is still due at authoring close.
 
-**Disposition totals:** capabilities16 RETAIN +20 IMPROVE; Paper25 RETAIN +42 IMPROVE.0 removals,0 relocations,0 invented blocked-data assertions. Existing domain semantics, source identities, exports, historical definitions, access controls and focused-chart behavior remain with their current owners.
+The remaining gates are the F01 joint shell/system freeze, actual consumer/domain integration, permitted browser keyboard/touch/focus/400% proof, and admitted formal review. The existing Chrome could not resolve the managed preview; its owned tab/server were stopped. This is a bounded access observation, not successful runtime verification. The legacy writer mismatch is historical and does not describe the working direct Paper route.
 
-## Concrete remaining actions
+Current source evidence pins remain Macro `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` and Terminal `b79b1e136290978ff7675087de979bb1b42b3713`. Protected Mastermind procedure refreshes and their bounded drift checks are recorded in `paper/CONTINUATION_GATES_20261103.md`. Source pins are evidence identities, not assertions about the served deployment.
 
-1. **P00:** resolve the original Paper adapter catalog qualification and return actual admitted write/readback evidence. The catalog mismatch was confirmed again at 02:39 UTC and is recorded exactly in evidence/closeout-gates.json; F02 did not attempt a mutation or alternate-carrier bypass.
-2. **F01/F02:** settle and version the joint shell/system composition. The proposed inspector rule is320px +24px gap only if at least640px primary content remains; all dimensions are explicitly baseline/proposed until joint review.
-3. **F02/QA01:** execute the candidate in an authorized reachable HTTP/HTTPS browser preview; prove keyboard/touch/focus, real400% zoom, all width classes, CJK typography and reduced-motion/forced-color behavior. The local preview was unreachable and inline data URLs were policy-blocked; no workaround or false browser proof is claimed.
-4. **F02 after P00/F01:** construct/read back the editable Paper references and in-Paper Read me/annotations, then freeze their exports with source artifacts and exact digests.
-5. **Existing review owner/QA01:** obtain admitted independent RIG critics and the design-authority verdict bound to that final set. Native advisory critique is useful but is not that receipt. The closeout roots reads returned INVALID_ARGUMENT for both declared request shapes, after the earlier backend_unavailable observation; no admission binding was established.
+## Historical source/static review identity
 
-D02/D07/D08/public editorial and D23 retain the explicitly named producer/identity/entitlement/mutation qualifications. Refraction, Sector and Prophet authority conditions are preserved in the continuity register. No product implementation is authorized by this source candidate.
-
-## Final reviewed artifact identity
-
-The final narrow follow-up source/static set is committed at `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, with 55 members and set SHA256 `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`. It addresses the two new minor repair-review findings: Options density-token wiring and the mobile pre-table scroll hint. The HTML SHA256 is `f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4`.
-
-Earlier artifacts remain reachable at their own commits and manifests. The 53-file repair set is `1253a647d193e1eacd1eb6f523a7a031529d2150`; the 32-file original set is `6ee221069deba909b0f1eceee53869d4f4569ac9`. Review outcomes must be read with their scoped evidence and exact set identity. Final report/index/return updates do not imply new product or Paper effects.
+The previous final source/static set remains `d68d5ecfbcd7e29094f59af3f44e7ae2a0f7f940`, 55 members, aggregate `38b19c087b0639b728f37d015c939e7abbccf95722b72730f6f5fce84e025324`; HTML SHA256 `f206a0274bd710835aabe3f80053bc87b359f7409ff09ea6d3bc49afdf4cb5f4`. Earlier reviews and artifacts remain at their own commits. Later native construction neither rewrites those reports nor inherits their approval.

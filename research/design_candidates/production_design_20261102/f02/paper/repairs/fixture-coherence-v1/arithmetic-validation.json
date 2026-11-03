@@ -1,0 +1,266 @@
+{
+  "schema": "f02.fixture-arithmetic-proof.v1",
+  "method": "Independent Fraction arithmetic and Decimal ROUND_HALF_UP from integer source tuples; assertions bind expected labels.",
+  "universe": {
+    "current_above": 709,
+    "prior_above": 697,
+    "covered": 1063,
+    "eligible": 1063,
+    "current_percent_fraction": "70900/1063",
+    "prior_percent_fraction": "69700/1063",
+    "delta_pp_fraction": "1200/1063",
+    "current_percent_1dp": "66.7",
+    "current_percent_2dp": "66.70",
+    "prior_percent_2dp": "65.57",
+    "delta_pp_2dp": "+1.13",
+    "delta_bps_0dp": "+113",
+    "relative_percent_2dp": "+1.72"
+  },
+  "core": {
+    "information_technology": {
+      "current_above": 742,
+      "prior_above": 721,
+      "covered": 1000,
+      "eligible": 1006,
+      "current_percent_fraction": "371/5",
+      "prior_percent_fraction": "721/10",
+      "delta_pp_fraction": "21/10",
+      "current_percent_1dp": "74.2",
+      "current_percent_2dp": "74.20",
+      "prior_percent_2dp": "72.10",
+      "delta_pp_2dp": "+2.10",
+      "delta_bps_0dp": "+210",
+      "relative_percent_2dp": "+2.91"
+    },
+    "utilities": {
+      "current_above": 132,
+      "prior_above": 133,
+      "covered": 250,
+      "eligible": 250,
+      "current_percent_fraction": "264/5",
+      "prior_percent_fraction": "266/5",
+      "delta_pp_fraction": "-2/5",
+      "current_percent_1dp": "52.8",
+      "current_percent_2dp": "52.80",
+      "prior_percent_2dp": "53.20",
+      "delta_pp_2dp": "-0.40",
+      "delta_bps_0dp": "-40",
+      "relative_percent_2dp": "-0.75"
+    }
+  },
+  "macro": {
+    "technology": {
+      "current_above": 207,
+      "prior_above": 201,
+      "covered": 286,
+      "eligible": 286,
+      "current_percent_fraction": "10350/143",
+      "prior_percent_fraction": "10050/143",
+      "delta_pp_fraction": "300/143",
+      "current_percent_1dp": "72.4",
+      "current_percent_2dp": "72.38",
+      "prior_percent_2dp": "70.28",
+      "delta_pp_2dp": "+2.10",
+      "delta_bps_0dp": "+210",
+      "relative_percent_2dp": "+2.99"
+    },
+    "industrials": {
+      "current_above": 189,
+      "prior_above": 185,
+      "covered": 267,
+      "eligible": 267,
+      "current_percent_fraction": "6300/89",
+      "prior_percent_fraction": "18500/267",
+      "delta_pp_fraction": "400/267",
+      "current_percent_1dp": "70.8",
+      "current_percent_2dp": "70.79",
+      "prior_percent_2dp": "69.29",
+      "delta_pp_2dp": "+1.50",
+      "delta_bps_0dp": "+150",
+      "relative_percent_2dp": "+2.16"
+    },
+    "financials": {
+      "current_above": 346,
+      "prior_above": 343,
+      "covered": 500,
+      "eligible": 500,
+      "current_percent_fraction": "346/5",
+      "prior_percent_fraction": "343/5",
+      "delta_pp_fraction": "3/5",
+      "current_percent_1dp": "69.2",
+      "current_percent_2dp": "69.20",
+      "prior_percent_2dp": "68.60",
+      "delta_pp_2dp": "+0.60",
+      "delta_bps_0dp": "+60",
+      "relative_percent_2dp": "+0.87"
+    },
+    "communication_services": {
+      "current_above": 118,
+      "prior_above": 116,
+      "covered": 177,
+      "eligible": 177,
+      "current_percent_fraction": "200/3",
+      "prior_percent_fraction": "11600/177",
+      "delta_pp_fraction": "200/177",
+      "current_percent_1dp": "66.7",
+      "current_percent_2dp": "66.67",
+      "prior_percent_2dp": "65.54",
+      "delta_pp_2dp": "+1.13",
+      "delta_bps_0dp": "+113",
+      "relative_percent_2dp": "+1.72"
+    },
+    "consumer_discretionary": {
+      "current_above": 238,
+      "prior_above": 241,
+      "covered": 375,
+      "eligible": 375,
+      "current_percent_fraction": "952/15",
+      "prior_percent_fraction": "964/15",
+      "delta_pp_fraction": "-4/5",
+      "current_percent_1dp": "63.5",
+      "current_percent_2dp": "63.47",
+      "prior_percent_2dp": "64.27",
+      "delta_pp_2dp": "-0.80",
+      "delta_bps_0dp": "-80",
+      "relative_percent_2dp": "-1.24"
+    },
+    "health_care": {
+      "current_above": 33,
+      "prior_above": 33,
+      "covered": 54,
+      "eligible": 54,
+      "current_percent_fraction": "550/9",
+      "prior_percent_fraction": "550/9",
+      "delta_pp_fraction": "0",
+      "current_percent_1dp": "61.1",
+      "current_percent_2dp": "61.11",
+      "prior_percent_2dp": "61.11",
+      "delta_pp_2dp": "0.00",
+      "delta_bps_0dp": "0",
+      "relative_percent_2dp": "0.00"
+    },
+    "utilities": {
+      "current_above": 194,
+      "prior_above": 198,
+      "covered": 333,
+      "eligible": 333,
+      "current_percent_fraction": "19400/333",
+      "prior_percent_fraction": "2200/37",
+      "delta_pp_fraction": "-400/333",
+      "current_percent_1dp": "58.3",
+      "current_percent_2dp": "58.26",
+      "prior_percent_2dp": "59.46",
+      "delta_pp_2dp": "-1.20",
+      "delta_bps_0dp": "-120",
+      "relative_percent_2dp": "-2.02"
+    },
+    "consumer_staples": {
+      "current_above": 139,
+      "prior_above": 138,
+      "covered": 250,
+      "eligible": 250,
+      "current_percent_fraction": "278/5",
+      "prior_percent_fraction": "276/5",
+      "delta_pp_fraction": "2/5",
+      "current_percent_1dp": "55.6",
+      "current_percent_2dp": "55.60",
+      "prior_percent_2dp": "55.20",
+      "delta_pp_2dp": "+0.40",
+      "delta_bps_0dp": "+40",
+      "relative_percent_2dp": "+0.72"
+    },
+    "materials": {
+      "current_above": 261,
+      "prior_above": 264,
+      "covered": 500,
+      "eligible": 500,
+      "current_percent_fraction": "261/5",
+      "prior_percent_fraction": "264/5",
+      "delta_pp_fraction": "-3/5",
+      "current_percent_1dp": "52.2",
+      "current_percent_2dp": "52.20",
+      "prior_percent_2dp": "52.80",
+      "delta_pp_2dp": "-0.60",
+      "delta_bps_0dp": "-60",
+      "relative_percent_2dp": "-1.14"
+    }
+  },
+  "energy": {
+    "current_above": null,
+    "prior_above": null,
+    "covered": 0,
+    "eligible": 82,
+    "current_percent": null,
+    "prior_percent": null,
+    "delta_pp": null,
+    "availability": "unavailable"
+  },
+  "history": [
+    {
+      "date": "21 Oct",
+      "above": 657,
+      "covered": 1063,
+      "rate_1dp": "61.8",
+      "rate_2dp": "61.81"
+    },
+    {
+      "date": "22 Oct",
+      "above": 663,
+      "covered": 1063,
+      "rate_1dp": "62.4",
+      "rate_2dp": "62.37"
+    },
+    {
+      "date": "23 Oct",
+      "above": null,
+      "covered": null,
+      "rate_1dp": null,
+      "rate_2dp": null
+    },
+    {
+      "date": "26 Oct",
+      "above": 679,
+      "covered": 1063,
+      "rate_1dp": "63.9",
+      "rate_2dp": "63.88"
+    },
+    {
+      "date": "27 Oct",
+      "above": 673,
+      "covered": 1063,
+      "rate_1dp": "63.3",
+      "rate_2dp": "63.31"
+    },
+    {
+      "date": "28 Oct",
+      "above": 687,
+      "covered": 1063,
+      "rate_1dp": "64.6",
+      "rate_2dp": "64.63"
+    },
+    {
+      "date": "29 Oct",
+      "above": 697,
+      "covered": 1063,
+      "rate_1dp": "65.6",
+      "rate_2dp": "65.57"
+    },
+    {
+      "date": "30 Oct",
+      "above": 709,
+      "covered": 1063,
+      "rate_1dp": "66.7",
+      "rate_2dp": "66.70"
+    }
+  ],
+  "checks": {
+    "numerator_le_covered_le_eligible": true,
+    "displayed_sector_rates_and_deltas_match": true,
+    "communication_not_universe": true,
+    "energy_unavailable_not_zero": true,
+    "one_history_gap_on_23_oct": true,
+    "sector_denominators_sum": 2742,
+    "independent_cohorts_explicit": true
+  },
+  "fixture_contract_sha256": "d3329c2608fe14fb4fd592f971c945b6ac5a860d8c9836ee485cfa0151b58433"
+}

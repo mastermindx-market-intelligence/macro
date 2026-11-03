@@ -166,6 +166,14 @@ Proposed later budgets are LCP ≤2.5s, INP ≤200ms and CLS ≤0.1 at p75, meas
 
 Editable artifact completion, final mapping and review: **F02**, using the accepted direct route. Legacy selector/v21 changes remain with the existing adapter owner and are not prerequisites invented for ordinary currently qualified F02 edits. Joint shell/system release: **F01 / F02**. Actual browser/assistive-technology verification of candidate behaviors: **F02 / QA01**. Real field/clock/entitlement qualification: **D02, D07, D08 and public editorial source owner**. Save request identity/readback: **D23**. Admitted dual RIG critics and authority verdict: **existing review owner / QA01**. These gates are carried individually; none is hidden behind a general claim that the whole assignment is blocked.
 
+## Native continuation and current design inputs
+
+The native continuation preserves this component version, `F02-SYSTEM/1.0.0-candidate.2`, while advancing the illustrative participation records to their separate `f02.fixture.v3/macro` namespace. A fixture revision is not a shared component release. The final native manifest binds the exact export/capture/source bytes; mutable Paper links and a token hash do not identify an approved revision.
+
+Use `paper/NATIVE_BOARD_INDEX.md`, `paper/native-role-bindings.json` and `paper/native-predecessor-bindings.json` to resolve actual board/step IDs and retained originals. The 17 portable component roles have authored examples and failure treatments; the four existing domain/source roles—VirtualizedDataInspector, CountLadder, LifecycleRail and DecisionRow/VerdictHero—remain explicitly retained and unqualified, with their current semantics and acceptance obligations. A shared anatomy companion does not replace a retained domain reference or approve its workflow.
+
+The original HTML prototype/static sheets and their reviews remain historical supporting evidence. Current native fixture and Company annual-change construction rules are in SOURCE_AND_DATA_CONTRACT §12. Numeric values align at the cell-frame edge; Company keeps every annual amount and comparison, with 12px meaningful units. Native EN/ZH/narrow/density variants are design evidence. F01 release, actual browser input/reflow and consumer/domain integration remain separate acceptance requirements.
+
 ## Standards consulted
 
 - [WCAG 2.2 — Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html): 24×24 CSS pixels or the specified exceptions/spacing, distinct from the programme's 44px target.

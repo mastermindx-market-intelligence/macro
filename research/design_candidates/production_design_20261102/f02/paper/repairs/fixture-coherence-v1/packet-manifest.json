@@ -1,0 +1,58 @@
+{
+  "schema": "f02.fixture-effective-packets.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "fixture_contract_sha256": "d3329c2608fe14fb4fd592f971c945b6ac5a860d8c9836ee485cfa0151b58433",
+  "packets": [
+    {
+      "original_packet": "mobile-inputs/mobile-state-boards.json",
+      "original_sha256": "a52e7566fa7ff5ae8e55874fb2b28e0d5cfc1fbc415530532294d9c590c35d4d",
+      "effective_packet": "effective/mobile-state-boards.json",
+      "effective_sha256": "1fb53d63740c77150fd85618ded8f0c73130bf943f376f2477bc06af78bb6a09",
+      "boards": 6,
+      "changed_steps": 43
+    },
+    {
+      "original_packet": "mobile-inputs/supplemental-boards.json",
+      "original_sha256": "aa5bb0dc6880bcc8fe50ce1b7c16fe6ad6945b6d962bf7bb921376456616bf50",
+      "effective_packet": "effective/supplemental-boards.json",
+      "effective_sha256": "65fbd6c54fcf3b2f505e0e16e8ee3b683e01944ec91ca6873425c0188586328a",
+      "boards": 4,
+      "changed_steps": 47
+    },
+    {
+      "original_packet": "core-supplement-inputs.json",
+      "original_sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+      "effective_packet": "effective/core-supplement-inputs.json",
+      "effective_sha256": "1f6bdadf537cc0d602fcd1bab151c2795bc6bc820359e09ca137a5dc3906f5c1",
+      "boards": 2,
+      "changed_steps": 6
+    },
+    {
+      "original_packet": "fault-composition-inputs.json",
+      "original_sha256": "9b9adf4aac8e3fb0dfc2f1dae2eb0426196c0546b59302d336897ee09b29ab19",
+      "effective_packet": "effective/fault-composition-inputs.json",
+      "effective_sha256": "331e12532275c25eaeccbb9637f6c95faefbe6f1cc8cf0c1ab17ba40a6bf6b83",
+      "boards": 1,
+      "changed_steps": 3
+    },
+    {
+      "original_packet": "foundation-inputs/boards.json",
+      "original_sha256": "ac628bc5745099539e7186f1e35428b964e83a36c24c498fc1605caa6dc92c38",
+      "effective_packet": "effective/foundation-boards.json",
+      "effective_sha256": "c7bc1968f19fbc0852353ecd01227e88181f81c28ae550f2fb4327bb636c3855",
+      "boards": 6,
+      "changed_steps": 10
+    },
+    {
+      "original_packet": "consumer-inputs/consumer-boards.json",
+      "original_sha256": "163c42de68b7e5f630ef5e4f36b16cec639cb969096cc8e4ac29f351de4c7d92",
+      "effective_packet": "effective/consumer-boards.json",
+      "effective_sha256": "4b696e9980544ba344643214a264754c226411c064024d82be06d4e803d37cb1",
+      "boards": 8,
+      "changed_steps": 36
+    }
+  ],
+  "originals_unchanged": true,
+  "company_and_options_original_subtrees_unchanged": true,
+  "native_effects": 0
+}
