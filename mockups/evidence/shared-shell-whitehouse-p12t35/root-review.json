@@ -1,0 +1,91 @@
+{
+  "schema": "shared-shell.bounded-design-review.v1",
+  "at": "2026-11-03T16:39:32.828960+00:00",
+  "reviewer": "root01a15e6c-42f8-7941-ac2b-296021932fbb nonauthor",
+  "task": "P12.T35",
+  "head": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "verdict": "PASS_LOCAL_SOURCE_AND_VISUAL",
+  "reference": {
+    "file": "01M2WGNCX9475G79JRKJTCM08P",
+    "page": "p-5-0",
+    "node": "1X4-0",
+    "scope": "Actual F Editorial STARTER screenshot viewed; adopted grammar only; not whole-report pixel reference or RIG promotion",
+    "token_state_hash": "cfd3d65c"
+  },
+  "actually_viewed": [
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-1440-dark-en.png",
+      "sha256": "f7894db2ebc4ae9eadb5f8f945055e1f4f9821d1f945a97c860a4a6beec476cd"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-1440-dark-zh.png",
+      "sha256": "7067dd0376bb727277552331bbca465a3f3050745d423b75e615ea6c2aef16e3"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-1440-light-en.png",
+      "sha256": "4c8b5ab05387f92f3a69472f8e2489035c921da7c889c022571a6a6abab03ddd"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-1440-light-zh.png",
+      "sha256": "953cae7a4fe2fa570556b4c012430649f8fc06d425169ad4a1d23d61f5caf312"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-390-dark-en.png",
+      "sha256": "6cd30091c723f8a38bbe23dc43c603e89fed0791d5fcfcb48e71f3f70c2caefd"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-390-dark-zh.png",
+      "sha256": "e0be29e26836c3366f194d766e4be662d94d8f990020c236af2351ddc9c09c30"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-390-light-en.png",
+      "sha256": "ae63bc8bd05fe0a58d0f3c7557480030a8ca7c129a0ea031f87b25a3c7e45335"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/reader-390-light-zh.png",
+      "sha256": "6c2b4f2fd08f0f06f67b7d2aa15d2b4d9d16fdc7e098ed57074478c60ebbf029"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/state-treasury-390-light-zh.png",
+      "sha256": "6e8a74a6bcc72677acdfe21536d4467f2335458a6b6e2c11be2c7d9f4b1d82c7"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/state-missing-390-dark-en.png",
+      "sha256": "d662232ea2b6814a817c69027c789d02c09154e0c01cfa2ea650fd2f33156356"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/state-empty-390-light-zh.png",
+      "sha256": "463aa29f89ff02749eba4e198e7b5827f737969862eac6db31752cfb63c76774"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/state-archived-1440-light-en.png",
+      "sha256": "5735d765ff04d3f10e280acb878b69fc6379f2cc20570efc5a1e6f73674cb9c0"
+    },
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/source-390-light-zh.png",
+      "sha256": "ecccd87ad9d329ec1422303882ff368ed0843b6fceffcb36a27763e4861aeceb"
+    }
+  ],
+  "consumed_result_sha256": "61f4e78d044c0de549b0f2fcc95b658fcb934ad3d180b744eacdcb33c5aefd70",
+  "judgment": [
+    "Bounded editorial reading measure and separate supporting outline reproduce governed F starter grammar without importing mock content. Desktop599.64/559.2px reading,220px rail; phone320pxbody and native outline.",
+    "Dark graphite surfaces use tonal depth/hairlines and no shadow; light white reading material uses neutral separation and existing controlled shadow. Even borders, no decorative colored container edges.",
+    "Both locales preserve retained originals with explicit original-text framing; known UI labels localized. Publication/read/banner clocks remain distinct. No science/factual quality or translation validation inferred.",
+    "Source and ticker targets40px across8actual profiles; complete source target and link focus visible; same-source Back/Forward/reload and keyboard focus proved by consumed retained fixture, not claimed personally exercised by reviewer.",
+    "All77records,63WhiteHouse+14Treasury, source URLs/order and source-input hash preserved. Missing/empty/archived states truthful; Treasury context retains original evidence and localized status labels.",
+    "814structuralJSbytes/no materialJSstylesheet; incumbent builder has no delta from T34."
+  ],
+  "checks_consumed": [
+    "touch-affected4PASS",
+    "finaldesignenforce-added0blocking",
+    "actualfinalfixture8profiles/5states/noerrors/noHTTPattempts",
+    "canonical349log16of16captured; final evidence-check/commit consumption remains assigning Family duty"
+  ],
+  "remaining": [
+    "Final evidence receipt/check and source publication through original Family",
+    "Actual Macro admitted protected CI/landing/page-only render/served readback",
+    "Legitimate in-Shell outer-scroll/history/adoption and programme full viewport/zoom/accessibility/rights acceptance",
+    "Actual primary source body, factual/science quality, authenticated behaviour and production acceptance remain unqualified"
+  ],
+  "controls": "No new source-body/browser/account/host/provider/runtime/CI effects; original holds and unknowns retained"
+}
