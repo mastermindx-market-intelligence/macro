@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-13",
+  "as_of": "2026-11-02",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -17,12 +17,12 @@
     "note": "No interim effect estimates. Informative strata and outcomes are opened only by the separately reviewed sole adjudication.",
     "observed": {
       "action_date_span_days": 0,
-      "distinct_action_months": 0,
+      "distinct_action_months": 1,
       "informative_exact_strata": null,
-      "level_control_rows": 0,
-      "matured_primary_rows": 0,
+      "level_control_rows": 1,
+      "matured_primary_rows": 1,
       "relief_hazard_rows": 0,
-      "unique_names": 0
+      "unique_names": 1
     },
     "required": {
       "action_date_span_days": 365,
@@ -38,20 +38,20 @@
   },
   "family": "pss_rh1_relief_hazard_prospective",
   "gate_open": true,
-  "generated_utc": "2026-10-13T05:01:34.320739+00:00",
+  "generated_utc": "2026-11-02T07:07:27.667568+00:00",
   "ledger": {
-    "advanced_today": 0,
-    "appended_today": 0,
+    "advanced_today": 1,
+    "appended_today": 68,
     "earliest_action": "2026-07-29",
-    "events": 168,
-    "latest_action": "2026-10-08",
-    "level_control": 69,
-    "matured": 0,
-    "primary_events": 94,
+    "events": 306,
+    "latest_action": "2026-10-30",
+    "level_control": 108,
+    "matured": 1,
+    "primary_events": 203,
     "rejected_pre_cutoff_today": 0,
-    "relief_hazard": 25,
-    "ungraded": 168,
-    "weak_level_diagnostic": 74
+    "relief_hazard": 95,
+    "ungraded": 305,
+    "weak_level_diagnostic": 103
   },
   "manifest_sha256": "0b07345178592032570aeb57c1c54c1cb24b6463a5836431bc7daf5d44b0cc6b",
   "membership_sha256": "f00c9d70e0c554213d6aa9a82fecc1492bcedc49c04ce36d4a14647f85713baf",
@@ -60,16 +60,15 @@
   "program_id": "PSS-RH1",
   "registration_ok": true,
   "scan_census": {
-    "anchors": 9651,
-    "detected_post_cutoff_paths": 164,
+    "anchors": 9759,
+    "detected_post_cutoff_paths": 302,
     "frozen_members": 799,
     "loaded_members": 798,
     "missing_members": 1,
-    "prospective_candidate_anchors": 428,
+    "prospective_candidate_anchors": 571,
     "reasons": {
-      "incomplete_formation": 35,
       "missing_ohlcv": 1,
-      "no_subject_recovery": 244,
+      "no_subject_recovery": 249,
       "pre_cutoff_action": 20
     }
   },

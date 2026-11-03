@@ -69,7 +69,18 @@ def load_price() -> pd.DataFrame:
     px = pd.concat(frames)
     px.index = pd.to_datetime(px.index).normalize()
     px = px[~px.index.duplicated(keep="last")].sort_index()  # coinbase wins overlap
-    return px.dropna(subset=["close"])
+    raw = px["close"]
+    if pd.api.types.is_bool_dtype(raw):
+        numeric = pd.Series(np.nan, index=px.index, dtype="float64")
+    else:
+        if raw.dtype == object:
+            raw = raw.mask(raw.map(lambda v: isinstance(v, (bool, np.bool_))))
+        numeric = pd.to_numeric(raw, errors="coerce")
+    # Non-finite and boolean closes are not prices. Finite negatives stay,
+    # matching the previous dropna (it only removed missing closes).
+    px = px.loc[np.isfinite(numeric)].copy()
+    px["close"] = numeric.loc[px.index].astype(float)
+    return px
 
 
 def load_hourly() -> pd.DataFrame | None:
@@ -80,7 +91,19 @@ def intraday_vol_daily(hourly: pd.DataFrame | None) -> pd.Series | None:
     """Parkinson estimator per calendar day from hourly bars -> daily series."""
     if hourly is None or hourly.empty:
         return None
-    g = hourly.groupby(hourly.index.normalize())
+
+    def _bar(s: pd.Series) -> pd.Series:
+        if pd.api.types.is_bool_dtype(s):
+            return pd.Series(np.nan, index=s.index, dtype="float64")
+        if s.dtype == object:
+            s = s.mask(s.map(lambda v: isinstance(v, (bool, np.bool_))))
+        num = pd.to_numeric(s, errors="coerce")
+        return num.where(np.isfinite(num) & (num > 0))
+
+    hi_s, lo_s = _bar(hourly["high"]), _bar(hourly["low"])
+    ok = hi_s.notna() & lo_s.notna() & (hi_s >= lo_s)
+    frame = pd.DataFrame({"high": hi_s.where(ok), "low": lo_s.where(ok)})
+    g = frame.groupby(frame.index.normalize())
     hi, lo = g["high"].max(), g["low"].min()
     pk = np.sqrt(np.log(hi / lo).pow(2) / (4 * np.log(2)))
     pk.name = "intraday_vol"
@@ -158,16 +181,27 @@ def load_all() -> dict[str, pd.Series | pd.DataFrame | None]:
         "us_m2": _col("fred", "M2SL", "us_m2"),                 # broad money (US, $bn)
         "china_m2_yoy": _col("china_macro", "money_supply", "m2_yoy"),  # PBoC M2 growth %
     }
-    # derived identities (D41)
+    # derived identities (D41). Non-positive or non-finite parents are
+    # unavailable (NaN). They must not become inf, and a supply share must
+    # not be clipped into a plausible 0 or 1.
     if mvrv is not None and mcap is not None:
-        d["realized_cap"] = (mcap / mvrv).rename("realized_cap")
-        d["nupl"] = (1 - 1 / mvrv).rename("nupl")
+        mv = pd.to_numeric(mvrv, errors="coerce")
+        mc = pd.to_numeric(mcap, errors="coerce")
+        ok = np.isfinite(mv) & np.isfinite(mc) & (mv > 0) & (mc > 0)
+        d["realized_cap"] = (mc / mv).where(ok).rename("realized_cap")
+        d["nupl"] = (1 - 1 / mv).where(ok).rename("nupl")
     if mcap is not None and stables is not None:
-        ssr = (mcap / stables.reindex(mcap.index).ffill()).rename("ssr")
-        d["ssr"] = ssr
+        mc = pd.to_numeric(mcap, errors="coerce")
+        den = pd.to_numeric(stables, errors="coerce").reindex(mc.index).ffill()
+        ok = np.isfinite(mc) & np.isfinite(den) & (mc > 0) & (den > 0)
+        d["ssr"] = (mc / den).where(ok).rename("ssr")
     # supply-in-profit as a FRACTION (bgeo gives it in BTC; CM supply normalizes).
     sip, sup = d.get("supply_in_profit"), d.get("supply")
     if sip is not None and sup is not None:
-        frac = (sip / sup.reindex(sip.index).ffill()).clip(0, 1)
+        num = pd.to_numeric(sip, errors="coerce")
+        den = pd.to_numeric(sup, errors="coerce").reindex(num.index).ffill()
+        ok = np.isfinite(num) & np.isfinite(den) & (den > 0)
+        frac = (num / den).where(ok)
+        frac = frac.where((frac >= 0) & (frac <= 1))
         d["supply_in_profit_pct"] = frac.rename("supply_in_profit_pct")
     return d

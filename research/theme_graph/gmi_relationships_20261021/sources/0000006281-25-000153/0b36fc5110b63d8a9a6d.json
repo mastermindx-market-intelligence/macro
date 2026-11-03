@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2025-11-25T21:02:50Z",
+ "accession": "0000006281-25-000153",
+ "cik": "0000006281",
+ "doc_byte_length": 2363627,
+ "doc_sha256": "4e312f689cc55d7ec170389b1cc7810ff0bee8e651a0ed7dcaabe5f08c68627a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-11-01",
+ "primary_document": "adi-20251101.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 302414,
+  "byte_start": 301750,
+  "normalized": "Our IC products are fabricated on proprietary processes at our internal production facilities in Wilmington, Massachusetts; Camas, Washington; Beaverton, Oregon; and Limerick, Ireland and also on a mix of proprietary and non-proprietary processes at third-party wafer fabricators. We currently source more than half of our wafer requirements annually from third-party wafer fabrication foundries, such as Taiwan Semiconductor Manufacturing Company (TSMC) and others, and the remainder is sourced internally. In addition, we operate an assembly, wafer sort and testing facility in Penang, Malaysia and wafer sort and test facilities in the Philippines and Thailand.",
+  "normalized_sha256": "0b36fc5110b63d8a9a6d45e276a2e711fb78bb263e389eff4e1bdc4429815e5f",
+  "raw": "Our IC products are fabricated on proprietary processes at our internal production facilities in Wilmington, Massachusetts; Camas, Washington; Beaverton, Oregon; and Limerick, Ireland and also on a mix of proprietary and non-proprietary processes at third-party wafer fabricators. We currently source more than half of our wafer requirements annually from third-party wafer fabrication foundries, such as Taiwan Semiconductor Manufacturing Company (TSMC) and others, and the remainder is sourced internally. In addition, we operate an assembly, wafer sort and testing facility in Penang, Malaysia and wafer sort and test facilities in the Philippines and Thailand.",
+  "raw_sha256": "0b36fc5110b63d8a9a6d45e276a2e711fb78bb263e389eff4e1bdc4429815e5f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/6281/000000628125000153/adi-20251101.htm",
+ "xbrl_contexts": []
+}

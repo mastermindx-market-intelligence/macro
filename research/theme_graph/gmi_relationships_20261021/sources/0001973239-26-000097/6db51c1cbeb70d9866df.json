@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2867050,
+  "byte_start": 2865759,
+  "normalized": "In November 2025, SoftBank Group acquired all of the outstanding equity interests of Ampere, in which the Company previously had an equity investment and over which the Company had significant influence. The Company continues to have licensing and servicing arrangements with Ampere for which the Company may earn fees for services provided. For the fiscal years ended March 31, 2026, 2025 and 2024, the Company recognized revenue of $3.6 million, $3.5 million and $49.3 million, respectively, from Ampere.",
+  "normalized_sha256": "7cd5efbba4b4602ade237850f47c68eb190b90b1c3cea68a850c377f1119650c",
+  "raw": "In November 2025, SoftBank Group acquired all of the outstanding equity interests of Ampere, in which the Company previously had an equity investment and over which the Company had significant influence. </span><span style=\"background-color:#ffffff;color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">The Company continues to have licensing and servicing arrangements with Ampere for which the Company may earn fees for services provided.</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"> For the fiscal years ended March 31, 2026, 2025 and 2024, the Company recognized revenue of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-356\" decimals=\"-5\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" scale=\"6\" id=\"f-1478\">3.6</ix:nonFraction>&#160;million, $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-357\" decimals=\"-5\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" scale=\"6\" id=\"f-1479\">3.5</ix:nonFraction>&#160;million and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-358\" decimals=\"-5\" name=\"us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax\" scale=\"6\" id=\"f-1480\">49.3</ix:nonFraction>&#160;million, respectively, from Ampere.",
+  "raw_sha256": "6db51c1cbeb70d9866dfdfa3534747199e115fed7703a2465b05061814cbedc3"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

@@ -749,7 +749,7 @@ def _r15_overview(allocation, *, history=True):
         market={'stance':'Mixed participation','stance_zh':'参与度分化','summary':'Daily context only.',
                 'summary_zh':'仅为每日背景。','total_tone':'flat','dominance_tone':'flat','fear_tone':'flat',
                 'total_state':'Mixed','dominance_state':'Stable','fear_state':'Neutral',
-                'history':{'dates':['2026-01-01','2026-01-02'] if history else [],'vals':[1,2] if history else []}},
+                'history':{'dates':['2025-12-30','2025-12-31','2026-01-01','2026-01-02'] if history else [],'vals':[1,2,3,4] if history else []}},
         allocation=allocation,as_of='2026-01-02',market_total='$3.2T',market_30d='+2.0%',
         dominance='58.0%',dominance_30d='-1.0%',fear='50',total_state_zh='分化',
         dominance_state_zh='稳定',fear_state_zh='中性',tape='<svg data-preserved-market-tape="true"></svg>',
@@ -815,7 +815,10 @@ def test_r15_assistant_entry_reuses_shared_owner_without_covering_the_desk():
     assert 'body.crypto-page.crypto-desk-ready #mmb-launch' in source
     assert "window.MMBrain.open()" in source
     assert "document.getElementById('mmb-boot')" in source
-    assert "MM_BRAIN_CFG" not in source and 'src="mm_brain.js"' not in source
+    # The page may read the shared host object and set getAiContext. It must
+    # not replace that object (theme.js anchor/symbol) or load a second widget.
+    assert 'src="mm_brain.js"' not in source
+    assert "window.MM_BRAIN_CFG=" not in source and "window.MM_BRAIN_CFG =" not in source
     assert 'fetch(' not in source
     assert "observer.disconnect()" in source
 

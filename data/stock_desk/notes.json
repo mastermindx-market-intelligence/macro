@@ -1,171 +1,171 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-10-08",
-  "generated_at": "2026-10-13T00:55:15.509256+00:00",
+  "as_of": "2026-10-30",
+  "generated_at": "2026-11-02T10:49:31.843907+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-08-MSCI-20261013005515-1",
-      "ticker": "MSCI",
-      "name": "MSCI",
-      "lean": "constructive",
+      "id": "2026-10-30-FLS-20261102104931-1",
+      "ticker": "FLS",
+      "name": "Flowserve",
+      "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The validated selection leg and an unblocked bottoming entry support a tentative relative rebound, but the risk controls argue for restraint because earnings are eight days away, the weekly trend has not turned, and the sector basket is deteriorating. The weak historical accuracy of constructive leans keeps conviction low.",
+      "thesis": "The daily bottoming setup is improving, but the weekly trend remains mixed and the deterministic verdict finds no clear edge. Contracting liquidity and elevated macro risk offset the unblocked entry signal.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis 55th percentile; not blocked",
+        "Weekly timeframe has not turned",
+        "Selection axis 46th percentile",
+        "Macro-risk elevated for a macro-sensitive name"
+      ],
+      "dissent": "The swing-low rejection, positive MACD and recovery above both major moving averages could develop into sustained relative strength.",
+      "falsifier": {
+        "text": "A weekly trend turn accompanied by sustained outperformance versus the S&P 500 over the next 20 trading days.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-27",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-30-CVCO-20261102104931-2",
+      "ticker": "CVCO",
+      "name": "Cavco Industries, Inc.",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The fresh-buy cycle and bullish weekly alignment argue against a bearish lean, but the profile still concludes there is no clear edge. The risk controls favor watching rather than extrapolating the already-extended move above its major averages.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh buy with bullish weekly agreement",
+        "Entry axis 55th percentile; not blocked",
+        "12.7% above the 50-day average",
+        "Selection axis 46th percentile"
+      ],
+      "dissent": "With daily and weekly trends aligned, momentum could persist and produce meaningful relative outperformance despite weak selection evidence.",
+      "falsifier": {
+        "text": "Sustained outperformance versus the S&P 500 while the price remains above both the 50-day and 200-day averages.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-11-27",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-10-30-CRGY-20261102104931-3",
+      "ticker": "CRGY",
+      "name": "Crescent Energy Company",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The constructive base-building verdict is supported by an unblocked early-cycle entry and positive selection context. Conviction stays low because earnings can override the setup, the weekly trend has not turned, and accounting and balance-sheet risks remain material.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.31, 55th percentile",
-        "Entry axis: unblocked, 60th percentile",
-        "Price reclaimed a rising 10-day average and remains above the 50-day average",
-        "Risk control: earnings in 8 days"
+        "Selection axis 62nd percentile",
+        "Entry axis 64th percentile; not blocked",
+        "New daily cycle with positive momentum",
+        "Earnings due; accounting quality flagged watch"
       ],
-      "dissent": "The stock remains below its 200-day average, quality is exceptionally weak at z -2.94, and the earnings event could erase the nascent turn.",
+      "dissent": "Negative net-income growth, substantial long-term debt and an unconfirmed weekly turn could make the apparent base fail around earnings.",
       "falsifier": {
-        "text": "An earnings reaction that leaves the stock below both its 10-day and 50-day averages while the weekly trend remains unturned.",
+        "text": "A failed daily cycle after earnings, with price falling below both the 50-day and 200-day averages.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "MSCI",
+          "subject_ticker": "CRGY",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 20
+          "horizon_d": 15
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-11-20",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-ADSK-20261013005515-2",
-      "ticker": "ADSK",
-      "name": "Autodesk",
+      "id": "2026-10-30-ITRI-20261102104931-4",
+      "ticker": "ITRI",
+      "name": "Itron, Inc.",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bottoming signal and clean quality profile are offset by weak residual selection, negative revisions and momentum, and an unconfirmed weekly trend. With the deterministic verdict finding no clear edge, there is insufficient evidence for relative direction.",
+      "thesis": "The bottoming attempt remains intact, so extension alone is not a reason to short it; however, the deterministic verdict shows no clear edge and the weekly trend is still mixed. The extension brake and accounting watch support waiting for confirmation.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.39, 44th percentile",
-        "Quality axis: z 1.15, 67th percentile; accounting clean",
+        "Board state: HOLD \u2014 EXTENDED",
         "Weekly timeframe has not turned",
-        "Below the 200-day average despite reclaiming the 10-day average"
+        "Selection axis 46th percentile",
+        "Entry axis 51st percentile; extension present"
       ],
-      "dissent": "A sustained recovery above the 200-day average could convert the recent swing low and positive MACD into a durable trend reversal.",
+      "dissent": "Positive MACD, improving revisions and price above both major averages could carry the rebound into sustained relative leadership.",
       "falsifier": {
-        "text": "The weekly trend turns bullish and the stock holds above its 200-day average.",
+        "text": "A confirmed weekly uptrend with sustained S&P 500 outperformance over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-11-27",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-08-ABBV-20261013005515-3",
-      "ticker": "ABBV",
-      "name": "Abbvie Inc",
+      "id": "2026-10-30-SJM-20261102104931-5",
+      "ticker": "SJM",
+      "name": "J.M. Smucker Company (The)",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bullish weekly alignment and fresh-buy cycle argue against shorting strength, while the extension brake at a 52-week high argues against assuming further relative upside. The neutral verdict and middling selection leave the direction unresolved.",
+      "thesis": "The base-building verdict and improving selection context prevent a bearish call, but the risk reshape says not to chase a crowded, extended staples move. A left-translated prior cycle and deteriorating reported earnings keep the relative direction too conflicted for a constructive lean.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Ladder: FRESH BUY with bullish bigger-picture trend",
-        "Above both 50-day and 200-day averages",
-        "At its 52-week high with RSI 67",
-        "Selection axis: 51st percentile"
-      ],
-      "dissent": "Strong trend alignment, positive MACD and high quality could sustain momentum and produce clear outperformance despite the extension.",
-      "falsifier": {
-        "text": "The stock continues holding above both major moving averages and establishes new highs while outperforming the S&P 500 over the horizon.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-10-08-BEKE-20261013005515-4",
-      "ticker": "BEKE",
-      "name": "KE Holdings (ADR)",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The unblocked bottoming entry is offset by weak residual selection, a mixed weekly picture and a left-translated prior cycle. Those opposing signals support the deterministic no-clear-edge verdict rather than a directional call.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry axis: 62nd percentile and unblocked",
-        "Selection axis: z -0.25, 46th percentile",
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis 63rd percentile",
+        "Board state: HOLD \u2014 EXTENDED",
         "Prior cycle was left-translated",
-        "Weekly timeframe has not turned"
+        "Accounting watch; net income and ROE negative"
       ],
-      "dissent": "Price is above both major moving averages with positive MACD, so the swing-low recovery could develop into renewed relative leadership.",
+      "dissent": "Positive revisions, momentum and proximity to the 52-week high could sustain defensive leadership despite weak fundamentals.",
       "falsifier": {
-        "text": "The weekly trend turns bullish and the stock sustains its advance above both the 50-day and 200-day averages.",
+        "text": "A decisive weekly trend confirmation followed by sustained outperformance versus the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-11-27",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-08-PG-20261013005515-5",
-      "ticker": "PG",
-      "name": "Procter + Gamble Co/The",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh-buy signal and bullish weekly trend prevent a bearish lean, but weak residual selection, a left-translated prior cycle and the deteriorating defensives basket temper the setup. The validated risk reshape supports watching the turn without asserting relative outperformance.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Ladder: FRESH BUY with bullish bigger-picture trend",
-        "Entry axis: 64th percentile and unblocked",
-        "Selection axis: z -0.48, 43rd percentile",
-        "Prior cycle was left-translated"
-      ],
-      "dissent": "An early investor-cycle phase, positive MACD and alignment above both major moving averages could allow the fresh buy signal to outperform.",
-      "falsifier": {
-        "text": "The stock sustains the fresh-buy trend above both major moving averages and outperforms the S&P 500 over the horizon.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-05",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-10-08-ZTS-20261013005515-6",
-      "ticker": "ZTS",
-      "name": "Zoetis",
+      "id": "2026-10-30-TSCO-20261102104931-6",
+      "ticker": "TSCO",
+      "name": "Tractor Supply",
       "lean": "cautious",
       "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "This is genuine relative weakness rather than mere extension: the lagging verdict, deeply negative momentum and revisions, and position below both major moving averages outweigh the short-term bottoming attempt. Cautious calls have been the better-calibrated historical lean, though the sample record still falls short of the stated chance benchmark overall.",
+      "thesis": "This is genuine relative weakness rather than mere extension: the deterministic verdict is lagging, selection is weak, the prior cycle topped early and price remains below its 200-day average. The improving daily turn is real, but it has not repaired the larger bearish structure.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.96, 35th percentile",
-        "Momentum z -2.82 and revisions z -1.10",
-        "Below the 50-day average and 24.7% below the 200-day average",
-        "49.9% below the 52-week high"
+        "Selection axis 39th percentile",
+        "Momentum context z-score -1.70",
+        "10.4% below the 200-day average",
+        "Prior cycle left-translated"
       ],
-      "dissent": "The recent swing low, positive MACD and strong cash generation could mark an early recovery before the weekly trend confirms.",
+      "dissent": "Strong profitability and quality, positive MACD and a rebound above the 50-day average could mark an early durable reversal.",
       "falsifier": {
-        "text": "The stock reclaims and holds above its 50-day average while outperforming the S&P 500 over the horizon.",
+        "text": "A recovery above the 200-day average followed by sustained outperformance versus the S&P 500 over the horizon.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "ZTS",
+          "subject_ticker": "TSCO",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-11-05",
+      "check_by": "2026-11-27",
       "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
