@@ -47,6 +47,10 @@ html[data-lang="zh"] .aib-page-header h1{letter-spacing:0;}
 {% include "_aibrief_css.j2" %}
 {% include "_mor2b_blocks_css.j2" %}
 </style>
+<noscript><style>
+.aib-page .brief-tab{display:block;}
+.aib-page .brief-tabs{display:none;}
+</style></noscript>
 </head>
 <body>
 
@@ -56,6 +60,7 @@ html[data-lang="zh"] .aib-page-header h1{letter-spacing:0;}
 <h1>{{ t('AI Daily Brief', 'AI每日简报') }}</h1>
 <p>{{ t('The cross-market read. What changed, what conflicts, and what to watch next.', '跨市场解读：哪些变化、哪些分歧、接下来关注什么。') }}</p>
 </header>
+<noscript><p class="muted"><span class="l-en">JavaScript is unavailable. All three market briefs are shown below; freshness has not been verified.</span><span class="l-zh">JavaScript 不可用。下方依次展示三个市场简报；时效性尚未核实。</span></p></noscript>
 {# ── Brief tabs ───────────────────────────────────────────────────────────────── #}
 <div class="brief-tabs" role="tablist" aria-label="Market · 市场">
   <button class="brief-tab-btn active" data-lens="macro" id="tab-macro" aria-controls="brief-macro" tabindex="0" role="tab" aria-selected="true">{{ t('Macro', '宏观') }}</button>

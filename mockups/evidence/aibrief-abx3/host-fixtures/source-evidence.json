@@ -1,8 +1,8 @@
 {
   "scope": "real full templates + incumbent synthetic host view-model fixtures + committed dated briefs; NOT production or full producer builds",
-  "source_parent": "38e4d16e93a4699d7bd40b6178f602ea916f0c90",
-  "capture_source": "candidate working tree before host-fix commit",
-  "auth_fixture": "Macro anonymous guard was first asserted closed, then a synthetic registered-reader display response was used in the local fixture. No real login, entitlement or production authentication is proved.",
+  "source_parent": "6f529c23fb1788c51e150a2a41ed973b7f15daa0",
+  "capture_source": "current original working tree after main integration; producer data not regenerated",
+  "auth_fixture": "Synthetic registered-reader display response after asserting the anonymous gate. No real authentication or entitlement proof.",
   "sources": {
     "templates/dashboard.html.j2": "cc97b61d464e111b5ef4a1744b002d8fce44410366b4ac9c9b756e5c67f0922b",
     "templates/china.html.j2": "08550d89a8349db3f79eff808ccfe5eb1da4df99a52265e3637be088535516c3",
@@ -10,17 +10,15 @@
     "templates/_aibrief_body.html.j2": "3626de3390345244304b95e37f164b9c63d63de237163586df9694c37a9f621f",
     "templates/_aibrief_css.j2": "01b91f1ce8fb1c805195461ccecab5dd14f7d547fc5f1c17bbb07409a3876d0e",
     "templates/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
-    "site/aibrief.js": "b15547a6fe25624e8286c34bfafe2a251012031501f9b2fe70d72c1d550ff9bf",
-    "tests/test_aibrief_page.py": "9996569f06260a161c4c7fe70b8d6c17f7552ea5f8bb6eb4b245d7d1ffa44520",
     "research/aibrief_v2/verify_hosts.py": "85c40233e2f80068acdac25d34dbd3fe754d68f5a071685e1280096a09c8486e"
   },
   "captures": {
-    "macro-1440-dark-en.png": "2666b1d590b149a7d7ed2f3b61be9154fb5c5b16fcb94440fe8d26f339fd0a56",
+    "macro-1440-dark-en.png": "4d70357228ee5b6eadac1f43a77ddcc378dd819746d84f4f9bda2c93c5f5c1db",
     "macro-1440-dark-zh.png": "d862ede2bc139988b4e292316405099c3eceb201b4d25329a1e7dafd2273d88c",
     "macro-1440-light-en.png": "fc1e1cc993ce564315f76aef13b3184d47ce81ad5df551c21b2c38399b48124d",
     "macro-1440-light-zh.png": "7880877efa31579021606aa9779c1d876dfa40a556c7322d05b256aa3f29e53c",
     "macro-390-dark-en.png": "8b36fbc500f63550e620bf4ba2f2ffb474eb866b4253eae10cb54f2d6d1caf9b",
-    "macro-390-dark-zh.png": "1cfc899c8a288722c41cfa049147e51e4dfe7e65dd2e78b47c30487cb07d349e",
+    "macro-390-dark-zh.png": "53242ba70600eabf8b6bdc1d3bc4d26a02173fa11c4f9b123a92124ebc40a3f6",
     "macro-390-light-en.png": "b49ac6ebfffbbc6c777bcf2f8f1fe65e47defe926d497dcfb6a5068fdbe8ad9e",
     "macro-390-light-zh.png": "70fb2672c414df56fa8292908fde694cd2fa4b8dd3bf369fc9abac802847d3ef",
     "china-1440-dark-en.png": "321bb83b0165f14c50141f96d88970b7884910d16831e8f6310d8568623a9bec",
@@ -40,11 +38,7 @@
     "hk-390-light-en.png": "5ba4410bd71370b31cb3d038f0d27be12e094dc328903a3ffcead81c650e93f1",
     "hk-390-light-zh.png": "f973363de9ce542605a726c8b61457a640fa0342cfee1fd92c471fe2d3c1733e"
   },
-  "assertions": "Actual open/close handlers, Escape, native disclosure keyboard activation, stale metadata, zero modal horizontal overflow and symmetric container side boundaries over all descendant block containers.",
-  "visually_inspected": [
-    "macro-1440-light-en.png",
-    "china-390-dark-zh.png",
-    "hk-390-light-en.png"
-  ],
+  "states": 24,
+  "page_errors": 0,
   "user_path_production_accepted": false
 }

@@ -319,3 +319,19 @@ def test_abx3_hk_dialog_intro_has_no_legacy_colored_callout():
     html = template.render(china_brief={'summary': 'Usable research'})
     assert 'class="hkx-plain"' not in html
     assert 'the same shared brief used on the China page' in html
+
+
+def test_abx3_scriptless_page_keeps_all_lenses_readable():
+    """No-script CSS must reveal the server-rendered lenses, not inert tabs."""
+    import re
+    html = _render(master_brief={'summary': 'MACRO_RESEARCH_FIXTURE'},
+                   china_brief={'summary': 'CHINA_RESEARCH_FIXTURE'},
+                   btc_brief={'summary': 'BITCOIN_RESEARCH_FIXTURE'})
+    fallbacks = re.findall(r'<noscript\b[^>]*>(.*?)</noscript>', html, re.S)
+    fallback = '\n'.join(fallbacks)
+    assert re.search(r'\.aib-page\s+\.brief-tab\s*\{[^}]*display:\s*block', fallback)
+    assert re.search(r'\.aib-page\s+\.brief-tabs\s*\{[^}]*display:\s*none', fallback)
+    assert 'All three market briefs are shown below' in fallback
+    assert '下方依次展示三个市场简报' in fallback
+    for content in ('MACRO_RESEARCH_FIXTURE', 'CHINA_RESEARCH_FIXTURE', 'BITCOIN_RESEARCH_FIXTURE'):
+        assert content in html

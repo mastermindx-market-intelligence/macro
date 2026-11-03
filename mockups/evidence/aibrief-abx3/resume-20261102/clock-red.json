@@ -1,0 +1,5 @@
+{
+  "scope": "Exact pre-fix failing regression output, JSON-escaped to preserve raw whitespace",
+  "raw_output_sha256": "e2e4b2e5a8fbb5b35449fd5e25e5708b7ce8a9f403ac8c2ce3c8d93bb9191eaf",
+  "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n_____________ test_abx3_naive_generation_time_cannot_skip_refresh ______________\ntests/test_master_brain.py:993: in test_abx3_naive_generation_time_cannot_skip_refresh\n    assert calls == [1], generated\nE   AssertionError: 2026-11-02T22:49:08.125147\nE   assert [] == [1]\nE     \nE     Right contains one more item: 1\nE     Use -v to get more diff\n\nNOTE: sparse worktree \u2014 verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_master_brain.py::test_abx3_naive_generation_time_cannot_skip_refresh\n1 failed, 64 deselected in 8.51s\n"
+}

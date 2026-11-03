@@ -728,8 +728,8 @@ def _abx3_run_fixture(monkeypatch, tmp_path, candidate):
     monkeypatch.setattr(mb, 'synthesize', lambda *a, **kw: dict(candidate))
     calls = []
     monkeypatch.setattr(mb, '_append_ledger', lambda *a: calls.append(a))
-    (tmp_path / 'data/regime').mkdir(parents=True)
-    (tmp_path / 'site').mkdir()
+    (tmp_path / 'data/regime').mkdir(parents=True, exist_ok=True)
+    (tmp_path / 'site').mkdir(exist_ok=True)
     return calls
 
 
@@ -834,3 +834,161 @@ def test_abx3_accepted_rewrite_missing_confidence_stays_unassessed(monkeypatch, 
     assert len(calls) == 2
     assert result['summary'] == 'A usable rewrite'
     assert result['confidence'] is None
+
+
+# ABX3-02 producer failure-retention regressions. Gathering/synthesis failure (raise or
+# non-dict result) with a usable same-lens prior on disk must retain that prior — never
+# void the run, never ship exception text, never replay the thesis ledger. The interval
+# gate may skip ONLY a usable same-lens past-dated prior. All provider IO stubbed;
+# persistence real in tmp_path.
+from datetime import datetime, timedelta, timezone  # noqa: E402
+
+
+def _abx3_valid_prior(tmp_path, lens='macro', summary='Last valid read', age_days=1):
+    old = {'schema': 'master_brief.v2', 'lens': lens, 'summary': summary,
+           'state_asof': '2026-10-16',
+           'generated_at': (datetime.now(timezone.utc) - timedelta(days=age_days)).isoformat(),
+           'confidence': 'medium', 'theses': [{'id': 'old'}]}
+    (tmp_path / 'data/regime/master_brief.json').write_text(json.dumps(old))
+    return old
+
+
+def test_abx3_state_fn_failure_retains_same_lens_prior(monkeypatch, tmp_path):
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid'})
+    monkeypatch.setitem(mb.LENSES, 'macro', {**mb.LENSES['macro'],
+        'state_fn': lambda root: (_ for _ in ()).throw(RuntimeError('gather boom cb_token'))})
+    old = _abx3_valid_prior(tmp_path)
+    result = mb.run(root=tmp_path)
+    assert result['summary'] == old['summary']
+    assert result['generated_at'] == old['generated_at']
+    assert result['state_asof'] == old['state_asof']
+    assert result['last_attempt']['status'] == 'retained'
+    assert result['last_attempt']['reason'] == 'synthesis_error'
+    assert 'cb_token' not in json.dumps(result)      # exception text stays out of the payload
+    assert not calls, 'retention must not replay the thesis ledger'
+    written = json.loads((tmp_path / 'data/regime/master_brief.json').read_text())
+    assert written['summary'] == old['summary']
+    assert written['last_attempt']['status'] == 'retained'
+
+
+def test_abx3_synthesize_failure_retains_same_lens_prior(monkeypatch, tmp_path):
+    cases = [
+        (lambda *a, **kw: (_ for _ in ()).throw(RuntimeError('synth boom cb_token')),
+         'synthesis_error'),
+        (lambda *a, **kw: None, 'unusable_reply'),
+        (lambda *a, **kw: ['not', 'a', 'brief'], 'unusable_reply'),
+    ]
+    for stub, expected_reason in cases:
+        calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid'})
+        monkeypatch.setattr(mb, 'synthesize', stub)
+        old = _abx3_valid_prior(tmp_path)
+        result = mb.run(root=tmp_path)
+        assert result['summary'] == old['summary'], stub
+        assert result['generated_at'] == old['generated_at'], stub
+        assert result['state_asof'] == old['state_asof'], stub
+        assert result['last_attempt']['status'] == 'retained', stub
+        assert result['last_attempt']['reason'] == expected_reason, stub
+        assert 'cb_token' not in json.dumps(result), stub
+        assert not calls, stub
+        written = json.loads((tmp_path / 'data/regime/master_brief.json').read_text())
+        assert written['summary'] == old['summary'], stub
+
+
+def test_abx3_retained_dry_run_writes_nothing(monkeypatch, tmp_path):
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid'})
+    monkeypatch.setattr(mb, 'synthesize', lambda *a, **kw: None)
+    old = _abx3_valid_prior(tmp_path)
+    before = (tmp_path / 'data/regime/master_brief.json').read_bytes()
+    result = mb.run(root=tmp_path, persist=False)
+    assert result['summary'] == old['summary']
+    assert result['last_attempt']['status'] == 'retained'
+    assert (tmp_path / 'data/regime/master_brief.json').read_bytes() == before
+    assert not (tmp_path / 'site/master_brief.json').exists()
+    assert not (tmp_path / 'data/master_brain/reply_cache').exists()
+    assert not calls
+
+
+def test_abx3_failure_without_prior_returns_none_and_writes_nothing(monkeypatch, tmp_path):
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid'})
+    monkeypatch.setitem(mb.LENSES, 'macro', {**mb.LENSES['macro'],
+        'state_fn': lambda root: (_ for _ in ()).throw(RuntimeError('gather boom'))})
+    assert mb.run(root=tmp_path) is None
+    assert not calls
+    assert not (tmp_path / 'data/regime/master_brief.json').exists()
+    assert not (tmp_path / 'site/master_brief.json').exists()
+
+
+def _abx3_gate_fixture(monkeypatch, tmp_path):
+    monkeypatch.setattr(mb, '_cfg', lambda: {'enabled': True, 'translate_zh': False,
+                                             'interval_days': 3})
+    monkeypatch.setitem(mb.LENSES, 'macro', {**mb.LENSES['macro'], 'state_fn': lambda root: {}})
+    calls = []
+    monkeypatch.setattr(mb, '_append_ledger', lambda *a: calls.append(a))
+    (tmp_path / 'data/regime').mkdir(parents=True, exist_ok=True)
+    (tmp_path / 'site').mkdir(exist_ok=True)
+    return calls
+
+
+def test_abx3_recent_wrong_or_unusable_prior_does_not_skip(monkeypatch, tmp_path):
+    fresh = {'schema': 'master_brief.v2',
+             'generated_at': (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()}
+    wrong_lens = {**fresh, 'lens': 'btc', 'summary': 'BTC edition'}
+    empty = {**fresh, 'lens': 'macro'}
+    malformed = ['not', 'a', 'brief']
+    for bad in (wrong_lens, empty, malformed):
+        calls = _abx3_gate_fixture(monkeypatch, tmp_path)
+        synths = []
+
+        def _fresh_brief(*a, **kw):
+            synths.append(1)
+            return {'lens': 'macro', 'summary': 'Fresh'}
+        monkeypatch.setattr(mb, 'synthesize', _fresh_brief)
+        (tmp_path / 'data/regime/master_brief.json').write_text(json.dumps(bad))
+        result = mb.run(root=tmp_path)
+        assert result['summary'] == 'Fresh', bad
+        assert len(synths) == 1, bad
+        assert json.loads((tmp_path / 'data/regime/master_brief.json').read_text())[
+            'summary'] == 'Fresh', bad
+
+
+def test_abx3_recent_valid_same_lens_prior_skips_provider(monkeypatch, tmp_path):
+    calls = _abx3_gate_fixture(monkeypatch, tmp_path)
+
+    def _no_provider(*a, **kw):
+        raise AssertionError('provider must not be called on a healthy cached edition')
+    monkeypatch.setattr(mb, 'synthesize', _no_provider)
+    old = _abx3_valid_prior(tmp_path, age_days=1)
+    before = (tmp_path / 'data/regime/master_brief.json').read_bytes()
+    result = mb.run(root=tmp_path)
+    assert result['summary'] == old['summary']
+    assert (tmp_path / 'data/regime/master_brief.json').read_bytes() == before
+    assert not calls
+
+
+def test_abx3_wrongtype_optional_metadata_keeps_valid_brief(monkeypatch, tmp_path):
+    calls = _abx3_run_fixture(monkeypatch, tmp_path, {'lens': 'macro', 'summary': 'Valid'})
+    for neural in ('garbage', ['nw'], {'cortex': 'garbage'}, {'cortex': ['x'], 'status': 'ok'}):
+        monkeypatch.setitem(mb.LENSES, 'macro', {**mb.LENSES['macro'],
+            'state_fn': (lambda root, _n=neural: {'neural_web': _n})})
+        result = mb.run(root=tmp_path)
+        assert result['summary'] == 'Valid', neural
+        assert result['nw_context_used'] is True, neural
+
+
+def test_abx3_naive_generation_time_cannot_skip_refresh(monkeypatch, tmp_path):
+    """An unknown timezone is not evidence that a cached edition is recent."""
+    now = datetime.now(timezone.utc)
+    ambiguous = [now.replace(tzinfo=None).isoformat(), now.date().isoformat()]
+    for generated in ambiguous:
+        _abx3_gate_fixture(monkeypatch, tmp_path)
+        calls = []
+        def refreshed(*args, **kwargs):
+            calls.append(1)
+            return {'lens': 'macro', 'summary': 'Refreshed with known time'}
+        monkeypatch.setattr(mb, 'synthesize', refreshed)
+        prior = {'lens': 'macro', 'summary': 'Prior with ambiguous time',
+                 'generated_at': generated, 'state_asof': now.date().isoformat()}
+        (tmp_path / 'data/regime/master_brief.json').write_text(json.dumps(prior))
+        result = mb.run(root=tmp_path, persist=False)
+        assert calls == [1], generated
+        assert result['summary'] == 'Refreshed with known time'

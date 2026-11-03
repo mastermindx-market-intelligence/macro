@@ -66,6 +66,17 @@ def main() -> int:
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
                     results.append({'case': 'shared_renderer_fixture', 'fixture': index, 'pass': True})
                     page.close()
+                # Native no-script fallback keeps every SSR market lens readable.
+                context = browser.new_context(java_script_enabled=False, viewport={'width': 390, 'height': 844})
+                page = context.new_page()
+                page.goto(origin + '/aibrief.html', wait_until='domcontentloaded')
+                for lens in ('macro', 'china', 'btc'):
+                    assert page.locator('#brief-' + lens).is_visible()
+                    assert 'Freshness not verified' in page.locator('#brief-' + lens + ' [data-aib-freshness]').inner_text()
+                assert not page.locator('.brief-tabs').is_visible()
+                assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+                results.append({'case': 'scriptless_all_lenses_readable', 'pass': True})
+                context.close()
                 # Failed optional review must be explicit, never attributed to rate limiting.
                 page = browser.new_page()
                 page.route('**/neuralweb/cortex_memo.json', lambda route: route.fulfill(status=503, body='Unavailable'))

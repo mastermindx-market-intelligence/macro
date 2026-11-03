@@ -482,7 +482,7 @@ def _read_json(path: Path):
 
 def _brief_age_days(prev: dict | None) -> float | None:
     """Age in days of a previously-generated brief, from its `generated_at`. Returns
-    None when missing/unparseable so the caller treats the brief as DUE (regenerate).
+    None when missing/unparseable or lacking a timezone, so the caller regenerates.
     Used by the regenerate-every-N-days interval gate in run()."""
     if not isinstance(prev, dict):
         return None
@@ -492,7 +492,8 @@ def _brief_age_days(prev: dict | None) -> float | None:
     try:
         gen = datetime.fromisoformat(ts)
         if gen.tzinfo is None:
-            gen = gen.replace(tzinfo=timezone.utc)
+            # No offset means an unknown clock, not an implicitly UTC edition.
+            return None
         age = (datetime.now(timezone.utc) - gen).total_seconds() / 86400.0
         return age if age >= 0 else None
     except Exception:  # noqa: BLE001
@@ -2748,36 +2749,62 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
             if interval > 1:
                 prev = _read_json(root / "data" / "regime" / spec["out"])
                 age = _brief_age_days(prev)
-                if age is not None and age < interval:
+                # Only a usable same-lens prior is a healthy cached edition: a
+                # recent but wrong-lens, empty or malformed payload must fall
+                # through to regeneration, never be served as current.
+                if (age is not None and age < interval and isinstance(prev, dict)
+                        and prev.get("lens") == lens and usable_brief(prev)):
                     log.info("master_brain: lens=%s brief is %.1fd old (< %dd interval) "
                              "— skipping regen, keeping prior brief", lens, age, interval)
                     return prev
         previous = _read_json(root / "data" / "regime" / spec["out"])
-        state = spec["state_fn"](root)
-        brief = synthesize(state, {**cfg, "_write_reply_cache": persist}, lens=lens, root=root)
-        # ADB-R9: additive optional keys (schema: master_brief.v2)
-        brief["nw_context_used"] = bool(state.get("neural_web"))
-        _nw = state.get("neural_web") or {}
-        _cortex = _nw.get("cortex") or {}
-        brief["cortex_status"] = (
-            _cortex.get("status", "absent") if not _cortex.get("absent") else "absent"
-        )
-        # spec §7: expose the lens interval so the UI can show "Updated every N days"
-        brief["refresh_days"] = _interval_for(lens, cfg)
-        # spec §6: deterministic chip rail — bilingual at build, never sent to translator
+        # Gather+synthesize is the operational boundary: a raise here (or a non-dict
+        # synthesis result) must not void the run — a usable same-lens prior on disk
+        # is still a valid edition, retained below. The logged exception message is
+        # diagnostic only and never enters the public payload.
+        state = None
+        brief = None
+        synthesis_failure: str | None = None
         try:
-            brief["key_facts"] = _key_facts_for(lens, state)
-        except Exception:  # noqa: BLE001 — additive, never fatal
-            brief["key_facts"] = []
+            state = spec["state_fn"](root)
+            brief = synthesize(state, {**cfg, "_write_reply_cache": persist}, lens=lens, root=root)
+            if not isinstance(brief, dict) or not isinstance(state, dict):
+                synthesis_failure = "unusable_reply"
+        except Exception as e:  # noqa: BLE001 — degrade to the retained prior below
+            log.error("master_brain gather/synthesize failed (lens=%s: %s)", lens, e)
+            synthesis_failure = "synthesis_error"
+        if synthesis_failure:
+            brief = None
+        else:
+            # ADB-R9: additive optional keys (schema: master_brief.v2). The optional
+            # nested projection is guarded: a wrong-typed neural_web/cortex must not
+            # discard an otherwise valid synthesis.
+            brief["nw_context_used"] = bool(state.get("neural_web"))
+            _nw = state.get("neural_web") if isinstance(state.get("neural_web"), dict) else {}
+            _cortex = _nw.get("cortex") if isinstance(_nw.get("cortex"), dict) else {}
+            brief["cortex_status"] = (
+                _cortex.get("status", "absent") if not _cortex.get("absent") else "absent"
+            )
+            # spec §7: expose the lens interval so the UI can show "Updated every N days"
+            brief["refresh_days"] = _interval_for(lens, cfg)
+            # spec §6: deterministic chip rail — bilingual at build, never sent to translator
+            try:
+                brief["key_facts"] = _key_facts_for(lens, state)
+            except Exception:  # noqa: BLE001 — additive, never fatal
+                brief["key_facts"] = []
         brief = normalize_brief(brief, lens)
         retained = False
         if (not usable_brief(brief) and isinstance(previous, dict)
                 and previous.get("lens") == lens and usable_brief(previous)):
             attempt = {"status": "retained", "attempted_at": datetime.now(timezone.utc).isoformat(),
-                       "reason": brief.get("degraded_reason") or "unusable_reply"}
+                       "reason": synthesis_failure or brief.get("degraded_reason") or "unusable_reply"}
             brief = normalize_brief(previous, lens)
             brief["last_attempt"] = attempt
             retained = True
+        elif synthesis_failure:
+            # No usable same-lens prior: keep the graceful-unavailable behavior —
+            # no brief, nothing written, nothing claimed retained or current.
+            return None
         else:
             brief["reading_changes"] = compare_readings(brief, previous)
             _translate_brief(brief, cfg, lens)

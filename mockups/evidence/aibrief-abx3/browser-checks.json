@@ -83,6 +83,10 @@
       "pass": true
     },
     {
+      "case": "scriptless_all_lenses_readable",
+      "pass": true
+    },
+    {
       "case": "optional_review_http_error",
       "pass": true
     }
