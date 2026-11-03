@@ -13610,6 +13610,7 @@ jobs:
           tests/test_fundamental_forensics_lane_c_cat_title.py
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_header_period_composition.py
+          tests/test_fundamental_forensics_displayed_title_fold.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q
