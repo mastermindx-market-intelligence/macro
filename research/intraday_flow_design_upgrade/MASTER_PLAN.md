@@ -292,8 +292,10 @@ startup remain distinct dependencies; no merge, rebase, deployment or release-st
   regenerated page passed301scoped tests and515browser assertions (d992e30...).
 - [x] Apply/inspect/release editable light-EN6ZVB-0 and dark-ZH6ZYE-0 source details.
 - [x] Freeze R3 specification above; reuse native-popover and existing source state.
-- [ ] Add failing source-details contracts, implement the scoped disclosure, regenerate
+- [x] Add failing source-details contracts, implement the scoped disclosure, regenerate
   with canonical writer/optimizer, then pass old/new scoped and browser tests.
 - [ ] Commit/publish exact source+visual proof and cumulative handoff on original PR.
 - [ ] Resolve original independent-review/visual-placement gates without denied replay;
   latest-head CI, shared-nav stability and genuine production proof remain required.
+
+R3 implementation verification:329scoped pytest,515baselinebrowser,244recoverycompat,201source-disclosure browser assertions; see SOURCE_DETAILS_R3.md. Current-source canonical capture, publication and independent acceptance remain next.

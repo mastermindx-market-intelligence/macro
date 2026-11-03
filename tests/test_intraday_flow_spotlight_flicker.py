@@ -103,7 +103,7 @@ def test_source_clocks_are_separate_and_missing_never_becomes_now(path):
     src=path.read_text()
     helpers=region(src,"function displaySourceTime","// ══ compute-once pipeline")
     out=run_js(r"""
-var el={innerHTML:''};var document={getElementById:function(){return el;}};
+var el={innerHTML:''};var document={getElementById:function(id){return id==='ift-source-times'?el:null;}};
 var BASE_DATA={as_of_display:{en:'31 Oct 12:54am UTC',zh:'10月31日 00:54 UTC'}};
 var quotesSourceAsof=null,pulseSourceAsof='2026-07-27T22:32:07Z';
 function lz(en,zh){return en;}function esc(s){return String(s);}

@@ -1,0 +1,88 @@
+{
+  "base": "5ad690329824a470529a235474d1f8eae3a18585",
+  "path": "templates/intraday_flow.html.j2",
+  "regions": [
+    {
+      "function": "_etMinutes",
+      "unchanged": true,
+      "sha256": "23c2fe9a70d2cf044504fe6414809b01786ab89086a5fb5ed34fbda03c932039"
+    },
+    {
+      "function": "isMarketHours",
+      "unchanged": true,
+      "sha256": "c01734f1282724c5146755d0e963f8b6c3f52efa356c61e7e5aa108cc86c7a4a"
+    },
+    {
+      "function": "flowMetaFresh",
+      "unchanged": true,
+      "sha256": "392906e145d2e6de23562f0e032a3586f18a624d032f21701fdc0f18c1da9588"
+    },
+    {
+      "function": "sessionPhase",
+      "unchanged": true,
+      "sha256": "428b6794ef8382f391bf2115aab4dec0c80fe85c94e273046a92723dfd4e9da1"
+    },
+    {
+      "function": "computeRvol",
+      "unchanged": true,
+      "sha256": "2934766af23f563e3693d0f6c2b6ddf2debd24ec24f9a6b378e112a6b5c0e1f6"
+    },
+    {
+      "function": "computeRangePos",
+      "unchanged": true,
+      "sha256": "08a659896bc0fd808d79a01067abc4c11071af4d4d14603c3e63b7c092754392"
+    },
+    {
+      "function": "computeVwapDelta",
+      "unchanged": true,
+      "sha256": "15aa9818fb5e8d8251b8b64d90b63b1ac29b96503ee7e36ed8a97da8e97bc14e"
+    },
+    {
+      "function": "computeLegs",
+      "unchanged": true,
+      "sha256": "e574fcf0106676afbb4eb58689745d7477f94c19b085347d80275c78ed4165ac"
+    },
+    {
+      "function": "dealerOf",
+      "unchanged": true,
+      "sha256": "2a0af41b60f77bef6d61144034754b082fa1ec670a9011ec9401e37f9a218e8b"
+    },
+    {
+      "function": "quotePx",
+      "unchanged": true,
+      "sha256": "af1dc56dc594af74b8c2418976ca5bb4c68217c189d5543276235cc714712f37"
+    },
+    {
+      "function": "boardPriceCoverage",
+      "unchanged": true,
+      "sha256": "c52802dc726e196d1e029f54fd66faf9e2c857f51a351e193125232771c9adc1"
+    },
+    {
+      "function": "boardPulseCoverage",
+      "unchanged": true,
+      "sha256": "e6b0521d915dca1c178613db168fc7ed53c9b2ac57939e24c14785f132c9188c"
+    },
+    {
+      "function": "computeStance",
+      "unchanged": true,
+      "sha256": "ea58fe1a253e998d2a0aeb877b4f9fddb05188feeaee2fcfc86eb83652f54056"
+    },
+    {
+      "function": "computeAll",
+      "unchanged": true,
+      "sha256": "f4e9191fc783601174addc7948fd9c97a71eeb4643ce445e42ebfacd1a3d232b"
+    },
+    {
+      "function": "laneCounts",
+      "unchanged": true,
+      "sha256": "a8718e75f661db58fc305868e0ec3ed27c351b646b80db0394514de489a3816f"
+    }
+  ],
+  "fetch_poll_functions_unchanged": [
+    "fetchQuotes",
+    "fetchPulse",
+    "fetchFlow",
+    "fetchRootFlow",
+    "startPolling"
+  ]
+}

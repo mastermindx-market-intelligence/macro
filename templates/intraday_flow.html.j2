@@ -44,10 +44,15 @@
       <h2 class="hero-thesis" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h2>
       <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
     </div>
+    <div class="ift-brief-actions">
     <button type="button" class="gbtn ift-refresh" id="ift-refresh" aria-label="Refresh available data">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>
       <span class="ift-refresh-copy">{{ t('Refresh', '刷新') }}</span>
     </button>
+    <button type="button" class="gbtn ift-source-open" id="ift-source-details-open" popovertarget="ift-source-panel" aria-controls="ift-source-panel" aria-haspopup="dialog" aria-expanded="false" aria-label="Source details">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 11v6M12 7v1"/></svg><span class="ift-source-open-copy">{{ t('Sources','来源') }}</span>
+    </button>
+    </div>
     <div class="ift-provenance">
 {% if ift.as_of_display and ift.as_of_display.en %}
         <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class="skel ift-skel-inline" aria-hidden="true"></span></div>
@@ -56,6 +61,16 @@
         {% endif %}
       <div class="ctx-stamp" id="ift-source-times"></div>
     </div>
+  </section>
+
+  <section class="ift-source-panel" id="ift-source-panel" popover="auto" role="dialog" aria-labelledby="ift-source-title">
+    <header class="ift-source-panel-head"><div><p class="ift-eyebrow">{{ t('Intraday Flow','盘中资金流') }}</p><h2 id="ift-source-title">{{ t('Source details','数据来源') }}</h2></div>
+      <button type="button" class="gbtn ift-source-close" id="ift-source-close" popovertarget="ift-source-panel" popovertargetaction="hide" aria-label="Close source details" autofocus><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </header>
+    <p class="ift-source-summary">{{ t('Received does not mean current.','已收到，不代表当前有效。') }}</p>
+    <p class="ift-source-scope">{{ t('Board-wide availability; individual names can differ.','看板整体可用性；各标的可能不同。') }}</p>
+    <div class="ift-source-detail-rows" id="ift-source-detail-rows"><p>{{ t('Checking sources…','正在检查来源…') }}</p></div>
+    <div class="ift-source-actions"><button type="button" class="gbtn" id="ift-source-refresh">{{ t('Refresh available data','刷新可用数据') }}</button><button type="button" class="gbtn" id="ift-source-back" popovertarget="ift-source-panel" popovertargetaction="hide">{{ t('Back to scan','返回扫描') }}</button></div>
   </section>
 
   <section class="ift-overview" aria-labelledby="ift-stages-heading">
@@ -736,7 +751,36 @@ function displaySourceTime(value) {
   var iso = date.toISOString();
   return esc(iso.slice(0,10)+' '+iso.slice(11,16)+' UTC');
 }
+// Source details are presentation of existing feed state, not a new health policy.
+function sourceDetailStatus(lane, status, stale, coverage) {
+  if (lane === 'tape' && stale === true) return {kind:'stale',en:'Marked stale',zh:'已标记过期',whyEn:'Not current volume confirmation.',whyZh:'不作为当前量能确认依据。'};
+  if (status === 'connecting') return {kind:'checking',en:'Checking…',zh:'检查中…',whyEn:'Confirmation is not available while this source connects.',whyZh:'来源连接期间，确认依据暂不可用。'};
+  if (status === 'live') {
+    if (lane === 'quotes') return {kind:'received',en:'Received · delayed',zh:'已收到 · 延迟',whyEn:'Received prices stay visible.',whyZh:'已收到的价格仍然保留。'};
+    if (lane === 'tape') return {kind:'received',en:'Received · check time',zh:'已收到 · 请核对时间',whyEn:'Source availability alone does not confirm a setup.',whyZh:'数据已收到，不代表布局已确认。'};
+    return {kind:'received',en:'Received · approximate',zh:'已收到 · 近似',whyEn:'Read the call-only evidence and its limitations.',whyZh:'请查看仅看涨期权依据及其局限。'};
+  }
+  if (lane !== 'options' && typeof coverage === 'number' && coverage > 0 && coverage < 1) return {kind:'limited',en:'Limited coverage',zh:'覆盖不完整',whyEn:'Some names have observations; inspect individual evidence.',whyZh:'部分标的有观测；请查看各标的依据。'};
+  return {kind:'unavailable',en:'Unavailable',zh:'不可用',whyEn:lane==='options'?'No directional inference.':'Current confirmation is unavailable.',whyZh:lane==='options'?'不推断资金方向。':'当前确认依据不可用。'};
+}
+function renderSourceDetails() {
+  var host = document.getElementById('ift-source-detail-rows');
+  if (!host) return;
+  var rows = [
+    {lane:'quotes',en:'Price',zh:'价格',status:quotesStatus,asof:quotesSourceAsof,coverage:boardPriceCoverage()},
+    {lane:'tape',en:'Volume &amp; VWAP',zh:'成交量与均价',status:pulseStatus,asof:pulseSourceAsof,stale:pulseSourceStale,coverage:boardPulseCoverage()},
+    {lane:'options',en:'Options flow',zh:'期权资金流',status:flowStatus,asof:flowAsof}
+  ];
+  var html = rows.map(function(row){
+    var detail = sourceDetailStatus(row.lane,row.status,row.stale,row.coverage);
+    return '<section class="ift-source-row" data-source-lane="'+row.lane+'"><div class="ift-source-row-head"><h3>'+lz(row.en,row.zh)+'</h3><span class="ift-source-state is-'+detail.kind+'">'+lz(detail.en,detail.zh)+'</span></div>'
+      + '<p class="ift-source-time">'+lz('Source ','来源')+displaySourceTime(row.asof)+'</p>'
+      + '<p class="ift-source-why">'+lz(detail.whyEn,detail.whyZh)+'</p></section>';
+  }).join('');
+  if (host._iftSourceHTML !== html) { host.innerHTML = html; host._iftSourceHTML = html; }
+}
 function updateSourceTimes() {
+  renderSourceDetails();
   var el = document.getElementById('ift-source-times');
   if (!el) return;
   el.innerHTML = '<span>'+lz('Price source ','价格来源 ')+displaySourceTime(quotesSourceAsof)+'</span>'
@@ -1146,6 +1190,9 @@ function localizeControls() {
   var zh = document.documentElement.getAttribute('data-lang') === 'zh';
   [['ift-hero','Session and data status','时段及数据状态'],
    ['ift-refresh','Refresh available data','刷新可用数据'],
+   ['ift-source-details-open','Source details','数据来源'],
+   ['ift-source-close','Close source details','关闭数据来源'],
+   ['ift-source-refresh','Refresh available data','刷新可用数据'],
    ['leaders-table','Intraday setup scan','盘中布局扫描'],
    ['ift-inspector','Selected name','所选标的'],
    ['ift-mobile-sort','Sort scan','扫描排序'],
@@ -1466,6 +1513,15 @@ if(resetButton) resetButton.addEventListener('click',resetFilters);
 var refreshButton = document.getElementById('ift-refresh');
 if(refreshButton) refreshButton.addEventListener('click',function(){
   fetchQuotes(); fetchPulse(); fetchFlow(); updateFlowStamp(flowAsof,flowMeta);
+});
+var sourcePanel = document.getElementById('ift-source-panel');
+var sourceOpener = document.getElementById('ift-source-details-open');
+var sourceRefresh = document.getElementById('ift-source-refresh');
+if (sourcePanel && sourceOpener) sourcePanel.addEventListener('toggle',function(event){
+  sourceOpener.setAttribute('aria-expanded',String(event.newState === 'open'));
+});
+if (sourceRefresh) sourceRefresh.addEventListener('click',function(){
+  if (refreshButton) refreshButton.click();
 });
 var countLabel = document.getElementById('count-label');
 if (countLabel) countLabel.addEventListener('click', function(e){
