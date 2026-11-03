@@ -356,7 +356,7 @@
   .see-more { border:1px solid var(--line); background:var(--panel2); color:var(--text); border-radius:8px; padding:7px 12px; font-size:12px; font-weight:650; cursor:pointer; }
   .see-more:hover { border-color:var(--muted); }
   .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr)); gap:13px; }
-  .cards .card { min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
+  .cards .card { min-width:0; background:var(--panel); border:1px solid var(--line); padding:12px 13px; cursor:pointer; transition:border-color .15s; }
   .cards .card:hover { border-color:var(--muted); }
   #si-explore .holdings-link { display:inline-block; margin-top:8px; color:var(--ink-link,var(--link)); }
   #si-explore .detail h4 { flex-wrap:wrap; overflow-wrap:anywhere; }
@@ -390,7 +390,6 @@
   #si-explore .rotrow { flex-wrap:wrap; }
   #si-explore .rotrow .rn { flex:1 1 8rem; white-space:normal; overflow:visible; overflow-wrap:anywhere; }
   #si-explore .rotcol { min-width:0; }
-  html[data-theme="light"] #si-explore .tcard { box-shadow:0 1px 3px color-mix(in srgb,var(--text) 7%,transparent); }
   @media (max-width:680px) {
     #si-explore .desk { grid-template-columns:minmax(0,1fr); }
     #si-explore .tmore > summary { min-height:40px; }
