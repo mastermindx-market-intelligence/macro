@@ -1,0 +1,90 @@
+[
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "dark",
+    "locale": "en",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "dark",
+    "locale": "zh",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "light",
+    "locale": "en",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      1440,
+      900
+    ],
+    "theme": "light",
+    "locale": "zh",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "theme": "dark",
+    "locale": "en",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "theme": "dark",
+    "locale": "zh",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "theme": "light",
+    "locale": "en",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  },
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "theme": "light",
+    "locale": "zh",
+    "exact_source_hrefs_preserved": true,
+    "source_words_preserved_normalized_whitespace": true,
+    "japan_row_text_byte_identical": true
+  }
+]

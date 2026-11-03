@@ -1,0 +1,193 @@
+{
+  "finding": "new sovereign summary/source targets below40px",
+  "reviewed_base": "45e8dc0e904c04450a3eb5caafeb59a4a5c2bf92",
+  "red": {
+    "cells": 2,
+    "controls": 30,
+    "min_width": 25.828125,
+    "min_height": 16,
+    "raw_path": "/Volumes/Mastermind/evidence/bonds-depth-p12t2s1-20261103/target-metrics-red.json",
+    "raw_sha256": "236bcf369bf2c8a19684678ee026ba1786cc9dfe499711f76d764eea31992f79"
+  },
+  "green": {
+    "cells": 8,
+    "controls": 120,
+    "min_width": 40,
+    "min_height": 40,
+    "raw_path": "/Volumes/Mastermind/evidence/bonds-depth-p12t2s1-20261103/target-metrics-green.json",
+    "raw_sha256": "03db65d86c6cb2f9de98fdea26a824ce6a4479cccdfd79bf3c5a7c08cba5ae63",
+    "all_at_least40": true,
+    "per_link_center_hit_and_focused_outline_assertions": "passed for each source anchor in all8 cells"
+  },
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 165,
+        "y": 746.5,
+        "width": 1110,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 165,
+        "y": 726.5,
+        "width": 1110,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "light",
+      "locale": "en",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 165,
+        "y": 746.5,
+        "width": 1110,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 165,
+        "y": 726.5,
+        "width": 1110,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 30,
+        "y": 723.75,
+        "width": 330,
+        "height": 61
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 30,
+        "y": 713,
+        "width": 330,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "locale": "en",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 30,
+        "y": 723.75,
+        "width": 330,
+        "height": 61
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "controls": 15,
+      "minimum_width": 40,
+      "minimum_height": 40,
+      "summary_closed_box": {
+        "x": 30,
+        "y": 713,
+        "width": 330,
+        "height": 40
+      },
+      "native_summary_display": "list-item",
+      "native_marker": "disclosure-open",
+      "summary_focused_outline": "auto",
+      "external_transport": 0
+    }
+  ],
+  "scope": "two new scoped size rules only; engine/tests/gauge/JS/materials/font/hrefs/source words unchanged; no source test or gauge rerun"
+}
