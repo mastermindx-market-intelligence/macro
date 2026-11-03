@@ -1,0 +1,40 @@
+{
+  "at": "2026-11-03T22:12:41.469373+00:00",
+  "source_head": "a35ef91b937a12f87cda6e91221a492ff172f0a0",
+  "canonical_full_materialization": {
+    "exit_code": 0,
+    "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/full-materialization.log",
+    "full_checkout_verified": true,
+    "clean_after_materialization": true
+  },
+  "guards": {
+    "runtime_styles": {
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/runtime_styles-full-guard.log",
+      "sha256": "ce27a25bb99e4fa6d754f33dc0c983b043865309daf5cd69a2de5df7192b0e3f",
+      "output_last_lines": [
+        "runtime style injection guard OK (275 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)"
+      ]
+    },
+    "visual_evidence": {
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/composition-source.diff",
+        "--repo-root",
+        "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/accepted-products-p12t2s5-20261103-7de64ea4ac4749d9"
+      ],
+      "exit_code": 0,
+      "log": "/Volumes/Mastermind/evidence/accepted-products-p12t2s5-20261103/visual_evidence-full-guard.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_last_lines": []
+    }
+  },
+  "browser": "HELD_NOT_RUN",
+  "old_sparse_guard_receipt": "ordinary-guards.json preserved; the supported full remedy was used without bypass"
+}
