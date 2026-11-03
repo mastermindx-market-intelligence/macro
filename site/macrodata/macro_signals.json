@@ -1,6 +1,6 @@
 {
   "date": "2026-11-02",
-  "generated_utc": "2026-11-03 01:57",
+  "generated_utc": "2026-11-03 02:18",
   "business_cycle": {
     "available": true,
     "asof": "2026-10-31",
@@ -4400,7 +4400,7 @@
         "key": "copper_gold",
         "name_en": "Copper/Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 2.005,
+        "value": 1.886,
         "pct": 97,
         "lean": "risk-on"
       },
@@ -4408,8 +4408,8 @@
         "key": "dxy",
         "name_en": "Dollar (20d %\u0394)",
         "name_zh": "\u7f8e\u5143\uff0820\u65e5 %\u53d8\u52a8\uff09",
-        "value": 0.136,
-        "pct": 55,
+        "value": 0.193,
+        "pct": 57,
         "lean": "risk-on"
       }
     ],
