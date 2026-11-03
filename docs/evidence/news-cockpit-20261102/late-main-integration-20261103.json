@@ -1,0 +1,203 @@
+{
+  "schema": "news.late-main-integration.v1",
+  "recorded_at": "2026-11-03T06:35:52.353031+00:00",
+  "previous_published_head": "454c567c245fba2e88e63ed8f8f7319ea6e83609",
+  "incoming_accepted_main": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+  "reason": "Main advanced beyond the earlier verified base; the prior PR was conflicting and pull_request CI could not start.",
+  "completed_merge_metadata_reconciled": {
+    "stale_merge_head": "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed",
+    "command": "git merge --quit",
+    "head_index_worktree_preserved": true,
+    "tree_before_and_after": "b149afafc294b4f07f9ee4c656238522ba8276c7"
+  },
+  "conflicts_resolved": [
+    "site/news.html",
+    "tests/test_ci_pack.py"
+  ],
+  "ci_test_executable_ast_matches_incoming_main": true,
+  "incoming_packing_baseline": [
+    [
+      137,
+      5909
+    ],
+    [
+      138,
+      5924
+    ],
+    [
+      131,
+      5665
+    ]
+  ],
+  "registry_unique_jobs": 379,
+  "candidate_step_delta_jobs_vs_main": [
+    "collector-registry"
+  ],
+  "incoming_declared_paths_missing": {},
+  "news_source_unchanged": {
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4"
+  },
+  "artifact": {
+    "before_sha256": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+    "after_sha256": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+    "bytes": 372371,
+    "canonical_finalizer_fixed_point": true,
+    "preserved_context_sha256": {
+      "ndSeed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+      "ndCalendar": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+      "ndImpact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+    },
+    "urls_removed": [],
+    "urls_added": [],
+    "not_a_fresh_data_build": true,
+    "not_deployed": true
+  },
+  "acceptance": "New combined packing/closure and hosted CI remain to be evaluated; prior 707c0ec verification is retained as historical evidence.",
+  "prior_no_effect_attempt": {
+    "base": "844b4bb4b25b4c82d8475c9ac937205778b80f57",
+    "prepared_tree": "255d71660f791e106e7a8cfa603e1d30adbf10d4",
+    "code": "PROTECTED_BASE_MISMATCH_OR_UNAVAILABLE",
+    "effect_state": "NOT_APPLIED"
+  },
+  "new_base_changed_path_count": 136,
+  "new_base_changed_source_paths": [
+    ".github/ci/legacy-jobs.yml",
+    ".github/workflows/ci.yml",
+    "app/deploy/update.sh",
+    "app/main.py",
+    "app/theme_research.py",
+    "config/theme_sources.yml",
+    "engine/company_intelligence/event_workspace.py",
+    "engine/company_intelligence/event_workspace_build.py",
+    "engine/company_intelligence/guidance_history.py",
+    "engine/company_intelligence/issuer_profiles.py",
+    "engine/fundamental_forensics/statement_graph.py",
+    "engine/market_ontology/semiconductor_owner_bundle.py",
+    "engine/market_ontology/semiconductor_theme_research.py",
+    "engine/market_ontology/semiconductor_witness_scope.py",
+    "engine/market_ontology/theme_research_binding.py",
+    "engine/market_ontology/theme_research_mounts.py",
+    "engine/market_ontology/theme_research_registry.py",
+    "engine/market_ontology/workspace_projection.py",
+    "engine/sector_intelligence/finance_research_registration.py",
+    "engine/theme_graph/admission.py",
+    "engine/theme_graph/curation_assertion.py",
+    "engine/theme_graph/rights.py",
+    "scripts/build_state_of_themes.py",
+    "scripts/build_theme_detail.py",
+    "scripts/check_theme_graph_contracts.py",
+    "scripts/publish_fif_production_datasets.py",
+    "scripts/refresh_event_workspaces.py",
+    "templates/_basket_intelligence_mounts.html.j2",
+    "templates/_theme_research_mount.html.j2",
+    "templates/_theme_research_mounts.html.j2",
+    "templates/_theme_research_section.html.j2",
+    "templates/basket_detail.html.j2",
+    "templates/state_of_themes.html.j2",
+    "tests/fixtures/semiconductor_theme_research/abf_substrate.json",
+    "tests/fixtures/semiconductor_theme_research/corrected_interpretation.json",
+    "tests/fixtures/semiconductor_theme_research/cowos_variants.json",
+    "tests/fixtures/semiconductor_theme_research/date_only_same_day.json",
+    "tests/fixtures/semiconductor_theme_research/empty_financial_success.json",
+    "tests/fixtures/semiconductor_theme_research/guidance_basis_change.json",
+    "tests/fixtures/semiconductor_theme_research/guidance_midpoint_unowned.json",
+    "tests/fixtures/semiconductor_theme_research/guidance_next_period.json",
+    "tests/fixtures/semiconductor_theme_research/guidance_perimeter_change.json",
+    "tests/fixtures/semiconductor_theme_research/hbm_12h_16h.json",
+    "tests/fixtures/semiconductor_theme_research/identity_namespace_or_epoch.json",
+    "tests/fixtures/semiconductor_theme_research/integrated_purchase_boundary.json",
+    "tests/fixtures/semiconductor_theme_research/jv_physical_vs_economics.json",
+    "tests/fixtures/semiconductor_theme_research/legacy_same_inputs.json",
+    "tests/fixtures/semiconductor_theme_research/logout_delayed_response.json",
+    "tests/fixtures/semiconductor_theme_research/long_label_modes.json",
+    "tests/fixtures/semiconductor_theme_research/mixed_wafer_units.json",
+    "tests/fixtures/semiconductor_theme_research/page2_new_generation.json",
+    "tests/fixtures/semiconductor_theme_research/recorded_later.json",
+    "tests/fixtures/semiconductor_theme_research/revoked_rights_warm.json",
+    "tests/fixtures/semiconductor_theme_research/same_url_different_statements.json",
+    "tests/fixtures/semiconductor_theme_research/source_authority_injection.json",
+    "tests/fixtures/semiconductor_theme_research/source_only_business.json",
+    "tests/fixtures/semiconductor_theme_research/st_target_then_operations.json",
+    "tests/fixtures/semiconductor_theme_research/umc_output_utilization.json",
+    "tests/fixtures/semiconductor_theme_research/unauthorized_missing_or_hidden.json",
+    "tests/fixtures/semiconductor_theme_research/witness_hbm_packaging.json",
+    "tests/fixtures/semiconductor_theme_research/witness_sic_gan.json",
+    "tests/fixtures/theme_research_client/composed_envelope.json",
+    "tests/fundamental_forensics_statement_withheld.test.mjs",
+    "tests/semiconductor_research_helpers.py",
+    "tests/test_basket_intelligence_mounts.py",
+    "tests/test_ci_pack.py",
+    "tests/test_complete_owner_refresh.py",
+    "tests/test_consumer_cyclical_display.py",
+    "tests/test_consumer_cyclical_plnt_page.py",
+    "tests/test_consumer_cyclical_shared_contract.py",
+    "tests/test_deploy_update_self_heal.py",
+    "tests/test_evidence_foundation_contract.py",
+    "tests/test_finance_research_registration.py",
+    "tests/test_fundamental_forensics_statement_refusals.py",
+    "tests/test_issuer_profiles_a5a.py",
+    "tests/test_semiconductor_assertion_semantics.py",
+    "tests/test_semiconductor_earnings_intake.py",
+    "tests/test_semiconductor_earnings_intake_integration.py",
+    "tests/test_semiconductor_earnings_witnesses.py",
+    "tests/test_semiconductor_guidance_history.py",
+    "tests/test_semiconductor_industrial_views.py",
+    "tests/test_semiconductor_native_identity.py",
+    "tests/test_semiconductor_owner_bundle.py",
+    "tests/test_semiconductor_publication_primitives.py",
+    "tests/test_semiconductor_research_composition.py",
+    "tests/test_semiconductor_research_inputs.py",
+    "tests/test_semiconductor_research_temporal.py",
+    "tests/test_semiconductor_theme_research_ui.py",
+    "tests/test_semiconductor_witness_scope.py",
+    "tests/test_semiconductor_witness_served_proof.py",
+    "tests/test_theme_graph_contracts.py",
+    "tests/test_theme_graph_curation_assertion.py",
+    "tests/test_theme_research_api.py",
+    "tests/test_theme_research_binding.py",
+    "tests/test_theme_research_mount_context.py",
+    "tests/test_theme_research_private_binding.py",
+    "tests/test_theme_research_registry.py",
+    "tests/test_theme_research_rights_refresh.py",
+    "tests/test_theme_sources_registry.py",
+    "tests/test_theme_tracker_research_mounts.py",
+    "tests/test_workspace_projection.py"
+  ],
+  "incoming_packing_probes": [
+    [
+      "templates/index.html",
+      137,
+      5909
+    ],
+    [
+      "scripts/build_free_content.py",
+      138,
+      5924
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      131,
+      5665
+    ]
+  ],
+  "fetch_reconciliation": [
+    {
+      "method": "continued_original_19a_merge_after_readback",
+      "fetched_base": "19a896b97ae20f2c12475a0207678f92dc4f335b",
+      "comparison_correction": "Read YAML blobs without stripping terminal newline; no workflow command changed by composition."
+    }
+  ],
+  "reviewed_critical_upstream_sha256": {
+    ".github/workflows/ci.yml": "57d481d67c62ed27e3d5959eb090dd38079cbbbb5ad28c8b027d08c22c82dc2b",
+    "app/deploy/update.sh": "f1a94147e87bf753052c05f5821c72cd2abe3071ce118210b51aacaf13aab85d",
+    "app/main.py": "d26c60c87369effdfdec5f5483c7df72c5dbfae96b4b276954146e2ca3064555"
+  },
+  "startup_composition": "Incoming accepted main retained byte-for-byte plus exact original News router block; Python AST parses.",
+  "restart_composition": "Incoming accepted deployment retained byte-for-byte plus original intelligence_history alternative; bash syntax passes; News/Theme Research named paths match and unrelated nightly paths do not.",
+  "ci_trigger_preservation": "Both parents pull_request positive trigger paths retained; all non-path workflow semantics match both parents.",
+  "news_ui_source_sha256_unchanged": true,
+  "original_ignored_sample_sha256": "bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00",
+  "new_composition_validation": "PENDING; prior 707c0ec exact-source evidence remains historical; final hosted CI and independent approval are still required."
+}
