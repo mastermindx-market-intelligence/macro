@@ -1,0 +1,126 @@
+[
+  {
+    "session": "D08A",
+    "integration_owner": "D08",
+    "views_or_workflows": [
+      "overview/desk",
+      "tape",
+      "tide",
+      "0DTE",
+      "largest",
+      "tickers",
+      "screener",
+      "Prophet",
+      "statistics"
+    ],
+    "exact_current_source_view_ids": "receiving session resolves from pinned OptionsWorkspace; do not invent query values",
+    "owned_current_pages": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-25-0"
+      }
+    ],
+    "candidate_file": "MM · Options Overview & Flow",
+    "shared_inputs": "D08 owns W1/W3 crossing references; siblings read only",
+    "dependency": "F01/F02/D08 frozen contracts for final composition; source/retention work starts independently"
+  },
+  {
+    "session": "D08B",
+    "integration_owner": "D08",
+    "views_or_workflows": [
+      "GEX (prism alias)",
+      "surface",
+      "positioning",
+      "levels",
+      "volatility",
+      "3D interpretation"
+    ],
+    "exact_current_source_view_ids": "receiving session resolves from pinned OptionsWorkspace; do not invent query values",
+    "owned_current_pages": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-V-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-U-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-T-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-H-0"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-D-0"
+      }
+    ],
+    "candidate_file": "MM · Options Exposure & Volatility",
+    "shared_inputs": "D08 owns W1/W3 crossing references; siblings read only",
+    "dependency": "F01/F02/D08 frozen contracts for final composition; source/retention work starts independently"
+  },
+  {
+    "session": "D08C",
+    "integration_owner": "D08",
+    "views_or_workflows": [
+      "structure",
+      "plan",
+      "scenarios/assumptions",
+      "compare",
+      "save/watch integration",
+      "review"
+    ],
+    "exact_current_source_view_ids": "receiving session resolves from pinned OptionsWorkspace; do not invent query values",
+    "owned_current_pages": [
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-P-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-7-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-6-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-5-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-4-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-3-1"
+      },
+      {
+        "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "page_id": "p-2-0"
+      }
+    ],
+    "candidate_file": "MM · Options Plan & Review",
+    "shared_inputs": "D08 owns W1/W3 crossing references; siblings read only",
+    "dependency": "F01/F02/D08 frozen contracts for final composition; source/retention work starts independently"
+  },
+  {
+    "session": "D08D",
+    "integration_owner": "D08",
+    "views_or_workflows": [
+      "futures",
+      "equity replay",
+      "temporal replay identity",
+      "dev harness exclusions"
+    ],
+    "exact_current_source_view_ids": "receiving session resolves from pinned OptionsWorkspace; do not invent query values",
+    "owned_current_pages": [],
+    "candidate_file": "MM · Futures & Replay",
+    "shared_inputs": "D08 owns W1/W3 crossing references; siblings read only",
+    "dependency": "F01/F02/D08 frozen contracts for final composition; source/retention work starts independently"
+  }
+]

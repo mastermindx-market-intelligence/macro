@@ -1,0 +1,1755 @@
+[
+  {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "MASTERMIND PAGES",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 58,
+    "expanded_pages": 58,
+    "expanded_artboards": 888,
+    "reported_nodes": 137350,
+    "owners": [
+      "D02",
+      "D04",
+      "D05",
+      "D07",
+      "D08A",
+      "D09",
+      "D10",
+      "D11",
+      "D12",
+      "D15",
+      "D16",
+      "D17",
+      "D18",
+      "D19",
+      "D21",
+      "D22",
+      "D23",
+      "D24",
+      "F01",
+      "F02",
+      "F03"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "split active content by assigned domain; preserve current IDs and references",
+    "default_page_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-5-0",
+    "pages": [
+      {
+        "id": "p-5-0",
+        "name": "Archetype Starters · Governed"
+      },
+      {
+        "id": "p-25-0",
+        "name": "Options · Research Desk · R1 · 2026-11-02"
+      },
+      {
+        "id": "p-24-0",
+        "name": "Sector Intelligence · R3 · Completion · 2026-10-21"
+      },
+      {
+        "id": "p-23-0",
+        "name": "Shared Shell · Completion & Integration · R1"
+      },
+      {
+        "id": "p-22-0",
+        "name": "Market Memory · Evidence workspace · R1 · 2026-10-18"
+      },
+      {
+        "id": "p-20-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18"
+      },
+      {
+        "id": "p-1Z-1",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17"
+      },
+      {
+        "id": "p-1Y-1",
+        "name": "ARCHIVE · Bonds + Transmission · pre-R30"
+      },
+      {
+        "id": "p-1X-1",
+        "name": "Forex · Archive · Prior studies & build history"
+      },
+      {
+        "id": "p-1W-1",
+        "name": "Macro · Dark Flow · Implementation · 2026-10-17"
+      },
+      {
+        "id": "p-1U-0",
+        "name": "Shared Market · Prepared Research + Reading · Reference"
+      },
+      {
+        "id": "p-1T-0",
+        "name": "Shared Market · Watchlists + Save States · Reference"
+      },
+      {
+        "id": "p-1S-0",
+        "name": "Shared Market · Search + Comparison · Reference"
+      },
+      {
+        "id": "p-1R-0",
+        "name": "Shared Market · All Tools + Research Launcher · Reference"
+      },
+      {
+        "id": "p-1Q-0",
+        "name": "01 · Design Foundations · Components & Archetype Rules"
+      },
+      {
+        "id": "p-1P-0",
+        "name": "00 · START HERE · Product & File Navigation"
+      },
+      {
+        "id": "p-1N-0",
+        "name": "Gov Revenue · Builder Contracts & State Specimens"
+      },
+      {
+        "id": "p-1M-0",
+        "name": "BioCatalyst · Builder & Acceptance Contracts"
+      },
+      {
+        "id": "p-1L-0",
+        "name": "ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build"
+      },
+      {
+        "id": "p-1K-0",
+        "name": "MedTech · Regulatory Catalyst R13 · Design References"
+      },
+      {
+        "id": "p-1J-0",
+        "name": "REFERENCE · Policy Watch R2–R3 & HELD · Not for Build"
+      },
+      {
+        "id": "p-1I-0",
+        "name": "ARCHIVE · Commodities Legacy 90–94 · Not for Build"
+      },
+      {
+        "id": "p-1H-0",
+        "name": "Bonds · Advanced Mechanism & Decision Studies · R18–R25"
+      },
+      {
+        "id": "p-1F-0",
+        "name": "Forex · Advanced Movement & Decision Studies · R17–R24"
+      },
+      {
+        "id": "p-1E-0",
+        "name": "Cross-Asset · Bonds × Forex Transmission & Confluence · Studies"
+      },
+      {
+        "id": "p-1B-0",
+        "name": "ARCHIVE · Earnings and Dossiers Original Source · Not for Build"
+      },
+      {
+        "id": "p-1A-0",
+        "name": "ARCHIVE · Intelligence Hub R4 Original Source · Not for Build"
+      },
+      {
+        "id": "p-18-0",
+        "name": "Investor Shell · Market Overview · Design Candidates"
+      },
+      {
+        "id": "p-17-0",
+        "name": "REFERENCE · Forex Alternate R19–R21 Studies"
+      },
+      {
+        "id": "p-16-0",
+        "name": "ARCHIVE · Forex Duplicate Study · Not for Build"
+      },
+      {
+        "id": "p-15-0",
+        "name": "Returns Calendar · Terminal + Dossier"
+      },
+      {
+        "id": "p-14-0",
+        "name": "Bot Paper Portfolio · V3 Upgrade · 2026-10-09"
+      },
+      {
+        "id": "p-Q-0",
+        "name": "Earnings + Dossiers · North Star Study · 2026-09-26"
+      },
+      {
+        "id": "p-3-1",
+        "name": "News Intelligence · 2026-09-20"
+      },
+      {
+        "id": "p-D-0",
+        "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24"
+      },
+      {
+        "id": "p-13-1",
+        "name": "Market Breadth · Command Center · R1 · 2026-09-29"
+      },
+      {
+        "id": "p-A-0",
+        "name": "Confluence Screener · Governed Reference · 2026-09-22"
+      },
+      {
+        "id": "p-H-1",
+        "name": "Confluence Screener · R2 · 2026-09-26"
+      },
+      {
+        "id": "p-O-1",
+        "name": "Bonds · Decision Workspace · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-N-1",
+        "name": "Forex · Guided Intelligence · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-J-1",
+        "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-8-1",
+        "name": "Live Site Baselines · Wave 1 · 2026-09-21"
+      },
+      {
+        "id": "p-T-0",
+        "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27"
+      },
+      {
+        "id": "p-10-0",
+        "name": "Crypto Intelligence · R3 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-L-0",
+        "name": "Commodities · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-Y-0",
+        "name": "Sector Intelligence · R2 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-S-1",
+        "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26"
+      },
+      {
+        "id": "p-K-0",
+        "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26"
+      },
+      {
+        "id": "p-Z-0",
+        "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build"
+      },
+      {
+        "id": "p-V-0",
+        "name": "ARCHIVE · Company Intelligence · Not for Build"
+      },
+      {
+        "id": "p-11-0",
+        "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build"
+      },
+      {
+        "id": "p-X-0",
+        "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build"
+      },
+      {
+        "id": "p-W-0",
+        "name": "ARCHIVE · International Markets · R9 · Not for Build"
+      },
+      {
+        "id": "p-E-1",
+        "name": "Sector Intelligence · vNext Study · 2026-09-24"
+      },
+      {
+        "id": "p-6-1",
+        "name": "Sector Intelligence · Unified Detail · 2026-09-21"
+      },
+      {
+        "id": "p-I-1",
+        "name": "Intelligence Hub · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-9-0",
+        "name": "Sector Central · Redesign · 2026-09-21"
+      },
+      {
+        "id": "p-7-1",
+        "name": "China Intelligence · vNext · 2026-09-21"
+      }
+    ]
+  },
+  {
+    "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+    "name": "Mastermind · Market Dashboard Popups · Redesign",
+    "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+    "archived": false,
+    "listed_pages": 6,
+    "expanded_pages": 6,
+    "expanded_artboards": 99,
+    "reported_nodes": 11588,
+    "owners": [
+      "D02",
+      "D10",
+      "D19"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "split active content by assigned domain; preserve current IDs and references",
+    "default_page_url": "https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "RISK RADAR SYSTEM"
+      },
+      {
+        "id": "p-6-0",
+        "name": "01B · Risk Radar · Pullback Underway · US + China"
+      },
+      {
+        "id": "p-5-0",
+        "name": "00 · Popups + Risk Radar · Start Here · Design Families"
+      },
+      {
+        "id": "p-3-0",
+        "name": "China Intelligence · R2 · Progressive Disclosure"
+      },
+      {
+        "id": "p-4-0",
+        "name": "Events & News · R2 · Briefing to Evidence · 2026-09-29"
+      },
+      {
+        "id": "p-2-0",
+        "name": "Program Handoff · Popup Upgrade Sequence"
+      }
+    ]
+  },
+  {
+    "file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+    "name": "Refined vase",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 8,
+    "expanded_pages": 8,
+    "expanded_artboards": 68,
+    "reported_nodes": 8672,
+    "owners": [
+      "D11"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      },
+      {
+        "id": "p-8-0",
+        "name": "98 · SOURCE ONLY · Intelligence Hub Alt Data Baseline"
+      },
+      {
+        "id": "p-7-0",
+        "name": "99 · Hub · Transfer QA + Held"
+      },
+      {
+        "id": "p-6-0",
+        "name": "04 · Hub · Loading, Filters + Locale Coverage"
+      },
+      {
+        "id": "p-5-0",
+        "name": "03 · Hub · Research + Risk States"
+      },
+      {
+        "id": "p-4-0",
+        "name": "02 · Hub · Mobile Commands + Evidence"
+      },
+      {
+        "id": "p-3-0",
+        "name": "01 · Hub · Desktop Commands + Evidence"
+      },
+      {
+        "id": "p-2-0",
+        "name": "Intelligence Hub · R4 · Working"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5JRN1HWF62YK527NKCY7WD5",
+    "name": "Paper E2E acceptance — file+page+order verified",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 2,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5JRN1HWF62YK527NKCY7WD5/p-2-0",
+    "pages": [
+      {
+        "id": "p-2-0",
+        "name": "E2E scratch second page"
+      },
+      {
+        "id": "p-1-0",
+        "name": "E2E primary retained"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "name": "PROPHET",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 12,
+    "expanded_pages": 12,
+    "expanded_artboards": 203,
+    "reported_nodes": 42611,
+    "owners": [
+      "D03",
+      "D20"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-C-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "PROPHET"
+      },
+      {
+        "id": "p-C-0",
+        "name": "08 · R7 award-grade · Opportunity workspace · DRAFT"
+      },
+      {
+        "id": "p-B-0",
+        "name": "REF · REJECTED · R6 text-row direction · R1–R4"
+      },
+      {
+        "id": "p-A-0",
+        "name": "07 · R6 successor · Opportunity workspace · DRAFT"
+      },
+      {
+        "id": "p-9-0",
+        "name": "06 · R6 · Flagship candidate · Design draft"
+      },
+      {
+        "id": "p-8-0",
+        "name": "REF · Prophet Quote + Assessment Reviews · R4.0–4.4"
+      },
+      {
+        "id": "p-7-0",
+        "name": "REF · Prophet Setup, Evidence + Playbooks · R3.1–3.9"
+      },
+      {
+        "id": "p-6-0",
+        "name": "05 · SOURCE ONLY · Prophet US Live Baseline"
+      },
+      {
+        "id": "p-5-0",
+        "name": "04 · Shared Contracts + State Coverage"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Screener · Table, Grid + Compare"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · R2 · Today, Setup + Plans"
+      },
+      {
+        "id": "p-2-1",
+        "name": "01 · Regional · Hong Kong + Canada"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "name": "News Intelligence · Decision Rail · R2 · 2026-10-21",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 1,
+    "expanded_artboards": 10,
+    "reported_nodes": 2747,
+    "owners": [
+      "D10"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "News Intelligence · Decision Rail · R2 · 2026-10-21"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "name": "Terminal",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 36,
+    "expanded_pages": 36,
+    "expanded_artboards": 412,
+    "reported_nodes": 69911,
+    "owners": [
+      "D04",
+      "D06",
+      "D07",
+      "D08B",
+      "D08C",
+      "D22",
+      "D25",
+      "F01",
+      "F03"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "split active content by assigned domain; preserve current IDs and references",
+    "default_page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Company Intelligence · 2026-09-20"
+      },
+      {
+        "id": "p-V-0",
+        "name": "Options · Exposure Intelligence · R2 · 2026-10-20"
+      },
+      {
+        "id": "p-U-0",
+        "name": "Options · Rotation & Positioning · R1 · 2026-10-20"
+      },
+      {
+        "id": "p-T-0",
+        "name": "Options · Exposure Intelligence · TerraShade study · 2026-10-20"
+      },
+      {
+        "id": "p-S-0",
+        "name": "Company · Production Suite · R3"
+      },
+      {
+        "id": "p-W-0",
+        "name": "Terminal · Chart Context · R1 · 2026-10-18"
+      },
+      {
+        "id": "p-X-0",
+        "name": "Terminal Portfolio · Builder + Acceptance References"
+      },
+      {
+        "id": "p-Y-0",
+        "name": "Terminal · Portfolio · Personal Desk · 2026-10-11"
+      },
+      {
+        "id": "p-Z-0",
+        "name": "Terminal · R3 Refraction · Top-edge only"
+      },
+      {
+        "id": "p-10-0",
+        "name": "Terminal · Account & settings · 2026-10-11"
+      },
+      {
+        "id": "p-R-0",
+        "name": "00 · TERMINAL · Start Here · Product Directory"
+      },
+      {
+        "id": "p-Q-0",
+        "name": "Returns Calendar · Terminal + Stock Dossier"
+      },
+      {
+        "id": "p-P-1",
+        "name": "Options · Build Contracts + Source Proof · Reference"
+      },
+      {
+        "id": "p-O-1",
+        "name": "Market Heatmaps · Saved Views + Recovery · R7–R8"
+      },
+      {
+        "id": "p-N-1",
+        "name": "Market Heatmaps · Mobile Atlas + Comparison · R6"
+      },
+      {
+        "id": "p-M-1",
+        "name": "Company R2 · Chinese Mobile + 320px Variants"
+      },
+      {
+        "id": "p-L-1",
+        "name": "Company R2 · C01 Source, Lineage + Evidence States"
+      },
+      {
+        "id": "p-K-1",
+        "name": "Company R2 · Tablet Brief + Evidence Variants"
+      },
+      {
+        "id": "p-J-1",
+        "name": "Company R2 · Mobile + Narrow-Screen Variants"
+      },
+      {
+        "id": "p-I-1",
+        "name": "Terminal · Intelligence Workspace · 2026-10"
+      },
+      {
+        "id": "p-H-0",
+        "name": "13 · Options · 3D Research Lab"
+      },
+      {
+        "id": "p-G-0",
+        "name": "12 · SOURCE ONLY · Terminal Live Baselines"
+      },
+      {
+        "id": "p-F-0",
+        "name": "11 · Company · Earnings + Dossiers · North Star Study"
+      },
+      {
+        "id": "p-E-0",
+        "name": "10 · Retained Shared Shell · Stocks + Setups"
+      },
+      {
+        "id": "p-D-0",
+        "name": "09 · Options · Volatility Lab"
+      },
+      {
+        "id": "p-C-0",
+        "name": "ARCHIVE · Company Intelligence · Superseded"
+      },
+      {
+        "id": "p-B-1",
+        "name": "08 · Company · Financials, Market + Ownership"
+      },
+      {
+        "id": "p-A-1",
+        "name": "07 · Company · Research, Results + Sources"
+      },
+      {
+        "id": "p-9-1",
+        "name": "06 · Company · Navigation + Interaction"
+      },
+      {
+        "id": "p-7-1",
+        "name": "05 · Options · Compare"
+      },
+      {
+        "id": "p-6-1",
+        "name": "04 · Options · Scenarios + Assumptions"
+      },
+      {
+        "id": "p-5-1",
+        "name": "03 · Options · Review"
+      },
+      {
+        "id": "p-4-1",
+        "name": "02 · Options · Save + Watch"
+      },
+      {
+        "id": "p-3-1",
+        "name": "01 · Options · Plan"
+      },
+      {
+        "id": "p-2-0",
+        "name": "Terminal · Options Structure Intelligence · R1 · 2026-09-27"
+      },
+      {
+        "id": "p-8-1",
+        "name": "Market Heatmaps · Unified Workspace · 2026-09-29"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5K3WQXMD1QKXM2SBD7VABW1",
+    "name": "Paper exact Copy link canary 2026-10-22 (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5K3WQXMD1QKXM2SBD7VABW1/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "E2E primary retained"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5K0V5AGPSDXKA2K1PH1ABNE",
+    "name": "Paper visual row guard canary 2026-10-22 (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5K0V5AGPSDXKA2K1PH1ABNE/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "E2E primary retained"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5JV8SY6WP21H72WKK7GJ5R6",
+    "name": "Paper reviewed deletion regression 2026-10-22 (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5JV8SY6WP21H72WKK7GJ5R6/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "E2E primary retained"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5JS8TNZKQ01SJS4D0S9VQFC",
+    "name": "Paper E2E acceptance — file+page+order verified (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5JS8TNZKQ01SJS4D0S9VQFC/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "E2E primary retained"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5HPWFPQ2Z5X79A9H8MJFKK0",
+    "name": "Young harmony",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 2,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5HPWFPQ2Z5X79A9H8MJFKK0/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      },
+      {
+        "id": "p-3-0",
+        "name": "Page 2"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+    "name": "MASTERMIND PAGES (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 57,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5HVW84WZFE62DREB6QB9ZDJ/p-5-0",
+    "pages": [
+      {
+        "id": "p-5-0",
+        "name": "Archetype Starters · Governed"
+      },
+      {
+        "id": "p-24-0",
+        "name": "Sector Intelligence · R3 · Completion · 2026-10-21"
+      },
+      {
+        "id": "p-23-0",
+        "name": "Shared Shell · Completion & Integration · R1"
+      },
+      {
+        "id": "p-22-0",
+        "name": "Market Memory · Evidence workspace · R1 · 2026-10-18"
+      },
+      {
+        "id": "p-20-0",
+        "name": "Catalyst Intelligence · Decision Desk · R1 · 2026-10-18"
+      },
+      {
+        "id": "p-1Z-1",
+        "name": "Catalyst-to-Opportunity · Source-bound integration · 2026-10-17"
+      },
+      {
+        "id": "p-1Y-1",
+        "name": "ARCHIVE · Bonds + Transmission · pre-R30"
+      },
+      {
+        "id": "p-1X-1",
+        "name": "Forex · Archive · Prior studies & build history"
+      },
+      {
+        "id": "p-1W-1",
+        "name": "Macro · Dark Flow · Implementation · 2026-10-17"
+      },
+      {
+        "id": "p-1U-0",
+        "name": "Shared Market · Prepared Research + Reading · Reference"
+      },
+      {
+        "id": "p-1T-0",
+        "name": "Shared Market · Watchlists + Save States · Reference"
+      },
+      {
+        "id": "p-1S-0",
+        "name": "Shared Market · Search + Comparison · Reference"
+      },
+      {
+        "id": "p-1R-0",
+        "name": "Shared Market · All Tools + Research Launcher · Reference"
+      },
+      {
+        "id": "p-1Q-0",
+        "name": "01 · Design Foundations · Components & Archetype Rules"
+      },
+      {
+        "id": "p-1P-0",
+        "name": "00 · START HERE · Product & File Navigation"
+      },
+      {
+        "id": "p-1N-0",
+        "name": "Gov Revenue · Builder Contracts & State Specimens"
+      },
+      {
+        "id": "p-1M-0",
+        "name": "BioCatalyst · Builder & Acceptance Contracts"
+      },
+      {
+        "id": "p-1L-0",
+        "name": "ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build"
+      },
+      {
+        "id": "p-1K-0",
+        "name": "MedTech · Regulatory Catalyst R13 · Design References"
+      },
+      {
+        "id": "p-1J-0",
+        "name": "REFERENCE · Policy Watch R2–R3 & HELD · Not for Build"
+      },
+      {
+        "id": "p-1I-0",
+        "name": "ARCHIVE · Commodities Legacy 90–94 · Not for Build"
+      },
+      {
+        "id": "p-1H-0",
+        "name": "Bonds · Advanced Mechanism & Decision Studies · R18–R25"
+      },
+      {
+        "id": "p-1F-0",
+        "name": "Forex · Advanced Movement & Decision Studies · R17–R24"
+      },
+      {
+        "id": "p-1E-0",
+        "name": "Cross-Asset · Bonds × Forex Transmission & Confluence · Studies"
+      },
+      {
+        "id": "p-1B-0",
+        "name": "ARCHIVE · Earnings and Dossiers Original Source · Not for Build"
+      },
+      {
+        "id": "p-1A-0",
+        "name": "ARCHIVE · Intelligence Hub R4 Original Source · Not for Build"
+      },
+      {
+        "id": "p-18-0",
+        "name": "Investor Shell · Market Overview · Design Candidates"
+      },
+      {
+        "id": "p-17-0",
+        "name": "REFERENCE · Forex Alternate R19–R21 Studies"
+      },
+      {
+        "id": "p-16-0",
+        "name": "ARCHIVE · Forex Duplicate Study · Not for Build"
+      },
+      {
+        "id": "p-15-0",
+        "name": "Returns Calendar · Terminal + Dossier"
+      },
+      {
+        "id": "p-14-0",
+        "name": "Bot Paper Portfolio · V3 Upgrade · 2026-10-09"
+      },
+      {
+        "id": "p-Q-0",
+        "name": "Earnings + Dossiers · North Star Study · 2026-09-26"
+      },
+      {
+        "id": "p-3-1",
+        "name": "News Intelligence · 2026-09-20"
+      },
+      {
+        "id": "p-D-0",
+        "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24"
+      },
+      {
+        "id": "p-13-1",
+        "name": "Market Breadth · Command Center · R1 · 2026-09-29"
+      },
+      {
+        "id": "p-A-0",
+        "name": "Confluence Screener · Governed Reference · 2026-09-22"
+      },
+      {
+        "id": "p-H-1",
+        "name": "Confluence Screener · R2 · 2026-09-26"
+      },
+      {
+        "id": "p-O-1",
+        "name": "Bonds · Decision Workspace · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-N-1",
+        "name": "Forex · Guided Intelligence · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-J-1",
+        "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-8-1",
+        "name": "Live Site Baselines · Wave 1 · 2026-09-21"
+      },
+      {
+        "id": "p-T-0",
+        "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27"
+      },
+      {
+        "id": "p-10-0",
+        "name": "Crypto Intelligence · R3 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-L-0",
+        "name": "Commodities · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-Y-0",
+        "name": "Sector Intelligence · R2 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-S-1",
+        "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26"
+      },
+      {
+        "id": "p-K-0",
+        "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26"
+      },
+      {
+        "id": "p-Z-0",
+        "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build"
+      },
+      {
+        "id": "p-V-0",
+        "name": "ARCHIVE · Company Intelligence · Not for Build"
+      },
+      {
+        "id": "p-11-0",
+        "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build"
+      },
+      {
+        "id": "p-X-0",
+        "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build"
+      },
+      {
+        "id": "p-W-0",
+        "name": "ARCHIVE · International Markets · R9 · Not for Build"
+      },
+      {
+        "id": "p-E-1",
+        "name": "Sector Intelligence · vNext Study · 2026-09-24"
+      },
+      {
+        "id": "p-6-1",
+        "name": "Sector Intelligence · Unified Detail · 2026-09-21"
+      },
+      {
+        "id": "p-I-1",
+        "name": "Intelligence Hub · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-9-0",
+        "name": "Sector Central · Redesign · 2026-09-21"
+      },
+      {
+        "id": "p-7-1",
+        "name": "China Intelligence · vNext · 2026-09-21"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5HQ8VMMY87NVDENZAGJNYKM",
+    "name": "Young harmony (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5HQ8VMMY87NVDENZAGJNYKM/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5HRAG5659SFE58D3PTA7D0V",
+    "name": "Young harmony (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5HRAG5659SFE58D3PTA7D0V/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+    "name": "GMI Explorer 2026-10-22 — Round 2",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 1,
+    "expanded_artboards": 4,
+    "reported_nodes": 153,
+    "owners": [
+      "D13"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5J3GC90GAKHK8B6SAPRV3JQ/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "name": "GMI Explorer 2026-10-21",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 1,
+    "expanded_artboards": 16,
+    "reported_nodes": 315,
+    "owners": [
+      "D13"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5HDPF3HSZFJJAFMARVQSHZR",
+    "name": "Jolly vase",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5HDPF3HSZFJJAFMARVQSHZR/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5JKR6H0JNN07BA3YKQDXBNC",
+    "name": "Young harmony (copy)",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 2,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M5JKR6H0JNN07BA3YKQDXBNC/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      },
+      {
+        "id": "p-3-0",
+        "name": "Page 2"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+    "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 2,
+    "expanded_pages": 2,
+    "expanded_artboards": 7,
+    "reported_nodes": 1217,
+    "owners": [
+      "D08"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "W1 · Sector origin → Exposure → Change · 2026-10-21"
+      },
+      {
+        "id": "p-2-0",
+        "name": "W3 · Flow → Volatility → Watch & review · 2026-10-21"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+    "name": "Expectation Surface · R1 · 2026-10-21",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 1,
+    "expanded_artboards": 5,
+    "reported_nodes": 4504,
+    "owners": [
+      "D07"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Expectation Surface · R1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "name": "International Markets · R10 · Current Build",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 17,
+    "expanded_pages": 17,
+    "expanded_artboards": 172,
+    "reported_nodes": 26782,
+    "owners": [
+      "D07",
+      "D11",
+      "D19",
+      "D21"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "split active content by assigned domain; preserve current IDs and references",
+    "default_page_url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "International Markets · R10 · Current Build"
+      },
+      {
+        "id": "p-F-0",
+        "name": "01B · Company Exposure & Transmission · R10"
+      },
+      {
+        "id": "p-E-0",
+        "name": "01A · Country Inspector & Follow · R10"
+      },
+      {
+        "id": "p-D-0",
+        "name": "04B · Comparison Setup & Review · R10"
+      },
+      {
+        "id": "p-I-0",
+        "name": "Global Surveillance · R14 · Masterpiece"
+      },
+      {
+        "id": "p-H-0",
+        "name": "Global Surveillance · R13 · Expansion"
+      },
+      {
+        "id": "p-G-0",
+        "name": "Country Intelligence · R12 · Build Reference"
+      },
+      {
+        "id": "p-C-0",
+        "name": "04A · Saved Research & Evidence Refresh · R10"
+      },
+      {
+        "id": "p-B-0",
+        "name": "80 · R10 · Builder Contracts & Reference States"
+      },
+      {
+        "id": "p-A-0",
+        "name": "ARCHIVE · Relocated Families · Not for Build"
+      },
+      {
+        "id": "p-9-0",
+        "name": "90 · ARCHIVE · Returns v2 duplicate studies · NOT FOR BUILD"
+      },
+      {
+        "id": "p-7-0",
+        "name": "06 · Returns Calendar · Terminal + Dossier"
+      },
+      {
+        "id": "p-5-0",
+        "name": "04 · Research Library + Search"
+      },
+      {
+        "id": "p-6-0",
+        "name": "05 · China Intelligence · vNext"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · History + Scenarios"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Macro, Policy + Risk"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Overview, Compare + Navigation"
+      }
+    ]
+  },
+  {
+    "file_id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+    "name": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 1,
+    "expanded_pages": 1,
+    "expanded_artboards": 1,
+    "reported_nodes": 101,
+    "owners": [
+      "D08"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+    "name": "MarketOntology",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 6,
+    "expanded_pages": 6,
+    "expanded_artboards": 98,
+    "reported_nodes": 13032,
+    "owners": [
+      "D13"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "MarketOntology · Joined Journey · 2026-09-25"
+      },
+      {
+        "id": "p-6-0",
+        "name": "04 · Implementation + Visual Engine · References"
+      },
+      {
+        "id": "p-5-0",
+        "name": "99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Retained Shared Shell · Company Comparison + Evidence"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Thesis Changes + Receipts"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Answers, Context + Evidence"
+      }
+    ]
+  },
+  {
+    "file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "name": "Mastermind Product Design System — Canonical",
+    "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+    "archived": false,
+    "listed_pages": 8,
+    "expanded_pages": 8,
+    "expanded_artboards": 48,
+    "reported_nodes": 5404,
+    "owners": [
+      "F02"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "00 · Cover"
+      },
+      {
+        "id": "p-8-1",
+        "name": "07 · Source Imports + Assets · Pending Review"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Getting Started"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Foundations"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Components"
+      },
+      {
+        "id": "p-5-0",
+        "name": "04 · Patterns"
+      },
+      {
+        "id": "p-6-0",
+        "name": "05 · Reference Screens"
+      },
+      {
+        "id": "p-7-0",
+        "name": "06 · Utilities"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3NRCX55B452A12819WNE1RH",
+    "name": "Mastermind OS",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 20,
+    "expanded_pages": 20,
+    "expanded_artboards": 306,
+    "reported_nodes": 40143,
+    "owners": [
+      "D27",
+      "F01"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      },
+      {
+        "id": "p-K-0",
+        "name": "12D · Sessions & Access · Canonical Atelier"
+      },
+      {
+        "id": "p-J-0",
+        "name": "12C · Meta-CEO & Supervision · Canonical Atelier"
+      },
+      {
+        "id": "p-I-0",
+        "name": "12B · Decisions & Plans · Canonical Atelier"
+      },
+      {
+        "id": "p-H-0",
+        "name": "12A · Projects & Evidence · Canonical Atelier"
+      },
+      {
+        "id": "p-G-0",
+        "name": "ARCHIVE · Market Shell References · Not for OS Build"
+      },
+      {
+        "id": "p-F-0",
+        "name": "14 · Investor Shell · Production Candidate · 2026-10-08"
+      },
+      {
+        "id": "p-E-0",
+        "name": "13 · Daily Experience · Flow + Builder Notes"
+      },
+      {
+        "id": "p-D-0",
+        "name": "12 · Canonical Atelier · Mastermind OS"
+      },
+      {
+        "id": "p-C-0",
+        "name": "11 · Chat Atelier · Current Design"
+      },
+      {
+        "id": "p-B-0",
+        "name": "10 · SOURCE ONLY · Signed-in Home Baseline"
+      },
+      {
+        "id": "p-A-0",
+        "name": "09 · Global Search + Recovery"
+      },
+      {
+        "id": "p-9-0",
+        "name": "08 · All Tools + Research Drawer"
+      },
+      {
+        "id": "p-8-0",
+        "name": "07 · Global Shell + Navigation"
+      },
+      {
+        "id": "p-7-0",
+        "name": "06 · Access, Loading + Recovery"
+      },
+      {
+        "id": "p-6-0",
+        "name": "05 · Chairman Daily Journey"
+      },
+      {
+        "id": "p-5-0",
+        "name": "04 · Connected Company Journeys"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Missions, Work + Fleet"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Conversations + Message States"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Noir Experience + Build Guides"
+      }
+    ]
+  },
+  {
+    "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "name": "Mastermind · Market Guide · Re-envisioning",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 6,
+    "expanded_pages": 6,
+    "expanded_artboards": 49,
+    "reported_nodes": 3488,
+    "owners": [
+      "D25"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Mastermind · Market Guide · Re-envisioning"
+      },
+      {
+        "id": "p-6-0",
+        "name": "04 · Risk Radar Full Guide · Themes + Locales"
+      },
+      {
+        "id": "p-5-0",
+        "name": "REF · Guide Baseline · Themes + Locales"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Search, Aliases + Recovery"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Contextual Help + Visual Explanations"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Score Reading · Themes + Locales"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+    "name": "Mastermind AI",
+    "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+    "archived": false,
+    "listed_pages": 9,
+    "expanded_pages": 9,
+    "expanded_artboards": 64,
+    "reported_nodes": 7159,
+    "owners": [
+      "D14"
+    ],
+    "classification": "primary product/design-system file",
+    "proposed_action": "retain/reorganize under assigned family; verify canonical successor",
+    "default_page_url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Mastermind AI · Chat Workbench · vNext · 2026-09-24"
+      },
+      {
+        "id": "p-4-0",
+        "name": "03 · Legacy Reference + Assets"
+      },
+      {
+        "id": "p-3-0",
+        "name": "02 · Answer Craft · R7–R8 References"
+      },
+      {
+        "id": "p-2-0",
+        "name": "01 · Interaction + Recovery · R2 References"
+      },
+      {
+        "id": "p-9-0",
+        "name": "R10 · Build + Implementation Boundaries"
+      },
+      {
+        "id": "p-8-0",
+        "name": "R10 · Save + Resume · Recovery"
+      },
+      {
+        "id": "p-7-0",
+        "name": "05 · SOURCE ONLY · Chat Live Baseline"
+      },
+      {
+        "id": "p-6-0",
+        "name": "99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build"
+      },
+      {
+        "id": "p-5-0",
+        "name": "04 · Retained Shared Shell · Research Reading + Evidence"
+      }
+    ]
+  },
+  {
+    "file_id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+    "name": "DUPLICATE DO NOT EDIT",
+    "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+    "archived": true,
+    "listed_pages": 36,
+    "expanded_pages": 0,
+    "expanded_artboards": null,
+    "reported_nodes": null,
+    "owners": [
+      "F03"
+    ],
+    "classification": "copy/test/archive candidate; preserve until identity/content/lineage verification",
+    "proposed_action": "F03 review; no automatic archive or deletion",
+    "default_page_url": "https://app.paper.design/file/01M3NQQ5KHTEZ50AGPT3RAD4BN/p-1-0",
+    "pages": [
+      {
+        "id": "p-1-0",
+        "name": "Page 1"
+      },
+      {
+        "id": "p-Q-0",
+        "name": "Earnings + Dossiers · North Star Study · 2026-09-26"
+      },
+      {
+        "id": "p-5-0",
+        "name": "Archetype Starters · Governed"
+      },
+      {
+        "id": "p-3-1",
+        "name": "News Intelligence · 2026-09-20"
+      },
+      {
+        "id": "p-2-1",
+        "name": "PROPHET"
+      },
+      {
+        "id": "p-4-1",
+        "name": "Company Intelligence · 2026-09-20"
+      },
+      {
+        "id": "p-D-0",
+        "name": "Mastermind · Shared Shell · Review 01 · 2026-09-24"
+      },
+      {
+        "id": "p-A-0",
+        "name": "Confluence Screener · Governed Reference · 2026-09-22"
+      },
+      {
+        "id": "p-H-1",
+        "name": "Confluence Screener · R2 · 2026-09-26"
+      },
+      {
+        "id": "p-O-1",
+        "name": "Bonds · Decision Workspace · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-N-1",
+        "name": "Forex · Guided Intelligence · R1 · 2026-09-26"
+      },
+      {
+        "id": "p-J-1",
+        "name": "Policy Watch · Decision Desk · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-8-1",
+        "name": "Live Site Baselines · Wave 1 · 2026-09-21"
+      },
+      {
+        "id": "p-C-0",
+        "name": "International Markets · vNext · 2026-09-24"
+      },
+      {
+        "id": "p-7-1",
+        "name": "China Intelligence · vNext · 2026-09-21"
+      },
+      {
+        "id": "p-T-0",
+        "name": "Intelligence Hub · Unified US + China · R4 · 2026-09-27"
+      },
+      {
+        "id": "p-U-0",
+        "name": "Terminal · Options Structure Intelligence · R1 · 2026-09-27"
+      },
+      {
+        "id": "p-12-3",
+        "name": "Mastermond OS App"
+      },
+      {
+        "id": "p-G-0",
+        "name": "MarketOntology · Joined Journey · 2026-09-25"
+      },
+      {
+        "id": "p-F-0",
+        "name": "Mastermind AI · Chat Workbench · vNext · 2026-09-24"
+      },
+      {
+        "id": "p-R-0",
+        "name": "Crypto + Bitcoin · R2 · Chart-led Research · 2026-09-26"
+      },
+      {
+        "id": "p-M-0",
+        "name": "Crypto + Vector · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-10-0",
+        "name": "Crypto Intelligence · R3 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-L-0",
+        "name": "Commodities · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-Y-0",
+        "name": "Sector Intelligence · R2 · Current Build · 2026-09-27"
+      },
+      {
+        "id": "p-S-1",
+        "name": "Gov Revenue · Signal Desk · R5 · 2026-09-26"
+      },
+      {
+        "id": "p-K-0",
+        "name": "BioCatalyst · North Star + Build Blueprint · 2026-09-26"
+      },
+      {
+        "id": "p-Z-0",
+        "name": "ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build"
+      },
+      {
+        "id": "p-V-0",
+        "name": "ARCHIVE · Company Intelligence · Not for Build"
+      },
+      {
+        "id": "p-11-0",
+        "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build"
+      },
+      {
+        "id": "p-X-0",
+        "name": "ARCHIVE · Intelligence Hub · R1–R3 · Not for Build"
+      },
+      {
+        "id": "p-W-0",
+        "name": "ARCHIVE · International Markets · R9 · Not for Build"
+      },
+      {
+        "id": "p-E-1",
+        "name": "Sector Intelligence · vNext Study · 2026-09-24"
+      },
+      {
+        "id": "p-6-1",
+        "name": "Sector Intelligence · Unified Detail · 2026-09-21"
+      },
+      {
+        "id": "p-I-1",
+        "name": "Intelligence Hub · R1 Study · 2026-09-26"
+      },
+      {
+        "id": "p-9-0",
+        "name": "Sector Central · Redesign · 2026-09-21"
+      }
+    ]
+  }
+]

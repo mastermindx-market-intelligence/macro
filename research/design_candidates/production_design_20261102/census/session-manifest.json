@@ -1,0 +1,522 @@
+[
+  {
+    "id": "P00",
+    "slug": "paper-access-prerequisite",
+    "title": "Restore the qualified Paper writing and organization path",
+    "folder": "00 Programme",
+    "target": "No new design file",
+    "dependencies": "existing Paper adapter owner",
+    "partners": "F03",
+    "job": "Resolve the observed tool-schema qualification mismatch through the existing owner, then prove the admitted path can support the intended file/page organization.",
+    "handoff": "handoffs/P00-paper-access-prerequisite.md",
+    "proposed_files": [
+      "No new design file"
+    ]
+  },
+  {
+    "id": "F01",
+    "slug": "shared-shell",
+    "title": "Shared shell, navigation and investor information architecture",
+    "folder": "01 Foundations",
+    "target": "MM · Shared Shell",
+    "dependencies": "P00 for edits; F02 handshake",
+    "partners": "D01 D06 D23 D25 D26 D27",
+    "job": "Give users one elegant, legible way to move between market workspaces while preserving exact instrument, region, research and return context.",
+    "handoff": "handoffs/F01-shared-shell.md",
+    "proposed_files": [
+      "MM · Shared Shell"
+    ]
+  },
+  {
+    "id": "F02",
+    "slug": "design-system",
+    "title": "Design system and reusable product patterns",
+    "folder": "01 Foundations",
+    "target": "MM · Design System",
+    "dependencies": "P00 for edits; F01 handshake",
+    "partners": "all design sessions",
+    "job": "Reconcile the canonical system into a coherent set of usable components, chart/table conventions and state patterns for the new shell.",
+    "handoff": "handoffs/F02-design-system.md",
+    "proposed_files": [
+      "MM · Design System"
+    ]
+  },
+  {
+    "id": "F03",
+    "slug": "paper-organization",
+    "title": "Paper organization, coverage and design integration",
+    "folder": "00 Programme",
+    "target": "MM · Design Programme",
+    "dependencies": "P00 for mutations; F01/F02 contracts",
+    "partners": "all sessions",
+    "job": "Make every current candidate, retained reference, archive and builder contract discoverable without crowding the working files.",
+    "handoff": "handoffs/F03-paper-organization.md",
+    "proposed_files": [
+      "MM · Design Programme"
+    ]
+  },
+  {
+    "id": "D01",
+    "slug": "today",
+    "title": "Today and personal market overview",
+    "folder": "10 Workspaces",
+    "target": "MM · Today",
+    "dependencies": "F01 F02",
+    "partners": "D02 D03 D10 D22 D23",
+    "job": "Help a returning investor understand what changed, what matters today and which saved tasks need attention.",
+    "handoff": "handoffs/D01-today.md",
+    "proposed_files": [
+      "MM · Today"
+    ]
+  },
+  {
+    "id": "D02",
+    "slug": "macro",
+    "title": "Macro regimes, breadth, risk and market events",
+    "folder": "20 Markets",
+    "target": "MM · Macro & Risk",
+    "dependencies": "F01 F02",
+    "partners": "D01 D10 D15 D19 D21 D25",
+    "job": "Explain the current macro regime, its supporting evidence and what would invalidate it, with clear paths into affected assets.",
+    "handoff": "handoffs/D02-macro.md",
+    "proposed_files": [
+      "MM · Macro Overview",
+      "MM · Macro Systems",
+      "MM · Risk & Events"
+    ]
+  },
+  {
+    "id": "D03",
+    "slug": "us-prophet",
+    "title": "US equities and Prophet opportunities",
+    "folder": "20 Markets",
+    "target": "MM · US Equities & Prophet",
+    "dependencies": "F01 F02",
+    "partners": "D04 D05 D07 D20",
+    "job": "Let users scan US market conditions and compare actionable research candidates without losing readiness, invalidation or evidence semantics.",
+    "handoff": "handoffs/D03-us-prophet.md",
+    "proposed_files": [
+      "MM · US Equities & Prophet"
+    ]
+  },
+  {
+    "id": "D04",
+    "slug": "discover",
+    "title": "Discovery, confluence and heatmaps",
+    "folder": "10 Workspaces",
+    "target": "MM · Discover & Heatmaps",
+    "dependencies": "F01 F02",
+    "partners": "D03 D05 D07 D13",
+    "job": "Move from a broad market scan to a defensible shortlist through visual comparison, filters and preserved evidence.",
+    "handoff": "handoffs/D04-discover.md",
+    "proposed_files": [
+      "MM · Discover & Heatmaps"
+    ]
+  },
+  {
+    "id": "D05",
+    "slug": "sectors",
+    "title": "Sectors, themes and rotation",
+    "folder": "20 Markets",
+    "target": "MM · Sectors & Rotation",
+    "dependencies": "F01 F02",
+    "partners": "D03 D04 D13 D19 D20",
+    "job": "Explain where leadership and money are rotating, let users investigate a sector/theme, and connect the analysis to exact instruments.",
+    "handoff": "handoffs/D05-sectors.md",
+    "proposed_files": [
+      "MM · Sectors & Rotation"
+    ]
+  },
+  {
+    "id": "D06",
+    "slug": "terminal",
+    "title": "Focused Terminal, charts and contextual investigation",
+    "folder": "10 Workspaces",
+    "target": "MM · Terminal & Chart Context",
+    "dependencies": "F01 F02",
+    "partners": "D07 D08 D14 D22",
+    "job": "Preserve the professional chart workspace while making transitions to context, analysis and research coherent with the shared shell.",
+    "handoff": "handoffs/D06-terminal.md",
+    "proposed_files": [
+      "MM · Terminal & Chart Context"
+    ]
+  },
+  {
+    "id": "D07",
+    "slug": "company",
+    "title": "Company intelligence, earnings and expectations",
+    "folder": "30 Research",
+    "target": "MM · Company & Earnings",
+    "dependencies": "F01 F02",
+    "partners": "D03 D06 D09 D12 D13",
+    "job": "Help users form and challenge a company thesis using financials, expectations, results, ownership and source evidence.",
+    "handoff": "handoffs/D07-company.md",
+    "proposed_files": [
+      "MM · Company Intelligence",
+      "MM · Earnings & Expectations"
+    ]
+  },
+  {
+    "id": "D08",
+    "slug": "options",
+    "title": "Options platform integration",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Integration",
+    "dependencies": "F01 F02; early common contract before slice composition",
+    "partners": "D08A D08B D08C D08D D05 D06 D09 D22 D23",
+    "job": "Own the common Options navigation, view/object contract and final integration across four separately dispatched design slices.",
+    "handoff": "handoffs/D08-options.md",
+    "proposed_files": [
+      "MM · Options Integration"
+    ]
+  },
+  {
+    "id": "D08A",
+    "slug": "options-overview-flow",
+    "title": "Options Overview and Flow",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Overview & Flow",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08B D09 D23",
+    "job": "Complete the Options scan/desk/flow family and its transitions into investigation.",
+    "handoff": "handoffs/D08A-options-overview-flow.md",
+    "proposed_files": [
+      "MM · Options Overview & Flow"
+    ]
+  },
+  {
+    "id": "D08B",
+    "slug": "options-exposure-volatility",
+    "title": "Options Exposure, Volatility and 3D",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Exposure & Volatility",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08A D08C D08D D09",
+    "job": "Complete exposure, volatility and 3D investigation while preserving analytical depth and accessible interpretation.",
+    "handoff": "handoffs/D08B-options-exposure-volatility.md",
+    "proposed_files": [
+      "MM · Options Exposure & Volatility"
+    ]
+  },
+  {
+    "id": "D08C",
+    "slug": "options-plan-review",
+    "title": "Options Plan, Compare and Review",
+    "folder": "10 Workspaces",
+    "target": "MM · Options Plan & Review",
+    "dependencies": "F01 F02 D08 common contract",
+    "partners": "D08 D08B D08D D22 D23",
+    "job": "Complete the structure/scenario/plan/save/watch/review journey with honest persistence and execution boundaries.",
+    "handoff": "handoffs/D08C-options-plan-review.md",
+    "proposed_files": [
+      "MM · Options Plan & Review"
+    ]
+  },
+  {
+    "id": "D08D",
+    "slug": "options-futures-replay",
+    "title": "Options Futures and Equity Replay",
+    "folder": "10 Workspaces",
+    "target": "MM · Futures & Replay",
+    "dependencies": "F01 F02 D08 common contract; route admission tracked separately",
+    "partners": "D08 D06 D08B D08C",
+    "job": "Complete futures/equity replay, temporal identity, entitlement and precise return context.",
+    "handoff": "handoffs/D08D-options-futures-replay.md",
+    "proposed_files": [
+      "MM · Futures & Replay"
+    ]
+  },
+  {
+    "id": "D09",
+    "slug": "flows",
+    "title": "Flows, dark pool and institutional ownership",
+    "folder": "30 Research",
+    "target": "MM · Flows & Ownership",
+    "dependencies": "F01 F02",
+    "partners": "D03 D05 D07 D08",
+    "job": "Help users distinguish reported transactions, inferred flow, position change and institutional holdings with comparable source clocks.",
+    "handoff": "handoffs/D09-flows.md",
+    "proposed_files": [
+      "MM · Flows & Dark Pool",
+      "MM · Funds & Ownership"
+    ]
+  },
+  {
+    "id": "D10",
+    "slug": "news",
+    "title": "News, events and the daily brief",
+    "folder": "30 Research",
+    "target": "MM · News & Briefings",
+    "dependencies": "F01 F02",
+    "partners": "D01 D02 D07 D11 D19",
+    "job": "Make reading and understanding current developments the primary task, with source disagreement and coverage evidence close at hand.",
+    "handoff": "handoffs/D10-news.md",
+    "proposed_files": [
+      "MM · News & Briefings"
+    ]
+  },
+  {
+    "id": "D11",
+    "slug": "research",
+    "title": "Research library and Intelligence Hub",
+    "folder": "30 Research",
+    "target": "MM · Research & Intelligence Hub",
+    "dependencies": "F01 F02",
+    "partners": "D07 D10 D12 D13 D14 D21",
+    "job": "Let users find, evaluate, read and revisit research across markets without duplicating the same saved object across products.",
+    "handoff": "handoffs/D11-research.md",
+    "proposed_files": [
+      "MM · Intelligence Hub",
+      "MM · Research Library & Reading"
+    ]
+  },
+  {
+    "id": "D12",
+    "slug": "memory",
+    "title": "Market memory, scenarios and strategy evidence",
+    "folder": "30 Research",
+    "target": "MM · Memory & Strategy Evidence",
+    "dependencies": "F01 F02",
+    "partners": "D02 D07 D15 D17 D18 D19 D22",
+    "job": "Support historical comparison and disciplined scenario research while keeping retrospective evidence separate from current actionable claims.",
+    "handoff": "handoffs/D12-memory.md",
+    "proposed_files": [
+      "MM · Market Memory",
+      "MM · Strategy Evidence"
+    ]
+  },
+  {
+    "id": "D13",
+    "slug": "gmi",
+    "title": "GMI and MarketOntology",
+    "folder": "30 Research",
+    "target": "MM · GMI & MarketOntology",
+    "dependencies": "F01 F02; route admission follow-up",
+    "partners": "D04 D05 D07 D11",
+    "job": "Give users a coherent route from theme and industry structure to an issuer, its relationships and the evidence for each membership claim.",
+    "handoff": "handoffs/D13-gmi.md",
+    "proposed_files": [
+      "MM · GMI",
+      "MM · MarketOntology"
+    ]
+  },
+  {
+    "id": "D14",
+    "slug": "ai",
+    "title": "Mastermind AI and research assistance",
+    "folder": "10 Workspaces",
+    "target": "MM · Mastermind AI",
+    "dependencies": "F01 F02",
+    "partners": "D06 D07 D11 D13 D23",
+    "job": "Make the research assistant grounded, contextual and recoverable without silently taking investment or account actions.",
+    "handoff": "handoffs/D14-ai.md",
+    "proposed_files": [
+      "MM · Mastermind AI"
+    ]
+  },
+  {
+    "id": "D15",
+    "slug": "bonds",
+    "title": "Bonds, credit and cross-asset transmission",
+    "folder": "20 Markets",
+    "target": "MM · Bonds & Transmission",
+    "dependencies": "F01 F02",
+    "partners": "D02 D12 D16",
+    "job": "Explain yield-curve and credit moves, their competing mechanisms and their transmission into other markets.",
+    "handoff": "handoffs/D15-bonds.md",
+    "proposed_files": [
+      "MM · Bonds & Transmission"
+    ]
+  },
+  {
+    "id": "D16",
+    "slug": "forex",
+    "title": "Forex and currency investigation",
+    "folder": "20 Markets",
+    "target": "MM · Forex",
+    "dependencies": "F01 F02",
+    "partners": "D02 D15 D17 D21",
+    "job": "Move from the currency landscape to a pair outlook with transparent drivers, evidence and scenario boundaries.",
+    "handoff": "handoffs/D16-forex.md",
+    "proposed_files": [
+      "MM · Forex"
+    ]
+  },
+  {
+    "id": "D17",
+    "slug": "commodities",
+    "title": "Commodities, energy and related strategies",
+    "folder": "20 Markets",
+    "target": "MM · Commodities & Energy",
+    "dependencies": "F01 F02",
+    "partners": "D02 D12 D15 D16",
+    "job": "Explain commodity supply, demand, inventories and price drivers while retaining access to specialist energy and strategy evidence.",
+    "handoff": "handoffs/D17-commodities.md",
+    "proposed_files": [
+      "MM · Commodities & Energy"
+    ]
+  },
+  {
+    "id": "D18",
+    "slug": "crypto",
+    "title": "Crypto intelligence and strategy evidence",
+    "folder": "20 Markets",
+    "target": "MM · Crypto",
+    "dependencies": "F01 F02",
+    "partners": "D06 D12 D22",
+    "job": "Combine a clear market and instrument investigation experience with the useful risk and strategy evidence in older Crypto work.",
+    "handoff": "handoffs/D18-crypto.md",
+    "proposed_files": [
+      "MM · Crypto"
+    ]
+  },
+  {
+    "id": "D19",
+    "slug": "china",
+    "title": "China market intelligence",
+    "folder": "20 Markets",
+    "target": "MM · China",
+    "dependencies": "F01 F02",
+    "partners": "D02 D03 D05 D10 D12 D20 D23",
+    "job": "Provide a first-class China workspace with its own market mechanics, source coverage and research journeys, rather than a relabeled US dashboard.",
+    "handoff": "handoffs/D19-china.md",
+    "proposed_files": [
+      "MM · China Overview",
+      "MM · China Research & Policy",
+      "MM · China Sectors & Setups"
+    ]
+  },
+  {
+    "id": "D20",
+    "slug": "hk-canada",
+    "title": "Hong Kong and Canada",
+    "folder": "20 Markets",
+    "target": "MM · Hong Kong & Canada",
+    "dependencies": "F01 F02; reuse D03 opportunity contract",
+    "partners": "D03 D05 D07 D19 D21",
+    "job": "Preserve local market identities and research depth while sharing genuinely common patterns across Hong Kong and Canada.",
+    "handoff": "handoffs/D20-hk-canada.md",
+    "proposed_files": [
+      "MM · Hong Kong",
+      "MM · Canada"
+    ]
+  },
+  {
+    "id": "D21",
+    "slug": "international",
+    "title": "International surveillance and country cycles",
+    "folder": "20 Markets",
+    "target": "MM · International & Country Cycles",
+    "dependencies": "F01 F02",
+    "partners": "D02 D11 D15 D16 D20",
+    "job": "Help users compare countries, inspect transmission and follow evidence while preserving the distinction between global surveillance and country-cycle tools.",
+    "handoff": "handoffs/D21-international.md",
+    "proposed_files": [
+      "MM · International & Country Cycles"
+    ]
+  },
+  {
+    "id": "D22",
+    "slug": "portfolio",
+    "title": "Portfolio and allocation",
+    "folder": "40 Personal",
+    "target": "MM · Portfolio & Allocation",
+    "dependencies": "F01 F02",
+    "partners": "D06 D08 D12 D18 D23 D25",
+    "job": "Help users understand their own exposure and research decisions, with clear separation among actual holdings, paper portfolios and model allocations.",
+    "handoff": "handoffs/D22-portfolio.md",
+    "proposed_files": [
+      "MM · Portfolio & Allocation"
+    ]
+  },
+  {
+    "id": "D23",
+    "slug": "monitor",
+    "title": "Monitor, watchlists, alerts and saved state",
+    "folder": "40 Personal",
+    "target": "MM · Monitor & Watchlists",
+    "dependencies": "F01 F02",
+    "partners": "D01 D07 D08 D11 D14 D22 D25",
+    "job": "Give users reliable monitoring and saved research workflows with explicit mutation, notification and recovery behavior.",
+    "handoff": "handoffs/D23-monitor.md",
+    "proposed_files": [
+      "MM · Monitor & Watchlists"
+    ]
+  },
+  {
+    "id": "D24",
+    "slug": "specialist",
+    "title": "Specialist and catalyst intelligence",
+    "folder": "30 Research",
+    "target": "MM · Specialist Intelligence",
+    "dependencies": "F01 F02",
+    "partners": "D07 D10 D11 D13",
+    "job": "Unify common evidence and catalyst patterns across specialist desks while preserving domain-specific semantics and useful depth.",
+    "handoff": "handoffs/D24-specialist.md",
+    "proposed_files": [
+      "MM · BioCatalyst & MedTech",
+      "MM · Government & Policy",
+      "MM · Corporate Special Situations"
+    ]
+  },
+  {
+    "id": "D25",
+    "slug": "account-help",
+    "title": "Account, onboarding, settings and contextual help",
+    "folder": "40 Personal",
+    "target": "MM · Account & Guide",
+    "dependencies": "F01 F02",
+    "partners": "D02 D06 D22 D23 D26",
+    "job": "Make access, preferences, onboarding and explanation understandable and recoverable without obscuring the research workflow.",
+    "handoff": "handoffs/D25-account-help.md",
+    "proposed_files": [
+      "MM · Account & Guide"
+    ]
+  },
+  {
+    "id": "D26",
+    "slug": "public",
+    "title": "Public site, editorial, learning and utilities",
+    "folder": "50 Public",
+    "target": "MM · Public & Learning",
+    "dependencies": "F01 F02 public variant",
+    "partners": "D14 D25",
+    "job": "Give prospective and anonymous users a coherent public experience, accurate product descriptions and clear transitions into beta.",
+    "handoff": "handoffs/D26-public.md",
+    "proposed_files": [
+      "MM · Public & Products",
+      "MM · Editorial & Learning",
+      "MM · Public Utilities"
+    ]
+  },
+  {
+    "id": "D27",
+    "slug": "internal",
+    "title": "Internal Mastermind OS and administration",
+    "folder": "60 Internal",
+    "target": "MM · Internal OS",
+    "dependencies": "F02; F01 boundary contract",
+    "partners": "F03 D25",
+    "job": "Preserve internal executive and administrative workflows as a distinct product, with truthful permission and action-state communication.",
+    "handoff": "handoffs/D27-internal.md",
+    "proposed_files": [
+      "MM · OS Conversations & Daily",
+      "MM · OS Projects & Decisions",
+      "MM · OS Sessions & Access"
+    ]
+  },
+  {
+    "id": "QA01",
+    "slug": "re-audit",
+    "title": "Independent integration and production-design re-audit",
+    "folder": "00 Programme",
+    "target": "MM · Review Evidence",
+    "dependencies": "candidate returns; independent reviewers",
+    "partners": "all sessions",
+    "job": "Verify coverage, retained capabilities, cross-product journeys and builder contracts against frozen references before implementation is commissioned.",
+    "handoff": "handoffs/QA01-re-audit.md",
+    "proposed_files": [
+      "MM · Review Evidence"
+    ]
+  }
+]
