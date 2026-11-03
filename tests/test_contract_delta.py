@@ -285,14 +285,16 @@ def _step_named(job: dict, name: str) -> dict | None:
     return None
 
 
-def test_ci_yml_carries_a_contract_delta_job_gated_to_pull_request() -> None:
+def test_ci_yml_carries_a_contract_delta_job_gated_to_authenticated_pr_proof() -> None:
     jobs = _ci_jobs()
     assert "contract-delta" in jobs, "ci.yml must declare a contract-delta job"
     job = jobs["contract-delta"]
-    assert job.get("if") == "github.event_name == 'pull_request'", (
-        "contract-delta must never attempt to run on a push/workflow_dispatch "
-        "main-proof event -- it has no PR base to diff against there"
-    )
+    assert job.get("needs") == ["ci-plan"]
+    assert job.get("if") == (
+        "!cancelled() && needs.ci-plan.result == 'success' && "
+        "needs.ci-plan.outputs.semantic_role == 'pr_head'"
+    ), "contract-delta may execute only after a successful exact-tree PR-proof plan"
+
     assert job.get("runs-on") == "ubuntu-latest"
     # 25 -> 45 (2026-08-19, PR #6013 cancellation): the job is off the
     # critical path (packs run ~30 min regardless), so this pins a floor, not
@@ -314,15 +316,25 @@ def test_contract_delta_binds_to_the_exact_tested_merge_parent() -> None:
     resolver = _step_named(job, "resolve the exact tested PR merge base")
     assert resolver is not None
     assert resolver.get("env", {}).get("EXPECTED_PR_HEAD") == (
-        "${{ github.event.pull_request.head.sha }}"
+        "${{ needs.ci-plan.outputs.subject_head_sha }}"
     )
+    assert resolver.get("env", {}).get("EXPECTED_TESTED_MERGE") == (
+        "${{ needs.ci-plan.outputs.tested_tree_sha }}"
+    )
+    assert resolver.get("env", {}).get("EXPECTED_TESTED_BASE") == (
+        "${{ needs.ci-plan.outputs.tested_base_sha }}"
+    )
+    assert "inputs." not in str(resolver.get("env", {}))
+
     resolver_run = resolver.get("run", "")
     assert "git rev-parse HEAD" in resolver_run
     assert "GITHUB_SHA" in resolver_run
     assert "git cat-file -p HEAD" in resolver_run
     assert "sed -n 's/^parent //p'" in resolver_run
     assert '"$#" -ne 2' in resolver_run
+    assert '"$tested_merge" != "$EXPECTED_TESTED_MERGE"' in resolver_run
     assert '"$tested_head" != "$EXPECTED_PR_HEAD"' in resolver_run
+    assert '"$tested_base" != "$EXPECTED_TESTED_BASE"' in resolver_run
     assert 'base_sha=$tested_base' in resolver_run
 
     blob = "\n".join(
@@ -392,6 +404,8 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
         **os.environ,
         "GITHUB_SHA": tested_merge,
         "EXPECTED_PR_HEAD": pr_head,
+        "EXPECTED_TESTED_MERGE": tested_merge,
+        "EXPECTED_TESTED_BASE": tested_base,
         "GITHUB_OUTPUT": str(output),
     }
     subprocess.run(
@@ -419,6 +433,19 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
     assert bad.returncode != 0
     assert "second parent does not match the exact PR head" in bad.stderr
 
+    # A valid-looking PR head does not license a different base or tested merge.
+    for changed_env in (
+        {"EXPECTED_TESTED_BASE": creation_base},
+        {"EXPECTED_TESTED_MERGE": creation_base},
+    ):
+        refused = subprocess.run(
+            ["bash", "-c", resolver["run"]],
+            cwd=repo, env={**env, **changed_env},
+            check=False, capture_output=True, text=True,
+        )
+        assert refused.returncode != 0
+        assert refused.stderr
+
 
 def test_ci_gate_needs_contract_delta() -> None:
     jobs = _ci_jobs()
@@ -427,7 +454,7 @@ def test_ci_gate_needs_contract_delta() -> None:
     assert isinstance(needs, list) and "contract-delta" in needs
 
 
-def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
+def test_ci_gate_enforcement_requires_success_for_pr_proof() -> None:
     jobs = _ci_jobs()
     gate = jobs["ci-gate"]
     step = _step_named(gate, "enforce contract-delta verdict")
@@ -436,12 +463,13 @@ def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
         "${{ needs.contract-delta.result }}"
     )
     run = step.get("run", "")
-    # Gated specifically on the literal string "failure", never on
-    # non-"success" -- the latter would fail ci-gate on every non-pull_request
-    # event, where contract-delta is `skipped` by design (see the job's own
-    # `if:`, pinned above) and must read as OK.
-    assert '$CONTRACT_DELTA_RESULT" = "failure"' in run
-    assert '!= "success"' not in run and '!="success"' not in run
+    # An admitted PR proof must not green when the contract job is skipped.
+    # Main baseline has no PR contract and must not be blocked by that skip.
+    assert step.get("env", {}).get("PR_PROOF") == (
+        "${{ needs.ci-plan.outputs.semantic_role == 'pr_head' }}"
+    )
+    assert 'if [ "$PR_PROOF" = "true" ] && [ "$CONTRACT_DELTA_RESULT" != "success" ]; then' in run
+    assert 'if [ "$CONTRACT_DELTA_RESULT" = "failure" ]' not in run
 
 
 def test_legacy_jobs_ci_control_plane_job_runs_the_new_suite() -> None:
