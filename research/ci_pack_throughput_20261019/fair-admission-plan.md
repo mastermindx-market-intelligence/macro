@@ -35,10 +35,10 @@ Validation must exercise workflow entrypoint mappings, not only a helper model. 
 ## Bounded discovery and original demand age — P9.T9.S6
 
 The original 875-PR discriminator executes the real preparation and budget code
-with synthetic provider responses. The prospective bridge stops after 185 PRs,
+with synthetic provider responses. The pre-repair prospective bridge stopped after 185 PRs,
 759 core requests used and 241 remaining, before publishing a census or selecting
-work. The inactive foundation makes no admission effects. The current implementation
-therefore preserves safety but does not establish usable admission at that scale.
+work. The inactive foundation makes no admission effects. That original failure established the need for bounded bulk discovery and
+conserved batch ages; the refusal remains valid evidence of the old path.
 The complete live population read on November 3 at 13:57 UTC contained 871 open
 main-targeting PRs, 600 Drafts and 110 armed non-Draft PRs. These are discovery
 counts, not a claim that those PRs are eligible or need refresh.
@@ -85,3 +85,14 @@ exhaustion, conservation on replacement and capacity accounting. A successful
 original proof reads. That mixed-case read bound stays explicit until separately
 demonstrated. Preparation and synthetic tests do not activate the bridge or
 satisfy the natural refresh and downstream publication acceptance above.
+
+The prospective implementation now uses the bounded reader and authenticated v2
+age frontier described above. Real stage-wiring fixtures cover 900 authored PRs
+and the observed 871/110 population shape with native proof records. The final
+composed stage module has 104 passing cases, including failures after original
+reservation that retain custody and hold the next sweep. The five other affected
+controller/helper modules retain their passing composed results. These are local
+source checks, not production token or installed admission qualification. A
+hypothetical 875 armed existing-proof population still exhausts the incumbent
+REST budget and refuses. Uncovered expired age artifacts also still refuse;
+periodic renewal of unchanged artifacts is not implemented.
