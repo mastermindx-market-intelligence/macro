@@ -9,7 +9,8 @@ User=root
 Group=root
 UMask=0077
 ExecStart=/usr/bin/python3 /usr/local/libexec/mastermind-ubuntu-storage-guard.py --vacuum
-TimeoutStartSec=75s
+TimeoutStartSec=420s
+# The optional generated-pytest maintainer stays disarmed until separately qualified.
 Nice=15
 IOSchedulingClass=idle
 MemoryMax=128M

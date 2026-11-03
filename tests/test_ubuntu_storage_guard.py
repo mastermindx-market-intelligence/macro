@@ -1,9 +1,11 @@
+import argparse
 import importlib.util
 import json
 import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).parent
 spec = importlib.util.spec_from_file_location("ubuntu_storage_guard", HERE.parent / "scripts" / "ubuntu_storage_guard.py")
@@ -58,6 +60,33 @@ class GuardTests(unittest.TestCase):
                 guard.save_receipt(link, {"a": 1})
             self.assertIsNone(guard.load_previous(link))
             self.assertEqual(guard.load_previous(p)["disk"]["available_bytes"], 99)
+
+    def test_existing_sentinel_remains_default_off(self):
+        with tempfile.TemporaryDirectory() as d:
+            args = argparse.Namespace(receipt=str(Path(d) / "latest.json"),
+                                      vacuum=False, reclaim_pytest_garbage=False)
+            with mock.patch.object(guard, "disk_status", return_value={
+                "level": "EMERGENCY", "available_bytes": 0,
+            }), mock.patch.object(guard, "systemd_units", return_value={}), \
+                 mock.patch.object(guard, "scratch_snapshot", return_value={"present": False}):
+                report = guard.run(args)
+            self.assertEqual(report["gc_mode"], "read_only")
+            self.assertEqual(report["pytest_reclaim"], {"attempted": False})
+            self.assertFalse(report["source_delete_enabled"])
+
+    def test_unenrolled_host_refuses_generated_temp_reclaim(self):
+        with tempfile.TemporaryDirectory() as d:
+            args = argparse.Namespace(receipt=str(Path(d) / "latest.json"),
+                                      vacuum=False, reclaim_pytest_garbage=True)
+            with mock.patch.object(guard, "disk_status", return_value={
+                "level": "EMERGENCY", "available_bytes": 0,
+            }), mock.patch.object(guard, "systemd_units", return_value={}), \
+                 mock.patch.object(guard, "scratch_snapshot", return_value={"present": False}), \
+                 mock.patch.object(guard.socket, "gethostname", return_value="untrusted-host"):
+                report = guard.run(args)
+            self.assertEqual(report["pytest_reclaim"]["status"], "REFUSED_UNENROLLED_HOST")
+            self.assertFalse(report["pytest_reclaim"]["attempted"])
+            self.assertFalse(report["source_delete_enabled"])
 
     def test_no_source_deletion_in_public_surface(self):
         self.assertNotIn("source", guard.vacuum_archived_journals.__doc__.lower() if guard.vacuum_archived_journals.__doc__ else "")
