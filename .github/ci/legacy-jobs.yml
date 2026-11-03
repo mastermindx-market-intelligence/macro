@@ -13388,10 +13388,21 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+        run: pip install pytest pytest-xdist pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+      # Hosted dispatch 41580998932 (main 428b42ce): this one pytest step ran
+      # 05:03:04Z–06:16:54Z (73m50s) and was the critical path of an 81-minute
+      # full suite. ubuntu-latest has more than one core; the step used one.
+      # -n 2 is pinned so the semantic command does not follow runner size.
+      # --dist loadfile keeps each module's fixtures and intra-file order on
+      # one worker. --max-worker-restart=0 fails the step on a worker crash
+      # instead of retrying it. This is the government-revenue candidate
+      # contract's worker bound, with loadfile in place of load.
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          -n 2
+          --dist loadfile
+          --max-worker-restart=0
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py

@@ -355,6 +355,35 @@ def _glob_matches(glob: str, path: str) -> bool:
     return re.fullmatch(pattern, path) is not None
 
 
+def test_kernel_suite_uses_two_loadfile_workers() -> None:
+    """The class-A kernel step is the hosted critical path; parallelize files only.
+
+    Dispatch 41580998932 measured this step at 73m50s on one core. Two workers
+    with ``--dist loadfile`` keep a module's fixtures and intra-file order
+    together. A worker crash must fail the step (``--max-worker-restart=0``).
+    ``loadfile`` stays unique to this step so a render-guard lane cannot
+    inherit it.
+    """
+    manifest = yaml.safe_load(LEGACY_JOBS_PATH.read_text(encoding="utf-8"))["jobs"]
+    kernel = manifest[FKG_JOB]
+    install = next(step for step in kernel["steps"] if step.get("name") == "install minimal deps")
+    assert "pytest-xdist" in str(install["run"]).split()
+    suite_step = next(step for step in kernel["steps"] if step.get("name") == FKG_SUITE_STEP)
+    tokens = str(suite_step["run"]).split()
+    assert tokens[:5] == ["python", "-m", "pytest", "-n", "2"]
+    assert "--dist" in tokens and tokens[tokens.index("--dist") + 1] == "loadfile"
+    assert "--max-worker-restart=0" in tokens
+    for suite in NEW_TEST_SUITES:
+        assert suite in tokens, suite
+    loadfile_steps = [
+        (job_id, step.get("name"))
+        for job_id, job in manifest.items()
+        for step in job.get("steps") or []
+        if isinstance(step, dict) and "--dist loadfile" in str(step.get("run") or "")
+    ]
+    assert loadfile_steps == [(FKG_JOB, FKG_SUITE_STEP)]
+
+
 def test_new_suites_wired_into_fif_kernel_guards() -> None:
     manifest = yaml.safe_load(LEGACY_JOBS_PATH.read_text(encoding="utf-8"))["jobs"]
     kernel = manifest[FKG_JOB]
