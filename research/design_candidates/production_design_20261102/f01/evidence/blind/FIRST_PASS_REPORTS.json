@@ -1,0 +1,23 @@
+{
+  "schema": "F01.closed_first_pass_reports.v1",
+  "input_commit": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
+  "input_manifest_sha256": "f5092fa6ff999fefb8b00a3ed15d0157756fd5f5fbedeae9fa645e31f113ee1b",
+  "reviewer_context": "Fresh isolated agents; artifact-only brief/manifest; no designer rationale, constraints, source specification or peer reports before frozen first pass",
+  "input_members": 29,
+  "images_actually_viewed_by_each": 19,
+  "formal_qualification": false,
+  "reports": [
+    {
+      "path": "evidence/review/CLOSED_PRODUCT_FIRST_PASS.md",
+      "bytes": 21245,
+      "sha256": "a2b2512933686221fdb3b16ac917ab78fabef5312600e379d81eb56a0b2266b8",
+      "git_blob_sha1": "cfceb927d16da8c7afe91b1bbc8cb3c549e9fbf0"
+    },
+    {
+      "path": "evidence/review/CLOSED_TASTE_FIRST_PASS.md",
+      "bytes": 31435,
+      "sha256": "e54d3f96a8839c995199dd6fffa41b1a0008e9137c89dd1a8b7507de35448925",
+      "git_blob_sha1": "02187204d5ce8f0c55289f94b393966c7d95fbdf"
+    }
+  ]
+}
