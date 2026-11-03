@@ -1,21 +1,21 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-02T15:52:06.752671+00:00",
+  "as_of": "2026-11-02T23:32:40.447802+00:00",
   "posts_seen": 6,
-  "seen_total": 310,
+  "seen_total": 312,
   "evaluated": 2,
   "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-02-president-trumps-second-term-promises-made-promises-kept-results-delivered",
-      "importance": 15,
+      "id": "wh-2026-11-02-president-trump-completes-historic-travel-blitz-30-events-20-states-32-days",
+      "importance": 5,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     },
     {
-      "id": "tw-2026-10-09-tga-build",
-      "importance": 78,
+      "id": "tw-2026-10-27-tga-release",
+      "importance": 82,
       "activated": true,
       "degraded_reason": "served_by:deepseek"
     }
