@@ -1871,6 +1871,12 @@
       "at": "2026-11-02T23:32:33.167433+00:00",
       "activated": true,
       "importance": 82
+    },
+    "https://www.whitehouse.gov/?p=53953": {
+      "id": "wh-2026-11-03-first-lady-melania-trump-to-convene-russian-and-ukrainian-representatives-at-the",
+      "at": "2026-11-03T15:07:48.694607+00:00",
+      "activated": false,
+      "importance": 15
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
