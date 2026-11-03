@@ -141,6 +141,46 @@ def test_exact_search_reads_uncapped_source_on_each_request(client, tmp_path):
     private(conflict)
 
 
+def test_native_producer_capture_reaches_existing_private_api(client, tmp_path, monkeypatch):
+    from engine import turn_watch_capture as capture
+    from scripts import build_turn_watch as builder
+
+    source, _, rows, artifact = seed(tmp_path, tuple(f"N{i:03}" for i in range(41)))
+    before = client.get(URL, params={"offset": "40"}).json()
+    artifact["coverage"].update(source_contract={"pass": True}, graded=41,
+                                deck_by_trigger={"pre_confluence_2d": 41})
+    monkeypatch.setattr(builder.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(builder.config, "site_dir", lambda: tmp_path / "site")
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates", lambda *a, **k: (artifact, rows))
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-09T06:00:00Z")
+    assert builder.build([]) == 0
+    response = client.get(URL, params={"offset": "40"})
+    assert response.status_code == 200
+    private(response)
+    body = response.json()
+    assert body["counts"] == {"source": 41, "matched": 41, "returned": 1}
+    assert body["rows"][0]["ticker"] == "N040"
+    assert body["rows"][0]["source_visibility"] == "BEYOND_CAP"
+    assert body["producer_capture"]["producer_captured_at"] == "2026-10-09T06:00:00Z"
+    assert body["producer_capture"]["clock_basis"] == "FIRST_RETAINED_PRODUCER_CAPTURE"
+    assert all(body["clocks"][k] is None for k in
+               ("first_available_at", "source_available_at", "observed_at", "published_at"))
+    assert all(v is False for v in body["rows"][0]["authority"].values())
+    assert str(tmp_path) not in response.text
+    assert body["snapshot_id"] != before["snapshot_id"]
+    # Metadata is optional and read on each request; it is never selected as a
+    # session input, and corruption cannot turn this population into an outage.
+    receipt = next((source.parent / "producer_captures").glob("*.json"))
+    receipt.write_text("{broken")
+    changed = client.get(URL, params={"offset": "40"})
+    assert changed.status_code == 200
+    assert changed.json()["counts"] == body["counts"]
+    assert changed.json()["producer_capture"]["reason"] == "PRODUCER_RECEIPT_INVALID"
+    conflict = client.get(URL, params={"snapshot": body["snapshot_id"], "offset": "40"})
+    assert conflict.status_code == 409
+    private(conflict)
+
+
 @pytest.mark.parametrize("query", [
     "?limit=0", "?offset=-1", "?ticker=AMZN*", "?limit=1&limit=2",
     "?root=/private", "?security_id=../AMZN", "?offset=" + "9" * 100,
