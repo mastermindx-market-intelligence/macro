@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+  "source_revision": "915af4624daf28c25ce08bb17270918d035cbbd2",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,10 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were rendered by the Grey Deer early-warning CEO seat (local Playwright Chromium) at source_revision, the EW-P5 FU2 recapture commit on the PR branch (1440 width, every degraded state in both themes, per-theme keyboard focus, L4 warning ink); the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
-    "pr_branch": "claude/gd-ew-p5-fu2-20261101",
-    "pr_parent_of_evidence_commit": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+    "note": "The repository browser probe ran on this source revision. All 68 screenshots and the five contact sheets match the preceding capture byte for byte. Each listed input matched the working tree at capture.",
+    "pr_branch": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
+    "pr_parent_of_evidence_commit": "915af4624daf28c25ce08bb17270918d035cbbd2",
+    "all_equal": true,
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2149,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
-        "blob_on_pr_branch": "512a9af50b804fa2eae856e18ccb2bb82196dd14",
+        "blob_at_source_revision": "65375f83e2812252f3dc64594c63fdc3d984af83",
+        "blob_on_pr_branch": "65375f83e2812252f3dc64594c63fdc3d984af83",
         "equal": true
       },
       {
@@ -2182,7 +2183,11 @@
         "blob_on_pr_branch": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
         "equal": true
       }
-    ],
-    "all_equal": true
+    ]
+  },
+  "previous_capture": {
+    "source_revision": "5d6fcf2aae32b7f7de6b4cd94aa461b6e89957d5",
+    "receipt_git_blob": "99dfdfcecf535dd17d4e8e307da03a9dd0fb19ac",
+    "receipt_sha256": "69a25cfabc3448c2302b2cbfb3c303cd9f601935eeb911c6390940fa0ada7729"
   }
 }
