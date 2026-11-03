@@ -1,0 +1,26 @@
+{
+  "observed_in": "P00 session, 2026-11-03 UTC",
+  "classification": "DIRECT_TOOL_PUBLICATION_DRIFT",
+  "tools": [
+    {
+      "name": "mcp__codex_apps__mastermind_paper_paper_catalog",
+      "description": "Return actual current Paper tool input schemas. Unknown/destructive tools are blocked. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.\n\n"
+    },
+    {
+      "name": "mcp__codex_apps__mastermind_paper_paper_edit",
+      "description": "Mutate the explicitly approved active Paper design. Never auto-retry this action.\n\nCaller must have current write permission and exclusive design-task ownership.\nFile creation/open transitions, native exports, node deletion and token deletion are intentionally not permitted. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.\n\n"
+    },
+    {
+      "name": "mcp__codex_apps__mastermind_paper_paper_inspect",
+      "description": "Inspect Paper availability and the active file; obtain a fresh snapshot guard. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.\n\n"
+    },
+    {
+      "name": "mcp__codex_apps__mastermind_paper_paper_prepare",
+      "description": "Focus one existing Paper file by bare ID, never a URL or path.\n\nPaper must already be running with an inspectable current file. Use\npaper_inspect first and pass its fresh snapshot. Changes active-file\nfocus, not design content. A lost/error reply is never replayed, even\nwhen post-read evidence sees the target. Reconcile on this same app. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.\n\n"
+    },
+    {
+      "name": "mcp__codex_apps__mastermind_paper_paper_read",
+      "description": "Call an allowed Paper inspection/screenshot/JSX tool, never a document mutation. This tool is part of plugin `Mastermind Paper`.\n\nMastermind Paper\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.\n\n"
+    }
+  ]
+}
