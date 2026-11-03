@@ -1439,6 +1439,59 @@ def build_registry(*, repo_root: Path, terminal_root: Path, terminal_ref: str,
     return doc, errors
 
 
+def refresh_terminal_registry(*, repo_root: Path, base_commit: str,
+                              terminal_root: Path, terminal_ref: str,
+                              as_of: Optional[str], overrides_path: Path,
+                              git: GitRunner = run_git) -> tuple[dict, list[str]]:
+    """Refresh one source owner without reclassifying unrelated Macro pages.
+
+    Read the baseline from its immutable protected Git object, not a mutable
+    file. Non-Terminal rows and their provenance remain byte-equivalent JSON
+    values. The ordinary exporter still owns concrete HTML inventory admission;
+    cross-revision export is eligible only after the new registry is protected.
+    """
+    import copy
+    import hashlib
+    if not re.fullmatch(r"[0-9a-f]{40}", base_commit):
+        return {}, ["registry baseline must be an immutable commit"]
+    if git(repo_root, ["merge-base", "--is-ancestor", base_commit, "origin/main"]) is None:
+        return {}, ["registry baseline must be contained by protected origin/main"]
+    raw = git(repo_root, ["show", base_commit + ":data/product_experience/page_registry.json"])
+    try:
+        baseline = json.loads(raw or "")
+    except (TypeError, json.JSONDecodeError):
+        return {}, ["registry baseline is missing or unreadable"]
+    if not isinstance(baseline, dict):
+        return {}, ["invalid registry baseline: expected an object"]
+    problems = validate(baseline)
+    if problems:
+        return {}, ["invalid registry baseline: " + problem for problem in problems]
+    rows, source = derive_terminal(terminal_root, terminal_ref, git=git)
+    if (source.get("available") is not True
+            or not re.fullmatch(r"[0-9a-f]{40}", terminal_ref)
+            or source.get("sha") != terminal_ref or not rows):
+        return {}, ["Terminal refresh requires an available exact immutable source"]
+    overrides = {key: value for key, value in load_overrides(overrides_path).items()
+                 if key.startswith("terminal:")}
+    errors = apply_overrides(rows, overrides, source_name=str(overrides_path.name))
+    if errors:
+        return {}, errors
+    for row in rows:
+        row["source_evidence"] = sorted(dict.fromkeys(row["source_evidence"]))
+        row["known_contracts"] = list(dict.fromkeys(row["known_contracts"]))
+        row["notes"] = list(dict.fromkeys(row["notes"]))
+    doc = copy.deepcopy(baseline)
+    retained = [row for row in doc["pages"] if row["repo"] != "terminal"]
+    # Baseline order is canonical; preserve other source rows exactly.
+    doc["pages"] = sorted(retained + [{f: row[f] for f in FIELD_ORDER} for row in rows],
+                          key=lambda row: (row["repo"], row["route"], row["page_id"]))
+    source["registry_base_commit"] = base_commit
+    source["registry_base_sha256"] = hashlib.sha256((raw or "").encode()).hexdigest()
+    doc["sources"]["terminal"] = source
+    doc["generated_at"] = as_of or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return doc, []
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
@@ -1451,6 +1504,8 @@ def main(argv: Optional[list[str]] = None) -> int:
                          "when git is unavailable")
     ap.add_argument("--as-of", default=None,
                     help="pin generated_at (ISO8601) so diffs stay clean")
+    ap.add_argument("--refresh-terminal-from", metavar="COMMIT",
+                    help="refresh only Terminal from an immutable protected registry; retain other owners and source pins")
     ap.add_argument("--with-prs", action="store_true",
                     help="one `gh pr list` call to attach open PRs (OFF by "
                          "default: the GitHub REST pool is shared fleet-wide)")
@@ -1479,11 +1534,20 @@ def main(argv: Optional[list[str]] = None) -> int:
         print(f"page registry OK: {len(doc['pages'])} rows, schema {SCHEMA}")
         return 0
 
-    doc, errors = build_registry(
-        repo_root=REPO_ROOT, terminal_root=args.terminal_root,
-        terminal_ref=args.terminal_ref, mastermind_root=args.mastermind_root,
-        site_dir=args.site_dir, as_of=args.as_of, overrides_path=args.overrides,
-    )
+    if args.refresh_terminal_from:
+        if args.with_prs:
+            ap.error("--refresh-terminal-from cannot rewrite cross-owner PR metadata")
+        doc, errors = refresh_terminal_registry(
+            repo_root=REPO_ROOT, base_commit=args.refresh_terminal_from,
+            terminal_root=args.terminal_root, terminal_ref=args.terminal_ref,
+            as_of=args.as_of, overrides_path=args.overrides,
+        )
+    else:
+        doc, errors = build_registry(
+            repo_root=REPO_ROOT, terminal_root=args.terminal_root,
+            terminal_ref=args.terminal_ref, mastermind_root=args.mastermind_root,
+            site_dir=args.site_dir, as_of=args.as_of, overrides_path=args.overrides,
+        )
     if errors:
         for error in errors:
             annotate(error)

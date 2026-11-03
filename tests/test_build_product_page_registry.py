@@ -701,3 +701,73 @@ def test_annotation_starts_the_line(capsys):
     reg.annotate("boom")
     out = capsys.readouterr().out.splitlines()
     assert out and out[0].startswith("::error title=page-registry::")
+
+
+def test_terminal_only_refresh_preserves_other_owners_and_source_pins(monkeypatch, tmp_path, committed):
+    import copy
+    baseline = copy.deepcopy(committed)
+    baseline_text = json.dumps(baseline)
+    old_terminal = [copy.deepcopy(r) for r in baseline['pages'] if r['repo'] == 'terminal']
+    new = copy.deepcopy(old_terminal[0])
+    new.update(page_id='terminal:scoped_probe', route='/scoped-probe', source_evidence=['terminal/app/scoped-probe/page.tsx'])
+    candidate = old_terminal + [new]
+    monkeypatch.setattr(reg, 'derive_terminal', lambda *a, **k: (candidate, {'available': True, 'sha': 'c' * 40, 'ref': 'c' * 40}))
+    overlay = tmp_path / 'overrides.yml'
+    overlay.write_text('pages:\n  terminal:scoped_probe:\n    access_shell: signed_in\n  macro:not_in_this_refresh:\n    lifecycle: internal\n')
+    def git(root, args):
+        if args == ['merge-base', '--is-ancestor', 'a' * 40, 'origin/main']:
+            return ''
+        if args == ['show', 'a' * 40 + ':data/product_experience/page_registry.json']:
+            return baseline_text
+        raise AssertionError(args)
+    doc, errors = reg.refresh_terminal_registry(repo_root=tmp_path, base_commit='a' * 40,
+        terminal_root=tmp_path, terminal_ref='c' * 40, as_of='2026-11-03T00:00:00Z',
+        overrides_path=overlay, git=git)
+    assert not errors
+    assert [r for r in doc['pages'] if r['repo'] != 'terminal'] == [r for r in baseline['pages'] if r['repo'] != 'terminal']
+    assert doc['sources']['macro'] == baseline['sources']['macro']
+    assert doc['sources']['mastermind'] == baseline['sources']['mastermind']
+    assert doc['sources']['terminal']['sha'] == 'c' * 40
+    assert doc['sources']['terminal']['registry_base_commit'] == 'a' * 40
+    assert len(doc['sources']['terminal']['registry_base_sha256']) == 64
+    assert next(r for r in doc['pages'] if r['page_id'] == 'terminal:scoped_probe')['access_shell'] == 'signed_in'
+    assert committed == baseline
+
+
+@pytest.mark.parametrize('base,contained,expected', [
+    ('main', True, 'immutable'), ('a' * 40, False, 'protected'),
+])
+def test_terminal_only_refresh_refuses_unbound_baseline(tmp_path, base, contained, expected):
+    def git(root, args):
+        if args[0] == 'merge-base':
+            return '' if contained else None
+        raise AssertionError('must not read a refused baseline')
+    _, errors = reg.refresh_terminal_registry(repo_root=tmp_path, base_commit=base,
+        terminal_root=tmp_path, terminal_ref='c' * 40, as_of=None,
+        overrides_path=tmp_path / 'unused.yml', git=git)
+    assert errors and expected in errors[0]
+
+
+def test_terminal_only_refresh_refuses_unavailable_or_mismatched_candidate(monkeypatch, tmp_path, committed):
+    baseline = json.dumps(committed)
+    overlay = tmp_path / 'overrides.yml'; overlay.write_text('pages: {}\n')
+    for source in ({'available': False}, {'available': True, 'sha': 'b' * 40, 'ref': 'c' * 40}):
+        monkeypatch.setattr(reg, 'derive_terminal', lambda *a, **k: ([], source))
+        _, errors = reg.refresh_terminal_registry(repo_root=tmp_path, base_commit='a' * 40,
+            terminal_root=tmp_path, terminal_ref='c' * 40, as_of=None, overrides_path=overlay,
+            git=lambda root, args: '' if args[0] == 'merge-base' else baseline)
+        assert errors and 'Terminal' in errors[0]
+
+
+def test_terminal_only_refresh_public_cli_preserves_output_on_refusal(tmp_path):
+    output = tmp_path / 'registry.json'; output.write_text('sentinel\n')
+    assert reg.main(['--refresh-terminal-from', 'mutable-main', '--output', str(output)]) == 1
+    assert output.read_text() == 'sentinel\n'
+
+
+def test_terminal_only_refresh_rejects_non_object_baseline(tmp_path):
+    _, errors = reg.refresh_terminal_registry(repo_root=tmp_path, base_commit='a' * 40,
+        terminal_root=tmp_path, terminal_ref='c' * 40, as_of=None,
+        overrides_path=tmp_path / 'unused.yml',
+        git=lambda root, args: '' if args[0] == 'merge-base' else '[]')
+    assert errors and 'expected an object' in errors[0]

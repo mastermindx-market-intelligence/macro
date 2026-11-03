@@ -358,3 +358,31 @@ Acceptance still requires exact-head independent review, required checks, normal
 protected landing, beta-only installation and authenticated real-source journeys.
 Preserve accepted foundation/A1A/A1B work and active neighboring navigation, Today,
 sector and performance changes. No merged/live claim is made by this checkpoint.
+
+
+### Scoped registry publication and release order
+
+The ordinary full census would newly classify unrelated GMI/Expectation pages as
+live and admit them into Shared Shell. This integration does not authorize those
+admissions. The existing registry builder therefore gains one narrow source-refresh
+mode, `--refresh-terminal-from <protected-registry-commit>`, which preserves every
+Macro/Mastermind row and their exact source provenance, and derives Terminal from
+one explicit immutable source. Tests prove baseline containment, exact source,
+non-owner preservation and failure without output replacement. No second registry,
+route allowlist, publisher, runtime store or auth owner is created.
+
+Baseline registry: Macro aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551. Terminal input:
+844e5a68a871b84ddfea7fb9c278981b565abe10. The refreshed registry has 353 rows:
+314 Macro, 32 Terminal, 7 Mastermind. Non-Terminal rows and source dictionaries
+remain exactly equal to that protected baseline. Existing newly derived Terminal
+Equity Replay keeps its incumbent paid gate; dev routes remain excluded.
+
+Release order: independently review and normally land this Macro registry source;
+then use the unchanged exporter with `--inventory-ref <that-protected-Macro-SHA>`
+and the exact committed registry bytes. This is the existing protected cross-revision
+inventory path, not a weakened candidate export. It retains published company and
+earnings pages while preserving unadmitted GMI/Expectation/internal routes. Join the
+result into Terminal PR1244, qualify and independently review the exact final source,
+then carry it through the existing beta-only release owner. The temporary full-census
+projection used during local browser development is not the release candidate and
+must not be published as final admission.
