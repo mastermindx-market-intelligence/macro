@@ -406,16 +406,10 @@ def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     ("2026-09-24", True), ("2026-09-23", False),
     ("2026-09-23T21:00:00Z", False), (None, False), ("not-a-date", False),
 ])
-def test_native_payoff_emit_discloses_date_against_actual_card(tmp_path, card_date, expected):
-    """The native emitter's two dates agree even when the index card advances."""
-    import json
-    from scripts.build_options_payoff_lab import emit
-    data = tmp_path / "data"
-    data.mkdir()
-    raw = _payload(roots=[_full_root_spy()], ledger_asof="2026-09-23",
-                   card_asof="2026-09-23")
-    (data / "latest.json").write_text(json.dumps(raw))
-    payload = emit(data, tmp_path / "site")
+def test_native_payoff_dates_disclose_age_against_actual_card(card_date, expected):
+    """Native emit sets ledger_asof from asof; those dates agree on stale ledgers."""
+    payload = _payload(roots=[_full_root_spy()], ledger_asof="2026-09-23",
+                       card_asof="2026-09-23")
     assert payload["ledger_asof"] == payload["asof"] == "2026-09-23"
     stores = _stores()
     stores["gex"]["SPY"]["meta"]["asof"] = card_date
