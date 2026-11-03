@@ -1,0 +1,17 @@
+{
+  "head": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "tree": "81fa44ac6b015b81a43daf5b71d74df370c5f0ce",
+  "input": {
+    "path": "site/am_edition.json",
+    "sha256": "8f70c342f602af606e1e67bf2271ede0eb65d3476f8132eaf0920503c4b8ec93",
+    "bytes": 17664,
+    "generated_at": "2026-11-03T04:38:17.344477+00:00"
+  },
+  "beforeSha256": "23738b18222892db553b803466387165ded6f7bbab744ead0150535abd349a59",
+  "source": {
+    "templates/am_edition.html.j2": "63ea5c6530fa8f7ca0d1888376afdeb355aaf0f7",
+    "scripts/build_am_edition.py": "699dbf92cfc17ac403db664cff0a5209e2328b25",
+    "scripts/check_title_i18n.py": "e411612636a1d38ec4ad6d2e69e3d99466925b53"
+  },
+  "networkAttempts": []
+}

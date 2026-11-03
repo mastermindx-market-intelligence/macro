@@ -1,0 +1,7 @@
+diff --git a/templates/am_edition.html.j2 b/templates/am_edition.html.j2
+index 63ea5c6530fa8..33e36bb808db7 100644
+--- a/templates/am_edition.html.j2
++++ b/templates/am_edition.html.j2
+@@ -29 +29 @@
+-<title>{{ t('Morning Edition', '早间版') }} — {{ as_of }}</title>
++<title>Morning Edition · 早间版 — {{ as_of }}</title>

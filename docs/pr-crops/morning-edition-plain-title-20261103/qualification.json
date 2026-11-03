@@ -1,0 +1,19 @@
+{
+  "baseline": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "nativeRenderer": "scripts.build_am_edition.render_html",
+  "inputSha256": "8f70c342f602af606e1e67bf2271ede0eb65d3476f8132eaf0920503c4b8ec93",
+  "inputBytes": 17664,
+  "exactAsOf": "2026-11-03T04:38:17.344477+00:00",
+  "beforeTitleRCDATA": "<span class=\"l-en\">Morning Edition</span><span class=\"l-zh\">早间版</span> — 2026-11-03T04:38:17.344477+00:00",
+  "afterTitleRCDATA": "Morning Edition · 早间版 — 2026-11-03T04:38:17.344477+00:00",
+  "beforeHtmlSha256": "23738b18222892db553b803466387165ded6f7bbab744ead0150535abd349a59",
+  "afterHtmlSha256": "9f6384cb363d4dc965c725a348af52792f8ac493a51e79cd06af95bc4cc10d2b",
+  "bodyIdentical": true,
+  "bodySha256": "cd04f465bcb6da1df94a10de3a7b4b7829c563f1ad1ad71e1e2b38c043534bb4",
+  "fullHtmlOutsideTitleIdentical": true,
+  "payloadUnchanged": true,
+  "networkAttempts": [],
+  "candidateTemplateSha256": "57924b511b4c77cf6218a21d063b539137554348191444b2e83cc89bf7123061",
+  "generatedSiteArtifactBlobUnchanged": "627f5ed31db15f27d1ca5fb77456650fd0697f9c",
+  "boundary": "local retained-input pure-render SOURCE proof only; generated site untouched, no browser/served/current-data claim"
+}
