@@ -1,0 +1,131 @@
+{# News-only presentation of existing alert and headline owners. No scorer or feed. #}
+{% autoescape true %}
+{% macro ni_bi(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
+{% set ni = namespace(priority=[], context=[], headlines=[], seen=[], invalid=0, duplicates=0, coverage_partial=false) %}
+{% set ni_known = alerts is defined and alerts is sequence and alerts is not string and alerts is not mapping %}
+{% for a in (alerts if ni_known else []) %}
+  {% if a is mapping %}
+    {% if a.get('tier', 'watch') in ('act', 'watch') or a.get('rule') == 'event_risk' %}
+      {% set ni.priority = ni.priority + [a] %}
+    {% else %}{% set ni.context = ni.context + [a] %}{% endif %}
+  {% else %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+{% endfor %}
+{% set ni_news = macro_news if macro_news is defined and macro_news is mapping else {} %}
+{# Per-leg producer truth survives even when a working source makes the aggregate reason null. #}
+{% set ni_legs = ni_news.get('leg_status') %}
+{% if ni_legs is mapping %}
+  {% for ni_leg in ni_legs.values() %}
+    {% if ni_leg is mapping %}
+      {% if ni_leg.get('degraded_reason') and ni_leg.get('degraded_reason') != 'no_headlines' %}{% set ni.coverage_partial = true %}{% endif %}
+    {% else %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+  {% endfor %}
+{% elif ni_legs is not none %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+{% if ni_news.get('degraded_reason') and ni_news.get('degraded_reason') != 'no_headlines' %}{% set ni.coverage_partial = true %}{% endif %}
+{% set ni_raw = ni_news.get('headlines') %}
+{% set ni_news_known = ni_raw is sequence and ni_raw is not string and ni_raw is not mapping %}
+{% for h in (ni_raw if ni_news_known else []) %}
+  {% if h is mapping and h.get('title') is string and h.title|trim %}
+    {% set ni_key = [h.get('url', ''), h.title, h.get('seendate', '')]|tojson %}
+    {% if ni_key not in ni.seen %}
+      {% set ni.seen = ni.seen + [ni_key] %}{% set ni.headlines = ni.headlines + [h] %}
+    {% else %}{% set ni.duplicates = ni.duplicates + 1 %}{% endif %}
+  {% else %}{% set ni.invalid = ni.invalid + 1 %}{% endif %}
+{% endfor %}
+{% set ni_latest = latest if latest is defined and latest is mapping else {} %}
+{% set ni_dislo = ni_latest.get('dislocation') or {} %}
+{% set ni_dislo_active = ni_dislo is mapping and ni_dislo.get('dislocation_active') %}
+{% set ni_total = ni.priority|length + ni.context|length + ni.headlines|length + (1 if ni_dislo_active else 0) %}
+{% macro ni_alert(a, kind) %}
+  {% set ni_rule = a.get('rule', '') %}
+  {% set ni_clock = a.get('observed_at') or a.get('ts') or a.get('date') %}
+  <article class="ni-row ni-row--{{ kind }}" data-al-row data-news-item="{{ kind }}" data-news-rule="{{ ni_rule }}"{% if ni_rule == 'event_risk' %} data-news-event-alert{% endif %}>
+    <div class="ni-row-top">
+      <span class="ni-kind">{{ ni_bi('Economic event' if ni_rule == 'event_risk' else ('Priority signal' if kind == 'priority' else 'Market context'), '经济事件' if ni_rule == 'event_risk' else ('优先信号' if kind == 'priority' else '市场背景')) }}</span>
+      <span class="ni-status{% if a.get('tier') == 'act' and ni_rule != 'event_risk' %} ni-status--act{% endif %}">{{ ni_bi('Event' if ni_rule == 'event_risk' else ('Act' if a.get('tier') == 'act' else ('Watch' if kind == 'priority' else 'Context')), '事件' if ni_rule == 'event_risk' else ('行动' if a.get('tier') == 'act' else ('关注' if kind == 'priority' else '背景'))) }}</span>
+    </div>
+    <h3 class="ni-title" data-news-title>{{ ni_bi(a.get('plain_en') or 'Market update', a.get('plain_zh') or a.get('plain_en') or '市场动态') }}</h3>
+    <p class="ni-observation" data-news-observation>{{ ni_bi(a.get('message') or 'Supporting observation unavailable.', a.get('message_zh') or a.get('message') or '暂无支持性观测。') }}</p>
+    {% if a.get('edge_en') %}<p class="ni-limit">{{ ni_bi(a.edge_en, a.get('edge_zh') or a.edge_en) }}</p>{% endif %}
+    <div class="ni-row-bottom">
+      {% if ni_clock %}<time class="ni-clock" datetime="{{ ni_clock }}" data-news-clock="{{ ni_clock }}">{{ ni_clock }}</time>{% else %}<span class="ni-clock ni-clock--unknown">{{ ni_bi('Observation time unavailable', '观测时间未提供') }}</span>{% endif %}
+      {% if ni_rule == 'event_risk' %}<a class="ni-source-link" href="#dlg-events" data-news-panel="dlg-events">{{ ni_bi('Open event calendar', '查看事件日历') }} <span aria-hidden="true">↗</span></a>{% endif %}
+    </div>
+    <details class="ni-evidence mx-disc">
+      <summary>{{ ni_bi('Why it matters & evidence', '影响与依据') }}<span class="ni-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ni-evidence-body">
+        {% if a.get('detail_en') %}<div><h4>{{ ni_bi('The implication', '意义') }}</h4><p>{{ ni_bi(a.detail_en, a.get('detail_zh') or a.detail_en) }}</p></div>{% endif %}
+        {% if a.get('what_en') %}<div><h4>{{ ni_bi('How to read this', '如何解读') }}</h4><p>{{ ni_bi(a.what_en, a.get('what_zh') or a.what_en) }}</p></div>{% endif %}
+        <div class="ni-evidence-foot">{{ ni_bi('Dashboard signal · priority follows the existing alert rule. A signal is not a verified news report.', '看板信号 · 优先级遵循现有警报规则。信号不等于已核实的新闻报道。') }}</div>
+      </div>
+    </details>
+  </article>
+{% endmacro %}
+<section class="ni" data-news-intelligence aria-label="Market intelligence">
+  <div class="ni-intro">
+    {% set ni_priority_count = ni.priority|length + (1 if ni_dislo_active else 0) %}
+    <div><span class="ni-eyebrow">{{ ni_bi('BRIEFING OVERVIEW', '简报概览') }}</span><p>{{ ni_bi((ni_priority_count|string ~ ' items need attention') if ni_priority_count else 'Context and headlines', (ni_priority_count|string ~ ' 项动态值得关注') if ni_priority_count else '市场背景与新闻') }}</p></div>
+    <span class="ni-coverage">{{ ni_bi('Signals · context · headlines', '信号 · 背景 · 新闻') }}</span>
+  </div>
+  <aside class="ni-release" data-news-release data-state="unknown" aria-label="Official releases" data-news-aria-en="Official releases" data-news-aria-zh="官方发布">
+    <div><span class="ni-release-label">{{ ni_bi('OFFICIAL RELEASES', '官方发布') }}</span><p data-news-release-summary>{{ ni_bi('Release status not checked yet.', '尚未检查发布状态。') }}</p><span class="ni-clock" data-news-release-clock>{{ ni_bi('Dashboard snapshot below.', '下方内容来自看板快照。') }}</span></div>
+    <a class="ni-source-link" href="#dlg-events" data-news-panel="dlg-events">{{ ni_bi('Event calendar', '事件日历') }} <span aria-hidden="true">↗</span></a>
+  </aside>
+  {% if ni.invalid or not ni_known or not ni_news_known %}
+  <div class="ni-notice" role="status"><strong>{{ ni_bi('Some information is unavailable.', '部分信息暂不可用。') }}</strong> {{ ni_bi('Available items remain below; missing data does not mean a quiet market.', '下方保留可用内容；缺失数据不代表市场平静。') if ni_total else ni_bi('No usable items were supplied; missing data does not mean a quiet market.', '本次快照未提供可用内容；缺失数据不代表市场平静。') }}</div>
+  {% elif ni.coverage_partial %}
+  <div class="ni-notice" role="status" data-news-coverage="partial"><strong>{{ ni_bi('Headline coverage is partial.', '新闻覆盖不完整。') }}</strong> {{ ni_bi('Some sources are unavailable; available reports remain below.', '部分来源暂不可用；下方保留可用报道。') if ni.headlines else ni_bi('Some sources are unavailable; no usable headlines were supplied in this snapshot.', '部分来源暂不可用；本次快照未提供可用报道。') }}</div>
+  {% endif %}
+  <div class="ni-tools" data-news-toolbar hidden>
+    <div class="ni-filters" role="group" aria-label="Filter developments" data-news-aria-en="Filter developments" data-news-aria-zh="筛选动态">
+      <button type="button" class="ni-filter is-selected" data-news-filter="all" aria-pressed="true">{{ ni_bi('All', '全部') }}</button>
+      <button type="button" class="ni-filter" data-news-filter="priority" aria-pressed="false">{{ ni_bi('Priority', '优先') }} <span class="ni-filter-count">{{ ni.priority|length + (1 if ni_dislo_active else 0) }}</span></button>
+      <button type="button" class="ni-filter" data-news-filter="context" aria-pressed="false">{{ ni_bi('Context', '背景') }} <span class="ni-filter-count">{{ ni.context|length }}</span></button>
+      <button type="button" class="ni-filter" data-news-filter="headlines" aria-pressed="false">{{ ni_bi('Headlines', '新闻') }} <span class="ni-filter-count">{{ ni.headlines|length }}</span></button>
+    </div>
+    <label class="ni-search"><span class="ni-sr-only">{{ ni_bi('Search intelligence', '搜索情报') }}</span><input type="search" data-news-search placeholder="Search signals, tickers, sources" data-news-placeholder-en="Search signals, tickers, sources" data-news-placeholder-zh="搜索信号、代码或来源" autocomplete="off" maxlength="200"></label>
+  </div>
+  <div class="ni-results-line"><span data-news-count>{{ ni_total }} {{ ni_bi('developments', '条动态') }}</span><button class="ni-reset" type="button" data-news-reset hidden>{{ ni_bi('Reset filters', '重置筛选') }}</button><span class="ni-sr-only" data-news-announcement role="status" aria-live="polite" aria-atomic="true"></span></div>
+  {% if ni.priority or ni_dislo_active %}
+  <section class="ni-section" data-news-section="priority" aria-labelledby="ni-priority-heading">
+    <div class="ni-section-head"><h2 id="ni-priority-heading">{{ ni_bi('Needs attention', '重点关注') }}</h2><span>{{ ni_bi('Review the change', '核查变化') }}</span></div>
+    <div class="ni-priority-grid">
+    {% if ni_dislo_active %}
+    <article class="ni-row ni-row--priority" data-al-row data-news-item="priority" data-news-rule="dislocation">
+      <div class="ni-row-top"><span class="ni-kind">{{ ni_bi('Market stress', '市场压力') }}</span><span class="ni-status">{{ ni_bi('Watch', '关注') }}</span></div>
+      <h3 class="ni-title">{{ ni_bi('Selling has turned stressed', '抛售已转为压力状态') }}</h3>
+      <p class="ni-observation">{% if ni_dislo.get('put_state') == 'unknown' or ni_dislo.get('put_state_reliable') == false or ni_dislo.get('fed_put') is none %}{{ ni_bi('Policy support is uncertain. Wait for the market to steady.', '政策支持尚不明确。等待市场企稳。') }}{% elif ni_dislo.get('verdict') == 'stand_aside' %}{{ ni_bi('The policy backstop is absent. Stand aside and review the risk evidence.', '政策托底缺失。保持观望并核查风险依据。') }}{% else %}{{ ni_bi('Wait for the market to steady. Watch — don’t chase.', '等待市场企稳。观察，不要追。') }}{% endif %}</p>
+      {% set ni_geo = ni_dislo.get('geo_reversibility') %}{% set ni_cat = ni_dislo.get('catalyst_narrative') %}
+      {% if (ni_geo is mapping and ni_geo.get('agreement') != 'corroborates') or (ni_cat is mapping and ni_cat.get('agreement') != 'corroborates') %}<p class="ni-limit">{{ ni_bi('Not everything agrees — review the reasons in Risk Radar.', '并非所有指标一致 — 请在风险雷达查看原因。') }}</p>{% endif %}
+      <a class="ni-source-link" href="#dlg-risk" data-news-panel="dlg-risk">{{ ni_bi('Inspect Risk Radar', '查看风险雷达') }} <span aria-hidden="true">↗</span></a>
+    </article>
+    {% endif %}
+    {% for a in ni.priority %}{{ ni_alert(a, 'priority') }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+  {% if ni.context %}
+  <section class="ni-section" data-news-section="context" aria-labelledby="ni-context-heading">
+    <div class="ni-section-head"><h2 id="ni-context-heading">{{ ni_bi('The wider picture', '市场全景') }}</h2><span>{{ ni_bi('Context, not a trade trigger', '背景信息，非交易触发') }}</span></div>
+    {% for a in ni.context %}{{ ni_alert(a, 'context') }}{% endfor %}
+  </section>
+  {% endif %}
+  {% if ni.headlines %}
+  <section class="ni-section" data-news-section="headlines" aria-labelledby="ni-headlines-heading">
+    <div class="ni-section-head"><h2 id="ni-headlines-heading">{{ ni_bi('Reported developments', '新闻动态') }}</h2><span>{{ ni_bi('Read the source', '查看来源') }}</span></div>
+    {% for h in ni.headlines %}
+      {% set ni_url = h.get('url') if h.get('url') is string else '' %}
+      {% set ni_safe_url = ni_url.startswith('https://') or ni_url.startswith('http://') %}
+      <article class="ni-row" data-news-item="headlines">
+        <div class="ni-row-top"><span class="ni-kind">{% if h.get('source') == 'news_rss' %}{{ ni_bi('Media report', '媒体报道') }}{% elif h.get('source') == 'official_rss' %}{{ ni_bi('Official source', '官方来源') }}{% elif h.get('source') == 'gdelt' %}{{ ni_bi('News wire', '新闻线索') }}{% else %}{{ h.get('source') or ni_bi('Source unnamed', '来源未注明') }}{% endif %}</span><span class="ni-status ni-status--neutral">{{ ni_bi('Reported', '报道') }}</span></div>
+        <h3 class="ni-title">{% if ni_safe_url %}<a href="{{ ni_url }}" target="_blank" rel="noopener noreferrer">{{ ni_bi(h.title, h.get('title_zh') or h.title) }} <span class="ni-external" aria-hidden="true">↗</span></a>{% else %}{{ ni_bi(h.title, h.get('title_zh') or h.title) }}{% endif %}</h3>
+        {% if h.get('seendate') %}<time class="ni-clock" datetime="{{ h.seendate }}" data-news-clock="{{ h.seendate }}" data-news-clock-kind="reported">{{ h.seendate }}</time>{% else %}<span class="ni-clock ni-clock--unknown">{{ ni_bi('Report time unavailable', '报道时间未提供') }}</span>{% endif %}
+        {% if h.get('summary') %}<details class="ni-evidence mx-disc"><summary>{{ ni_bi('Summary & source', '摘要与来源') }}<span class="ni-chevron" aria-hidden="true">⌄</span></summary><div class="ni-evidence-body"><p>{{ ni_bi(h.summary, h.get('summary_zh') or h.summary) }}</p>{% if ni_safe_url %}<a class="ni-source-link" href="{{ ni_url }}" target="_blank" rel="noopener noreferrer">{{ ni_bi('Read the original report', '阅读原始报道') }} ↗</a>{% else %}<p>{{ ni_bi('Source link unavailable.', '来源链接不可用。') }}</p>{% endif %}</div></details>{% endif %}
+      </article>
+    {% endfor %}
+  </section>
+  {% endif %}
+  {% if not ni_total %}<div class="ni-empty mx-empty"><h3>{{ ni_bi('No developments to display', '暂无可显示动态') }}</h3><p class="mx-empty-why">{{ ni_bi('No usable items were supplied in this snapshot. Open the full feed to check available coverage.', '本次快照未提供可用内容。请打开完整新闻流查看覆盖情况。') }}</p></div>{% endif %}
+  <div class="ni-empty mx-empty" data-news-no-matches hidden><h3>{{ ni_bi('No matching developments', '没有匹配动态') }}</h3><p class="mx-empty-why">{{ ni_bi('Try another term or reset the filters.', '请尝试其他关键词或重置筛选。') }}</p></div>
+  <footer class="ni-footer"><p>{{ ni_bi('Signal observations and reported news use different clocks. Missing times stay unknown.', '信号观测与新闻报道使用不同时间口径；缺失时间不会被推测填补。') }}</p><a href="news.html" class="ni-feed-link">{{ ni_bi('Open the full news feed', '打开完整新闻流') }} <span aria-hidden="true">↗</span></a></footer>
+</section>
+{% endautoescape %}

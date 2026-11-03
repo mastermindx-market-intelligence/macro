@@ -211,15 +211,12 @@ if (api.radarState(detectedRows, []).kind !== "published") {{
 }}
 const detectedAfter25h = api.recentPublications(
   unparsedPayload, new Date("2026-07-31T02:00:00Z"));
-if (detectedAfter25h.length !== 1) {{
-  throw new Error("unparsed publication disappeared after the 24h result window");
+if (detectedAfter25h.length !== 0) {{
+  throw new Error("old unparsed publication was represented as a recent result");
 }}
-if (api.awaitingEvents(
-    unparsedPayload,
-    new Date("2026-07-31T02:00:00Z"),
-    {{ "FOMC:2026-07-29": true }}
-  ).length !== 0) {{
-  throw new Error("T+25h detected publication regressed to awaiting release");
+const delayedAfter25h = api.awaitingEvents(unparsedPayload, new Date("2026-07-31T02:00:00Z"), {{}});
+if (delayedAfter25h.length !== 1 || delayedAfter25h[0].status !== "verification_delayed") {{
+  throw new Error("T+25h detected publication must remain visible as verification delayed");
 }}
 const expiringPayload = {{
   publications: [{{
@@ -520,7 +517,8 @@ def test_release_publication_client_patches_all_event_surfaces():
         "official results · live",
     ):
         assert contract in source
-    assert "toISOString().slice(0, 10)" not in source
+    # Absolute timestamp validation may format UTC. Calendar-date semantics are
+    # exercised at the Eastern midnight boundary in the runtime test above.
 
 
 def test_release_publication_client_covers_actual_stale_macro_surfaces():

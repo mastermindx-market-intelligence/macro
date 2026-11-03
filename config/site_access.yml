@@ -323,6 +323,8 @@ public:
     - /risk_envelope_live.js
     - /china_risk_state_live.js
     - /release_publications_live.js
+    - /macro_news_intelligence.css
+    - /macro_news_intelligence.js
     - /heatmap.js
     - /stocktable.js
     - /globe-deck.js

@@ -1,0 +1,13 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/_macro_news_intelligence.html.j2
+  - templates/macro_news_intelligence.css
+  - templates/macro_news_intelligence.js
+  - templates/release_publications_live.js
+  - site/macro_news_intelligence.css
+  - site/macro_news_intelligence.js
+  - site/release_publications_live.js
+  - site/macro.html
+  - site/us_stocks.html
+manifest: mockups/refs/news-intelligence-20261102/manifest.json

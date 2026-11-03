@@ -26,6 +26,9 @@
   var missedPolls = 0;
   var feedFreshness = "unknown";
   var hadLivePrimary = false;
+  var lastAcceptedBuilt = 0;
+  var inFlight = null;
+  var REQUEST_TIMEOUT_MS = 15000;
 
   function list(nodes) {
     return Array.prototype.slice.call(nodes || []);
@@ -225,6 +228,7 @@
   }
 
   function renderAwaitingCard(row, payload) {
+    var delayed = row.status === "verification_delayed" || row.status === "published_unparsed";
     var card = document.createElement("section");
     card.className = "mx-live-event-card awaiting";
     card.setAttribute("data-live-event-id", row.event_id || "");
@@ -232,8 +236,8 @@
     top.className = "mx-live-event-top";
     top.appendChild(languagePair(
       "mx-live-event-pill",
-      "Verifying official source",
-      "正在核验官方来源"
+      delayed ? "Official publication · verification delayed" : "Verifying official source",
+      delayed ? "官方发布 · 核验延迟" : "正在核验官方来源"
     ));
     var asof = document.createElement("span");
     asof.className = "mx-live-event-asof";
@@ -251,8 +255,10 @@
     ));
     card.appendChild(languagePair(
       "mx-live-event-summary",
-      "Awaiting the official release. This event is no longer shown as upcoming.",
-      "正在等待官方发布；该事件不再显示为“即将发布”。"
+      delayed ? "Publication was detected, but verified facts are still unavailable. Do not infer an outcome." :
+        "Awaiting the official release. This event is no longer shown as upcoming.",
+      delayed ? "已检测到官方发布，但核验事实仍不可用。请勿推断结果。" :
+        "正在等待官方发布；该事件不再显示为“即将发布”。"
     ));
     return card;
   }
@@ -753,6 +759,7 @@
   function patchAlertSurfaces(row, verified) {
     var actual = row.actual || {};
     list(document.querySelectorAll(".mx5-alert-item.warn")).forEach(function (alert) {
+      if (isNewsSurface(alert)) return;
       if (!rowMatchesText(row, alert.textContent)) return;
       setPair(
         alert.querySelector(".mx5-alert-title"),
@@ -771,68 +778,9 @@
       alert.classList.add("mx-live-resolved");
     });
 
-    var dialog = document.getElementById("dlg-news");
-    if (!dialog) return;
-    function updateDialogContainer(container) {
-      var englishNodes = list(container.querySelectorAll(".l-en"));
-      var titleEnglish = englishNodes.filter(function (node) {
-        return /major event on deck|official (?:release|publication)/.test(
-          String(node.textContent || "").toLowerCase()
-        );
-      })[0];
-      if (titleEnglish) {
-        setPair(
-          titleEnglish.parentNode,
-          verified ? "Official release published — outcome verified" :
-            "Official publication detected — result verification underway",
-          verified ? "官方发布已公布 — 结果已核验" :
-            "已检测到官方发布 — 正在核验结果"
-        );
-      }
-      var detailEnglish = englishNodes.filter(function (node) {
-        return node !== titleEnglish && rowMatchesText(row, node.textContent);
-      })[0];
-      if (detailEnglish) {
-        setPair(
-          detailEnglish.parentNode,
-          actual.summary_en || ((row.label || row.type) +
-            " publication detected; verified facts are being extracted."),
-          actual.summary_zh || ((row.label_zh || row.label || row.type) +
-            "官方发布已检测；正在提取核验信息。")
-        );
-      }
-      container.setAttribute("data-live-event-container", "true");
-      container.setAttribute("data-live-event-id", String(row.event_id || ""));
-      container.classList.add("mx-live-resolved");
-    }
-    list(dialog.querySelectorAll("[data-live-event-container]")).forEach(
-      function (container) {
-        if (container.getAttribute("data-live-event-id") ===
-            String(row.event_id || "")) updateDialogContainer(container);
-      }
-    );
-    list(dialog.querySelectorAll(".l-en")).forEach(function (english) {
-      if (!/major event on deck|event-risk window/.test(
-        String(english.textContent || "").toLowerCase()
-      )) return;
-      var container = english.parentNode;
-      for (var depth = 0; container && container !== dialog && depth < 6; depth += 1) {
-        if (rowMatchesText(row, container.textContent)) {
-          var titleEnglish = list(container.querySelectorAll(".l-en")).filter(
-            function (node) {
-              return /major event on deck/.test(
-                String(node.textContent || "").toLowerCase()
-              );
-            }
-          )[0];
-          if (titleEnglish) {
-            updateDialogContainer(container);
-          }
-          break;
-        }
-        container = container.parentNode;
-      }
-    });
+    // News snapshot alerts have no stable release-instance identity. Never bind
+    // a release by incidental CPI/jobs words in an explainer or ancestor.
+    // The existing release owner updates the dedicated News status strip instead.
   }
 
   function patchProspectiveCopy(row, published) {
@@ -846,6 +794,7 @@
     var key = String(row.type || "").toLowerCase();
     var label = String(row.label || "").toLowerCase();
     list(document.querySelectorAll(".l-en")).forEach(function (english) {
+      if (isNewsSurface(english)) return;
       var text = String(english.textContent || "");
       var lower = text.toLowerCase();
       var namesEvent = (key && lower.indexOf(key) >= 0) ||
@@ -880,14 +829,6 @@
         parent.setAttribute("data-live-event-id", String(row.event_id || ""));
       }
     });
-    var alertsBadge = document.querySelector("#sx-news-v2 .mx5-card-badge");
-    if (alertsBadge) {
-      setPair(
-        alertsBadge,
-        verified ? "Live update" : "Verifying",
-        verified ? "实时更新" : "核验中"
-      );
-    }
   }
 
   function ensureRadarBanner() {
@@ -915,42 +856,107 @@
       (Number(clock[0]) * 60 + Number(clock[1] || 0));
   }
 
+  function releaseTimestamp(value) {
+    // Missing and timezone-free clocks are unknown, never synthesize end-of-day.
+    if (typeof value !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return NaN;
+    if (Number(value.slice(11, 13)) > 23 || Number(value.slice(14, 16)) > 59) return NaN;
+    var day = new Date(value.slice(0, 10) + "T12:00:00Z");
+    if (isNaN(day.getTime()) || day.toISOString().slice(0, 10) !== value.slice(0, 10)) return NaN;
+    return new Date(value).getTime();
+  }
+
+  function isNewsSurface(node) {
+    for (var current = node; current; current = current.parentNode) {
+      if (current.id === "dlg-news" || current.id === "sx-news-v2") return true;
+    }
+    return false;
+  }
+
+  function releaseKey(row) {
+    if (!row || typeof row !== "object") return "";
+    if (typeof row.event_id === "string" && row.event_id.trim()) return "event:" + row.event_id.trim();
+    return row.type && /^\d{4}-\d{2}-\d{2}$/.test(row.date || "") ? row.type + ":" + row.date : "";
+  }
+
+  function publicationVerified(row) {
+    var actual = row && row.actual;
+    return Boolean(row && row.status !== "published_unparsed" && row.data_ready === true && actual && typeof actual === "object" &&
+      [actual.summary_en, actual.summary_zh, actual.headline_en, actual.headline_zh].some(function (text) {
+        return typeof text === "string" && text.trim();
+      }));
+  }
+
   function recentPublications(payload, now) {
     var cutoff = now.getTime() - (24 * 60 * 60 * 1000);
-    return (payload.publications || []).filter(function (row) {
-      if (["published", "published_unparsed"].indexOf(row.status) < 0) return false;
-      var detected = new Date(row.detected_at || row.date + "T23:59:59Z").getTime();
-      return !isNaN(detected) &&
-        (row.status === "published_unparsed" || detected >= cutoff);
+    return (Array.isArray(payload.publications) ? payload.publications : []).filter(function (row) {
+      if (!row || typeof row !== "object" || !releaseKey(row) ||
+          ["published", "published_unparsed"].indexOf(row.status) < 0) return false;
+      var detected = releaseTimestamp(row.detected_at);
+      return !isNaN(detected) && detected >= cutoff && detected <= now.getTime();
     }).sort(function (left, right) {
-      return new Date(left.detected_at || 0).getTime() -
-        new Date(right.detected_at || 0).getTime();
+      return releaseTimestamp(left.detected_at) - releaseTimestamp(right.detected_at);
     });
   }
 
   function awaitingEvents(payload, now, publishedKeys) {
-    var rows = payload.events || payload.due || payload.upcoming || [];
+    var rows = [];
+    ["events", "due", "upcoming"].forEach(function (name) {
+      if (Array.isArray(payload[name])) rows = rows.concat(payload[name]);
+    });
+    // An old/unclocked parse failure stays visible as delayed, never as a fresh release.
+    (Array.isArray(payload.publications) ? payload.publications : []).forEach(function (row) {
+      if (row && row.status === "published_unparsed" && !publishedKeys[releaseKey(row)]) {
+        var matching = rows.filter(function (event) { return releaseKey(event) === releaseKey(row); })[0] || {};
+        rows.unshift(Object.assign({}, matching, row, {status: "verification_delayed"}));
+      }
+    });
+    var seen = {};
     return rows.filter(function (row) {
-      var key = row.event_id ?
-        "event:" + row.event_id :
-        row.type + ":" + row.date;
-      var lifecycleRequiresAttention = [
-        "awaiting_publication",
-        "published_unparsed",
-        "verification_delayed"
-      ].indexOf(String(row.status || "")) >= 0;
-      return !publishedKeys[key] && (
-        lifecycleRequiresAttention ||
-        (row.date === easternDateKey(now) && eventHasPassed(row, now))
-      );
+      var key = releaseKey(row);
+      if (!key || seen[key] || publishedKeys[key]) return false;
+      var attention = ["awaiting_publication", "published_unparsed", "verification_delayed"]
+        .indexOf(String(row.status || "")) >= 0;
+      var eligible = attention || (row.date === easternDateKey(now) && eventHasPassed(row, now));
+      if (eligible) seen[key] = true;
+      return eligible;
     });
   }
 
   function payloadIsFresh(payload, now) {
-    var built = new Date(payload && payload.built || "").getTime();
+    var built = releaseTimestamp(payload && payload.built);
     var current = (now || new Date()).getTime();
-    return !isNaN(built) && built <= current + POLL_MS &&
-      current - built <= STALE_AFTER_MS;
+    return !isNaN(built) && built <= current && current - built <= STALE_AFTER_MS;
+  }
+
+  function patchNewsReleaseState(publications, awaiting, payload, coverage) {
+    coverage = coverage || {};
+    var strip = document.querySelector("#dlg-news [data-news-release]");
+    var pending = publications.filter(function (row) { return !publicationVerified(row); }).length + awaiting.length;
+    var verified = publications.length - (pending - awaiting.length);
+    var delayed = awaiting.some(function (row) { return row.status === "verification_delayed"; });
+    var state = delayed ? "delayed" : coverage.clockIssues ? "uncertain" : coverage.partial ? "partial" : pending ? "verifying" : verified ? "verified" : "empty";
+    var en = pending ? pending + " release" + (pending === 1 ? "" : "s") + (delayed ? " awaiting verification · delayed" : " awaiting verification") :
+      verified ? verified + " official result" + (verified === 1 ? "" : "s") + " verified" : "No recent release status to display";
+    var zh = pending ? pending + " 项发布待核验" + (delayed ? " · 核验延迟" : "") :
+      verified ? verified + " 项官方结果已核验" : "暂无近期发布状态可显示";
+    if (pending && verified) { en += " · " + verified + " verified"; zh += " · " + verified + " 项已核验"; }
+    if (coverage.clockIssues) {
+      var clockEn = coverage.clockIssues + " release time" + (coverage.clockIssues === 1 ? " needs" : "s need") + " checking";
+      var clockZh = coverage.clockIssues + " 项发布时间待核查";
+      en = pending || verified ? en + " · " + clockEn : clockEn;
+      zh = pending || verified ? zh + " · " + clockZh : clockZh;
+    }
+    if (coverage.partial) { en += " · partial coverage"; zh += " · 部分覆盖"; }
+    if (strip) {
+      strip.setAttribute("data-state", state);
+      setPair(strip.querySelector("[data-news-release-summary]"), en, zh);
+      var stamp = new Date(payload.built).toISOString().slice(0, 16).replace("T", " ") + " UTC";
+      setPair(strip.querySelector("[data-news-release-clock]"), "Source checked " + stamp, "来源检查于 " + stamp);
+    }
+    var badge = document.querySelector("#sx-news-v2 .mx5-card-badge");
+    if (badge) setPair(badge, delayed ? "Verification delayed" : coverage.clockIssues ? "Time uncertain" : coverage.partial ? "Partial update" : pending ? "Verification pending" : verified ? "Official results" : "Snapshot",
+      delayed ? "核验延迟" : coverage.clockIssues ? "时间待核查" : coverage.partial ? "部分更新" : pending ? "待核验" : verified ? "官方结果" : "快照");
   }
 
   function radarState(publications, awaiting) {
@@ -1002,6 +1008,12 @@
 
   function markFeedStale() {
     feedFreshness = "stale";
+    var newsStrip = document.querySelector && document.querySelector("#dlg-news [data-news-release]");
+    if (newsStrip) {
+      newsStrip.setAttribute("data-state", "delayed");
+      setPair(newsStrip.querySelector("[data-news-release-summary]"),
+        "Release updates delayed · current status unavailable", "发布更新延迟 · 当前状态不可用");
+    }
     if (document.documentElement) {
       document.documentElement.setAttribute("data-release-live-freshness", "stale");
     }
@@ -1116,25 +1128,45 @@
       }
     );
     var alertsBadge = document.querySelector("#sx-news-v2 .mx5-card-badge");
-    if (alertsBadge) setPair(alertsBadge, "Last verified", "上次核验");
+    if (alertsBadge) setPair(alertsBadge, "Snapshot", "快照");
   }
 
   function render(payload, nowValue) {
     var now = nowValue instanceof Date ? nowValue : new Date();
-    if (!payload || !Array.isArray(payload.publications || []) ||
+    if (!payload || !Array.isArray(payload.publications) ||
         !payloadIsFresh(payload, now)) {
       notePollFailure(now);
       return false;
     }
-    lastSuccessfulPollAt = now.getTime();
-    missedPolls = 0;
-    markFeedFresh();
+    var built = releaseTimestamp(payload.built);
+    if (built < lastAcceptedBuilt) return false;
+    var coverage = {
+      partial: ["events", "due", "upcoming"].some(function (key) {
+        return payload[key] != null && !Array.isArray(payload[key]);
+      }) || payload.publications.some(function (row) { return !releaseKey(row); }),
+      clockIssues: payload.publications.filter(function (row) {
+        if (!row || row.status !== "published") return false;
+        var stamp = releaseTimestamp(row.detected_at);
+        return isNaN(stamp) || stamp > now.getTime();
+      }).length
+    };
     ensureStyles();
-    var publications = recentPublications(payload, now);
+    var publications = recentPublications(payload, now).map(function (row) {
+      var ready = publicationVerified(row), actual = row.actual || {};
+      function fact(name) { return typeof actual[name] === "string" ? actual[name].trim() : ""; }
+      // All consumers share a claim level; missing translation never means a
+      // different verification state, and a bare data_ready flag is not evidence.
+      if (ready) actual = Object.assign({}, actual, {
+        headline_en: fact("headline_en") || fact("headline_zh") || fact("summary_en") || fact("summary_zh"),
+        headline_zh: fact("headline_zh") || fact("headline_en") || fact("summary_zh") || fact("summary_en"),
+        summary_en: fact("summary_en") || fact("summary_zh") || fact("headline_en") || fact("headline_zh"),
+        summary_zh: fact("summary_zh") || fact("summary_en") || fact("headline_zh") || fact("headline_en")
+      });
+      return Object.assign({}, row, {data_ready: ready, actual: actual});
+    });
     var publishedKeys = {};
     publications.forEach(function (row) {
-      publishedKeys[row.type + ":" + row.date] = true;
-      if (row.event_id) publishedKeys["event:" + row.event_id] = true;
+      publishedKeys[releaseKey(row)] = true;
     });
     var awaiting = awaitingEvents(payload, now, publishedKeys);
     var panel = ensureOutcomePanel();
@@ -1175,6 +1207,7 @@
       patchWhereNext(primary, isPublished);
     }
     if (trackPrimaryState(Boolean(group || primary))) expireLiveState();
+    patchNewsReleaseState(publications, awaiting, payload, coverage);
 
     var banner = ensureRadarBanner();
     if (banner) {
@@ -1182,20 +1215,41 @@
       setPair(banner, radar.en, radar.zh);
       banner.hidden = radar.kind === "empty";
     }
+    lastAcceptedBuilt = built;
+    lastSuccessfulPollAt = now.getTime();
+    missedPolls = 0;
+    markFeedFresh();
     return true;
   }
 
   function poll() {
-    fetch(ENDPOINT, { cache: "no-store", credentials: "same-origin" })
+    if (inFlight) return inFlight;
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var timeout;
+    var deadline = new Promise(function (_, reject) {
+      timeout = window.setTimeout(function () {
+        if (controller) controller.abort();
+        reject(new Error("Release request timed out"));
+      }, REQUEST_TIMEOUT_MS);
+    });
+    var request = Promise.resolve().then(function () {
+      return fetch(ENDPOINT, {cache: "no-store", credentials: "same-origin", signal: controller ? controller.signal : undefined});
+    })
       .then(function (response) {
         if (!response.ok) throw new Error("HTTP " + response.status);
         return response.json();
-      })
-      .then(render)
+      });
+    inFlight = Promise.race([request, deadline]).then(function (payload) { return render(payload); })
       .catch(function () {
         /* Keep the baked dashboard usable, but never leave a false green "Live". */
         notePollFailure();
+        return false;
+      })
+      .finally(function () {
+        window.clearTimeout(timeout);
+        inFlight = null;
       });
+    return inFlight;
   }
 
   function start() {
@@ -1219,6 +1273,8 @@
     patchActionPlan: patchActionPlan,
     patchProspectiveCopy: patchProspectiveCopy,
     notePollFailure: notePollFailure,
+    poll: poll,
+    publicationVerified: publicationVerified,
     freshness: function () { return feedFreshness; },
     render: render
   };

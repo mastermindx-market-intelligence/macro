@@ -1,0 +1,244 @@
+{
+  "site/macro.html": {
+    "bytes": 588980,
+    "sha256": "5c1c14373488c881202e5f5cdcd9aee9b70de7abdd4cbc88d81b0ae275feb65d",
+    "outside_allowed_regions_byte_identical": true,
+    "outside_news_visible_text_identical": true,
+    "preserved_region_sha256": "11896df28df06fce8670e2989acb07711ce8e56e2f166bdb8dc2e9ba59343558",
+    "host_script_replacements": 1,
+    "incoming_theme_stamp": {
+      "before": "theme.css?v=9bd171a6",
+      "after": "theme.css?v=9bd171a6",
+      "content_matches_integrated_main": true
+    }
+  },
+  "site/us_stocks.html": {
+    "bytes": 761788,
+    "sha256": "3a47fcda5018ace7dd7113516566451ef2f730c2ea074188023fb0b9d8547a82",
+    "outside_allowed_regions_byte_identical": true,
+    "outside_news_visible_text_identical": true,
+    "preserved_region_sha256": "d20343c8e8cc5555407da19632025e86d35b57a95ae4dee2e6330e23dcdfd1e0",
+    "host_script_replacements": 0,
+    "incoming_theme_stamp": {
+      "before": "theme.css?v=9bd171a6",
+      "after": "theme.css?v=9bd171a6",
+      "content_matches_integrated_main": true
+    }
+  },
+  "main": "1866e2c3891149694b0ec5a757dba072872ae8f6",
+  "candidate_parent": "d54cd3dc80cd24f6d5953c50c4d5088bdd5cfb27",
+  "alerts": [
+    {
+      "rule": "event_risk",
+      "observation": "Event-risk window: Jobs report (nonfarm payrolls) in 4 days — high two-sided volatility expected. Not a sell signal; size for the noise.",
+      "translation": "事件风险窗口：非农就业报告（4 天后）—— 预计偏高的两面性波动。非卖出信号；按噪声调整仓位。",
+      "observed_time_supplied": false,
+      "published_fields_exact": true,
+      "published_field_digest": "354b6862dd8471510edc14ee6d13383be82808f225065b3be14fd7563b6a6509"
+    }
+  ],
+  "headlines": [
+    {
+      "url": "https://seekingalpha.com/news/4663036-pseg-reaffirms-2026-non-gaap-operating-earnings-guidance-of-4_28-to-4_40-per-share-and-6?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "PSEG reaffirms 2026 non-GAAP operating earnings guidance of $4.28 to $4.40 per share and 6% to 8% growth outlook through 2030",
+      "title_zh": "PSEG重申2026年非GAAP运营收益指引为每股4.28至4.40美元，并预计到2030年实现6%至8%的增长",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T22:39:28+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.cnbc.com/2026/11/02/palantir-pltr-earnings-q3-2026.html",
+      "title": "Palantir reports booming U.S. commercial revenue growth, topping government for first time",
+      "title_zh": "Palantir报告美国商业收入增长迅猛，首次超过政府业务",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T21:30:36+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.marketwatch.com/story/palantir-earnings-reveal-a-major-ai-turning-point-db766110?mod=mw_rss_topstories",
+      "title": "Palantir earnings reveal a major AI turning point",
+      "title_zh": "Palantir财报揭示AI重大转折点",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T21:09:00+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.npr.org/2026/10/28/nx-s1-6020425/federal-reserve-interest-rates-inflation",
+      "title": "Fed holds interest rates steady even as inflation remains stubborn",
+      "title_zh": "尽管通胀依然顽固，美联储维持利率不变",
+      "published_date_label": "Oct 28",
+      "recovered_time": "2026-10-28T18:04:42+00:00",
+      "clock_matches": 2,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+      "title": "Federal Reserve issues FOMC statement",
+      "title_zh": "美联储发布FOMC声明",
+      "published_date_label": "Oct 28",
+      "recovered_time": "2026-10-28T18:00:00+00:00",
+      "clock_matches": 3,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/official_news_cache/official_v3_2026-11-02.json",
+        "data/macro/official_news_cache/official_v3_2026-11-02.json",
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/29/norwegian-earnings-guidance-shares.html",
+      "title": "Norwegian shares surge 13% on earnings beat, guidance raise",
+      "title_zh": "挪威股市因业绩超预期及上调指引大涨13%",
+      "published_date_label": "Oct 29",
+      "recovered_time": "2026-10-29T20:14:15+00:00",
+      "clock_matches": 2,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://seekingalpha.com/news/4663035-lightbridge-outlines-up-to-20-percent-reactor-uprate-potential-while-advancing-doe-pathway?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+      "title": "Lightbridge outlines up to 20% reactor uprate potential while advancing DOE pathway for pilot fuel facility",
+      "title_zh": "Lightbridge概述高达20%的反应堆功率提升潜力，同时推进能源部试点燃料设施路径",
+      "published_date_label": "Nov 2",
+      "recovered_time": "2026-11-02T22:39:16+00:00",
+      "clock_matches": 1,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/30/meta-outlook-to-revised-to-negative-by-sp-after-cash-flow-negative.html",
+      "title": "Meta outlook revised downward by S&P on cash flow and capex concerns",
+      "title_zh": "标普因现金流和资本支出担忧下调Meta展望",
+      "published_date_label": "Oct 30",
+      "recovered_time": "2026-10-30T22:42:26+00:00",
+      "clock_matches": 2,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.cnbc.com/2026/10/30/reddit-stock-q3-earnings.html",
+      "title": "Reddit stock plunges 29% after weak outlook, wrapping its worst day ever",
+      "title_zh": "Reddit股价在疲弱展望后暴跌29%，创下史上最差单日表现",
+      "published_date_label": "Oct 30",
+      "recovered_time": "2026-10-30T20:11:12+00:00",
+      "clock_matches": 3,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "site/news.html"
+      ]
+    },
+    {
+      "url": "https://www.npr.org/2026/10/28/nx-s1-6017978/fed-expected-to-hold-interest-rates-steady-but-a-hike-is-anticipated-by-years-end",
+      "title": "Fed expected to hold interest rates steady but a hike is anticipated by year's end",
+      "title_zh": "预计美联储将维持利率不变，但年底前料将加息",
+      "published_date_label": "Oct 28",
+      "recovered_time": "2026-10-28T08:45:31+00:00",
+      "clock_matches": 2,
+      "distinct_clock_matches": 1,
+      "clock_source_paths": [
+        "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json",
+        "site/news.html"
+      ]
+    }
+  ],
+  "counts": {
+    "all": 11,
+    "priority": 1,
+    "context": 0,
+    "headlines": 10,
+    "clock_known": 10,
+    "clock_unknown": 0
+  },
+  "health_inferred": false,
+  "clock_input_sha256": {
+    "data/macro/news_rss_cache/news_rss_v2_2026-11-02.json": "f1c7edf3c2f1bd336c38cf6d57e2db36315bc8499a1b664f68c6f2f0051e904a",
+    "data/macro/official_news_cache/official_v3_2026-11-02.json": "4a97018ee32ae311db2ab7717cc948a3cc4449e555bc2bb20407b55977b38465",
+    "site/news.html": "5cac11638ab08d5476ba471beca3cee68ee04c4ffa546bab8f3c1c46b5ab31be"
+  },
+  "alert_mapping": "Exact bilingual static metadata match plus current published observation pair",
+  "canonical_writer": "lib.pages.write_page",
+  "canonical_optimizer": "scripts.optimize_assets.make_optimizer",
+  "allowed_replacements": [
+    "Macro dlg-news component",
+    "Macro static mx5 modal owner script",
+    "new News CSS and JS references",
+    "owned release-publications client content stamp",
+    "incoming main theme.css content stamp"
+  ],
+  "alert_field_comparison": {
+    "normalization": "collapse whitespace after DOM text extraction",
+    "fields": [
+      "plain_en",
+      "plain_zh",
+      "message",
+      "message_zh",
+      "what_en",
+      "what_zh"
+    ],
+    "comparison": "exact equality",
+    "published_badges_exact": true
+  },
+  "source_blobs": {
+    "templates/dashboard.html.j2": "d4579779e221375594cc8b4387304a3bb1205141",
+    "templates/_macro_news_intelligence.html.j2": "ec8646c14bf3feeba3405414aa7a6a04063b7129",
+    "templates/macro_news_intelligence.css": "0eafdf810efa19a802b8bef03fc441e86519db0f",
+    "templates/macro_news_intelligence.js": "cfc1dfdba7abd094497c599498f05c2494f2668c",
+    "templates/release_publications_live.js": "abc50fec5c19a91b5017ee1092bac3a97da77e3b",
+    "scripts/optimize_assets.py": "62d7daf72add439d4880e1f0533b45524d4f141d",
+    "lib/pages.py": "db175c463a31828263b57a3287afba661439a765"
+  },
+  "published_main_blobs": {
+    "site/macro.html": "0810f1b7b39f472a8f61aaa82d8dd004476a342f",
+    "site/us_stocks.html": "acbc96ecf102ded7157bd09ea1e802870c4c3600",
+    "site/news.html": "386e32394acd14ad3a38ad2a3c0141613f965af6"
+  },
+  "ci_repair": {
+    "prior_run": 41403516201,
+    "prior_head": "d54cd3dc80cd24f6d5953c50c4d5088bdd5cfb27",
+    "introduced_repair": "design-governance path count9 to13 for four declared News paths",
+    "inherited_repairs": "Current main already repairs the GMI premise closure and daily workflow size",
+    "packing_qualification_commit": "6a870742da0e749dadb0c34eacf516929ed41da5",
+    "packing_tests_passed": 6,
+    "packing_seconds": 533.49,
+    "packing_limits_changed": false,
+    "subsequent_changes": "Four exact published headline clocks enriched; source and path inventory unchanged"
+  },
+  "canonical_workspace_reproduction": {
+    "macro_sha256": "5c1c14373488c881202e5f5cdcd9aee9b70de7abdd4cbc88d81b0ae275feb65d",
+    "stocks_sha256": "3a47fcda5018ace7dd7113516566451ef2f730c2ea074188023fb0b9d8547a82",
+    "independent_copy_equal": true
+  },
+  "final_verification": {
+    "canonical_workspace_tests": 101,
+    "seconds": 60.57,
+    "result": "passed",
+    "inline_js": "both final dashboard pages passed",
+    "ci_release_pending": true
+  }
+}
