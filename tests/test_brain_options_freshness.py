@@ -1,7 +1,6 @@
 """Regression cases for the GOOG contract question and the two distinct options clocks."""
 from datetime import date
 import json
-from pathlib import Path
 
 import pytest
 
@@ -10,7 +9,7 @@ from engine.neuralweb import ask_brain, brain_gateway, options_evidence
 from scripts import topup_thetadata_day as topup
 
 
-def test_topup_retains_enrolled_roots_and_active_names_beyond_reporting_cap(tmp_path, monkeypatch):
+def test_topup_retains_enrolled_roots(tmp_path, monkeypatch):
     from engine import options_universe
     monkeypatch.setattr(options_universe, "gex_symbols", lambda: ["GOOGL"])
     monkeypatch.setattr(options_universe, "baskets_universe", lambda: ["GOOG", "GOOGL", "NEW"])
@@ -22,7 +21,7 @@ def test_topup_retains_enrolled_roots_and_active_names_beyond_reporting_cap(tmp_
         folder.mkdir(parents=True)
         (folder / f"{year}.parquet").touch()
     roots = topup._maintained_roots(tmp_path, date(2026, 11, 2), topup._daily_universe())
-    assert all(roots.count(root) == 1 for root in ["GOOG", "GOOGL", "NEW", "BABA"])
+    assert all(roots.count(root) == 1 for root in ["GOOGL", "BABA"])
     assert "DEFUNCT" not in roots and "../BAD" not in roots
 
 
@@ -82,3 +81,42 @@ def test_empty_success_and_resolved_member_boundary(tmp_path, monkeypatch):
     assert evidence["options_hub"]["status"] == "no_observations"
     assert evidence["exact_contract_quote"] == "unavailable"
     assert reads == ["GOOG"]
+
+
+def test_terminal_catalog_filters_market_type_and_exact_share_class():
+    from engine.terminal_options_universe import match_catalogs
+    data = {"as_of": "2026-10-31", "symbols": {
+        "GOOG": {"sec": "Equities", "mkt": "NASDAQ"},
+        "GOOGL": {"sec": "Equities", "mkt": "NASDAQ"},
+        "OTHER": {"sec": "Equities", "mkt": "HKEX"},
+        "FUT": {"sec": "Futures", "mkt": "US"},
+        "ETF": {"sec": "Funds", "mkt": "US"},
+        "CBOECO": {"sec": "Equities", "mkt": "Cboe"},
+        "../BAD": {"sec": "Equities", "mkt": "US"},
+    }}
+    symbols, receipt = match_catalogs(data, {"GOOG", "OTHER", "FUT", "ETF", "CBOECO", "../BAD"}, date(2026, 11, 2))
+    assert symbols == {"GOOG", "ETF", "CBOECO"} and receipt["unmatched_roots"] == 1
+    with pytest.raises(ValueError, match="clock"):
+        match_catalogs(data, symbols, date(2026, 11, 30))
+
+
+def test_terminal_extension_uses_remaining_budget_and_reports_unreached(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    from engine import options_universe, terminal_options_universe
+    monkeypatch.setattr(terminal_options_universe, "terminal_candidates",
+                        lambda _day, _deadline: ({"GOOG", "GOOGL", "THIN"}, {"matched_roots": 3}))
+    monkeypatch.setattr(options_universe, "baskets_universe", lambda: ["GOOG", "BASKET"])
+    monkeypatch.setattr(topup._time, "monotonic", lambda: 300)
+    ctx = topup.RunContext(date(2026, 11, 2), date(2026, 10, 30), False)
+    present = {"eod_S": "complete", "oi_S": "complete", "greeks_S": "complete"}
+    def pool(store, roots, td, *, workers, deadline_min, ctx):
+        assert set(roots) == {"GOOG", "THIN", "BASKET"}
+        assert deadline_min == 2 and workers == 2
+        return {"GOOG": topup.RootResult("GOOG", "complete", present)}, True, False
+    monkeypatch.setattr(topup, "_run_daily_pool", pool)
+    prior = {"GOOGL": topup.RootResult("GOOGL", "already_present", present)}
+    start = datetime(2026, 11, 2, 22, tzinfo=timezone.utc)
+    receipt = topup._terminal_session_coverage(tmp_path, ctx, None, 2, 420, prior, start)
+    assert receipt["status"] == "partial" and receipt["not_reached"] == 1
+    assert receipt["full_settled_panel"] == 2 and receipt["inspected"] == 2
+    assert topup._terminal_session_coverage(tmp_path, ctx, None, 2, 290, prior, start)["status"] == "deferred"

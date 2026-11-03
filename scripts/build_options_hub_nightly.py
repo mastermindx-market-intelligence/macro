@@ -1669,6 +1669,14 @@ def main() -> None:
             len(roots_gex_skipped), roots_gex_skipped,
         )
 
+    # Only the whole-universe owner can refresh the whole-universe health stamp.
+    # A targeted publication may repair its roots while the full publisher has
+    # other names outstanding. Its exit status describes just those requested roots.
+    if not publish_aggregates:
+        if _is_partial:
+            sys.exit(2)
+        return
+
     # ── run_status ───────────────────────────────────────────────────────────
     # Register options_hub_nightly in the run_status/circuit-breaker pattern.
     # Mirrors the established pattern in scripts/collect.py + lib/store.write_status.

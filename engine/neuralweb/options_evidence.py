@@ -137,16 +137,27 @@ def hub_volatility(ticker: str, params: dict, expected: date) -> dict:
     # A month-only request reports represented expiries. An exact side/strike IV
     # is eligible only when the user/model supplies an exact date and all keys match.
     prefix = expiry + "-" if len(expiry) == 7 else None
-    terms = []
+    terms = {}
+    duplicates = set()
     for row in term:
         if not isinstance(row, dict) or not isinstance(row.get("exp"), str):
             continue
         day = row["exp"]
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", day):
             continue
-        if day == expiry or (prefix and day.startswith(prefix)):
-            terms.append({"expiration": day, "atm_iv_pct": _number(row.get("atm_iv"), positive=True)})
-    result["expiry_observations"] = terms[:31]
+        try:
+            date.fromisoformat(day)
+        except ValueError:
+            continue
+        if day < book["asof"] or not (day == expiry or (prefix and day.startswith(prefix))):
+            continue
+        if day in terms:
+            duplicates.add(day)
+        terms[day] = _number(row.get("atm_iv"), positive=True)
+    result["expiry_observations"] = [
+        {"expiration": day, "atm_iv_pct": terms[day] if day not in duplicates else None}
+        for day in sorted(terms)
+    ]
     side, strike = params.get("right"), _number(params.get("strike"), positive=True)
     if prefix or side not in ("put", "call") or strike is None:
         return result

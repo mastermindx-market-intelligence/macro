@@ -1222,11 +1222,8 @@ def _source_coverage_gate() -> float:
 
 
 def _daily_universe() -> list[str]:
-    # The GEX product cap limits its reporting universe, not ThetaData's EOD
-    # maintenance universe. Keep its priority order and append the active basket.
-    from engine.options_universe import baskets_universe
     from scripts.backfill_thetadata_eod import _resolve_universe
-    return _resolve_universe(extra_roots=baskets_universe())
+    return _resolve_universe()
 
 
 def _maintained_roots(store: Path, session: _date, configured: list[str]) -> list[str]:
@@ -1256,6 +1253,52 @@ def _maintained_roots(store: Path, session: _date, configured: list[str]) -> lis
                for y in {year, previous}):
             roots[symbol] = None
     return list(roots)
+
+
+def _terminal_session_coverage(store, ctx, td, workers, deadline, prior, started_at):
+    """Use spare capacity under the same writer lock after the baseline consumer."""
+    import hashlib
+    from engine.options_universe import baskets_universe
+    from engine.terminal_options_universe import terminal_candidates
+
+    if _time.monotonic() >= deadline:
+        return {"status": "deferred", "reason": "source_deadline"}
+    try:
+        candidates, receipt = terminal_candidates(ctx.D, deadline)
+    except Exception as exc:
+        log.warning("Terminal options catalog unavailable (%s)", type(exc).__name__)
+        return {"status": "unavailable", "reason": "catalog_unavailable",
+                "error_type": type(exc).__name__}
+
+    # A stable order within a fire and a different order on later fires keeps
+    # a slow tail from being permanently cut off. Already-stored cells are cheap
+    # no-ops in the incumbent pool. No vendor limits or schedules are increased.
+    seed = started_at.strftime("%Y-%m-%dT%H")
+    basket = {s for s in baskets_universe() if re.fullmatch(r"[A-Z0-9][A-Z0-9.\\-]{0,14}", s)}
+    extra = sorted((candidates | basket) - prior.keys(),
+                   key=lambda s: hashlib.sha256(f"{seed}/{s}".encode()).digest())
+    remaining = (deadline - _time.monotonic()) / 60
+    added, cutoff, lost = {}, bool(extra), False
+    if extra and remaining > 0:
+        added, cutoff, lost = _run_daily_pool(store, extra, td, workers=workers,
+                                               deadline_min=remaining, ctx=ctx)
+    measured = {s: r for s, r in {**prior, **added}.items() if s in candidates}
+    receipt.update(
+        status="partial" if cutoff or lost or len(measured) < len(candidates) else "measured",
+        source_session=ctx.S.isoformat(), oi_report_session=ctx.D.isoformat(),
+        inspected=len(measured), not_reached=len(candidates) - len(measured),
+        eod_present=sum(_panel_present(r.cells, "eod_S") for r in measured.values()),
+        greeks_present=sum(_panel_present(r.cells, "greeks_S") for r in measured.values()),
+        oi_present=sum(_panel_present(r.cells, "oi_S") for r in measured.values()),
+        full_settled_panel=sum(_s_panel_ok(r) for r in measured.values()),
+        eod_vendor_empty=sum(r.cells.get("eod_S") == "vendor_empty" for r in measured.values()),
+        fetch_errors=sum(any(v == "fetch_failed" for v in r.cells.values())
+                         or r.state in {"failed", "fetch_failed", "date_unresolved"} for r in measured.values()),
+        deadline_exceeded=cutoff, terminal_lost=lost,
+    )
+    if receipt["fetch_errors"]:
+        receipt["status"] = "partial"
+    return receipt
 
 
 def _ad_universe() -> list[str]:
@@ -1417,6 +1460,7 @@ def _refresh_live_flow_baselines(runtime: Path, store: Path, source_session: _da
 def _daily_main(*, workers: int, deadline_min: float, forced: bool,
                 now_fn: Callable[[], datetime] | None = None,
                 baseline_runtime: Path | None = None,
+                terminal_coverage: bool = False,
                 d_session_observation: _DSessionObservation | None = None) -> int:
     now_fn = now_fn or (lambda: datetime.now(timezone.utc))
     started_at = datetime.now(timezone.utc)
@@ -1429,7 +1473,7 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
         return 0
 
     shared_deadline_at = (_time.monotonic() + max(0., deadline_min)*60
-                          if d_session_observation is not None else None)
+                          if d_session_observation is not None or terminal_coverage else None)
 
     try:
         store = Path(resolve_thetadata_store(
@@ -1493,6 +1537,8 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
                 "terminal_health": None,
                 "oi_D_source": None,
             }
+            if terminal_coverage:
+                receipt["terminal_coverage"] = {"status": "deferred", "reason": "priority_source_or_consumer"}
             if observation is not None:
                 receipt['d_session_observation'] = observation
             receipt.update(extra)
@@ -1596,6 +1642,13 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
             _write_daily_receipt(store, source_receipt)
             if baseline["status"] != "complete":
                 return 1
+        if terminal_coverage and not forced and status == "healthy":
+            coverage = _terminal_session_coverage(store, ctx, td, workers, shared_deadline_at,
+                                                  results, entered_at)
+            source_receipt["terminal_coverage"] = coverage
+            _write_daily_receipt(store, source_receipt)
+            if coverage["status"] != "measured":
+                return 1
         return 0 if status == "healthy" else 1
     finally:
         lock_cm.__exit__(None, None, None)
@@ -1684,6 +1737,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.daily:
         workers = args.workers if args.workers is not None else _DAILY_WORKERS_DEFAULT
         return _daily_main(workers=workers, deadline_min=args.deadline_min,
+                           terminal_coverage=(args.baseline_runtime is not None and not args.force_run
+                                              and observation is None),
                            forced=args.force_run, baseline_runtime=args.baseline_runtime,
                            d_session_observation=observation)
 

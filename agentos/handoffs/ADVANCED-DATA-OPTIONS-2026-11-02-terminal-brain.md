@@ -8,7 +8,7 @@ mission: Restore dated and correctly scoped Terminal and Brain options data acro
 state_before: GOOG's August skew was the only options field in the production Brain reader. The Terminal stock rail loaded a separate July snapshot.
 changed:
   - path: scripts/topup_thetadata_day.py
-    what: The existing daily T1 writer retains its priority order, adds the active basket beyond the GEX reporting cap, and preserves receipt-backed roots with a current-year partition.
+    what: The existing daily T1 writer preserves its original priority, maintains receipt-backed partitions and uses remaining normal capacity for the exact Terminal and vendor catalog intersection after the baseline consumer.
   - path: engine/neuralweb/brain_gateway.py
     what: Enrich existing ticker reads from the Options Hub behind the existing options-product feature, with matching ticker, session, expiry, strike and side where present.
   - path: engine/neuralweb/cortex.py
@@ -25,7 +25,13 @@ verified:
     result: "01:00 UTC November 3 receipt for D November 2 and S October 30 failed before pulls. Listener was running. Subsequent health probe returned HTTP 429."
   - claim: Focused backend tests passed on the candidate.
     command: "python -m pytest -q tests/test_brain_options_freshness.py tests/test_options_nw_wiring.py tests/test_topup_thetadata_daily.py tests/test_brain_seed_router.py tests/test_brain_tool_economics.py tests/test_ask_brain.py"
-    result: "512 passed."
+    result: "512 passed at the first source checkpoint. The expanded cohort and publisher test group subsequently passed 603 cases, and the gateway and authorization group passed another 529."
+  - claim: The full Terminal US candidate list can be measured from production source catalogs.
+    command: "Match the served Terminal security manifest, filtered by US equity/fund venue and exact security symbol, to the subscribed local symbol catalog."
+    result: "3,445 matches among 3,805 Terminal US equities and funds; 360 unmatched. Catalog hash 967f1d47f589cbd2306dbceb9c0d4640c3e82f06cd7909f3e681de8b9e7ab2f8. The vendor catalog includes historical symbols; only a session-specific observation proves coverage."
+  - claim: The vendor terminal recovered and the six original ticker stores now have the October 30 session.
+    command: "Inspect the enrolled launchd and listener ownership, record a stalled local HTTP 429 with no established clients, use the documented window-stall restart, verify HTTP 200, run the installed locked one-day writer and read exact session partitions."
+    result: "200 with 107555 bytes; all six EOD/Greek/OI root partitions restored through October 30. GOOG November 27 280 put bid 9.40, ask 10.10, IV 30.13%, OI 878 on October 30. The same-day November 2 historical wildcard returned no rows. An additional 311/318 roots completed all three tiers; seven returned no rows."
 unverified:
   - claim: Production options quotes for the requested GOOG contract.
     what_would_verify: "A signed-in Brain replay after release with a matching option root, strike, side, expiry, field timestamps and a separately qualified bid/ask source."
@@ -33,7 +39,7 @@ unverified:
     what_would_verify: "Join the entitled, current optionable listing to the Terminal security manifest. Count current, partial, stale, missing and unsupported separately over two natural updates. The 9,758-name multi-asset manifest is not the optionable denominator."
 unresolved:
   - The Hub publishes an empty volatility shell under a common session label for roots without observations. Source values and last good receipts determine what is known.
-  - The November source throttle and the 323 names with no current-year partition require measured normal-cadence throughput. Existing worker, rate and deadline limits remain in force.
+  - The original local vendor stall was recovered. Full-catalog source reads, Hub publication throughput and next-cycle freshness still require measurement. On a natural scheduled run, remaining capacity follows the normal baseline refresh and records its separate Terminal coverage counts.
   - The signed-in end-of-November GOOG 280 put premium remains unverified. An end-of-day smile point or an ATM tenor is not a bid/ask.
 next_actions:
   - Review and land the Macro and Terminal source through their independent release paths. Install the accepted T1 change in the existing M1 daily owner.
