@@ -387,6 +387,8 @@
   #si-explore .tmore { margin-top:auto; }
   #si-explore .tmore > summary { min-height:28px; width:fit-content; text-transform:none; letter-spacing:normal; }
   #si-explore :is(a,summary):focus-visible { outline:2px solid var(--ink-link,var(--link)); outline-offset:2px; }
+  /* The shared narrative grid otherwise forces a 340px track onto a 260px phone panel. */
+  #si-explore #forming-narratives .ne-grid { grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr)); }
   #si-explore .rotrow { flex-wrap:wrap; }
   #si-explore .rotrow .rn { flex:1 1 8rem; white-space:normal; overflow:visible; overflow-wrap:anywhere; }
   #si-explore .rotcol { min-width:0; }

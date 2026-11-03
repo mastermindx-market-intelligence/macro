@@ -48,6 +48,10 @@ def load(page, html, data, status=200):
             return route.fulfill(content_type="text/html", body=html)
         if url.path == "/chinabasketdata/baskets.json":
             return route.fulfill(status=status, json=data)
+        if url.path == "/chinabasketdata/narrative_emergence.json":
+            return route.fulfill(json={"narratives": [{"signature": "layout-fixture",
+                "name_en": NAME, "name_zh": ZH_NAME, "score": 57,
+                "score_label": {"en": "Forming", "zh": "成形中"}}]})
         file = ROOT / "site" / url.path.lstrip("/")
         if file.is_file() and file.resolve().is_relative_to((ROOT / "site").resolve()):
             return route.fulfill(path=file)
@@ -68,6 +72,12 @@ def test_long_theme_and_chart_fit_with_no_entry(browser, html, width, lang):
         expect(name.locator(".l-" + lang)).to_be_visible()
         expect(card.locator(".treco")).to_contain_text("no entry")
         expect(card.locator(".trend svg")).to_be_visible()
+        narrative = page.locator("#ne-layout-fixture")
+        expect(narrative).to_be_visible()
+        assert narrative.evaluate("""el => {
+            const card = el.getBoundingClientRect(), grid = el.parentElement.getBoundingClientRect();
+            return card.left >= grid.left - 1 && card.right <= grid.right + 1;
+        }""")
         assert card.evaluate("""card => {
             const name = card.querySelector('.nm'), rect = card.getBoundingClientRect();
             const spark = card.querySelector('.trend svg').getBoundingClientRect();
