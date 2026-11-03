@@ -1074,12 +1074,14 @@ def render_site(model, site_dir):
 # the real GMI builder — integration against this repo's own scripts
 # ---------------------------------------------------------------------------
 
-REAL_GMI_BUILDER = REPO_ROOT / "scripts" / "build_gmi_explorer.py"
+# The scanner reads these builders as AST data, never imports or runs them.
+# Its existing scripts/** scope still covers changes to the real source files.
+REAL_GMI_BUILDER = REPO_ROOT / "scripts" / "build_gmi_explorer.py"  # ci-trigger-closure: data — parse-only builder source; imports are not executed
 
 
 def test_gmi_real_gmi_builder_binds_all_six_surfaces():
     sites, _unresolved = reg.scan_write_sites(REPO_ROOT / "scripts")
-    mine = [s for s in sites if s.builder == "scripts/build_gmi_explorer.py"]
+    mine = [s for s in sites if s.builder == "scripts/build_gmi_explorer.py"]  # ci-trigger-closure: data — builder identity assertion, not an import
     got = {(s.route, s.is_family, s.template) for s in mine}
     assert got == {
         ("/gmi.html", False, "gmi_map.html.j2"),
@@ -1089,7 +1091,7 @@ def test_gmi_real_gmi_builder_binds_all_six_surfaces():
         ("/gmi-states.html", False, "gmi_states.html.j2"),
         ("/gmi-issuer-<lower>.html", True, "gmi_issuer.html.j2"),
     }
-    ontology = [s for s in sites if s.builder == "scripts/build_ontology_explorer.py"]
+    ontology = [s for s in sites if s.builder == "scripts/build_ontology_explorer.py"]  # ci-trigger-closure: data — builder identity assertion, not an import
     assert [(s.route, s.template) for s in ontology] == [
         ("/ontology.html", "ontology.html.j2")]
 
