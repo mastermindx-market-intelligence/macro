@@ -1,0 +1,39 @@
+{
+  "base": "ed9fb81da853429ce87495d6c012467ebf057548",
+  "source_sha256": {
+    "engine/intl_bonds.py": "1d6289649850b2809cf6ac5fa1ece9f0760da26855f3d00e26c93dd5bb8e36ef",
+    "templates/bonds.html.j2": "5040060f619226e1d3328b8b33a0e6c82ef87a6123b68d7fcf2d946df145e379",
+    "tests/test_bonds_glance_copy.py": "ff7f9c2c76b0a89ec88b03f1cff5d171622227f0c07f60472ce52f7aa740da15"
+  },
+  "accepted_gauge_head": "168c19b6453929b033beb5d6ed83b8d9fd166c41",
+  "accepted_gauge_template_blob": "8bb464cbbc8e9381a66735cc67ceb44429ef6108",
+  "gauge_macros_byte_identical_sha256": "622104b0118bf9483cce9b72abbfb0d7e19f187128d51690ca6c1eb298e11638",
+  "css_parity_exceptions": [
+    "removed local .sec-head::before decorative3px edge",
+    "new disclosure links bind existing ink+underline for both materials"
+  ],
+  "all_js_byte_identical": true,
+  "existing_ci_covered_module": "tests/test_bonds_glance_copy.py",
+  "ci_definition_changes": false,
+  "fixture_scope": "authored #deeper/#global-detail/CSS plus native retained owner snapshot; no complete shell or served proof",
+  "workers": {
+    "ss-bonds-depth-contract-p12t2s1-20261103-001": {
+      "class": "C0_MECHANICAL",
+      "rc": 1,
+      "result": "EAI_AGAIN/provider_error",
+      "usable_result": false,
+      "quality_acceptance": false
+    },
+    "ss-bonds-source-clock-p12t2s1-20261103-001": {
+      "class": "C1_ROUTINE_BOUNDED",
+      "rc": 1,
+      "result": "EAI_AGAIN/provider_error",
+      "usable_patch": false,
+      "quality_acceptance": false
+    }
+  },
+  "parent_integration": "root-authorized direct isolated repair after exact terminal23041 result; no unknown source effect or replacement request",
+  "focused_source_tests_passed": 10,
+  "final_capture_phase": "capture-final; native shared ink/polish/Inter/illus CSS plus retained fonts, settled before capture",
+  "earlier_capture_limit": "before/after/v2 external captures preserve narrower component-CSS observations; final material verdict uses final only"
+}
