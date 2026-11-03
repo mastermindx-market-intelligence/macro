@@ -1,0 +1,31 @@
+{
+  "formal_causal_outcomes_measured": 0,
+  "prospective_validation_started": false,
+  "case_count": 2,
+  "cases": [
+    {
+      "case_id": "syn-case-alpha",
+      "canonical_case_id": "syn-fin-case-alpha",
+      "aliases": ["syn-alias-alpha-not-canonical"],
+      "anchor_date": "2024-06-30",
+      "archetype": "synthetic_descriptive",
+      "witness": "SYN_WITNESS_A",
+      "descriptive_evidence_state": "MARKET_AND_VALUATION_MEASURED",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "Synthetic limit: a measured description is not a measured cause.",
+      "slice_id": "card_networks"
+    },
+    {
+      "case_id": "syn-case-beta",
+      "canonical_case_id": "syn-fin-case-beta",
+      "aliases": ["syn-alias-beta-not-canonical"],
+      "anchor_date": "2023-11-02",
+      "archetype": "synthetic_alias",
+      "witness": "SYN_WITNESS_B",
+      "descriptive_evidence_state": "DESCRIPTIVE_ONLY",
+      "formal_causal_outcome": "UNMEASURED",
+      "primary_limit": "Synthetic limit: an alias does not replace the canonical case id.",
+      "slice_id": "exchanges_trading_venues"
+    }
+  ]
+}

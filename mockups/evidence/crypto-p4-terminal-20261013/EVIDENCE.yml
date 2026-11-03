@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - scripts/build_vector.py
+  - templates/crypto.html.j2
+  - templates/live.js
+  - templates/vector.html.j2
+manifest: mockups/evidence/crypto-p4-terminal-20261013/manifest.json

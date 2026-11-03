@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.marketdesk_extractor.release.v1",
-  "release_id": "marketdesk-transient-pdf-requeue-20261011-c2",
-  "capability": "typed transient MarketDesk PDF failure recovery on original quota-guarded producer",
+  "release_id": "marketdesk-terms-consent-self-heal-20261024-v1",
+  "capability": "self-heal authenticated MarketDesk T&Cs overlay via POST /terms/consent, silent Firebase session refresh, and marketdesk auth --force",
   "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "source_of_truth": "Git commit plus current release manifest",
   "manifest": "SHA256SUMS",
-  "manifest_sha256": "ddef88c5843ace9d0da3b9b9fe3d5df0936164d3ff4db12fe0e37bd3272d0254",
+  "manifest_sha256": "e2a7f630280da223b8f87c7c016b74c77b3265c724d96cbced39eb1a75946692",
   "payload_count": 58,
   "recovery_manifest": "RECOVERY_SHA256SUMS",
   "recovery_manifest_sha256": "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602",
@@ -25,13 +25,24 @@
     "Classify only proven pre-TLS Playwright disconnects as transient without replaying the failed request inline.",
     "Requeue source-HTTP-5xx and typed pre-TLS failures as DISCOVERED, never permanently SKIPPED_UNSUPPORTED.",
     "Apply a five-minute per-account retry delay, preserving token-bucket pace and 70-downloads-per-rolling-24h ledger.",
-    "Keep existing session-expired, cap-bounce, dead-driver recycling, permanent non-PDF and privacy boundaries unchanged."
+    "Keep existing session-expired, cap-bounce, dead-driver recycling, permanent non-PDF and privacy boundaries unchanged.",
+    "Bound optional wide-pass old-row heal attempts by the existing successful-heal quota, with a 60-second accumulated-call soft admission budget; an admitted call may overrun.",
+    "Preserve unopted manual/narrow discovery, comprehensive since/day/scanned coverage, mandatory new-report summaries and latest-feed merge.",
+    "Expose numeric optional-heal attempted/deferred/call-work counters in the existing discovery summary; preserve 300 successful heals, 5000 wide scanned rows and 70 downloads per rolling 24 hours.",
+    "Classify malformed feed and browse arrays with one fresh raw session control; positive authentication preserves the existing discovery retry cadence without accepting the rejected response.",
+    "Reject non-list provision metadata, including null and later failed chunks, instead of returning empty or partial success.",
+    "Report browser construction or entry failures as UNKNOWN/BROWSER_START_FAILED in the existing health projection and dry-run plan; clear the flag after successful browser entry.",
+    "Release partial browser contexts and Playwright drivers after startup failures, preserving the original error and idempotent teardown.",
+    "When browse/provision return {success:false} while latest/latest is an ID array, POST /terms/consent once and retry the rejected request.",
+    "Do not park the account for the authenticated T&Cs overlay; a dead session still raises SessionExpired with no consent POST.",
+    "Add marketdesk auth --force so a live latest feed cannot skip the headed login window.",
+    "On SessionExpired during discovery, attempt one silent Firebase IndexedDB restore through POST /api/user/login without storing a password."
   ],
   "non_goals": [
-    "No MarketDesk re-authentication or browser-profile mutation.",
-    "No LaunchAgent activation, restart, retirement, or replacement.",
+    "No password storage, new browser profile, or second LaunchAgent.",
+    "No LaunchAgent activation, restart, retirement, or replacement from this source packet.",
     "No queue, database schema table, bucket, scheduler, workflow, or publication-authority change.",
-    "No automatic credential refresh; re-authentication remains an explicit human single-writer operation.",
+    "Headed interactive login remains the human single-writer recovery when Firebase restore fails.",
     "No automatic immediate duplicate PDF request or download cap increase.",
     "No new storage schema, durable retry scheduler, publisher, account credential or profile owner."
   ]

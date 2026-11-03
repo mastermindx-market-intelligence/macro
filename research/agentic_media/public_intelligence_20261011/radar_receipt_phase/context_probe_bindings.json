@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/source-review-20261014-0552/mmx-context-probe-0552.py": "09734cec66762f58fb24af3821e0d9f450f9891f85ce0e9469b6553da791ac62",
+    "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/source-review-20261014-0552/mmx-context-local-probe-0552.py": "145b081a32953135e71b1218e989293b8ac110120f4c79e3ba47156e0e030fb3"
+  },
+  "installed_probe_outcome": "ImportError before effect",
+  "local_probe_outcome": "14 date/identity controls plus corrupt-hash refusal passed; no contextual-relevance approval",
+  "temporary_paths_not_required": true
+}

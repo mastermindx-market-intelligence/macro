@@ -1,0 +1,192 @@
+...........................FFFFFFFFF                                     [100%]
+=================================== FAILURES ===================================
+__________ test_corrupt_staging_accounting_refuses_before_provider[{] __________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_staging_accountin0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d966040>
+payload = '{'
+
+    @pytest.mark.parametrize('payload', ['{', '[]', '{}'])
+    def test_corrupt_staging_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/staging/unreadable.json').write_text(payload)
+>       with pytest.raises(ValueError, match='staging|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:612: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  stage_official_feed_press:stage_official_feed_press.py:137 official staging cadence: unreadable /private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_staging_accountin0/root/repo/data/press/staging/unreadable.json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+_________ test_corrupt_staging_accounting_refuses_before_provider[[]] __________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_staging_accountin1/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc279a0>
+payload = '[]'
+
+    @pytest.mark.parametrize('payload', ['{', '[]', '{}'])
+    def test_corrupt_staging_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/staging/unreadable.json').write_text(payload)
+>       with pytest.raises(ValueError, match='staging|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:612: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+_________ test_corrupt_staging_accounting_refuses_before_provider[{}] __________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_staging_accountin2/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dbff2a0>
+payload = '{}'
+
+    @pytest.mark.parametrize('payload', ['{', '[]', '{}'])
+    def test_corrupt_staging_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/staging/unreadable.json').write_text(payload)
+>       with pytest.raises(ValueError, match='staging|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:612: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+________ test_corrupt_published_accounting_refuses_before_provider[{\n] ________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_published_account0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dbfc9f0>
+payload = '{\n'
+
+    @pytest.mark.parametrize('payload', ['{\n', '[]\n', '{}\n'])
+    def test_corrupt_published_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/published.jsonl').write_text(payload)
+>       with pytest.raises(ValueError, match='ledger|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:621: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:329 press revision reconciliation: invalid ledger row: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+_______ test_corrupt_published_accounting_refuses_before_provider[[]\n] ________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_published_account1/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc27850>
+payload = '[]\n'
+
+    @pytest.mark.parametrize('payload', ['{\n', '[]\n', '{}\n'])
+    def test_corrupt_published_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/published.jsonl').write_text(payload)
+>       with pytest.raises(ValueError, match='ledger|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:621: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+_______ test_corrupt_published_accounting_refuses_before_provider[{}\n] ________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corr...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_corrupt_published_account2/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc27c40>
+payload = '{}\n'
+
+    @pytest.mark.parametrize('payload', ['{\n', '[]\n', '{}\n'])
+    def test_corrupt_published_accounting_refuses_before_provider(candidate, monkeypatch, payload):
+        calls = _stub_writer(monkeypatch)
+        (candidate['root'] / 'data/press/published.jsonl').write_text(payload)
+>       with pytest.raises(ValueError, match='ledger|accounting'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_official_staging.py:621: Failed
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+_______ test_changed_guid_and_revision_cannot_replay_superseded_release ________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_chan...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_changed_guid_and_revision0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc483d0>
+
+    def test_changed_guid_and_revision_cannot_replay_superseded_release(candidate, monkeypatch):
+        calls = _stub_writer(monkeypatch)
+        first = _stage(candidate, monkeypatch)
+        path = candidate['root'] / first['staging_path']
+        obj = json.loads(path.read_text())
+        obj['status'] = 'superseded'
+        path.write_text(json.dumps(obj))
+        raw = candidate['feed'].read_text().replace('<item>', '<item><guid>changed-guid</guid>', 1)
+        candidate['feed'].write_text(raw)
+        candidate['feed_sha256'] = hashlib.sha256(candidate['feed'].read_bytes()).hexdigest()
+        q = json.loads(candidate['qualification'].read_text())
+        q['feed_sha256'] = candidate['feed_sha256']
+        candidate['qualification_sha256'] = _dump(candidate['qualification'], q)
+        second = _stage(candidate, monkeypatch)
+>       assert second['staged'] is False
+E       assert True is False
+
+tests/test_press_official_staging.py:640: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-8f2bc78b2d11 status passed (public article approval: false — no emit path)
+_______________ test_cadence_normalizes_offset_timestamps_to_utc _______________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_cade...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_cadence_normalizes_offset0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc48590>
+
+    def test_cadence_normalizes_offset_timestamps_to_utc(candidate, monkeypatch):
+        calls = _stub_writer(monkeypatch)
+        for n in range(2):
+            _book_brief_attempt(candidate['root'], f'offset-{n}',
+                                staged_at='2026-10-13T20:05:00-04:00')
+        out = _stage(candidate, monkeypatch)
+>       assert out['staged'] is False and calls['n'] == 0
+E       assert (True is False)
+
+tests/test_press_official_staging.py:650: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+________________ test_staging_path_cannot_escape_canonical_root ________________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_stag...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_staging_path_cannot_escap0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10dc27f50>
+tmp_path = PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_staging_path_cannot_escap0')
+
+    def test_staging_path_cannot_escape_canonical_root(candidate, monkeypatch, tmp_path):
+        calls = _stub_writer(monkeypatch)
+        candidate['cfg']['paths']['staging_dir'] = str(tmp_path / 'elsewhere')
+>       with pytest.raises(ValueError, match='canonical'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'canonical'
+E         Actual message: "'/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_staging_path_cannot_escap0/elsewhere/press-external-d067882437a8.json' is not in the subpath of '/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1663/test_staging_path_cannot_escap0/root/repo'"
+
+tests/test_press_official_staging.py:656: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_staging.py::test_corrupt_staging_accounting_refuses_before_provider[{]
+FAILED tests/test_press_official_staging.py::test_corrupt_staging_accounting_refuses_before_provider[[]]
+FAILED tests/test_press_official_staging.py::test_corrupt_staging_accounting_refuses_before_provider[{}]
+FAILED tests/test_press_official_staging.py::test_corrupt_published_accounting_refuses_before_provider[{\n]
+FAILED tests/test_press_official_staging.py::test_corrupt_published_accounting_refuses_before_provider[[]\n]
+FAILED tests/test_press_official_staging.py::test_corrupt_published_accounting_refuses_before_provider[{}\n]
+FAILED tests/test_press_official_staging.py::test_changed_guid_and_revision_cannot_replay_superseded_release
+FAILED tests/test_press_official_staging.py::test_cadence_normalizes_offset_timestamps_to_utc
+FAILED tests/test_press_official_staging.py::test_staging_path_cannot_escape_canonical_root
+9 failed, 27 passed in 25.09s

@@ -1,0 +1,13 @@
+# F09 critical-minerals actual browser capture
+
+Native CUA Chrome browser 3; task tab 1925925584; local http://127.0.0.1:3591/#critical-minerals. These are actual browser pixels, not mockups. All eight images were individually inspected by the parent. The complete commodities template and normal navigation were rendered using the existing W6 representative outer-page fixture, with the new panel carrying the exact retained native USGS annual sentences. This is controlled visual proof, not production-data or whole-page acceptance.
+
+Source and timing disclosure was opened. Actual CSS viewports were 1440x900 and390x844. Existing zoom was preserved; the supported browser viewport override used1800x1125 and488x1055; DOM measurements confirmed requested CSS sizes. Crops used document-relative element geometry multiplied by actual devicePixelRatio1.25. Two initial incorrectly positioned crops were replaced by the final inspected panel images. Theme/language changed only through the existing visible Settings controls. Actual Chinese text and both material treatments were inspected in every final image.
+
+Dark uses a quiet opaque panel and neutral rules. Light uses the existing white panel, cool canvas and existing panel shadow. Layout, copy, clocks and authority limits are identical. Mobile is a single column with wrapped source sentences. The new panel has clientWidth=scrollWidth349 and right370.4 at CSS viewport390. The representative outer page has inherited horizontal overflow518 from au-a3/old meter elements; no whole-page mobile PASS is claimed.
+
+English/dark restored; browser viewport override reset to natural1406x876; only task tab1925925584 closed. Local server49820 stopped. The separate authenticated holdings task tab remains with its existing owner.
+
+Keyboard follow-through on task tab1925925594: native Space opened the disclosure; actual Tab/Shift+Tab moved focus to summary. Read-only DOM confirmed :focus-visible in both themes, and two actual JPEG crops show the blue outline. Screenshot bytes are native JPEG; filename extensions and dimensions are decoded from the images, not assumed PNG. The real adapter output equals the captured source-context exactly.
+
+Native full build, with no production artifact in the committed checkout, was separately opened and captured: explicit unavailable, no source link and no fake numeric fact. Preview task1925925594 closed, EN/dark and natural1406x876 restored, server47658 stopped. Whitespace-only Jinja control indentation corrected afterward; parsed rendered elements, attributes and visible strings match for populated and unavailable contexts (manifest records both source hashes). No visual or behavioral change.

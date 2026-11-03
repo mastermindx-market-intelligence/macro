@@ -1,0 +1,1043 @@
+diff --git a/scripts/run_press.py b/scripts/run_press.py
+index 48c2164759..89a30569a7 100644
+--- a/scripts/run_press.py
++++ b/scripts/run_press.py
+@@ -150,6 +150,42 @@ def _is_unverified_earnings_story_stage(item: object) -> bool:
+     )
+ 
+ 
++# `scripts/stage_official_feed_press.py` stages one qualified official-feed
++# candidate as an ordinary Brief draft.  Its staged record carries an explicit
++# private-official provenance receipt with public-article approval false: the
++# qualification is candidate-only and conveys no release grant.  The receipt
++# lives in a mutable staging file, so — exactly as for the earnings guard
++# above — the refusal keeps an independent identity trail: the `official_feed:`
++# source ref IS the story's source, so it survives any provenance strip that
++# leaves the record recognisable as this story at all.
++_OFFICIAL_STAGE_RAIL = "private_official_feed"
++_OFFICIAL_SOURCE_PREFIX = "official_feed:"
++
++
++def _is_private_official_stage(item: object) -> bool:
++    """Detect a privately staged official-feed candidate — never emittable."""
++    if not isinstance(item, dict):
++        return False
++    slot = item.get("slot")
++    holders = [item] + ([slot] if isinstance(slot, dict) else [])
++    for holder in holders:
++        provenance = holder.get("provenance")
++        if not isinstance(provenance, dict):
++            continue
++        receipt = provenance.get("admission_receipt")
++        if (isinstance(receipt, dict)
++                and str(receipt.get("rail") or "") == _OFFICIAL_STAGE_RAIL):
++            return True
++    refs: set[str] = set()
++    for holder in holders:
++        for key in ("sources", "seed_refs"):
++            refs.update(str(r) for r in (holder.get(key) or []) if isinstance(r, str))
++        revisions = holder.get("source_revisions")
++        if isinstance(revisions, dict):
++            refs.update(str(r) for r in revisions)
++    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
++
++
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Paths
+ # ─────────────────────────────────────────────────────────────────────────────
+@@ -370,7 +406,12 @@ def reconcile_earnings_call_revisions(root: Path, cfg: dict) -> dict:
+     for path, obj in stage_rows:
+         revisions = _source_revisions(obj)
+         tracked_refs = [ref for ref in revisions if ref in current]
+-        missing_refs = [ref for ref in revisions if ref not in current]
++        # Only a ref THIS reconciliation owns can go missing from it.  Other
++        # rails' revision receipts (official_feed:, whitehouse:, artifact:) sit
++        # in the same map but were never transcript revisions; treating them as
++        # vanished earnings refs would falsely supersede their records.
++        missing_refs = [ref for ref in revisions
++                        if ref not in current and ref.startswith("chronicle:")]
+ 
+         if obj.get("status") == "correction_required":
+             active = [
+@@ -988,6 +1029,26 @@ def run_emit(root: Path, cfg: dict) -> dict:
+                     f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                 )
+                 continue
++            if _is_private_official_stage(obj):
++                # Candidate-only qualification: staging proved the source, not
++                # a release grant.  A passed deterministic suite changes no
++                # approval state, so this refuses BEFORE any revalidation or
++                # content/site/ledger write.
++                obj["status"] = "approval_required"
++                obj["quarantine_reason"] = (
++                    "privately staged official-feed candidate: the candidate-only "
++                    "qualification conveys no public-article approval"
++                )
++                path.write_text(
++                    json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
++                    encoding="utf-8",
++                )
++                _annotate(
++                    "warning", "press_emit_official_approval",
++                    f"press emit: official candidate {obj.get('id')} requires "
++                    f"public-article approval — not emitted",
++                )
++                continue
+             # Staging is mutable: its saved report describes the earlier draft,
+             # not necessarily the copy we just loaded. Re-run the same suite
+             # before ANY content/render/ledger write and retain the fresh report
+diff --git a/scripts/stage_official_feed_press.py b/scripts/stage_official_feed_press.py
+new file mode 100644
+index 0000000000..1f9fcdaade
+--- /dev/null
++++ b/scripts/stage_official_feed_press.py
+@@ -0,0 +1,338 @@
++"""scripts/stage_official_feed_press.py — private staging for ONE qualified
++official-feed (OCC) Press candidate.
++
++One explicit invocation stages exactly one already-qualified official candidate
++through the incumbent Press runner.  This is a thin caller, not a second
++pipeline: planning, validation, the checkpoint discipline, the staging tree and
++the writer/validator rail are all the existing ones.
++
++    python -m scripts.stage_official_feed_press \\
++        --feed <retained occ_news.xml> --feed-sha256 <hex> \\
++        --qualification <retained qualification.json> --qualification-sha256 <hex> \\
++        --confirm-private-staging
++
++What one invocation does, in order, and what it refuses:
++
++  1. RE-PLANS.  ``plan_official_feed_candidate`` re-runs against the hash-bound
++     retained feed and qualification bytes and CURRENT REAL TIME — the publisher
++     clock, the observed-at clock and the Brief window are all re-checked.  The
++     CLI deliberately offers no date flag, so this rail cannot be back-dated
++     (test fixtures inject a clock in-process instead).
++  2. REFUSES existing coverage.  The same source can never stage twice across
++     dates or revisions: canonical published refs and live staged refs both
++     block it, exactly as the ordinary planner is blocked.
++  3. REFUSES a replay.  The staged slot id is the candidate id, so a repeated
++     invocation of the SAME candidate collides with the durable
++     ``provider_started`` checkpoint and can never overwrite or replay it.
++  4. REFUSES at the daily Brief cadence ceiling.  The ceiling counts TODAY'S
++     existing Brief attempts in the canonical staging tree — whatever their
++     status, including in_progress, quarantined and approval_required — plus
++     today's published ledger rows, with a slot that is both staged and
++     published counted once, by id.  Successes are not the unit of count;
++     attempts are.
++  5. STAGES one ordinary Brief slot through the EXISTING
++     ``_stage_preplanned_slots`` rail into the NORMAL canonical staging root:
++     durable exclusive checkpoint before the provider call, exactly one
++     provider attempt (``single_provider_attempt=True`` with
++     ``max_regenerations=0``), the ORDINARY Press run-token budget and circuit
++     breaker.  The separate earnings 12k admitted-token contract is neither
++     borrowed nor loosened, and ``run_admitted_earnings_staging`` is not used —
++     this is not earnings and must never be labelled as earnings.
++
++What one invocation never does: it never emits, never writes under content/ or
++site/ or the ledger, and never promotes anything anywhere.
++
++AUTHORITY.  A private staging action is authorized by the calling principal —
++which is why the CLI demands an explicit ``--confirm-private-staging``.  The
++qualification is CANDIDATE-ONLY: it records editorial acceptance of a source
++candidate and conveys no public release grant.  The staged record therefore
++carries ``provenance.admission_receipt.rail = "private_official_feed"`` with
++``public_article_approved: false``, and ``scripts/run_press.py --emit`` fails
++closed on that provenance — and on the ``official_feed:`` source-ref trail that
++survives any provenance strip — even when the deterministic validators passed.
++"""
++from __future__ import annotations
++
++import argparse
++import json
++import logging
++import sys
++from datetime import datetime, timezone
++from pathlib import Path
++
++_REPO = Path(__file__).resolve().parent.parent
++if str(_REPO) not in sys.path:
++    sys.path.insert(0, str(_REPO))
++
++from engine.press import desk_planner, writer  # noqa: E402
++from engine.press.official_feed_candidate import plan_official_feed_candidate  # noqa: E402
++# The incumbent runner owns the staging rail and its small shared helpers; a
++# thin caller imports them rather than forking copies that can drift.
++from scripts.run_press import (  # noqa: E402
++    _annotate, _env_int, _now, _paths, _read_ledger_rows, _stage_preplanned_slots,
++)
++
++log = logging.getLogger("stage_official_feed_press")
++
++#: The provenance rail recorded on every staged record.  ``run_press --emit``
++#: refuses this rail fail-closed; the constant must stay in sync with the
++#: guard's ``_OFFICIAL_STAGE_RAIL`` there.
++STAGE_RAIL = "private_official_feed"
++
++
++def _official_slot(plan: dict, cfg: dict) -> dict:
++    """The ordinary Brief slot this candidate stages as — planner-shaped.
++
++    Every field is either copied from the plan's validation context (which the
++    qualification pinned), a desk identity value from the shipped config, or a
++    deterministic identity of the plan itself.  Nothing is invented: the facts,
++    their dates, the primary source and the allowed links are the plan's own,
++    and the raw source document is the agency's complete RSS summary.
++    """
++    desk_cfg = (cfg.get("desks") or {}).get("brief") or {}
++    ctx = dict(plan["validation_context"])
++    facts = [dict(f) for f in (ctx.get("facts") or [])]
++    slot = dict(ctx)
++    slot.update({
++        "id": plan["candidate_id"],
++        "cluster": str(desk_cfg.get("cluster") or "market-brief"),
++        "model_key": str(desk_cfg.get("model_key") or "press_brief"),
++        # The plan deliberately exposes no headline prose; the story block
++        # carries only the reviewed event identity.  The writer is told the
++        # external-source law by build_prompt from primary_source.kind.
++        "story": {"kind": "official_feed", "event_date": plan["event_date"]},
++        "sources": [plan["source_ref"]],
++        "source_revisions": dict(plan["source_revisions"]),
++        # Same identity shape the planner writes: the refs of the facts that
++        # seed the piece (the official source ref plus any reviewed artifact).
++        "seed_refs": sorted({str(f.get("ref")) for f in facts if f.get("ref")}),
++        # No chronicle context is injected on this rail: the qualification is
++        # the exact evidence contract, and unreviewed narrative must not reach
++        # the writer prompt through a side door.
++        "chronicle_context": {"lines": [], "narratives": [], "budget_used": 0,
++                              "coverage": {"start": None, "end": None,
++                                           "note": "official candidate rail: no chronicle context injected"}},
++        "slug_hint": "official-" + str(plan["candidate_id"]).removeprefix("press-external-"),
++    })
++    return slot
++
++
++def _brief_attempts_today(paths: dict, run_date: str, ceiling: int) -> tuple[int, int]:
++    """(distinct Brief attempts consumed today, the daily ceiling).
++
++    Counts every canonical staging record for the Brief desk whose ATTEMPT day
++    is today, whatever its status — in_progress, passed, quarantined and
++    approval_required all reserved or spent a provider attempt — plus today's
++    published ledger rows.  A slot that is both staged and published counts
++    ONCE (by id): the emit path consumes its staging file, but a failed unlink
++    or an interrupted emit must not turn one attempt into two.
++    """
++    ids: set[str] = set()
++    for path in sorted(paths["staging"].glob("*.json")):
++        if path.name.startswith("_"):
++            continue          # `_run_summary.json` is a run artifact, not a slot
++        try:
++            obj = json.loads(path.read_text(encoding="utf-8"))
++        except Exception as exc:  # noqa: BLE001
++            log.warning("official staging cadence: unreadable %s: %s", path, exc)
++            continue
++        if not isinstance(obj, dict) or str(obj.get("desk") or "") != "brief":
++            continue
++        staged_at = str(obj.get("staged_at") or "")
++        attempt_day = staged_at[:10] or str(obj.get("as_of") or "")[:10]
++        if attempt_day == run_date:
++            ids.add(str(obj.get("id") or path.stem))
++    for row in _read_ledger_rows(paths["ledger"]):
++        if str(row.get("desk") or "") != "brief":
++            continue
++        if str(row.get("ts") or "")[:10] != run_date:
++            continue
++        ids.add(str(row.get("id") or ""))
++    return len(ids), int(ceiling)
++
++
++def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
++                                  qualification_path, qualification_sha256,
++                                  now: datetime | None = None) -> dict:
++    """Stage one qualified official-feed candidate as an ordinary Brief slot.
++
++    Explicit invocation by the calling principal is the private-staging
++    authorization.  The qualification is candidate-only: the staged record is
++    written with public-article approval false and conveys no release grant.
++    Every refusal below happens BEFORE any provider effect, so a refused run
++    spends exactly zero tokens and reserves exactly zero slots.
++
++    ``now`` is the current real time and is deliberately absent from the CLI:
++    only an in-process caller (a test fixture) may inject a clock.
++    """
++    root = Path(root)
++    paths = _paths(cfg, root)
++    paths["staging"].mkdir(parents=True, exist_ok=True)
++    moment = now if now is not None else datetime.now(timezone.utc)
++    if moment.tzinfo is None:
++        raise ValueError("injected clock must carry a timezone")
++
++    # 1. Re-plan against the retained bytes and the given clock.  Bad hashes,
++    #    stale/changed bytes, an unqualified source or an out-of-window event
++    #    raise here — before any state is touched.
++    plan = plan_official_feed_candidate(
++        feed_path=Path(feed_path), feed_sha256=str(feed_sha256).lower(),
++        qualification_path=Path(qualification_path),
++        qualification_sha256=str(qualification_sha256).lower(),
++        root=root, as_of=moment.isoformat(), cfg=cfg,
++    )
++    run_date = str(plan["validation_context"]["as_of"])
++    identity = {
++        "candidate_id": plan["candidate_id"],
++        "source_ref": plan["source_ref"],
++        "feed_sha256": plan["feed_sha256"],
++        "qualification_sha256": plan["qualification_sha256"],
++        "event_date": plan["event_date"],
++    }
++
++    def _refuse(reason: str) -> dict:
++        _annotate("warning", "press_official_stage_refused",
++                  f"official feed staging refused: {plan['candidate_id']} — {reason}")
++        return {"staged": False, "rail": STAGE_RAIL, "reason": reason,
++                "run_date": run_date, "public_article_approved": False,
++                "allow_emit": False, **identity}
++
++    # 2. Existing canonical coverage blocks the same source across dates and
++    #    revisions — published first, then anything live in staging, with the
++    #    plan's own blocked flag as the belt-and-braces backstop.
++    published_refs, published_slugs = desk_planner.published_refs(root, cfg)
++    staged_refs, staged_slugs = desk_planner.staged_refs(root, cfg)
++    if plan["source_ref"] in published_refs:
++        return _refuse("source already has existing canonical coverage")
++    if plan["source_ref"] in staged_refs:
++        return _refuse("source already sits in the canonical staging tree")
++    if plan["blocked_by_existing_coverage"]:
++        return _refuse("source already has existing canonical coverage")
++
++    # 3. A repeated slot can never overwrite or replay its checkpoint.
++    slot_path = paths["staging"] / f"{plan['candidate_id']}.json"
++    if slot_path.exists():
++        return _refuse("replay of an existing staged slot — the same slot identity "
++                       "is already reserved")
++
++    # 4. The daily Brief cadence ceiling counts today's attempts, not wins.
++    consumed, ceiling = _brief_attempts_today(paths, run_date, plan["cadence_per_day"])
++    if consumed >= ceiling:
++        return _refuse(
++            f"daily Brief cadence ceiling reached ({consumed} of {ceiling} "
++            f"attempt(s) today, all statuses counted)")
++
++    # 5. Stage through the incumbent rail: ordinary budget, ordinary breaker,
++    #    one provider attempt, durable checkpoint before the call.
++    receipt = {
++        "rail": STAGE_RAIL,
++        "private_staging_only": True,
++        "public_article_approved": False,
++        "authorized_by": "calling_principal",
++        "planned_at": plan["published_at"],
++        "staged_at": _now(),
++        **identity,
++    }
++    slot = _official_slot(plan, cfg)
++    llm_cfg = (cfg.get("llm") or {})
++    state = writer.RunState(
++        # The ORDINARY Press budget — deliberately not the earnings rail's
++        # separate 12k admitted contract, which is neither borrowed nor loosened.
++        token_budget=_env_int("PRESS_RUN_TOKEN_BUDGET",
++                              int(llm_cfg.get("run_token_budget") or 240_000)),
++        breaker_threshold=_env_int("PRESS_CIRCUIT_BREAKER_FAILURES",
++                                   int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3)),
++    )
++    taken = desk_planner.taken_slugs(root) | published_slugs | staged_slugs
++    summary = _stage_preplanned_slots(
++        root, cfg,
++        slots=[slot],
++        staging_dir=paths["staging"],
++        run_date=run_date,
++        state=state,
++        max_regenerations=0,
++        taken_slugs=taken,
++        admission_receipt=receipt,
++        single_provider_attempt=True,
++    )
++    items = summary.get("items") or []
++    status = str(items[0].get("status")) if items else ""
++    _annotate("notice", "press_official_staged",
++              f"official feed candidate staged PRIVATELY: {plan['candidate_id']} "
++              f"status {status} (public article approval: false — no emit path)")
++    return {
++        "staged": True,
++        "rail": STAGE_RAIL,
++        "run_date": run_date,
++        "status": status,
++        "staging_path": str(slot_path.relative_to(root)),
++        "public_article_approved": False,
++        "allow_emit": False,
++        "cadence": {"consumed_before": consumed, "ceiling": ceiling},
++        "writer_state": summary.get("writer_state"),
++        "summary": summary,
++        **identity,
++    }
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# CLI
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def main(argv=None) -> int:
++    ap = argparse.ArgumentParser(
++        description="Privately stage ONE qualified official-feed (OCC) Press "
++                    "candidate through the incumbent runner. Never emits.")
++    ap.add_argument("--feed", required=True, help="retained feed evidence file")
++    ap.add_argument("--feed-sha256", required=True, help="SHA256 of the feed evidence")
++    ap.add_argument("--qualification", required=True, help="retained qualification file")
++    ap.add_argument("--qualification-sha256", required=True,
++                    help="SHA256 of the qualification file")
++    ap.add_argument("--root", default="", help="repo root override (tests)")
++    ap.add_argument("--confirm-private-staging", action="store_true",
++                    help="required acknowledgement: the calling principal authorizes "
++                         "this PRIVATE staging action; the qualification is "
++                         "candidate-only and conveys no public release grant")
++    # Deliberately NO --as-of: this rail re-plans against current real time and
++    # cannot be back-dated.  Test fixtures inject a clock in-process.
++    args = ap.parse_args(argv)
++
++    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
++
++    def _emit_result(out: dict) -> int:
++        print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
++        return 0 if out.get("staged") else 1
++
++    if not args.confirm_private_staging:
++        _annotate("warning", "press_official_stage_refused",
++                  "official feed staging refused: --confirm-private-staging is "
++                  "required — a private staging action must be explicit")
++        return _emit_result({"staged": False, "rail": STAGE_RAIL,
++                             "reason": "private staging not confirmed by the caller",
++                             "public_article_approved": False})
++
++    root = Path(args.root).resolve() if args.root else _REPO
++    cfg = desk_planner.load_config(root)
++    if not cfg:
++        _annotate("error", "press_config",
++                  "config/press.yml is missing or unparsable — press lane cannot run")
++        return 1
++
++    try:
++        out = stage_official_feed_candidate(
++            root, cfg,
++            feed_path=Path(args.feed), feed_sha256=args.feed_sha256,
++            qualification_path=Path(args.qualification),
++            qualification_sha256=args.qualification_sha256,
++        )
++    except ValueError as exc:
++        # Every planning refusal is a ValueError carrying its own reason.  The
++        # provider was never reached: report and exit non-zero.
++        return _emit_result({"staged": False, "rail": STAGE_RAIL, "reason": str(exc),
++                             "public_article_approved": False})
++    return _emit_result(out)
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/tests/test_press_official_staging.py b/tests/test_press_official_staging.py
+new file mode 100644
+index 0000000000..fcca3028e5
+--- /dev/null
++++ b/tests/test_press_official_staging.py
+@@ -0,0 +1,605 @@
++"""tests/test_press_official_staging.py — private official-feed staging rail.
++
++Controls for ``scripts/stage_official_feed_press.py`` and the matching
++``scripts/run_press.py`` emit guard.  The discriminating pairs:
++
++  * bad hashes / clocks / unqualified source   → refuse, ZERO provider calls
++  * existing staged or published source        → refuse, ZERO provider calls
++  * full daily Brief cadence (all statuses)    → refuse, ZERO provider calls
++  * same cadence booked YESTERDAY              → allowed (the ceiling is per DAY)
++  * a slot both staged and published today     → counted once, not twice
++  * a repeated slot                            → never a second provider call
++  * writer failure                             → exactly ONE attempt, no regen
++  * interrupted provider                       → retained exclusive checkpoint
++  * successful private stage                   → exact source/ticker/fact-date
++                                                 and receipt provenance, and the
++                                                 ORDINARY (not 12k) token budget
++  * run_emit on a passing official stage       → refusal, no content/site/ledger
++                                                 write, provenance strip or not
++
++Everything runs against a synthetic root under tmp_path.  Every test mocks the
++writer at the module boundary — no test makes a network call, runs a provider,
++or generates anything.  No CLI backdating exists to test: the flag is absent,
++and that absence is itself pinned.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import shutil
++import sys
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++import pytest
++
++_REPO = Path(__file__).resolve().parent.parent
++if str(_REPO) not in sys.path:
++    sys.path.insert(0, str(_REPO))
++
++from engine.press import desk_planner as P  # noqa: E402
++from engine.press import writer as W  # noqa: E402
++from scripts import run_press as R  # noqa: E402
++from scripts import stage_official_feed_press as S  # noqa: E402
++from tests import press_fixtures as F  # noqa: E402
++
++# The injected test clock.  The qualification's observed_at is 2026-10-14, so
++# any real "today" before that date would refuse — which is exactly why the
++# clock is an in-process parameter and never a CLI flag.
++NOW = datetime(2026, 10, 14, 0, 25, 0, tzinfo=timezone.utc)
++
++ITEM_URL = "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html"
++FEED_URL = "https://www.occ.treas.gov/rss/occ_news.xml"
++
++OCC_FEED_XML = (
++    '<?xml version="1.0" encoding="UTF-8"?>\n'
++    '<rss version="2.0">\n'
++    "<channel>\n"
++    "<title>OCC News</title>\n"
++    "<link>https://www.occ.gov</link>\n"
++    "<description>OCC enforcement news.</description>\n"
++    "<item>\n"
++    "<title>OCC Imposes $750 Million Assessment Against Bank of America for "
++    "Deficient BSA/AML Compliance</title>\n"
++    "<description>The Office of the Comptroller of the Currency (OCC) today "
++    "announced a $750 million civil money penalty against Bank of America, N.A. "
++    "(bank), for deficiencies in its Bank Secrecy Act compliance "
++    "program.</description>\n"
++    "<pubDate>13 Oct 2026 16:15:00 -0400</pubDate>\n"
++    f"<link>{ITEM_URL}</link>\n"
++    "<author>Office of the Comptroller of the Currency</author>\n"
++    "</item>\n"
++    "<item>\n"
++    "<title>OCC Releases CRA Performance Evaluations</title>\n"
++    "<description>The OCC today released a list of Community Reinvestment Act "
++    "performance evaluations.</description>\n"
++    "<pubDate>8 Oct 2026 17:30:00 -0400</pubDate>\n"
++    "<link>https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-84.html</link>\n"
++    "</item>\n"
++    "</channel>\n"
++    "</rss>\n"
++)
++
++MARKET_STATE = {
++    "asof": "2026-10-13", "score": 56, "verdict": "MIXED",
++    "components": [
++        {"key": "trend", "label_en": "Trend & technicals", "score": 62, "weight": 0.24},
++        {"key": "risk", "label_en": "Risk appetite", "score": 70, "weight": 0.18},
++        {"key": "breadth", "label_en": "Breadth & participation", "score": 68, "weight": 0.16},
++        {"key": "liquidity", "label_en": "Liquidity & credit", "score": 76, "weight": 0.14},
++    ],
++}
++CONTEXT_FACT_IDS = (
++    "market_state_score", "market_state_trend", "market_state_risk",
++    "market_state_breadth", "market_state_liquidity",
++)
++
++
++def _dump(path: Path, value) -> str:
++    path.write_text(json.dumps(value, sort_keys=True) + "\n")
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def _official_draft() -> dict:
++    """A COMPLIANT draft for the fixture slot — validated, not invented.
++
++    The numbers it carries are the fixture qualification's own reviewed source
++    facts (the $750 million third-party claim and the reviewed market-state
++    measurements), and the full real validator suite passes on it: the GREEN
++    path in this file is genuinely exercised, never vacuous.
++    """
++    return {
++        "title": "An enforcement test against a mixed backdrop",
++        "description": ("A large banking agency action landed on a mixed reading "
++                        "of our own measurements. Here is the level that would "
++                        "change the picture."),
++        "slug": "an-enforcement-test-against-a-mixed-backdrop",
++        "body_html": (
++            '<p class="press-byline">The Brief — Mastermind News desk</p>\n'
++            "<p><a href=\"https://www.occ.gov/news-issuances/news-releases/2026/"
++            "nr-occ-2026-89.html\">Office of the Comptroller of the Currency</a> "
++            "moved against one of the largest American bank holding companies "
++            "this week, and our own backdrop composite reads 56 of 100 as of the "
++            "session before the announcement.</p>"
++            "<p>Inside that composite, the trend component sits at 62 while risk "
++            "appetite reads 70, which is a mixed posture rather than a stressed "
++            "one, and it is the posture we carry into the enforcement read.</p>"
++            "<p>Participation is still broader than credit is tight: breadth "
++            "scores 68 against a liquidity reading of 76, so the system we are "
++            "describing is one where money is moving and names are trading.</p>"
++            "<p>The action itself is a penalty of 750, expressed in millions of "
++            "dollars, and the agency describes it in its own summary as a civil "
++            "money penalty tied to deficiencies in controls.</p>"
++            "<p>Two things happened on the same afternoon and only one of them "
++            "was priced, and the procedural one was the one everybody watched "
++            "while the substantive one moved the number that actually matters "
++            "for the names we follow here.</p>"
++            "<p>Our own reading starts from what we can measure rather than from "
++            "what the tape felt like, and on an afternoon like this one the "
++            "difference between those two postures is the whole story, not a "
++            "footnote to it.</p>"
++            "<p>What would move our reading is the next composite print: the gap "
++            "between 56 overall and 62 on trend is the spread we watch when an "
++            "enforcement action lands on a systemically watched name.</p>"
++            "<p>The obvious objection is that any single enforcement headline "
++            "tells you very little on its own, and that objection is correct, "
++            "which is exactly why the rest of this piece leans on measured "
++            "levels instead of adjectives.</p>"
++            "<p>Anyone who has watched this corner for a few years will "
++            "recognise the shape of the day, and recognising a shape is not the "
++            "same as knowing what comes next, so the honest version of this "
++            "paragraph stops at the recognition.</p>\n"
++            '<p class="press-footer">Educational content — not investment '
++            "advice. Markets involve risk.</p>"
++        ),
++    }
++
++
++def _stub_writer(monkeypatch, *, ok=True, reason="stubbed writer failure",
++                 error: Exception | None = None) -> dict:
++    """Mock engine.press.writer.write.  No LLM, no network, no generation."""
++    calls = {"n": 0, "single_provider_attempt": [], "slots": []}
++
++    def _write(slot, cfg, *, state=None, attempt=0, prior_failures=None,
++               single_provider_attempt=False, admitted_token_cap=False):
++        calls["n"] += 1
++        calls["single_provider_attempt"].append(single_provider_attempt)
++        calls["slots"].append(slot.get("id"))
++        if error is not None:
++            raise error
++        if not ok:
++            (state or W.RunState()).record_failure()
++            return {"ok": False, "draft": None, "reason": reason, "provider": None,
++                    "attempt": attempt, "state": (state or W.RunState()).snapshot()}
++        return {"ok": True, "draft": _official_draft(), "reason": "",
++                "provider": "stub", "model": "stub-model", "attempt": attempt,
++                "state": (state or W.RunState()).snapshot()}
++
++    monkeypatch.setattr(W, "write", _write)
++    return calls
++
++
++def _snapshot(root: Path) -> set[str]:
++    return {str(p.relative_to(root)) for p in root.rglob("*") if p.is_file()}
++
++
++def _plan_offline(candidate: dict) -> dict:
++    """The offline plan — no provider, no state.  Used to learn identities."""
++    from engine.press.official_feed_candidate import plan_official_feed_candidate
++
++    return plan_official_feed_candidate(
++        feed_path=candidate["feed"], feed_sha256=candidate["feed_sha256"],
++        qualification_path=candidate["qualification"],
++        qualification_sha256=candidate["qualification_sha256"],
++        root=candidate["root"], as_of=NOW.isoformat(), cfg=candidate["cfg"],
++    )
++
++
++def _stage(candidate: dict, monkeypatch=None, **kw) -> dict:
++    if monkeypatch is not None:
++        monkeypatch.delenv("PRESS_RUN_TOKEN_BUDGET", raising=False)
++        monkeypatch.delenv("PRESS_CIRCUIT_BREAKER_FAILURES", raising=False)
++    return S.stage_official_feed_candidate(
++        candidate["root"], candidate["cfg"],
++        feed_path=candidate["feed"], feed_sha256=candidate["feed_sha256"],
++        qualification_path=candidate["qualification"],
++        qualification_sha256=candidate["qualification_sha256"],
++        now=NOW, **kw)
++
++
++@pytest.fixture
++def candidate(tmp_path) -> dict:
++    """Hash-bound retained feed + qualification over a minimal repo root."""
++    root = F.fixture_root(tmp_path / "root")
++    (root / "site/stocks").mkdir(parents=True, exist_ok=True)
++    (root / "site/stocks/BAC.html").write_text("<html>Bank of America</html>")
++
++    measured = tmp_path / "market_state.json"
++    digest = _dump(measured, MARKET_STATE)
++    shutil.copyfile(measured, root / "data/market_state/latest.json")
++
++    feed = tmp_path / "occ_news.xml"
++    feed.write_bytes(OCC_FEED_XML.encode("utf-8"))
++    feed_sha = hashlib.sha256(feed.read_bytes()).hexdigest()
++
++    q = {
++        "kind": "official_feed_editorial_qualification",
++        "source_key": "occ_news", "feed_url": FEED_URL,
++        "feed_sha256": feed_sha, "item_url": ITEM_URL,
++        "published_at": "2026-10-13T20:15:00+00:00",
++        "event_date": "2026-10-13",
++        "observed_at": "2026-10-14T00:19:37+00:00",
++        "rights_basis": {
++            "qualification": "government_authored_factual_reporting",
++            "scope": ("Original factual reporting of the agency assessment; "
++                      "no imagery or endorsement."),
++        },
++        "review_result": "accepted_as_editorial_candidate_only",
++        "reviewed_claims": [{"literal": "$750 million civil money penalty",
++                             "quantity_literal": "$750 million"}],
++        "reviewed_tickers": {"BAC": "Bank of America"},
++        "allow_stage": False, "allow_emit": False, "publication_approved": False,
++        "first_party_context": [
++            {"id": fid, "artifact": "data/market_state/latest.json",
++             "sha256": digest,
++             "relevance": ("Dated broad backdrop only; not an explanation of "
++                           "bank-specific price effects.")}
++            for fid in CONTEXT_FACT_IDS
++        ],
++    }
++    qpath = tmp_path / "qualification.json"
++    return {"root": root, "feed": feed, "feed_sha256": feed_sha,
++            "qualification": qpath, "qualification_sha256": _dump(qpath, q),
++            "cfg": P.load_config(root), "market_state_sha256": digest}
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# GREEN: the successful private stage
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def test_successful_private_stage_keeps_exact_source_identity(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    root = candidate["root"]
++    before = _snapshot(root)
++
++    out = _stage(candidate, monkeypatch)
++
++    assert out["staged"] is True
++    assert out["public_article_approved"] is False and out["allow_emit"] is False
++    assert out["status"] == "passed"
++    assert calls["n"] == 1 and calls["single_provider_attempt"] == [True]
++
++    # Nothing was written outside the canonical staging tree.
++    new = _snapshot(root) - before
++    assert new, "the stage produced nothing at all"
++    assert all(p.startswith("data/press/staging/") for p in new), sorted(new)
++
++    record = json.loads((root / "data/press/staging" / f"{out['candidate_id']}.json")
++                        .read_text(encoding="utf-8"))
++    assert record["desk"] == "brief" and record["as_of"] == "2026-10-14"
++    assert record["source_revisions"][out["source_ref"]] == "sha256:" + candidate["feed_sha256"]
++    assert record["source_revisions"]["artifact:data/market_state/latest.json"] == \
++        "sha256:" + candidate["market_state_sha256"]
++    # The source facts, their dates and the primary source are the plan's own.
++    lead = record["slot"]["facts"][0]
++    assert lead["text"] == "$750 million civil money penalty"
++    assert lead["values"] == ["750"] and lead["tier"] == "third_party"
++    assert lead["dated"] == "2026-10-13", "each fact date must be preserved"
++    assert record["slot"]["primary_source"] == {
++        "kind": "external", "name": "Office of the Comptroller of the Currency",
++        "url": ITEM_URL,
++    }
++    assert record["slot"]["allowed_links"] == \
++        ["https://www.mastermind-x.com/stocks/BAC.html"]
++    # Explicit private-official provenance with public approval false.
++    receipt = record["provenance"]["admission_receipt"]
++    assert receipt["rail"] == "private_official_feed"
++    assert receipt["public_article_approved"] is False
++    assert receipt["feed_sha256"] == candidate["feed_sha256"]
++    assert receipt["qualification_sha256"] == candidate["qualification_sha256"]
++    # The ORDINARY Press budget — the earnings 12k contract is not borrowed.
++    assert out["writer_state"]["token_budget"] == 240_000
++    assert out["writer_state"]["token_budget"] != 12_000
++    assert out["cadence"]["consumed_before"] == 0 and out["cadence"]["ceiling"] == 2
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# RED: refusals — every one of them spends ZERO provider calls
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def test_bad_feed_hash_refuses_without_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    candidate["feed"].write_bytes(candidate["feed"].read_bytes() + b" ")
++    with pytest.raises(ValueError, match="hash"):
++        _stage(candidate, monkeypatch)
++    assert calls["n"] == 0
++    assert not (candidate["root"] / "data/press/staging" / "_run_summary.json").exists()
++
++
++def test_changed_bytes_against_stale_qualification_refuse(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    candidate["feed"].write_bytes(candidate["feed"].read_bytes() + b" ")
++    candidate["feed_sha256"] = hashlib.sha256(candidate["feed"].read_bytes()).hexdigest()
++    with pytest.raises(ValueError, match="identity mismatch"):
++        _stage(candidate, monkeypatch)
++    assert calls["n"] == 0
++
++
++def test_bad_qualification_hash_refuses_without_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    candidate["qualification_sha256"] = "0" * 64
++    with pytest.raises(ValueError, match="hash mismatch"):
++        _stage(candidate, monkeypatch)
++    assert calls["n"] == 0
++
++
++@pytest.mark.parametrize("patch", [
++    {"source_key": "cnbc_top"},
++    {"allow_stage": True},
++    {"allow_emit": True},
++    {"publication_approved": True},
++    {"review_result": "accepted_as_full_release"},
++    {"published_at": "2026-10-13T21:15:00+00:00"},
++    {"event_date": "2026-10-01"},
++    {"reviewed_claims": [{"literal": "$950 million civil money penalty",
++                          "quantity_literal": "$950 million"}]},
++])
++def test_unqualified_or_mutated_source_refuses_without_provider(candidate, monkeypatch, patch):
++    calls = _stub_writer(monkeypatch)
++    q = json.loads(candidate["qualification"].read_text())
++    q.update(patch)
++    candidate["qualification_sha256"] = _dump(candidate["qualification"], q)
++    with pytest.raises(ValueError):
++        _stage(candidate, monkeypatch)
++    assert calls["n"] == 0
++
++
++@pytest.mark.parametrize("days", [10, -1])
++def test_stale_or_backdated_clock_refuses_without_provider(candidate, monkeypatch, days):
++    calls = _stub_writer(monkeypatch)
++    shifted = NOW + timedelta(days=days)
++    with pytest.raises(ValueError, match="window|clock"):
++        S.stage_official_feed_candidate(
++            candidate["root"], candidate["cfg"],
++            feed_path=candidate["feed"], feed_sha256=candidate["feed_sha256"],
++            qualification_path=candidate["qualification"],
++            qualification_sha256=candidate["qualification_sha256"],
++            now=shifted)
++    assert calls["n"] == 0
++
++
++def test_existing_published_source_refuses_without_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    plan = _plan_offline(candidate)
++    ledger = candidate["root"] / "data/press/published.jsonl"
++    row = {"id": "press-brief-prior", "ts": "2026-10-14T01:00:00Z", "desk": "brief",
++           "slug": "prior-piece", "sources": [plan["source_ref"]]}
++    with ledger.open("a", encoding="utf-8") as fh:
++        fh.write(json.dumps(row) + "\n")
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is False
++    assert "coverage" in out["reason"]
++    assert calls["n"] == 0
++
++
++def test_existing_staged_source_refuses_without_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    plan = _plan_offline(candidate)
++    stage_dir = candidate["root"] / "data/press/staging"
++    (stage_dir / "prior.json").write_text(json.dumps(
++        {"id": "press-brief-prior", "desk": "brief", "status": "in_progress",
++         "staged_at": "2026-10-14T00:20:00Z", "sources": [plan["source_ref"]]}))
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is False
++    assert "canonical staging tree" in out["reason"]
++    assert calls["n"] == 0
++
++
++def _book_brief_attempt(root: Path, slot_id: str, *, staged_at: str,
++                        status: str = "quarantined") -> None:
++    stage_dir = root / "data/press/staging"
++    stage_dir.mkdir(parents=True, exist_ok=True)
++    (stage_dir / f"{slot_id}.json").write_text(json.dumps(
++        {"id": slot_id, "desk": "brief", "status": status, "staged_at": staged_at,
++         "as_of": staged_at[:10], "sources": [f"chronicle:{slot_id}"], "slug": ""}))
++
++
++def test_full_daily_brief_cadence_refuses_without_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    _book_brief_attempt(candidate["root"], "press-brief-d1-a",
++                        staged_at="2026-10-14T00:05:00Z", status="quarantined")
++    _book_brief_attempt(candidate["root"], "press-brief-d1-b",
++                        staged_at="2026-10-14T00:10:00Z", status="in_progress")
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is False
++    assert "cadence" in out["reason"]
++    assert calls["n"] == 0
++
++
++def test_same_cadence_booked_yesterday_still_stages(candidate, monkeypatch):
++    """The discriminating half of the ceiling: it counts TODAY, not the slot."""
++    calls = _stub_writer(monkeypatch)
++    _book_brief_attempt(candidate["root"], "press-brief-d0-a",
++                        staged_at="2026-10-13T00:05:00Z")
++    _book_brief_attempt(candidate["root"], "press-brief-d0-b",
++                        staged_at="2026-10-13T00:10:00Z")
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is True and calls["n"] == 1
++    assert out["cadence"]["consumed_before"] == 0
++
++
++def test_published_rows_count_and_double_counting_does_not(candidate, monkeypatch):
++    """A slot both staged and published today is ONE attempt, not two."""
++    calls = _stub_writer(monkeypatch)
++    _book_brief_attempt(candidate["root"], "press-brief-dup",
++                        staged_at="2026-10-14T00:05:00Z")
++    ledger = candidate["root"] / "data/press/published.jsonl"
++    with ledger.open("a", encoding="utf-8") as fh:
++        fh.write(json.dumps({"id": "press-brief-dup", "ts": "2026-10-14T02:00:00Z",
++                             "desk": "brief", "slug": "dup",
++                             "sources": ["chronicle:press-brief-dup"]}) + "\n")
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is True
++    assert out["cadence"]["consumed_before"] == 1, "staged+published must count once"
++    assert calls["n"] == 1
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# The slot discipline: replay, single attempt, interruption
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def test_repeated_slot_refuses_and_never_replays_the_provider(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch)
++    first = _stage(candidate, monkeypatch)
++    assert first["staged"] is True and calls["n"] == 1
++
++    # The live staged ref blocks the straight repeat.
++    second = _stage(candidate, monkeypatch)
++    assert second["staged"] is False and calls["n"] == 1
++    assert "canonical staging tree" in second["reason"]
++
++    # Even once the record is superseded (the reconciliation's audit state,
++    # which no longer blocks by ref), the same slot identity can never
++    # overwrite or replay its checkpoint.
++    path = candidate["root"] / first["staging_path"]
++    record = json.loads(path.read_text(encoding="utf-8"))
++    record["status"] = "superseded"
++    path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n",
++                    encoding="utf-8")
++    third = _stage(candidate, monkeypatch)
++    assert third["staged"] is False and "replay" in third["reason"]
++    assert calls["n"] == 1, "the same slot can never reach the provider twice"
++
++
++def test_writer_failure_makes_exactly_one_attempt_and_no_regeneration(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch, ok=False, reason="provider_unavailable")
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is True and out["status"] == "quarantined"
++    assert calls["n"] == 1
++    record = json.loads((candidate["root"] / "data/press/staging"
++                         / f"{out['candidate_id']}.json").read_text(encoding="utf-8"))
++    assert record["status"] == "quarantined"
++    assert len(record["attempts"]) == 1
++
++
++def test_interrupted_provider_retains_exclusive_checkpoint(candidate, monkeypatch):
++    calls = _stub_writer(monkeypatch, error=RuntimeError("provider socket died"))
++    with pytest.raises(RuntimeError, match="socket died"):
++        _stage(candidate, monkeypatch)
++    assert calls["n"] == 1
++    plan = _plan_offline(candidate)
++    record = json.loads((candidate["root"] / "data/press/staging"
++                         / f"{plan['candidate_id']}.json").read_text(encoding="utf-8"))
++    assert record["status"] == "in_progress"
++    assert record["progress"] == {"phase": "provider_started", "attempt": 0}
++    assert record.get("draft") is None, "an interrupted slot retains no draft"
++
++    # The retained reservation blocks any restage of the same source.
++    calls2 = _stub_writer(monkeypatch)
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is False
++    assert "canonical staging tree" in out["reason"]
++    assert calls2["n"] == 0
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# The emit guard: fail closed, provenance strip or not
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def _emit_snapshot(root: Path) -> dict:
++    def _digest(path: Path) -> str:
++        return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else ""
++    return {
++        "tree": _snapshot(root),
++        "ledger": _digest(root / "data/press/published.jsonl"),
++    }
++
++
++def test_emit_refuses_private_official_despite_passing_report(candidate, monkeypatch):
++    _stub_writer(monkeypatch)
++    out = _stage(candidate, monkeypatch)
++    assert out["staged"] is True and out["status"] == "passed"
++
++    before = _emit_snapshot(candidate["root"])
++    result = R.run_emit(candidate["root"], candidate["cfg"])
++    after = _emit_snapshot(candidate["root"])
++
++    assert result["emitted"] == 0
++    record = json.loads((candidate["root"] / out["staging_path"]).read_text(encoding="utf-8"))
++    assert record["status"] == "approval_required"
++    assert "public-article approval" in record["quarantine_reason"]
++    assert "earnings" not in record["quarantine_reason"], \
++        "the official refusal must be the official guard's, not the earnings guard's"
++    # No content write, no site write, no ledger row — despite validator status
++    # passed — and the audit record is retained, not consumed.
++    assert after["ledger"] == before["ledger"]
++    assert after["tree"] - before["tree"] == set()
++    assert list((candidate["root"] / "content/seo/blog").glob("*.md")) == []
++    assert not (candidate["root"] / "site" / "blog").exists()
++    assert (candidate["root"] / out["staging_path"]).exists()
++
++
++def test_emit_refusal_survives_a_provenance_strip(candidate, monkeypatch):
++    _stub_writer(monkeypatch)
++    out = _stage(candidate, monkeypatch)
++    path = candidate["root"] / out["staging_path"]
++    record = json.loads(path.read_text(encoding="utf-8"))
++    record.pop("provenance")
++    path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n",
++                    encoding="utf-8")
++
++    before = _emit_snapshot(candidate["root"])
++    result = R.run_emit(candidate["root"], candidate["cfg"])
++    after = _emit_snapshot(candidate["root"])
++
++    assert result["emitted"] == 0
++    record = json.loads(path.read_text(encoding="utf-8"))
++    assert record["status"] == "approval_required"
++    assert after["ledger"] == before["ledger"]
++    assert after["tree"] - before["tree"] == set()
++
++
++def test_emit_guards_do_not_cross_label_the_rails():
++    official = {"id": "press-external-abc123", "desk": "brief",
++                "sources": ["official_feed:abc123"],
++                "slot": {"id": "press-external-abc123",
++                         "sources": ["official_feed:abc123"]}}
++    assert R._is_private_official_stage(official) is True
++    assert R._is_unverified_earnings_story_stage(official) is False
++    earnings = {"id": "press-earnings-2026-x",
++                "sources": ["chronicle:defeatbeta:AAPL:2026Q3"]}
++    assert R._is_unverified_earnings_story_stage(earnings) is True
++    assert R._is_private_official_stage(earnings) is False
++    ordinary = {"id": "press-brief-2026-07-26-x",
++                "sources": ["chronicle:risk_radar_forward_log#2026-07-24"]}
++    assert R._is_private_official_stage(ordinary) is False
++    assert R._is_unverified_earnings_story_stage(ordinary) is False
++
++
++# ─────────────────────────────────────────────────────────────────────────────
++# CLI: explicit authorization, and no backdating
++# ─────────────────────────────────────────────────────────────────────────────
++
++
++def test_cli_refuses_without_the_explicit_private_staging_acknowledgement(tmp_path, capsys):
++    rc = S.main(["--feed", "f.xml", "--feed-sha256", "0" * 64,
++                 "--qualification", "q.json", "--qualification-sha256", "0" * 64])
++    assert rc == 1
++    # House law: the annotation is a bare line-start print BEFORE the JSON.
++    printed = capsys.readouterr().out
++    out = json.loads(printed[printed.index("{"):])
++    assert out["staged"] is False and "confirm" in out["reason"]
++
++
++def test_cli_offers_no_backdating_flag(candidate):
++    with pytest.raises(SystemExit) as exc:
++        S.main(["--feed", str(candidate["feed"]),
++                "--feed-sha256", candidate["feed_sha256"],
++                "--qualification", str(candidate["qualification"]),
++                "--qualification-sha256", candidate["qualification_sha256"],
++                "--as-of", "2026-10-01"])
++    assert exc.value.code == 2, "an unknown flag must be an argparse error"

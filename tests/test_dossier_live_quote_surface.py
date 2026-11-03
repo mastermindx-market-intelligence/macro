@@ -8,6 +8,7 @@ still told the reader a day-old price was live.
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -209,3 +210,23 @@ def test_revealing_a_background_tab_reads_immediately(client_text: str) -> None:
 def test_client_names_the_session_date_outside_regular_hours(client_text: str) -> None:
     """Upstream can hand back a PREVIOUS session's move; the reader is told."""
     assert "q.regular_session_date" in client_text
+
+
+def test_extended_quote_has_its_own_dated_bilingual_reading(template_text: str) -> None:
+    for binding in ("data-dq-regular-label", "data-dq-extended", "data-dq-ext-session",
+                    "data-dq-ext-price", "data-dq-ext-abs", "data-dq-ext-pct",
+                    "data-dq-ext-reference", "data-dq-ext-age", "data-dq-ext-status"):
+        assert binding in template_text
+    assert 'data-dq-ext-values hidden' in template_text
+    assert 'Extended quote unavailable. Showing the regular quote.' in template_text
+    assert '盘前盘后报价暂不可用，现显示常规时段报价。' in template_text
+
+
+def test_extended_controller_behavior_offline():
+    if not CLIENT.exists():
+        pytest.skip("site/ is not checked out in this sparse worktree")
+    result = subprocess.run(
+        ["node", "--test", "tests/js/dossier_live_quote.test.cjs"], cwd=ROOT,
+        text=True, capture_output=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

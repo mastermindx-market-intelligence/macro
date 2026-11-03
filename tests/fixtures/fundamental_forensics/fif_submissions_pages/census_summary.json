@@ -1,0 +1,500 @@
+{
+ "census_recorded_at": "2026-10-12T16:14:00Z",
+ "census_scope": "five_issuer_v1 D0 contract accessions vs latest verified submissions (filings.recent + filings.files[] pages)",
+ "issuers": [
+  {
+   "accessions": [
+    {
+     "accession": "0000320193-25-000079",
+     "covering_pages": [],
+     "filing_date": "2025-10-31",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0000320193-26-000020",
+     "covering_pages": [],
+     "filing_date": "2026-07-31",
+     "form": "10-Q",
+     "location": "recent"
+    }
+   ],
+   "cik": "0000320193",
+   "ticker": "AAPL"
+  },
+  {
+   "accessions": [
+    {
+     "accession": "0001640147-26-000008",
+     "covering_pages": [],
+     "filing_date": "2026-03-20",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-25-000052",
+     "covering_pages": [],
+     "filing_date": "2025-03-21",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-24-000101",
+     "covering_pages": [],
+     "filing_date": "2024-03-26",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-26-000037",
+     "covering_pages": [],
+     "filing_date": "2026-09-04",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-26-000030",
+     "covering_pages": [],
+     "filing_date": "2026-05-29",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-25-000211",
+     "covering_pages": [],
+     "filing_date": "2025-12-05",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-25-000187",
+     "covering_pages": [],
+     "filing_date": "2025-09-05",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-25-000110",
+     "covering_pages": [],
+     "filing_date": "2025-05-30",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-24-000250",
+     "covering_pages": [],
+     "filing_date": "2024-11-27",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-24-000207",
+     "covering_pages": [],
+     "filing_date": "2024-08-29",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-24-000135",
+     "covering_pages": [],
+     "filing_date": "2024-05-31",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001640147-26-000033",
+     "covering_pages": [],
+     "filing_date": "2026-09-02",
+     "form": "8-K",
+     "location": "recent"
+    }
+   ],
+   "cik": "0001640147",
+   "ticker": "SNOW"
+  },
+  {
+   "accessions": [
+    {
+     "accession": "0000018230-26-000008",
+     "covering_pages": [],
+     "filing_date": "2026-02-13",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-25-000008",
+     "covering_pages": [],
+     "filing_date": "2025-02-14",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-24-000009",
+     "covering_pages": [],
+     "filing_date": "2024-02-16",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-26-000046",
+     "covering_pages": [],
+     "filing_date": "2026-08-05",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-26-000021",
+     "covering_pages": [],
+     "filing_date": "2026-05-06",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-25-000048",
+     "covering_pages": [],
+     "filing_date": "2025-11-03",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-25-000040",
+     "covering_pages": [],
+     "filing_date": "2025-08-06",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-25-000016",
+     "covering_pages": [],
+     "filing_date": "2025-05-07",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-24-000053",
+     "covering_pages": [],
+     "filing_date": "2024-11-06",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-24-000045",
+     "covering_pages": [],
+     "filing_date": "2024-08-07",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-24-000020",
+     "covering_pages": [],
+     "filing_date": "2024-05-01",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000018230-26-000040",
+     "covering_pages": [],
+     "filing_date": "2026-08-04",
+     "form": "8-K",
+     "location": "recent"
+    }
+   ],
+   "cik": "0000018230",
+   "ticker": "CAT"
+  },
+  {
+   "accessions": [
+    {
+     "accession": "0000070858-26-000157",
+     "covering_pages": [],
+     "filing_date": "2026-02-25",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0000070858-25-000139",
+     "covering_pages": [
+      "CIK0000070858-submissions-004.json"
+     ],
+     "filing_date": "2025-02-25",
+     "form": "10-K",
+     "location": "CIK0000070858-submissions-004.json"
+    },
+    {
+     "accession": "0000070858-24-000122",
+     "covering_pages": [
+      "CIK0000070858-submissions-008.json"
+     ],
+     "filing_date": "2024-02-20",
+     "form": "10-K",
+     "location": "CIK0000070858-submissions-008.json"
+    },
+    {
+     "accession": "0000070858-26-000394",
+     "covering_pages": [],
+     "filing_date": "2026-07-31",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000070858-26-000249",
+     "covering_pages": [],
+     "filing_date": "2026-05-01",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000070858-25-000405",
+     "covering_pages": [],
+     "filing_date": "2025-10-31",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0000070858-25-000268",
+     "covering_pages": [
+      "CIK0000070858-submissions-002.json"
+     ],
+     "filing_date": "2025-07-31",
+     "form": "10-Q",
+     "location": "CIK0000070858-submissions-002.json"
+    },
+    {
+     "accession": "0000070858-25-000200",
+     "covering_pages": [
+      "CIK0000070858-submissions-003.json"
+     ],
+     "filing_date": "2025-04-30",
+     "form": "10-Q",
+     "location": "CIK0000070858-submissions-003.json"
+    },
+    {
+     "accession": "0000070858-24-000280",
+     "covering_pages": [
+      "CIK0000070858-submissions-005.json"
+     ],
+     "filing_date": "2024-10-29",
+     "form": "10-Q",
+     "location": "CIK0000070858-submissions-005.json"
+    },
+    {
+     "accession": "0000070858-24-000208",
+     "covering_pages": [
+      "CIK0000070858-submissions-006.json"
+     ],
+     "filing_date": "2024-07-30",
+     "form": "10-Q",
+     "location": "CIK0000070858-submissions-006.json"
+    },
+    {
+     "accession": "0000070858-24-000156",
+     "covering_pages": [
+      "CIK0000070858-submissions-007.json"
+     ],
+     "filing_date": "2024-04-30",
+     "form": "10-Q",
+     "location": "CIK0000070858-submissions-007.json"
+    },
+    {
+     "accession": "0000070858-26-000353",
+     "covering_pages": [],
+     "filing_date": "2026-07-14",
+     "form": "8-K",
+     "location": "recent"
+    }
+   ],
+   "cik": "0000070858",
+   "ticker": "BAC"
+  },
+  {
+   "accessions": [
+    {
+     "accession": "0001652044-26-000018",
+     "covering_pages": [],
+     "filing_date": "2026-02-05",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-25-000014",
+     "covering_pages": [],
+     "filing_date": "2025-02-05",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-24-000022",
+     "covering_pages": [],
+     "filing_date": "2024-01-31",
+     "form": "10-K",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-26-000071",
+     "covering_pages": [],
+     "filing_date": "2026-07-23",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-26-000048",
+     "covering_pages": [],
+     "filing_date": "2026-04-30",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-25-000091",
+     "covering_pages": [],
+     "filing_date": "2025-10-30",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-25-000062",
+     "covering_pages": [],
+     "filing_date": "2025-07-24",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-25-000043",
+     "covering_pages": [],
+     "filing_date": "2025-04-25",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-24-000118",
+     "covering_pages": [],
+     "filing_date": "2024-10-30",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-24-000079",
+     "covering_pages": [],
+     "filing_date": "2024-07-24",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-24-000053",
+     "covering_pages": [],
+     "filing_date": "2024-04-26",
+     "form": "10-Q",
+     "location": "recent"
+    },
+    {
+     "accession": "0001652044-26-000066",
+     "covering_pages": [],
+     "filing_date": "2026-07-22",
+     "form": "8-K",
+     "location": "recent"
+    }
+   ],
+   "cik": "0001652044",
+   "ticker": "GOOGL"
+  }
+ ],
+ "page_ceiling_bytes": 16777216,
+ "page_column_keys": [
+  "acceptanceDateTime",
+  "accessionNumber",
+  "act",
+  "core_type",
+  "fileNumber",
+  "filingDate",
+  "filmNumber",
+  "form",
+  "isInlineXBRL",
+  "isXBRL",
+  "isXBRLNumeric",
+  "items",
+  "primaryDocDescription",
+  "primaryDocument",
+  "reportDate",
+  "size"
+ ],
+ "pages": [
+  {
+   "bytes": 320799,
+   "cik": "0000070858",
+   "filingFrom": "2025-05-29",
+   "filingTo": "2025-08-11",
+   "name": "CIK0000070858-submissions-002.json",
+   "rows": 2048,
+   "sha256": "ed07761fc532dde8be5ee2738f91917c800eed026b3de6d479c656c32bb26dad",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-002.json"
+  },
+  {
+   "bytes": 323641,
+   "cik": "0000070858",
+   "filingFrom": "2025-03-04",
+   "filingTo": "2025-05-27",
+   "name": "CIK0000070858-submissions-003.json",
+   "rows": 2071,
+   "sha256": "fcd2548356db32825bbc0d4e2d7177499a830c5cc4838582945089f39ea74cb5",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-003.json"
+  },
+  {
+   "bytes": 315583,
+   "cik": "0000070858",
+   "filingFrom": "2024-12-06",
+   "filingTo": "2025-03-02",
+   "name": "CIK0000070858-submissions-004.json",
+   "rows": 2017,
+   "sha256": "691834a0a5bee215fd78c946864b74e460618b8af2efb33d4831c9e08db552f3",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-004.json"
+  },
+  {
+   "bytes": 314444,
+   "cik": "0000070858",
+   "filingFrom": "2024-08-19",
+   "filingTo": "2024-12-04",
+   "name": "CIK0000070858-submissions-005.json",
+   "rows": 2003,
+   "sha256": "5d3105ed725b9301da621700cf01daa74303e80d62311b052575aea755c6c1ca",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-005.json"
+  },
+  {
+   "bytes": 315735,
+   "cik": "0000070858",
+   "filingFrom": "2024-05-06",
+   "filingTo": "2024-08-17",
+   "name": "CIK0000070858-submissions-006.json",
+   "rows": 2007,
+   "sha256": "c945dedcbf16748a3ebed216cf3b32138fc4b77f3d9672dfdd6d3f9f782b785b",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-006.json"
+  },
+  {
+   "bytes": 313023,
+   "cik": "0000070858",
+   "filingFrom": "2024-02-27",
+   "filingTo": "2024-05-04",
+   "name": "CIK0000070858-submissions-007.json",
+   "rows": 2020,
+   "sha256": "80ad6ee7063243b581d24af73b7aa8686bb72c5a397b8864001b970532edd928",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-007.json"
+  },
+  {
+   "bytes": 311553,
+   "cik": "0000070858",
+   "filingFrom": "2023-11-02",
+   "filingTo": "2024-02-25",
+   "name": "CIK0000070858-submissions-008.json",
+   "rows": 2012,
+   "sha256": "055402ec7fb877f6619da004cd3b7fde0406e98d88249105447e658d00b28100",
+   "url": "https://data.sec.gov/submissions/CIK0000070858-submissions-008.json"
+  }
+ ],
+ "projections": {
+  "acquire_contract_first_night_bytes": 13884354,
+  "acquire_contract_worst_case_bytes": 16422772,
+  "capture_worst_case_bytes": 138230325,
+  "capture_worst_case_pct_of_budget": 51.4948,
+  "largest_page_bytes": 323641
+ },
+ "run_budget_bytes": 268435456,
+ "schema": "fundamental_forensics.fif_submissions_census_summary/v1"
+}

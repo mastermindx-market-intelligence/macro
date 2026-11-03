@@ -402,6 +402,19 @@ def drawdown_brake(alloc: pd.Series, ret: pd.Series, cfg: dict) -> pd.Series:
     return pd.Series(out, index=alloc.index)
 
 
+def _as_price(s: pd.Series) -> pd.Series:
+    """Float observations. Booleans and non-finite values are missing.
+
+    ``True`` must not become a price of 1 via ``astype(float)`` or ``to_numeric``.
+    """
+    if pd.api.types.is_bool_dtype(s):
+        return pd.Series(np.nan, index=s.index, dtype="float64")
+    if s.dtype == object:
+        s = s.mask(s.map(lambda v: isinstance(v, (bool, np.bool_))))
+    num = pd.to_numeric(s, errors="coerce")
+    return num.where(np.isfinite(num))
+
+
 def _completed_three_day_closes(close: pd.Series) -> pd.Series:
     """Preserve legacy 3D bins, exposing each only on its final daily close.
 
@@ -409,7 +422,8 @@ def _completed_three_day_closes(close: pd.Series) -> pd.Series:
     after that day's close, not at its midnight label). Moving only the label
     by two days preserves bin membership; switching to right-closed bins would
     change the signal definition. Missing/invalid bins remain unknown and the
-    unfinished terminal bin is omitted. Publication-time qualification remains
+    unfinished terminal bin is omitted. Booleans and non-finite values are
+    invalid prices, not zeroes or ones. Publication-time qualification remains
     the input owner's responsibility.
     """
     if close.empty:
@@ -418,7 +432,8 @@ def _completed_three_day_closes(close: pd.Series) -> pd.Series:
             or not close.index.is_monotonic_increasing or close.index.has_duplicates
             or not close.index.equals(close.index.normalize())):
         raise ValueError("Completed 3D closes require unique increasing daily dates")
-    usable = close.where(np.isfinite(close) & (close > 0))
+    usable = _as_price(close)
+    usable = usable.where(usable > 0)
     bins = usable.resample("3D", closed="left", label="left")
     completed = bins.last().where(bins.count() == 3)
     completed.index = completed.index + pd.Timedelta(days=2)
@@ -435,10 +450,10 @@ def bottom_pressure(price: pd.DataFrame) -> pd.Series:
     source publication and revision availability are separate input contracts.
     Returns a Series on the daily index in [0, 1].
     """
-    c = price["close"].astype(float)
-    h = price["high"].astype(float) if "high" in price else c
-    l = price["low"].astype(float) if "low" in price else c
-    o = price["open"].astype(float) if "open" in price else c
+    c = _as_price(price["close"])
+    h = _as_price(price["high"]) if "high" in price else c
+    l = _as_price(price["low"]) if "low" in price else c
+    o = _as_price(price["open"]) if "open" in price else c
     idx = c.index
 
     def _srsi_k(s: pd.Series, n: int = 14, sm: int = 3) -> pd.Series:
@@ -731,10 +746,10 @@ def tactical(inputs: dict, risk_idx: pd.Series, cfg: dict) -> pd.Series:
 # valuation axis: MVRV-Z, NUPL, Mayer (Tier-1 accuracy upgrade)
 # --------------------------------------------------------------------------- #
 def valuation(inputs: dict, cfg: dict) -> pd.DataFrame:
-    """The missing cycle anchor. MVRV-Z = (mcap - realized_cap) / rolling_std(mcap)
-    on a ~1-cycle window (ETF-era responsive). NUPL and Mayer are cheap orthogonal
-    cross-checks. All ~2010-> depth, so these are calibration anchors, not
-    confirmation. Emitted standalone — measured before any blend (§3 of the doc)."""
+    """F-MVRV cycle anchor. MVRV-Z = (mcap - realized_cap) / rolling_std(mcap)
+    on a ~1-cycle window (ETF-era responsive). NUPL is the identity 1 - 1/MVRV,
+    not an orthogonal cross-check. Mayer (close / SMA) is a separate price family.
+    Emitted standalone — measured before any blend (§3 of the doc)."""
     idx = inputs["price"].index
     out = pd.DataFrame(index=idx)
     mcap, rcap = inputs.get("mcap"), inputs.get("realized_cap")
@@ -1733,20 +1748,34 @@ def macro_overlay(inputs: dict, cfg: dict) -> pd.DataFrame:
 # contrarian capitulation / euphoria overlay (Tier-1)
 # --------------------------------------------------------------------------- #
 def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """Vote of orthogonal extremes — NUPL, supply-in-profit, Fear&Greed, MVRV-Z.
-    >=min_votes in one tail flags a contrarian regime: this is what lets the
-    dashboard tell an early-bull pullback (risk-off) from a cycle-bottom
-    capitulation (accumulate) — the Risk Index calibration already shows the
-    forward-return U-shape this resolves."""
+    """One vote per information family. F-MVRV (NUPL and MVRV-Z together),
+    supply-in-profit, and Fear&Greed. >=min_votes families in one tail flags a
+    contrarian regime. NUPL = 1 - 1/MVRV and MVRV-Z scales that same gap, so
+    they are one family and must not add."""
     idx = inputs["price"].index
     capit = pd.DataFrame(index=idx)
     euph = pd.DataFrame(index=idx)
 
-    nupl = inputs.get("nupl")
-    if nupl is not None:
-        n = nupl.reindex(idx).ffill()
-        capit["nupl"] = n < cfg.get("nupl_capitulation", 0.0)
-        euph["nupl"] = n > cfg.get("nupl_euphoria", 0.65)
+    # F-MVRV is one family. Either transform may trip the vote; they do not add.
+    # A missing observation stays missing rather than counting as a False vote.
+    nupl_s = inputs.get("nupl")
+    z_s = val["mvrv_z"] if "mvrv_z" in val else None
+    if nupl_s is not None or z_s is not None:
+        capit_f = pd.Series(False, index=idx)
+        euph_f = pd.Series(False, index=idx)
+        seen = pd.Series(False, index=idx)
+        if nupl_s is not None:
+            n = pd.to_numeric(nupl_s.reindex(idx).ffill(), errors="coerce")
+            seen = seen | n.notna()
+            capit_f = capit_f | (n < cfg.get("nupl_capitulation", 0.0))
+            euph_f = euph_f | (n > cfg.get("nupl_euphoria", 0.65))
+        if z_s is not None:
+            z = pd.to_numeric(z_s.reindex(idx), errors="coerce")
+            seen = seen | z.notna()
+            capit_f = capit_f | (z < cfg.get("z_under", 0.0))
+            euph_f = euph_f | (z > cfg.get("z_over", 3.5))
+        capit["mvrv_family"] = capit_f.where(seen)
+        euph["mvrv_family"] = euph_f.where(seen)
     sip = inputs.get("supply_in_profit_pct")
     if sip is not None:
         s = sip.reindex(idx).ffill(limit=5)
@@ -1757,11 +1786,6 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         f = fg.reindex(idx).ffill(limit=3)
         capit["fg"] = f < cfg["fg_capitulation"]
         euph["fg"] = f > cfg["fg_euphoria"]
-    if "mvrv_z" in val:
-        z = val["mvrv_z"]
-        capit["z"] = z < cfg.get("z_under", 0.0)
-        euph["z"] = z > cfg.get("z_over", 3.5)
-
     out = pd.DataFrame(index=idx)
     if capit.empty:
         return out

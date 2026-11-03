@@ -1,0 +1,25 @@
+{
+  "agentos_validation": {
+    "errors": 0,
+    "existing_warnings": 165,
+    "exit": 0
+  },
+  "ci_guard_process": "53162; result not yet consumed",
+  "existing_data_lab_regressions": {
+    "passed": 244,
+    "seconds": 11.72
+  },
+  "history_and_transport_tests": {
+    "passed": 155,
+    "seconds": 3.86
+  },
+  "installed_history_dossier": false,
+  "recorded_at": "2026-10-15T08:08:29.755371+00:00",
+  "schema": "market_memory.history_continuation_tests.v1",
+  "scope_evidence": "HISTORY_SCOPE_VERIFICATION_20261015.json",
+  "workflow_request_tests": {
+    "failed_before": 2,
+    "passed_after": 2,
+    "seconds_after": 2.31
+  }
+}

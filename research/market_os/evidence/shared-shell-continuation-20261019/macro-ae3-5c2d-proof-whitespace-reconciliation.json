@@ -1,0 +1,97 @@
+{
+  "record_type": "proof_whitespace_reconciliation",
+  "started_at": "2026-10-20T14:21:00.582956+00:00",
+  "finished_at": "2026-10-20T14:21:11.895875+00:00",
+  "original_failed_receipt": "macro-ae3-5c2d-proof-validation.json",
+  "original_failed_log": "macro-ae3-5c2d-proof-owned-whitespace.log.gz",
+  "original_failure_retained": true,
+  "exact_repairs": [
+    {
+      "file": "README.md",
+      "old_bytes": 55076,
+      "new_bytes": 55075,
+      "prior_committed_prefix_unchanged": true
+    },
+    {
+      "old_file": "macro-beta-before-e2d-publication-20261020T0536-remote.py",
+      "new_file": "macro-beta-before-e2d-publication-20261020T0536-remote.py.gz",
+      "raw_bytes": 3677,
+      "raw_sha256": "c53b62c77cc27142fc31f20e771a50428be6311af72249eec6140e5a068e78c0",
+      "gzip_bytes": 1543,
+      "gzip_sha256": "43cf0f109cd112a9ac22b11961676778a1b0bdadaa2f69d30feb226533aedf54",
+      "roundtrip_equal": true
+    }
+  ],
+  "reused_unchanged_checks": [
+    {
+      "check": "agentos",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "started_at": "2026-10-20T11:37:04.837732+00:00",
+      "finished_at": "2026-10-20T11:37:06.045645+00:00",
+      "exit": 0,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-proof-agentos.log",
+      "bytes": 30368,
+      "sha256": "65a40e15aa180f417e81669c042fa3d5d61753ce671388573d861316583679ad"
+    },
+    {
+      "check": "template-sync",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T11:37:06.046959+00:00",
+      "finished_at": "2026-10-20T11:37:09.645652+00:00",
+      "exit": 0,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-proof-template-sync.log",
+      "bytes": 44,
+      "sha256": "8978f102ef1207f759ad00b587d8a10ed40d27480ee9a7d3dc0cf1ea10fe9fd2"
+    },
+    {
+      "check": "p0b-closure",
+      "command": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-final-changed-paths.txt",
+        "--event",
+        "pull_request"
+      ],
+      "started_at": "2026-10-20T11:37:09.647291+00:00",
+      "finished_at": "2026-10-20T11:37:09.770692+00:00",
+      "exit": 0,
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-proof-p0b-closure.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "new_check": {
+    "check": "owned-whitespace",
+    "command": [
+      "git",
+      "-C",
+      "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+      "diff",
+      "--cached",
+      "--check",
+      "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+      "--"
+    ],
+    "started_at": "2026-10-20T14:21:11.075973+00:00",
+    "finished_at": "2026-10-20T14:21:11.895591+00:00",
+    "exit": 0,
+    "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-proof-owned-whitespace-after.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "checked_index": "a707d6d1d044ced4efccdab680772acdba5edb19"
+  },
+  "handoff_and_workstream_unchanged": true,
+  "source_runtime_or_tests_modified": false,
+  "all_documentation_checks_exit0_after_repair": true
+}

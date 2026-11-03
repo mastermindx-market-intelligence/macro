@@ -1,0 +1,14 @@
+{
+  "schema": "fundamental_forensics.cost_rates/v1",
+  "rates_id": "fif_cost_rates_v1",
+  "currency": "USD",
+  "rates": [
+    {"rate_id": "source.sec_edgar_get", "component": "source", "unit": "get", "usd_per_unit": 0.0, "status": "declared_rate", "verified": true, "basis_period": "one_time", "source": "SEC EDGAR public access under the SEC fair-access policy; no fee", "as_of": "2026-10-19"},
+    {"rate_id": "licence.sec_edgar", "component": "licence", "unit": "issuer", "usd_per_unit": 0.0, "status": "declared_rate", "verified": true, "basis_period": "one_time", "source": "C2 freeze section 6.5 item 5: public EDGAR only, no licence or purchase", "as_of": "2026-10-19"},
+    {"rate_id": "storage.object_gb_month", "component": "storage", "unit": "gb_month", "usd_per_unit": 0.015, "status": "declared_rate", "verified": false, "basis_period": "per_month", "source": "Cloudflare R2 standard storage public list price; seat-declared, not re-verified by this lane", "as_of": "2026-10-19"},
+    {"rate_id": "parse.host_cpu_second", "component": "parse", "unit": "cpu_second", "usd_per_unit": null, "status": "unmeasured", "verified": false, "basis_period": "one_time", "source": "self-hosted fleet; no amortised host rate has been declared", "as_of": "2026-10-19"},
+    {"rate_id": "inference.ai_costs_ledger", "component": "inference", "unit": "usd", "usd_per_unit": 1.0, "status": "declared_rate", "verified": true, "basis_period": "one_time", "source": "est_cost_usd of matching ai_costs.usage.v1 rows (lib/ai_costs.py pricing)", "as_of": "2026-10-19"},
+    {"rate_id": "review.operator_minute", "component": "review", "unit": "minute", "usd_per_unit": null, "status": "unmeasured", "verified": false, "basis_period": "one_time", "source": "no operator labour rate has been declared; minutes are reported", "as_of": "2026-10-19"}
+  ],
+  "inference_row_filter": {"stage_prefixes": ["fundamental_forensics", "fif"], "lane_prefixes": ["fundamental_forensics", "fif"]}
+}

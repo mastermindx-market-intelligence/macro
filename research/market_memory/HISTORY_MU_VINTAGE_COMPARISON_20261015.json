@@ -1,0 +1,52 @@
+{
+  "added_MU_tail_rows": 3,
+  "changed_field_counts": {
+    "close_tradj": 8482,
+    "drawdown_252ob_pct": 7910,
+    "realized_volatility_21ob_pct": 8482,
+    "relative_return_21ob_pp": 8442,
+    "return_1ob_pct": 8342,
+    "return_21ob_pct": 8463,
+    "return_5ob_pct": 8430,
+    "return_63ob_pct": 8471,
+    "sma_distance_200ob_pct": 8481,
+    "sma_distance_20ob_pct": 8482,
+    "sma_distance_50ob_pct": 8481
+  },
+  "current_date_available_rows": 48,
+  "default_study_selection_changed": false,
+  "installed_consumer_checks": [
+    {
+      "MU_present": true,
+      "date": "2026-10-09",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "37df447006843a648d5d16b3e8fc1583e91d9222e9ced0043d32f916c458b6a3",
+      "rows": 48
+    },
+    {
+      "MU_present": true,
+      "date": "2026-10-14",
+      "implementation_revision": "c223bd38c3750e5f4a4707d9ab3083b5089764f7",
+      "response_sha256": "e542957e5235133d64ae200cb0b99195662d7a9f507589e0a7bc256fdfb4978c",
+      "rows": 48
+    }
+  ],
+  "kind": "EXPLICIT_SEPARATE_RESTATED_STUDY_NOT_APPEND",
+  "new_MU_source_capture": {
+    "attempted": 1,
+    "bytes": 2332973,
+    "errors": [],
+    "failed": 0,
+    "new": 1,
+    "ok": 1,
+    "row_hints": 9264
+  },
+  "new_study_manifest_sha256": "71e9cb64d88fa4b9ef8b37712f3bb45df0ab6cf26a6518921b6fa7d71a99ec52",
+  "original_and_append_archives_not_rewritten": true,
+  "parent_append_manifest_sha256": "ccaff1599545c58d2f9e1bfcba81bd1088c65267b400f773fcd6f7d2f553e709",
+  "point_in_time_eligible": false,
+  "revised_historical_MU_rows": 8482,
+  "schema": "market_memory.adjustment_vintage_comparison.v1",
+  "state_rows": 345176,
+  "unchanged_rows": 336691
+}

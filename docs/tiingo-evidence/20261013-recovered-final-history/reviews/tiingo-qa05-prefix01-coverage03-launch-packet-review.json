@@ -1,0 +1,41 @@
+{
+  "schema": "tiingo.qa05.exact_coverage_launch_packet_review/v1",
+  "recorded_at_utc": "2026-10-13T21:33:56.189770+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation05-20261013-01a12ab6",
+  "verdict": "PASS_SINGLE_EXACT_FOREGROUND_COVERAGE01_LAUNCH_BINDING",
+  "packet_file": "tiingo-qa05-prefix01-coverage03-launch-packet.json",
+  "packet_sha256": "879ec2ea8381144452cf237047a5a587c45f404c8f5065bc643af8afc543af25",
+  "source_sha256": "7e734c3bfb9c6b4f79468eb1516a8d86d39361e427cb0dfa8227833acb4e93af",
+  "source_review_sha256": "c096a26ab708bc17ca3ff8f77357bbdeef837d2b457de3b55a9c0eaa7a507d35",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "actual_qualifier_root_sha256": "7cb548f9ebd9a47fa530f495fb637de0aa32c800bf40a1d1a1a550c7d1947b2f",
+  "actual_qualification_sha256": "12bd8681461c238af1441177fc4d94e416e180b4260dc02393813789607f5b4f",
+  "actual_qualifier_wait_sha256": "dd85ec50f796be101f6fbada6def873594e2dd880f8152ac08044a6d3c997be9",
+  "actual_qualifier_validation_sha256": "b8c1e33bb332065091248034265d7ffb595c90477d580a84a8320fbdb991d934",
+  "verification": [
+    "All40 frozen input hashes and exact source/wrapper matched",
+    "Actualroot15874 exit0 consumedchunka22cb7 binds childwait0, passedvalidation, exactq05 and semantic acceptance",
+    "q05 conserves121 WRITTEN valid receipts/zeroquality/269160bars with lineage/protected-state acceptance",
+    "Six exclusive wrapper/output slots are distinct, disjoint from inputs/source/packet, in E and truly absent by lstat",
+    "Coverage-only invocation produces one new census file; no materializer/provider/credential call"
+  ],
+  "admission": "Parent may invoke this exact packet once through reviewed foreground wrapper02 on the same carrier; changed binding or occupied output requires same-operation reconciliation.",
+  "expected_census_if_success": {
+    "accepted_nonempty_ticker_histories": 47539,
+    "accepted_distinct_bars": 100574156,
+    "basis": "Expected accepted-q arithmetic; not observed coverage output"
+  },
+  "required_after_launch": [
+    "Consume actual coverage native outcome, durable childwait, validation and exact census hash independently",
+    "Verify incremental121histories269160bars, exactq05 membership, predecessor5dadd and candidate conservation before actual root acceptance",
+    "Six-phase conservation and recovery-aware closure remain separate proof obligations; this review claims neither completed coverage nor programme acceptance"
+  ],
+  "reviewer_executed_stage": false,
+  "runtime_coverage_success_claimed": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "accepted_reader_rows_rescanned": false,
+  "delegation": false
+}

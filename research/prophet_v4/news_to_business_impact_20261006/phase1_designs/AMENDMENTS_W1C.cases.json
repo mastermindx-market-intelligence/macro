@@ -1,0 +1,15 @@
+{
+  "ruling": "DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS",
+  "note": "Overrides of frozen A-design worked fixtures. Case files stay byte-frozen; a consuming test applies these values and fails closed if this file is missing.",
+  "cases": {
+    "A4_transfer_obs/cases/W_obs_1600_landmark.json": {
+      "matched_window_start": "2026-09-25T13:30:00Z",
+      "matched_window_end": "2026-09-25T20:00:00Z",
+      "superseded": {
+        "matched_window_start": "2026-09-26T13:30:00Z",
+        "matched_window_end": "2026-09-26T20:00:00Z"
+      },
+      "reason": "X4: the matched window is counted in trading sessions; the frozen value is a Saturday."
+    }
+  }
+}

@@ -1,0 +1,352 @@
+{
+  "captured_at_utc": "2026-10-22T12:06:45.570130+00:00",
+  "ci_ancestor_introduced": {
+    "after_count": 353,
+    "before_count": 344,
+    "introduced": [
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "cn-standout-audit"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "coiled-mtf-anchor-era"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "conviction-profile"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "crypto-vector-r2-organs"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "dashboard-render-contract"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "international-workspace-browser"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "international-workspace-foundation"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "itr-turn-rotation"
+      },
+      {
+        "declared_path": "app/deploy/ohlc_origin_known_hosts",
+        "init_path": "app/__init__.py",
+        "job": "nw-lobe-unfreeze"
+      }
+    ]
+  },
+  "ci_scope_correction": {
+    "added_paths": {
+      "biocatalyst-serving": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "cn-standout-audit": [
+        "app/deploy/ohlc_origin_known_hosts"
+      ],
+      "coiled-mtf-anchor-era": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "conviction-profile": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "crypto-vector-r2-organs": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "dashboard-render-contract": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "intelligence-registry": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "international-workspace-browser": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "international-workspace-foundation": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "itr-turn-rotation": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "nw-lobe-unfreeze": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "unrun-picks-boards": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ],
+      "washout-turn-organ": [
+        "app/deploy/ohlc_origin_known_hosts",
+        "scripts/publish_ohlc.py"
+      ]
+    },
+    "manifest_sha256": "d0339c25184e441c7efd5ea304e0262ff4b8d2cbe9abb3fa4db06e75b804d2d6"
+  },
+  "executions": {
+    "ci_ancestor_final": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+        "--tb=short",
+        "-q",
+        "--basetemp",
+        "/tmp/portfolio-ohlc-delivery-20261022/ci-ancestor-final/pytest"
+      ],
+      "elapsed_seconds": 7.459228833089583,
+      "exit": 0,
+      "finished_at_utc": "2026-10-22T12:04:30.907123+00:00",
+      "source_sha256": {
+        ".github/ci/legacy-jobs.yml": "94df276ae0f0f464b80aa6db9615683fa59333e4ee5baae08b09fd446da6678b",
+        "app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tests/test_ci_pack.py": "0d8cbf026e3af688b410c07dd486ee33f08b79aac8ad9058d418d973e162644f"
+      },
+      "started_at_utc": "2026-10-22T12:04:23.447770+00:00",
+      "unchanged": true
+    },
+    "ci_closure": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py",
+        "-k",
+        "test_exclusive_curation_narrows_ordinary_code_prs or test_the_curated_exclusive_set_is_actually_declared or test_curated_exclusive_scopes_cover_their_own_import_closure or ancestor",
+        "--tb=short",
+        "-q",
+        "--basetemp",
+        "/tmp/portfolio-ohlc-delivery-20261022/ci-registration-closure/pytest"
+      ],
+      "elapsed_seconds": 164.87657774996478,
+      "exit": 1,
+      "finished_at_utc": "2026-10-22T12:02:27.949991+00:00",
+      "source_sha256": {
+        ".github/ci/legacy-jobs.yml": "d0339c25184e441c7efd5ea304e0262ff4b8d2cbe9abb3fa4db06e75b804d2d6",
+        "tests/test_ci_pack.py": "0d8cbf026e3af688b410c07dd486ee33f08b79aac8ad9058d418d973e162644f"
+      },
+      "started_at_utc": "2026-10-22T11:59:43.074932+00:00",
+      "unchanged": true
+    },
+    "ci_initial_registration": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py",
+        "-k",
+        "test_exclusive_curation_narrows_ordinary_code_prs or test_the_curated_exclusive_set_is_actually_declared or test_curated_exclusive_scopes_cover_their_own_import_closure or ancestor",
+        "--tb=short",
+        "-q",
+        "--basetemp",
+        "/tmp/portfolio-ohlc-delivery-20261022/ci-registration-final/pytest"
+      ],
+      "elapsed_seconds": 146.88738949992694,
+      "exit": 1,
+      "finished_at_utc": "2026-10-22T11:57:22.058186+00:00",
+      "source_sha256": {
+        ".github/ci/legacy-jobs.yml": "86ad6eaba74f9b6e48dc0f7f37f5c2033495ceb4428e649c49cbdefca79f5bf8",
+        "tests/test_ci_pack.py": "0d8cbf026e3af688b410c07dd486ee33f08b79aac8ad9058d418d973e162644f"
+      },
+      "started_at_utc": "2026-10-22T11:54:55.206669+00:00",
+      "unchanged": true
+    },
+    "core": {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_publish_ohlc.py",
+        "tests/test_build_chart_data.py",
+        "-q",
+        "--basetemp",
+        "/tmp/portfolio-ohlc-delivery-20261022/root-core-final/pytest"
+      ],
+      "elapsed_seconds": 3.7433380000293255,
+      "exit": 0,
+      "finished_at_utc": "2026-10-22T11:44:00.401397+00:00",
+      "log": "/tmp/portfolio-ohlc-delivery-20261022/root-core-final/pytest.log",
+      "source_sha256": {
+        ".github/ci/legacy-jobs.yml": "9ba74522a47edc195a87f34907ca19b7c58ab150563ca93e9ee619277c0273ba",
+        "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+        "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+        "tests/test_build_chart_data.py": "7d2200b2054eb334eec965e1ccedb7c13c7b69586eb29227c32eb5d4ba99fcf0",
+        "tests/test_publish_ohlc.py": "4ae3fb590a8894690d6030e5a3867a890fae4642b6c08cdb09d3c6a305c1a483"
+      },
+      "started_at_utc": "2026-10-22T11:43:56.657853+00:00",
+      "unchanged": true
+    },
+    "integration": {
+      "results": [
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "tests/test_push_retry.py",
+            "-k",
+            "ohlc_delivery or daily_engine_push_loss_is_red_without_suppressing_delivery_tail",
+            "-q",
+            "--basetemp",
+            "/tmp/portfolio-ohlc-delivery-20261022/rebased-integration/workflow"
+          ],
+          "elapsed_seconds": 3.0464541249675676,
+          "exit": 0,
+          "finished_at_utc": "2026-10-22T12:00:49.148881+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/rebased-integration/0.log",
+          "started_at_utc": "2026-10-22T12:00:46.102295+00:00"
+        },
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "tests/test_regwall_json_gate.py",
+            "-k",
+            "ohlc or broad_asset",
+            "-q",
+            "--basetemp",
+            "/tmp/portfolio-ohlc-delivery-20261022/rebased-integration/regwall"
+          ],
+          "elapsed_seconds": 1.5049484999617562,
+          "exit": 0,
+          "finished_at_utc": "2026-10-22T12:00:50.654013+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/rebased-integration/1.log",
+          "started_at_utc": "2026-10-22T12:00:49.149114+00:00"
+        },
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "scripts.check_dag_conformance"
+          ],
+          "elapsed_seconds": 2.5561906250659376,
+          "exit": 0,
+          "finished_at_utc": "2026-10-22T12:00:53.210394+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/rebased-integration/2.log",
+          "started_at_utc": "2026-10-22T12:00:50.654282+00:00"
+        }
+      ],
+      "source_sha256": {
+        ".github/workflows/daily.yml": "f3462056936e2a0206d415cff24689b2dfaedb41d8543dea424fa6cb1b01bc0b",
+        "config/dag.yml": "3422f50545d3858f7945e8f362ae3c6fd8925f5705e5fb5e92083e818aa7af52",
+        "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+        "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+        "tests/test_push_retry.py": "dc06571cc38a072fc9cc873aefda79ad9ec8a106175e916e7da4b65cee8aea3c",
+        "tests/test_regwall_json_gate.py": "bf26e01d661b4b2cbae7a60fa7f27c16597e7446cc3c3ec50571a6b105bbfe63"
+      },
+      "unchanged": true
+    },
+    "post_rebase": {
+      "results": [
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "tests/test_deploy_update_self_heal.py",
+            "-k",
+            "ohlc_delivery or repository_noop or update_script_has_valid_shell_syntax",
+            "-q",
+            "--basetemp",
+            "/tmp/portfolio-ohlc-delivery-20261022/post-rebase-validation/updater"
+          ],
+          "elapsed_seconds": 2.0173394170124084,
+          "exit": 0,
+          "finished_at_utc": "2026-10-22T11:47:33.057556+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/post-rebase-validation/0.log",
+          "started_at_utc": "2026-10-22T11:47:31.040050+00:00"
+        },
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "-m",
+            "pytest",
+            "tests/test_ci_pack.py",
+            "-k",
+            "test_exclusive_curation_narrows_ordinary_code_prs",
+            "-q",
+            "--basetemp",
+            "/tmp/portfolio-ohlc-delivery-20261022/post-rebase-validation/packing"
+          ],
+          "elapsed_seconds": 101.08414904098026,
+          "exit": 1,
+          "finished_at_utc": "2026-10-22T11:49:14.141800+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/post-rebase-validation/1.log",
+          "started_at_utc": "2026-10-22T11:47:33.057957+00:00"
+        },
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "scripts/check_contract_delta.py",
+            "--help"
+          ],
+          "elapsed_seconds": 0.09688108309637755,
+          "exit": 0,
+          "finished_at_utc": "2026-10-22T11:49:14.239055+00:00",
+          "log": "/tmp/portfolio-ohlc-delivery-20261022/post-rebase-validation/2.log",
+          "started_at_utc": "2026-10-22T11:49:14.142218+00:00"
+        }
+      ],
+      "source_sha256": {
+        ".github/ci/legacy-jobs.yml": "e022c1186caca1d0fa090dfece6db44df924bba3601accbc39d348189659f865",
+        "app/deploy/update.sh": "970a5008950ffcc7ffecc2d495c5aa88fa853c009f53b812c203cff37f0432e1",
+        "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+        "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+        "tests/test_ci_pack.py": "ba314f5641baee9fb1eae7e5faed6da8dbc7e91535ebc743943a7b75296a51c8",
+        "tests/test_deploy_update_self_heal.py": "4071001ad747201495606b8854c9c1af9a9050d068311b49bf2802f26d3d598f"
+      },
+      "unchanged": true
+    }
+  },
+  "limits": [
+    "local focused evidence; protected hosted CI remains required",
+    "no production payload publication or authenticated Portfolio acceptance",
+    "CI registration qualification uses 31 passing cases followed by the remaining corrected ratchet; not a single 32-case all-green execution"
+  ],
+  "rebase_base": "8c23f6b26a36ce20f5842590e41bb9d78bff1bac",
+  "schema": "portfolio.ohlc.delivery.validation.v1",
+  "source_commit_before_evidence": "93b5c78c153b81d948cf5e15c70008a49dd64d5c",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "94df276ae0f0f464b80aa6db9615683fa59333e4ee5baae08b09fd446da6678b",
+    ".github/workflows/daily.yml": "f3462056936e2a0206d415cff24689b2dfaedb41d8543dea424fa6cb1b01bc0b",
+    ".gitignore": "63591becd5b5ecb1b0cf18403103d49d50c9d3cf0a8a052ee50178cee9621781",
+    "app/deploy/ohlc_origin_known_hosts": "eca7a93ca24295b31034c4926a70ed2e3cc522b39b10a24bddc808f6e121942e",
+    "app/deploy/update.sh": "970a5008950ffcc7ffecc2d495c5aa88fa853c009f53b812c203cff37f0432e1",
+    "config/dag.yml": "3422f50545d3858f7945e8f362ae3c6fd8925f5705e5fb5e92083e818aa7af52",
+    "docs/PORTFOLIO_OHLC_ORIGIN_DELIVERY.md": "262760c06bf37af90705af06bc5e322af6cd32e224e15d3e315e97c306fb3435",
+    "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+    "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+    "tests/test_build_chart_data.py": "7d2200b2054eb334eec965e1ccedb7c13c7b69586eb29227c32eb5d4ba99fcf0",
+    "tests/test_ci_pack.py": "0d8cbf026e3af688b410c07dd486ee33f08b79aac8ad9058d418d973e162644f",
+    "tests/test_deploy_update_self_heal.py": "4071001ad747201495606b8854c9c1af9a9050d068311b49bf2802f26d3d598f",
+    "tests/test_publish_ohlc.py": "4ae3fb590a8894690d6030e5a3867a890fae4642b6c08cdb09d3c6a305c1a483",
+    "tests/test_push_retry.py": "dc06571cc38a072fc9cc873aefda79ad9ec8a106175e916e7da4b65cee8aea3c",
+    "tests/test_regwall_json_gate.py": "bf26e01d661b4b2cbae7a60fa7f27c16597e7446cc3c3ec50571a6b105bbfe63"
+  }
+}

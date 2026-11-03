@@ -2,9 +2,11 @@
 
 Builds a minimal ``.xlsx`` with :mod:`zipfile` only.  The Response sheet is
 the CSV projection from :meth:`MetricMatrix.to_csv_bytes` (same rows and
-columns, including the value-column ``_csv_safe`` exemption).  The Meta sheet
-carries scalar fields the response already holds plus ``exact_text_cells``
-when a Decimal cannot round-trip through IEEE-754.
+columns, including the value-column ``_csv_safe`` exemption).  A finite value
+that cannot round-trip through IEEE-754 is an inlineStr cell carrying its
+exact decimal text with no apostrophe (negative included); the Meta sheet
+carries scalar fields the response already holds plus ``exact_text_cells``,
+the A1 references of those exact-decimal text cells.
 """
 from __future__ import annotations
 
@@ -111,6 +113,15 @@ _STYLES = f"""\
 
 class _ExactNumeric:
     """CSV value-column spelling that must appear verbatim in ``<v>``."""
+
+    __slots__ = ("text",)
+
+    def __init__(self, text: str) -> None:
+        self.text = text
+
+
+class _ExactText:
+    """Finite non-IEEE decimal: exact text cell, no ``_csv_safe`` apostrophe."""
 
     __slots__ = ("text",)
 
@@ -226,7 +237,7 @@ def _csv_value_cell(text: str) -> Any:
         return text
     if _fits_ieee754(parsed):
         return _ExactNumeric(text)
-    return text
+    return _ExactText(text)
 
 
 def _meta_rows(
@@ -290,6 +301,13 @@ def _encode_cell(
     a1 = f"{_col_name(col_index)}{row_index}"
     if isinstance(value, _ExactNumeric):
         return _numeric_cell(a1, value.text)
+    if isinstance(value, _ExactText):
+        # The text already parsed as a finite Decimal, so it can only hold a
+        # sign, digits, a point and an exponent: no formula lead is possible
+        # and _csv_safe would corrupt the exact decimal (a negative value
+        # would gain a literal leading apostrophe inside the cell text).
+        exact_text_cells.append(a1)
+        return _inline_str_cell(a1, value.text)
     if isinstance(value, bool):
         return _inline_str_cell(a1, _csv_safe("true" if value else "false"))
     if isinstance(value, int):
@@ -298,7 +316,7 @@ def _encode_cell(
         if _fits_ieee754(decimal_value):
             return _numeric_cell(a1, text)
         exact_text_cells.append(a1)
-        return _inline_str_cell(a1, _csv_safe(text))
+        return _inline_str_cell(a1, text)
     if isinstance(value, Decimal):
         if not value.is_finite():
             return _inline_str_cell(a1, _csv_safe(str(value)))
@@ -306,7 +324,7 @@ def _encode_cell(
         if _fits_ieee754(value):
             return _numeric_cell(a1, text)
         exact_text_cells.append(a1)
-        return _inline_str_cell(a1, _csv_safe(text))
+        return _inline_str_cell(a1, text)
     if isinstance(value, datetime):
         return _inline_str_cell(a1, _csv_safe(_datetime_text(value)))
     if isinstance(value, date):

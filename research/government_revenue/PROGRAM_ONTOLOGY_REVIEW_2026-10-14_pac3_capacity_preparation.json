@@ -1,0 +1,185 @@
+{
+  "contract": "government_program_ontology_review_worksheet.v1",
+  "schema_version": "1.0.0",
+  "reviewed_at": "2026-10-14T12:13:19+00:00",
+  "reviewer": "Assigned Defense programme Meta-CEO, native Codex root 01a13300-c75b-79c3-83f9-79b3b4c01dc7 under Chris end-to-end commission; AI source review, not a claim of human review. Bounded source semantics reviewed through Fabric defense-capacity-repaired-source-review-01a13300-a; actual curator admission remains separate.",
+  "coverage": [
+    {
+      "scope": "program_identity",
+      "subject_type": "program",
+      "subject_id": "acq-program:pac-3-mse"
+    },
+    {
+      "scope": "public_capacity",
+      "subject_type": "program",
+      "subject_id": "acq-program:pac-3-mse"
+    }
+  ],
+  "rows": [
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:f03e2070ab91",
+        "evidence_class": "issuer_disclosure",
+        "sha256": "f03e2070ab9172b6afa6140fa5b280b8c6a39b5786c0063adccc0bad1f1ffc65",
+        "source_url": "https://www.boeing.com/features/2026/10/boeing-receives-contract-to-accelerate-patriot-seeker-output",
+        "retrieved_from_url": "https://www.boeing.com/features/2026/10/boeing-receives-contract-to-accelerate-patriot-seeker-output",
+        "retrieved_at": "2026-10-14T05:42:49+00:00",
+        "known_at": "2026-10-14T05:42:49+00:00",
+        "claim_scopes": [
+          "program_identity",
+          "public_capacity"
+        ],
+        "pinned_issuer_host": "www.boeing.com",
+        "pinned_issuer_host_basis": "Retained first-party corporate release identifies the asserting issuer; exact corporate/IR origin and document bytes are bound in the source-review packet. No inference of independent government verification."
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:17cc11b30b0a",
+        "evidence_class": "official_contract_announcement",
+        "sha256": "17cc11b30b0aa388018eecbf090fc0e54d9d9cf444a500b93eef055de29318a2",
+        "source_url": "https://www.army.mil/article/291670",
+        "retrieved_from_url": "https://www.army.mil/article/291670",
+        "retrieved_at": "2026-10-14T05:42:52+00:00",
+        "known_at": "2026-10-14T05:42:52+00:00",
+        "claim_scopes": [
+          "program_identity"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "evidence",
+      "candidate_row": {
+        "evidence_id": "ev:b558a0f8f3aa",
+        "evidence_class": "issuer_disclosure",
+        "sha256": "b558a0f8f3aa332c9962d15b12e306c98f7f66f05614c05b9a7dc08bbf9a908a",
+        "source_url": "https://news.lockheedmartin.com/2026-01-06-Lockheed-Martin-and-Department-of-War-Advance-Landmark-Acquisition-Transformation-to-Accelerate-PAC-3-R-MSE-Production",
+        "retrieved_from_url": "https://news.lockheedmartin.com/2026-01-06-Lockheed-Martin-and-Department-of-War-Advance-Landmark-Acquisition-Transformation-to-Accelerate-PAC-3-R-MSE-Production",
+        "retrieved_at": "2026-10-14T05:42:52+00:00",
+        "known_at": "2026-10-14T05:42:52+00:00",
+        "claim_scopes": [
+          "program_identity",
+          "public_capacity"
+        ],
+        "pinned_issuer_host": "news.lockheedmartin.com",
+        "pinned_issuer_host_basis": "Retained first-party corporate release identifies the asserting issuer; exact corporate/IR origin and document bytes are bound in the source-review packet. No inference of independent government verification."
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "program",
+      "identity_disposition": "new_identity",
+      "candidate_row": {
+        "id": "acq-program:pac-3-mse",
+        "revision": 1,
+        "name": "Patriot Advanced Capability-3 Missile Segment Enhancement (PAC-3 MSE)",
+        "aliases": [
+          "PAC-3 MSE"
+        ],
+        "source_identities": [
+          {
+            "system": "contract_announcement",
+            "native_identifier": "Patriot Advanced Capability-3 Missile Segment Enhancement, or PAC-3 MSE, interceptors",
+            "evidence_ref": "ev:17cc11b30b0a"
+          }
+        ],
+        "phase": "production",
+        "sponsor_agency": "U.S. government",
+        "budget_program_keys": [],
+        "verification_state": "reviewed",
+        "known_at": "2026-10-14T12:13:19+00:00",
+        "valid_from": "2026-10-14T12:13:19+00:00",
+        "valid_to": null,
+        "evidence_refs": [
+          "ev:17cc11b30b0a"
+        ]
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_capacity_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:pac-3-mse",
+        "product_scope": "component",
+        "product_label": "PAC-3 MSE seekers - Boeing issuer report",
+        "entity_id": null,
+        "kind": "announced_target",
+        "quantity": 3,
+        "comparator": "exact",
+        "unit": "relative_multiplier",
+        "period_label": "Previously announced seven-year framework; absolute baseline unspecified",
+        "known_at": "2026-10-14T12:13:19+00:00",
+        "valid_from": "2026-10-14T12:13:19+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:17cc11b30b0a",
+          "ev:f03e2070ab91"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-capacity:77b79da90686ae9f0c616d6b"
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_capacity_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:pac-3-mse",
+        "product_scope": "whole_program",
+        "product_label": "PAC-3 MSE interceptors - Lockheed Martin issuer report",
+        "entity_id": null,
+        "kind": "announced_target",
+        "quantity": 2000,
+        "comparator": "approximately",
+        "unit": "units_per_year",
+        "period_label": "Seven-year agreement; start/end not stated; issuer-stated approximate 600 baseline is unverified context",
+        "known_at": "2026-10-14T12:13:19+00:00",
+        "valid_from": "2026-10-14T12:13:19+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:17cc11b30b0a",
+          "ev:b558a0f8f3aa"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-capacity:1ce0b6f4c16037f216d6f93f"
+      }
+    },
+    {
+      "action": "admit",
+      "target_kind": "public_capacity_assertion",
+      "candidate_row": {
+        "revision": 1,
+        "program_id": "acq-program:pac-3-mse",
+        "product_scope": "whole_program",
+        "product_label": "PAC-3 MSE interceptors - Lockheed Martin issuer report",
+        "entity_id": null,
+        "kind": "demonstrated_throughput",
+        "quantity": 620,
+        "comparator": "exact",
+        "unit": "units",
+        "period_label": "2025 as reported; calendar versus fiscal basis not stated",
+        "known_at": "2026-10-14T12:13:19+00:00",
+        "valid_from": "2026-10-14T12:13:19+00:00",
+        "valid_to": null,
+        "verification_state": "reviewed",
+        "evidence_refs": [
+          "ev:17cc11b30b0a",
+          "ev:b558a0f8f3aa"
+        ],
+        "predecessor_id": null,
+        "succession_reason": null,
+        "id": "prog-capacity:674783ef0e7d727578f93774"
+      }
+    }
+  ]
+}

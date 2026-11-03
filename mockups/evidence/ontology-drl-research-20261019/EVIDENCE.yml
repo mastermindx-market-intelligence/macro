@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology-company.css
+  - templates/ontology-research.js
+  - templates/ontology.html.j2
+manifest: mockups/evidence/ontology-drl-research-20261019/manifest.json

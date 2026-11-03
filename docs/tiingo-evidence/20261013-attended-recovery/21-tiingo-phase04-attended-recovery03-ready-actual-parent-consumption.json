@@ -1,0 +1,21 @@
+{
+  "schema": "tiingo.attended_validation_READY_actual_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:55:18.959130+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "original_tool_session": 81573,
+  "actual_ready_tool_chunk": "6dda88",
+  "original_process_id": 27327,
+  "ready_sha256": "67fd77c9e800bb6147508ddd4d58d08d1ff8b3a4ef36906b902e5113e4407bc0",
+  "actual_ready_return_consumed": true,
+  "process_terminal_exit_code": null,
+  "validation_stage_success_explicitly_consumed": true,
+  "revised_validation_gate_explicitly_accepted": true,
+  "method_sha256": "a48d23bb49f16205a57ad46ce22c04a07068dc67eed52fc56e5ebdbe0330296f",
+  "plan_sha256": "eb75c83b6f5de511ea41377844f622a20a1ac5ff5656f81607d1daacb6b92aa5",
+  "root_proof_contract_acceptance_sha256": "d6c515d852463dd5c0a60dcf0bcff732e2b09833c8aa29350fd1c6f33f7e167f",
+  "exact_source_review_sha256": "54606d2fce15019b5f07118567b0721925de13a2e00b1b67b5f95c9bca1ca0ed",
+  "historical20348_terminal_rc0_not_relabelled": true,
+  "provider_requests": 0,
+  "credentials_read": false
+}

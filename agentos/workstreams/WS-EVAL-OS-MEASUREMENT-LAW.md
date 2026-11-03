@@ -37,16 +37,10 @@ waves:
     title: Append-only law + forward-only accrual
     status: in_progress
     next_action: >
-      stock_desk general forward accrual is now PROVEN_LIVE from a real production registration:
-      data/qledger/evidence_clock_start/stock_desk.json starts at
-      2026-08-29T11:08:11.609328+00:00 for 20 trading days. stock_desk matched-control remains
-      truthfully NOT STARTED because the accepted stock receipts did not carry a valid governed
-      control. thematic_desk still has no durable general clock. The old E1 worker child was
-      terminally stopped for stale worker continuity after its effects were reconciled. A fresh
-      bounded E1 recovery child must classify why the already-wired real US thematic nightly path
-      yielded no registrable thesis/claim, produce the first lawful thematic prospective claim +
-      clock when the underlying desk actually makes one (or repair only a proven blocking defect),
-      and return explicit real grader/cohort proof that pre-clock rows are excluded.
+      General evidence clocks now exist for demand_chain (2026-08-19), stock_desk (2026-08-29)
+      and thematic_desk (2026-08-31). Preserve their original receipts. Current runner-local
+      control qualification, cohort exclusion and genuine normal-run evidence still require
+      owner evidence; absence in Git is not absence in runtime.
   - id: W5
     title: Control-leg decision
     status: done
@@ -56,12 +50,11 @@ waves:
       demand_chain are matched-control-required; thematic_desk is benchmark-only. #5665/#5672
       repaired demand-chain wiring/replay semantics.
 next_action: >
-  Place and execute fresh child eval-os-e1-thematic-cohort-recovery-20260829-sol-001 under the
-  current protected Skillpack. Do not redo the stock repair or stock general-clock start. Close the
-  remaining E1 truth gap: classify the real US thematic zero-output path, obtain the first lawful
-  thematic_desk prospective clock from real production without manufacturing a thesis, and prove
-  the real grader/cohort excludes pre-clock rows. Preserve demand_chain's runner-local control law
-  and stock matched-control NOT STARTED state until real governed evidence changes it.
+  Preserve all three accepted general clocks. Verify current original scheduled producer/grader
+  and cohort/control qualification through their existing owners; do not restart the superseded
+  thematic first-clock task. Continue final composed adversarial acceptance and staged metric-
+  validity qualification on PR #6651. The latest inspected scheduled collect failed and its
+  older persisted status cannot qualify that run.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -74,7 +67,7 @@ landmines:
   - "engine/source_registry.py keeps its OWN _add_trading_days NYSE walker and grades narrative_source_call through its own exit. 'ONE resolver' is true only for claims that grade through qledger; do not overstate qledger scope."
   - "Current production track_record contains explicit and legacy bases and refuses pooling; future consumers must preserve this rather than reconstructing family statistics from raw mixed rows."
   - "data/qledger/control_evidence_clock_start/ is intentionally runner-local/untracked after #5970. A missing Git file is not proof a live clock is absent; production host/runtime truth must be read without inventing another canonical copy."
-  - "stock_desk now has a durable real general clock; thematic_desk is the only focal desk still missing a tracked general evidence_clock_start receipt."
+  - "All three focal general clocks exist. First-event annotations are immutable and distinct from current declared rulers or available grades."
   - "The canonical nightly thematic path is already wired daily engine -> cl_baskets -> build_baskets -> build_allocation -> _run_thematic_desk -> engine.thematic_desk.run. Do not invent a second producer or misclassify the remaining gap as a generic scheduler absence."
 do_not_redo:
   - "Do NOT re-propose 'the horizon fix is a one-line in_scope_horizons change'. The defect was missing unit declaration."
@@ -91,6 +84,7 @@ artifacts:
   - research/PREREG_P0C1_DIRECTION_CORRECT_CONTROL_HITS.md
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
+  - research/EVAL_OS_CONTINUATION_2026-10-12.md
 ---
 
 ## Reconciliation — 2026-08-27
@@ -128,3 +122,11 @@ The old E1 child received terminal `SOL CLOSED / STOP` on Slack thread
 `C0BSBM78V1N/1787896831.113919` at message `1788024583.456369`; its temporary watcher was ordered
 disarmed. The parent Eval OS program remains active. A fresh recovery child is required for the
 remaining thematic + cohort proof rather than silently moving the old worker/session.
+
+## Current clock reconciliation — 2026-10-12
+
+`git show a8e054ce5d7d44e48ff552841dc93d3c0ec87149:data/qledger/evidence_clock_start/thematic_desk.json` confirms the original thematic first registration at `2026-08-31T05:01:42.762963+00:00`,20 trading days, source09cc2e0f465c5a27f7382b3656694b5d068ef00d. The stock receipt remains2026-08-29T11:08:11.609328+00:00. Earlier absent-clock text describes its historical observation only. No new receipt or registration is authorized by this correction. Current acceptance still owes real cohort/control qualification and natural-run status.
+
+## Current consumer qualification — 2026-10-13
+
+The internal existing response-eval owner now has accepted finite synthetic seven-class/overlap/trial/look/contamination contracts and136 affected controls. This is deterministic internal QA, not empirical class qualification or protected study access. The evidence consumer preserves recorded cohorts, control and whole-family baseline populations, clock partitions and explicit zero/null; current/all-input qualification remains unavailable even when named local generations match. No registration event, control origin or grade horizon changed. Natural owner progression and original excluded study/producer obligations remain open.

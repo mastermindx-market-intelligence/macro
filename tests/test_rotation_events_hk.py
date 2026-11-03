@@ -352,7 +352,7 @@ def test_hk_lane_unarmed_state_written_no_ledger(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _hk_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_hk")
     state_p = tmp_path / "rotation_events_hk" / "state.json"
     ledger_p = tmp_path / "rotation_events_hk" / "events.jsonl"
@@ -368,7 +368,7 @@ def test_hk_lane_armed_ledger_advances(tmp_path, monkeypatch):
     a, b = _aligned_pair()
     sectors = _hk_sectors(a, b)
     re_.run_nightly(sectors, tmp_path,
-                    generated_utc="test",
+                    generated_utc="2026-10-01 05:00 UTC",
                     data_subdir="rotation_events_hk")
     ledger_p = tmp_path / "rotation_events_hk" / "events.jsonl"
     assert ledger_p.exists(), (

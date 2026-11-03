@@ -65,6 +65,46 @@ AUTHORITY_FLAGS = {
     "trade_authority": False,
 }
 
+# Successor text for a retired TUNE (REG §7 after the X2-05 fold). Not part of
+# the prereg spec; changing it does not move the prereg digest.
+RETIREMENT_SUCCESSOR = "— (none registered); owner = seat/S0"
+
+
+def refuse_nonfalse_authority(seal: dict | None = None) -> None:
+    """Refuse any authority flag that is not literal False.
+
+    Checks the module AUTHORITY_FLAGS mapping, then (when a seal dict is
+    given) top-level seal['authority_flags'] and seal['labels']['authority_flags'].
+    Absence of the top-level key is tolerated for the v1 seal only by falling
+    back to labels; absence is never treated as permission to be non-false.
+    """
+    for key, value in AUTHORITY_FLAGS.items():
+        if value is not False:
+            raise ValueError(
+                f"AUTHORITY_FLAGS[{key!r}] is {value!r}; every authority flag "
+                "must be literal False")
+    if seal is None:
+        return
+    locations = []
+    top = seal.get("authority_flags")
+    if top is not None:
+        locations.append(("top-level", top))
+    labels = seal.get("labels") or {}
+    under_labels = labels.get("authority_flags")
+    if under_labels is not None:
+        locations.append(("labels", under_labels))
+    if top is None and under_labels is None:
+        raise ValueError(
+            "seal carries no authority_flags at top-level or under labels")
+    for loc_name, mapping in locations:
+        if not isinstance(mapping, dict):
+            raise ValueError(f"authority_flags under {loc_name} is not a mapping")
+        for key, value in mapping.items():
+            if value is not False:
+                raise ValueError(
+                    f"authority_flags[{key!r}] under {loc_name} is {value!r}; "
+                    "every authority flag must be literal False")
+
 # A07 identity resolution instants (security_master ingested_at, as stored).
 IDENTITY_RESOLVED_AS_OF = {
     "SEC:US-XNYS-BABA": "2026-08-21T10:17:27",

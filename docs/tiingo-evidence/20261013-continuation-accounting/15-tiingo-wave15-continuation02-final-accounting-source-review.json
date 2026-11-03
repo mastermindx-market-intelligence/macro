@@ -1,0 +1,35 @@
+{
+  "schema": "tiingo.bounded_physical_final_accounting_source_review/v1",
+  "recorded_at_utc": "2026-10-13T02:42:19.495310+00:00",
+  "decision": "PASS",
+  "method_sha256": "cb89aef29025589ab3b7e99d317285d26e4a4a1396e9835dfcb64e2166ded3c5",
+  "accepted_predecessor_method_sha256": "7560a0b20d17ebabad0085920305f76de08aedb65a654769e3b0ddcaf7b248a1",
+  "core_sha256": "c6932707a653fd825256a51531b1e320661b2561ef1633edc52880fd8412cebd",
+  "scope_sha256": "39ceba80e6de58c23781156f69b075c1ac5d15499fb03feaf4f9d1349090649a",
+  "plan_sha256": "9ce4a829152152d6558c4170bf7033817453f5207c5faa02e72718371ee1e3fb",
+  "actual_capture_result_sha256": "259a104731b007c3465c7c001c40df49ade457793ec3030eb90e5871d790fbdd",
+  "actual_capture_parent_sha256": "461c416c8dd91cceb605199bf6d98673c12640def8041f532323b0c0954a5107",
+  "findings": [
+    "Exact diff from accepted756 changes only phase02 naming, c693 core pin, session57125,2015 cardinalities and output schema field. Existing physical accounting validation mechanism retained.",
+    "All core PINS and current collector/producer source bytes verified. Actual scope and plan agree with original remaining budget24564798615; accounting adds no capture or budget-changing effect.",
+    "Actual capture parent binds consumed57125 exit1 and exact result259a to reviewed scope/method. Result settled at2026-10-13T02:30:36.374956+00:00 with no fatal exception and false all-selected completion.",
+    "Independent ordered admission/task check establishes122 unique in-range admissions,121 successes,1TRPCF TimeoutError and1893 never-admitted; union is exact2015 and rolling-four gaps pass. Captured raw bytes51532314.",
+    "Only actual consumed phase02 qualification-window parents can authorize matching phase02 q/coverage files. No accepted parent means no accounting output. Every success must match qualified or whole-quality disposition before output.",
+    "Physical clocks, frozen selection, exact source method, empty/nonempty flags, quality scalar/raw/no-projection checks, retained partial hashes and raw/row sums remain unchanged. New exclusive output cannot overwrite predecessor proofs."
+  ],
+  "actual_remaining_gate": "At review no phase02 qualification-window actual-parent-consumption file existed and no accounting output existed. Wait for actual97444 terminal consumption and accurate bound window parent, with all captured121 successes dispositioned, before executing accounting.",
+  "limitations": [
+    "Source PASS is not proof that121 captured successes are already qualified.",
+    "No failed-request retry, successor capture, full2015 capture claim or programme acceptance is authorized.",
+    "Zero-success/no-qualification-proof outcomes still fail closed under inherited acceptedq requirement."
+  ],
+  "review_actions": {
+    "method_executed": false,
+    "provider_calls": 0,
+    "credentials_accessed": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "offline_diff_hash_mapping_arithmetic_checks": true,
+    "review_artifact_only_write": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "tiingo.actual_original_finite_capture_terminal_parent_consumption/v1",
+  "recorded_at_utc": "2026-10-13T02:19:17.611614+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "original_tool_session": 33372,
+  "original_exit_code": 1,
+  "actual_original_terminal_return_consumed": true,
+  "actual_result_sha256": "18c5d5b16917aafc0d1c1c1959ee45b62bfb7ad870b66c058e1fb06dff299df8",
+  "actual_scope_sha256": "3ce93ca004e71564f5b9e85444b02bf3be53a3255ee44c40152b285331bb378b",
+  "capture_method_sha256": "dccefc622669e985443ae1434a311185c4f50d87fec28df78da6e18f1c16b934",
+  "actual_original_execution_log_sha256": "d85841c97c2421b27c1f4c0e61107fcbdddb7c2c2a288bf8af1583f8ccbc77a8",
+  "successful_requests": 615,
+  "held_attempted_failures": 1,
+  "held_failed_symbols": [
+    "TORSF"
+  ],
+  "never_admitted_count": 2015,
+  "all_selected_captured": false,
+  "all_qualification_and_accounting_returns_consumed": false,
+  "failed_requests_retried": false,
+  "programme_acceptance_claimed": false
+}

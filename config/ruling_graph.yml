@@ -1024,7 +1024,7 @@ rulings:
     experiment_ref: null
     fdr_family: null
     precedence_rank: 1
-    source_doc: "CLAUDE.md"
+    source_doc: "docs/agent_guides/CLAUDE_MODEL_ROUTING.md"
     source_quote: "The main session may run a frontier model (Fable/Opus). **Never let fan-outs inherit it.** Workflow `agent()` calls and Agent-tool spawns inherit the session model unless you pass `model:` explicitly — under ultracode that silently burns frontier tokens on mechanical work. Route every spawn:"
     source_pr: 1241
     supersedes: []
@@ -1060,7 +1060,7 @@ rulings:
     experiment_ref: null
     fdr_family: null
     precedence_rank: 1
-    source_doc: "CLAUDE.md"
+    source_doc: "docs/agent_guides/CLAUDE_MODEL_ROUTING.md"
     source_quote: "Enforcement: a PreToolUse hook (`.claude/hooks/model_routing_guard.py`, wired in `.claude/settings.json`) denies Agent/Task spawns without an explicit model, `fable` spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose `agent()` calls carry no `model:`/`agentType` routing (or route to fable without a script-level FABLE-WHY line)."
     source_pr: 1241
     supersedes: []
@@ -1098,7 +1098,7 @@ rulings:
     experiment_ref: null
     fdr_family: null
     precedence_rank: 1
-    source_doc: "CLAUDE.md"
+    source_doc: "docs/agent_guides/CLAUDE_HOUSE_LAWS.md"
     source_quote: "branch off **fresh `origin/main`** (never reuse a squash-merged branch); finish via commit → push → PR → same-day squash-merge. Stash stack is repo-global — never bare `git stash`/`pop`. Main checkout is often occupied by other agents; work in worktrees, never touch main checkout's git state."
     source_pr: 1241
     supersedes: []
@@ -1136,7 +1136,7 @@ rulings:
     experiment_ref: null
     fdr_family: null
     precedence_rank: 1
-    source_doc: "CLAUDE.md"
+    source_doc: "docs/agent_guides/CLAUDE_HOUSE_LAWS.md"
     source_quote: "display-only until gauntleted; pre-registered gates; nulls printed, not hidden. The word \"validated\" in user-facing text is CI-enforced (`scripts/check_validated_claims.py`). LLMs may only de-escalate calibrated keys — never originate signals, scores, or escalations."
     source_pr: 1241
     supersedes: []
@@ -1172,7 +1172,7 @@ rulings:
     experiment_ref: null
     fdr_family: null
     precedence_rank: 1
-    source_doc: "CLAUDE.md"
+    source_doc: "docs/agent_guides/CLAUDE_HOUSE_LAWS.md"
     source_quote: "nightly is the sole advancer of forward ledgers; intraday lanes discard `data/` writes."
     source_pr: 1241
     supersedes: []

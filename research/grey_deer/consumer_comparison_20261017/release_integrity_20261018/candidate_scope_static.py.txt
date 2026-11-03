@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+"""Catalogue a fixed commit's Python import closure without importing its code.
+
+Reads Git objects only. The sole write is a new JSON report outside --repo.
+This is a conservative static aid, not release admission or runtime validation.
+"""
+
+import argparse
+import ast
+from collections import deque
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+
+LIMITATIONS = [
+    "The graph describes only the candidate revision; deleted predecessor paths are listed, not traversed.",
+    "Resolution assumes the repository root is on sys.path and uses case-sensitive tracked .py paths. "
+    "Installed packages, gitlinks, compiled modules, generated/untracked files, alternate source roots, "
+    "sys.path/__path__ changes and environment-specific import hooks are not resolved.",
+    "All lexical scopes and branches are included, including deferred functions, dead branches and "
+    "TYPE_CHECKING blocks. Reachability is an over-approximation, not proof of execution.",
+    "Recognized dynamic names are direct/aliased importlib.import_module and __import__ calls. "
+    "Aliases are collected without scope or rebinding analysis. Reflection, wrappers, eval/exec and "
+    "unrecognized loaders can hide imports. Reported dynamic sites cover parsed reached files only.",
+    "From-import names may be attributes rather than submodules; both local possibilities are retained. "
+    "Star exports and nonliteral dynamic names/fromlists remain unresolved.",
+    "No first-party module is imported or executed. Imports alone omit configuration, templates, "
+    "startup effects, service wiring, data/schema dependencies and non-Python consumers.",
+    "Unreached does not mean inert. This graph does not prove runtime compatibility, complete release "
+    "scope, current branch identity, writer custody, deployment permission or production acceptance.",
+]
+UNRESOLVED_LOADERS = {"spec_from_file_location", "spec_from_loader", "module_from_spec",
+                      "exec_module", "load_module"}
+
+
+def fixed_oid(value):
+    if not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", value):
+        raise argparse.ArgumentTypeError("use a full lowercase commit object ID, not a moving ref")
+    return value
+
+
+def object_digest(kind, data, oid):
+    digest = hashlib.new("sha1" if len(oid) == 40 else "sha256")
+    digest.update(kind.encode() + b" " + str(len(data)).encode() + b"\0" + data)
+    return digest.hexdigest()
+
+
+class Objects:
+    def __init__(self, repo):
+        self.repo = repo
+        self.cache = {}
+        self.env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        self.env.update(GIT_OPTIONAL_LOCKS="0", GIT_NO_REPLACE_OBJECTS="1",
+                        GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="", GIT_TERMINAL_PROMPT="0")
+
+    def git(self, *args):
+        result = subprocess.run(["git", "--no-pager", "-C", str(self.repo), *args],
+                                env=self.env, capture_output=True, check=False, timeout=60)
+        if result.returncode:
+            raise RuntimeError("git " + args[0] + " failed: " +
+                               result.stderr.decode("utf-8", "replace")[:1500])
+        return result.stdout
+
+    def read(self, kind, oid):
+        key = (kind, oid)
+        if key not in self.cache:
+            data = self.git("cat-file", kind, oid)
+            if object_digest(kind, data, oid) != oid:
+                raise RuntimeError("object identity mismatch: " + oid)
+            self.cache[key] = data
+        return self.cache[key]
+
+    def revision(self, oid):
+        data = self.read("commit", oid)
+        headers = data.split(b"\n\n", 1)[0].splitlines()
+        tree = next(line[5:].decode("ascii") for line in headers if line.startswith(b"tree "))
+        return {"commit": oid, "tree": tree, "commit_bytes_sha256": hashlib.sha256(data).hexdigest(),
+                "parents": [line[7:].decode("ascii") for line in headers if line.startswith(b"parent ")]}
+
+    def tree(self, oid):
+        entries = {}
+        for row in self.git("ls-tree", "-r", "-z", "--full-tree", oid).split(b"\0"):
+            if not row:
+                continue
+            header, path = row.split(b"\t", 1)
+            mode, kind, object_id = header.decode("ascii").split()
+            entries[path.decode("utf-8", "surrogateescape")] = {
+                "mode": mode, "type": kind, "git_oid": object_id}
+        return entries
+
+
+def argument(call, name, position):
+    if len(call.args) > position:
+        return call.args[position]
+    return next((item.value for item in call.keywords if item.arg == name), None)
+
+
+def literal_string(node):
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left, right = literal_string(node.left), literal_string(node.right)
+        if left is not None and right is not None:
+            return left + right
+    return None
+
+
+def relative_name(package, level, tail):
+    parts = package.split(".") if package else []
+    if level < 1 or level > len(parts):
+        return None
+    return ".".join(parts[:len(parts) - level + 1] + ([tail] if tail else []))
+
+
+class Closure:
+    def __init__(self, objects, tree):
+        self.objects, self.tree = objects, tree
+        self.directories = {"/".join(path.split("/")[:i]) for path in tree
+                            for i in range(1, len(path.split("/")))}
+        self.modules, self.sources = {}, {}
+        self.queue = deque()
+        self.imports, self.unresolved, self.dynamic, self.errors = [], [], [], []
+
+    def locate(self, name):
+        if not name or any(not part or "/" in part or "\\" in part for part in name.split(".")):
+            return None
+        stem = name.replace(".", "/")
+        for path, kind in ((stem + "/__init__.py", "package"), (stem + ".py", "module")):
+            if path in self.tree:
+                return path, kind
+        return (None, "namespace") if stem in self.directories else None
+
+    def enqueue(self, name, location):
+        path, kind = location
+        self.modules.setdefault(name, {"path": path, "kind": kind})
+        if path is not None and path not in self.sources:
+            self.sources[path] = {"module": name, **self.tree[path], "parse_status": "queued"}
+            self.queue.append((name, path))
+
+    def reach(self, name, site):
+        parents = []
+        parts = name.split(".") if name else []
+        for i in range(1, len(parts)):
+            parent = ".".join(parts[:i])
+            path = parent.replace(".", "/") + "/__init__.py"
+            if path in self.tree:
+                parents.append(path)
+                self.enqueue(parent, (path, "package"))
+        location = self.locate(name)
+        edge = {**site, "target": name, "parent_initializers": parents,
+                "resolution": location[1] if location else "external_or_unresolved"}
+        self.imports.append(edge)
+        if location:
+            self.enqueue(name, location)
+        else:
+            self.unresolved.append(edge)
+        return location is not None
+
+    def member(self, base, name, site):
+        child = base + "." + name
+        if name != "*" and self.locate(child):
+            self.reach(child, {**site, "kind": "possible_from_submodule"})
+        else:
+            self.unresolved.append({**site, "target": child,
+                                    "resolution": "star_exports_unresolved" if name == "*"
+                                    else "attribute_or_unresolved_submodule"})
+
+    def dynamic_call(self, call, loader, site, package):
+        name = literal_string(argument(call, "name", 0))
+        detail = {**site, "loader": loader, "literal_name": name}
+        if name is None:
+            self.dynamic.append({**detail, "reason": "nonliteral_or_missing_name"})
+            return
+        if loader == "__import__":
+            level = argument(call, "level", 4)
+            if level is not None and not (isinstance(level, ast.Constant) and level.value == 0):
+                self.dynamic.append({**detail, "reason": "relative_builtin_import_context_unresolved"})
+                return
+        if name.startswith("."):
+            package_arg = argument(call, "package", 1)
+            dynamic_package = literal_string(package_arg)
+            if isinstance(package_arg, ast.Name) and package_arg.id == "__package__":
+                dynamic_package = package
+            level = len(name) - len(name.lstrip("."))
+            name = relative_name(dynamic_package or "", level, name[level:])
+            if not name:
+                self.dynamic.append({**detail, "reason": "relative_dynamic_package_unresolved"})
+                return
+        local = self.reach(name, {**site, "kind": "literal_dynamic_import", "loader": loader})
+        if loader == "__import__":
+            fromlist = argument(call, "fromlist", 3)
+            if fromlist is None or (isinstance(fromlist, ast.Constant) and fromlist.value is None):
+                return
+            if isinstance(fromlist, (ast.List, ast.Tuple)) and all(literal_string(n) is not None for n in fromlist.elts):
+                if local:
+                    for item in fromlist.elts:
+                        self.member(name, literal_string(item), site)
+            else:
+                self.dynamic.append({**detail, "reason": "nonliteral_or_unsupported_fromlist"})
+
+    def scan(self, module, path, parsed):
+        package = module if path.endswith("/__init__.py") else module.rpartition(".")[0]
+        nodes = list(ast.walk(parsed))
+        importlib_names, loader_names = {"importlib"}, {"__import__": "__import__"}
+        for node in nodes:
+            if isinstance(node, ast.Import):
+                importlib_names.update(a.asname or a.name for a in node.names if a.name == "importlib")
+            if isinstance(node, ast.ImportFrom) and node.level == 0:
+                for alias in node.names:
+                    if node.module == "importlib" and alias.name == "import_module":
+                        loader_names[alias.asname or alias.name] = "import_module"
+                    if node.module == "builtins" and alias.name == "__import__":
+                        loader_names[alias.asname or alias.name] = "__import__"
+                    if node.module and node.module.startswith("importlib") and alias.name in UNRESOLVED_LOADERS:
+                        loader_names[alias.asname or alias.name] = alias.name
+        for node in nodes:
+            site = {"source_module": module, "path": path, "line": getattr(node, "lineno", 0),
+                    "column": getattr(node, "col_offset", 0)}
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    self.reach(alias.name, {**site, "kind": "import"})
+            elif isinstance(node, ast.ImportFrom):
+                base = relative_name(package, node.level, node.module) if node.level else node.module
+                if not base:
+                    self.unresolved.append({**site, "resolution": "relative_import_beyond_known_package",
+                                            "level": node.level, "module": node.module})
+                    continue
+                local = self.reach(base, {**site, "kind": "from_import", "members": [a.name for a in node.names]})
+                if local:
+                    for alias in node.names:
+                        self.member(base, alias.name, site)
+            elif isinstance(node, ast.Call):
+                loader = loader_names.get(node.func.id) if isinstance(node.func, ast.Name) else None
+                if isinstance(node.func, ast.Attribute):
+                    if node.func.attr == "import_module" and isinstance(node.func.value, ast.Name) and node.func.value.id in importlib_names:
+                        loader = "import_module"
+                    elif node.func.attr in UNRESOLVED_LOADERS:
+                        loader = node.func.attr
+                if loader in UNRESOLVED_LOADERS:
+                    self.dynamic.append({**site, "loader": loader, "reason": "loader_semantics_unresolved",
+                                         "literal_name": literal_string(argument(node, "name", 0))})
+                elif loader:
+                    self.dynamic_call(node, loader, site, package)
+
+    def run(self, root):
+        root_resolved = self.reach(root, {"kind": "root", "path": None, "line": None})
+        while self.queue:
+            module, path = self.queue.popleft()
+            record = self.sources[path]
+            try:
+                data = self.objects.read("blob", record["git_oid"])
+                record.update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+                if record["mode"] not in {"100644", "100755"}:
+                    raise ValueError("tracked entry is not an ordinary Python source file; symlink targets are not followed")
+                parsed = ast.parse(data, filename=path)
+                record["parse_status"] = "parsed"
+                self.scan(module, path, parsed)
+            except (RuntimeError, SyntaxError, ValueError, UnicodeError, RecursionError) as exc:
+                record["parse_status"] = "unparsed_or_incomplete"
+                self.errors.append({"path": path, "error": type(exc).__name__, "message": str(exc),
+                                    "line": getattr(exc, "lineno", None)})
+        return root_resolved
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", required=True, type=Path)
+    parser.add_argument("--revision", required=True, type=fixed_oid)
+    parser.add_argument("--compare", required=True, type=fixed_oid)
+    parser.add_argument("--root", default="app.main")
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args()
+    repo, output = args.repo.resolve(strict=True), args.output.resolve()
+    if not repo.is_dir() or output.is_relative_to(repo) or ".git" in output.parts:
+        parser.error("--repo must be a directory; --output must be outside it and outside Git metadata")
+    if output.exists() or not output.parent.is_dir():
+        parser.error("--output must be a new file in an existing directory")
+    objects = Objects(repo)
+    candidate, previous = objects.revision(args.revision), objects.revision(args.compare)
+    tree, old_tree = objects.tree(args.revision), objects.tree(args.compare)
+    changes = {path: {"status": "added" if path not in old_tree else "deleted" if path not in tree else "modified",
+                      "before": old_tree.get(path), "after": tree.get(path)}
+               for path in sorted(tree.keys() | old_tree.keys()) if tree.get(path) != old_tree.get(path)}
+    graph = Closure(objects, tree)
+    root_resolved = graph.run(args.root)
+    python_changes = {path: change for path, change in changes.items() if path.endswith(".py")}
+    report = {
+        "schema": "static-python-scope-v1", "observed_at": datetime.now(timezone.utc).isoformat(),
+        "analyzer": {"path": str(Path(__file__).resolve()), "sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                     "python": sys.version, "first_party_imports_executed": False},
+        "source": {"repo": str(repo), "revision": candidate, "compare": previous},
+        "root": args.root, "root_resolved": root_resolved,
+        "counts": {"changed_paths": len(changes), "changed_python_paths": len(python_changes),
+                   "reached_modules": len(graph.modules), "reached_source_paths": len(graph.sources)},
+        "reached_modules": dict(sorted(graph.modules.items())),
+        "reached_sources": dict(sorted(graph.sources.items())),
+        "statically_reached_changed_source": {p: c for p, c in python_changes.items() if p in graph.sources},
+        "remaining_changed_python_paths": {p: c for p, c in python_changes.items() if p not in graph.sources},
+        "changed_non_python_paths": {p: c for p, c in changes.items() if not p.endswith(".py")},
+        "imports": graph.imports, "external_or_unresolved_imports": graph.unresolved,
+        "unresolved_dynamic_import_sites": graph.dynamic, "parser_or_object_errors": graph.errors,
+        "limitations": LIMITATIONS,
+    }
+    payload = json.dumps(report, indent=2, sort_keys=True) + "\n"
+    with output.open("x", encoding="utf-8") as stream:
+        stream.write(payload)
+    print(json.dumps({"output": str(output), "root_resolved": root_resolved,
+                      "counts": report["counts"], "errors": len(graph.errors)}))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+        print(str(error), file=sys.stderr)
+        sys.exit(2)

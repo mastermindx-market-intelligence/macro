@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-15T21:48:57.007739+00:00",
+  "run_id": "eval-b4-authority-triage-01a1333d-c1",
+  "retained_result_sha256": "f0b7353e3fd6aa2d642fe397ee2c166adb08dc0802fc620c3766a9c231de33de",
+  "verdict": "NOT_ACCEPTED",
+  "quality_verdict_established": false,
+  "material_errors": [
+    "Worker conflated literal ci-authority job name with inactive ci-authority/codex/merge-queue-pilot context despite exact names in supplied evidence.",
+    "Worker claimed binding filter would remove older cancelled authority job; actual canonical is_non_binding_check does not do so.",
+    "Worker called missing explicitfilter the cause although official defaultlatest and original response already contradicted that inference."
+  ],
+  "accepted_observation": "Consuming exact canonical reader was the proper discriminating observation; root performed it21:47:27checks, sameINCOMPLETEci-authority.",
+  "release_authority": "None; no ledger acceptance or source change on basis of this return.",
+  "next": "Parent continues exact same-carrier diagnosis; do not replay or replace this run."
+}

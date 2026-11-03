@@ -4,7 +4,7 @@ No browser, no network. The route handler is exercised directly with fake
 route/request objects; the router behind it is the REAL ``app.forensics.router``
 in-process. The only monkeypatch anywhere in this file is the state-blob source
 for the GET /api/forensics/state forwarding test (the kernel state itself is
-built for real from the tree's five parquet inputs in the temp-root tests).
+built for real from the tree's six parquet inputs in the temp-root tests).
 """
 from __future__ import annotations
 
@@ -529,11 +529,11 @@ def test_evidence_yml_exactly_three_keys(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# kernel temp-root build: the five inputs, nothing writes through
+# kernel temp-root build: the six inputs, nothing writes through
 # ---------------------------------------------------------------------------
 
 
-def test_prepare_kernel_temp_root_symlinks_exactly_five_inputs(tmp_path: Path) -> None:
+def test_prepare_kernel_temp_root_symlinks_exactly_six_inputs(tmp_path: Path) -> None:
     created = tool.prepare_kernel_temp_root(ROOT, tmp_path)
     assert tuple(created) == tool.KERNEL_INPUTS
     for relative in tool.KERNEL_INPUTS:
@@ -1327,6 +1327,11 @@ class _ScriptedPage:
         self.keyboard = _ScriptedKeyboard(self)
         self.moves: list[tuple[int, int]] = []
         self.mouse = types.SimpleNamespace(move=lambda x, y: self.moves.append((x, y)))
+        # A43 Z1 repair: the disabled-controls probe answer (the same list back
+        # every call; each keyboard interaction probes it once per receipt).
+        self.disabled_answers: list[Any] = []
+        self.evaluate_calls = 0
+        self.disabled_probe_at = 0
 
     def locator(self, selector: str) -> _ScriptedLocator:
         return _ScriptedLocator(self, selector)
@@ -1335,9 +1340,13 @@ class _ScriptedPage:
         self.waits.append(ms)
 
     def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluate_calls += 1
         if script == tool._FOCUS_RESET_SCRIPT.strip():
             self.resets += 1
             return None
+        if script == tool._DISABLED_CONTROLS_SCRIPT.strip():
+            self.disabled_probe_at = self.evaluate_calls
+            return list(self.disabled_answers)
         queue = {
             tool._DRAWER_PROBE_SCRIPT.strip(): "drawer",
             tool._ACTIVE_PROBE_SCRIPT.strip(): "active",
@@ -1383,11 +1392,58 @@ def test_interaction_force_spec_parses_to_the_intercepted_payload_shape() -> Non
         tool.INTERACTION_DRAWER_OPEN,
         tool.INTERACTION_TAB_KEYS,
         tool.INTERACTION_DRAWER_TRAP,
+        tool.INTERACTION_SAVED_RESTORE_PINNED,
+        tool.INTERACTION_SAVED_OPEN_UNAVAILABLE,
+        tool.INTERACTION_SAVED_WRITE_FAILURE,
     }
+    # X2-s r1 (H4): both saved-views interactions carry input text and are
+    # registered on the dispatch table under their own handler.
+    for name in (tool.INTERACTION_SAVED_RESTORE_PINNED, tool.INTERACTION_SAVED_OPEN_UNAVAILABLE):
+        assert tool.INTERACTION_INPUTS[name], name + " has input text"
+        assert name in tool._INTERACTIONS, name + " is registered"
+    assert tool._INTERACTIONS[tool.INTERACTION_SAVED_RESTORE_PINNED] is tool._interact_saved_restore_pinned
+    assert tool._INTERACTIONS[tool.INTERACTION_SAVED_OPEN_UNAVAILABLE] is tool._interact_saved_open_unavailable
+    # X2-s r2 (C3): the write-failure interaction names the browser refusal
+    # (QuotaExceededError) in its input text and is registered too.
+    assert tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "QuotaExceededError" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    # X2-s r2 (C4): the capture page never enables Save, so the write is driven
+    # through Rename on the restored row; the input text says so.
+    assert "click Rename" in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert "Save this view" not in tool.INTERACTION_INPUTS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+    assert tool.SAVED_RENAME_SELECTOR == "#ff-saved-rename"
+    assert (
+        tool._INTERACTIONS[tool.INTERACTION_SAVED_WRITE_FAILURE]
+        is tool._interact_saved_write_failure
+    )
     assert not tool.is_interaction_payload(
         {"name": "empty", "kind": "attribute", "value": "", "attribute": "data-empty"}
     )
     assert not tool.is_interaction_payload(None)
+
+
+def test_saved_write_failure_setitem_patch_is_key_scoped() -> None:
+    """X2-s r2 (C3): the write-failure patch refuses ONLY the passed key.
+
+    Hermetic (no browser): the patch is a fixed script string whose refusal
+    branch is guarded by ``k === key`` — the argument handed in by the
+    interaction — and whose every other write is delegated verbatim to the
+    original ``setItem``, so the refusal can never leak to another key.
+    """
+    patch = tool._SAVED_WRITE_FAILURE_SETITEM_PATCH
+    assert patch.startswith("(key) =>")
+    assert "Storage.prototype.setItem" in patch
+    refuse_at = patch.index("if (k === key)")
+    throw_at = patch.index("throw new DOMException")
+    delegate_at = patch.index("return original.call(this, k, v)")
+    assert refuse_at < throw_at < delegate_at, "the throw sits inside the key guard"
+    assert "QuotaExceededError" in patch
+    # No other throw site and no concrete key literal: the one refusal names
+    # only the key passed in (the stored-bytes reader is key-parameterised
+    # too).
+    assert patch.count("throw ") == 1
+    assert "localStorage" not in patch
+    assert tool._SAVED_STORED_BYTES_SCRIPT == "(key) => localStorage.getItem(key)"
 
 
 def test_page_proxy_reports_applied_only_for_a_verified_interaction() -> None:
@@ -1615,6 +1671,329 @@ def test_run_interaction_unknown_or_raising_is_a_recorded_gap() -> None:
     receipt = tool.run_interaction(page, _interaction_payload("drawer_open"), _cell())
     assert receipt["verified"] is False
     assert receipt["error"].startswith("TimeoutError")
+
+
+# ---------------------------------------------------------------------------
+# A43 Z1 repair: the closed fact, the disabled-controls record, the rest-cell
+# receipt kind, and the gates that keep keyboard interactions.json at 24 rows.
+# ---------------------------------------------------------------------------
+
+
+def test_fold_closed_into_verified_loses_a_lost_focus_restore() -> None:
+    receipt = {"verified": True, "facts": {"wrapped": True, "escaped": 0}}
+    tool.fold_closed_into_verified(
+        receipt,
+        {
+            "open": True,
+            "modal": True,
+            "focus_restored": False,
+            "focus_matches_trigger": False,
+            "focus_on_finding_button": False,
+            "focus_id": None,
+            "focus_tag": "body",
+        },
+    )
+    assert receipt["verified"] is False
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+
+
+def test_fold_closed_into_verified_is_fail_closed_only() -> None:
+    # The measured product behavior: focus lands on the selected finding's
+    # button (openAnalysisDrawer -> selectedEvidenceButton()), not the CTA.
+    restored = {
+        "open": False,
+        "focus_restored": True,
+        "focus_matches_trigger": False,
+        "focus_on_finding_button": True,
+        "focus_id": None,
+        "focus_tag": "button",
+    }
+    kept = {"verified": True, "facts": {}}
+    tool.fold_closed_into_verified(kept, restored)
+    assert kept["verified"] is True
+    # A restored close never un-fails a receipt whose trap already failed.
+    failed = {"verified": False, "facts": {}}
+    tool.fold_closed_into_verified(failed, restored)
+    assert failed["verified"] is False
+
+
+class _CloseProbePage(FakePage):
+    """Answers the closed probe; records key presses, waits, and shots."""
+
+    def __init__(self, answer: Any) -> None:
+        super().__init__()
+        self.answer = answer
+        self.seen_config: Any = None
+        self.pressed: list[str] = []
+        self.waits: list[int] = []
+        self.keyboard = types.SimpleNamespace(press=self.pressed.append)
+
+    def wait_for_timeout(self, ms: int) -> None:
+        self.waits.append(ms)
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluated.append((script, arg))
+        if script == tool._DRAWER_CLOSED_PROBE_SCRIPT.strip():
+            self.seen_config = arg
+            return self.answer
+        return None
+
+
+def test_close_drawer_and_probe_restore_presses_escape_then_settles() -> None:
+    page = _CloseProbePage(
+        {"open": False, "modal": False, "focus_restored": True, "focus_matches_trigger": False, "focus_on_finding_button": True, "focus_id": None, "focus_tag": "button"}
+    )
+    closed = tool.close_drawer_and_probe_restore(page)
+    assert closed["focus_restored"] is True and closed["open"] is False
+    assert page.pressed == ["Escape"]
+    assert page.waits == [tool.INTERACTION_SETTLE_MS]
+    assert page.seen_config == {
+        "evidence": tool.EVIDENCE_SELECTOR,
+        "trigger": tool.PRIMARY_FINDING_SELECTOR,
+    }
+
+
+def _disabled_entries(locale: str) -> list[dict[str, Any]]:
+    labels = {
+        "en": ("Export unavailable", "Save this view"),
+        "zh": ("导出不可用", "保存当前视图"),
+    }
+    tips = {
+        "en": "Export is unavailable until this issuer, cutoff and policy can be queried.",
+        "zh": "在可查询该发行人、截止日和策略之前，导出不可用。",
+    }
+    return [
+        {
+            "selector": selector,
+            "present": True,
+            "disabled": True,
+            "visible_text": text,
+            "label_en": "Export unavailable" if selector == "#ff-export-btn" else "Save this view",
+            "label_zh": "导出不可用" if selector == "#ff-export-btn" else "保存当前视图",
+            "tip": tips[locale],
+            "aria_disabled": None,
+        }
+        for selector, text in zip(tool.DISABLED_CONTROL_SELECTORS, labels[locale])
+    ]
+
+
+class _DisabledProbePage(FakePage):
+    def __init__(self, answer: Any) -> None:
+        super().__init__()
+        self.answer = answer
+        self.seen_config: Any = None
+
+    def evaluate(self, script: str, arg: Any = None) -> Any:
+        self.evaluated.append((script, arg))
+        if script == tool._DISABLED_CONTROLS_SCRIPT.strip():
+            self.seen_config = arg
+            return self.answer
+        return None
+
+
+@pytest.mark.parametrize("locale", ["en", "zh"])
+def test_disabled_controls_record_shape_and_locale_selection(locale: str) -> None:
+    page = _DisabledProbePage(_disabled_entries(locale))
+    entries = tool.probe_disabled_controls(page, locale)
+    assert page.seen_config == {
+        "selectors": list(tool.DISABLED_CONTROL_SELECTORS),
+        "locale": locale,
+    }
+    assert [entry["selector"] for entry in entries] == list(tool.DISABLED_CONTROL_SELECTORS)
+    for entry in entries:
+        assert set(entry) == {
+            "selector",
+            "present",
+            "disabled",
+            "visible_text",
+            "label_en",
+            "label_zh",
+            "tip",
+            "aria_disabled",
+        }
+    receipt = tool.record_disabled_controls(page, _cell(locale=locale))
+    assert receipt["interaction"] == "disabled_controls"
+    assert receipt["force_state"] is None
+    assert receipt["verified"] is True
+    assert receipt["input"] is tool.DISABLED_CONTROLS_PROBE_INPUT
+    assert receipt["facts"]["controls"] == entries
+    assert receipt["cell_id"] == _cell(locale=locale).cell_id
+
+
+def test_disabled_controls_receipt_unverified_when_a_control_is_not_disabled() -> None:
+    entries = _disabled_entries("en")
+    entries[0]["disabled"] = False
+    receipt = tool.record_disabled_controls(_DisabledProbePage(entries), _cell())
+    assert receipt["verified"] is False
+
+    gone = [entry for entry in _disabled_entries("en") if entry["selector"] != "#ff-saved-save"]
+    receipt = tool.record_disabled_controls(_DisabledProbePage(gone), _cell())
+    assert receipt["verified"] is False
+
+
+def test_disabled_controls_probe_failure_is_a_recorded_gap() -> None:
+    class _Broken:
+        def evaluate(self, script: str, arg: Any = None) -> Any:
+            raise RuntimeError("page gone")
+
+    receipt = tool.record_disabled_controls(_Broken(), _cell())
+    assert receipt["verified"] is False
+    assert receipt["error"].startswith("RuntimeError")
+    assert receipt["facts"]["controls"] == []
+
+
+def test_rest_disabled_controls_probe_gate() -> None:
+    assert (
+        tool.rest_disabled_controls_probe_wanted(
+            "populated",
+            [
+                "drawer_open:[data-ff-evidence-interaction=drawer_open]",
+                "source_hover:hover(.ff-source-control)",
+            ],
+        )
+        is True
+    )
+    for keyboard_force in (
+        "tab_keys:[data-ff-evidence-interaction=tab_keys]",
+        "drawer_trap:[data-ff-evidence-interaction=drawer_trap]",
+    ):
+        assert tool.rest_disabled_controls_probe_wanted("populated", [keyboard_force]) is False
+    for mode in ("anonymous", "unavailable", "degraded"):
+        assert tool.rest_disabled_controls_probe_wanted(mode, []) is False
+
+
+def test_keyboard_receipts_carry_the_none_state_disabled_controls() -> None:
+    entries = _disabled_entries("en")
+    page = _ScriptedPage(
+        active=[{"matches": True}],
+        tablist=[
+            {"focus_is_tab": True, "focus_tab": "overview", "selected": ["overview"]},
+            {"focus_is_tab": True, "focus_tab": "accounting", "selected": ["accounting"]},
+        ],
+    )
+    page.disabled_answers = entries
+    receipt = tool.run_interaction(page, _interaction_payload("tab_keys"), _cell())
+    assert receipt["verified"] is True
+    assert receipt["facts"]["disabled_controls"] == entries
+    # The probe ran BEFORE the walk moved focus (it was the first evaluate).
+    assert page.disabled_probe_at == 1
+
+
+def test_page_proxy_runs_the_rest_probe_on_rest_cells_only() -> None:
+    probed: list[Any] = []
+    rest_cell = _cell()
+    forced_cell = _cell(force_state=types.SimpleNamespace(name="drawer_open"))
+    current = {"cell": rest_cell}
+    page = tool.PageProxy(
+        FakePage(),
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: current["cell"],
+        rest_probe=lambda page_, cell_: probed.append(cell_),
+    )
+    page.screenshot(full_page=True)
+    assert probed == [rest_cell]
+    current["cell"] = forced_cell
+    page.screenshot(full_page=True)
+    assert probed == [rest_cell], "a forced cell never produces a disabled_controls receipt"
+
+
+class _TrapShotPage(_CloseProbePage):
+    """Records the shot/Escape order for the drawer_trap post-shot close."""
+
+    def __init__(self, answer: Any) -> None:
+        super().__init__(answer)
+        self.events: list[str] = []
+
+    def screenshot(self, **kwargs: Any) -> bytes:
+        self.events.append("shot")
+        return super().screenshot(**kwargs)
+
+
+def _trap_proxy(closed_answer: Any) -> tuple[_TrapShotPage, Any]:
+    real = _TrapShotPage(closed_answer)
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_trap",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    return real, page
+
+
+def test_page_proxy_closes_the_drawer_after_the_drawer_trap_shot() -> None:
+    real, page = _trap_proxy(
+        {"open": False, "modal": False, "focus_restored": True, "focus_matches_trigger": False, "focus_on_finding_button": True, "focus_id": None, "focus_tag": "button"}
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    assert page.screenshot(full_page=True) == b"png-bytes"
+    # The shot happened FIRST — it must still show the open, trapped drawer.
+    assert real.events == ["shot"]
+    assert real.pressed == ["Escape"]
+    receipt = page._last_receipt[1]
+    assert receipt["facts"]["closed"]["focus_restored"] is True
+    assert receipt["verified"] is True
+
+
+def test_page_proxy_a_failed_focus_restore_voids_the_trap_receipt() -> None:
+    real, page = _trap_proxy(
+        {"open": True, "modal": True, "focus_restored": False, "focus_matches_trigger": False, "focus_on_finding_button": False, "focus_id": "ff-evidence-close", "focus_tag": "button"}
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    page.screenshot(full_page=True)
+    receipt = page._last_receipt[1]
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+    assert receipt["verified"] is False
+
+
+def test_page_proxy_a_probe_failure_fails_closed_without_killing_the_shot() -> None:
+    class _NoKeyboardPage(FakePage):
+        pass
+
+    real = _NoKeyboardPage()
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_trap",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_trap"))
+    assert page.screenshot(full_page=True) == b"png-bytes"
+    receipt = page._last_receipt[1]
+    assert receipt["verified"] is False
+    assert "probe_error" in receipt["facts"]["closed"]
+    assert receipt["facts"]["closed"]["focus_restored"] is False
+
+
+def test_page_proxy_skips_the_close_on_every_other_interaction() -> None:
+    real = _TrapShotPage(None)
+    cell = _cell()
+    page = tool.PageProxy(
+        real,
+        fold_recorder=lambda page, cell: None,
+        get_cell=lambda: cell,
+        interaction_runner=lambda *_args, **_kwargs: {
+            "cell_id": cell.cell_id,
+            "interaction": "drawer_open",
+            "verified": True,
+            "facts": {},
+        },
+    )
+    page.evaluate("FORCE", _interaction_payload("drawer_open"))
+    page.screenshot(full_page=True)
+    assert real.pressed == []
+    assert "closed" not in page._last_receipt[1]["facts"]
 
 
 # ---------------------------------------------------------------------------
@@ -1872,3 +2251,178 @@ def test_degraded_needs_a_stale_kernel_clock_before_any_capture(monkeypatch, tmp
     assert rc == tool.EXIT_USAGE
     assert calls == []
     assert not out_dir.exists()
+
+
+# ---------------------------------------------------------------------------
+# briefcase seed (X2-s r1, H1/H4) — hermetic, no browser
+# ---------------------------------------------------------------------------
+
+_EVIDENCE_SEED = (
+    ROOT / "tests" / "fixtures" / "fundamental_forensics" / "fif_saved_research"
+    / "evidence_briefcase_seed.json"
+)
+
+
+def test_briefcase_seed_init_script_writes_only_that_one_key() -> None:
+    raw = _EVIDENCE_SEED.read_text(encoding="utf-8")
+    info = tool.resolve_briefcase_seed(str(_EVIDENCE_SEED), ROOT)
+    expected = (
+        '(()=>{try{window.localStorage.setItem("' + tool.BRIEFCASE_STORAGE_KEY + '", '
+        + json.dumps(raw) + ')}catch(e){}})();'
+    )
+    assert info["init_script"] == expected
+    assert info["init_script"].count("setItem") == 1, "exactly one write"
+    assert "removeItem" not in info["init_script"]
+    assert ".clear(" not in info["init_script"]
+    # The embedded literal decodes back to the exact fixture bytes, and the
+    # script ends exactly as frozen.
+    decoder = json.JSONDecoder()
+    payload_start = info["init_script"].index(", ") + 2
+    literal, consumed = decoder.raw_decode(info["init_script"][payload_start:])
+    assert literal == raw
+    assert info["init_script"][payload_start + consumed :] == ")}catch(e){}})();"
+
+
+def test_briefcase_seed_refuses_paths_outside_fixtures_and_non_objects(tmp_path: Path) -> None:
+    outside = tmp_path / "seed.json"
+    outside.write_text("{}", encoding="utf-8")
+    with pytest.raises(ValueError, match="tests/fixtures"):
+        tool.resolve_briefcase_seed(str(outside), ROOT)
+
+    fixtures_tmp = tmp_path / "tests" / "fixtures"
+    fixtures_tmp.mkdir(parents=True)
+    not_object = fixtures_tmp / "seed.json"
+    not_object.write_text("[1, 2]", encoding="utf-8")
+    with pytest.raises(ValueError, match="JSON object"):
+        tool.resolve_briefcase_seed(str(not_object), tmp_path)
+    unparseable = fixtures_tmp / "broken.json"
+    unparseable.write_text("{not json", encoding="utf-8")
+    with pytest.raises(ValueError, match="parseable JSON"):
+        tool.resolve_briefcase_seed(str(unparseable), tmp_path)
+
+
+def test_main_refuses_a_bad_briefcase_seed_with_exit_usage_before_any_capture(
+    monkeypatch, tmp_path: Path
+) -> None:
+    calls = _forbid_any_capture(monkeypatch)
+    outside = tmp_path / "seed.json"
+    outside.write_text("{}", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    assert (
+        tool.main(
+            [
+                "--mode", tool.MODE_ANONYMOUS,
+                "--out-dir", str(out_dir),
+                "--briefcase-seed", str(outside),
+            ]
+        )
+        == tool.EXIT_USAGE
+    )
+    fixtures_tmp = tmp_path / "tests" / "fixtures"
+    fixtures_tmp.mkdir(parents=True)
+    not_object = fixtures_tmp / "seed.json"
+    not_object.write_text('"just a string"', encoding="utf-8")
+    assert (
+        tool.main(
+            [
+                "--mode", tool.MODE_ANONYMOUS,
+                "--out-dir", str(out_dir),
+                "--briefcase-seed", str(not_object),
+            ]
+        )
+        == tool.EXIT_USAGE
+    )
+    assert calls == [], "no browser/kernel work ran for a refused seed"
+    assert not out_dir.exists()
+
+
+def test_briefcase_seed_sidecar_shape_and_manifest_reference() -> None:
+    info = tool.resolve_briefcase_seed(str(_EVIDENCE_SEED), ROOT)
+    assert set(info) == {"path", "sha256", "storage_key", "init_script"}
+    assert info["path"] == (
+        "tests/fixtures/fundamental_forensics/fif_saved_research/evidence_briefcase_seed.json"
+    )
+    assert info["sha256"] == hashlib.sha256(_EVIDENCE_SEED.read_bytes()).hexdigest()
+    assert info["storage_key"] == tool.BRIEFCASE_STORAGE_KEY
+
+    manifest: dict[str, Any] = {"pages": []}
+    tool.postprocess_manifest(
+        manifest,
+        mode=tool.MODE_ANONYMOUS,
+        generator_command="cmd",
+        wrapper_module_sha256="0" * 64,
+        scrubbed_env_names=(),
+        aborted_hosts=(),
+        state_receipt=None,
+        briefcase_seed="briefcase_seed.json",
+    )
+    assert manifest["evidence_source"]["briefcase_seed"] == "briefcase_seed.json"
+
+    without: dict[str, Any] = {"pages": []}
+    tool.postprocess_manifest(
+        without,
+        mode=tool.MODE_ANONYMOUS,
+        generator_command="cmd",
+        wrapper_module_sha256="0" * 64,
+        scrubbed_env_names=(),
+        aborted_hosts=(),
+        state_receipt=None,
+    )
+    assert "briefcase_seed" not in without["evidence_source"], "no flag, no reference"
+
+
+# ---------------------------------------------------------------------------
+# A0-SE SAFE-ENV production-capture hook (--dataset-store / --state-store)
+# ---------------------------------------------------------------------------
+
+
+def test_production_capture_flags_parse_and_default_off() -> None:
+    parser = tool.build_parser()
+    plain = parser.parse_args(["--mode", tool.MODE_POPULATED, "--out-dir", "x"])
+    assert plain.dataset_store is None
+    assert plain.state_store is None
+    hooked = parser.parse_args(
+        [
+            "--mode", tool.MODE_POPULATED, "--out-dir", "x",
+            "--dataset-store", "/tmp/ds", "--state-store", "/tmp/ss",
+        ]
+    )
+    assert hooked.dataset_store == "/tmp/ds"
+    assert hooked.state_store == "/tmp/ss"
+
+
+def test_install_state_into_local_store_writes_the_loaders_key(
+    tmp_path: Path
+) -> None:
+    from engine.fundamental_forensics import private_state
+    from engine.research_vault.r2_store import LocalStore
+
+    blob = gzip.compress(b'{"schema": "fundamental_forensics.state/v1"}')
+    served = tool.install_state_into_local_store(tmp_path, blob)
+    assert served == tmp_path / private_state.STATE_KEY
+    # The exact store adapter the loader's RESEARCH_LOCAL_STORE path uses
+    # reads the object back at the same key, byte for byte.
+    assert LocalStore(tmp_path).get_bytes(private_state.STATE_KEY) == blob
+
+
+def test_production_capture_flags_do_not_bypass_the_render_guard(
+    monkeypatch, tmp_path: Path
+) -> None:
+    site_dir = tmp_path / "site"
+    site_dir.mkdir()
+    (site_dir / "fundamental_forensics.html").write_text(
+        "<html><body>stale, no ff ids</body></html>", encoding="utf-8"
+    )
+    _forbid_browser(monkeypatch)
+    rc = tool.main(
+        [
+            "--mode", tool.MODE_POPULATED,
+            "--out-dir", str(tmp_path / "out"),
+            "--generated-at", "2026-10-13T02:05:00Z",
+            "--site-dir", str(site_dir),
+            "--dataset-store", str(tmp_path / "ds"),
+            "--state-store", str(tmp_path / "ss"),
+        ]
+    )
+    assert rc == tool.EXIT_STALE_PAGE
+    assert not (tmp_path / "out").exists()

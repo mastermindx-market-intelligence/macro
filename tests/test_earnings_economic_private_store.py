@@ -2122,3 +2122,28 @@ def test_private_fixtures_do_not_import_private_sgml() -> None:
     assert fixtures.synthetic_exhibit_sgml("synthetic-exhibit-991.htm") == (
         b"<DOCUMENT><TYPE>EX-99.1<FILENAME>synthetic-exhibit-991.htm<TEXT>\n</TEXT></DOCUMENT>"
     )
+
+
+def test_v2_native_record_without_selection_is_refused(tmp_path, native):
+    stage = stage_economic_case(tmp_path, "valid", name="unselected")
+    path = stage / "native" / "latest.json"
+    sm = json.loads(path.read_bytes())
+    slug = sm["economic_slots"]["cik:0000080424"]["slug"]
+    chain = sm["selections"].pop(slug)["chain"]
+    del sm["economic_slots"]["cik:0000080424"]
+    for entry in chain:
+        (stage / "native" / "workspaces" / f"{entry['workspace']}.json").unlink(missing_ok=True)
+        doc = stage / "native" / "documents" / f"{entry['document']}.json"
+        if doc.is_file():
+            digest = json.loads(doc.read_bytes())["content_sha256"]
+            doc.unlink()
+            (stage / "native" / "source_bodies" / f"{digest}.txt").unlink(missing_ok=True)
+            sm["received"].pop(digest, None)
+    path.write_bytes(canonical_json_bytes(sm))
+    expect_closure("malformed_native_section", pp.prepare_private_publication, stage)
+    manifest, payloads = native
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    del manifest["native"]["selections"][slug]
+    del manifest["native"]["economic_slots"]["cik:0000080424"]
+    expect_closure("malformed_native_section", pp.validate_native_closure,
+                   reseal_manifest(manifest, pp), payloads, slugs=[slug])

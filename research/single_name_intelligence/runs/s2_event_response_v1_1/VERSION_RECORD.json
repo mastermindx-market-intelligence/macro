@@ -1,0 +1,39 @@
+{
+  "study_version": "v1.1",
+  "supersedes": "v1 at commit b75a3c27083e1e1dec820e4d545e3a3948b3244b",
+  "reason": "defect repair (X2-01..08, A7-F1/F2/F5) — versioned reprint, identical preregistered configs",
+  "defects": {
+    "X2-01": "INFO-LEAK scan and retirement run before any window return; retired cells print RETIRED-CONTAMINATED and do not resolve excesses",
+    "X2-02": "trailing63_direction uses the frozen prereg sign (BABA(D)/BABA(D63)-1)-(SPY(D)/SPY(D63)-1); v1 printed the inverse and is void",
+    "X2-03": "v1.1 seal carries top-level authority_flags (all false) and outcome_free true; builder and verifier refuse any non-False flag",
+    "X2-04": "per-cell graded_membership_count / graded_membership_sha256 / census_only_count added; membership_sha256 unchanged",
+    "X2-05": "REG §3 RETIRED-CONTAMINATED fold for P01/P03/P04 v1 TUNE; §7 successor = — (none registered); owner = seat/S0",
+    "X2-06": "REPORT states once that 27 cells plus 3 REG §6 TEST-rule rows all abstained and multiplicity adjustment is not estimable",
+    "X2-07": "each TUNE block prints baseline (iii) once; proper-score line cites the block's own protocol",
+    "X2-08": "REPORT opens with a 27-row honest-N lead table; trial counts live in a receipt footnote",
+    "A7-F1": "purge_flag(split, None) returns True (unknown coverage purged); v1 rows with coverage None = 0 so membership_sha256 unchanged",
+    "A7-F2": "split_tokens drops empty-after-strip tokens; None stays []",
+    "A7-F5": "run_collapse exclusions are sorted by (step, issuer_key, id)"
+  },
+  "prereg_digest_v1": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+  "prereg_digest_v1_1": "38b564eadc8f55d8511aa69d5894d224024383f6cd714e071a7a478709f06943",
+  "prereg_digest_unchanged": true,
+  "membership_sha256_per_cell": "identical to v1",
+  "membership_sha256_mismatches": [],
+  "configuration_change": false,
+  "all_cells_abstain": true,
+  "voided": [
+    "v1 baseline-(ii) directions printed in v1 were sign-inverted relative to the prereg and are void",
+    "v1 P04 TUNE excesses were computed before the leak scan and are void"
+  ],
+  "authority_flags": {
+    "rank_authority": false,
+    "gate_authority": false,
+    "size_authority": false,
+    "signal_authority": false,
+    "escalation_authority": false,
+    "trade_authority": false
+  },
+  "descriptive_only": true,
+  "v1_coverage_none_row_count": 0
+}

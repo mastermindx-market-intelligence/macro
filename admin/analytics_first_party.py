@@ -246,8 +246,12 @@ def _excluded_cte() -> str:
     a listed IP, a listed cookie id, or a loopback IP — see _LOOPBACK_IPS) PLUS the cookies
     linked to them by shared device fingerprint or routable IP."""
     cfg = _load_exclusions()
-    if cfg["emails"]:
-        emails = ",".join(_sql_str(e) for e in cfg["emails"])
+    # The site administrator is the operator, not a customer. Always suppress the
+    # exact registered admin identity and its linked cookies from visitor analytics.
+    # Preserve the private exclusion config for additional operator identities.
+    operator_emails = set(cfg["emails"]) | {"admin@mastermind-x.com"}
+    if operator_emails:
+        emails = ",".join(_sql_str(e) for e in sorted(operator_emails))
         users_body = f"select id from auth.users where lower(email) in ({emails})"
     else:
         users_body = "select id from auth.users where false"
@@ -304,8 +308,16 @@ def _excluded_cte() -> str:
         "          where visitor_id in (select visitor_id from excl_seed) "
         f"            and {_routable('ip')}) ki on ki.ip = e2.ip "
         f"  where e2.visitor_id is not null and {_routable('e2.ip')}), "
+        # Implicit fingerprint/IP linkage must never hide a *different, verified*
+        # account merely because that customer shares a VPN exit or household IP
+        # with the operator. Preserve explicit exclusion seeds (e.g. configured
+        # IPs, cookies and registered operator accounts) without this restriction.
         "excluded as (select visitor_id from excl_seed "
-        "             union select visitor_id from excl_link)"
+        "             union select l.visitor_id from excl_link l "
+        "               where not exists (select 1 from public.analytics_events e3 "
+        "                 where e3.visitor_id = l.visitor_id "
+        "                   and e3.user_id is not null "
+        "                   and e3.user_id not in (select id from excl_users)))"
     )
 
 

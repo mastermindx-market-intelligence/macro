@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-13",
+  "operation": "alpha-k3d-economic-propagation-20260826-sol-001",
+  "carrier": "macro#6514",
+  "finding": "Original data-gated signal-contract placement is excluded by the PR code gate. A successful manifest validation is not execution enrollment.",
+  "prepush_effect": "NONE; required-job assertion refused before remote push",
+  "supersedes": "CI placement in CURRENT_MAIN_INTEGRATION_20261013.json and earlier same-job advice only",
+  "selected_design": "One sole k3d-economic-propagation-contracts code-gated job in existing CI owner; no duplicate data-gated invocation",
+  "inherited_main_jobs": 299,
+  "new_job_count": 1,
+  "existing_execution_definitions_unchanged": true,
+  "only_existing_scope_widening": {
+    "ci-control-plane-contracts": [
+      "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+      "lib/economic_propagation.py",
+      "lib/economic_propagation_v2.py",
+      "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+    ]
+  },
+  "validation": {
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "previous_closure_result": {
+    "passed": 11,
+    "failed": 1,
+    "cause": "new control-plane selector test named four dependency paths missing from its declared scope"
+  },
+  "native_541_evidence_reused": "All native K3-D runtime, schema, fixtures and test sources unchanged; prior current-main native run retained",
+  "hosted_ci": "NOT_YET_RUN_FOR_THIS_INTEGRATION",
+  "production_admission": false
+}

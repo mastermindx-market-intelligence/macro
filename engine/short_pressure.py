@@ -329,9 +329,16 @@ def axes(ticker: str, asof=None, xs: pd.DataFrame | None = None) -> dict | None:
         add("borrow_fee", round(fee, 2), f"ordinary to borrow at {fee:.2f}% a year", False)
 
     av = _f(r.get("avail_shares"))
-    add("availability", av,
-        "lending supply not scarce" if _b(r.get("avail_unlimited")) or av is None
-        else f"{av:,.0f} shares available to borrow", None)
+    if _b(r.get("avail_unlimited")):
+        # IBKR writes '>10000000' for abundant supply: a censored LOWER bound,
+        # never an exact count, so no value is printed.
+        add("availability", None, "lending supply not scarce", None)
+    elif av is None:
+        # No capture at/before asof (the accrual starts 2026-08-05) or no quote
+        # for this name. Absent data reads as absent, never as abundant supply.
+        add("availability", None, "no availability quote", None)
+    else:
+        add("availability", av, f"{av:,.0f} shares available to borrow", None)
 
     elevated = [l for l in legs if l["elevated"] is True]
     measured = [l for l in legs if l["elevated"] is not None]

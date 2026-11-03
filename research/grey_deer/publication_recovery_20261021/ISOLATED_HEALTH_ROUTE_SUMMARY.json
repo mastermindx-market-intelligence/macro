@@ -1,0 +1,139 @@
+{
+  "schema": "grey_deer.paired_health_route_qualification_summary.v1",
+  "programme": "MAS-258",
+  "mission_complete": false,
+  "classification": "COMPLETED_BOUNDED_QUALIFICATION_WITH_NEGATIVE_CANDIDATE_WITNESS",
+  "process": 9147,
+  "collection_process": 12209,
+  "controller_exit_code": 0,
+  "started_at": "2026-10-21T12:15:33.753551+00:00",
+  "completed_at": "2026-10-21T12:15:59.460655+00:00",
+  "candidate": "87d4af0a152eefa3c5f441f5600fae9133b3deaa",
+  "baseline": "fe7afd0111141bae27927715e709d074fea729e2",
+  "full_report": {
+    "file": "ISOLATED_HEALTH_ROUTE_RESULT.json",
+    "sha256": "20fcbded4f383dbe33f1cfcf0351f1f1bbc9862bdfa7e61a08c472485417d166",
+    "bytes": 38439
+  },
+  "archive": {
+    "sha256": "ed2c3b671cbe5604cc4c6feb7e9dd387032f870d980021b759d8f481b9dc07cf",
+    "bytes": 104202240
+  },
+  "harnesses": {
+    "child": {
+      "sha256": "fc72650290aef3128ad4c0aa2ae988cd5613dfad29ba80514c9f7ba9c376295c",
+      "bytes": 11486
+    },
+    "controller": {
+      "sha256": "d856f3d94596d367f42a89d17c755fa6266991c6f209183cd3c7dd73d008b564",
+      "bytes": 23449
+    },
+    "inputs": {
+      "sha256": "ad7567176534ceeac22bd36a50d22e38aa7e30f3d29536397ec586080eeb9c79",
+      "bytes": 3443
+    }
+  },
+  "context": "Actual allowlisted nonsecret service settings; explicit nonsecret presence fixtures; configured Codex auth file absent. No provider authentication or execution was attempted by the harness.",
+  "route": "One actual FastAPI GET /health per fresh process through ASGI routing, auth/cache middleware and complete response serialization; no extra lifespan/startup or warm-up request.",
+  "candidate_observation": {
+    "startup_qualified": true,
+    "jobs": 18,
+    "scheduler_state": 2,
+    "request_started": true,
+    "deadline_kind": "request_6s",
+    "complete_response_witness": false,
+    "http_status": null,
+    "response_body": null,
+    "precise_failure_location": null,
+    "exit_code": -9,
+    "exit_meaning": "deliberate independent-controller containment at request deadline",
+    "startup_denied_events": [],
+    "request_phase_audit_record": "not retained after hard timeout; clean startup is not a claim of zero later request-phase audit events",
+    "launcher_reaped": true,
+    "process_group_gone": true,
+    "helper_contract_passed": false
+  },
+  "baseline_observation": {
+    "startup_qualified": true,
+    "jobs": 18,
+    "scheduler_state": 2,
+    "http_status": 200,
+    "elapsed_seconds": 5.988967098,
+    "budget_margin_seconds": 0.011032902000000178,
+    "body_bytes": 817,
+    "body_sha256": "9e74be5e82af48786f18d881de01a4494fc870695e7529b40ac9d2fa532a3c34",
+    "health": {
+      "status": "ok",
+      "paper_only": true,
+      "reasoning_backend": "waterfall",
+      "reasoning_policy": "codex_first_claude_oauth_fallback",
+      "reasoning_policy_ok": true,
+      "shared_reasoning_available": true,
+      "codex_available": false,
+      "scheduled_runtime_ok": true,
+      "scheduled_runtime_expected": true,
+      "scheduler_running": true,
+      "scheduler_started": null,
+      "commit": "fe7afd0111141bae27927715e709d074fea729e2",
+      "serve_only": null
+    },
+    "helper_contract_passed": true,
+    "startup_denied_events": [],
+    "completed_child_denied_events": [],
+    "launcher_reaped": true,
+    "process_group_gone": true,
+    "read_counts_scope": "baseline completed response only",
+    "selected_read_counts": {
+      "capability_manifest": 50,
+      "macro_key_ledger": 90,
+      "mastermind_local_key_ledger": 14,
+      "key_usage": 6,
+      "mastermind_events": 6,
+      "mastermind_pool_status": 6,
+      "metabolism_budget_config": 6
+    }
+  },
+  "execution_completed": true,
+  "paired_helper_contract_passed": false,
+  "preservation": {
+    "source_context_unchanged": true,
+    "canonical_authorities_unchanged": true,
+    "snapshot_authorities_unchanged": true,
+    "health_sources_unchanged": true,
+    "health_snapshots_unchanged": true,
+    "production_identity_unchanged": true,
+    "macro_source_unchanged": true,
+    "full_restoration_verified": true
+  },
+  "preparation_correction": {
+    "discarded_context_read_process": 79288,
+    "reason": "A local byte-delimiter parsing error made the first context extraction invalid.",
+    "corrected_context_read_processes": [
+      80463,
+      88617
+    ],
+    "only_corrected_context_used": true
+  },
+  "review": {
+    "design_reviewer": "/root/release_contract_review",
+    "implementation_ruling": "ACCEPTED after full source read and finite snapshot/presence clarifications",
+    "interpretation_reviewer": "/root/risk_contract_review",
+    "interpretation_ruling": "ACCEPTED for isolated response-contract evidence; no authentication or production claim",
+    "actual_result_reviewer": "/root/release_contract_review",
+    "actual_result_ruling": "ACCEPTED — paired lane complete; retain candidate negative; no unchanged rerun warranted",
+    "specific_limits": [
+      "Candidate timeout supplies neither HTTP status/body nor a precise failure-location attribution.",
+      "The single cold-process pair does not establish a source regression or its cause.",
+      "Read counts belong only to the phase that retained them.",
+      "Baseline 5.988967098-second isolated pass does not clear the observed live timeout, authentication, TCP/uvicorn, active-job contention or recovery health.",
+      "Actual paused state is retained even when literal scheduler.running and scheduled_runtime_ok are true.",
+      "No full-release qualification of later protected 7ab47f0 is inferred."
+    ]
+  },
+  "cleanup_file": "HEALTH_ROUTE_CLEANUP.json",
+  "later_source_file": "LATER_PROTECTED_SOURCE_DELTA.json",
+  "production_deployment": false,
+  "production_restart": false,
+  "production_health_repolled": false,
+  "release_disposition": "HOLD / NOT_READY"
+}

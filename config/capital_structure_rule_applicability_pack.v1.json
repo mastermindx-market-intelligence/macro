@@ -1,0 +1,2797 @@
+{
+ "schema": "capital_structure.rule_applicability_pack.v1",
+ "version": "capital-structure-rule-applicability/1.2.0",
+ "task": "L0",
+ "qualified_on": "2026-10-14",
+ "masterplan": {
+  "commit": "93c82c9058eed8c39e34046753c5274ad5d80eb7",
+  "path": "research/capital_structure/e2e_20261013/MASTERPLAN.md"
+ },
+ "acceptance_rows": [
+  "A12",
+  "A13",
+  "A14",
+  "A20"
+ ],
+ "reference_pack": {
+  "path": "config/capital_structure_reference_pack.v1.json",
+  "schema": "capital_structure.reference_pack.v1",
+  "sha256_at_qualification": "a02b548d617563df42b04cdd5b83876fcd7ef048ffe44bb22561f50f6199cc8e",
+  "pinned_spans": {
+   "cdi_securities_act_forms_q116_21": "55ca5395f131bd98c293a3938c825750f9c113e1ecc90a5d6f5bceef51661f32",
+   "cdi_securities_act_forms_q116_22": "c7653f8b341cd9f8fd900d96a7a16d5382514055dc836bf904a1b560969434df",
+   "cdi_securities_act_forms_q116_23": "a85fb5d9d3a8132b7782e84e59c8906d2cefda0fcff357e34137218940b28cdb",
+   "cdi_securities_act_forms_q116_24": "42213961420c57114e2f98352c26504b8c4aba089a6756ec1813d346cdc62459",
+   "cdi_securities_act_forms_q116_25": "2185bff93df9ed684c813a8079334c9e6b4fe1af41f27a805b4dfab6f0db4640",
+   "cdi_securities_act_forms_q116_26": "a23453c25ae126e66386940d80a83c653b467da94034b04656f057d411415c4d",
+   "nasdaq_5615_a_3_A_fpi_home_country_practice": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+   "nasdaq_5615_a_3_B_i_annual_report_disclosure": "87f96f8b7b3ecd7051bcfa2604049db4d2d6fd9cdab4bc2c95f1b6e8c3862240",
+   "nasdaq_5635_d_1_A_minimum_price": "d18548bee6f2d619032012515ab8760f87c679c8c755bb359085a2fb8fe22681",
+   "nasdaq_5635_d_1_B_twenty_percent_issuance": "4371cf6fcf244e6a5ea8c2f0cdc4f9db7e0271011bb782e83a0e791bf7c75fd4",
+   "nasdaq_5635_d_2_approval_trigger": "f315c177eebb92bc8df69b01af8af17b01435a75ce63134feba369932eff91ee",
+   "nasdaq_im_5635_3_registration_alone_not_public_offering": "a6e929a70d9a58e91e2b4b3d1b0c0a145f338740382e7d3bd9b995f22200791b",
+   "nasdaq_5635_e_1_outstanding_shares_basis": "9f0370c6c012856561b2dc85ff76a7bf5a3a0c5de7abc39f6c3589c570ce441c"
+  },
+  "pinned_examples": {
+   "cdi_116_21_equity_line_is_at_the_market": "0ce4fd8bdfa00abeae9f2c17b268ca1345ce2652c6b41f984b7fd3eae0535612",
+   "cdi_116_22_capacity_measured_against_amount_offered": "3906e4962fe8169c6794f4747c53975a32cee1ec99aa72c4135062e3093ec0c4",
+   "cdi_116_23_concurrent_continuous_offerings": "97740db44576b4a3dd0e52a47db05d1bb1e211abd59bfad975cf3fece660c3ae",
+   "cdi_116_24_warrants_not_exercisable_within_12_months": "16a66d45922bc85e99fd418cc15d5ad7b9d0c465a9000afa8111167288c98098",
+   "cdi_116_25_ib3_resale_counts_against_ib6_capacity": "fb8ed87deed8b1ab15bd00aa2a776d694778dbabf028e3a2c6303677b65c0c90",
+   "cdi_116_26_atm_supplement_continues_after_transition_to_baby_shelf": "f4b538f6f938a36331fd0238d8993709d828b1a6f83fc20a022bfcfd43da3426",
+   "nasdaq_5635_d_2_twenty_percent_below_minimum_price": "100d677592ddc11e3fb033b4e6d6b6910ca18db1da8a46e941762c91a0966d4c",
+   "nasdaq_im_5635_3_registration_alone_is_not_a_public_offering": "47ab12177c065ccac2eafcdf6b43b6fa320c1fcae645408c5f20ec2a07520bc0"
+  }
+ },
+ "rule_pack": {
+  "rule_pack_id": "capital_structure.rule_applicability.L0",
+  "jurisdiction": "US-federal",
+  "venues": [
+   "nasdaq"
+  ],
+  "forms": [
+   "S-3",
+   "F-3"
+  ]
+ },
+ "window_kinds": {
+  "verified": [
+   "version_index",
+   "point",
+   "amendment_trail",
+   "interpretation_dated"
+  ],
+  "bracketed": [
+   "bracket"
+  ]
+ },
+ "sources": [
+  {
+   "source_id": "form_s3_pdf",
+   "source_class": "binding_rule",
+   "url": "https://www.sec.gov/files/forms-3.pdf",
+   "file": "forms-3.pdf",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 512652,
+   "sha256": "b72c1542d440bbd1b473994e71718506e35796d04c4ada6d33a71d5aee6cfc7b",
+   "content_type": "application/pdf",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_label": "OMB 3235-0073, expires Feb. 28, 2029, SEC 1379 (02-25)",
+   "edition_date": null,
+   "derived_text": {
+    "tool": "pdftotext -layout",
+    "tool_version": "26.06.0",
+    "file": "forms-3.txt",
+    "bytes": 85019,
+    "sha256": "522751792552d129c20380869fb772f241a2568a569314cdd5e19da9ec1e71ee"
+   }
+  },
+  {
+   "source_id": "form_f3_pdf",
+   "source_class": "binding_rule",
+   "url": "https://www.sec.gov/files/formf-3.pdf",
+   "file": "formf-3.pdf",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 886594,
+   "sha256": "52ce8893c063b6328e21b70c4c6743b54048590efb00e8c94934f7832d3d0666",
+   "content_type": "application/pdf",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_label": "OMB 3235-0256, expires June 30, 2029, SEC 1983 (02-25)",
+   "edition_date": null,
+   "derived_text": {
+    "tool": "pdftotext -layout",
+    "tool_version": "26.06.0",
+    "file": "formf-3.txt",
+    "bytes": 82227,
+    "sha256": "46d2803a40dc8d957cfeafc421d81a8ea669fd666f6a30a340cb395489bd4a3e"
+   }
+  },
+  {
+   "source_id": "ecfr_title_index",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/titles.json",
+   "file": "ecfr_titles.json",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 8033,
+   "sha256": "764c4761eac1fa6c03b838388498d2dc639cde3a8ece8d1f104e85db7f91e057",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_239_13_versions",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=239.13",
+   "file": "ecfr_239_13_versions.json",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 3009,
+   "sha256": "d09a2d275614f2f25abd4f8553c8b67b3f8cc0b8f8265e24c422b52a6297676a",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_239_33_versions",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=239.33",
+   "file": "ecfr_239_33_versions.json",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 2764,
+   "sha256": "4fe3455922199e3380ff3a92e8ecaf6707689ad7e0c29f3443e7fa2c390818d5",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_230_401_versions",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=230.401",
+   "file": "ecfr_230_401_versions.json",
+   "retrieved_at": "2026-10-14T07:44:59Z",
+   "http_status": 200,
+   "bytes": 401,
+   "sha256": "236bddf1dd541022afcdefcfd3ec087dbbce4bc354bae3989e54d5d494e94d33",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_239_13_current",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2026-10-09.xml",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 21575,
+   "sha256": "c9acaf3684fd4d7535627e1e4472f8495cd7aad70ffcc90ef71ef1cd0bcde8e7",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5768,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2026-10-09"
+  },
+  {
+   "source_id": "ecfr_239_33_current",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2026-10-09.xml",
+   "retrieved_at": "2026-10-14T05:04:02Z",
+   "http_status": 200,
+   "bytes": 19679,
+   "sha256": "02ac2f8bb264ddc6a52c0fa7e65347b3ea55c212ddc1d1ba1f24a20fa4b8dc21",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5219,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2026-10-09"
+  },
+  {
+   "source_id": "ecfr_230_401_current",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=230.401",
+   "file": "ecfr_230_401_full_2026-10-09.xml",
+   "retrieved_at": "2026-10-14T07:48:27Z",
+   "http_status": 200,
+   "bytes": 5219,
+   "sha256": "b516ad8bfb049f463681fd8b18e36a788a32abd380b1656be97702f89b76ea93",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 1774,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2026-10-09"
+  },
+  {
+   "source_id": "ecfr_239_13_2016-11-21",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2016-11-21.xml",
+   "retrieved_at": "2026-10-14T07:47:47Z",
+   "http_status": 200,
+   "bytes": 21581,
+   "sha256": "b22919b2ed811f5dbe58e9af356c532e2fc9f6e4f513acb9165da0040466dc6e",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5756,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2016-11-21"
+  },
+  {
+   "source_id": "ecfr_239_13_2018-08-16",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2018-08-16/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2018-08-16.xml",
+   "retrieved_at": "2026-10-14T07:47:48Z",
+   "http_status": 200,
+   "bytes": 21681,
+   "sha256": "2ff8f67d7cd241c471cc40d66d19526274ddd3df6930e1515623ba01f70a02d5",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5825,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2018-08-16"
+  },
+  {
+   "source_id": "ecfr_239_13_2018-09-17",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2018-09-17/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2018-09-17.xml",
+   "retrieved_at": "2026-10-14T07:47:50Z",
+   "http_status": 200,
+   "bytes": 21486,
+   "sha256": "990c25e7fa108c0ef7b69c9c5a514c5507e1c5edbfd36ba4a6d66daed4b21182",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5725,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2018-09-17"
+  },
+  {
+   "source_id": "ecfr_239_13_2019-01-31",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2019-01-31/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2019-01-31.xml",
+   "retrieved_at": "2026-10-14T07:47:55Z",
+   "http_status": 200,
+   "bytes": 21516,
+   "sha256": "d30e8783209175e0b9a47013cbe1a140b69763a77b5cf26c1eb2c49ce3dac2d6",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5741,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2019-01-31"
+  },
+  {
+   "source_id": "ecfr_239_13_2019-06-15",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2019-06-15/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2019-06-15.xml",
+   "retrieved_at": "2026-10-14T07:48:00Z",
+   "http_status": 200,
+   "bytes": 21516,
+   "sha256": "d30e8783209175e0b9a47013cbe1a140b69763a77b5cf26c1eb2c49ce3dac2d6",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5741,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2019-06-15"
+  },
+  {
+   "source_id": "ecfr_239_13_2023-08-04",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2023-08-04/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2023-08-04.xml",
+   "retrieved_at": "2026-10-14T07:48:01Z",
+   "http_status": 200,
+   "bytes": 21615,
+   "sha256": "85cf76ae82fce6515b38593b303d762a0de159758f2a9515bf21770b5250b0c5",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5811,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2023-08-04"
+  },
+  {
+   "source_id": "ecfr_239_13_2023-09-05",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2023-09-05/title-17.xml?section=239.13",
+   "file": "ecfr_239_13_full_2023-09-05.xml",
+   "retrieved_at": "2026-10-14T07:48:06Z",
+   "http_status": 200,
+   "bytes": 21550,
+   "sha256": "414dd39f0c3cf35d266e1b27fe6faaae974f79b6ccfad7c21d0d0a878c8e3b90",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5757,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2023-09-05"
+  },
+  {
+   "source_id": "ecfr_239_33_2016-11-21",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2016-11-21.xml",
+   "retrieved_at": "2026-10-14T07:48:11Z",
+   "http_status": 200,
+   "bytes": 19506,
+   "sha256": "e95649cd2972f65933d3c6eb2ef8a433483a1277084a46da735378ef9633730b",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5172,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2016-11-21"
+  },
+  {
+   "source_id": "ecfr_239_33_2018-08-16",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2018-08-16/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2018-08-16.xml",
+   "retrieved_at": "2026-10-14T07:48:12Z",
+   "http_status": 200,
+   "bytes": 19606,
+   "sha256": "2926f409c1666f41d8b5319f95eeb3b8cf5797a7a5c50edfaf0b9a23c0535a9f",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5244,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2018-08-16"
+  },
+  {
+   "source_id": "ecfr_239_33_2018-09-17",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2018-09-17/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2018-09-17.xml",
+   "retrieved_at": "2026-10-14T07:48:17Z",
+   "http_status": 200,
+   "bytes": 19411,
+   "sha256": "83c3d07230b65643b052634e44cda356f25d286e5dff8e4da44882e23d6334c5",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5143,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2018-09-17"
+  },
+  {
+   "source_id": "ecfr_239_33_2019-01-31",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2019-01-31/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2019-01-31.xml",
+   "retrieved_at": "2026-10-14T07:48:22Z",
+   "http_status": 200,
+   "bytes": 19441,
+   "sha256": "1741d4f568ead491e34397143a5aece4550b65293461e66f222d648a76b1df44",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5160,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2019-01-31"
+  },
+  {
+   "source_id": "ecfr_239_33_2020-04-20",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-04-20/title-17.xml?section=239.33",
+   "file": "ecfr_239_33_full_2020-04-20.xml",
+   "retrieved_at": "2026-10-14T07:48:24Z",
+   "http_status": 200,
+   "bytes": 19541,
+   "sha256": "8192be4b69aefc2e62e1e6f7215eb12b5c06abe546ce2b64a225c479cf4158ac",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 5230,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2020-04-20"
+  },
+  {
+   "source_id": "release_33_8878",
+   "source_class": "binding_rule",
+   "url": "https://www.sec.gov/files/rules/final/2007/33-8878.pdf",
+   "file": "33-8878.pdf",
+   "retrieved_at": "2026-10-14T06:54:56Z",
+   "http_status": 200,
+   "bytes": 243256,
+   "sha256": "9caba7d9bdba0c16f5717dab617c2724df4974ba50d482ef5eee34cf293c7288",
+   "content_type": "application/pdf",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "release": {
+    "releases": [
+     "33-8878"
+    ],
+    "file_number": "S7-10-07",
+    "rin": "3235-AJ89",
+    "status": "final",
+    "effective_date": "2008-01-28"
+   },
+   "derived_text": {
+    "tool": "pdftotext -layout",
+    "tool_version": "26.06.0",
+    "file": "33-8878.txt",
+    "bytes": 165272,
+    "sha256": "d64ca2b0dfdb88b1aadc1ebcbef77afd9d8df11bebee3f3cde169b903b7179ef"
+   }
+  },
+  {
+   "source_id": "ecfr_230_415_versions",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=230.415",
+   "file": "ecfr_230_415_versions.json",
+   "retrieved_at": "2026-10-14T14:47:27Z",
+   "http_status": 200,
+   "bytes": 2050,
+   "sha256": "53b4ccb4c7bf4e71afd5113bca92bfa549c6f66134a06280ff98db8da399cddc",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": "gzip",
+   "wire_bytes": 355,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_230_462_versions",
+   "source_class": "edition_index",
+   "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=230.462",
+   "file": "ecfr_230_462_versions.json",
+   "retrieved_at": "2026-10-14T14:47:28Z",
+   "http_status": 200,
+   "bytes": 1071,
+   "sha256": "02d8ab37585d948c6f3fe4e2ff723dc2a6dc5a8896f9a76ce5585986655e7542",
+   "content_type": "application/json; charset=utf-8",
+   "content_encoding": "gzip",
+   "wire_bytes": 309,
+   "rights": "us_government_work_public_domain",
+   "enforceable": false
+  },
+  {
+   "source_id": "ecfr_230_415_current",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2026-10-09.xml",
+   "retrieved_at": "2026-10-14T14:47:59Z",
+   "http_status": 200,
+   "bytes": 8049,
+   "sha256": "738564d62bce6d929ee7cf5ccdce2ced4c43c30cdd0d78d9f80315fb4c9fe6c0",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2618,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2026-10-09"
+  },
+  {
+   "source_id": "ecfr_230_462_current",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=230.462",
+   "file": "ecfr_230_462_full_2026-10-09.xml",
+   "retrieved_at": "2026-10-14T14:48:22Z",
+   "http_status": 200,
+   "bytes": 3177,
+   "sha256": "1110da5b82e30bb32ab575799daa73e895dca3b2990ea62101460166785d9372",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 1234,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2026-10-09"
+  },
+  {
+   "source_id": "ecfr_230_415_2016-11-21",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2016-11-21.xml",
+   "retrieved_at": "2026-10-14T14:48:01Z",
+   "http_status": 200,
+   "bytes": 7507,
+   "sha256": "2364a6129f3bb5e005967fc42c3828a973d27af78736b70f59038e258bf67a65",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2450,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2016-11-21"
+  },
+  {
+   "source_id": "ecfr_230_415_2020-06-01",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-06-01/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2020-06-01.xml",
+   "retrieved_at": "2026-10-14T14:48:03Z",
+   "http_status": 200,
+   "bytes": 7606,
+   "sha256": "51162374d53a64b745ad66b319b46c0b8f8e2b798800f95b60c6b38f03444bf1",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2514,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2020-06-01"
+  },
+  {
+   "source_id": "ecfr_230_415_2020-08-01",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-08-01/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2020-08-01.xml",
+   "retrieved_at": "2026-10-14T14:48:08Z",
+   "http_status": 200,
+   "bytes": 7884,
+   "sha256": "a0416e09ca7d99df69efd0ade0b3a168ef420dc4f936fc76c82c6e4cb229e483",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2545,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2020-08-01"
+  },
+  {
+   "source_id": "ecfr_230_415_2021-12-09",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2021-12-09/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2021-12-09.xml",
+   "retrieved_at": "2026-10-14T14:48:09Z",
+   "http_status": 200,
+   "bytes": 7983,
+   "sha256": "605c5cfcdb6a5fa086b69177ecdbb993442a5e52e501afb91b0e35a853c7df8b",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2609,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2021-12-09"
+  },
+  {
+   "source_id": "ecfr_230_415_2022-01-31",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2022-01-31/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2022-01-31.xml",
+   "retrieved_at": "2026-10-14T14:48:14Z",
+   "http_status": 200,
+   "bytes": 7985,
+   "sha256": "f86ee691170afb42f5c7efdbfb7afe617fe4efb632426730324c433e70d50b63",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2586,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2022-01-31"
+  },
+  {
+   "source_id": "ecfr_230_415_2024-07-24",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2024-07-24/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2024-07-24.xml",
+   "retrieved_at": "2026-10-14T14:48:19Z",
+   "http_status": 200,
+   "bytes": 8097,
+   "sha256": "ea861a91d6e247929fdfc68e6f8f337e9034deea97a9b9985155137795ad3b51",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2665,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2024-07-24"
+  },
+  {
+   "source_id": "ecfr_230_415_2024-09-23",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2024-09-23/title-17.xml?section=230.415",
+   "file": "ecfr_230_415_full_2024-09-23.xml",
+   "retrieved_at": "2026-10-14T14:48:20Z",
+   "http_status": 200,
+   "bytes": 8049,
+   "sha256": "738564d62bce6d929ee7cf5ccdce2ced4c43c30cdd0d78d9f80315fb4c9fe6c0",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 2618,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2024-09-23"
+  },
+  {
+   "source_id": "ecfr_230_462_2016-11-21",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=230.462",
+   "file": "ecfr_230_462_full_2016-11-21.xml",
+   "retrieved_at": "2026-10-14T14:48:32Z",
+   "http_status": 200,
+   "bytes": 3084,
+   "sha256": "9770324302fa5754a05e20dbb99271f0784becb3a104a938685c5c4f0052ad6d",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 1172,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2016-11-21"
+  },
+  {
+   "source_id": "ecfr_230_462_2020-06-01",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-06-01/title-17.xml?section=230.462",
+   "file": "ecfr_230_462_full_2020-06-01.xml",
+   "retrieved_at": "2026-10-14T14:48:37Z",
+   "http_status": 200,
+   "bytes": 3183,
+   "sha256": "757ba5b24f2959e4ed3603a15daf91e5615476d95c16e273d0d60171d66f0325",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 1235,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2020-06-01"
+  },
+  {
+   "source_id": "ecfr_230_462_2020-08-01",
+   "source_class": "binding_rule",
+   "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-08-01/title-17.xml?section=230.462",
+   "file": "ecfr_230_462_full_2020-08-01.xml",
+   "retrieved_at": "2026-10-14T14:48:38Z",
+   "http_status": 200,
+   "bytes": 3177,
+   "sha256": "1110da5b82e30bb32ab575799daa73e895dca3b2990ea62101460166785d9372",
+   "content_type": "text/xml",
+   "content_encoding": "gzip",
+   "wire_bytes": 1234,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_date": "2020-08-01"
+  },
+  {
+   "source_id": "release_33_8591",
+   "source_class": "binding_rule",
+   "url": "https://www.sec.gov/rules/final/33-8591.pdf",
+   "file": "33-8591.pdf",
+   "retrieved_at": "2026-10-14T14:49:14Z",
+   "http_status": 200,
+   "bytes": 2287419,
+   "sha256": "449cb5a5b533d72b4cf56e9b3647efe2f86c306983378b435424726c42281a6b",
+   "content_type": "application/pdf",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "release": {
+    "releases": [
+     "33-8591",
+     "34-52056",
+     "IC-26993",
+     "FR-75"
+    ],
+    "international_series_release_no": "1294",
+    "file_number": "S7-38-04",
+    "rin": "3235-AI11",
+    "status": "final",
+    "effective_date": "2005-12-01",
+    "title": "SECURITIES OFFERING REFORM",
+    "federal_register_source_notes": {
+     "230.415": "70 FR 44812, Aug. 3, 2005",
+     "230.462": "70 FR 44818, Aug. 3, 2005",
+     "basis": "the release PDF itself prints no Federal Register citation; these are the source-note entries retrieved inside the eCFR XML for each section"
+    }
+   },
+   "derived_text": {
+    "tool": "pdftotext -layout",
+    "tool_version": "24.02.0",
+    "file": "33-8591.txt",
+    "bytes": 954526,
+    "sha256": "88ea8e973d3c5383648279c5d1b08f7735bda3641cdcf9dce4a5069568311ac8"
+   }
+  },
+  {
+   "source_id": "usc_15_77j_2024",
+   "source_class": "binding_rule",
+   "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title15/html/USCODE-2024-title15-chap2A-subchapI-sec77j.htm",
+   "file": "usc15_77j_2024.htm",
+   "retrieved_at": "2026-10-14T14:49:16Z",
+   "http_status": 200,
+   "bytes": 8732,
+   "sha256": "dd1637e9def25ad6736ce2c810dd05f5d19cbeab51b3447adec60695d9222fc9",
+   "content_type": "text/html",
+   "content_encoding": null,
+   "wire_bytes": null,
+   "rights": "us_government_work_public_domain",
+   "enforceable": true,
+   "edition_label": "United States Code, 2024 Edition",
+   "currency_as_printed": "United States Code, 2024 Edition (the granule prints no 'current through' line)",
+   "statute": "15 U.S.C. 77j (Securities Act of 1933 Section 10)"
+  }
+ ],
+ "spans": [
+  {
+   "span_id": "form_s3:I.B.1",
+   "source_id": "form_s3_pdf",
+   "chars": 1066,
+   "sha256": "e1f79b8e29c0602aee921baacea4417f81b1ef375f166110fa81a6caef1e35a6",
+   "normalized_sha256": "64f67892856cf9818a5dfcea223f41c01bed9a18f8b36def69b2daa869b74b8e",
+   "text": "1. Primary Offerings by Certain Registrants. Securities to be offered for cash by or on behalf of a registrant, or outstanding securities to be offered for cash for the account of any person other than the registrant, including securities acquired by standby underwriters in connection with the call or redemption by the registrant of warrants or a class of convertible securities; provided that the aggregate market value of the voting and non-voting common equity held by non-affiliates of the registrant is $75 million or more. Instruction. For the purposes of this Form, “common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). The aggregate market value of the registrant’s outstanding voting and non-voting common equity shall be computed by use of the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of filing. See the definition of “affiliate” in Securities Act Rule 405.",
+   "same_as": null
+  },
+  {
+   "span_id": "form_s3:I.B.6",
+   "source_id": "form_s3_pdf",
+   "chars": 997,
+   "sha256": "d411867fa4d6e393be59bd576b98eca37fbd46b7b429d14e245dd02faee7ac40",
+   "normalized_sha256": "d3141cf3830c3afa44248abd89743e4f3079c74b86fb264c11c34c29c4abf511",
+   "text": "6. Limited Primary Offerings by Certain Other Registrants. Securities to be offered for cash by or on behalf of a registrant; provided that: (a) the aggregate market value of securities sold by or on behalf of the registrant pursuant to this Instruction I.B.6. during the period of 12 calendar months immediately prior to, and including, the sale is no more than one-third of the aggregate market value of the voting and non-voting common equity held by non-affiliates of the registrant; (b) the registrant is not a shell company (as defined in §230.405 of this chapter) and has not been a shell company for at least 12 calendar months previously and if it has been a shell company at any time previously, has filed current Form 10 information with the Commission at least 12 calendar months previously reflecting its status as an entity that is not a shell company; and (c) the registrant has at least one class of common equity securities listed and registered on a national securities exchange.",
+   "same_as": null
+  },
+  {
+   "span_id": "form_s3:I.B.6.instructions",
+   "source_id": "form_s3_pdf",
+   "chars": 3945,
+   "sha256": "b7a4fed4609f3de3e70c304934e2b47da3f7299c77b613ebcfc60bfd648e5be5",
+   "normalized_sha256": "60595d549e8e1244c422188b454b9e85b7dd8acd33e3083eaec2a8fd0a763904",
+   "text": "Instructions. 1. “Common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). For purposes of computing the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to General Instruction I.B.6., registrants shall use the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of sale. See the definition of “affiliate” in Securities Act Rule 405 (§230.405 of this chapter). 2. For purposes of computing the aggregate market value of all securities sold by or on behalf of the registrant in offerings pursuant to General Instruction I.B.6. during any period of 12 calendar months, registrants shall aggregate the gross proceeds of such sales; provided, that, in the case of derivative securities convertible into or exercisable for shares of the registrant’s common equity, registrants shall calculate the aggregate market value of any underlying equity shares in lieu of the market value of the derivative securities. The aggregate market value of the underlying equity shall be calculated by multiplying the maximum number of common equity shares into which the derivative securities are convertible or for which they are exercisable as of a date within 60 days prior to the date of sale, by the same per share market price of the registrant’s equity used for purposes of calculating the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to Instruction 1 to General Instruction I.B.6. If the derivative securities have been converted or exercised, the aggregate market value of the underlying equity shall be calculated by multiplying the actual number of shares into which the securities were converted or received upon exercise, by the market price of such shares on the date of conversion or exercise. 3. If the aggregate market value of the registrant’s outstanding voting and nonvoting common equity computed pursuant to General Instruction I.B.6. equals or exceeds $75 million subsequent to the effective date of this registration statement, then the one third limitation on sales specified in General Instruction I.B.6(a) shall not apply to additional sales made pursuant to this registration statement on or subsequent to such date and instead the registration statement shall be considered filed pursuant to General Instruction I.B.1. 4. The term “Form 10 information” means the information that is required by Form 10 or Form 20-F (§249.210 or §249.220f of this chapter), as applicable to the registrant, to register under the Securities Exchange Act of 1934 each class of securities being registered using this Form. A registrant may provide the Form 10 information in another Commission filing with respect to the registrant. 5. The date used in Instruction 2 to General Instruction I.B.6. shall be the same date used in Instruction 1 to General Instruction I.B.6. 6. A registrant’s eligibility to register a primary offering on Form S-3 pursuant to General Instruction I.B.6. does not mean that the registrant meets the requirements of Form S-3 for purposes of any other rule or regulation of the Commission apart from Rule 415(a)(1)(x) (§230.415(a)(1)(x) of this chapter). 7. Registrants must set forth on the outside front cover of the prospectus the calculation of the aggregate market value of the registrant’s outstanding voting and nonvoting common equity pursuant to General Instruction I.B.6. and the amount of all securities offered pursuant to General Instruction I.B.6. during the prior 12 calendar month period that ends on, and includes, the date of the prospectus. 8. For purposes of General Instruction I.B.6(c), a “national securities exchange” shall mean an exchange registered as such under Section 6(a) of the Securities Exchange Act of 1934.",
+   "same_as": null
+  },
+  {
+   "span_id": "form_f3:I.B.1",
+   "source_id": "form_f3_pdf",
+   "chars": 993,
+   "sha256": "eff992cee98e917bdbf74242c6fc503e08001c1334dc627d9205ad8433ff3ab4",
+   "normalized_sha256": "e9f5579decf15cea426d4f70481358cfe5c0d85b3cdadcdb675fb623cdee8208",
+   "text": "1. Primary Offerings by Certain Registrants. Securities to be offered for cash by or on behalf of a registrant, provided that the aggregate market value worldwide of the voting and non-voting common equity held by non-affiliates of the registrant is the equivalent of $75 million or more. In the case of securities registered pursuant to this paragraph, the financial statements included in this registration statement must comply with Item 18 of Form 20-F. Instruction. For the purposes of this Form, “common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). The aggregate market value of the registrant’s outstanding voting and non-voting common equity shall be computed by use of the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of filing. See the definition of “affiliate” in Securities Act Rule 405.",
+   "same_as": null
+  },
+  {
+   "span_id": "form_f3:I.B.5",
+   "source_id": "form_f3_pdf",
+   "chars": 1007,
+   "sha256": "79193b369798ba2e5ff300885738daeacd99d19a3a36a49e13db3de79022c85a",
+   "normalized_sha256": "003aa9b450d7f3a879cc89d241da8e3fa6eb449f865635d7a908ca3876b49a4b",
+   "text": "5. Limited Primary Offerings by Certain Other Registrants. Securities to be offered for cash by or on behalf of a registrant; provided that: (a) the aggregate market value of securities sold by or on behalf of the registrant pursuant to this Instruction I.B.5. during the period of 12 calendar months immediately prior to, and including, the sale is no more than one-third of the aggregate market value worldwide of the voting and non-voting common equity held by non-affiliates of the registrant; (b) the registrant is not a shell company (as defined in §230.405 of this chapter) and has not been a shell company for at least 12 calendar months previously and if it has been a shell company at any time previously, has filed current Form 10 information with the Commission at least 12 calendar months previously reflecting its status as an entity that is not a shell company; and (c) the registrant has at least one class of common equity securities listed and registered on a national securities exchange.",
+   "same_as": null
+  },
+  {
+   "span_id": "form_f3:I.B.5.instructions",
+   "source_id": "form_f3_pdf",
+   "chars": 3945,
+   "sha256": "2a6f9198107b853dce988bbcde7039d7568b20aa1322c8b8ff50ef0985966a85",
+   "normalized_sha256": "999a42e491c8409b1f962aa18ffd790ec3599216019a7f650eaeb8e11123c75d",
+   "text": "Instructions. 1. “Common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). For purposes of computing the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to General Instruction I.B.5., registrants shall use the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of sale. See the definition of “affiliate” in Securities Act Rule 405 (§230.405 of this chapter). 2. For purposes of computing the aggregate market value of all securities sold by or on behalf of the registrant in offerings pursuant to General Instruction I.B.5. during any period of 12 calendar months, registrants shall aggregate the gross proceeds of such sales; provided, that, in the case of derivative securities convertible into or exercisable for shares of the registrant’s common equity, registrants shall calculate the aggregate market value of any underlying equity shares in lieu of the market value of the derivative securities. The aggregate market value of the underlying equity shall be calculated by multiplying the maximum number of common equity shares into which the derivative securities are convertible or for which they are exercisable as of a date within 60 days prior to the date of sale, by the same per share market price of the registrant’s equity used for purposes of calculating the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to Instruction 1 to General Instruction I.B.5. If the derivative securities have been converted or exercised, the aggregate market value of the underlying equity shall be calculated by multiplying the actual number of shares into which the securities were converted or received upon exercise, by the market price of such shares on the date of conversion or exercise. 3. If the aggregate market value of the registrant’s outstanding voting and nonvoting common equity computed pursuant to General Instruction I.B.5. equals or exceeds $75 million subsequent to the effective date of this registration statement, then the one-third limitation on sales specified in General Instruction I.B.5(a) shall not apply to additional sales made pursuant to this registration statement on or subsequent to such date and instead the registration statement shall be considered filed pursuant to General Instruction I.B.1. 4. The term “Form 10 information” means the information that is required by Form 10 or Form 20-F (§249.210 or 249.220f of this chapter), as applicable to the registrant, to register under the Securities Exchange Act of 1934 each class of securities being registered using this Form. A registrant may provide the Form 10 information in another Commission filing with respect to the registrant. 5. The date used in Instruction 2 to General Instruction I.B.5. shall be the same date used in Instruction 1 to General Instruction I.B.5. 6. A registrant’s eligibility to register a primary offering on Form F-3 pursuant to General Instruction I.B.5. does not mean that the registrant meets the requirements of Form F-3 for purposes of any other rule or regulation of the Commission apart from Rule 415(a)(1)(x) (§230.415(a)(1)(x) of this chapter). 7. Registrants must set forth on the outside front cover of the prospectus the calculation of the aggregate market value of the registrant’s outstanding voting and non voting common equity pursuant to General Instruction I.B.5. and the amount of all securities offered pursuant to General Instruction I.B.5. during the prior 12 calendar month period that ends on, and includes, the date of the prospectus. 8. For purposes of General Instruction I.B.5(c), a “national securities exchange” shall mean an exchange registered as such under Section 6(a) of the Securities Exchange Act of 1934.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_239_13:b_1",
+   "source_id": "ecfr_239_13_current",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": "(1) Primary and secondary offerings by certain registrants. Securities to be offered for cash by or on behalf of a registrant, or outstanding securities to be offered for cash for the account of any person other than the registrant, including securities acquired by standby underwriters in connection with the call or redemption by the registrant of warrants or a class of convertible securities; provided that the aggregate market value of the voting and non-voting common equity held by non-affiliates of the registrant is $75 million or more. Instruction to paragraph (b)(1): The aggregate market value of the registrant's outstanding voting stock shall be computed by use of the price at which the stock was last sold, or the average of the bid and asked prices of such stock, as of a date within 60 days prior to the date of filing. See the definition of affiliate in Securities Act Rule 405 (§ 230.405 of this chapter).",
+   "same_as": null,
+   "cita_tail": "4, 2014; 83 FR 40877, Aug. 16, 2018; 88 FR 51943, Aug. 4, 2023; 90 FR 9688, Feb. 18, 2025]"
+  },
+  {
+   "span_id": "ecfr_239_33:b_1",
+   "source_id": "ecfr_239_33_current",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": "(1) Primary offerings by certain registrants. Securities to be offered for cash by or on behalf of a registrant, provided that the aggregate market value worldwide of the voting and non-voting common equity held by non-affiliates of the registrant is the equivalent of $75 million or more. In the case of securities registered pursuant to this paragraph, the financial statements included in this registration statement must comply with Item 18 of Form 20-F (§ 249.220f of this chapter). Instruction to paragraph (b)(1): The aggregate market value of the registrant's outstanding voting stock shall be computed by use of the price at which the stock was last sold, or the average of the bid and asked prices of such stock, in the principal market for such stock as of a date within 60 days prior to the date of filing. See the definition of “affiliate” in Securities Act Rule 405 (§ 230.405 of this chapter).",
+   "same_as": null,
+   "cita_tail": "7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "ecfr_230_401:g_3",
+   "source_id": "ecfr_230_401_current",
+   "chars": 263,
+   "sha256": "6e3677645002038dedd9adbff7a3e1205069d94e7ecc3a13efb5bbba96b7bafe",
+   "normalized_sha256": "42049b388e4600d447f15295d5c8a38155407119864a77399bfb8e6240a60576",
+   "text": "(3) Violations of General Instruction I.B.6. of Form S-3 or General Instruction I.B.5. of Form F-3 will also violate the requirements as to proper form under this section notwithstanding that the registration statement may have been declared effective previously.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_239_13/2016-11-21:b_1",
+   "source_id": "ecfr_239_13_2016-11-21",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": ", 2005; 70 FR 44820, Aug. 3, 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014]"
+  },
+  {
+   "span_id": "ecfr_239_13/2018-08-16:b_1",
+   "source_id": "ecfr_239_13_2018-08-16",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": ", 2005; 70 FR 44820, Aug. 3, 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014]"
+  },
+  {
+   "span_id": "ecfr_239_13/2018-09-17:b_1",
+   "source_id": "ecfr_239_13_2018-09-17",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": ", 2005; 70 FR 44820, Aug. 3, 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014]"
+  },
+  {
+   "span_id": "ecfr_239_13/2019-01-31:b_1",
+   "source_id": "ecfr_239_13_2019-01-31",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": " 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "ecfr_239_13/2019-06-15:b_1",
+   "source_id": "ecfr_239_13_2019-06-15",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": " 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "ecfr_239_13/2023-08-04:b_1",
+   "source_id": "ecfr_239_13_2023-08-04",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": " 2005; 74 FR 6816, Feb. 10, 2009; 79 FR 57332, Sept. 24, 2014; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "ecfr_239_13/2023-09-05:b_1",
+   "source_id": "ecfr_239_13_2023-09-05",
+   "chars": 925,
+   "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+   "normalized_sha256": "87f16bd874b44d6857311af287e0404851797336d8c6477ba7f7fbbe8afdb05b",
+   "text": null,
+   "same_as": "ecfr_239_13:b_1",
+   "cita_tail": " 2009; 79 FR 57332, Sept. 24, 2014; 83 FR 40877, Aug. 16, 2018; 88 FR 51943, Aug. 4, 2023]"
+  },
+  {
+   "span_id": "ecfr_239_33/2016-11-21:b_1",
+   "source_id": "ecfr_239_33_2016-11-21",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": null,
+   "same_as": "ecfr_239_33:b_1",
+   "cita_tail": " 14, 1997; 70 FR 1620, Jan. 7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009]"
+  },
+  {
+   "span_id": "ecfr_239_33/2018-08-16:b_1",
+   "source_id": "ecfr_239_33_2018-08-16",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": null,
+   "same_as": "ecfr_239_33:b_1",
+   "cita_tail": " 14, 1997; 70 FR 1620, Jan. 7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009]"
+  },
+  {
+   "span_id": "ecfr_239_33/2018-09-17:b_1",
+   "source_id": "ecfr_239_33_2018-09-17",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": null,
+   "same_as": "ecfr_239_33:b_1",
+   "cita_tail": " 14, 1997; 70 FR 1620, Jan. 7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009]"
+  },
+  {
+   "span_id": "ecfr_239_33/2019-01-31:b_1",
+   "source_id": "ecfr_239_33_2019-01-31",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": null,
+   "same_as": "ecfr_239_33:b_1",
+   "cita_tail": "7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "ecfr_239_33/2020-04-20:b_1",
+   "source_id": "ecfr_239_33_2020-04-20",
+   "chars": 908,
+   "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+   "normalized_sha256": "eca12f2bf46a498e436500b41999eed044f3df595cbbe4efb64964f085eacce8",
+   "text": null,
+   "same_as": "ecfr_239_33:b_1",
+   "cita_tail": "7, 2005; 70 FR 44825, Aug. 3, 2005; 74 FR 6817, Feb. 10, 2009; 83 FR 40877, Aug. 16, 2018]"
+  },
+  {
+   "span_id": "release_33_8878:rule_401_g_3",
+   "source_id": "release_33_8878",
+   "chars": 263,
+   "sha256": "6e3677645002038dedd9adbff7a3e1205069d94e7ecc3a13efb5bbba96b7bafe",
+   "normalized_sha256": "42049b388e4600d447f15295d5c8a38155407119864a77399bfb8e6240a60576",
+   "text": null,
+   "same_as": "ecfr_230_401:g_3"
+  },
+  {
+   "span_id": "release_33_8878:form_s3:I.B.6",
+   "source_id": "release_33_8878",
+   "chars": 997,
+   "sha256": "d411867fa4d6e393be59bd576b98eca37fbd46b7b429d14e245dd02faee7ac40",
+   "normalized_sha256": "d3141cf3830c3afa44248abd89743e4f3079c74b86fb264c11c34c29c4abf511",
+   "text": null,
+   "same_as": "form_s3:I.B.6"
+  },
+  {
+   "span_id": "release_33_8878:form_s3:I.B.6.instructions",
+   "source_id": "release_33_8878",
+   "chars": 3950,
+   "sha256": "a2d3f9de6d41585aab0be99e41b9ca119f18a81494e96077d5eda6d5775234b5",
+   "normalized_sha256": "60595d549e8e1244c422188b454b9e85b7dd8acd33e3083eaec2a8fd0a763904",
+   "text": "Instructions. 1. “Common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). For purposes of computing the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to General Instruction I.B.6., registrants shall use the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of sale. See the definition of “affiliate” in Securities Act Rule 405 (§230.405 of this chapter). 2. For purposes of computing the aggregate market value of all securities sold by or on behalf of the registrant in offerings pursuant to General Instruction I.B.6. during any period of 12 calendar months, registrants shall aggregate the gross proceeds of such sales; provided, that, in the case of derivative securities convertible into or exercisable for shares of the registrant’s common equity, registrants shall calculate the aggregate market value of any underlying equity shares in lieu of the market value of the derivative securities. The aggregate market value of the underlying equity shall be calculated by multiplying the maximum number of common equity shares into which the derivative securities are convertible or for which they are exercisable as of a date within 60 days prior to the date of sale, by the same per share market price of the registrant’s equity used for purposes of calculating the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to Instruction 1 to General Instruction I.B.6. If the derivative securities have been converted or exercised, the aggregate market value of the underlying equity shall be calculated by multiplying the actual number of shares into which the securities were converted or received upon exercise, by the market price of such shares on the date of conversion or exercise. 3. If the aggregate market value of the registrant’s outstanding voting and non- voting common equity computed pursuant to General Instruction I.B.6. equals or exceeds $75 million subsequent to the effective date of this registration statement, then the one- third limitation on sales specified in General Instruction I.B.6(a) shall not apply to additional sales made pursuant to this registration statement on or subsequent to such date and instead the registration statement shall be considered filed pursuant to General Instruction I.B.1. 4. The term “Form 10 information” means the information that is required by Form 10 or Form 20-F (§249.210 or §249.220f of this chapter), as applicable to the registrant, to register under the Securities Exchange Act of 1934 each class of securities being registered using this form. A registrant may provide the Form 10 information in another Commission filing with respect to the registrant. 5. The date used in Instruction 2 to General Instruction I.B.6. shall be the same date used in Instruction 1 to General Instruction I.B.6. 6. A registrant’s eligibility to register a primary offering on Form S-3 pursuant to General Instruction I.B.6. does not mean that the registrant meets the requirements of Form S-3 for purposes of any other rule or regulation of the Commission apart from Rule 415(a)(1)(x) (§230.415(a)(1)(x) of this chapter). 7. Registrants must set forth on the outside front cover of the prospectus the calculation of the aggregate market value of the registrant’s outstanding voting and non- voting common equity pursuant to General Instruction I.B.6. and the amount of all securities offered pursuant to General Instruction I.B.6. during the prior 12 calendar month period that ends on, and includes, the date of the prospectus. 8. For purposes of General Instruction I.B.6(c), a “national securities exchange” shall mean an exchange registered as such under Section 6(a) of the Securities Exchange Act of 1934.",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8878:form_f3:I.B.5",
+   "source_id": "release_33_8878",
+   "chars": 1007,
+   "sha256": "79193b369798ba2e5ff300885738daeacd99d19a3a36a49e13db3de79022c85a",
+   "normalized_sha256": "003aa9b450d7f3a879cc89d241da8e3fa6eb449f865635d7a908ca3876b49a4b",
+   "text": null,
+   "same_as": "form_f3:I.B.5"
+  },
+  {
+   "span_id": "release_33_8878:form_f3:I.B.5.instructions",
+   "source_id": "release_33_8878",
+   "chars": 3950,
+   "sha256": "83d150ab1be0be6b0d57e4d01e616663e4e06b01932b98006ea92a2ba0f10f1f",
+   "normalized_sha256": "999a42e491c8409b1f962aa18ffd790ec3599216019a7f650eaeb8e11123c75d",
+   "text": "Instructions. 1. “Common equity” is as defined in Securities Act Rule 405 (§230.405 of this chapter). For purposes of computing the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to General Instruction I.B.5., registrants shall use the price at which the common equity was last sold, or the average of the bid and asked prices of such common equity, in the principal market for such common equity as of a date within 60 days prior to the date of sale. See the definition of “affiliate” in Securities Act Rule 405 (§230.405 of this chapter). 2. For purposes of computing the aggregate market value of all securities sold by or on behalf of the registrant in offerings pursuant to General Instruction I.B.5. during any period of 12 calendar months, registrants shall aggregate the gross proceeds of such sales; provided, that, in the case of derivative securities convertible into or exercisable for shares of the registrant’s common equity, registrants shall calculate the aggregate market value of any underlying equity shares in lieu of the market value of the derivative securities. The aggregate market value of the underlying equity shall be calculated by multiplying the maximum number of common equity shares into which the derivative securities are convertible or for which they are exercisable as of a date within 60 days prior to the date of sale, by the same per share market price of the registrant’s equity used for purposes of calculating the aggregate market value of the registrant’s outstanding voting and non-voting common equity pursuant to Instruction 1 to General Instruction I.B.5. If the derivative securities have been converted or exercised, the aggregate market value of the underlying equity shall be calculated by multiplying the actual number of shares into which the securities were converted or received upon exercise, by the market price of such shares on the date of conversion or exercise. 3. If the aggregate market value of the registrant’s outstanding voting and non- voting common equity computed pursuant to General Instruction I.B.5. equals or exceeds $75 million subsequent to the effective date of this registration statement, then the one- third limitation on sales specified in General Instruction I.B.5(a) shall not apply to additional sales made pursuant to this registration statement on or subsequent to such date and instead the registration statement shall be considered filed pursuant to General Instruction I.B.1. 4. The term “Form 10 information” means the information that is required by Form 10 or Form 20-F (§249.210 or §249.220f of this chapter), as applicable to the registrant, to register under the Securities Exchange Act of 1934 each class of securities being registered using this form. A registrant may provide the Form 10 information in another Commission filing with respect to the registrant. 5. The date used in Instruction 2 to General Instruction I.B.5. shall be the same date used in Instruction 1 to General Instruction I.B.5. 6. A registrant’s eligibility to register a primary offering on Form F-3 pursuant to General Instruction I.B.5. does not mean that the registrant meets the requirements of Form F-3 for purposes of any other rule or regulation of the Commission apart from Rule 415(a)(1)(x) (§230.415(a)(1)(x) of this chapter). 7. Registrants must set forth on the outside front cover of the prospectus the calculation of the aggregate market value of the registrant’s outstanding voting and non- voting common equity pursuant to General Instruction I.B.5. and the amount of all securities offered pursuant to General Instruction I.B.5. during the prior 12 calendar month period that ends on, and includes, the date of the prospectus. 8. For purposes of General Instruction I.B.5(c), a “national securities exchange” shall mean an exchange registered as such under Section 6(a) of the Securities Exchange Act of 1934.",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8878:effective_date",
+   "source_id": "release_33_8878",
+   "chars": 33,
+   "sha256": "99f33c5c0432e13c6d80ab29e8529bcb4e8fa8777cbfab67c0f786b673ac8e75",
+   "normalized_sha256": "4b458bd708246ca6e79e9db3f5dad18f875324db31ac2ec84b87a7e5f57a9fb6",
+   "text": "EFFECTIVE DATE: January 28, 2008.",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8878:amend_230_401",
+   "source_id": "release_33_8878",
+   "chars": 185,
+   "sha256": "b690630d45b50943d469bfc2c5829b646bb81a5790504f33d065c172a567e7ae",
+   "normalized_sha256": "1886e5dc5d9923c858c037f8f2b8272d64d232bb3f971782dfb29185fb2c5417",
+   "text": "2. Amend §230.401 by: a. in paragraph (g)(1), revising the cite “paragraph (g)(2)” to read “paragraphs (g)(2) and (g)(3)”; and b. adding paragraph (g)(3). The addition reads as follows:",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8878:amend_form_s3",
+   "source_id": "release_33_8878",
+   "chars": 98,
+   "sha256": "93756c3020b14094ef01631e73d3d3ed479fd97e9a081ed4bfe508ed5299fd8b",
+   "normalized_sha256": "7c91243e86625b0a665c4a4f74517ae838e480b011578f5eabb7bbc0e4cca41e",
+   "text": "4. Amend Form S-3 (referenced in §239.13) by adding General Instruction I.B.6. to read as follows:",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8878:amend_form_f3",
+   "source_id": "release_33_8878",
+   "chars": 98,
+   "sha256": "8e44b7e17c3ff8c2300ea29608abb7c45287b7a4249bda9dde4e1b7b0738a749",
+   "normalized_sha256": "dd75a9ca160424fb13ea3f458a7f704f300176273aea4fef43a5c89665b81dde",
+   "text": "5. Amend Form F-3 (referenced in §239.33) by adding General Instruction I.B.5. to read as follows:",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2016-11-21:a_1_x",
+   "source_id": "ecfr_230_415_2016-11-21",
+   "chars": 350,
+   "sha256": "17f7164401a7ae4bed322162a504bff26a28911b5decdb96f7606ab14efc9b80",
+   "normalized_sha256": "a1ea6270063acaf1ecf6cb817a2e8cfcc78948872a79bab84b29c8427ac1d739",
+   "text": "(x) Securities registered (or qualified to be registered) on Form S-3 or Form F-3 (§ 239.13 or § 239.33 of this chapter) which are to be offered and sold on an immediate, continuous or delayed basis by or on behalf of the registrant, a majority-owned subsidiary of the registrant or a person of which the registrant is a majority-owned subsidiary; or",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2020-08-01:a_1_x",
+   "source_id": "ecfr_230_415_2020-08-01",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": "(x) Securities registered (or qualified to be registered) on Form S-3 or Form F-3 (§ 239.13 or § 239.33 of this chapter), or on Form N-2 (§§ 239.14 and 274.11a-1 of this chapter) pursuant to General Instruction A.2 of that form, which are to be offered and sold on an immediate, continuous or delayed basis by or on behalf of the registrant, a majority-owned subsidiary of the registrant or a person of which the registrant is a majority-owned subsidiary; or",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2016-11-21:a_4",
+   "source_id": "ecfr_230_415_2016-11-21",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": "(4) In the case of a registration statement pertaining to an at the market offering of equity securities by or on behalf of the registrant, the offering must come within paragraph (a)(1)(x) of this section. As used in this paragraph, the term “at the market offering” means an offering of equity securities into an existing trading market for outstanding shares of the same class at other than a fixed price.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2016-11-21:a_5",
+   "source_id": "ecfr_230_415_2016-11-21",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": "(5) Securities registered on an automatic shelf registration statement and securities described in paragraphs (a)(1)(vii), (ix), and (x) of this section may be offered and sold only if not more than three years have elapsed since the initial effective date of the registration statement under which they are being offered and sold, provided, however, that if a new registration statement has been filed pursuant to paragraph (a)(6) of this section: (i) If the new registration statement is an automatic shelf registration statement, it shall be immediately effective pursuant to Rule 462(e) (§ 230.462(e)); or (ii) If the new registration statement is not an automatic shelf registration statement: (A) Securities covered by the prior registration statement may continue to be offered and sold until the earlier of the effective date of the new registration statement or 180 days after the third anniversary of the initial effective date of the prior registration statement; and (B) A continuous offering of securities covered by the prior registration statement that commenced within three years of the initial effective date may continue until the effective date of the new registration statement if such offering is permitted under the new registration statement.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2016-11-21:a_6",
+   "source_id": "ecfr_230_415_2016-11-21",
+   "chars": 1203,
+   "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+   "normalized_sha256": "1019548c0ad712959fe400d9c115215ebeda54a04d511ec3527ea192144d910b",
+   "text": "(6) Prior to the end of the three-year period described in paragraph (a)(5) of this section, an issuer may file a new registration statement covering securities described in such paragraph (a)(5) of this section, which may, if permitted, be an automatic shelf registration statement. The new registration statement and prospectus included therein must include all the information that would be required at that time in a prospectus relating to all offering(s) that it covers. Prior to the effective date of the new registration statement (including at the time of filing in the case of an automatic shelf registration statement), the issuer may include on such new registration statement any unsold securities covered by the earlier registration statement by identifying on the bottom of the facing page of the new registration statement or latest amendment thereto the amount of such unsold securities being included and any filing fee paid in connection with such unsold securities, which will continue to be applied to such unsold securities. The offering of securities on the earlier registration statement will be deemed terminated as of the date of effectiveness of the new registration statement.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2022-01-31:a_6",
+   "source_id": "ecfr_230_415_2022-01-31",
+   "chars": 1277,
+   "sha256": "dde5f03572929d2b18489e09f23103e82c8b81a634266131bcabe2326c363c5c",
+   "normalized_sha256": "adb7710fe1b567022f8a6b66865ace67a1ec71ee9728d2d581c747892bd156da",
+   "text": "(6) Prior to the end of the three-year period described in paragraph (a)(5) of this section, an issuer may file a new registration statement covering securities described in such paragraph (a)(5) of this section, which may, if permitted, be an automatic shelf registration statement. The new registration statement and prospectus included therein must include all the information that would be required at that time in a prospectus relating to all offering(s) that it covers. Prior to the effective date of the new registration statement (including at the time of filing in the case of an automatic shelf registration statement), the issuer may include on such new registration statement any unsold securities covered by the earlier registration statement by identifying on the bottom of the facing page of the new registration statement or latest amendment thereto, unless expressly required in another part of the registration statement, the amount of such unsold securities being included and any filing fee paid in connection with such unsold securities, which will continue to be applied to such unsold securities. The offering of securities on the earlier registration statement will be deemed terminated as of the date of effectiveness of the new registration statement.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_462/2016-11-21:e",
+   "source_id": "ecfr_230_462_2016-11-21",
+   "chars": 383,
+   "sha256": "66eebea4c2855d2c8e4817ee8d12d1d5d233bd98759c51a3a4216b81747561c8",
+   "normalized_sha256": "e7a084f4437c2dd78739cbe83d93f0939bdd2375f31a31362b467c3991c00766",
+   "text": "(e) An automatic shelf registration statement, including an automatic shelf registration statement filed in accordance with Rule 415(a)(6) (§ 230.415(a)(6)), and any post-effective amendment thereto, including a post-effective amendment filed to register additional classes of securities pursuant to Rule 413(b) (§ 230.413(b)), shall become effective upon filing with the Commission.",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415/2020-06-01:a_1_x",
+   "source_id": "ecfr_230_415_2020-06-01",
+   "chars": 350,
+   "sha256": "17f7164401a7ae4bed322162a504bff26a28911b5decdb96f7606ab14efc9b80",
+   "normalized_sha256": "a1ea6270063acaf1ecf6cb817a2e8cfcc78948872a79bab84b29c8427ac1d739",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2021-12-09:a_1_x",
+   "source_id": "ecfr_230_415_2021-12-09",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": null,
+   "same_as": "ecfr_230_415/2020-08-01:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2022-01-31:a_1_x",
+   "source_id": "ecfr_230_415_2022-01-31",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": null,
+   "same_as": "ecfr_230_415/2020-08-01:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-07-24:a_1_x",
+   "source_id": "ecfr_230_415_2024-07-24",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": null,
+   "same_as": "ecfr_230_415/2020-08-01:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-09-23:a_1_x",
+   "source_id": "ecfr_230_415_2024-09-23",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": null,
+   "same_as": "ecfr_230_415/2020-08-01:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2026-10-09:a_1_x",
+   "source_id": "ecfr_230_415_current",
+   "chars": 458,
+   "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+   "normalized_sha256": "bcd84c879b776da8866132ad3c61658335a03781a8a205543bc58ac9e3bf22a9",
+   "text": null,
+   "same_as": "ecfr_230_415/2020-08-01:a_1_x"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-06-01:a_4",
+   "source_id": "ecfr_230_415_2020-06-01",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-08-01:a_4",
+   "source_id": "ecfr_230_415_2020-08-01",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2021-12-09:a_4",
+   "source_id": "ecfr_230_415_2021-12-09",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2022-01-31:a_4",
+   "source_id": "ecfr_230_415_2022-01-31",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-07-24:a_4",
+   "source_id": "ecfr_230_415_2024-07-24",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-09-23:a_4",
+   "source_id": "ecfr_230_415_2024-09-23",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2026-10-09:a_4",
+   "source_id": "ecfr_230_415_current",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-06-01:a_5",
+   "source_id": "ecfr_230_415_2020-06-01",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-08-01:a_5",
+   "source_id": "ecfr_230_415_2020-08-01",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2021-12-09:a_5",
+   "source_id": "ecfr_230_415_2021-12-09",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2022-01-31:a_5",
+   "source_id": "ecfr_230_415_2022-01-31",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-07-24:a_5",
+   "source_id": "ecfr_230_415_2024-07-24",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-09-23:a_5",
+   "source_id": "ecfr_230_415_2024-09-23",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2026-10-09:a_5",
+   "source_id": "ecfr_230_415_current",
+   "chars": 1266,
+   "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_5"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-06-01:a_6",
+   "source_id": "ecfr_230_415_2020-06-01",
+   "chars": 1203,
+   "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+   "normalized_sha256": "1019548c0ad712959fe400d9c115215ebeda54a04d511ec3527ea192144d910b",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_6"
+  },
+  {
+   "span_id": "ecfr_230_415/2020-08-01:a_6",
+   "source_id": "ecfr_230_415_2020-08-01",
+   "chars": 1203,
+   "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+   "normalized_sha256": "1019548c0ad712959fe400d9c115215ebeda54a04d511ec3527ea192144d910b",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_6"
+  },
+  {
+   "span_id": "ecfr_230_415/2021-12-09:a_6",
+   "source_id": "ecfr_230_415_2021-12-09",
+   "chars": 1203,
+   "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+   "normalized_sha256": "1019548c0ad712959fe400d9c115215ebeda54a04d511ec3527ea192144d910b",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_6"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-07-24:a_6",
+   "source_id": "ecfr_230_415_2024-07-24",
+   "chars": 1277,
+   "sha256": "dde5f03572929d2b18489e09f23103e82c8b81a634266131bcabe2326c363c5c",
+   "normalized_sha256": "adb7710fe1b567022f8a6b66865ace67a1ec71ee9728d2d581c747892bd156da",
+   "text": null,
+   "same_as": "ecfr_230_415/2022-01-31:a_6"
+  },
+  {
+   "span_id": "ecfr_230_415/2024-09-23:a_6",
+   "source_id": "ecfr_230_415_2024-09-23",
+   "chars": 1277,
+   "sha256": "dde5f03572929d2b18489e09f23103e82c8b81a634266131bcabe2326c363c5c",
+   "normalized_sha256": "adb7710fe1b567022f8a6b66865ace67a1ec71ee9728d2d581c747892bd156da",
+   "text": null,
+   "same_as": "ecfr_230_415/2022-01-31:a_6"
+  },
+  {
+   "span_id": "ecfr_230_415/2026-10-09:a_6",
+   "source_id": "ecfr_230_415_current",
+   "chars": 1277,
+   "sha256": "dde5f03572929d2b18489e09f23103e82c8b81a634266131bcabe2326c363c5c",
+   "normalized_sha256": "adb7710fe1b567022f8a6b66865ace67a1ec71ee9728d2d581c747892bd156da",
+   "text": null,
+   "same_as": "ecfr_230_415/2022-01-31:a_6"
+  },
+  {
+   "span_id": "ecfr_230_462/2020-06-01:e",
+   "source_id": "ecfr_230_462_2020-06-01",
+   "chars": 383,
+   "sha256": "66eebea4c2855d2c8e4817ee8d12d1d5d233bd98759c51a3a4216b81747561c8",
+   "normalized_sha256": "e7a084f4437c2dd78739cbe83d93f0939bdd2375f31a31362b467c3991c00766",
+   "text": null,
+   "same_as": "ecfr_230_462/2016-11-21:e"
+  },
+  {
+   "span_id": "ecfr_230_462/2020-08-01:e",
+   "source_id": "ecfr_230_462_2020-08-01",
+   "chars": 383,
+   "sha256": "66eebea4c2855d2c8e4817ee8d12d1d5d233bd98759c51a3a4216b81747561c8",
+   "normalized_sha256": "e7a084f4437c2dd78739cbe83d93f0939bdd2375f31a31362b467c3991c00766",
+   "text": null,
+   "same_as": "ecfr_230_462/2016-11-21:e"
+  },
+  {
+   "span_id": "ecfr_230_462/2026-10-09:e",
+   "source_id": "ecfr_230_462_current",
+   "chars": 383,
+   "sha256": "66eebea4c2855d2c8e4817ee8d12d1d5d233bd98759c51a3a4216b81747561c8",
+   "normalized_sha256": "e7a084f4437c2dd78739cbe83d93f0939bdd2375f31a31362b467c3991c00766",
+   "text": null,
+   "same_as": "ecfr_230_462/2016-11-21:e"
+  },
+  {
+   "span_id": "release_33_8591:effective_date",
+   "source_id": "release_33_8591",
+   "chars": 32,
+   "sha256": "fa462c7337ab6659d98dc43f44d59b2da4fef623d25ebc80f64ae4d5a2719d01",
+   "normalized_sha256": "23e3004e74775a6fecbbac035364ed0bb4c71458544512eddaabdc9e521a4e40",
+   "text": "EFFECTIVE DATE: December 1, 2005",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8591:amend_230_415",
+   "source_id": "release_33_8591",
+   "chars": 337,
+   "sha256": "20e9b16c7dad1a8c74c250152cb68004ac2ae44ac8b58cf7addb0f02ce97ea89",
+   "normalized_sha256": "ba92b62e3545c8d42b620b2d44b396ed5f1f2c98845614d5b65016b5aa35bead",
+   "text": "30. Amend §230.415 as follows: a. Remove the authority citations following the section; b. Revise paragraph (a)(1)(x); c. Revise paragraph (a)(2); d. Revise paragraph (a)(3); e. Revise paragraph (a)(4) including the undesignated paragraph; f. Add paragraph (a)(5); and g. Add paragraph (a)(6). The revisions and addition read as follows:",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8591:amend_230_462",
+   "source_id": "release_33_8591",
+   "chars": 71,
+   "sha256": "9d8562660fd051b779dd8c9b449eace752fe8aacf579eef5178b28a32d7aa231",
+   "normalized_sha256": "1987368f14344a2393730f9f57104e521556ad9cb6a7ab707b2e4f337e95fae9",
+   "text": "42. Amend §230.462 by adding paragraphs (e) and (f) to read as follows:",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8591:rule_415_a_1_x",
+   "source_id": "release_33_8591",
+   "chars": 349,
+   "sha256": "c2457f5ee84e19c0493ee6156a5dddb2ac96e1595dc07c13a84fd5db88dbade3",
+   "normalized_sha256": "a1ea6270063acaf1ecf6cb817a2e8cfcc78948872a79bab84b29c8427ac1d739",
+   "text": "(x) Securities registered (or qualified to be registered) on Form S-3 or Form F-3 (§239.13 or §239.33 of this chapter) which are to be offered and sold on an immediate, continuous or delayed basis by or on behalf of the registrant, a majority- owned subsidiary of the registrant or a person of which the registrant is a majority-owned subsidiary; or",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8591:rule_415_a_4",
+   "source_id": "release_33_8591",
+   "chars": 408,
+   "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+   "normalized_sha256": "c12dbbfd3cda7e9add7aa7121df09370566ee24efe67558e19433fdac12e36e7",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_4"
+  },
+  {
+   "span_id": "release_33_8591:rule_415_a_5",
+   "source_id": "release_33_8591",
+   "chars": 1264,
+   "sha256": "939b48fcf83ade4473b0411a0c50cfb8c446cf5215d4c2ab4e1566f46f4f8418",
+   "normalized_sha256": "2e279dec97763e5f1431d3b97a567e32d7006d41153e47dab3adeeb337c3b903",
+   "text": "(5) Securities registered on an automatic shelf registration statement and securities described in paragraphs (a)(1)(vii), (ix), and (x) of this section may be offered and sold only if not more than three years have elapsed since the initial effective date of the registration statement under which they are being offered and sold, provided, however, that if a new registration statement has been filed pursuant to paragraph (a)(6) of this section: (i) If the new registration statement is an automatic shelf registration statement, it shall be immediately effective pursuant to Rule 462(e)(§230.462(e)); or (ii) If the new registration statement is not an automatic shelf registration statement: (A) Securities covered by the prior registration statement may continue to be offered and sold until the earlier of the effective date of the new registration statement or 180 days after the third anniversary of the initial effective date of the prior registration statement; and (B) A continuous offering of securities covered by the prior registration statement that commenced within three years of the initial effective date may continue until the effective date of the new registration statement if such offering is permitted under the new registration statement.",
+   "same_as": null,
+   "page_furniture_removed": "the derived text breaks this paragraph across a PDF page: after \"statement:\" it prints the page folio \"370\" and a form feed before \"(A) Securities covered\"; the folio and the page break are omitted from this span; apart from that, the only change is the whitespace collapse applied to every PDF-derived span (its normalized_sha256 equals ecfr_230_415/2016-11-21:a_5)"
+  },
+  {
+   "span_id": "release_33_8591:rule_415_a_6",
+   "source_id": "release_33_8591",
+   "chars": 1203,
+   "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+   "normalized_sha256": "1019548c0ad712959fe400d9c115215ebeda54a04d511ec3527ea192144d910b",
+   "text": null,
+   "same_as": "ecfr_230_415/2016-11-21:a_6"
+  },
+  {
+   "span_id": "release_33_8591:rule_462_e",
+   "source_id": "release_33_8591",
+   "chars": 381,
+   "sha256": "4024b4000e0401ce3538ecced90f9188d3ffc8dea286a204266578f9a06b6f79",
+   "normalized_sha256": "e7a084f4437c2dd78739cbe83d93f0939bdd2375f31a31362b467c3991c00766",
+   "text": "(e) An automatic shelf registration statement, including an automatic shelf registration statement filed in accordance with Rule 415(a)(6) (§230.415(a)(6)), and any post-effective amendment thereto, including a post-effective amendment filed to register additional classes of securities pursuant to Rule 413(b) (§230.413(b)), shall become effective upon filing with the Commission.",
+   "same_as": null
+  },
+  {
+   "span_id": "usc_15_77j:a_3",
+   "source_id": "usc_15_77j_2024",
+   "chars": 427,
+   "sha256": "c7415a83dab4d3266b2a7198d476b68220ff71036d4668e65efbc6375c899754",
+   "normalized_sha256": "5e577d14f8e64ac14a8f8b546f75d32f59847c0b22d09710960c666afb5aea92",
+   "text": "(3) notwithstanding the provisions of paragraphs (1) and (2) of this subsection when a prospectus is used more than nine months after the effective date of the registration statement, the information contained therein shall be as of a date not more than sixteen months prior to such use, so far as such information is known to the user of such prospectus or can be furnished by such user without unreasonable effort or expense;",
+   "same_as": null
+  },
+  {
+   "span_id": "release_33_8591:release_nos",
+   "source_id": "release_33_8591",
+   "chars": 117,
+   "sha256": "34adb5e1d05edfc6f5fcea577811dea08f1d327c9f8ac182947adc981e1e2302",
+   "normalized_sha256": "d4ad4677ecf987e3a12c041ea4ccea78e46dcf49af65a47be07f5911c826ef01",
+   "text": "RELEASE NOS. 33-8591; 34-52056; IC-26993; FR-75 INTERNATIONAL SERIES RELEASE NO. 1294 FILE NO. S7-38-04 RIN 3235-AI11",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_415:cita",
+   "source_id": "ecfr_230_415_current",
+   "chars": 233,
+   "sha256": "8e75112cd51b622ed902fa9afa69e33bb9800f40b31ecceec26f4b9e75605ada",
+   "normalized_sha256": "2de0b4e76fbbebef35b1ef686606484ea20aa49cb33a9152b5bb138e033ab0d7",
+   "text": "[48 FR 52896, Nov. 23, 1983, as amended at 59 FR 43470, Aug. 24, 1994; 70 FR 44812, Aug. 3, 2005; 73 FR 968, Jan. 4, 2008; 79 FR 57329, Sept. 24, 2014; 85 FR 33354, June 1, 2020; 87 FR 70199, Dec. 9, 2021; 89 FR 60083, July 24, 2024]",
+   "same_as": null
+  },
+  {
+   "span_id": "ecfr_230_462:cita",
+   "source_id": "ecfr_230_462_current",
+   "chars": 151,
+   "sha256": "74f381f790cf748da84acb04b93d1c8a82a43a59732d1d30d4dd9056c3d67a21",
+   "normalized_sha256": "6b6d2662b98a3a67bb51fe0bed89974f045b32da6ba840f80c0cf7159c5287df",
+   "text": "[59 FR 21650, Apr. 26, 1994, as amended at 60 FR 26617, May 17, 1995; 62 FR 39763, July 24, 1997; 70 FR 44818, Aug. 3, 2005; 85 FR 33356, June 1, 2020]",
+   "same_as": null
+  }
+ ],
+ "rules": [
+  {
+   "rule_id": "form_s3.I.B.1",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Form S-3 General Instruction I.B.1",
+   "form": "S-3",
+   "instruction": "I.B.1",
+   "span_ids": [
+    "form_s3:I.B.1"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2026-10-14",
+     "end": "2026-10-14",
+     "sha256": "e1f79b8e29c0602aee921baacea4417f81b1ef375f166110fa81a6caef1e35a6",
+     "span_id": "form_s3:I.B.1"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "reporting_history_12_months",
+    "timely_filing_12_months"
+   ],
+   "interpretation_date": null,
+   "note": null
+  },
+  {
+   "rule_id": "form_s3.I.B.6",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Form S-3 General Instruction I.B.6 and its Instructions 1-8",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [
+    "form_s3:I.B.6",
+    "form_s3:I.B.6.instructions",
+    "release_33_8878:form_s3:I.B.6",
+    "release_33_8878:form_s3:I.B.6.instructions",
+    "release_33_8878:amend_form_s3"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2008-01-28",
+     "end": "2008-01-28",
+     "sha256": "d411867fa4d6e393be59bd576b98eca37fbd46b7b429d14e245dd02faee7ac40",
+     "span_id": "release_33_8878:form_s3:I.B.6"
+    },
+    {
+     "kind": "bracket",
+     "start": "2008-01-28",
+     "end": "2026-10-14",
+     "sha256": "d411867fa4d6e393be59bd576b98eca37fbd46b7b429d14e245dd02faee7ac40",
+     "span_id": "form_s3:I.B.6"
+    },
+    {
+     "kind": "point",
+     "start": "2026-10-14",
+     "end": "2026-10-14",
+     "sha256": "d411867fa4d6e393be59bd576b98eca37fbd46b7b429d14e245dd02faee7ac40",
+     "span_id": "form_s3:I.B.6"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2008-01-28",
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "sold_under_instruction_trailing_12_months_usd",
+    "shell_company_history",
+    "exchange_listed_common_equity"
+   ],
+   "interpretation_date": null,
+   "note": "Adopted by Release 33-8878 effective 2008-01-28; adopted and current text are identical for the instruction body and differ only typographically in Instructions 1-8 (equal normalized_sha256)."
+  },
+  {
+   "rule_id": "form_f3.I.B.1",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Form F-3 General Instruction I.B.1",
+   "form": "F-3",
+   "instruction": "I.B.1",
+   "span_ids": [
+    "form_f3:I.B.1"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2026-10-14",
+     "end": "2026-10-14",
+     "sha256": "eff992cee98e917bdbf74242c6fc503e08001c1334dc627d9205ad8433ff3ab4",
+     "span_id": "form_f3:I.B.1"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "reporting_history_12_months",
+    "timely_filing_12_months"
+   ],
+   "interpretation_date": null,
+   "note": null
+  },
+  {
+   "rule_id": "form_f3.I.B.5",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Form F-3 General Instruction I.B.5 and its Instructions 1-8",
+   "form": "F-3",
+   "instruction": "I.B.5",
+   "span_ids": [
+    "form_f3:I.B.5",
+    "form_f3:I.B.5.instructions",
+    "release_33_8878:form_f3:I.B.5",
+    "release_33_8878:form_f3:I.B.5.instructions",
+    "release_33_8878:amend_form_f3"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2008-01-28",
+     "end": "2008-01-28",
+     "sha256": "79193b369798ba2e5ff300885738daeacd99d19a3a36a49e13db3de79022c85a",
+     "span_id": "release_33_8878:form_f3:I.B.5"
+    },
+    {
+     "kind": "bracket",
+     "start": "2008-01-28",
+     "end": "2026-10-14",
+     "sha256": "79193b369798ba2e5ff300885738daeacd99d19a3a36a49e13db3de79022c85a",
+     "span_id": "form_f3:I.B.5"
+    },
+    {
+     "kind": "point",
+     "start": "2026-10-14",
+     "end": "2026-10-14",
+     "sha256": "79193b369798ba2e5ff300885738daeacd99d19a3a36a49e13db3de79022c85a",
+     "span_id": "form_f3:I.B.5"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2008-01-28",
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "sold_under_instruction_trailing_12_months_usd",
+    "shell_company_history",
+    "exchange_listed_common_equity"
+   ],
+   "interpretation_date": null,
+   "note": "Adopted by Release 33-8878 effective 2008-01-28; adopted and current text are identical for the instruction body and differ only typographically in Instructions 1-8 (equal normalized_sha256)."
+  },
+  {
+   "rule_id": "cfr.17.239.13.b.1",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 239.13(b)(1) (Form S-3 eligibility, primary and secondary offerings)",
+   "form": "S-3",
+   "instruction": null,
+   "span_ids": [
+    "ecfr_239_13:b_1"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "72ccea209480874b57da05f2b047d9da0139d7ee3be1b2ad8d49af4650809d87",
+     "span_id": "ecfr_239_13:b_1"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "reporting_history_12_months",
+    "timely_filing_12_months"
+   ],
+   "interpretation_date": null,
+   "note": "Every eCFR point-in-time version from the 2016-11-21 baseline to the current edition carries byte-identical (b)(1) text; earlier editions are not served by the eCFR versioner."
+  },
+  {
+   "rule_id": "cfr.17.239.33.b.1",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 239.33(b)(1) (Form F-3 eligibility, primary and secondary offerings)",
+   "form": "F-3",
+   "instruction": null,
+   "span_ids": [
+    "ecfr_239_33:b_1"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "a82fa13096582e20b38f53066c4ec9df9a89a5c38106896cadceaf89fe7d7bdf",
+     "span_id": "ecfr_239_33:b_1"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [
+    "public_float_usd",
+    "public_float_measurement_date",
+    "reporting_history_12_months",
+    "timely_filing_12_months"
+   ],
+   "interpretation_date": null,
+   "note": "Every eCFR point-in-time version from the 2016-11-21 baseline to the current edition carries byte-identical (b)(1) text; earlier editions are not served by the eCFR versioner."
+  },
+  {
+   "rule_id": "cfr.17.230.401.g.3",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.401(g)(3) (violations of Form S-3 I.B.6 / Form F-3 I.B.5 violate proper form)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_401:g_3",
+    "release_33_8878:rule_401_g_3",
+    "release_33_8878:amend_230_401"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "bracket",
+     "start": "2008-01-28",
+     "end": "2016-11-21",
+     "sha256": "6e3677645002038dedd9adbff7a3e1205069d94e7ecc3a13efb5bbba96b7bafe",
+     "span_id": "release_33_8878:rule_401_g_3"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "6e3677645002038dedd9adbff7a3e1205069d94e7ecc3a13efb5bbba96b7bafe",
+     "span_id": "ecfr_230_401:g_3"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2008-01-28",
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": null
+  },
+  {
+   "rule_id": "cfr.17.230.415.a.1.x",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.415(a)(1)(x) (securities registered or qualified to be registered on Form S-3 or Form F-3 offered and sold on an immediate, continuous or delayed basis)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_415/2016-11-21:a_1_x",
+    "ecfr_230_415/2020-08-01:a_1_x",
+    "release_33_8591:rule_415_a_1_x",
+    "release_33_8591:amend_230_415",
+    "release_33_8591:effective_date"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2005-12-01",
+     "end": "2005-12-01",
+     "sha256": "c2457f5ee84e19c0493ee6156a5dddb2ac96e1595dc07c13a84fd5db88dbade3",
+     "span_id": "release_33_8591:rule_415_a_1_x"
+    },
+    {
+     "kind": "bracket",
+     "start": "2005-12-01",
+     "end": "2016-11-21",
+     "sha256": "c2457f5ee84e19c0493ee6156a5dddb2ac96e1595dc07c13a84fd5db88dbade3",
+     "span_id": "release_33_8591:rule_415_a_1_x"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2020-07-31",
+     "sha256": "17f7164401a7ae4bed322162a504bff26a28911b5decdb96f7606ab14efc9b80",
+     "span_id": "ecfr_230_415/2016-11-21:a_1_x"
+    },
+    {
+     "kind": "version_index",
+     "start": "2020-08-01",
+     "end": "2026-10-09",
+     "sha256": "6093985e4b239f2649f9e66264049e904beeb26dae75d0a6b0051da66b5abc38",
+     "span_id": "ecfr_230_415/2020-08-01:a_1_x"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Release 33-8591 item 30.b says 'Revise paragraph (a)(1)(x)' - the paragraph pre-existed 2005-12-01, so earlier days are withheld, not not_in_force. The release's adopted text and the 2016-11-21 eCFR edition share one normalized_sha256, so 2005-12-01..2016-11-21 is bracketed on the release span. All eight retrieved editions were compared paragraph by paragraph: the text is identical from 2016-11-21 through 2020-06-01 and changes at the 2020-08-01 edition (Form N-2 General Instruction A.2 and the paragraph (xi)/(xii)/(xiii) tail are added), which is why the version_index window splits there."
+  },
+  {
+   "rule_id": "cfr.17.230.415.a.4",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.415(a)(4) (an at the market offering of equity securities must come within paragraph (a)(1)(x); definition of 'at the market offering')",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_415/2016-11-21:a_4",
+    "release_33_8591:rule_415_a_4",
+    "release_33_8591:amend_230_415",
+    "release_33_8591:effective_date"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2005-12-01",
+     "end": "2005-12-01",
+     "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+     "span_id": "release_33_8591:rule_415_a_4"
+    },
+    {
+     "kind": "bracket",
+     "start": "2005-12-01",
+     "end": "2016-11-21",
+     "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+     "span_id": "release_33_8591:rule_415_a_4"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "42c17b63bf3ef4876a3ab1a0c33138df9bfac18cab6f67ffc0ea456c787cb2fc",
+     "span_id": "ecfr_230_415/2016-11-21:a_4"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Release 33-8591 item 30.e says 'Revise paragraph (a)(4) including the undesignated paragraph' - the paragraph pre-existed 2005-12-01, so earlier days are withheld, not not_in_force. The release's adopted (a)(4) text is byte-identical to every retrieved eCFR edition's (a)(4) text (one sha256 across all eight editions), so the release span is recorded as same_as the 2016-11-21 span and 2005-12-01..2016-11-21 is bracketed."
+  },
+  {
+   "rule_id": "cfr.17.230.415.a.5",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.415(a)(5) (three-year shelf window, with subparagraphs (i) and (ii), including (ii)(A) and (ii)(B))",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_415/2016-11-21:a_5",
+    "release_33_8591:rule_415_a_5",
+    "release_33_8591:amend_230_415",
+    "release_33_8591:effective_date"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2005-12-01",
+     "end": "2005-12-01",
+     "sha256": "939b48fcf83ade4473b0411a0c50cfb8c446cf5215d4c2ab4e1566f46f4f8418",
+     "span_id": "release_33_8591:rule_415_a_5"
+    },
+    {
+     "kind": "bracket",
+     "start": "2005-12-01",
+     "end": "2016-11-21",
+     "sha256": "939b48fcf83ade4473b0411a0c50cfb8c446cf5215d4c2ab4e1566f46f4f8418",
+     "span_id": "release_33_8591:rule_415_a_5"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "40059686ade3ce5562eb0a29eaad58f5e679bf51e32bac62effae643171836fb",
+     "span_id": "ecfr_230_415/2016-11-21:a_5"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2005-12-01",
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Release 33-8591 item 30.f says 'Add paragraph (a)(5)', so the paragraph was not in force before the release's printed EFFECTIVE DATE: December 1, 2005. The span carries the whole paragraph as retrieved: (a)(5) with (i), (ii) and (ii)(A)-(B). The release's adopted text and the 2016-11-21 eCFR edition share one normalized_sha256 (they differ only in the space inside '(Sec. 230.462(e))'), so 2005-12-01..2016-11-21 is bracketed. All eight retrieved editions carry byte-identical (a)(5) text."
+  },
+  {
+   "rule_id": "cfr.17.230.415.a.6",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.415(a)(6) (a new registration statement filed before the end of the three-year period, including carry-over of unsold securities)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_415/2016-11-21:a_6",
+    "ecfr_230_415/2022-01-31:a_6",
+    "release_33_8591:rule_415_a_6",
+    "release_33_8591:amend_230_415",
+    "release_33_8591:effective_date"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2005-12-01",
+     "end": "2005-12-01",
+     "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+     "span_id": "release_33_8591:rule_415_a_6"
+    },
+    {
+     "kind": "bracket",
+     "start": "2005-12-01",
+     "end": "2016-11-21",
+     "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+     "span_id": "release_33_8591:rule_415_a_6"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2022-01-30",
+     "sha256": "de05a4731206324e5bd47d41aab372f35e562d5ffa797bf74e3faa5a2464f832",
+     "span_id": "ecfr_230_415/2016-11-21:a_6"
+    },
+    {
+     "kind": "version_index",
+     "start": "2022-01-31",
+     "end": "2026-10-09",
+     "sha256": "dde5f03572929d2b18489e09f23103e82c8b81a634266131bcabe2326c363c5c",
+     "span_id": "ecfr_230_415/2022-01-31:a_6"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2005-12-01",
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Release 33-8591 item 30.g says 'Add paragraph (a)(6)', so the paragraph was not in force before the release's printed EFFECTIVE DATE: December 1, 2005. The release's adopted text is byte-identical to the 2016-11-21 eCFR edition's (a)(6) text (one sha256), so 2005-12-01..2016-11-21 is bracketed. The text changes at the 2022-01-31 edition, which inserts 'unless expressly required in another part of the registration statement'; the version_index window splits there."
+  },
+  {
+   "rule_id": "cfr.17.230.462.e",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "17 CFR 230.462(e) (an automatic shelf registration statement, and any post-effective amendment to it, is effective upon filing with the Commission)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "ecfr_230_462/2016-11-21:e",
+    "release_33_8591:rule_462_e",
+    "release_33_8591:amend_230_462",
+    "release_33_8591:effective_date"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2005-12-01",
+     "end": "2005-12-01",
+     "sha256": "4024b4000e0401ce3538ecced90f9188d3ffc8dea286a204266578f9a06b6f79",
+     "span_id": "release_33_8591:rule_462_e"
+    },
+    {
+     "kind": "bracket",
+     "start": "2005-12-01",
+     "end": "2016-11-21",
+     "sha256": "4024b4000e0401ce3538ecced90f9188d3ffc8dea286a204266578f9a06b6f79",
+     "span_id": "release_33_8591:rule_462_e"
+    },
+    {
+     "kind": "version_index",
+     "start": "2016-11-21",
+     "end": "2026-10-09",
+     "sha256": "66eebea4c2855d2c8e4817ee8d12d1d5d233bd98759c51a3a4216b81747561c8",
+     "span_id": "ecfr_230_462/2016-11-21:e"
+    }
+   ],
+   "before_first_window": "not_in_force",
+   "not_in_force_before": "2005-12-01",
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Release 33-8591 item 42 says 'Amend Sec. 230.462 by adding paragraphs (e) and (f)', so paragraph (e) was not in force before the release's printed EFFECTIVE DATE: December 1, 2005. The release's adopted (e) text and the 2016-11-21 eCFR edition share one normalized_sha256 (they differ only in the space inside the two section cites), so 2005-12-01..2016-11-21 is bracketed. All four retrieved editions carry byte-identical (e) text."
+  },
+  {
+   "rule_id": "usc.15.77j.a.3",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "15 U.S.C. 77j(a)(3) (Securities Act of 1933 Section 10(a)(3): a prospectus used more than nine months after effectiveness must carry information as of a date not more than sixteen months prior to such use)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [
+    "usc_15_77j:a_3"
+   ],
+   "reference_span_labels": [],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2026-10-14",
+     "end": "2026-10-14",
+     "sha256": "c7415a83dab4d3266b2a7198d476b68220ff71036d4668e65efbc6375c899754",
+     "span_id": "usc_15_77j:a_3"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Retrieved from the govinfo granule USCODE-2024-title15-chap2A-subchapI-sec77j.htm, the newest main edition served (HTTP 200 on the first try). The granule prints 'United States Code, 2024 Edition' and no 'current through' line, so it carries no edition date; the only day verified is the qualification date 2026-10-14, the same convention the L0 pack used for the undated Form S-3/F-3 PDFs. The page's credit line reads '(May 27, 1933, ch. 38, title I, Sec. 10, 48 Stat. 81; June 6, 1934, ch. 404, title II, Sec. 205, 48 Stat. 906; Aug. 10, 1954, ch. 667, title I, Sec. 8, 68 Stat. 685.)'; the enactment and amendment history of paragraph (a)(3) itself was not retrieved, so earlier days are withheld rather than bracketed."
+  },
+  {
+   "rule_id": "sec_cdi.116.21",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.21 [2008-11-26]",
+   "form": "S-3",
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_21"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2008-11-26",
+     "end": "2026-10-13",
+     "sha256": "55ca5395f131bd98c293a3938c825750f9c113e1ecc90a5d6f5bceef51661f32",
+     "reference_span_label": "cdi_securities_act_forms_q116_21"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2008-11-26",
+   "note": null
+  },
+  {
+   "rule_id": "sec_cdi.116.22",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.22 [2010-08-11]",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_22"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2010-08-11",
+     "end": "2026-10-13",
+     "sha256": "c7653f8b341cd9f8fd900d96a7a16d5382514055dc836bf904a1b560969434df",
+     "reference_span_label": "cdi_securities_act_forms_q116_22"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2010-08-11",
+   "note": null
+  },
+  {
+   "rule_id": "sec_cdi.116.23",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.23 [2010-08-11]",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_23"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2010-08-11",
+     "end": "2026-10-13",
+     "sha256": "a85fb5d9d3a8132b7782e84e59c8906d2cefda0fcff357e34137218940b28cdb",
+     "reference_span_label": "cdi_securities_act_forms_q116_23"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2010-08-11",
+   "note": null
+  },
+  {
+   "rule_id": "sec_cdi.116.24",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.24 [2013-05-16]",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_24"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2013-05-16",
+     "end": "2026-10-13",
+     "sha256": "42213961420c57114e2f98352c26504b8c4aba089a6756ec1813d346cdc62459",
+     "reference_span_label": "cdi_securities_act_forms_q116_24"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2013-05-16",
+   "note": null
+  },
+  {
+   "rule_id": "sec_cdi.116.25",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.25 [2016-11-02]",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_25"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2016-11-02",
+     "end": "2026-10-13",
+     "sha256": "2185bff93df9ed684c813a8079334c9e6b4fe1af41f27a805b4dfab6f0db4640",
+     "reference_span_label": "cdi_securities_act_forms_q116_25"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2016-11-02",
+   "note": null
+  },
+  {
+   "rule_id": "sec_cdi.116.26",
+   "binding_class": "staff_interpretation",
+   "enforceable": false,
+   "citation": "SEC Securities Act Forms C&DI Question 116.26 [2026-03-19]",
+   "form": "S-3",
+   "instruction": "I.B.6",
+   "span_ids": [],
+   "reference_span_labels": [
+    "cdi_securities_act_forms_q116_26"
+   ],
+   "windows": [
+    {
+     "kind": "interpretation_dated",
+     "start": "2026-03-19",
+     "end": "2026-10-13",
+     "sha256": "a23453c25ae126e66386940d80a83c653b467da94034b04656f057d411415c4d",
+     "reference_span_label": "cdi_securities_act_forms_q116_26"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": "2026-03-19",
+   "note": null
+  },
+  {
+   "rule_id": "nasdaq.5615.a.3",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5615(a)(3)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5615_a_3_A_fpi_home_country_practice",
+    "nasdaq_5615_a_3_B_i_annual_report_disclosure"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2025-11-24",
+     "end": "2026-10-19",
+     "sha256": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+     "reference_span_label": "nasdaq_5615_a_3_A_fpi_home_country_practice"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: a Foreign Private Issuer may follow home country practice in lieu of the Rule 5600 Series (which contains Rule 5635), and must disclose each requirement it does not follow in its annual report. Excerpt-limited source qualified in E0; rendered in a browser on 2026-10-19T08:20:51Z because a non-browser GET returns 403. The rulebook prints two amendment trails near 5615(a)(3): the IM-5615-3 trail (amended Jan. 21, 2025 (SR-NASDAQ-2025-007), operative Feb. 4, 2025) and the trail closing Rule 5615 (amended November 24, 2025 (SR-NASDAQ-2025-037), trail text sha256 64321afcf86dd0de7fe6926ea80aaf48092a2187aad332b34b7c294f2b540e64). The page does not say which trail binds the (a)(3) text, so the window starts at the later date. Full 5615(a)(3) span text sha256 c74cf26cabdd92772464dc06149f01f342c2f1e6519ad309bbb152e455653fcc; IM-5615-3 span text sha256 91d39fb831b3c1b5d794438177a53dbf387ad9bdcd0c12d6850d4b52dc7f39f0."
+  },
+  {
+   "rule_id": "nasdaq.5635.d.1.A",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5635(d)(1)(A)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5635_d_1_A_minimum_price"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2020-01-15",
+     "end": "2026-10-13",
+     "sha256": "d18548bee6f2d619032012515ab8760f87c679c8c755bb359085a2fb8fe22681",
+     "reference_span_label": "nasdaq_5635_d_1_A_minimum_price"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: enforceable against listed issuers; excerpt-limited source qualified in E0."
+  },
+  {
+   "rule_id": "nasdaq.5635.d.1.B",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5635(d)(1)(B)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5635_d_1_B_twenty_percent_issuance"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2020-01-15",
+     "end": "2026-10-13",
+     "sha256": "4371cf6fcf244e6a5ea8c2f0cdc4f9db7e0271011bb782e83a0e791bf7c75fd4",
+     "reference_span_label": "nasdaq_5635_d_1_B_twenty_percent_issuance"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: enforceable against listed issuers; excerpt-limited source qualified in E0."
+  },
+  {
+   "rule_id": "nasdaq.5635.d.2",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5635(d)(2)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5635_d_2_approval_trigger"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2020-01-15",
+     "end": "2026-10-13",
+     "sha256": "f315c177eebb92bc8df69b01af8af17b01435a75ce63134feba369932eff91ee",
+     "reference_span_label": "nasdaq_5635_d_2_approval_trigger"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [
+    "transaction_type",
+    "price",
+    "quantity",
+    "voting_power",
+    "outstanding_basis_5635_e_1"
+   ],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: enforceable against listed issuers; excerpt-limited source qualified in E0."
+  },
+  {
+   "rule_id": "nasdaq.im_5635_3",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq IM-5635-3",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_im_5635_3_registration_alone_not_public_offering"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2018-09-26",
+     "end": "2026-10-13",
+     "sha256": "a6e929a70d9a58e91e2b4b3d1b0c0a145f338740382e7d3bd9b995f22200791b",
+     "reference_span_label": "nasdaq_im_5635_3_registration_alone_not_public_offering"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: enforceable against listed issuers; excerpt-limited source qualified in E0."
+  },
+  {
+   "rule_id": "nasdaq.5635.e.1",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5635(e)(1)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5635_e_1_outstanding_shares_basis"
+   ],
+   "windows": [
+    {
+     "kind": "point",
+     "start": "2026-10-13",
+     "end": "2026-10-13",
+     "sha256": "9f0370c6c012856561b2dc85ff76a7bf5a3a0c5de7abc39f6c3589c570ce441c",
+     "reference_span_label": "nasdaq_5635_e_1_outstanding_shares_basis"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: enforceable against listed issuers; excerpt-limited source qualified in E0."
+  }
+ ],
+ "examples": [
+  {
+   "example_id": "cdi_116_21_equity_line_is_at_the_market",
+   "rule_ids": [
+    "sec_cdi.116.21",
+    "form_s3.I.B.1",
+    "form_s3.I.B.6",
+    "form_f3.I.B.1",
+    "form_f3.I.B.5"
+   ],
+   "negative": false,
+   "reference_digest": "0ce4fd8bdfa00abeae9f2c17b268ca1345ce2652c6b41f984b7fd3eae0535612"
+  },
+  {
+   "example_id": "cdi_116_22_capacity_measured_against_amount_offered",
+   "rule_ids": [
+    "sec_cdi.116.22",
+    "form_s3.I.B.6"
+   ],
+   "negative": true,
+   "reference_digest": "3906e4962fe8169c6794f4747c53975a32cee1ec99aa72c4135062e3093ec0c4"
+  },
+  {
+   "example_id": "cdi_116_23_concurrent_continuous_offerings",
+   "rule_ids": [
+    "sec_cdi.116.23",
+    "form_s3.I.B.6"
+   ],
+   "negative": false,
+   "reference_digest": "97740db44576b4a3dd0e52a47db05d1bb1e211abd59bfad975cf3fece660c3ae"
+  },
+  {
+   "example_id": "cdi_116_24_warrants_not_exercisable_within_12_months",
+   "rule_ids": [
+    "sec_cdi.116.24",
+    "form_s3.I.B.6"
+   ],
+   "negative": false,
+   "reference_digest": "16a66d45922bc85e99fd418cc15d5ad7b9d0c465a9000afa8111167288c98098"
+  },
+  {
+   "example_id": "cdi_116_25_ib3_resale_counts_against_ib6_capacity",
+   "rule_ids": [
+    "sec_cdi.116.25",
+    "form_s3.I.B.6"
+   ],
+   "negative": true,
+   "reference_digest": "fb8ed87deed8b1ab15bd00aa2a776d694778dbabf028e3a2c6303677b65c0c90"
+  },
+  {
+   "example_id": "cdi_116_26_atm_supplement_continues_after_transition_to_baby_shelf",
+   "rule_ids": [
+    "sec_cdi.116.26",
+    "form_s3.I.B.1",
+    "form_s3.I.B.6"
+   ],
+   "negative": false,
+   "reference_digest": "f4b538f6f938a36331fd0238d8993709d828b1a6f83fc20a022bfcfd43da3426"
+  },
+  {
+   "example_id": "nasdaq_5635_d_2_twenty_percent_below_minimum_price",
+   "rule_ids": [
+    "nasdaq.5635.d.1.A",
+    "nasdaq.5635.d.1.B",
+    "nasdaq.5635.d.2",
+    "nasdaq.5635.e.1"
+   ],
+   "negative": false,
+   "reference_digest": "100d677592ddc11e3fb033b4e6d6b6910ca18db1da8a46e941762c91a0966d4c"
+  },
+  {
+   "example_id": "nasdaq_im_5635_3_registration_alone_is_not_a_public_offering",
+   "rule_ids": [
+    "nasdaq.im_5635_3"
+   ],
+   "negative": true,
+   "reference_digest": "47ab12177c065ccac2eafcdf6b43b6fa320c1fcae645408c5f20ec2a07520bc0"
+  }
+ ],
+ "excluded": [
+  {
+   "source_id": "sec_release_33_11418_registered_offering_reform",
+   "binding_class": "proposed_reform",
+   "enforceable": false,
+   "status": "proposed",
+   "reason": "Release 33-11418 is a proposal (S7-2026-17, RIN 3235-AN41) with no final action as of the E0 qualification; it is excluded from every rule pack and never evaluated as law."
+  }
+ ],
+ "findings": [
+  "Form S-3 I.B.1 and 17 CFR 239.13(b)(1) are worded differently but carry the same $75 million public-float test measured within 60 days prior to filing.",
+  "General Instructions I.B.6 (Form S-3) and I.B.5 (Form F-3) exist only in the forms; the CFR sections 239.13 and 239.33 do not reproduce them.",
+  "Every eCFR point-in-time edition of 239.13 (seven substantive amendment dates from 2016-11-21) and 239.33 (six) carries byte-identical (b)(1) text; only the source-note citation tail changes between editions.",
+  "The 2019-06-15 entries in both version indices are marked non-substantive.",
+  "The eCFR versioner baseline is 2016-11-21; earlier editions are bracketed by the adopting release, not verified edition by edition.",
+  "The eCFR full-text endpoint returns HTTP 406 unless the request accepts gzip; every qualified XML body was fetched gzip-encoded and is recorded with wire and decoded byte counts.",
+  "Release 33-8878 (final, S7-10-07, RIN 3235-AJ89) adopted Form S-3 I.B.6, Form F-3 I.B.5 and Rule 401(g)(3) effective 2008-01-28; the adopted text equals the current text apart from typography in Instructions 1-8.",
+  "Instruction 6 to I.B.6/I.B.5 limits that eligibility to Rule 415(a)(1)(x) offerings; Instruction 3 moves a registrant whose public float reaches $75 million after effectiveness to I.B.1 and lifts the one-third limit.",
+  "Form editions qualified: Form S-3 SEC 1379 (02-25), OMB 3235-0073 expiring 2029-02-28; Form F-3 SEC 1983 (02-25), OMB 3235-0256 expiring 2029-06-30.",
+  "Rule 415(a)(1)(x), (a)(5) and (a)(6) and Rule 462(e) come from Release 33-8591 (SECURITIES OFFERING REFORM, RELEASE NOS. 33-8591; 34-52056; IC-26993; FR-75, FILE NO. S7-38-04, RIN 3235-AI11, final) whose printed EFFECTIVE DATE is December 1, 2005.",
+  "Item 30 of Release 33-8591 REVISES 415(a)(1)(x) and (a)(4) and ADDS (a)(5) and (a)(6); item 42 ADDS 462(e) and (f). Only (a)(5), (a)(6) and 462(e) are therefore not_in_force before 2005-12-01; (a)(1)(x) and (a)(4) pre-existed and are withheld, not not_in_force.",
+  "The eCFR versioner serves seven point-in-time editions of 230.415 (2016-11-21, 2020-06-01, 2020-08-01, 2021-12-09, 2022-01-31, 2024-07-24, 2024-09-23) and three of 230.462 (2016-11-21, 2020-06-01, 2020-08-01); every one was retrieved and compared paragraph by paragraph instead of being assumed identical.",
+  "Paragraph text does change between served editions: 415(a)(1)(x) changes at 2020-08-01 (350 to 458 chars) and 415(a)(6) changes at 2022-01-31 (1203 to 1277 chars, inserting 'unless expressly required in another part of the registration statement'); 415(a)(4), 415(a)(5) and 462(e) are byte-identical across every served edition, so their version_index windows split and do not split accordingly.",
+  "full/2026-10-14/title-17.xml was refused with HTTP 404 for both sections, so there is no point window at today; the last verified day for the CFR provisions is the title-17 up_to_date_as_of date 2026-10-09 and later days answer beyond_window.",
+  "For all five CFR provisions the Release 33-8591 adopted text and the earliest served eCFR edition share one normalized_sha256, which is what earns the 2005-12-01..2016-11-21 bracket; 415(a)(4) and 415(a)(6) are byte-identical between the two, so their release spans are recorded as same_as the 2016-11-21 spans.",
+  "Securities Act Section 10(a)(3) is 15 U.S.C. 77j(a)(3). The govinfo USCODE-2024-title15 granule prints 'United States Code, 2024 Edition' and no 'current through' line, so only the 2026-10-14 qualification date is verified and every earlier day is withheld; its credit line reads '(May 27, 1933, ch. 38, title I, Sec. 10, 48 Stat. 81; June 6, 1934, ch. 404, title II, Sec. 205, 48 Stat. 906; Aug. 10, 1954, ch. 667, title I, Sec. 8, 68 Stat. 685.)'.",
+  "The eCFR source notes retrieved inside the XML carry the Federal Register citations for the 2005 amendments - '70 FR 44812, Aug. 3, 2005' for 230.415 and '70 FR 44818, Aug. 3, 2005' for 230.462; the Release 33-8591 PDF itself prints no Federal Register citation, so none was encoded from an unretrieved source.",
+  "No pre-2016 Form S-3 or Form F-3 edition is served by sec.gov: the /about/forms/ aliases return the current (02-25) editions byte-identically and directory browsing is refused, so that gap stays open with all four attempts recorded."
+ ],
+ "gaps": [
+  {
+   "gap_id": "foreign_issuer_f3_witness",
+   "note": "No qualified foreign-issuer F-3 form/venue case yet; E0 did not guess one.",
+   "owed_by": "L0/T0 with one exact source packet"
+  },
+  {
+   "gap_id": "held_out_pattern_witness",
+   "note": "Held-out pattern case not yet nominated.",
+   "owed_by": "T0"
+  },
+  {
+   "gap_id": "whk_replacement_issuer",
+   "note": "WHK no longer supplies an S-3-family case; old witness preserved, replacement not guessed.",
+   "owed_by": "L0/T0 with one exact source packet"
+  },
+  {
+   "gap_id": "binding_form_instruction_text",
+   "status": "closed_by_L0",
+   "note": "Closed: Form S-3/F-3 current editions, 17 CFR 239.13/239.33/230.401 current and historical editions and the adopting Release 33-8878 are qualified with exact spans and windows.",
+   "owed_by": null
+  },
+  {
+   "gap_id": "rule_415_and_section_10_a_3_text",
+   "status": "closed",
+   "note": "Closed by L1: all six provisions now carry retrieved text. 17 CFR 230.415(a)(1)(x), (a)(4), (a)(5) (the whole paragraph, with (i), (ii) and (ii)(A)-(B)) and (a)(6) were retrieved from the current eCFR edition 2026-10-09 and from every point-in-time edition the versioner serves (2016-11-21, 2020-06-01, 2020-08-01, 2021-12-09, 2022-01-31, 2024-07-24, 2024-09-23), and from the adopting Release 33-8591; 17 CFR 230.462(e) from the three served editions (2016-11-21, 2020-06-01, 2020-08-01), the current edition and the same release; Securities Act Section 10(a)(3) as 15 U.S.C. 77j(a)(3) from the govinfo USCODE-2024-title15 granule. Still NOT known, and answered withheld rather than verified: the pre-2005-12-01 text of 415(a)(1)(x) and 415(a)(4) (the release revises them, so they pre-existed), the enactment and amendment history of 77j(a)(3) (the granule prints no edition date), and the form editions tracked by the separate pre_2016_form_editions gap.",
+   "owed_by": "L1",
+   "closed_by": "L1"
+  },
+  {
+   "gap_id": "pre_2016_form_editions",
+   "status": "open",
+   "note": "Form editions between 2008-01-28 and the current SEC 1379/1983 (02-25) editions are bracketed, not retrieved; an as-of query inside the bracket answers 'bracketed', never 'verified'. L1 spent its four-request budget on this gap and closed nothing: sec.gov serves only the current (02-25) editions at the /about/forms/ aliases (byte-identical to the already-qualified sources), and directory browsing is refused, so no pre-2016 edition label was retrievable from a primary source. See attempts.",
+   "owed_by": "L1",
+   "attempts": [
+    {
+     "url": "https://www.sec.gov/about/forms/forms-3.pdf",
+     "http_status": 200,
+     "retrieved_at": "2026-10-14T14:50:13Z",
+     "bytes": 512652,
+     "sha256": "b72c1542d440bbd1b473994e71718506e35796d04c4ada6d33a71d5aee6cfc7b",
+     "outcome": "HTTP 200 but this is the CURRENT edition, not a pre-2016 one: the bytes are byte-identical to already-qualified source form_s3_pdf, whose printed label is 'OMB 3235-0073, expires Feb. 28, 2029, SEC 1379 (02-25)'. '(02-25)' is not older than '(02-25)', so it does not qualify. No new source entry was created for a byte-identical duplicate."
+    },
+    {
+     "url": "https://www.sec.gov/about/forms/formf-3.pdf",
+     "http_status": 200,
+     "retrieved_at": "2026-10-14T14:50:14Z",
+     "bytes": 886594,
+     "sha256": "52ce8893c063b6328e21b70c4c6743b54048590efb00e8c94934f7832d3d0666",
+     "outcome": "HTTP 200 but this is the CURRENT edition, not a pre-2016 one: the bytes are byte-identical to already-qualified source form_f3_pdf, whose printed label is 'OMB 3235-0256, expires June 30, 2029, SEC 1983 (02-25)'. '(02-25)' is not older than '(02-25)', so it does not qualify. No new source entry was created for a byte-identical duplicate."
+    },
+    {
+     "url": "https://www.sec.gov/about/forms",
+     "http_status": 301,
+     "retrieved_at": "2026-10-14T14:51:28Z",
+     "outcome": "REFUSED: HTTP 301 to http://dc.aws-sec.akadns.net/about/forms/ (sec.gov's own CDN hostname); no index of archived form editions was served. The Location target is the same path with a trailing slash, which is what the fourth attempt requested."
+    },
+    {
+     "url": "https://www.sec.gov/about/forms/",
+     "http_status": 200,
+     "retrieved_at": "2026-10-14T14:51:45Z",
+     "bytes": 3232,
+     "sha256": "29be4d7b118a228ffad2195d8aea40f9b1fce7a4239d72311c2bd659636bed46",
+     "outcome": "HTTP 200 but the body is sec.gov's 'Directory Browsing Not Allowed Here.' page (3232 bytes), not an index. It links no archived or superseded Form S-3/Form F-3 edition, so no further candidate URL could be justified from a retrieved page. The four-request budget for this gap is spent; it stays OPEN."
+    }
+   ]
+  }
+ ],
+ "request_policy": {
+  "user_agent": "MastermindMarketIntelligence-ResearchSeat/1.0 (+https://www.mastermind-x.com)",
+  "max_requests_per_second": 1,
+  "fair_access_source_id": "sec_developer_resources_fair_access",
+  "requests_made": 60,
+  "refused_requests": 18,
+  "collector_added": false,
+  "note": "Manual research-seat retrievals (SEC forms and release, eCFR versioner); 15 eCFR attempts without gzip returned HTTP 406 and were retried once with gzip. No nightly lane or collector fetches these sources. L1 added these 23 manual research-seat requests at no more than one per second with the same User-Agent and with Accept-Encoding: gzip on every eCFR request: the title index (re-confirming title 17 up_to_date_as_of 2026-10-09), the 230.415 and 230.462 edition indices, the current edition plus every point-in-time edition each index lists for both sections, Release 33-8591, the govinfo 15 U.S.C. 77j granule, and the four pre_2016_form_editions attempts. Three were refused: full/2026-10-14/title-17.xml returned HTTP 404 for both sections, so no point window exists at today, and sec.gov/about/forms returned HTTP 301 with directory browsing refused. requests_made and refused_requests are the 1.0.0 totals (37 and 15) plus these counts; l1_requests is one row per L1 request including the refusals. Three of the 23 responses were byte-identical to files already qualified in 1.0.0 (titles.json, forms-3.pdf and formf-3.pdf), so they were logged here rather than duplicated as sources.",
+  "l1_requests": [
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/titles.json",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:47:26Z",
+    "wire_bytes": 1266,
+    "bytes": 8033,
+    "content_encoding": "gzip",
+    "content_type": "application/json; charset=utf-8",
+    "sha256": "764c4761eac1fa6c03b838388498d2dc639cde3a8ece8d1f104e85db7f91e057"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:47:27Z",
+    "wire_bytes": 355,
+    "bytes": 2050,
+    "content_encoding": "gzip",
+    "content_type": "application/json; charset=utf-8",
+    "sha256": "53b4ccb4c7bf4e71afd5113bca92bfa549c6f66134a06280ff98db8da399cddc"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/versions/title-17.json?section=230.462",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:47:28Z",
+    "wire_bytes": 309,
+    "bytes": 1071,
+    "content_encoding": "gzip",
+    "content_type": "application/json; charset=utf-8",
+    "sha256": "02d8ab37585d948c6f3fe4e2ff723dc2a6dc5a8896f9a76ce5585986655e7542"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:47:59Z",
+    "wire_bytes": 2618,
+    "bytes": 8049,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "738564d62bce6d929ee7cf5ccdce2ced4c43c30cdd0d78d9f80315fb4c9fe6c0"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-14/title-17.xml?section=230.415",
+    "http_status": 404,
+    "retrieved_at": "2026-10-14T14:48:00Z",
+    "wire_bytes": 156,
+    "bytes": 160,
+    "content_encoding": "gzip",
+    "content_type": "application/json; charset=utf-8",
+    "sha256": "7304d8067e5353454296bcf3a994e7d4322db5500c58796c431ec16f5d768c6e"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:01Z",
+    "wire_bytes": 2450,
+    "bytes": 7507,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "2364a6129f3bb5e005967fc42c3828a973d27af78736b70f59038e258bf67a65"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-06-01/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:03Z",
+    "wire_bytes": 2514,
+    "bytes": 7606,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "51162374d53a64b745ad66b319b46c0b8f8e2b798800f95b60c6b38f03444bf1"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-08-01/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:08Z",
+    "wire_bytes": 2545,
+    "bytes": 7884,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "a0416e09ca7d99df69efd0ade0b3a168ef420dc4f936fc76c82c6e4cb229e483"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2021-12-09/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:09Z",
+    "wire_bytes": 2609,
+    "bytes": 7983,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "605c5cfcdb6a5fa086b69177ecdbb993442a5e52e501afb91b0e35a853c7df8b"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2022-01-31/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:14Z",
+    "wire_bytes": 2586,
+    "bytes": 7985,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "f86ee691170afb42f5c7efdbfb7afe617fe4efb632426730324c433e70d50b63"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2024-07-24/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:19Z",
+    "wire_bytes": 2665,
+    "bytes": 8097,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "ea861a91d6e247929fdfc68e6f8f337e9034deea97a9b9985155137795ad3b51"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2024-09-23/title-17.xml?section=230.415",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:20Z",
+    "wire_bytes": 2618,
+    "bytes": 8049,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "738564d62bce6d929ee7cf5ccdce2ced4c43c30cdd0d78d9f80315fb4c9fe6c0"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-09/title-17.xml?section=230.462",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:22Z",
+    "wire_bytes": 1234,
+    "bytes": 3177,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "1110da5b82e30bb32ab575799daa73e895dca3b2990ea62101460166785d9372"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-14/title-17.xml?section=230.462",
+    "http_status": 404,
+    "retrieved_at": "2026-10-14T14:48:27Z",
+    "wire_bytes": 156,
+    "bytes": 160,
+    "content_encoding": "gzip",
+    "content_type": "application/json; charset=utf-8",
+    "sha256": "7304d8067e5353454296bcf3a994e7d4322db5500c58796c431ec16f5d768c6e"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2016-11-21/title-17.xml?section=230.462",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:32Z",
+    "wire_bytes": 1172,
+    "bytes": 3084,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "9770324302fa5754a05e20dbb99271f0784becb3a104a938685c5c4f0052ad6d"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-06-01/title-17.xml?section=230.462",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:37Z",
+    "wire_bytes": 1235,
+    "bytes": 3183,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "757ba5b24f2959e4ed3603a15daf91e5615476d95c16e273d0d60171d66f0325"
+   },
+   {
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2020-08-01/title-17.xml?section=230.462",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:48:38Z",
+    "wire_bytes": 1234,
+    "bytes": 3177,
+    "content_encoding": "gzip",
+    "content_type": "text/xml",
+    "sha256": "1110da5b82e30bb32ab575799daa73e895dca3b2990ea62101460166785d9372"
+   },
+   {
+    "url": "https://www.sec.gov/rules/final/33-8591.pdf",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:49:14Z",
+    "wire_bytes": 2287419,
+    "bytes": 2287419,
+    "content_encoding": null,
+    "content_type": "application/pdf",
+    "sha256": "449cb5a5b533d72b4cf56e9b3647efe2f86c306983378b435424726c42281a6b"
+   },
+   {
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title15/html/USCODE-2024-title15-chap2A-subchapI-sec77j.htm",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:49:16Z",
+    "wire_bytes": 8732,
+    "bytes": 8732,
+    "content_encoding": null,
+    "content_type": "text/html",
+    "sha256": "dd1637e9def25ad6736ce2c810dd05f5d19cbeab51b3447adec60695d9222fc9"
+   },
+   {
+    "url": "https://www.sec.gov/about/forms/forms-3.pdf",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:50:13Z",
+    "wire_bytes": 512652,
+    "bytes": 512652,
+    "content_encoding": null,
+    "content_type": "application/pdf",
+    "sha256": "b72c1542d440bbd1b473994e71718506e35796d04c4ada6d33a71d5aee6cfc7b"
+   },
+   {
+    "url": "https://www.sec.gov/about/forms/formf-3.pdf",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:50:14Z",
+    "wire_bytes": 886594,
+    "bytes": 886594,
+    "content_encoding": null,
+    "content_type": "application/pdf",
+    "sha256": "52ce8893c063b6328e21b70c4c6743b54048590efb00e8c94934f7832d3d0666"
+   },
+   {
+    "url": "https://www.sec.gov/about/forms",
+    "http_status": 301,
+    "retrieved_at": "2026-10-14T14:51:28Z",
+    "wire_bytes": 320,
+    "bytes": 320,
+    "content_encoding": null,
+    "content_type": "text/html; charset=iso-8859-1",
+    "sha256": "807f01b456fde05b3025172cb88dae4473fff19c94b3ebb5e292602b86ca311a"
+   },
+   {
+    "url": "https://www.sec.gov/about/forms/",
+    "http_status": 200,
+    "retrieved_at": "2026-10-14T14:51:45Z",
+    "wire_bytes": 3232,
+    "bytes": 3232,
+    "content_encoding": null,
+    "content_type": "text/html",
+    "sha256": "29be4d7b118a228ffad2195d8aea40f9b1fce7a4239d72311c2bd659636bed46"
+   }
+  ]
+ },
+ "source_policy": {
+  "collector_added_by_e0": false,
+  "contract_doc": "docs/CAPITAL_STRUCTURE_INTELLIGENCE_CONTRACT.md",
+  "http_403_is_never_missing_index_evidence": true,
+  "in_policy_anchor_forms": [
+   "F-3",
+   "F-3/A",
+   "F-3ASR",
+   "S-3",
+   "S-3/A",
+   "S-3ASR"
+  ],
+  "issuer_scoped_forms_require_anchor": [
+   "8-K",
+   "6-K",
+   "DEF 14A",
+   "10-Q",
+   "10-K",
+   "20-F",
+   "40-F"
+  ],
+  "legacy_forms": [
+   "424B1",
+   "424B2",
+   "424B3",
+   "424B4",
+   "424B5",
+   "S-3",
+   "S-3/A",
+   "S-3ASR"
+  ],
+  "out_of_policy_forms": [
+   "S-8",
+   "S-11",
+   "S-4",
+   "F-4",
+   "F-6",
+   "N-2",
+   "S-3D",
+   "F-3D",
+   "424H"
+  ],
+  "registration_fee_forms": [
+   "1-A",
+   "1-A POS",
+   "1-A/A",
+   "F-1",
+   "F-1/A",
+   "F-10",
+   "F-10/A",
+   "F-3",
+   "F-3/A",
+   "F-3ASR",
+   "S-1",
+   "S-1/A",
+   "S-3",
+   "S-3/A",
+   "S-3ASR"
+  ],
+  "request_class_reserves": {
+   "HISTORICAL_BACKFILL": 20,
+   "LIVE_TAIL": 500,
+   "RECOVERY": 20,
+   "global_ceiling": 540
+  },
+  "reserves_changed_by_e0": false
+ },
+ "rights": {
+  "contains_personal_data": false,
+  "excerpt_limited": {
+   "digest_required": true,
+   "excerpt_cap_chars": 500,
+   "full_text_spans_allowed": false
+  },
+  "repository_fixture": {
+   "synthetic": true
+  },
+  "sec_edgar_public_filing": {
+   "personal_data_redaction_required": true,
+   "raw_excerpt_cap_chars": 500
+  },
+  "us_government_work_public_domain": {
+   "basis": "17 U.S.C. 105",
+   "full_text_spans_allowed": true
+  }
+ },
+ "fact_origins": {
+  "adjudicated_gold": true,
+  "canonical_extraction": true,
+  "issuer_assertion": false,
+  "llm_interpretation": false,
+  "llm_proposed_span": false,
+  "model_prose": false
+ }
+}

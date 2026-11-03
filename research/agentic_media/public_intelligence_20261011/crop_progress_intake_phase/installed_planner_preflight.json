@@ -1,0 +1,196 @@
+{
+  "observed_at": "2026-10-14T17:07:10.187003+00:00",
+  "installed_head": "3a316a30256b5e6d326d9cdc8d88af96eb47a4bc",
+  "source_id": "usda-nass-2026-10-13-crop-progress",
+  "published_at": "2026-10-13",
+  "eligible_count": 207,
+  "ranked_position": 35,
+  "unheld_position": 23,
+  "candidate_pool": 8,
+  "blocked_target": false,
+  "held_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/marketing/hot_tape_pack.json#ABSI",
+    "artifact:data/marketing/hot_tape_pack.json#ALHC",
+    "artifact:data/marketing/hot_tape_pack.json#ASTX",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "artifact:site/marketdata/sp500_heatmap.json#CCI",
+    "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+    "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+    "chronicle:TTWO-BULL-20261007",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-4sbw9xdvesv-09647d",
+    "research_vault:marketdesk-8inwlunucuj-8950ab",
+    "research_vault:marketdesk-arbvfsvswas-96701d",
+    "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+    "research_vault:marketdesk-ioh3cizfpog-b49a47",
+    "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-uc6giunqscq-05fcee",
+    "research_vault:marketdesk-xyyijkslpal-b997fb",
+    "research_vault:usda-2026-10-09-wasde-676"
+  ],
+  "triage": {
+    "schema": "press.research_triage.v1",
+    "scoring_version": "w2r.1",
+    "as_of": "2026-10-14",
+    "ts": "2026-10-14T17:07:10Z",
+    "report_id": "usda-nass-2026-10-13-crop-progress",
+    "title": "Crop Progress, October 13, 2026",
+    "institution": "U.S. Department of Agriculture, National Agricultural Statistics Service",
+    "published_at": "2026-10-13",
+    "status": "skipped",
+    "drop_reason": null,
+    "drop_detail": null,
+    "tier": "none",
+    "rank": 35,
+    "w_score": 0.428533,
+    "w_score_pre_veto": 0.428533,
+    "components": {
+      "institution_tier": 0.5,
+      "cluster_density": 0.0,
+      "relevance": 0.0,
+      "extraction_quality": 1.0,
+      "attention_potential": 0.606667,
+      "novelty": 0.5
+    },
+    "contributions": {
+      "institution_tier": 0.08,
+      "cluster_density": 0.0,
+      "relevance": 0.0,
+      "extraction_quality": 0.24,
+      "attention_potential": 0.048533,
+      "novelty": 0.06
+    },
+    "component_detail": {
+      "institution_tier": {
+        "state": "unranked",
+        "institution": "u_s_department_of_agriculture_national_agricultural_statistics_service",
+        "note": "institution not in the tier register \u2014 neutral, NOT a measurement"
+      },
+      "cluster_density": {
+        "state": "measured-alone",
+        "institutions": 1,
+        "institutions_full": 4,
+        "story_id": "st-cee0f8549dc05547",
+        "members": 1,
+        "note": "clustered and genuinely alone on its theme \u2014 this 0 IS a measurement, unlike the absent states"
+      },
+      "relevance": {
+        "state": "no-report-tickers",
+        "note": "this report carries no tickers, so the ticker half is unmeasurable and the topic half is renormalized to carry the component \u2014 NOT a zero ticker score",
+        "renormalized": true,
+        "w_topic_effective": 1.0,
+        "topic_hits": [],
+        "sources": {
+          "movers": {
+            "state": "observed",
+            "tickers": 16
+          },
+          "chronicle": {
+            "state": "observed",
+            "events": 37
+          },
+          "watchlist": {
+            "state": "observed",
+            "assets": 1
+          }
+        }
+      },
+      "extraction_quality": {
+        "state": "observed",
+        "points": 8,
+        "mean_words": 33.38,
+        "numeric_share": 1.0,
+        "pages": 16
+      },
+      "attention_potential": {
+        "state": "observed",
+        "shape": 0.7583,
+        "top_pick": false,
+        "numbers": 2,
+        "entities": 2,
+        "length_band": "short",
+        "contract": "ranking input only \u2014 never a framing instruction to the writer"
+      },
+      "novelty": {
+        "state": "no-peers",
+        "window_days": 30,
+        "note": "no published estate in the window \u2014 neutral value, NOT a measurement of novelty"
+      }
+    },
+    "veto": null,
+    "score_source": "planner-recomputed",
+    "datasketch_present": true
+  },
+  "first_unheld": [
+    {
+      "id": "marketdesk-0ows1rkwgz6-1d9feb",
+      "title": "Shennan Circuits (002916.SZ) mSAP PCB and IC substrate capacity expansion, riding on strong AI demand; TP up to Rmb511; Buy",
+      "published_at": "2026-09-23T14:38:09Z"
+    },
+    {
+      "id": "marketdesk-m04zrgkxyce-22a813",
+      "title": "Cintas Corp. (CTAS) F1Q First Take Beat and raise quarter lifted by accelerating organic revenue growth and record margins",
+      "published_at": "2026-09-23T18:35:18Z"
+    },
+    {
+      "id": "marketdesk-ayiijj63mgv-f053ed",
+      "title": "US Weekly Kickstart The outlook for corporate equity supply and demand in 2027",
+      "published_at": "2026-10-10T03:44:06Z"
+    },
+    {
+      "id": "marketdesk-d5h90yu382j-bc2367",
+      "title": "General Mills Inc. (GIS) First Take F1Q beat; FY27 guidance reiterated",
+      "published_at": "2026-09-23T14:39:45Z"
+    },
+    {
+      "id": "marketdesk-75qspjfpqxs-b7f945",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Today, 2 September CPI Preview, 3 Hybrids Stretched Equity Rates Correlation, 4 5 Key Charts and 5 GS Energy Webcast 14 Oct 2026",
+      "published_at": "2026-10-14T13:44:00Z"
+    },
+    {
+      "id": "marketdesk-810sqguhx8x-b2e5e5",
+      "title": "GS Armbrust What Matters Today HF Exposure to Mag 7 at the Highs Large Bank Earnings ASML and Anthropic Today US Equity Positioning is a Tailwind HF Performance in September 14 Oct 2026",
+      "published_at": "2026-10-14T13:44:19Z"
+    },
+    {
+      "id": "marketdesk-vduxjun5diu-38254c",
+      "title": "Wm weekly market view will earnings resolve the bond equity split 09 october 2026",
+      "published_at": "2026-10-10T03:10:55Z"
+    },
+    {
+      "id": "marketdesk-nkdy4yrxhjc-c2fe94",
+      "title": "Global Weekly Kickstart Earnings Season Arrives with a High Bar",
+      "published_at": "2026-10-12T14:12:24Z"
+    }
+  ],
+  "selected_slots": [
+    {
+      "id": "press-research_desk-2026-10-14-abebea4ebdab",
+      "sources": [
+        "research_vault:marketdesk-0ows1rkwgz6-1d9feb"
+      ]
+    }
+  ],
+  "usda_slot": null,
+  "cutover": false,
+  "writer_calls": 0,
+  "runtime_writes": 0,
+  "publication_approved": false,
+  "changed_inputs": [],
+  "stable_installed_head": true,
+  "head_after": "3a316a30256b5e6d326d9cdc8d88af96eb47a4bc",
+  "full_private_evidence_sha256": "cc39e9fa923eb5873e2aed708f371c6664c2ceccfca1242c2ae33663a3b343f6",
+  "tracked_input_count": 524,
+  "interpretation": "Eligible, not selected: rank35, unheld23, pool8. Do not alter pool, scores, source date or invent exclusions to select it. Actual selected private report lacks a qualified public-article receipt in current mission evidence; no generation."
+}

@@ -3,8 +3,8 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-10-12",
- "generated_utc": "2026-10-12T07:45:02.691933+00:00",
+ "as_of": "2026-11-02",
+ "generated_utc": "2026-11-02T07:06:35.719939+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -19,36 +19,36 @@
    "2W": 346
   },
   "classes": {
-   "both": 0,
-   "fired_uniform_only": 3,
-   "fired_tailored_only": 54,
-   "neither": 1572
+   "both": 28,
+   "fired_uniform_only": 122,
+   "fired_tailored_only": 150,
+   "neither": 1329
   },
-  "disagreements": 57,
-  "agree_by_construction": 0
+  "disagreements": 272,
+  "agree_by_construction": 27
  },
  "ledger": {
-  "fire_rows": 6473,
-  "appended_today": 57,
-  "graded": 116,
-  "grades_advanced_today": 0
+  "fire_rows": 7926,
+  "appended_today": 300,
+  "graded": 1177,
+  "grades_advanced_today": 799
  },
  "timing": {
   "uniform": {
-   "n_graded": 95,
-   "n_timing_labeled": 95,
-   "confirmed_reset": 63,
-   "called_low": 0,
-   "early": 32,
-   "median_fwd63": 2.97
+   "n_graded": 706,
+   "n_timing_labeled": 706,
+   "confirmed_reset": 498,
+   "called_low": 26,
+   "early": 182,
+   "median_fwd63": 0.68
   },
   "tailored": {
-   "n_graded": 63,
-   "n_timing_labeled": 63,
-   "confirmed_reset": 21,
-   "called_low": 0,
-   "early": 42,
-   "median_fwd63": -9.37
+   "n_graded": 711,
+   "n_timing_labeled": 711,
+   "confirmed_reset": 330,
+   "called_low": 80,
+   "early": 301,
+   "median_fwd63": -5.4
   }
  },
  "note": "PSS-W3 reset-confirmer shadow (masterplan §W3, ruling R-W1T-2). Logs uniform-gate (2W Stoch-RSI) vs tailored-gate (Stoch-RSI at the codex structure-derived rung) disagreements both directions; graded later under dual rulers (fwd63 + timing). Display/shadow tier only: it NEVER gates, ranks, sizes, or alters any Prophet, washout, or board decision. Promotion of any gate change needs its own prereg + ruling. First quarterly miss-rate readout ≈ 3 months post-ship."

@@ -1,0 +1,107 @@
+{
+  "original_runtime": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-current-event-20261013-3acef99375769a7f",
+  "peers": [
+    {
+      "name": "press-brief-2026-10-11-6cf53bdfd11a.json",
+      "sha256": "340de7c873a807794cb00807753dec7da04842295fe5439ce1462a1b015afbc8",
+      "sources": [
+        "chronicle:TTWO-BULL-20261007"
+      ]
+    },
+    {
+      "name": "press-official-cd2747adeed2.json",
+      "sha256": "444946ab02c0537c539e367cf121ee8efd4d6ab8a6c5f27ae880ff2934053931",
+      "sources": [
+        "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+        "official_feed:url:cd2747adeed2"
+      ]
+    },
+    {
+      "name": "press-research_desk-2026-10-11-81675c403cda.json",
+      "sha256": "1174c20e6a630dec8cd97369ae91d946caebfa06d30bb3a7d57ed17d58becffe",
+      "sources": [
+        "research_vault:marketdesk-f4gxuf5mmau-53a7ed"
+      ]
+    },
+    {
+      "name": "press-research_desk-2026-10-13-6baf3247f154.json",
+      "sha256": "2aef46759c72b4621e772d0da04d2eeee4025b525988f8dd7f1ae1f207206c0a",
+      "sources": [
+        "research_vault:marketdesk-ergkmhwhsow-e05c9a"
+      ]
+    },
+    {
+      "name": "press-research_desk-2026-10-14-593acfb87c11.json",
+      "sha256": "7e3bea845ead2083896e88d641ebb2c43f5d8be8c2824a3680b37f0c803919b3",
+      "sources": [
+        "research_vault:usda-2026-10-09-wasde-676"
+      ]
+    }
+  ],
+  "existing_held_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "chronicle:TTWO-BULL-20261007",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-4sbw9xdvesv-09647d",
+    "research_vault:marketdesk-8inwlunucuj-8950ab",
+    "research_vault:marketdesk-arbvfsvswas-96701d",
+    "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+    "research_vault:marketdesk-ioh3cizfpog-b49a47",
+    "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-uc6giunqscq-05fcee",
+    "research_vault:marketdesk-xyyijkslpal-b997fb"
+  ],
+  "combined_refs": [
+    "artifact:data/gex/latest.json",
+    "artifact:data/market_state/latest.json",
+    "artifact:data/marketing/hot_tape_pack.json#ABSI",
+    "artifact:data/marketing/hot_tape_pack.json#ALHC",
+    "artifact:data/marketing/hot_tape_pack.json#ASTX",
+    "artifact:data/risk_radar/forward_log.jsonl",
+    "artifact:site/basketdata/breadth_split.json",
+    "artifact:site/basketdata/fear_greed.json",
+    "artifact:site/marketdata/sp500_heatmap.json#CCI",
+    "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+    "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+    "chronicle:TTWO-BULL-20261007",
+    "official_feed:99354c7bd7561bf9356a1193875243a72ff1d000",
+    "official_feed:url:cd2747adeed2",
+    "research_vault:marketdesk-4sbw9xdvesv-09647d",
+    "research_vault:marketdesk-8inwlunucuj-8950ab",
+    "research_vault:marketdesk-arbvfsvswas-96701d",
+    "research_vault:marketdesk-augnhdcr2jm-0cbff4",
+    "research_vault:marketdesk-dxcjj8lpx8k-75b4af",
+    "research_vault:marketdesk-ergkmhwhsow-e05c9a",
+    "research_vault:marketdesk-f4gxuf5mmau-53a7ed",
+    "research_vault:marketdesk-ioh3cizfpog-b49a47",
+    "research_vault:marketdesk-qtq09kmuctq-baf3cc",
+    "research_vault:marketdesk-qvymtn8aohk-00548d",
+    "research_vault:marketdesk-rc9hi0toy31-75d4dc",
+    "research_vault:marketdesk-stzblc3lgcn-40b123",
+    "research_vault:marketdesk-uc6giunqscq-05fcee",
+    "research_vault:marketdesk-xyyijkslpal-b997fb",
+    "research_vault:usda-2026-10-09-wasde-676"
+  ],
+  "source_selector_or_scoring_change": false,
+  "probe_sha256": "7a27bcecc16c12e963bb141b1515b753e6d524fc1e335c3c4fda372c31bb5c9d",
+  "newly_carried_peer_refs": [
+    "artifact:data/marketing/hot_tape_pack.json#ABSI",
+    "artifact:data/marketing/hot_tape_pack.json#ALHC",
+    "artifact:data/marketing/hot_tape_pack.json#ASTX",
+    "artifact:site/marketdata/sp500_heatmap.json#CCI",
+    "artifact:site/marketdata/sp500_heatmap.json#MRNA",
+    "artifact:site/marketdata/sp500_heatmap.json#TMUS",
+    "research_vault:usda-2026-10-09-wasde-676"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-14T16:21:29.026659+00:00",
+  "qualified_a1": "b1db2fc7510b3121bb9494f7f55a4351e6a48c77",
+  "preview_tree": "6b6cccfbcaf3a76c62d2091e6fe88c201b71512b",
+  "all_318_prior_job_definitions_identical": true,
+  "new_job": [
+    "leadership-rotation-countercases"
+  ],
+  "new_job_exclusive": true,
+  "new_job_declared_in_curated_set": true,
+  "probe_path_matches": {
+    "templates/index.html": [],
+    "scripts/build_free_content.py": [],
+    "engine/prophet/plan_book.py": []
+  },
+  "production17_unchanged": true,
+  "no_branch_update": true,
+  "scope": "Differential source review only: new unrelated exclusive job does not select three packing probe paths. Reuses qualified A1; does not establish complete current-main closure or hosted proof."
+}

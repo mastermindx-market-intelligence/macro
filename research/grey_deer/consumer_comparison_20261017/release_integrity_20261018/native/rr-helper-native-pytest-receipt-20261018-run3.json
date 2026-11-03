@@ -1,0 +1,43 @@
+{
+  "schema": "risk_radar.helper_native_pytest.v1",
+  "run": 3,
+  "started_at": "2026-10-18T07:52:15.082963+00:00",
+  "completed_at": "2026-10-18T07:54:37.180544+00:00",
+  "elapsed_seconds": 142.096,
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310",
+  "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--junitxml=/tmp/rr-helper-native-pytest-20261018-run3.xml",
+    "tests/test_deploy_provenance.py"
+  ],
+  "exit_code": 0,
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "49",
+      "time": "141.431",
+      "timestamp": "2026-10-18T00:52:15.409281-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "log_path": "/tmp/rr-helper-native-pytest-20261018-run3.log",
+  "log_bytes": 5364,
+  "log_sha256": "600984428ed7a81e2051270bd8e3bfbcf4ed9d6c9b02e1f85a5ac5b5d0125299",
+  "source_sha256": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "1e463a9116fb6c9bc6e6fe10ea23bf619d8674fd7e0ad6ce2392410e302a897c"
+  },
+  "macro_dependency_pin": "256c757b3c4f0ec759571c29a30a71387d0a18f8",
+  "bash_syntax_passed": true,
+  "git_diff_check_passed": true,
+  "rsync_version": "openrsync: protocol version 29\nrsync version 2.6.9 compatible"
+}

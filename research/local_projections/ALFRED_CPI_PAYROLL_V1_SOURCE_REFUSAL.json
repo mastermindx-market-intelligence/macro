@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-20T02:06:06.356042+00:00",
+  "study_spec_sha256": "9b70d444ba75d01db7460c86f970d1626a2df553c07dea17a8aa5dac4072edb5",
+  "assembler_sha256": "4756b2857905f28960f8b07d771b97e1a59dd86e7b8b74b08bfe05defe87f4b6",
+  "effects": "Read-only fixed source objects and local evidence panel; no estimate, trial ledger, store, publication or database write.",
+  "state": "SOURCE_PREREQUISITE_REFUSED",
+  "error_type": "ValueError",
+  "error": "2025-09-01: missing payrolls asof vintage",
+  "next": "Preserve frozen selection; qualify specific producer gap before any estimate. No silent date-range change."
+}

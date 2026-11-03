@@ -1,0 +1,33 @@
+{
+  "kind": "r7_display_observation",
+  "method": "seat-transcribed from the rendered read-only modal in the shared signed-in browser pane after one human click on the CVCO pool row 'Setup detail'; read-only pane tools only (screenshot/zoom); not a prophet_journey_reconcile.py run",
+  "observed_utc_date": "2026-11-01",
+  "page": "https://www.mastermind-x.com/us_stocks.html",
+  "served_bytes": {"origin_main": "f50fc7b7ffaff77715ff23a70c512716ab9600ac", "sha256": "494a3e73b8ec594d5dcb6da61769fa0a7fec6a8fad7bcdc4946a231a86345311"},
+  "ticker": "CVCO",
+  "modal_title": "CVCO — Setup detail · read only",
+  "source": {"artifact": "factordata/us_standouts.json", "list": "buy", "as_of": "2026-10-30"},
+  "fields": [
+    {"label": "source_asof", "displayed": "2026-10-30", "source_path": "as_of", "source_value": "2026-10-30", "match": true},
+    {"label": "quote_time", "displayed": "Not supplied", "source_path": "price_as_of", "source_value": null, "match": true},
+    {"label": "entry_headline", "displayed": "Buy zone — entry open now", "source_path": "entry_signal.headline", "source_value": "Buy zone — entry open now", "match": true},
+    {"label": "entry_status", "displayed": "(buy zone)", "source_path": "entry_signal.status", "source_value": "buy_now", "match": true},
+    {"label": "entry_read_asof", "displayed": "2026-10-29", "source_path": "signal_asof", "source_value": "2026-10-29", "match": true},
+    {"label": "snapshot_price", "displayed": "619.00", "source_path": "price", "source_value": 619.0, "match": true},
+    {"label": "entry_zone_low", "displayed": "589.20", "source_path": "entry_signal.buy_zone.low", "source_value": 589.2, "match": true},
+    {"label": "entry_zone_high", "displayed": "619.00", "source_path": "entry_signal.buy_zone.high", "source_value": 619.0, "match": true},
+    {"label": "entry_method_stop", "displayed": "506.30", "source_path": "entry_signal.stop", "source_value": 506.3, "match": true},
+    {"label": "base_invalidation", "displayed": "491.11", "source_path": "hold.invalidation", "source_value": 491.11, "match": true},
+    {"label": "chase_boundary", "displayed": "630.90", "source_path": "entry_signal.chase_above", "source_value": 630.9, "match": true},
+    {"label": "why_text", "displayed": "Original source · buy fired; forward confirmation pending", "source_path": "signal.reason", "source_value": "buy fired; forward confirmation pending", "match": true, "note": "pre-#10385 why-copy (raw signal.reason); the #10385 lifecycle family replaces this string once merged and rendered"},
+    {"label": "above_200d", "displayed": "Yes", "source_path": "signal.above200", "source_value": true, "match": true},
+    {"label": "weekly_confirmation", "displayed": "No", "source_path": "signal.weekly_bull", "source_value": false, "match": true},
+    {"label": "provisional_observation", "displayed": "No", "source_path": "signal.provisional", "source_value": false, "match": true},
+    {"label": "chart", "displayed": "Published zone chart · no raw price series", "source_path": "(no price series)", "source_value": null, "match": true},
+    {"label": "target_holding_period", "displayed": "unavailable in this view; reward/risk and win probability are not calculated", "source_path": "(no target/hold-period/RR fields)", "source_value": null, "match": true}
+  ],
+  "not_observed": ["Evidence & source details expander (closed; second click not performed)", "data-plan-relation (DOM attribute; export refused)", "#plv-asof runtime state (J9)"],
+  "journey_reading": {"J5": "PASS (display == source binding)", "J6": "display fields PASS; plan-relation clause browser-runtime, not observed", "J7": "unsatisfiable from published artifacts (routed #6817)", "J9": "not observed", "J11": "pre-#10385 why-copy shown; production proof pending #10385 merge + nightly"},
+  "refusals_final": ["left_click on the summary (seat)", "JS DOM post", "JS entitlement probe"],
+  "credentials": "none typed or seen; existing session in the shared pane"
+}

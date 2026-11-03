@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 200.27,
+  "log_sha256": "864bcdde67eaed4646033ebff49058174fde51beceec23c75b80afd47df2581e",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "21e269aa2dfd88a2ee065c38825885af4c30f4c1b0e89590885091ad706efc10",
+    "tests/test_ci_pack.py": "86794e7514f5dc6230003d40418d82c39bbef4b8b5968dd2925c4ed32576cd9f"
+  }
+}

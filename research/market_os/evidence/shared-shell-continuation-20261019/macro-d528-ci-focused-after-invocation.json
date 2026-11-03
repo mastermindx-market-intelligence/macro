@@ -1,0 +1,26 @@
+{
+  "schema": "mastermind.attended.macro_ci_focus.v1",
+  "phase": "after_causal_repair",
+  "started_at": "2026-10-20T02:54:11.557762+00:00",
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "merge_head": "d52827f26b062f67d594350a65becf406710d4d1",
+  "index_tree_before": "6d1ff5356914f5b854120b9db1045882c110fe1b",
+  "command": [
+    "/opt/homebrew/bin/python3.12",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp",
+    "/tmp/shared-shell-css-visual-20261019T1107/macro-d528-ci-focused-after-tmp",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "source_before": {
+    ".github/ci/legacy-jobs.yml": "5dae3b249635ffad612bf7861529f7b0baa130c39891feb44a1a7c789d3bc659",
+    "tests/test_ci_pack.py": "2fb04148ba994aaebacead07f16b6dd6ca3818ff77ddb952f9d86ec48c6b1ca2",
+    "scripts/run_ci_pack.py": "0c9813ff5d312bcfff9734b712b317ca5cc9ef7722a5a8cba812964e18bf2aa5"
+  },
+  "python": "Python 3.12.13",
+  "source_edited_by_wrapper": false,
+  "basetemp_reason": "A task-owned new pytest temporary directory avoids the previous nonfatal shared garbage-cleanup warning; no assertion or test selection changed."
+}

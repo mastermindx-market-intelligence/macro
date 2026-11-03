@@ -1,0 +1,11 @@
+{
+  "state": "OPTIONAL_SERVER_REQUEST_JOURNAL_NOT_RETAINED",
+  "cause": "uvicorn re-emitted SIGTERM (exit143) before the wrapper finally block; in-memory request rows were not written.",
+  "accepted_evidence_unaffected": [
+    "All 10 browser resource/status/geometry observations remain in TIMING.json.",
+    "The source/data/denial/stage-bound SERVER_RECEIPT.json was persisted before requests.",
+    "All 24 capture,11density/program,2deep-link artifacts and source checks are persisted independently."
+  ],
+  "claims": "Do not claim a retained server-side request journal for this batch. Browser-qualified local source performance is not production performance.",
+  "repair": "A separate successor harness flushes at the ASGI shutdown event; do not overwrite the exact harness revision used by the accepted browser observations."
+}

@@ -1,0 +1,137 @@
+{
+  "observed_at": "2026-10-13T23:45:21.806572+00:00",
+  "mode": "read_only_published_feed_no_cursor_write",
+  "results": [
+    {
+      "source": "fed_press",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "status": 200,
+      "sha256": "8b554322d8c85c2659506fd41d0c5bfd673fb8804bf4c277a35ba3f5eeff654b",
+      "items": []
+    },
+    {
+      "source": "bls_news",
+      "error": "403 Client Error: Forbidden for url: https://www.bls.gov/feed/bls_latest.rss"
+    },
+    {
+      "source": "bea_news",
+      "url": "https://apps.bea.gov/rss/rss.xml",
+      "status": 200,
+      "sha256": "8a5160d26d699a6073a2cd0dd075c442f0baf73e25e469af744519e19f36d1a4",
+      "items": [
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/us-international-trade-goods-and-services-august-2026",
+          "published_at": "2026-10-06T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/gdp-third-estimate-industries-corporate-profits-state-gdp-and-state-personal-income-2nd",
+          "published_at": "2026-09-30T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://bea.gov/news/2026/us-international-transactions-and-investment-position-2nd-quarter-2026",
+          "published_at": "2026-09-24T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-july-2026",
+          "published_at": "2026-08-26T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-june-2026",
+          "published_at": "2026-07-30T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/direct-investment-country-and-industry-2025",
+          "published_at": "2026-07-21T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/activities-us-affiliates-foreign-multinational-enterprises-2024",
+          "published_at": "2026-07-10T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        },
+        {
+          "title": null,
+          "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-may-2026",
+          "published_at": "2026-06-25T12:30:00+00:00",
+          "published": null,
+          "summary": null
+        }
+      ]
+    }
+  ],
+  "fed_probe_correction": {
+    "observed_at": "2026-10-13T23:51:33.260240+00:00",
+    "reason": "HTTP library inferred ISO-8859-1 for BOM-prefixed UTF-8 XML. Existing collector decodes UTF-8, so there is no application defect.",
+    "items": [
+      {
+        "id": "59193372b21cdb702e0a623e9ae331cbbaf05f0c",
+        "source": "fed_press",
+        "source_name": "Federal Reserve",
+        "source_tier": "official",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+        "published_at": "2026-10-13T18:00:00+00:00",
+        "headline": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+        "body_snippet": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      {
+        "id": "c546e9affae4091a4e27ceb927d2314e96051e87",
+        "source": "fed_press",
+        "source_name": "Federal Reserve",
+        "source_tier": "official",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm",
+        "published_at": "2026-10-09T14:00:00+00:00",
+        "headline": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families",
+        "body_snippet": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families"
+      },
+      {
+        "id": "e9de74181df715ca2511c9b1224617b9cfd26792",
+        "source": "fed_press",
+        "source_name": "Federal Reserve",
+        "source_tier": "official",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+        "published_at": "2026-10-08T20:30:00+00:00",
+        "headline": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+        "body_snippet": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+      },
+      {
+        "id": "d04032df58d2a2f7b46f93bc3bb01c8b8cf09ae4",
+        "source": "fed_press",
+        "source_name": "Federal Reserve",
+        "source_tier": "official",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+        "published_at": "2026-10-07T18:00:00+00:00",
+        "headline": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+        "body_snippet": "Minutes of the Federal Open Market Committee, September 15-16, 2026"
+      },
+      {
+        "id": "68dd4df5ef1617842f5a5ba2d5ee27ff6f72f5ae",
+        "source": "fed_press",
+        "source_name": "Federal Reserve",
+        "source_tier": "official",
+        "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+        "published_at": "2026-10-05T20:30:00+00:00",
+        "headline": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+        "body_snippet": "Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      }
+    ]
+  }
+}

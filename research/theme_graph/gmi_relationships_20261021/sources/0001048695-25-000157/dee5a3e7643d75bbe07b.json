@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2025-11-25T18:00:17Z",
+ "accession": "0001048695-25-000157",
+ "cik": "0001048695",
+ "doc_byte_length": 1758288,
+ "doc_sha256": "38791917b3a135bc96b4211295a56e2ae3dcea99a727047ec18a84896e141939",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2025-11-25",
+ "form": "10-K",
+ "period_of_report": "2025-09-30",
+ "primary_document": "ffiv-20250930.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1637400,
+  "byte_start": 1635894,
+  "normalized": "Customer C10.9 %—",
+  "normalized_sha256": "a2aa7cffcf7f92ef793062927cdcdd0928b8504514b00de8998bfe5186e79324",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Customer C</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-191\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1148\">10.9</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"2\" style=\"background-color:#cceeff;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-192\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" format=\"ixt:fixed-zero\" scale=\"-2\" id=\"f-1149\">&#8212;</ix:nonFraction>&#160;</span></td><td style=\"background-color:#cceeff;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"/></tr>",
+  "raw_sha256": "dee5a3e7643d75bbe07b3519eb8c06f078bade6315fb5a184d89fe4f04d4d56e"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1048695/000104869525000157/ffiv-20250930.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 88764,
+   "byte_start": 88098,
+   "context_ref": "c-191",
+   "raw": "<xbrli:context id=\"c-191\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001048695</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ffiv:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:GeographicConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-10-01</xbrli:startDate><xbrli:endDate>2025-09-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "2d081887bdaacd293e37ba5138d664f4d184cc7c69743e172625a01ad8dadc49"
+  },
+  {
+   "byte_end": 89430,
+   "byte_start": 88764,
+   "context_ref": "c-192",
+   "raw": "<xbrli:context id=\"c-192\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001048695</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">ffiv:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:GeographicConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-10-01</xbrli:startDate><xbrli:endDate>2024-09-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "686dc8fccd440b6e459236eb0c785971f3abc98965a794559a9ecd7d10fd2959"
+  }
+ ]
+}

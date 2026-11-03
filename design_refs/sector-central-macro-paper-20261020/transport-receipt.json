@@ -1,0 +1,13 @@
+{
+  "archive": "Macro_Sector_Central_Source_Review_2026-10-20.zip",
+  "archive_bytes": 615900,
+  "archive_sha256": "9ed2731cf6729805ef1635b3bfa898805b192ff0e0fd96f0ca1651de3c1b5bf5",
+  "archive_entries": 58,
+  "base64_lines": 10806,
+  "patch_sha256": "0455c772e59377ecd36cc7eb92582eddbde31ab1110bce69955041322b35ff91",
+  "patch_bytes": 206458,
+  "plan_sha256": "133483186ffb8150c3de4a8a70983888d46f70fed5e07b00cfc0acbafc518365",
+  "manifest_sha256": "15a3e9197cff5d509f34392822bc335be182c73fdc9f5b162ab24a236e6230c9",
+  "tests": "565 passed in 45.35s",
+  "source_unchanged_since_tests": true
+}
