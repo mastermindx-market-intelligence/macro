@@ -1,0 +1,279 @@
+{
+  "kind": "Author-recorded acknowledgments and same-carrier capture evidence, not a runtime lifecycle or retry owner",
+  "sourcePin": "9f65957e29eba92245d78609f032aaea523b7cb4",
+  "scopeAdjudicationCommit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "carrier": "Existing Mastermind Paper direct app",
+  "count": 52,
+  "all_new_responses_observed": "APPLIED_RESPONSE_OBSERVED",
+  "receiptLimit": "The raw reply was retained before parsing in each call; the response state and generated node IDs were observed. Older in-memory tool-store entries became unavailable during phase persistence. This record is an author-compiled acknowledgment inventory, not a byte-for-byte raw MCP envelope archive. No operation was replayed. Current same-carrier screenshots and JSX independently retain the resulting six board states.",
+  "originalAtlasOperation": "F01-20261103-c4-state-8-v1",
+  "originalAtlasState": "EFFECT_UNKNOWN; target711X-0 untouched",
+  "readmeOperation": "F01-20261103-c4-readme-concurrence-v2",
+  "readmeState": "DOCUMENT_CHANGED; held without retry",
+  "operations": [
+    {
+      "operation_id": "F01-20261103-r3-D-inspector440",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-source-truth",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape11-header",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape11-row1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape11-row2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape11-row3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape11-row4",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-local-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-flow-subviews",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-guide-futures",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-tape-controls",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-section-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-company-sections",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-financial-subviews",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-period-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-statement-types",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-period-history",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-source-cells",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-selected-cell",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-selected-chart-period",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-dock-close",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-saved-work-access",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-transcript-empty",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-cell-target44",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-A-macro-local-views",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-H-macro-local-views",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-AH-context-copy",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-A-subset-disclosure",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-H-subset-disclosure",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-A-collapse-control",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-H-expand-control",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-H-expand-tooltip",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-ACDH-current-labels",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-A-inactive-today-icon",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-C-inactive-today-icon",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-H-inactive-today-icon",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-D-inactive-today-icon",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-navigation-container",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-local-views",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-locale-touch44",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-market-touch44",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-copy-coverage-units",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-page-height",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-touch1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-touch2",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-touch3",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-touch4",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-source-touch5",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-all-sectors-touch48",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-E-history-touch48",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-F-clear-touch44",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    },
+    {
+      "operation_id": "F01-20261103-r3-F-product-help",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false
+    }
+  ],
+  "production_acceptance": false,
+  "formal_review": false
+}

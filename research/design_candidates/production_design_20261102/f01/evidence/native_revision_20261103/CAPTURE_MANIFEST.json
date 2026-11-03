@@ -1,0 +1,110 @@
+{
+  "schema": "F01.native_revision_capture.v1",
+  "status": "PARTIAL; six changed boards only; unqualified design evidence",
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-27-0",
+  "sourceAdjudicationCommit": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+  "captureMethod": "Actual same-app get_screenshot scale1 and get_jsx inline-styles; JPEG bytes unmodified",
+  "originalAtlasEffect": "EFFECT_UNKNOWN; target711X-0 untouched",
+  "readmeOperation": "DOCUMENT_CHANGED; held without retry",
+  "files": [
+    {
+      "path": "A.jsx",
+      "boardId": "6ZY9-0",
+      "bytes": 35541,
+      "sha256": "40b681e539af78d90403e9090865a84ab50e04b14c2e42ee72b3ead13e91a15f",
+      "gitBlobSha1": "62d1e7593656ba8214e44c1f3880177df1de2de0"
+    },
+    {
+      "path": "A.jpg",
+      "boardId": "6ZY9-0",
+      "bytes": 123859,
+      "sha256": "f9566d05145b05bb1611c62c499eed19222153c1aecdf47b6177ec0765e51904",
+      "gitBlobSha1": "716d352c869492c15d24c72129542a67411c6cee",
+      "width": 1440,
+      "height": 960
+    },
+    {
+      "path": "C.jsx",
+      "boardId": "6ZYB-0",
+      "bytes": 41969,
+      "sha256": "5abd4b4f48360c699b587b5dee3a7d654aa9b7d8a74e169f5b7b8a16a66f8251",
+      "gitBlobSha1": "4d007df4bd2a94bd0922a7492f90db14b5f9bebe"
+    },
+    {
+      "path": "C.jpg",
+      "boardId": "6ZYB-0",
+      "bytes": 140091,
+      "sha256": "7990201eecb765492fd731b320164e2b806833802f46f22c91a9f00550fadd12",
+      "gitBlobSha1": "b1b2f1b3727031cb7aeb0c000822bbc2c46624ee",
+      "width": 1280,
+      "height": 1180
+    },
+    {
+      "path": "D.jsx",
+      "boardId": "6ZYC-0",
+      "bytes": 60396,
+      "sha256": "18712d1739f137edf98bb26de28394798736b82f7f2ff6b0a1334c2565f44035",
+      "gitBlobSha1": "8898bbd950988e8928b4f0c497eed0c5feea0e82"
+    },
+    {
+      "path": "D.jpg",
+      "boardId": "6ZYC-0",
+      "bytes": 105876,
+      "sha256": "ccb8b0dbedfe280cfed262af4e01f13ac30a98841e26f9da3dca26ee487f2e53",
+      "gitBlobSha1": "356c1ece6735b71f19b5060ad3f481890c3b9e29",
+      "width": 1024,
+      "height": 960
+    },
+    {
+      "path": "E.jsx",
+      "boardId": "6ZYD-0",
+      "bytes": 20911,
+      "sha256": "ff966235e3bddb9bcfd9f139a5b0927b2ae8f5d8cb010ccb42470e609f1a1b7c",
+      "gitBlobSha1": "ee5f5cedd537f6af128aae324ade7e9920dde0cb"
+    },
+    {
+      "path": "E.jpg",
+      "boardId": "6ZYD-0",
+      "bytes": 55429,
+      "sha256": "05cc4c09682062a6ac1277c851385364cd8ec01f1fa11f0d8d092eba1dfa8a15",
+      "gitBlobSha1": "313f564467016b87c687dd721a5bca06b79f1dff",
+      "width": 390,
+      "height": 1140
+    },
+    {
+      "path": "F.jsx",
+      "boardId": "6ZZV-0",
+      "bytes": 11504,
+      "sha256": "f18200ef593b20961250f710e1a5655f5753a126704794fb77ff0166708c6129",
+      "gitBlobSha1": "e5d9e2667c75ce32cde70891b77ccad1384b3127"
+    },
+    {
+      "path": "F.jpg",
+      "boardId": "6ZZV-0",
+      "bytes": 37625,
+      "sha256": "a60511e2d97da7326aa4f68d4fe7c0671122b7685fc08924512844275dd18f89",
+      "gitBlobSha1": "8c12a26546d7acec8cb781e86c7e6747e2e74d44",
+      "width": 320,
+      "height": 960
+    },
+    {
+      "path": "H.jsx",
+      "boardId": "70WJ-0",
+      "bytes": 37850,
+      "sha256": "b7d5e4400cd19d62e7e0bfc4df5828b08cd37d20b04f3ca748e8d8294a0577d3",
+      "gitBlobSha1": "8ca535a0ee22c7736fad63bb14ff71d587c304d8"
+    },
+    {
+      "path": "H.jpg",
+      "boardId": "70WJ-0",
+      "bytes": 109406,
+      "sha256": "24cbbb8221b02027c1d284af7c5fe6cfa0c91dcad12d0b1c06e7b9b1b7da3d22",
+      "gitBlobSha1": "0bd9e137111bbceebd78a5afb3a44d9b5eab8cab",
+      "width": 1280,
+      "height": 960
+    }
+  ],
+  "aggregate_definition": "SHA256 of sorted path + NUL + member SHA256 + newline",
+  "aggregate_sha256": "8465612640379507ac49a88fa6d3b3618736d7f8c586db45b4682b9905d584bc"
+}
