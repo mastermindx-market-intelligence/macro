@@ -1,6 +1,6 @@
 # F03 — supported organization and preservation specification
 
-**No Paper operation in this plan has been dispatched.** The [301-row action ledger](data/resource-action-ledger.json) is proposed work with exact original identities, not a migration receipt. All `applied` fields are false; destination, admission and readback fields are null.
+**No cross-file migration action in this plan has been dispatched.** The [301-row resource-action ledger](data/resource-action-ledger.json) remains proposed with exact original identities and null destination/readback fields. Separately, the direct app has already recorded 36 same-file native edit operations (the two page-label corrections and a first editable directory board) in [native-progress.json](paper/native-progress.json). Those edits are not falsely counted as resource transfers.
 
 ## Capability result and original owner
 
@@ -26,7 +26,7 @@ The proposed `MM · Design Programme` file in `00 Programme` has no verified des
 
 **Bonds:** file `01M2WGNCX9475G79JRKJTCM08P`, page `p-1H-0` still says R18–R25. Explicit live read confirmed 12 boards: R32 `6885-1`, `63GL-1`, `63S3-1`, `63YS-1`, `648A-1`; R30 `66FJ-1`, `676M-1`, `6693-1`; R33 implementation map `67ZC-1`; R31 `6B6Q-1`; CDI `6GDA-0`, `6JKG-0`. Proposed page label: **Bonds · Decision & Credit Studies · Revision index**. D15 must select the candidate and index the supporting revisions. Do not rename the whole page “R32.” Adjacent transmission page `p-1E-0` contains related material including board `6894-1`; preserve its separate identity.
 
-**Crypto:** same file, page `p-10-0` says R3 Current Build. Explicit live read confirmed eight R4 boards: `6K9I-0`, `6KE7-0`, `6KJ0-0`, `6KM8-0`, `6KPL-0`, `6KRP-0`, `6KTQ-0`, `6L34-0`. Proposed label: **Crypto Intelligence · R4 · Design References**. D18 supplies candidate approval separately; the label must not claim current build authority. Neither rename is applied.
+**Crypto:** same file, page `p-10-0` says R3 Current Build. Explicit live read confirmed eight R4 boards: `6K9I-0`, `6KE7-0`, `6KJ0-0`, `6KM8-0`, `6KPL-0`, `6KRP-0`, `6KTQ-0`, `6L34-0`. Proposed label: **Crypto Intelligence · R4 · Design References**. D18 supplies candidate approval separately; the label does not claim current build authority. Both Bonds and Crypto neutral page-label changes were subsequently applied and read back through the direct Paper app with original IDs retained (see `paper/native-progress.json`).
 
 ## Known lineage and source locations
 
