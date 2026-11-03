@@ -69,6 +69,7 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import re
 import logging
 import math
 import subprocess
@@ -1221,8 +1222,40 @@ def _source_coverage_gate() -> float:
 
 
 def _daily_universe() -> list[str]:
+    # The GEX product cap limits its reporting universe, not ThetaData's EOD
+    # maintenance universe. Keep its priority order and append the active basket.
+    from engine.options_universe import baskets_universe
     from scripts.backfill_thetadata_eod import _resolve_universe
-    return _resolve_universe()
+    return _resolve_universe(extra_roots=baskets_universe())
+
+
+def _maintained_roots(store: Path, session: _date, configured: list[str]) -> list[str]:
+    """Keep the configured priority order and the store's existing enrolled cohort.
+
+    Historical backfill receipts can include empty NO_DATA years. Only retain a
+    receipt-backed root with a real EOD partition for this session year. In January
+    a prior-year partition carries enrollment through the year boundary.
+    """
+    path = store / "_backfill_state.json"
+    if not path.exists():
+        return configured
+    state = json.loads(path.read_text())
+    if state.get("version") != 1 or not isinstance(state.get("completed"), dict):
+        raise ValueError("Invalid ThetaData backfill enrollment")
+    year = str(session.year)
+    if session.month == 1:
+        previous = str(session.year - 1)
+    else:
+        previous = year
+    roots = dict.fromkeys(configured)
+    for symbol, years in sorted(state["completed"].items()):
+        if (not isinstance(symbol, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.\-]{0,14}", symbol)
+                or not isinstance(years, list) or not years):
+            continue
+        if any((store / "eod" / symbol / f"{y}.parquet").is_file()
+               for y in {year, previous}):
+            roots[symbol] = None
+    return list(roots)
 
 
 def _ad_universe() -> list[str]:
@@ -1506,7 +1539,7 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
             return 1
 
         try:
-            t1_universe = _daily_universe()
+            t1_universe = _maintained_roots(store, ctx.S, _daily_universe())
             ad_universe = _ad_universe()
         except Exception as e:  # noqa: BLE001
             _finish("failed", terminal_health="reachable",

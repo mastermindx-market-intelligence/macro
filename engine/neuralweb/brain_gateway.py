@@ -7862,7 +7862,20 @@ def _dispatch_brain_tool(
             tool_name, tool_params, root,
             include_risk_context=_ontology_evidence_allowed(user_id, root),
         )
-    return _dispatch_read_tool(tool_name, tool_params, root)
+    result = _dispatch_read_tool(tool_name, tool_params, root)
+    if tool_name in {"read_options_entry_state", "explain_options_context"} and tool_params.get("ticker"):
+        from app.options_auth import options_product_allowed
+        from engine.neuralweb.options_evidence import published_volatility
+        from lib import nyse_calendar
+        try:
+            allowed = options_product_allowed(user_id)
+        except Exception:
+            allowed = False
+        if allowed:
+            ticker = str(tool_params["ticker"]).strip().upper()
+            evidence = published_volatility(root, ticker, tool_params, nyse_calendar.expected_last_session())
+            result = {**result, "volatility_evidence": evidence}
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -7886,6 +7899,17 @@ def _all_brain_tool_schemas(
     """
     from engine.neuralweb.ask_brain import _read_tool_schemas  # noqa: PLC0415
     schemas = _read_tool_schemas() + _brain_tool_schemas()
+    # Existing options reads gain optional identity inputs; the execution path
+    # checks the product grant before reading any member volatility observation.
+    for i, schema in enumerate(schemas):
+        if schema.get("name") in {"read_options_entry_state", "explain_options_context"}:
+            inputs = schema["input_schema"]
+            props = {**inputs["properties"],
+                     "expiration": {"type": "string", "description": "Exact YYYY-MM-DD, or YYYY-MM to list represented expiry observations"},
+                     "right": {"type": "string", "enum": ["put", "call"]},
+                     "strike": {"type": "number", "exclusiveMinimum": 0}}
+            schemas[i] = {**schema, "input_schema": {**inputs, "properties": props},
+                          "description": schema["description"] + " For a contract question pass its ticker, expiry, strike and side. Distinguish dated underlying or smile IV from a contract premium."}
     if not _earnings_evidence_allowed(user_id, root):
         schemas = [s for s in schemas if s.get("name") != "read_earnings_evidence"]
     # Analyst OS P0: market-intel retrieval (live events wire + research-vault search).

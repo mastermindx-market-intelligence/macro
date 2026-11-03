@@ -28,7 +28,7 @@ from engine.neuralweb import cortex
 
 def _state_df(tickers: list[str], **overrides) -> pd.DataFrame:
     base = {
-        "as_of": "2026-07-05",
+        "as_of": "2026-07-06",
         "iv30": 0.25,
         "iv_rank_252": None,
         "iv_rank_5d_chg": None,
@@ -51,10 +51,10 @@ def _state_df(tickers: list[str], **overrides) -> pd.DataFrame:
         "pin_risk": False,
         "gex_confirm_verdict": "NEUTRAL",
         "evidence_quality": "full",
-        "src_gex_asof": "2026-07-05",
-        "src_skew_asof": "2026-07-05",
-        "src_ivspread_asof": "2026-07-05",
-        "src_flow_asof": "2026-07-05",
+        "src_gex_asof": "2026-07-06",
+        "src_skew_asof": "2026-07-06",
+        "src_ivspread_asof": "2026-07-06",
+        "src_flow_asof": "2026-07-06",
     }
     rows = []
     for t in tickers:
@@ -68,14 +68,16 @@ def _state_df(tickers: list[str], **overrides) -> pd.DataFrame:
 def _board_df(buy: list[str], watch: list[str]) -> pd.DataFrame:
     rows = []
     for t in buy:
-        rows.append({"as_of": "2026-07-05", "ticker": t, "lane": "buy"})
+        rows.append({"as_of": "2026-07-06", "ticker": t, "lane": "buy"})
     for t in watch:
-        rows.append({"as_of": "2026-07-05", "ticker": t, "lane": "watch"})
+        rows.append({"as_of": "2026-07-06", "ticker": t, "lane": "watch"})
     return pd.DataFrame(rows)
 
 
 @pytest.fixture()
-def tmp_root(tmp_path: Path) -> Path:
+def tmp_root(tmp_path: Path, monkeypatch) -> Path:
+    from datetime import date
+    monkeypatch.setattr(cortex.nyse_calendar, 'expected_last_session', lambda: date(2026, 7, 6))
     (tmp_path / "data" / "options_entry").mkdir(parents=True)
     (tmp_path / "data" / "us_board_ledger").mkdir(parents=True)
     (tmp_path / "data" / "neuralweb").mkdir(parents=True)
@@ -106,7 +108,7 @@ def test_adapter_folds_ungraded_honest(tmp_root):
     assert (df["ledger"] == "options_entry").all()
     assert (df["size_binding"] == False).all()  # noqa: E712
     assert set(df["signal_id"]) == {
-        "options_entry:2026-07-05:AAPL", "options_entry:2026-07-05:MSFT"}
+        "options_entry:2026-07-06:AAPL", "options_entry:2026-07-06:MSFT"}
 
 
 def test_adapter_corrupt_store_fail_open(tmp_root):

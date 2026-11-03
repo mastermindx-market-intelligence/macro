@@ -1334,6 +1334,7 @@ def _make_options_root() -> pathlib.Path:
       - data/us_board_ledger/retro_grades.parquet  (list_options_contradictions)
     """
     import pandas as pd
+    from lib import nyse_calendar
 
     d = pathlib.Path(tempfile.mkdtemp())
 
@@ -1360,6 +1361,7 @@ def _make_options_root() -> pathlib.Path:
         {
             "ticker": "NVDA",
             "skew": -0.05,
+            "src_skew_asof": nyse_calendar.expected_last_session().isoformat(),
             "skew_5d_chg": 0.01,
             "gex_confirm_verdict": "CONFIRM",
             "gamma_regime": "long",
