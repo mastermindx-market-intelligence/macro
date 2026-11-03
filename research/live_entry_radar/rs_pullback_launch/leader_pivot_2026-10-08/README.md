@@ -52,3 +52,9 @@ This GitHub source publication stores all report text, the original source-free 
 The bounded tranche uses four prior full 30m bars from the same supplied session and preserves the Phase-1 owner's existing combined daily eligibility. This conservative warmup scope is **not** a final experiment-population decision. Confirmation, invalidation, expiry, actual issuance, approved consumer enrollment and the real admitted witness remain unfinished. Neither a synthetic pivot nor an `OBSERVED_MARKET` input label can set `source_admitted=true`.
 
 No old source carrier, original refusal, registered calendar, incumbent Entry Engine or research threshold is changed. Keep publication/review, source admission, scientific efficacy and deployment as separate gates.
+
+## Additive Terminal design proposal — 3 November 2026
+
+[Terminal Rotation & Pivot Intelligence](ROTATION_PIVOT_EXTENSION_2026-11-03.md) connects the existing RS study, Leadership Rotation measurements, Quote Hub and Radar/Evaluation owners into a proposed live observation and causal pivot-watch experience. It includes the current-code integration audit, primary research and counterevidence, latency/clock requirements, Terminal UX, staged backtests and implementation slices.
+
+Status: **SPEC_ONLY**. This dated proposal does not change the historical report, existing DNR dispositions, admitted source/experiment state, event authority or production behavior. No new market backtest or live forecast is claimed.
