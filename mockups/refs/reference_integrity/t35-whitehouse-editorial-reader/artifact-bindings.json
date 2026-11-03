@@ -1,0 +1,161 @@
+{
+  "reference_id": "t35-whitehouse-editorial-reader",
+  "prepared_at": "2026-11-03T22:28:40.681249+00:00",
+  "after_runtime_source": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "before_source": "b6760d0aa7d4173457ace5a160dad750899e281d",
+  "files": [
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html.j2",
+      "sha256": "0f60a874f196d65a1a9f55c437dbf8203e52fb8f5f7125d02666c5315496b894",
+      "source_commit": "b6760d0aa7d4173457ace5a160dad750899e281d",
+      "source_path": "templates/whitehouse.html.j2"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/build_whitehouse.py",
+      "sha256": "d37b4a8298cdc9fe5657ce26947daa7b2bc434ef2780d741a0968aa77cab4176",
+      "source_commit": "b6760d0aa7d4173457ace5a160dad750899e281d",
+      "source_path": "scripts/build_whitehouse.py"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2",
+      "sha256": "ce360740569540d61a9f4bad1d25f81863e11610c8dd119dfba7c0a3e59487db",
+      "source_commit": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+      "source_path": "templates/whitehouse.html.j2"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/build_whitehouse.py",
+      "sha256": "7f879b50af331837aa5ec6fdfa1f80f01b2c0af7d97fca407b43a9f5eb6ccb0e",
+      "source_commit": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+      "source_path": "scripts/build_whitehouse.py"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html",
+      "sha256": "5a925d8ed65aabd4abd2b7567fcf5f6b64fa1f07e0227bda9264526f622ff6ed"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse-controlled.html",
+      "sha256": "349552b50c08d54b8256e5eeadda461df2db6081d31ea0b09129bdec45c9c676"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-1440-dark-en.png",
+      "sha256": "8243e5a486c259a38f509cbf887216f2e24e055fb8eaa68d934a7ec9f67ef086"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-390-light-zh.png",
+      "sha256": "f57b7708e3894f7253ddb2f44decebb81599570ed528fa95a4a0d70c50564a91"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/source-1440-dark-en.png",
+      "sha256": "8a518d1ff8d8d719305bfbf4ff7b79945452c068f07a64b65c518da589e44512"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/source-390-light-zh.png",
+      "sha256": "1c13eebbd4808bb68558cad9d19bb8bf3cf98c9ad4caff3a5b5d0bce43c89246"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-en.png",
+      "sha256": "f7894db2ebc4ae9eadb5f8f945055e1f4f9821d1f945a97c860a4a6beec476cd"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-zh.png",
+      "sha256": "7067dd0376bb727277552331bbca465a3f3050745d423b75e615ea6c2aef16e3"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-en.png",
+      "sha256": "4c8b5ab05387f92f3a69472f8e2489035c921da7c889c022571a6a6abab03ddd"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-zh.png",
+      "sha256": "953cae7a4fe2fa570556b4c012430649f8fc06d425169ad4a1d23d61f5caf312"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-en.png",
+      "sha256": "6cd30091c723f8a38bbe23dc43c603e89fed0791d5fcfcb48e71f3f70c2caefd"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-zh.png",
+      "sha256": "e0be29e26836c3366f194d766e4be662d94d8f990020c236af2351ddc9c09c30"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-en.png",
+      "sha256": "ae63bc8bd05fe0a58d0f3c7557480030a8ca7c129a0ea031f87b25a3c7e45335"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-zh.png",
+      "sha256": "6c2b4f2fd08f0f06f67b7d2aa15d2b4d9d16fdc7e098ed57074478c60ebbf029"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-dark-en.png",
+      "sha256": "9cdd085b0d44a2e1de481ced8f96d76a7ade28ce57a3559004cdd536e476fd34"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-dark-zh.png",
+      "sha256": "17247a3e4bd057115d8a81c1ecdd73575072f5420dd55ebdd6edc8701f1a1acc"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-light-en.png",
+      "sha256": "64442280c9996ff7510aa685d365ebd845406ed816299e1a40e826fb92356136"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-light-zh.png",
+      "sha256": "5778a9acad66db4950bcc1e908e2b07e522540b12fbe9651cecca79f8a8f937f"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-dark-en.png",
+      "sha256": "2f80ab3b01d9bcc6f6da870e17adb456c115a45e8383f54b9dccba45f80caeca"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-dark-zh.png",
+      "sha256": "7613cdd510216d45fffc787be0c8fa1ab1cd31e1de9680e3a6208c0965d33399"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-en.png",
+      "sha256": "5abf37b58e7983b650caf7880d0fb9b68d707252498927de5b7989b0b5d1defe"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-zh.png",
+      "sha256": "ecccd87ad9d329ec1422303882ff368ed0843b6fceffcb36a27763e4861aeceb"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-archived-1440-light-en.png",
+      "sha256": "5735d765ff04d3f10e280acb878b69fc6379f2cc20570efc5a1e6f73674cb9c0"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-empty-390-light-zh.png",
+      "sha256": "463aa29f89ff02749eba4e198e7b5827f737969862eac6db31752cfb63c76774"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-missing-390-dark-en.png",
+      "sha256": "d662232ea2b6814a817c69027c789d02c09154e0c01cfa2ea650fd2f33156356"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-1440-dark-en.png",
+      "sha256": "d246509bae1af76ca1bd6b93b2eea85c1d632b269b7f61b1ca56d4908feb0de9"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-390-light-zh.png",
+      "sha256": "6e8a74a6bcc72677acdfe21536d4467f2335458a6b6e2c11be2c7d9f4b1d82c7"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/source-inputs.json",
+      "sha256": "a89be95a492a415ebca5aeedf8c138f15c63a9916750b9c6d3f714a56af858af"
+    }
+  ],
+  "limits": [
+    {
+      "axis": "theme-locale-viewport",
+      "value": "1440 light EN/ZH,1440 dark ZH,390 dark EN/ZH,390 light EN",
+      "reason": "No retained before report image on these axes. Existing before images are1440 dark EN and390 light ZH; no new capture permitted."
+    },
+    {
+      "axis": "serving-access",
+      "value": "current served/authenticated/inShell before and after",
+      "reason": "Evidence is retained standalone local controlled rendering; it does not establish current serving, entitlement or embedded handshake."
+    },
+    {
+      "axis": "population",
+      "value": "all77 report cards visually compared",
+      "reason": "Before retained body contains77; after crops render selected Finland and Treasury rows. Existing immutable full-render assertions cover77 anchor order/source URLs/input hash, not77-card visual parity."
+    }
+  ]
+}

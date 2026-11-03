@@ -1,0 +1,16 @@
+{
+  "head": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "kind": "standalone actual-renderer retained-input fixture, NOT inShell/serving/primarybody/rights/science",
+  "sources": {
+    "scripts/build_whitehouse.py": "7f879b50af331837aa5ec6fdfa1f80f01b2c0af7d97fca407b43a9f5eb6ccb0e",
+    "templates/whitehouse.html.j2": "ce360740569540d61a9f4bad1d25f81863e11610c8dd119dfba7c0a3e59487db",
+    "tests/test_whitehouse_build.py": "285c567c950c65c4d0b602f7ad2fa8d08ac5ad667174375bd650898e0936220c",
+    "research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md": "12cb1b6528153783be638b98e41a231465baae4f7fe8b931b42939371dee4505"
+  },
+  "treasury_source_sha256": "ec5bffc6d3d04014cb1291de8cf97716ba7b393e4bca82b39031bd9972c3f12a",
+  "full_records": 77,
+  "full_original_anchor_order_equal": true,
+  "all_source_urls_equal": true,
+  "input_hash_unchanged": "996ce93b375cd7635e9acfa7711d16fc33db66a16b8c8000fb26a08198036e2e",
+  "selected_source_id": "wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri"
+}

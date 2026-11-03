@@ -1,0 +1,129 @@
+schema: mastermind.rig_baseline.v1
+reference_id: t35-whitehouse-editorial-reader
+captured_at: '2026-11-03T22:28:40.681249+00:00'
+production:
+  route: /whitehouse.html
+  live_url: https://www.mastermind-x.com/whitehouse.html
+  source_commit: b6760d0aa7d4173457ace5a160dad750899e281d
+  source_paths:
+  - templates/whitehouse.html.j2
+  - scripts/build_whitehouse.py
+  shared_surfaces: []
+  observation_kind: Historical protected source and retained controlled captures;
+    not a new current-production visit.
+evidence:
+  screenshots:
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-1440-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-390-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  gaps:
+  - axis: theme-locale-viewport
+    value: 1440 light EN/ZH,1440 dark ZH,390 dark EN/ZH,390 light EN
+    reason: No retained before report image on these axes. Existing before images
+      are1440 dark EN and390 light ZH; no new capture permitted.
+  - axis: serving-access
+    value: current served/authenticated/inShell before and after
+    reason: Evidence is retained standalone local controlled rendering; it does not
+      establish current serving, entitlement or embedded handshake.
+  - axis: population
+    value: all77 report cards visually compared
+    reason: Before retained body contains77; after crops render selected Finland and
+      Treasury rows. Existing immutable full-render assertions cover77 anchor order/source
+      URLs/input hash, not77-card visual parity.
+user_job: Understand what this dated policy report argues, distinguish AI interpretation
+  from source facts, and open the original evidence without losing the selected report.
+core_interactions:
+- Select a report fragment
+- Read argument/summary and inspect model/source clocks
+- Inspect sector and ticker rows
+- Open primary-source link
+- Use shared theme/locale and navigation
+information_hierarchy:
+- Site navigation
+- White House monitoring page explanation
+- Treasury snapshot
+- Retained report title/badges/date/model metadata
+- Translated summary and original AI analysis
+- Sector/ticker evidence
+- Original source and limitations
+design_lineage:
+  rulings:
+  - ref: docs/DESIGN_DOCTRINE.md
+    evidence: No container accent edges; source/AI boundary, no authority inflation
+    implication: Existing behavior remains evidence, not a visual exception.
+  - ref: P12.T34 source-agency correction
+    evidence: Separate earlier change; baseline source screenshot may label Treasury
+      as White House
+    implication: Do not attribute the independent T34 correction to T35 hierarchy.
+  rejected_variants: []
+  comments:
+  - path: 'templates/whitehouse.html.j2: original source/banners'
+    note: LIVE is the incumbent banner lifetime; report/body/source clocks are separate.
+capabilities:
+- id: reports.retained-population
+  user_job: Find every retained White House and Treasury report and its original anchor.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-card ids; full population63 wh +14 tw'
+  importance: core
+- id: reports.metadata-clocks
+  user_job: Distinguish publication, read-generation, expiry, fallback model and model
+    confidence.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-when/wh-badge'
+  importance: core
+- id: reports.original-body
+  user_job: Read the stored report argument and original analysis.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-analysis'
+  importance: core
+- id: reports.bilingual-summary
+  user_job: Read available EN/ZH titles and summaries without changing stored arguments.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    lang-en/lang-zh title and summary'
+  importance: core
+- id: reports.sector-evidence
+  user_job: Inspect every sector-impact row and rationale.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    sector-impact table'
+  importance: core
+- id: reports.ticker-evidence
+  user_job: Inspect named instruments, original rationale and available quote/change
+    fields.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    ticker table and instrument links'
+  importance: core
+- id: reports.primary-source
+  user_job: Open the original source URL with agency attribution.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-src; T34 corrects Treasury attribution separately'
+  importance: core
+- id: reports.model-assessment
+  user_job: See model significance value and informational limitations.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    significance meter and wh-disc'
+  importance: core
+- id: treasury.snapshot
+  user_job: Read cash/flow values, units, dates, sparkline and source/method context.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-tre'
+  importance: supporting
+- id: page.global-navigation
+  user_job: Use incumbent product navigation, theme/locale controls and footer.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    shared nav/footer'
+  importance: supporting
+- id: page.explanation
+  user_job: Read source/method/fallback and page-level disclaimers.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    wh-hero and wh-pagedisc'
+  importance: supporting
+- id: reports.fragment-return
+  user_job: Retain a selected report via exact native fragment and ordinary Back/reload.
+  evidence: 'mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/whitehouse.html:
+    original wh-/tw- ids'
+  importance: core
