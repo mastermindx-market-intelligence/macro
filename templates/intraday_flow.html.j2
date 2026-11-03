@@ -154,7 +154,7 @@
 
   /* ══ Spotlight — "Look here first" ═════════════════════════════ */
   .spot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr)); gap:14px; }
-  .spot-card { position:relative; border:1px solid color-mix(in srgb,var(--lane) 34%,var(--glass-line)); border-radius:15px; padding:15px 16px 16px; background:var(--glass-2); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); box-shadow:0 10px 30px -14px color-mix(in srgb,var(--lane) 45%,transparent), var(--glass-sh); overflow:hidden; }
+  .spot-card { position:relative; border:1px solid color-mix(in srgb,var(--lane) 34%,var(--glass-line)); border-top-color:color-mix(in srgb,var(--lane) 55%,rgba(255,255,255,.4)); border-radius:15px; padding:15px 16px 16px; background:var(--glass-2); -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur); box-shadow:0 10px 30px -14px color-mix(in srgb,var(--lane) 45%,transparent), var(--glass-sh); overflow:hidden; }
   .spot-card::before { content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:0 0 44px -12px color-mix(in srgb,var(--lane) 40%,transparent) inset; }
   .spot-hd { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .spot-tk { font-family:var(--num); font-size:20px; font-weight:800; letter-spacing:-.01em; color:var(--text); }

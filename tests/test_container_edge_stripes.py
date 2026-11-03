@@ -234,7 +234,12 @@ GUARD3_LEGACY = {
         (".rip-zone.rz-fall", "border-left"),
         (".mx-cap--resolved::before", "border-top"),
     },
-    INTRADAY: set(),
+    INTRADAY: {
+        # Lit top edge on the lane-tinted glass card. Its rule line also holds an
+        # untokenised color-mix and a 15px radius, so editing it trips the
+        # design ratchet; migrate it together with a radius + lane-line token.
+        (".spot-card", "border-top-color"),
+    },
 }
 
 
