@@ -25,8 +25,15 @@ from ..research_vault.r2_store import VersionedBytes
 
 EDITION_SCHEMA = "company_intelligence.issuer_disclosure_edition/v1"
 FACT_SCHEMA = "company_intelligence.product_integration_fact/v1"
+SEC_EDITION_SCHEMA = "company_intelligence.sec_disclosure_edition/v1"
+SUPPLIER_FACT_SCHEMA = "company_intelligence.disclosed_supplier_fact/v1"
+SEC_SUPPLIER_PURPOSE = "private_company_intelligence_context"
+SEC_SUPPLIER_AUDIENCE = "company_intelligence_entitled"
+EDITION_SCHEMAS = frozenset({EDITION_SCHEMA, SEC_EDITION_SCHEMA})
+FACT_SCHEMAS = frozenset({FACT_SCHEMA, SUPPLIER_FACT_SCHEMA})
 MAX_OBJECT_BYTES = 16 * 1024
 MAX_SOURCE_BYTES = 1024 * 1024
+MAX_SEC_SOURCE_BYTES = 4 * 1024 * 1024
 MAX_REVISIONS = 64
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}\Z")
@@ -125,7 +132,7 @@ class Reference:
     byte_length: int
 
     def __post_init__(self) -> None:
-        _require(type(self.schema) is str and self.schema in {EDITION_SCHEMA, FACT_SCHEMA}, "REFERENCE_SCHEMA_INVALID")
+        _require(type(self.schema) is str and self.schema in EDITION_SCHEMAS | FACT_SCHEMAS, "REFERENCE_SCHEMA_INVALID")
         _digest(self.sha256)
         _integer(self.byte_length, 1, MAX_OBJECT_BYTES)
 
@@ -146,18 +153,20 @@ def _ref(value: dict) -> Reference:
 
 
 def validate_edition(value: dict) -> Reference:
+    _require(type(value) is dict, "SCHEMA_INVALID")
+    sec = value.get("schema") == SEC_EDITION_SCHEMA
     _closed(value, {"schema", "disclosure_id", "issuer_id", "source_key", "revision",
                     "previous", "source_sha256", "source_byte_length", "published_date",
-                    "published_at", "publication_precision", "known_at"})
-    _require(value["schema"] == EDITION_SCHEMA, "SCHEMA_INVALID")
+                    "published_at", "publication_precision", "known_at"} | ({"sec_source"} if sec else set()))
+    _require(value["schema"] in EDITION_SCHEMAS, "SCHEMA_INVALID")
     _require(value["disclosure_id"] == disclosure_id(value["issuer_id"], value["source_key"]), "DISCLOSURE_ID_MISMATCH")
     _integer(value["revision"], 1, MAX_REVISIONS)
-    _integer(value["source_byte_length"], 1, MAX_SOURCE_BYTES)
+    _integer(value["source_byte_length"], 1, MAX_SEC_SOURCE_BYTES if sec else MAX_SOURCE_BYTES)
     _digest(value["source_sha256"])
     known = _instant(value["known_at"])
     _require((value["revision"] == 1) == (value["previous"] is None), "PREDECESSOR_REQUIRED")
     if value["previous"] is not None:
-        _reference(value["previous"], EDITION_SCHEMA)
+        _reference(value["previous"], value["schema"])
     try:
         published_date = value["published_date"]
         _require(type(published_date) is str and date.fromisoformat(published_date).isoformat() == published_date, "DATE_INVALID")
@@ -171,35 +180,62 @@ def validate_edition(value: dict) -> Reference:
         published = _instant(value["published_at"])
         source_day = datetime.fromisoformat(value["published_at"].replace("Z", "+00:00")).date()
         _require(source_day.isoformat() == published_date and published <= known, "PUBLICATION_TIME_MISMATCH")
+    if sec:
+        s = _closed(value["sec_source"], {"snapshot_id", "snapshot_at", "manifest_key", "document_id",
+            "accession", "issuer_cik", "archive_url", "accepted_at", "retrieved_at", "recorded_at",
+            "retrieval_receipt_id", "span_start_byte", "span_end_byte", "span_sha256"})
+        _require(type(s["snapshot_id"]) is str and re.fullmatch(r"ffsecsrc_[0-9a-f]{64}", s["snapshot_id"]) is not None,
+                 "SEC_SOURCE_INVALID")
+        _require(type(s["accession"]) is str and re.fullmatch(r"[0-9]{10}-[0-9]{2}-[0-9]{6}", s["accession"]) is not None
+                 and type(s["issuer_cik"]) is str and re.fullmatch(r"[0-9]{10}", s["issuer_cik"]) is not None,
+                 "SEC_SOURCE_INVALID")
+        for field in ("manifest_key", "document_id", "archive_url", "retrieval_receipt_id"):
+            _require(type(s[field]) is str and 0 < len(s[field]) <= 700 and not any(ord(c) < 32 for c in s[field]), "SEC_SOURCE_INVALID")
+        _require(s["document_id"] == value["source_key"] and value["publication_precision"] == "date"
+                 and value["published_at"] is None, "SEC_SOURCE_BINDING_MISMATCH")
+        _require(_instant(s["accepted_at"]) <= _instant(s["retrieved_at"]) <= _instant(s["recorded_at"])
+                 <= _instant(s["snapshot_at"]) <= known <= datetime.now(timezone.utc), "SEC_SOURCE_CLOCK_INVALID")
+        _integer(s["span_start_byte"], 0, value["source_byte_length"])
+        _integer(s["span_end_byte"], s["span_start_byte"] + 1, value["source_byte_length"])
+        _digest(s["span_sha256"])
     return _ref(value)
 
 
 def validate_fact(value: dict) -> Reference:
+    _require(type(value) is dict, "SCHEMA_INVALID")
+    supplier = value.get("schema") == SUPPLIER_FACT_SCHEMA
     _closed(value, {"schema", "fact_id", "claim_key", "disclosure_id", "edition",
                     "revision", "previous", "review_revision", "subject_id", "object_id",
                     "subject_identity", "object_identity", "kind", "lifecycle", "product",
-                    "platform", "amount", "economic_share", "span", "known_at"})
-    _require(value["schema"] == FACT_SCHEMA, "SCHEMA_INVALID")
+                    "platform", "amount", "economic_share", "span", "known_at"} | ({"qualification"} if supplier else set()))
+    _require(value["schema"] in FACT_SCHEMAS, "SCHEMA_INVALID")
     _require(value["fact_id"] == fact_id(value["disclosure_id"], value["claim_key"]), "FACT_ID_MISMATCH")
-    _reference(value["edition"], EDITION_SCHEMA)
+    _reference(value["edition"], SEC_EDITION_SCHEMA if supplier else EDITION_SCHEMA)
     _integer(value["revision"], 1, MAX_REVISIONS)
     _require((value["revision"] == 1) == (value["previous"] is None), "PREDECESSOR_REQUIRED")
     if value["previous"] is not None:
-        _reference(value["previous"], FACT_SCHEMA)
+        _reference(value["previous"], value["schema"])
     for field in ("review_revision", "subject_identity", "object_identity"):
         _digest(value[field])
     _identifier(value["subject_id"]); _identifier(value["object_id"])
     _require(value["subject_id"] != value["object_id"], "PARTY_IDENTITY_AMBIGUOUS")
-    _require(value["kind"] == "product_integration" and value["lifecycle"] == "planned", "FACT_SPECIES_INVALID")
+    _require((value["kind"], value["lifecycle"]) ==
+             (("disclosed_supplier", "reported_use") if supplier else ("product_integration", "planned")), "FACT_SPECIES_INVALID")
     for field in ("product", "platform"):
         _require(type(value[field]) is str and 0 < len(value[field]) <= 256 and len(value[field].encode("utf-8")) <= 256
                  and value[field].strip() == value[field], "FACT_SCOPE_INVALID")
     _require(value["amount"] is None and value["economic_share"] is None, "MAGNITUDE_NOT_ADMITTED")
     span = _closed(value["span"], {"start_byte", "end_byte", "text_sha256"})
-    _integer(span["start_byte"], 0, MAX_SOURCE_BYTES)
-    _integer(span["end_byte"], span["start_byte"] + 1, MAX_SOURCE_BYTES)
+    limit = MAX_SEC_SOURCE_BYTES if supplier else MAX_SOURCE_BYTES
+    _integer(span["start_byte"], 0, limit)
+    _integer(span["end_byte"], span["start_byte"] + 1, limit)
     _digest(span["text_sha256"])
-    _instant(value["known_at"])
+    adopted = _instant(value["known_at"])
+    if supplier:
+        q = _closed(value["qualification"], {"direction", "identity_mode", "identity_observed_at", "evidence_revision"})
+        _require(q["direction"] == "object_supplies_subject" and q["identity_mode"] == "current", "SUPPLIER_QUALIFICATION_INVALID")
+        _require(_instant(q["identity_observed_at"]) <= adopted <= datetime.now(timezone.utc), "SUPPLIER_ADOPTION_CLOCK_INVALID")
+        _digest(q["evidence_revision"])
     return _ref(value)
 
 
@@ -272,14 +308,25 @@ class Admission:
     allowed_fields: frozenset[str]
     operation: str = "read"
     subject_binding: SubjectIdentityBinding | None = None
+    object_binding: SubjectIdentityBinding | None = None
 
     def validate(self, request: Request, candidate: Reference | None) -> None:
         _require(self.subject_binding is None or type(self.subject_binding) is SubjectIdentityBinding,
                  "SUBJECT_IDENTITY_INVALID")
         _require(self.request == request, "ADMISSION_REQUEST_MISMATCH")
         _require(self.operation == ("publish" if candidate is not None else "read"), "ADMISSION_OPERATION_MISMATCH")
-        _require(type(self.reference) is Reference and self.reference.schema == FACT_SCHEMA, "ADMISSION_REFERENCE_INVALID")
-        _require(type(self.edition) is Reference and self.edition.schema == EDITION_SCHEMA, "ADMISSION_REFERENCE_INVALID")
+        _require(type(self.reference) is Reference and self.reference.schema in FACT_SCHEMAS, "ADMISSION_REFERENCE_INVALID")
+        supplier = self.reference.schema == SUPPLIER_FACT_SCHEMA
+        _require(type(self.edition) is Reference and self.edition.schema ==
+                 (SEC_EDITION_SCHEMA if supplier else EDITION_SCHEMA), "ADMISSION_REFERENCE_INVALID")
+        if supplier:
+            _require((request.purpose, request.audience) == (SEC_SUPPLIER_PURPOSE, SEC_SUPPLIER_AUDIENCE), "PURPOSE_NOT_ADMITTED")
+            _require(request.mode == "current" and self.identity_mode == "current" and self.profile == "DERIVED",
+                     "HISTORICAL_BINDING_UNAVAILABLE")
+            _require(type(self.subject_binding) is SubjectIdentityBinding
+                     and type(self.object_binding) is SubjectIdentityBinding
+                     and self.subject_binding.issuer_id != self.object_binding.issuer_id,
+                     "SUPPLIER_IDENTITY_BINDING_REQUIRED")
         _require(candidate is None or self.reference == candidate, "ADMISSION_REFERENCE_MISMATCH")
         for field in (self.generation, self.dataset_id, self.profile):
             _identifier(field)
@@ -295,6 +342,10 @@ class Admission:
             _require(self.publication_precision == "instant" and self.identity_mode == "historical", "HISTORICAL_BINDING_UNAVAILABLE")
         _require(type(self.allowed_fields) is frozenset and self.allowed_fields <= _FIELDS
                  and {"fact_id", "kind", "lifecycle"} <= self.allowed_fields, "FIELD_GRANT_INVALID")
+        if supplier:
+            # The closed supplier metadata binds both parties and product.
+            # A restricted field grant cannot silently expose that linkage.
+            _require(self.allowed_fields == _FIELDS, "SUPPLIER_FIELD_GRANT_REQUIRED")
 
 
 class DisclosureAuthority(Protocol):
@@ -336,10 +387,23 @@ def _subject_binding(fact: dict, admission: Admission) -> None:
         _require(fact["subject_id"] == binding.issuer_id
                  and fact["subject_identity"] == binding.decision_revision,
                  "SUBJECT_IDENTITY_MISMATCH")
+    if fact["schema"] == SUPPLIER_FACT_SCHEMA:
+        binding = admission.object_binding
+        _require(type(binding) is SubjectIdentityBinding and fact["object_id"] == binding.issuer_id
+                 and fact["object_identity"] == binding.decision_revision, "OBJECT_IDENTITY_MISMATCH")
+
+
+def _source_binding(edition: dict, fact: dict, admission: Admission) -> None:
+    if fact["schema"] == SUPPLIER_FACT_SCHEMA:
+        s = edition["sec_source"]
+        _require(admission.subject_binding.evidenced_cik == s["issuer_cik"]
+                 and fact["qualification"]["evidence_revision"] == hashlib.sha256(_canonical(s)).hexdigest()
+                 and fact["span"] == {"start_byte": s["span_start_byte"], "end_byte": s["span_end_byte"],
+                                      "text_sha256": s["span_sha256"]}, "SUPPLIER_EVIDENCE_MISMATCH")
 
 
 def _key(reference: Reference) -> str:
-    kind = "editions" if reference.schema == EDITION_SCHEMA else "facts"
+    kind = "editions" if reference.schema in EDITION_SCHEMAS else "facts"
     return f"company_intelligence/issuer_disclosures/v1/{kind}/{reference.sha256}.json"
 
 
@@ -359,15 +423,15 @@ def _load(store: object, reference: Reference) -> dict:
     raw = _read(store, reference)
     _require(raw is not None, "PRIVATE_OBJECT_ABSENT")
     value = _decode(raw)
-    actual = validate_edition(value) if reference.schema == EDITION_SCHEMA else validate_fact(value)
+    actual = validate_edition(value) if reference.schema in EDITION_SCHEMAS else validate_fact(value)
     _require(actual == reference, "PRIVATE_OBJECT_MISMATCH")
     return value
 
 
 def _slot(value: dict) -> tuple[str, bytes]:
     """The incumbent CAS store binds one value to each native revision."""
-    identity = value["disclosure_id"] if value["schema"] == EDITION_SCHEMA else value["fact_id"]
-    family = "editions" if value["schema"] == EDITION_SCHEMA else "facts"
+    identity = value["disclosure_id"] if value["schema"] in EDITION_SCHEMAS else value["fact_id"]
+    family = "editions" if value["schema"] in EDITION_SCHEMAS else "facts"
     key = hashlib.sha256(identity.encode("utf-8")).hexdigest()
     path = f"company_intelligence/issuer_disclosures/v1/revisions/{family}/{key}/{value['revision']}.json"
     return path, _canonical({"schema": "company_intelligence.disclosure_revision_binding/v1",
@@ -413,7 +477,7 @@ def _chain(store: object, value: dict) -> None:
     while value["previous"] is not None:
         prior = _load(store, _reference(value["previous"], value["schema"]))
         _binding(store, prior)
-        identity = "disclosure_id" if value["schema"] == EDITION_SCHEMA else "fact_id"
+        identity = "disclosure_id" if value["schema"] in EDITION_SCHEMAS else "fact_id"
         _require(prior[identity] == value[identity] and prior["revision"] + 1 == value["revision"], "CORRECTION_CHAIN_MISMATCH")
         _require(_instant(prior["known_at"]) <= _instant(value["known_at"]), "CORRECTION_TIME_REVERSED")
         value = prior
@@ -466,6 +530,7 @@ def publish_disclosure(store: object, authority: DisclosureAuthority, request: R
     _require(_instant(edition["known_at"]) <= _instant(fact["known_at"]), "FACT_PRECEDES_SOURCE")
     admission = preflight(authority, request, fref)
     _subject_binding(fact, admission)
+    _source_binding(edition, fact, admission)
     _require(admission.edition == eref and admission.known_at == fact["known_at"]
              and admission.publication_precision == edition["publication_precision"], "ADMISSION_METADATA_MISMATCH")
     try:
@@ -477,7 +542,7 @@ def publish_disclosure(store: object, authority: DisclosureAuthority, request: R
         body = source_reader.read_source(disclosure_id=edition["disclosure_id"], edition_reference=eref,
                                          source_sha256=edition["source_sha256"],
                                          expected_byte_length=edition["source_byte_length"],
-                                         max_byte_length=MAX_SOURCE_BYTES)
+                                         max_byte_length=MAX_SEC_SOURCE_BYTES if edition["schema"] == SEC_EDITION_SCHEMA else MAX_SOURCE_BYTES)
     except Exception:
         raise DisclosureError("SOURCE_READ_UNAVAILABLE") from None
     _require(type(body) is bytes and len(body) == edition["source_byte_length"]
@@ -521,12 +586,22 @@ def read_disclosure(store: object, authority: DisclosureAuthority, request: Requ
              and fact["subject_id"] == edition["issuer_id"]
              and edition["publication_precision"] == admission.publication_precision
              and _instant(edition["known_at"]) <= _instant(fact["known_at"]), "SOURCE_BINDING_MISMATCH")
+    _source_binding(edition, fact, admission)
     _binding(store, fact); _binding(store, edition)
     _chain(store, fact); _chain(store, edition)
     _require(preflight(authority, request) == admission, "ADMISSION_CHANGED")
-    return {"schema": "company_intelligence.private_product_integration/v2",
+    result = {"schema": "company_intelligence.private_product_integration/v2",
             "fact": {k: fact[k] for k in sorted(admission.allowed_fields)},
             "reference": admission.reference.payload(), "edition": admission.edition.payload(),
             "source_timing": {k: edition[k] for k in
                               ("published_date", "published_at", "publication_precision", "known_at")},
             "generation": admission.generation, "authority": "context_only"}
+    if fact["schema"] == SUPPLIER_FACT_SCHEMA:
+        result["schema"] = "company_intelligence.private_disclosed_supplier/v1"
+        result["source_timing"]["sec_source"] = dict(edition["sec_source"])
+        result["supplier_binding"] = {**fact["qualification"], "span": dict(fact["span"]),
+            "subject_identity": fact["subject_identity"], "object_identity": fact["object_identity"],
+            "adopted_at": fact["known_at"],
+            "current_subject_identity": admission.subject_binding.snapshot_sha256,
+            "current_object_identity": admission.object_binding.snapshot_sha256}
+    return result

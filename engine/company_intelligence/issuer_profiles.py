@@ -1882,21 +1882,57 @@ _SEMICONDUCTOR_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
 }
 
 
-def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
-    """The registered :class:`IssuerIdentity` for one of the four homebuilders,
-    or one of the T05a semiconductor witnesses (TSM/ON).
+# Industrials T02 is a lazy sibling registration. The owner module imports
+# IssuerProfile/_no_guidance from this module, so these wrappers deliberately
+# defer its import until lookup time instead of creating a module-load cycle.
+def _expo_issuer_factory() -> IssuerIdentity:
+    from .industrials_profiles import expo_issuer
+    return expo_issuer()
 
-    ``None`` for AAPL (use :func:`event_workspace.apple_issuer` directly) and
-    for any unknown ticker.  Acquisition needs the CIK and
+
+def _pnr_issuer_factory() -> IssuerIdentity:
+    from .industrials_profiles import pnr_issuer
+    return pnr_issuer()
+
+
+def _expo_profile_factory() -> IssuerProfile:
+    from .industrials_profiles import expo_profile
+    return expo_profile()
+
+
+def _pnr_profile_factory() -> IssuerProfile:
+    from .industrials_profiles import pnr_profile
+    return pnr_profile()
+
+
+_INDUSTRIALS_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
+    "EXPO": _expo_issuer_factory,
+    "PNR": _pnr_issuer_factory,
+}
+
+_INDUSTRIALS_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
+    "EXPO": _expo_profile_factory,
+    "PNR": _pnr_profile_factory,
+}
+
+
+def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
+    """The registered :class:`IssuerIdentity` for a homebuilder, an Industrials
+    issuer, or a T05a semiconductor witness.
+
+    Homebuilders are DHI, PHM, KBH, and TOL. Industrials T02 issuers are EXPO
+    and PNR. Semiconductor witnesses are TSM and ON. ``None`` for AAPL (use :func:`event_workspace.apple_issuer`
+    directly) and for any unknown ticker.  Acquisition needs the CIK and
     ``fiscal_year_end_month`` before an event's fiscal period can be derived
     from a discovered filing's ``report_date``, which is why this is exposed
     separately from :func:`profile_for_ticker`.
     """
     normalized = str(ticker or "").strip().upper()
     factory = _HOMEBUILDER_ISSUER_FACTORIES.get(normalized)
-    if factory is not None:
-        return factory()
-    factory = _SEMICONDUCTOR_ISSUER_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _INDUSTRIALS_ISSUER_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _SEMICONDUCTOR_ISSUER_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1923,9 +1959,10 @@ def profile_for_ticker(
     if normalized == "AAPL":
         return apple_profile()
     factory = _HOMEBUILDER_PROFILE_FACTORIES.get(normalized)
-    if factory is not None:
-        return factory()
-    factory = _SEMICONDUCTOR_PROFILE_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _INDUSTRIALS_PROFILE_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _SEMICONDUCTOR_PROFILE_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 

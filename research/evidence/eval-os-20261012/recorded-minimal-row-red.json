@@ -1,0 +1,11 @@
+{
+  "source_sha256": "26f6f82198cd165220c14be5504e5a0a7f68f4c9b6c641ab7b2734892c40aa31",
+  "witness": {
+    "stock_desk": {
+      "21": {
+        "unknown": 1
+      }
+    }
+  },
+  "accepted_before": true
+}

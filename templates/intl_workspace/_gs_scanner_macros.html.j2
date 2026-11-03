@@ -1,0 +1,159 @@
+{# INTL-GS W2A (IM13) scanner/coverage macros — only compositions the
+   foundation does not provide (gs_kpi integer pairs, KPI abstain cards, the
+   tier slot grammar, table-leg cells, disclosures). Foundation macros are
+   imported and called, never copied. All visible strings pass through
+   t('EN','中文') here; attributes take plain strings only (never t()). #}
+{% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
+{% macro sm_abstain_chip_only(state) -%}
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="{{ state.token }}" title="{{ state.reason[0] }} · {{ state.reason[1] }}">{{ t('Abstain', '弃权') }}</span>
+{%- endmacro %}
+
+{% macro sm_abstain_state(token, reason) -%}
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="{{ token }}">{{ t('Abstain', '弃权') }}</span> <span class="intl-gs__statecell__reason">{{ t(reason[0], reason[1]) }}</span>
+{%- endmacro %}
+
+{% macro sm_leg_abstain(leg) -%}
+{%- set title = leg.copies|map(attribute='0')|join('; ') if leg.copies else 'Abstain' -%}
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="value_unavailable" title="{{ title }}" aria-label="{{ title }}">{{ t('Abstain', '弃权') }}</span>
+{%- if leg.first_reason %} <span class="intl-gs__statecell__reason">{{ t(leg.first_reason[0], leg.first_reason[1]) }}</span>{% endif -%}
+{%- endmacro %}
+
+{% macro sm_leg(leg, dp=2) -%}
+{%- if leg.state == 'qualified' -%}
+<span class="intl-gs__num{% if leg.pct is not none and leg.pct > 0 %} intl-gs__num--up{% elif leg.pct is not none and leg.pct < 0 %} intl-gs__num--down{% endif %}">{{ gs.gs_signed(leg.pct, dp, '%') }}</span>
+{%- else -%}
+{{ sm_leg_abstain(leg) }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro sm_tier(tier) -%}
+{%- if tier and tier.tier_abstain -%}
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="evidence_tier_undefined" title="{{ tier.label[0] }} · {{ tier.label[1] }}">{{ t('Abstain', '弃权') }}</span>
+{%- elif not tier or not tier.rights_class -%}
+<span class="intl-gs__rights-slot" role="img" aria-label="{{ tier.label[0] if tier else 'No rights row' }} · {{ tier.label[1] if tier else '无权利记录' }}" title="{{ tier.label[0] if tier else 'No rights row' }}"></span>
+{%- elif tier.rights_class in ('unresolved', 'internal_only') -%}
+{{ gs.gs_rights_slot() }}<span class="intl-gs__tiernote">{{ t(tier.label[0], tier.label[1]) }}</span>
+{%- else -%}
+<span class="intl-gs__chip intl-gs__chip--tier">{{ t(tier.label[0], tier.label[1]) }}</span>
+{%- endif -%}
+{%- if tier and tier.delay %} <span class="intl-gs__chip intl-gs__chip--muted-dashed">{{ t(tier.delay[0], tier.delay[1]) }}</span>{% endif -%}
+{%- if tier and tier.capability_display and tier.capability_display != 'complete' %} {{ gs.gs_state_chip(tier.capability_display) }}{% endif -%}
+{%- if tier and tier.capability_reason %} <span class="intl-gs__tiernote">{{ t(tier.capability_reason[0], tier.capability_reason[1]) }}</span>{% endif -%}
+{%- endmacro %}
+
+{% macro sm_kpi(card, label) -%}
+<div class="intl-gs__kpi" data-kpi="{{ card.id }}">
+  <div class="intl-gs__kpi__head">
+    <span class="intl-gs__kpi__label">{{ label }}</span>
+    <span class="intl-gs__kpi__tier">{{ sm_tier(card.tier) }}</span>
+  </div>
+  {%- if card.kind == 'breadth' -%}
+  <span class="intl-gs__kpi__value intl-gs__num">{{ card.up }} / {{ card.qualified }} <span class="intl-gs__kpi__unitword">{{ t('markets', '个市场') }}</span></span>
+  <span class="intl-gs__kpi__meta">{{ t('Up in USD', '美元口径上涨') }}{%- if card.clock %} · <time class="intl-gs__num" datetime="{{ card.clock.datetime }}">{{ t(card.clock.en, card.clock.zh) }}</time>{% endif %}</span>
+  {%- elif card.kind == 'move' -%}
+  <span class="intl-gs__kpi__value intl-gs__num{% if card.ink %} intl-gs__num--{{ card.ink }}{% endif %}">{{ gs.gs_signed(card.pct, 2, '%') }} <span class="intl-gs__kpi__market">{{ t(card.market[0], card.market[1]) }}</span></span>
+  <span class="intl-gs__kpi__meta">{{ t('Local', '本地') }} {{ gs.gs_signed(card.local_pct, 2, '%') }} · {{ t('FX', '汇率') }} {{ gs.gs_signed(card.fx_pct, 2, '%') }} · <time class="intl-gs__num" datetime="{{ card.clock.datetime }}">{{ t(card.clock.en, card.clock.zh) }}</time></span>
+  {%- else -%}
+  <span class="intl-gs__kpi__value">{{ gs.gs_state_chip('abstain') }}</span>
+  <span class="intl-gs__kpi__meta">{{ t(card.reason[0], card.reason[1]) }}</span>
+  {%- endif -%}
+</div>
+{%- endmacro %}
+
+{% macro sm_band_card(band) -%}
+<div class="intl-gs__band intl-gs__band--q" data-band="q{{ band.q }}">
+  {{ gs.gs_bandhead(band.title, qnum=band.qnum, sub=band.sub, id=band.id) }}
+  <p class="intl-gs__abstainline">{{ sm_abstain_state(band.token, band.reason) }}</p>
+</div>
+{%- endmacro %}
+
+{% macro sm_market_name(row, view) -%}
+{%- if row.linkable -%}
+<a class="intl-gs__marketlink" data-gs-select-market="{{ row.id }}" href="?view={{ view }}&amp;market={{ row.id }}">{{ t(row.name_en, row.name_zh) }}</a> <a class="intl-gs__chip intl-gs__chip--link" data-gs-open="dossier" href="?view=dossier&amp;market={{ row.id }}">{{ t('Dossier', '档案') }}</a>
+{%- else -%}
+<span class="intl-gs__marketlink">{{ t(row.name_en, row.name_zh) }}</span>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro sm_market_sub(sub) -%}
+{%- if sub -%}
+<div class="intl-gs__mrktsub intl-gs__num" data-role="market-sub"><span class="intl-gs__marketcode">{{ sub.index_id }}</span> · {{ sub.currency }} · {{ t('close', '收盘') }} <time datetime="{{ sub.clock.datetime }}">{{ t(sub.clock.en, sub.clock.zh) }}</time></div>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro sm_minibar(fx_leg) -%}
+{%- if fx_leg and fx_leg.state == 'qualified' and fx_leg.local_pct is not none and fx_leg.additive_fx_contribution_pp is not none -%}
+<span class="intl-gs__minibarwrap" title="Local {{ fx_leg.local_pct }} pp · FX contribution {{ fx_leg.additive_fx_contribution_pp }} pp · interaction {{ fx_leg.interaction_pp }} pp" aria-label="Local {{ fx_leg.local_pct }} percentage points, FX contribution {{ fx_leg.additive_fx_contribution_pp }} percentage points, interaction {{ fx_leg.interaction_pp }} percentage points">{{ gs.gs_minibar(fx_leg.local_pct, fx_leg.additive_fx_contribution_pp) }}</span>
+{%- else -%}
+<span class="intl-gs__num intl-gs__num--muted">—</span>
+{%- endif -%}
+{%- endmacro %}
+
+{# ---- specimen-only row grammar (§10.1 specimen rows; layout acceptance) ---- #}
+{% macro sm_specimen_leg(leg) -%}
+{%- if leg.state == 'abstain' -%}
+<span class="intl-gs__num intl-gs__num--muted">—</span>{% if leg.specimen_reason %} <span class="intl-gs__statecell__reason">{{ t(leg.specimen_reason[0], leg.specimen_reason[1]) }}</span>{% endif %}
+{%- elif leg.state in ('qualified', 'stale') -%}
+<span class="intl-gs__num{% if leg.state == 'stale' %} intl-gs__num--muted{% elif leg.pct > 0 %} intl-gs__num--up{% elif leg.pct < 0 %} intl-gs__num--down{% endif %}">{{ gs.gs_signed(leg.pct, 2, '%') }}</span>
+{%- else -%}
+<span class="intl-gs__num{% if leg.pct > 0 %} intl-gs__num--up{% elif leg.pct < 0 %} intl-gs__num--down{% endif %}">{{ gs.gs_signed(leg.pct, 2, '%') }}</span>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro sm_specimen_tier(tier) -%}
+{%- set kind = {'qualified': 'warn-dashed', 'stale': 'warn', 'abstain': 'muted-dashed', 'Proxy': 'prov'}.get(tier.state, 'tier') -%}
+<span class="intl-gs__chip intl-gs__chip--{{ kind }}">{{ t(tier.label[0], tier.label[1]) }}</span>
+{%- if tier.note %} <span class="intl-gs__chip intl-gs__chip--muted-dashed">{{ t(tier.note[0], tier.note[1]) }}</span>{% endif -%}
+{%- endmacro %}
+
+{% macro sm_specimen_minibar(row) -%}
+{%- if row.local.pct is not none and row.fx.pct is not none -%}
+{{ gs.gs_minibar(row.local.pct, row.fx.pct) }}
+{%- else -%}<span class="intl-gs__num intl-gs__num--muted">—</span>{%- endif -%}
+{%- endmacro %}
+
+{# ---- §10.2/§11.1 mobile market cards (render only at ≤900) ---- #}
+{% macro sm_mcard(row, p) -%}
+<div class="intl-gs__mcard" data-gs-market-row="{{ row.id }}">
+  <div class="intl-gs__mcard__head">{{ sm_market_name(row, 'scanner') }} <code class="intl-gs__marketcode">{{ row.id }}</code> {{ sm_tier(row.tier) }}</div>
+  <div class="intl-gs__mcard__usd"><span class="intl-gs__mcard__label">{{ t('USD %', '美元 %') }}</span> {{ sm_leg(row.usd) }}</div>
+  <div class="intl-gs__mcard__row"><span class="intl-gs__mcard__label">{{ t('Local', '本地') }}</span> {{ sm_leg(row.local) }} <span class="intl-gs__mcard__label">{{ t('FX', '汇率') }}</span> {{ sm_leg(row.fx) }} <span class="intl-gs__mcard__label">{{ t('Common', '共同') }}</span> <span class="intl-gs__statecell__reason">{{ t(p.abstain.common.reason[0], p.abstain.common.reason[1]) }}</span></div>
+  <div class="intl-gs__mcard__row"><span class="intl-gs__mcard__label">{{ t('Divergence', '背离') }}</span> <span class="intl-gs__statecell__reason">{{ t(p.abstain.divergence.reason[0], p.abstain.divergence.reason[1]) }}</span></div>
+  <div class="intl-gs__mcard__row"><span class="intl-gs__mcard__label">{{ t('USD 20D', '美元 20日') }}</span> <span class="intl-gs__statecell__reason">{{ t(p.abstain.series.reason[0], p.abstain.series.reason[1]) }}</span></div>
+  <div class="intl-gs__mcard__row"><span class="intl-gs__mcard__label">{{ t('Stance', '立场') }}</span> <span class="intl-gs__statecell__reason">{{ t(p.abstain.stance.reason[0], p.abstain.stance.reason[1]) }}</span></div>
+</div>
+{%- endmacro %}
+
+{% macro sm_specimen_mcard(row) -%}
+<div class="intl-gs__mcard" data-gs-market-row="{{ row.id }}">
+  <div class="intl-gs__mcard__head"><span class="intl-gs__marketname">{{ t(row.name_en, row.name_zh) }}</span> <code class="intl-gs__marketcode">{{ row.id }}</code> {{ sm_specimen_tier(row.tier) }}</div>
+  <div class="intl-gs__mcard__usd"><span class="intl-gs__mcard__label">{{ t('USD %', '美元 %') }}</span> {{ sm_specimen_leg(row.usd) }}</div>
+  <div class="intl-gs__mcard__row"><span class="intl-gs__mcard__label">{{ t('Local', '本地') }}</span> {{ sm_specimen_leg(row.local) }} <span class="intl-gs__mcard__label">{{ t('FX', '汇率') }}</span> {{ sm_specimen_leg(row.fx) }}</div>
+</div>
+{%- endmacro %}
+
+{# ---- §10.6 coverage matrix row (div grid; glyph precedes the clock) ---- #}
+{% set cap_labels = {'equity_index_fx': ('Equity index + FX', '股指与汇率'), 'constituent_breadth': ('Constituent breadth', '成分股广度'), 'local_rates_credit': ('Local rates + credit', '本地利率与信用'), 'dollar_funding_external': ('Dollar funding + external', '美元融资与外部'), 'macro_policy': ('Macro + policy', '宏观与政策'), 'us_exposure_transmission': ('US exposure + transmission', '美国敞口与传导'), 'history_pit_rights': ('History + point-in-time rights', '历史与时点权利')} %}
+{% macro cov_row(row, p) -%}
+<div class="intl-gs__covrow{% if row.kind == 'aggregate' %} intl-gs__covrow--aggregate{% endif %}" data-gs-cov-row="{{ row.id }}" data-gs-market-row="{{ row.id }}">
+  <span class="intl-gs__covcell intl-gs__covcell--market">
+    {%- if row.linkable -%}
+    <a class="intl-gs__marketlink" data-gs-select-market="{{ row.id }}" href="?view=coverage&amp;market={{ row.id }}">{{ t(row.name_en, row.name_zh) }}</a> <code class="intl-gs__marketcode">{{ row.id }}</code>
+    {%- else -%}
+    {{ t(row.name_en, row.name_zh) }} <code class="intl-gs__marketcode">{{ row.id }}</code>
+    {%- endif -%}
+  </span>
+  <span class="intl-gs__covcell intl-gs__covcell--session" data-abstain="session_calendar_unadmitted" title="{{ p.session_title[0] }} · {{ p.session_title[1] }}">{{ row.session if row.session else '—' }}</span>
+  {%- for column in p.matrix.columns %}{% set cell = row.cells[column.id] %}
+  <span class="intl-gs__covcell" data-col="{{ column.id }}" data-gs-state="{{ cell.state if cell.state else 'aggregate' }}" data-gs-cell-for="{{ row.id }}"{% if cell.title %} title="{{ cell.title[0] }} · {{ cell.title[1] }}"{% elif cell.reason_copy %} title="{{ column.label[0] }} · {{ cell.reason_copy[0] }} · {{ cell.reason_copy[1] }}"{% endif %}>
+    <span class="intl-gs__covcell__label">{{ t(column.label[0], column.label[1]) }}</span>
+    {%- if cell.excluded -%}<span class="intl-gs__num intl-gs__num--muted">—</span>
+    {%- else -%}{{ gs.gs_glyph(cell.state) }}{% if cell.clock %} <time class="intl-gs__num" datetime="{{ cell.clock.datetime }}">{{ t(cell.clock.en, cell.clock.zh) }}</time>{% else %} <span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}
+    {%- endif -%}
+  </span>
+  {%- endfor %}
+  <span class="intl-gs__covcell intl-gs__covcell--use">
+    {%- if row.use -%}{% for cap in row.use %}{{ t(cap_labels[cap][0], cap_labels[cap][1]) }}{% if not loop.last %} · {% endif %}{% endfor %}{% else %}{{ t(row.use_copy[0], row.use_copy[1]) }}{% endif -%}
+  </span>
+</div>
+{%- endmacro %}

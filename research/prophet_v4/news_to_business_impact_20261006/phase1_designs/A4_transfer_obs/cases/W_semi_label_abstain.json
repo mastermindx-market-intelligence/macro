@@ -1,0 +1,39 @@
+{
+  "schema": "transfer_absence.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "unsolicited_instruction_detected": false,
+  "absence_id": "xfer_3216a5cf4ac25f0091271639",
+  "source_fact_id": "fact_21fff50d62560d3c535fac04",
+  "source_company_id": "cik:0000002488",
+  "candidate_target_company_id": "cik:0001045810",
+  "abstention_reason": "gmi_member_of_only",
+  "refused_generator": {
+    "graph": "fundamental_comparability",
+    "generator_kind": "gmi_member_of",
+    "generator_id": "theme_graph:MEMBER_OF:ai_semiconductors",
+    "as_of": "2026-09-28T13:35:00Z",
+    "belief_time": "2026-09-28T13:35:00Z",
+    "hop_count": 1,
+    "path": [
+      "cik:0000002488",
+      "cik:0001045810"
+    ]
+  },
+  "two_party_span": {
+    "schema": "field_absence.v1",
+    "authority": "context_only",
+    "reason": "not_stated",
+    "subject": "two_party_span",
+    "detail": "headline carries a semiconductor label only; no span names both issuers or a shared end market",
+    "missing_fields": []
+  },
+  "observed_at": "2026-09-28T13:35:00Z",
+  "source_available_at": "2026-09-28T13:32:14Z",
+  "display_summary": "AMD and NVIDIA share a semiconductor basket label. No cited span names both parties or a shared end market, so no transfer edge is emitted."
+}

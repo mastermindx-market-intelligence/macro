@@ -828,3 +828,42 @@ def test_enriched_event_carries_no_new_package_or_multi_leg_field():
     enriched = envelope["events"][0]
     fabricated = [key for key in _package_field_names(enriched) if key not in ev]
     assert fabricated == []
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+# 30. F02-Q2 — unknown expiry enriches; DTE factor matches 0DTE on purpose
+# Existing pins of the 0.20 factor (not repeated here):
+#   test_q_score_matches_hand_computation — case B is dte=0, dte_bucket="0d"
+#   test_fresh_near_miss_0dte — FRESH does not fire at dte 0; not the factor
+# Nothing pins dte=None or dte_bucket="unknown".
+# ════════════════════════════════════════════════════════════════════════════════
+
+def test_unknown_expiry_dte_factor_matches_0dte():
+    """An unknown-expiry event enriches, scores like 0DTE, and stays unknown.
+
+    ``compute_q_score`` coerces ``dte: None`` with ``int(event.get("dte", 0) or 0)``,
+    so the factor is the 0DTE factor 0.20. That parity with the Terminal scorer
+    is intentional. The enriched row must still say ``zerodte`` False and
+    ``dte_bucket`` "unknown" — the score does not relabel the event.
+    """
+    unknown = _mk_event(dte=None, dte_bucket="unknown", zerodte=False)
+    zero = _mk_event(dte=0, dte_bucket="0d", zerodte=True)
+    coerced = int(unknown.get("dte", 0) or 0)
+    assert fe._dte_factor(coerced, str(unknown.get("dte_bucket", "") or "")) == 0.20
+    assert fe._dte_factor(coerced, "unknown") == fe._dte_factor(0, "0d")
+
+    q_unknown = fe.compute_q_score(unknown)
+    q_zero = fe.compute_q_score(zero)
+    unknown_dte = next(c for c in q_unknown["components"] if c["key"] == "dteRelevance")
+    zero_dte = next(c for c in q_zero["components"] if c["key"] == "dteRelevance")
+    assert unknown_dte["value"] == zero_dte["value"]
+
+    thresholds = fe.compute_thresholds([unknown])
+    envelope = fe.build_enrich_envelope(
+        [unknown], SESSION_DATE, ASOF, thresholds=thresholds,
+    )
+    assert envelope["n_events"] == 1
+    row = envelope["events"][0]
+    assert row["dte"] is None
+    assert row["dte_bucket"] == "unknown"
+    assert row["zerodte"] is False

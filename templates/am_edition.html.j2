@@ -192,6 +192,9 @@
     {% if payload.prior_close_date %}
     <span class="muted sm">{{ t('prior close:', '前一收盘：') }} {{ payload.prior_close_date }}</span>
     {% endif %}
+    {% if block.source_as_of %}
+    <span class="muted sm">{{ t('reading of', '读数日期') }} {{ block.source_as_of[:10] }}</span>
+    {% endif %}
     {{ help(
       'Price change since the last regular-session close. Sources from the live quote feed at build time.',
       '自最近一次常规交易收盘以来的价格变动。数据来源于构建时的实时行情。'
@@ -207,6 +210,11 @@
       {{ row.symbol }}
       {% if row.change_pct is not none %}
         {{ '+' if row.change_pct > 0 else '' }}{{ "%.2f"|format(row.change_pct) }}%
+      {% elif row.last is not none %}
+        <span class="ctx-label">{{ t('last', '最新') }}</span> {{ row.last }}
+        {% if row.prior_close is not none %}
+        <span class="ctx-label">{{ t('close', '收盘') }}</span> {{ row.prior_close }}
+        {% endif %}
       {% endif %}
     </span>
     {% endfor %}
@@ -272,6 +280,10 @@
 
 {# ── Cross-asset plane ─────────────────────────────────────────────────────── #}
 {% if block.key == 'cross_asset_plane' %}
+{% set _cap_chip = (
+  ('live', t('Current', '当前')) if block.state == 'CURRENT'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知'))
+) %}
 <div class="panel">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <h2 style="margin:0">{{ t('Cross-asset view', '跨资产视角') }}</h2>
@@ -280,7 +292,19 @@
       '神经 Web 全景的多资产共识：各脑叶对方向投票，汇总判断如下。'
     ) }}
   </div>
-  {% if block.state == 'CURRENT' and block.rows %}
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  <div class="mx-block-header">
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _cap_chip[0] }}">{{ _cap_chip[1] }}</span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:10] }}</span>
+    {% endif %}
+  </div>
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and block.state_reason_en %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '',
+                               block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
     {% for row in block.rows %}
     <div class="ctx-strip" style="margin-bottom:6px">
       <span class="ctx-chip regime">
@@ -292,7 +316,7 @@
     <p class="muted sm">{{ t(row.contradictions_en or '',
                              row.contradictions_zh or row.contradictions_en or '') }}</p>
     {% endif %}
-    {% if row.freshness_en or row.freshness_zh %}
+    {% if block.state == 'CURRENT' and (row.freshness_en or row.freshness_zh) %}
     <p class="muted sm">{{ t(row.freshness_en or '',
                              row.freshness_zh or row.freshness_en or '') }}</p>
     {% endif %}
@@ -323,7 +347,7 @@
       </span>
     </span>
     {% if block.source_as_of %}
-    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:16] }}</span>
     {% endif %}
     {{ help(
       'Five cross-asset planes (rates, dollar, credit, commodities, international) read from their own owner artifacts. Stale rows show last-known values with a dated reason.',
@@ -392,7 +416,7 @@
       </span>
     </span>
     {% if block.source_as_of %}
-    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:16] }}</span>
     {% endif %}
     {{ help(
       'Conditions we are watching, in plain words. No direction, no magnitude, no order — only what would change the read.',
@@ -412,6 +436,7 @@
       <span class="mx-rw-meta">
         {% if row.since %}{{ t('since', '起始') }} {{ row.since[:10] }}{% endif %}
         {% if row.as_of %} · {{ t('as of', '数据截至') }} {{ row.as_of[:10] }}{% endif %}
+        {% if row.check_by %} · {{ t('check by', '核查日') }} {{ row.check_by[:10] }}{% endif %}
         {% if block.calibration_note_en %} · {{ t(block.calibration_note_en, block.calibration_note_zh or block.calibration_note_en) }}{% endif %}
       </span>
     </div>
@@ -490,7 +515,7 @@
       </span>
     </span>
     {% if block.source_as_of %}
-    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    <span class="dtp-asof">{{ t('as of', '数据截至') }} {{ block.source_as_of[:16] }}</span>
     {% endif %}
     {{ help(
       'Pages and references that own each plane — the canonical destinations for the dashboards behind the read.',
@@ -529,7 +554,7 @@
 {% if payload.null_count and payload.null_count > 0 %}
 <p class="muted sm" style="text-align:center;margin-top:8px">
   {{ t('Some readings are unavailable —', '部分数据暂时不可用 —') }}
-  {{ payload.null_count }} {{ t('item(s) could not be loaded.', '项无法加载。') }}
+  {{ payload.null_count }} {{ t('reading(s) are unresolved.', '项读数尚未确定。') }}
 </p>
 {% endif %}
 

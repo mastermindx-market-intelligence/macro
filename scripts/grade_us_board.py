@@ -2074,6 +2074,13 @@ def _freeze_graded_prices(fresh: pd.DataFrame, stored: pd.DataFrame,
         for c in cols:
             if c not in out.columns:
                 out[c] = None
+            # pandas 3 raises where it used to upcast when a stored value does not fit
+            # the fresh column. A column no fresh row has a value for comes out of the
+            # grade as all-NaN float64, while the store holds text or None for it, which
+            # killed the grader on 2026-10-05 and left every later board ungraded. The
+            # stored value is the claim being frozen, so the fresh column gives way.
+            if out[c].dtype != prior[c].dtype:
+                out[c] = out[c].astype(object)
             out.loc[common, c] = prior.loc[common, c]
         # ERA MARKER. A row frozen at a value this ladder did not produce must not
         # inherit this ladder's stamp — that would assert a basis nobody verified. The
