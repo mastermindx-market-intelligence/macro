@@ -73,6 +73,26 @@ mergers, return-of-capital specials, stock dividends, scrip options. An action i
 from a price discontinuity is never admitted as a confirmed event (P01.02); the only admitted
 source of events is a qualified original observation with its own receipt (P02).
 
+### D00.D3 clarification (seat ruling 2026-10-17) — ABSENT vs UNRESOLVED
+
+The product `S(t; v) = ∏ r_e` runs over QUALIFIED split events. Two situations were conflated by
+the Q01 oracle's pre-registration and are now distinguished:
+
+- **ABSENT** — the revision set contains no split observation at all for the window. The product is
+  empty and the factor is 1. This is the oracle's pre-registered reading and it stands.
+- **UNRESOLVED** — the revision set CONTAINS an observation whose qualification is `INFERRED`
+  (P01.02: a discontinuity-inferred action is never admitted as a confirmed event). The share basis of
+  the window cannot be asserted either way: applying the ratio would admit an unqualified event,
+  and computing factor 1 would state "no split happened" without a qualified receipt — the false
+  consensus C03 exists to prevent. `split_factor`, `sadj_view` and `total_return_view` therefore
+  refuse with the typed `NOT_CONFIRMED` (D4: context may be shown, computation refuses). RAW is
+  untouched.
+
+Consequence recorded in `Q01_ORACLE.md` (FINDING F1 CLOSED-BY-RULING): the strict-xfail pin
+`test_Q01_06_not_confirmed_pre_registered_oracle_factor` was replaced by
+`test_Q01_06_not_confirmed_is_a_typed_refusal_by_ruling` in PR #9273 (commit b1ca917a0b7d).
+No library change was needed — the SUT already behaved this way at first run.
+
 ## D00.D4 — Compatibility and absence: context is shown, computation refuses
 
 Fallback is **context, never a substitute**. It may be shown when (a) the fallback row has the
@@ -145,3 +165,8 @@ composition of existing readers, not a new store, registry, allocator or evaluat
   price rows (D00.D3 / D00.01), consumer-A venues `[XNYS, XNAS, XASE, ARCX]` and the `TRADJ`-labelled v1
   witness with its readout obligation (D00.D6). Full text: `D00_A1_AMENDMENT.md`;
   decision `DEC:DATAOS-D00-A1-VENUE-CLOCK-UNITS-SCOPE`.
+- **D00.A2 (2026-10-17)** — D00.D3 clarification ABSENT vs UNRESOLVED: an empty split product is
+  factor 1 (ABSENT); a window that CONTAINS an `INFERRED` observation is UNRESOLVED and `split_factor` /
+  `sadj_view` / `total_return_view` refuse with the typed `NOT_CONFIRMED` (D00.D4); RAW untouched.
+  Pinned by `tests/verification/test_oracle_q01.py` (PR #9273, commit b1ca917a0b7d);
+  decision `DEC:DATAOS-D00-D3-ABSENT-VS-UNRESOLVED`.
