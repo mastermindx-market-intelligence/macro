@@ -29,12 +29,13 @@ scored, never an MRS leg.
 from __future__ import annotations
 
 import logging
+from urllib.parse import urlsplit
 
 import numpy as np
 import pandas as pd
 
 from engine.ird_velocity import velocity_fields_bp as _ird_velocity
-from lib import store
+from lib import config, store
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +72,12 @@ ROSTER: list[dict] = [
 SLOPE_INVERTED, SLOPE_FLAT, SLOPE_STEEP = 0.0, 0.25, 1.0
 DIR_BP = 10.0
 STALE_DAYS = {"daily": 12, "monthly": 75}
+
+# Incumbent US frame aliases and their original FRED series identifiers.
+_FRAME_TO_FRED = {
+    "us10y": "DGS10", "us2y": "DGS2", "us3m": "DGS3MO",
+    "us10y_real": "DFII10",
+}
 
 
 # --- small causal helpers -----------------------------------------------------
@@ -140,20 +147,75 @@ def _r(v, nd: int = 2):
     return None if v is None or not np.isfinite(v) else round(float(v), nd)
 
 
+def _observed_at(raw: pd.Series | None, endpoint: pd.Timestamp) -> pd.Timestamp | None:
+    """The source row behind a carried value, excluding later observations."""
+    if raw is None:
+        return None
+    known = raw.dropna()
+    known = known.loc[known.index <= endpoint]
+    return known.index[-1] if not known.empty else None
+
+
+def _source_observation(spec: dict, field: str, raw: pd.Series | None,
+                        aligned: pd.Series | None) -> dict | None:
+    """Display-only receipt from the same series/config already used by the owner."""
+    if aligned is None or aligned.dropna().empty:
+        return None
+    observed = _observed_at(raw, aligned.dropna().index[-1])
+    key = spec.get(field)
+    src = spec["src"]
+    try:
+        cfg = config.load().get("sovereign") or {}
+    except (KeyError, TypeError, ValueError, OSError):
+        cfg = {}
+    source_url = None
+    if src in {"frame", "fred"}:
+        provider_en = provider_zh = "FRED"
+        series_id = _FRAME_TO_FRED.get(key) if src == "frame" else key
+        if series_id:
+            source_url = f"https://fred.stlouisfed.org/series/{series_id}"
+    elif src == "ecb":
+        provider_en, provider_zh = "ECB", "欧洲央行"
+        series_id = (cfg.get("ecb_series") or {}).get(key)
+        if series_id and cfg.get("ecb_url"):
+            source_url = f"{cfg['ecb_url'].rstrip('/')}/{series_id}?format=csvdata"
+    else:
+        provider_en, provider_zh = "Japan MoF", "日本财务省"
+        series_id = (cfg.get("jgb_tenors") or {}).get(key)
+        source_url = cfg.get("mof_url")
+    # Optional link metadata cannot turn an unavailable original source into a link.
+    try:
+        parsed = urlsplit(source_url) if isinstance(source_url, str) else None
+        valid_url = bool(parsed and parsed.scheme == "https" and parsed.hostname
+                         and not parsed.username and not parsed.password)
+    except ValueError:
+        valid_url = False
+    if not valid_url:
+        source_url = None
+    labels = {"y10": ("10y yield", "10年期收益率"),
+              "y2": ("2y yield", "2年期收益率"),
+              "short": ("3m rate", "3个月利率"),
+              "real": ("10y real yield", "10年期实际收益率")}
+    return {"label_en": labels[field][0], "label_zh": labels[field][1],
+            "provider_en": provider_en, "provider_zh": provider_zh,
+            "series_id": series_id, "source_url": source_url,
+            "observed_as_of": observed.date().isoformat() if observed is not None else None}
+
+
 # --- per-country row ----------------------------------------------------------
 def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict | None:
     idx = f.index
-    y10 = _align(_series(spec, "y10", f), idx)
+    raw_y10 = _series(spec, "y10", f)
+    y10 = _align(raw_y10, idx)
     if y10 is None or y10.dropna().empty:
         return None
-    y2 = _align(_series(spec, "y2", f), idx)
-    short = _align(_series(spec, "short", f), idx)
-    real = _align(_series(spec, "real", f), idx)
+    raw_y2, raw_short, raw_real = (_series(spec, field, f) for field in ("y2", "short", "real"))
+    y2, short, real = (_align(raw, idx) for raw in (raw_y2, raw_short, raw_real))
 
     lvl = float(y10.dropna().iloc[-1])
     last_ts = y10.dropna().index[-1]
-    age = (idx[-1] - last_ts).days
-    stale = age > STALE_DAYS.get(spec["cadence"], 30)
+    observed = _observed_at(raw_y10, last_ts)
+    stale = observed is None or (idx[-1] - observed).days > STALE_DAYS.get(spec["cadence"], 30)
 
     # slope: prefer 10y-2y, else 10y-short(3m). carry the label so the UI is honest.
     slope, slope_basis = None, None
@@ -162,6 +224,15 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
     elif short is not None and not short.dropna().empty:
         slope, slope_basis = lvl - float(short.dropna().iloc[-1]), "10y-3m"
 
+    used = [("y10", raw_y10, y10)]
+    if slope_basis == "2s10s":
+        used.append(("y2", raw_y2, y2))
+    elif slope_basis == "10y-3m":
+        used.append(("short", raw_short, short))
+    if real is not None and not real.dropna().empty:
+        used.append(("real", raw_real, real))
+    sources = [_source_observation(spec, field, raw, aligned) for field, raw, aligned in used]
+
     chg = _chg_bp(y10)
     diff = (lvl - us_y10_last) * 100.0 if us_y10_last is not None else None
     # IRD-R13 velocity fields (shared ird_velocity grammar)
@@ -169,6 +240,8 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
     return {
         "code": spec["code"], "en": spec["en"], "zh": spec["zh"], "ccy": spec["ccy"],
         "cadence": spec["cadence"], "stale": stale, "gdp_w": spec["gdp_w"],
+        "observed_as_of": observed.date().isoformat() if observed is not None else None,
+        "sources": [source for source in sources if source is not None],
         "y10": _r(lvl), "y2": _r(float(y2.dropna().iloc[-1])) if y2 is not None and not y2.dropna().empty else None,
         "slope": _r(slope), "slope_basis": slope_basis, "slope_state": _slope_state(slope),
         "chg_63d_bp": _r(chg, 0), "direction": _direction(chg),
@@ -340,11 +413,7 @@ def _load_series_standalone(spec: dict, key_field: str) -> pd.Series | None:
     src = spec["src"]
     if src == "frame":
         # US: map column aliases to FRED series ids
-        _frame_to_fred = {
-            "us10y": "DGS10", "us2y": "DGS2", "us3m": "DGS3MO",
-            "us10y_real": "DFII10",
-        }
-        fred_id = _frame_to_fred.get(key)
+        fred_id = _FRAME_TO_FRED.get(key)
         if not fred_id:
             return None
         df = store.read("fred", fred_id)

@@ -95,6 +95,7 @@ html[data-lang="zh"] .l-en{display:none}
 html[data-lang="zh"] body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Inter,sans-serif}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--ink-link, var(--blue));text-decoration:none}
+.mx-disc a{color:var(--ink);text-decoration:underline}
 .wrap{max-width:1200px;margin:0 auto;padding:0 22px 72px;position:relative;z-index:1}
 /* ambient aurora backdrop — quiet, tuned to the bond accent (indigo/teal), never loud */
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -116,8 +117,6 @@ html[data-theme="dark"] body::before{
 /* section headers — quiet kicker + colored rail + hairline fading to the edge --- */
 .sec-head{display:flex;align-items:center;gap:12px;margin:44px 0 16px;padding:0;
   font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.11em}
-.sec-head::before{content:"";flex:none;width:3px;height:16px;border-radius:2px;
-  background:var(--accent-grad)}
 .sec-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--grid),transparent)}
 
 /* cards — glass, floating, gentle hover lift ------------------------------ */
@@ -721,10 +720,10 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
       {% for r in intl.countries %}
       {% set ss = SST.get(r.slope_state, (C.muted, r.slope_state or '—', r.slope_state or '—')) %}
       <tr>
-        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }}{% if r.stale %}<span class="stale-tag">{{ t('lag','滞后') }}{{ lens('OECD monthly series — lags ~1 month', 'OECD月度序列 · 滞后约1个月') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
+        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.stale %}<span class="stale-tag">{{ t('stale','过期') }}{{ lens('Observation older than its source freshness window', '观测数据已超过该来源的时效窗口') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
         <td><b>{{ '%.2f'|format(r.y10) }}%</b></td>
         <td>{{ ('%.2f'|format(r.real_10y) ~ '%') if r.real_10y is not none else '—' }}</td>
-        <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}</td>
+        <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}{% if r.slope is not none %}pp <span class="faint">{{ t('10y−2y', '10年−2年') if r.slope_basis == '2s10s' else t('10y−3m', '10年−3月') if r.slope_basis == '10y-3m' else '' }}</span>{% endif %}</td>
         <td style="color:{{ DIR.get(r.direction, C.muted) }}">{{ ('%+.0f'|format(r.chg_63d_bp) ~ 'bp') if r.chg_63d_bp is not none else '—' }}</td>
         <td>{{ ('%+.1f'|format(r.z1y)) if r.z1y is not none else '—' }}</td>
         <td style="color:{{ C.green if (r.diff_vs_us_bp or 0) < 0 else C.text }}">{{ ('%+.0f'|format(r.diff_vs_us_bp)) if r.diff_vs_us_bp is not none else '—' }}</td>
@@ -1307,10 +1306,10 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% for r in intl.countries %}
       {% set ss = SST.get(r.slope_state, (C.muted, r.slope_state or '—', r.slope_state or '—')) %}
       <tr>
-        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }}{% if r.stale %}<span class="stale-tag" data-tip-en="OECD monthly series — lags ~1 month" data-tip-zh="OECD月度序列 · 滞后约1个月">{{ t('lag','滞后') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
+        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }} <span class="faint">{{ r.ccy }}</span>{% if r.stale %}<span class="stale-tag" data-tip-en="Observation older than its source freshness window" data-tip-zh="观测数据已超过该来源的时效窗口">{{ t('stale','过期') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
         <td><b>{{ '%.2f'|format(r.y10) }}%</b></td>
         <td>{{ ('%.2f'|format(r.real_10y) ~ '%') if r.real_10y is not none else '—' }}</td>
-        <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}</td>
+        <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}{% if r.slope is not none %}pp <span class="faint">{{ t('10y−2y', '10年−2年') if r.slope_basis == '2s10s' else t('10y−3m', '10年−3月') if r.slope_basis == '10y-3m' else '' }}</span>{% endif %}</td>
         <td style="color:{{ DIR.get(r.direction, C.muted) }}">{{ ('%+.0f'|format(r.chg_63d_bp) ~ 'bp') if r.chg_63d_bp is not none else '—' }}</td>
         <td>{{ ('%+.1f'|format(r.z1y)) if r.z1y is not none else '—' }}</td>
         <td style="color:{{ C.green if (r.diff_vs_us_bp or 0) < 0 else C.text }}">{{ ('%+.0f'|format(r.diff_vs_us_bp)) if r.diff_vs_us_bp is not none else '—' }}</td>
@@ -1330,7 +1329,26 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     </div></div>
     {% if charts.intl_yields %}<div style="margin-top:14px">{{ charts.intl_yields | safe }}</div>{% endif %}
     <div class="sub faint" style="margin-top:8px">{{ t('Level = 10y yield. Real = 10y minus market-priced inflation. Slope = curve shape. 3m Δ = 63-day move. vs 1-yr normal = standard deviations from its own past-year average. vs US = 10y rate gap. Monthly OECD series are tagged.', '水平=10年收益率；实际=10年减去市场定价通胀；斜率=曲线形态；3月变化=63日变动；对比一年常态=较自身过去一年均值的标准差；对美=10年利差。OECD月度序列已标注。') }}</div>
+    <details class="mx-disc">
+      <summary>{{ t('Sources and observation dates — inspect the readings', '来源与观测日期 — 核对读数') }}</summary>
+      <p class="note">{{ t('These are source observations, not the analysis or page build date. Carried values keep their original observation date.', '以下为来源的观测日期，并非分析或页面构建日期。延用读数保留其原始观测日期。') }}</p>
+      {% for r in intl.countries %}
+      <div class="note">
+        <b>{{ t(r.en, r.zh) }} · {{ r.ccy }}</b>
+        <span class="faint"> · {{ t('Monthly', '月度') if r.cadence == 'monthly' else t('Daily', '日度') }}</span>
+        {% if r.sources|default([]) %}
+        <ul>
+          {% for source in r.sources %}
+          <li>{{ t(source.label_en, source.label_zh) }} · {% if source.source_url %}<a href="{{ source.source_url }}" target="_blank" rel="noopener noreferrer">{{ t(source.provider_en, source.provider_zh) }}</a>{% else %}{{ t('Source link unavailable', '来源链接不可用') }}{% endif %} · {{ t('Observed', '观测日期') }} {{ source.observed_as_of or t('Observation date unavailable', '观测日期未知') }}</li>
+          {% endfor %}
+        </ul>
+        {% else %}<p>{{ t('Source observations unavailable.', '来源观测信息不可用。') }}</p>{% endif %}
+      </div>
+      {% endfor %}
+    </details>
   </div>
+  {% else %}
+  <p class="note">{{ t('Sovereign observations are unavailable. No yield or curve assessment is shown.', '主权债券观测数据不可用，暂不展示收益率或曲线评估。') }}</p>
   {% endif %}
 
   <div class="card">

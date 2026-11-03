@@ -1,0 +1,379 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-11-03T17:19:12.785015+00:00",
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      "sovereign_sources_expanded"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "target": {
+    "kind": "base_url",
+    "base_url": "https://bonds-fixture.invalid",
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "No hosted origin: route.fulfill serves exact native snapshot/authored fragment/CSS; source SHA256 and frozen base below",
+    "source_base": "ed9fb81da853429ce87495d6c012467ebf057548",
+    "source_sha256": {
+      "engine/intl_bonds.py": "1d6289649850b2809cf6ac5fa1ece9f0760da26855f3d00e26c93dd5bb8e36ef",
+      "templates/bonds.html.j2": "5040060f619226e1d3328b8b33a0e6c82ef87a6123b68d7fcf2d946df145e379",
+      "tests/test_bonds_glance_copy.py": "ff7f9c2c76b0a89ec88b03f1cff5d171622227f0c07f60472ce52f7aa740da15"
+    }
+  },
+  "tool": {
+    "module_ref": "research/market_os/evidence/bonds-sovereign-depth-20261103/capture_depth.py",
+    "module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b",
+    "version": "1.0.0"
+  },
+  "selection": {
+    "mode": "explicit_routes",
+    "explicit_routes": [
+      "/bonds.html#global-detail"
+    ],
+    "selected": 1
+  },
+  "timing_basis": "not_measured",
+  "honesty": {
+    "scope": "Controlled offline native owner + actual authored Bonds fragments, incumbent page/shared CSS and retained Inter fonts; normal keyboard hash drill, native source disclosure, in-document history return only. No hosted Shell/bridge, auth, chart, remote source response or served proof.",
+    "transport": "All document requests fulfilled locally, all other requests intercepted; no external transport",
+    "access": "ephemeral anonymous local fixture; no credentials/account mutation",
+    "gauge": "Prior16 accepted gauge cells reused; not repeated or reclassified as this depth proof",
+    "fonts": "Exact6 tracked Inter files; hashes in source evidence. Requests fulfilled locally, font-ready before capture."
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "page_id": "macro:bonds",
+      "registry_route": "/bonds.html",
+      "route": "/bonds.html#global-detail",
+      "route_kind": "page",
+      "console_errors": [],
+      "failed_responses": [],
+      "metrics": {
+        "horizontal_overflow": false,
+        "console_error_count": 0,
+        "scope": "changed sovereign table and source disclosure only"
+      },
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 274069,
+          "captured": true,
+          "file": "evidence/1440-dark-en-row.png",
+          "force_state": null,
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "ad4a2cd51a0fdadaeac91abd4b38d949f189d008edad9a49150ed2e6ac81dd85",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 191680,
+          "captured": true,
+          "file": "evidence/1440-dark-en-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "289c5c7fe6ca0d37bfe99e2d3e461975aeb6ca14fad21df4017c69113d9c7122",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 290833,
+          "captured": true,
+          "file": "evidence/1440-dark-zh-row.png",
+          "force_state": null,
+          "height": 900,
+          "width": 1440,
+          "locale": "zh",
+          "theme": "dark",
+          "sha256": "2d22701f468d883004593dcca8215b6045cc5dafeb7e0e18734e9b91659ebf38",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 203952,
+          "captured": true,
+          "file": "evidence/1440-dark-zh-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 900,
+          "width": 1440,
+          "locale": "zh",
+          "theme": "dark",
+          "sha256": "5756b7b23cbb25a710c8c69966997dc2a158921f3a8277fd6666edcc2d8a6fe4",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 262455,
+          "captured": true,
+          "file": "evidence/1440-light-en-row.png",
+          "force_state": null,
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "light",
+          "sha256": "54a4405d0fdc6742513affab43b1a1ea671b4307af6105f468aecb3c689ffed6",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 183878,
+          "captured": true,
+          "file": "evidence/1440-light-en-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 900,
+          "width": 1440,
+          "locale": "en",
+          "theme": "light",
+          "sha256": "dd54ab0382872f2d4248769d23a464bc22e133aabb9878c9d1703f611685dd1a",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 276531,
+          "captured": true,
+          "file": "evidence/1440-light-zh-row.png",
+          "force_state": null,
+          "height": 900,
+          "width": 1440,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "3df7ad7995968f180997da1df4208da1e1e6d0d302d80479d3c96c9b76c802a8",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 198592,
+          "captured": true,
+          "file": "evidence/1440-light-zh-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 900,
+          "width": 1440,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "8ca41db6de6095128e4eb2f28d7cfccd52fc1c476079622520990e0eae15ebc2",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 138743,
+          "captured": true,
+          "file": "evidence/390-dark-en-row.png",
+          "force_state": null,
+          "height": 844,
+          "width": 390,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "1b0e52a0aac0d3ec843daae527f85f54c2808146b77929986a45a510ac86b1b2",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 109220,
+          "captured": true,
+          "file": "evidence/390-dark-en-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 844,
+          "width": 390,
+          "locale": "en",
+          "theme": "dark",
+          "sha256": "707b2484d31b41ff3fc54775c94577f376901a6e9fbb1fe2fec44c867d5055fc",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 152535,
+          "captured": true,
+          "file": "evidence/390-dark-zh-row.png",
+          "force_state": null,
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "dark",
+          "sha256": "d500f1f20f5828af06152c4b2603238557107cc6380de194a2f4a9c21a7dd1fb",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 113534,
+          "captured": true,
+          "file": "evidence/390-dark-zh-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "dark",
+          "sha256": "3c61bf75735d1f9bf9682c82e861309956af0f8d6dced63566306e2ff194f6a3",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 135439,
+          "captured": true,
+          "file": "evidence/390-light-en-row.png",
+          "force_state": null,
+          "height": 844,
+          "width": 390,
+          "locale": "en",
+          "theme": "light",
+          "sha256": "c63a98c0a89e2091aee73bbbc8ce251443d7589ae4dfb21cfbe9e375e801e267",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 107284,
+          "captured": true,
+          "file": "evidence/390-light-en-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 844,
+          "width": 390,
+          "locale": "en",
+          "theme": "light",
+          "sha256": "fd5c83655883486d6edc6554f3d7194d4665e1ac95eb8ce5161479ed4d9da629",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 149507,
+          "captured": true,
+          "file": "evidence/390-light-zh-row.png",
+          "force_state": null,
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "9ee22d99c833f34ee770bed86995f1ba0123b5ba21eee21cdd2c23cb140704c7",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 112289,
+          "captured": true,
+          "file": "evidence/390-light-zh-sources.png",
+          "force_state": "sovereign_sources_expanded",
+          "height": 844,
+          "width": 390,
+          "locale": "zh",
+          "theme": "light",
+          "sha256": "c82c7c7dc298959e3e750380366d9c8c33060c45f34b8a1c91eafcaa1d1719c8",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "capture_tool_module_sha256": "b4a493e0e249638217c3f2c433aee80e1e5718cb6fa845c8ba2adf7e76eb355b"
+        }
+      ],
+      "gaps": [
+        {
+          "dimension": "runtime",
+          "captured": false,
+          "reason": "Full SharedShell parent/bridge/auth/hosted source request and served publication outside this offline fragment proof"
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "pages": 1,
+    "states": 16
+  }
+}

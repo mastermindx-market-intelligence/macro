@@ -230,3 +230,149 @@ def test_committed_gauge_matches_current_renderer():
     env = Environment(undefined=StrictUndefined, autoescape=True)
     expected = str(env.from_string(_gauge_macro_src()).module.gauge(score, color))
     assert figures == re.findall(r'<figure class="bhg l-(?:en|zh)".*?</figure>', expected, re.S)
+
+
+# P12.T2.S1: observation/source clocks survive calendar alignment and rendering.
+def _sovereign_row(monkeypatch, observed="2026-09-30", value=3.057, cadence="daily", extra=None):
+    import pandas as pd
+    from engine import intl_bonds as ib
+
+    spec = next(s for s in ib.ROSTER if s["code"] == ("GB" if cadence == "monthly" else "JP"))
+    series = {"y10": pd.Series([value], index=pd.to_datetime([observed]))}
+    series.update(extra or {})
+    monkeypatch.setattr(ib, "_series", lambda spec, field, frame: series.get(field))
+    frame = pd.DataFrame(index=pd.bdate_range("2026-06-01", "2026-10-30"))
+    return ib._country_row(spec, frame, 4.94)
+
+
+def test_sovereign_source_age_uses_unfilled_owner_dates(monkeypatch):
+    # Existing daily12/monthly75-day policy; a carried point is not a new observation.
+    cases = [("daily", "2026-10-30", False), ("daily", "2026-10-19", False),
+             ("daily", "2026-09-30", True), ("monthly", "2026-09-01", False),
+             ("monthly", "2026-08-16", False), ("monthly", "2026-08-15", True)]
+    for cadence, observed, stale in cases:
+        row = _sovereign_row(monkeypatch, observed, cadence=cadence)
+        assert row["observed_as_of"] == observed
+        assert row["sources"][0]["observed_as_of"] == observed
+        assert row["stale"] is stale
+        assert row["y10"] == 3.06
+
+
+def test_sovereign_future_owner_point_cannot_date_the_selected_value(monkeypatch):
+    import pandas as pd
+    from engine import intl_bonds as ib
+
+    raw = pd.Series([3.057, 9.9], index=pd.to_datetime(["2026-09-30", "2026-11-04"]))
+    monkeypatch.setattr(ib, "_series", lambda spec, field, frame: raw if field == "y10" else None)
+    frame = pd.DataFrame(index=pd.bdate_range("2026-09-01", "2026-10-30"))
+    row = ib._country_row(next(s for s in ib.ROSTER if s["code"] == "JP"), frame, 4.94)
+    assert row["observed_as_of"] == "2026-09-30" and row["y10"] == 3.06
+    assert row["sources"][0]["observed_as_of"] == "2026-09-30"
+    assert row["stale"] is True
+
+
+def test_sovereign_missing_and_genuine_zero_are_distinct(monkeypatch):
+    row = _sovereign_row(monkeypatch, value=0.0)
+    assert row["y10"] == 0.0 and row["observed_as_of"] == "2026-09-30"
+    assert row["stale"] is True
+    assert _sovereign_row(monkeypatch, value=float("nan")) is None
+
+
+def test_sovereign_comparison_keeps_its_own_observation_and_basis(monkeypatch):
+    import pandas as pd
+
+    y2 = pd.Series([2.4], index=pd.to_datetime(["2026-10-15"]))
+    row = _sovereign_row(monkeypatch, extra={"y2": y2})
+    assert row["slope_basis"] == "2s10s" and row["slope"] == 0.66
+    assert [s["observed_as_of"] for s in row["sources"]] == ["2026-09-30", "2026-10-15"]
+    assert [s["series_id"] for s in row["sources"]] == ["10年", "2年"]
+    assert all(s["source_url"] == "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv"
+               for s in row["sources"])
+
+
+def test_sovereign_short_rate_fallback_keeps_its_actual_basis(monkeypatch):
+    import pandas as pd
+
+    short = pd.Series([4.0], index=pd.to_datetime(["2026-10-01"]))
+    row = _sovereign_row(monkeypatch, cadence="monthly", extra={"short": short})
+    assert row["slope_basis"] == "10y-3m" and row["slope"] == -0.94
+    assert row["sources"][1]["source_url"].endswith("/IR3TIB01GBM156N")
+    assert row["sources"][1]["observed_as_of"] == "2026-10-01"
+
+
+def test_sovereign_missing_source_link_cannot_fabricate_one(monkeypatch):
+    from engine import intl_bonds as ib
+
+    monkeypatch.setattr(ib.config, "load", lambda: {"sovereign": {"mof_url": "javascript:bad"}})
+    row = _sovereign_row(monkeypatch)
+    assert row["sources"][0]["source_url"] is None
+    assert row["sources"][0]["observed_as_of"] == "2026-09-30"
+
+
+def test_sovereign_us_source_uses_the_existing_fred_alias(monkeypatch):
+    import pandas as pd
+    from engine import intl_bonds as ib
+
+    raw = pd.Series([4.94], index=pd.to_datetime(["2026-10-30"]))
+    monkeypatch.setattr(ib, "_series", lambda spec, field, frame: raw if field == "y10" else None)
+    frame = pd.DataFrame(index=pd.to_datetime(["2026-10-30"]))
+    row = ib._country_row(next(s for s in ib.ROSTER if s["code"] == "US"), frame, 4.94)
+    assert row["sources"][0]["source_url"] == "https://fred.stlouisfed.org/series/DGS10"
+    assert row["observed_as_of"] == "2026-10-30" and row["stale"] is False
+
+
+def _render_sovereign_fragment(intl):
+    from jinja2 import Environment, StrictUndefined
+    from scripts.build_bonds import C
+
+    src = _src()
+    macros = src[:src.index("<!DOCTYPE html>")]
+    start = src.index('  <section class="landing" id="global-detail"')
+    end = src.index("  <div class=\"card\">\n    <h2>{{ t('Euro-area", start)
+    return Environment(autoescape=True, undefined=StrictUndefined).from_string(
+        macros + src[start:end] + "</section>"
+    ).render(C=C, intl=intl, charts={"intl_yields": ""})
+
+
+def test_sovereign_render_exposes_source_date_currency_and_curve_basis(monkeypatch):
+    import pandas as pd
+
+    row = _sovereign_row(monkeypatch, extra={"y2": pd.Series([2.4], index=pd.to_datetime(["2026-10-15"]))})
+    intl = {"global": {"direction": "stable", "avg_10y": row["y10"], "avg_10y_chg_63d_bp": 0},
+            "us_vs_world": {"us_premium_bp": None}, "countries": [row], "em": None,
+            "verdict_en": "Retained fixture", "verdict_zh": "留存测试"}
+    html = _render_sovereign_fragment(intl)
+    assert 'details class="mx-disc"' in html and "Sources and observation dates" in html
+    assert "JPY" in html and "10y−2y" in html and "10年−2年" in html
+    assert "2026-09-30" in html and "2026-10-15" in html and "2026-10-30" not in html
+    assert "Japan MoF" in html and "日本财务省" in html
+    assert 'target="_blank" rel="noopener noreferrer"' in html
+    row["sources"][0]["observed_as_of"] = None
+    assert "Observation date unavailable" in _render_sovereign_fragment(intl)
+
+
+def test_sovereign_render_missing_owner_does_not_show_a_zero_assessment():
+    html = _render_sovereign_fragment(None)
+    assert "Sovereign observations are unavailable" in html and "主权债券观测数据不可用" in html
+    assert "0.00%" not in html and 'class="sc-tbl"' not in html
+
+
+
+def test_sovereign_summary_does_not_relabel_daily_japan_as_oecd_monthly(monkeypatch):
+    from jinja2 import Environment, StrictUndefined
+    from scripts.build_bonds import C
+
+    row = _sovereign_row(monkeypatch)
+    src = _src()
+    start = src.index('  <section class="band" id="world"')
+    end = src.index("  </section>", start) + len("  </section>")
+    intl = {"global": {"direction": "stable", "avg_10y": row["y10"], "avg_10y_chg_63d_bp": 0},
+            "us_vs_world": {"us_premium_bp": None, "premium_direction": None}, "countries": [row], "em": None}
+    html = Environment(autoescape=True, undefined=StrictUndefined).from_string(
+        src[:src.index("<!DOCTYPE html>")] + src[start:end]
+    ).render(C=C, intl=intl, xasset_vm=None)
+    assert "Japan" in html and "stale" in html and "过期" in html
+    assert "Observation older than its source freshness window" in html
+    import re
+    country_cell = re.search(r'<td class="cty">.*?</td>', html, re.S).group(0)
+    assert "OECD monthly series" not in country_cell and "OECD月度序列" not in country_cell
