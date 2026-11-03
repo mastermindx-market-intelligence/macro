@@ -288,6 +288,9 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
     ``fatal: bad revision`` with exit 128, which a bare returncode assertion
     reports as a template regression that did not happen. Resolve the base
     first (see ``_integration_base``) and skip honestly when it is absent.
+    Once the contribution is integrated into that base (a main push, or a PR
+    that leaves this template alone), the diff is empty; the claim then applies
+    only if the base itself lacks the include, so skip when the base carries it.
     """
     base = _integration_base()
     if base is None:
@@ -307,33 +310,31 @@ def test_basket_detail_diff_is_exactly_one_inserted_line():
     )
     line = result.stdout.strip()
     if not line:
-        # The branch under test did not touch the template, so the include
-        # must already be integrated in the base (any branch that merged a
-        # main carrying #7870 lands here, as does main itself). The -0 claim
-        # is then vacuous; what remains checkable is that the base carries
-        # exactly one aggregator include between the back link and #app.
         shown = subprocess.run(
             ["git", "show", f"{base}:templates/basket_detail.html.j2"],
             capture_output=True, text=True, cwd=str(REPO_ROOT),
         )
         assert shown.returncode == 0, (
-            f"git show failed:\nSTDOUT={shown.stdout}\nSTDERR={shown.stderr}"
+            f"git show {base}:templates/basket_detail.html.j2 failed:\n"
+            f"STDERR={shown.stderr}"
         )
-        base_targets = [
+        # The same include the sibling L1 test pins: its regex, its target filter.
+        in_base = [
             m.group(1) for m in _INCLUDE_RE.finditer(shown.stdout)
             if "basket_intelligence_mounts" in m.group(1)
         ]
-        assert len(base_targets) == 1, (
-            f"basket_detail.html.j2 is unchanged vs the integration base {base} "
-            f"and that base carries {len(base_targets)} aggregator include(s), "
-            f"not 1: the include this suite exists to pin is absent"
-        )
-        back, inc, app = _back_app_marker_lines(shown.stdout)
-        assert 0 < back < inc < app, (
-            f"base include must sit AFTER back link and BEFORE #app; got "
-            f"back={back}, include={inc}, #app={app}"
-        )
-        return
+        if len(in_base) == 1:
+            pytest.skip(
+                f"basket_detail.html.j2 is unchanged vs the integration base "
+                f"{base[:12]} because this branch's aggregator include is already "
+                "integrated into it; the +1/-0 claim applies only before "
+                "integration, and the content half is pinned by "
+                "test_common_template_has_exactly_one_aggregator_include_outside_app"
+            )
+    assert line, (
+        f"basket_detail.html.j2 is unchanged vs the integration base {base}: "
+        f"the aggregator include this suite exists to pin is absent from the diff"
+    )
     parts = line.split("\t")
     assert len(parts) >= 2, f"unexpected numstat output: {line!r}"
     added, deleted = int(parts[0]), int(parts[1])
