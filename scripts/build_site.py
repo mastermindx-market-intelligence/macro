@@ -4680,10 +4680,25 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
     # DISPLAY-ONLY — zero effect on selection, rank, or gating. Missing sector or
     # sector_central data -> field absent, chip silently omitted. Ordering: sector_central.json
     # is written by build_sector_rotation before build_site.main() runs (nightly DAG order).
+    # A second attach must not retain a receipt from a missing/replaced sidecar.
+    for _card in (doc.get("buy") or []):
+        if isinstance(_card, dict):
+            _card.pop("sector_stance_source", None)
     _sc_path = site / "sectordata" / "sector_central.json"
     if _sc_path.exists():
         try:
             _sc_doc = json.loads(_sc_path.read_text())
+            # Keep the sidecar's own snapshot clock. It is not the stock signal's
+            # date or an admission/freshness decision; never substitute build time.
+            _sc_stamp = _sc_doc.get("as_of")
+            _sc_date = None
+            if isinstance(_sc_stamp, str) and len(_sc_stamp) == 10:
+                try:
+                    _parsed = datetime.strptime(_sc_stamp, "%Y-%m-%d").date().isoformat()
+                    if _parsed == _sc_stamp:
+                        _sc_date = _parsed
+                except ValueError:
+                    pass
             # Build ETF-ticker -> (label_en, label_zh) from the sectors list
             _sc_by_etf: dict[str, tuple[str, str]] = {}
             for _sec in (_sc_doc.get("sectors") or []):
@@ -4704,6 +4719,11 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                     _lbl_en, _lbl_zh = _sc_by_etf[_etf]
                     _card["sector_stance"] = _lbl_en
                     _card["sector_stance_zh"] = _lbl_zh
+                    _card["sector_stance_source"] = {
+                        "schema": "sector_stance_source/v1",
+                        "etf": _etf,
+                        "snapshot_as_of": _sc_date,
+                    }
         except Exception as _rlt6e:  # noqa: BLE001 — additive, never fatal
             log.warning("RLT-R6 sector-stance enrich failed (%s)", _rlt6e)
     # OEU M-PRO: display-tier options context → up to two extra ⚠ popover rows per
@@ -8119,22 +8139,13 @@ def main() -> int:
         log.error("experiments registry build failed: %s", e)
 
     # --- history page: the longer-window charts + lifespan base rates ----------
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(hist["quad"])
-    lifespan_rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        lifespan_rows.append({"name": QUAD_SHORT[q],
-                              "n": trans["n_by_quad"].get(q, "—"),
-                              "median": trans["median_days"].get(q, "—"),
-                              "next": next_quads_line(nxt),
-                              "next_zh": next_quads_line(nxt, zh=True)})
+    from engine.playbook import finished_lifespan_rows
     hist_html = env.get_template("history.html.j2").render(
         latest=latest,
         generated_utc=generated,
         chart_regime=chart_regime(f, hist, days=1095),
         chart_axes=chart_axes(hist, days=1095),
-        lifespan_rows=lifespan_rows,
+        lifespan_rows=finished_lifespan_rows(hist["quad"]),
     )
     out2 = site / "history.html"
     write_page(out2, hist_html)
@@ -8605,8 +8616,20 @@ def main() -> int:
         from scripts.build_capital_structure_page import render as _render_capital_structure
         _cs_page = _render_capital_structure(config.ROOT)
         log.info("wrote %s", _cs_page)
-    except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
-        log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+    except Exception as _cs_e:  # noqa: BLE001 — annotate loudly; never break main build
+        # A withheld page keeps the last build's bytes, whose "in N days" copy is
+        # wrong a day later. A log WARNING let that ride a green run from 10-24 to
+        # 11-02. Bare print, NOT a logger call: GitHub only parses a workflow
+        # command when "::" starts the line (see the sitemap note below).
+        _cs_msg = ("capital_structure.html NOT rebuilt, stale page retained — "
+                   f"{type(_cs_e).__name__}: {(str(_cs_e).splitlines() or [''])[0]}")
+        print(f"::error title=capital_structure::{_cs_msg}", flush=True)
+        try:
+            if os.environ.get("GITHUB_STEP_SUMMARY"):
+                with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as _cs_fh:
+                    _cs_fh.write(f"### ❌ {_cs_msg}\n")
+        except OSError:
+            pass
 
     # Finance Intelligence dossier — render only the registered preview shell.
     # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships

@@ -1,45 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-02T06:01:39.762036+00:00",
+  "as_of": "2026-11-03T15:07:48.696833+00:00",
   "posts_seen": 7,
-  "seen_total": 308,
-  "evaluated": 6,
-  "activated": 1,
+  "seen_total": 313,
+  "evaluated": 1,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-01-presidential-message-on-all-saints-day-3b81",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-31-presidential-message-on-reformation-day",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-30-what-they-are-saying-president-trump-puts-americas-fishermen-first-and-secures-a",
-      "importance": 45,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-29-president-trump-unleashes-the-american-economy-gdp-surges-as-investment-hits-mul",
-      "importance": 25,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
-      "importance": 72,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-29-president-trump-put-money-back-in-your-pockets-radical-democrats-want-it-back-an",
-      "importance": 8,
+      "id": "wh-2026-11-03-first-lady-melania-trump-to-convene-russian-and-ukrainian-representatives-at-the",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
