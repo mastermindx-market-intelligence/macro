@@ -86,9 +86,9 @@ Requirement, owning task and planned exact test are verbatim from the plan.
 | IND-D02 | T01 | `tests/test_industrials_dependency_binding.py` | `test_ind_d02` | LANDED_BEHAVIOUR |
 | IND-D06 | T01 | `tests/test_industrials_dependency_binding.py` | `test_ind_d06` | LANDED_BEHAVIOUR |
 | IND-SF07 | T01 | `tests/test_industrials_dependency_binding.py` | `test_ind_sf07` | LANDED_BEHAVIOUR |
-| IND-D04 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_d04` | NO_SOURCE |
-| IND-D05 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_d05` | NO_SOURCE |
-| IND-R210 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_r210` | NO_SOURCE |
+| IND-D04 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_d04` | RECOVERED_ORIGINAL |
+| IND-D05 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_d05` | RECOVERED_ORIGINAL |
+| IND-R210 | T02 | `tests/test_industrials_issuer_enrollment.py` | `test_ind_r210` | RECOVERED_ORIGINAL |
 | IND-D01 | T03 | `tests/test_industrials_source_facts.py` | `test_ind_d01` | NO_SOURCE |
 | IND-R203 | T03 | `tests/test_industrials_source_facts.py` | `test_ind_r203` | NO_SOURCE |
 | IND-R204 | T03 | `tests/test_industrials_source_facts.py` | `test_ind_r204` | NO_SOURCE |

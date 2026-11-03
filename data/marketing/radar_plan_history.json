@@ -2,6 +2,111 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-01",
+      "tickers": [
+        "ABT",
+        "ADUS",
+        "ATEC",
+        "BILL",
+        "BRK.B",
+        "CACI",
+        "CAVA",
+        "CCK",
+        "CMG",
+        "CMI",
+        "CRBG",
+        "DG",
+        "ESE",
+        "FG",
+        "LSTR",
+        "LYCA",
+        "MRP",
+        "NBIX",
+        "NOV",
+        "NUE",
+        "PRG",
+        "PRI",
+        "PTEN",
+        "RAPP",
+        "UGI",
+        "VMI",
+        "XRAY"
+      ]
+    },
+    {
+      "as_of": "2026-10-31",
+      "tickers": [
+        "ABT",
+        "ACGL",
+        "ADC",
+        "ALHC",
+        "AMSF",
+        "ASML",
+        "CAR",
+        "CVCO",
+        "DAIO",
+        "ECL",
+        "ELAN",
+        "EPR",
+        "GLPI",
+        "GOLF",
+        "GOOG",
+        "IP",
+        "LONA",
+        "LYCA",
+        "MDT",
+        "MNST",
+        "MSFT",
+        "MTZ",
+        "OI",
+        "OVV",
+        "SCQCU",
+        "SR",
+        "TFX",
+        "UE",
+        "USFD",
+        "WFRD",
+        "WMS"
+      ]
+    },
+    {
+      "as_of": "2026-10-30",
+      "tickers": [
+        "AAPL",
+        "AKAM",
+        "ALRM",
+        "AMCR",
+        "AMZN",
+        "AR",
+        "AVGO",
+        "BC",
+        "BFS",
+        "BNL",
+        "BRX",
+        "COST",
+        "DAIO",
+        "EXK",
+        "GMAB",
+        "HMN",
+        "LONA",
+        "LYCA",
+        "MSFT",
+        "OGS",
+        "OI",
+        "OKLO",
+        "PLG",
+        "PRG",
+        "RHI",
+        "SCQCU",
+        "SFM",
+        "SHEN",
+        "SON",
+        "TREX",
+        "WULF",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-10-25",
       "tickers": [
         "AA",
@@ -127,42 +232,6 @@
         "XLK",
         "YELP",
         "YOU"
-      ]
-    },
-    {
-      "as_of": "2026-10-20",
-      "tickers": [
-        "ELF",
-        "EPAM",
-        "ICHR",
-        "OKLO",
-        "RL",
-        "ULS",
-        "URI"
-      ]
-    },
-    {
-      "as_of": "2026-10-19",
-      "tickers": [
-        "AFG",
-        "INGR",
-        "LOPE",
-        "OMC",
-        "PINS",
-        "WWD"
-      ]
-    },
-    {
-      "as_of": "2026-10-18",
-      "tickers": [
-        "ATR",
-        "GFI",
-        "IFF",
-        "LLY",
-        "LOPE",
-        "OKLO",
-        "QDEL",
-        "SMR"
       ]
     }
   ]

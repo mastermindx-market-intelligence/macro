@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-10-25",
+  "as_of": "2026-11-02",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-09-27-when-a-newly-displayed-us-q2-regime-coin-ed2a30",
+      "id": "cortex-2026-10-05-when-us-leadership-remains-intact-while-10628a",
       "claim_shape": "conditional_regime",
       "verdict": "insufficient-n",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "metric_space": "absolute",
+        "metric_space": "contrast",
         "query_axes_applied": [
           "symbol"
         ],
@@ -23,8 +23,8 @@
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "hit_rate",
-        "threshold": 0.178,
+        "metric": "excess_mean_difference",
+        "threshold": -0.01,
         "min_n": 25,
         "horizon_d": 21,
         "direction_expected": -1,

@@ -546,3 +546,116 @@ def test_wti_export_durability_failure_is_not_reported_as_success(modules, monke
     actual = json.loads((tmp_path / "yahoo/CL_F.observation.json").read_bytes())
     assert actual["scenario_adoption"] == "UNQUALIFIED_NATIVE_INPUTS"
     assert not list((tmp_path / "yahoo").glob(".CL_F.observation-*"))
+
+
+def test_wti_temporal_context_preserves_pre_normalization_and_actual_request(modules, monkeypatch, tmp_path):
+    store, base, yahoo = modules
+    adapter = setup_wti(modules, monkeypatch)
+    adapter.cfg.update(retries=1, backoff_base_s=0)
+    # Exercise the actual wrapper but only an invented in-memory provider return.
+    monkeypatch.setattr(adapter, "_download", yahoo.YahooAdapter._download.__get__(adapter))
+    raw = pd.DataFrame({"Close": [10., 11.], "Adj Close": [10., 11.], "Volume": [100, 100]},
+                       index=pd.DatetimeIndex([pd.Timestamp("2024-01-02T13:15:12.123456789"), pd.Timestamp("2024-01-03T23:59:00")]))
+    raw.attrs = {"cookie": "SECRET_COOKIE", "exchangeTimezoneName": "UNTRUSTED", "headers": {"Authorization": "SECRET"}}
+    raw.index.name = "SECRET_INDEX_NAME"
+    calls = []
+    def download(*args, **kwargs):
+        calls.append((args, kwargs))
+        return raw
+    monkeypatch.setattr(yahoo.yf, "download", download)
+    monkeypatch.setattr(yahoo.yf, "__version__", "0.2.66", raising=False)
+    result = base.run_adapter(adapter, full_history=True, capture_wti_receipts=True)
+    assert result.status in {"ok", "stale"}
+    assert calls == [((["CL=F"],), dict(period="max", auto_adjust=False, progress=False, group_by="ticker", threads=True))]
+    receipt = json.loads(next(capture_root(tmp_path).glob("receipts/*.json")).read_bytes())
+    temporal = receipt["adapter_temporal_context"]
+    ctx = temporal["context"]
+    assert ctx["index"]["labels"] == [x.isoformat() for x in raw.index]
+    assert ctx["index"]["already_midnight"] is False
+    assert ctx["index"]["timezone"] is None and ctx["index"]["timezone_aware"] is False
+    assert ctx["parser_versions"]["yfinance"] == "0.2.66"
+    assert ctx["request"]["period"] == "max"
+    assert ctx["resolved_request_defaults"] is None
+    assert temporal["provider_image_sha256"] == receipt["provider_return_image"]["sha256"]
+    assert temporal["merged_image_sha256"] == receipt["merged_capture_image"]["sha256"]
+    assert hashlib.sha256(store._availability_json(ctx)).hexdigest() == temporal["sha256"]
+    # This change adds provenance, not a new date/index policy or image format.
+    assert receipt["provider_return_image"]["sha256"] == hashlib.sha256(store._availability_image(frame())).hexdigest()
+    for key in ["provider_available_at", "futures_session_completion", "vendor_session_metadata", "vendor_daily_label_convention"]:
+        assert ctx[key] is None
+    encoded = json.dumps(receipt)
+    assert "SECRET" not in encoded and "UNTRUSTED" not in encoded and "Authorization" not in encoded
+    assert receipt["scenario_adoption"] == "UNQUALIFIED_NATIVE_INPUTS"
+    assert receipt["historical_original_availability_proven"] is False
+
+
+def test_wti_aware_index_provenance_does_not_change_existing_image_refusal(modules):
+    store, base, yahoo = modules
+    raw = frame(); raw.index = pd.DatetimeIndex(["2024-03-08 17:15", "2024-03-11 17:15"], tz="America/Chicago")
+    ctx = yahoo._wti_temporal_context(raw.index, None)
+    assert ctx["index"]["timezone"] == "America/Chicago"
+    assert ctx["index"]["timezone_aware"] is True
+    assert ctx["index"]["labels"][0].endswith("-06:00")
+    assert ctx["index"]["labels"][1].endswith("-05:00")
+    normalized = base.Adapter().validate("CL=F", raw)
+    assert normalized.index.tz == raw.index.tz  # normalize is NOT a timezone eraser.
+    with pytest.raises(ValueError, match="availability frame contract"):
+        store._availability_image(normalized)
+    assert ctx["vendor_daily_label_convention"] is None
+
+
+@pytest.mark.parametrize("corrupt", ["clock", "headers", "session", "label", "version", "request", "image"])
+def test_wti_temporal_context_refuses_false_facts_and_unbounded_input(modules, monkeypatch, corrupt):
+    store, _, yahoo = modules
+    ctx = yahoo._wti_temporal_context(frame().index, None)
+    if corrupt == "clock": ctx["provider_available_at"] = "2026-10-25T00:35:20Z"
+    elif corrupt == "headers": ctx["headers"] = {"Authorization": "SECRET"}
+    elif corrupt == "session": ctx["vendor_session_metadata"] = {"completed": True}
+    elif corrupt == "label": ctx["index"]["labels"][0] = "SECRET_COOKIE"
+    elif corrupt == "version": ctx["parser_versions"]["yfinance"] = "https://SECRET@host"
+    elif corrupt == "request": ctx["request"] = {"url": "https://SECRET@host"}
+    else: ctx["index"]["labels"][0] = "2024-01-01T00:00:00"
+    with pytest.raises(ValueError, match="WTI temporal"):
+        store._wti_temporal_receipt(ctx, frame())
+
+
+def test_wti_temporal_unknown_download_context_and_reset(modules, monkeypatch):
+    _, _, yahoo = modules
+    adapter = setup_wti(modules, monkeypatch)
+    adapter.fetch(full_history=True, capture_source_metadata=True)
+    ctx = adapter.wti_temporal_metadata()
+    assert ctx["request"] is None  # monkeypatched wrapper cannot claim real invocation.
+    assert ctx["index"]["already_midnight"] is True
+    ctx["index"]["labels"].clear()
+    assert len(adapter.wti_temporal_metadata()["index"]["labels"]) == 2
+    adapter.fetch(full_history=True, capture_source_metadata=False)
+    assert adapter.wti_temporal_metadata() is None
+    assert yahoo._wti_temporal_context(pd.Index(["SECRET"]), None) is None
+
+
+def test_wti_metadata_failure_does_not_discard_series_or_replay(modules, monkeypatch):
+    _, _, yahoo = modules
+    adapter = setup_wti(modules, monkeypatch)
+    calls = []
+    download = adapter._download
+    monkeypatch.setattr(adapter, "_download", lambda *a: calls.append(a) or download(*a))
+    def unavailable(*a):
+        raise ValueError("unsupported index representation")
+    monkeypatch.setattr(yahoo, "_wti_temporal_context", unavailable)
+    frames = adapter.fetch(full_history=True, capture_source_metadata=True)
+    assert "CL=F" in frames and len(frames["CL=F"]) == 2
+    assert calls == [(["CL=F"], "max")]
+    assert adapter.wti_temporal_metadata() is None
+
+
+def test_unrelated_rebase_cannot_erase_wti_temporal_context(modules, monkeypatch):
+    store, _, _ = modules
+    adapter = setup_wti(modules, monkeypatch)
+    frames = adapter.fetch(full_history=True, capture_source_metadata=True)
+    before = adapter.wti_temporal_metadata()
+    frames["OTHER"] = frame()
+    monkeypatch.setattr(store, "basis_shifted", lambda group, ticker, *a, **k: ticker == "OTHER")
+    monkeypatch.setattr(adapter, "_download", lambda *a: (_ for _ in ()).throw(RuntimeError("synthetic failed OTHER rebase")))
+    adapter._rebase_shifted(frames, set(), capture_source_metadata=True)
+    assert adapter.wti_temporal_metadata() == before
+    assert "CL=F" in frames
