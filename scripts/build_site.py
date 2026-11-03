@@ -8119,22 +8119,13 @@ def main() -> int:
         log.error("experiments registry build failed: %s", e)
 
     # --- history page: the longer-window charts + lifespan base rates ----------
-    from engine.playbook import QUAD_SHORT, next_quads_line, transition_stats
-    trans = transition_stats(hist["quad"])
-    lifespan_rows = []
-    for q in ("Q1", "Q2", "Q3", "Q4"):
-        nxt = trans["matrix"].get(q, {})
-        lifespan_rows.append({"name": QUAD_SHORT[q],
-                              "n": trans["n_by_quad"].get(q, "—"),
-                              "median": trans["median_days"].get(q, "—"),
-                              "next": next_quads_line(nxt),
-                              "next_zh": next_quads_line(nxt, zh=True)})
+    from engine.playbook import finished_lifespan_rows
     hist_html = env.get_template("history.html.j2").render(
         latest=latest,
         generated_utc=generated,
         chart_regime=chart_regime(f, hist, days=1095),
         chart_axes=chart_axes(hist, days=1095),
-        lifespan_rows=lifespan_rows,
+        lifespan_rows=finished_lifespan_rows(hist["quad"]),
     )
     out2 = site / "history.html"
     write_page(out2, hist_html)
@@ -8605,8 +8596,20 @@ def main() -> int:
         from scripts.build_capital_structure_page import render as _render_capital_structure
         _cs_page = _render_capital_structure(config.ROOT)
         log.info("wrote %s", _cs_page)
-    except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
-        log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+    except Exception as _cs_e:  # noqa: BLE001 — annotate loudly; never break main build
+        # A withheld page keeps the last build's bytes, whose "in N days" copy is
+        # wrong a day later. A log WARNING let that ride a green run from 10-24 to
+        # 11-02. Bare print, NOT a logger call: GitHub only parses a workflow
+        # command when "::" starts the line (see the sitemap note below).
+        _cs_msg = ("capital_structure.html NOT rebuilt, stale page retained — "
+                   f"{type(_cs_e).__name__}: {(str(_cs_e).splitlines() or [''])[0]}")
+        print(f"::error title=capital_structure::{_cs_msg}", flush=True)
+        try:
+            if os.environ.get("GITHUB_STEP_SUMMARY"):
+                with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as _cs_fh:
+                    _cs_fh.write(f"### ❌ {_cs_msg}\n")
+        except OSError:
+            pass
 
     # Finance Intelligence dossier — render only the registered preview shell.
     # Per Chairman directive 2026-09-24 (relayed from Astra CEO): Finance ships

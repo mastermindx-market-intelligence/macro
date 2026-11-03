@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-11-01",
+  "as_of": "2026-11-02",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,8 +71,14 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [],
-    "live_plan_ids": [],
+    "c0_plan_ids": [
+      "LQDA-BULL-20261029",
+      "NB-BULL-20261026"
+    ],
+    "live_plan_ids": [
+      "LQDA-BULL-20261029",
+      "NB-BULL-20261026"
+    ],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -85,7 +91,7 @@
       "label": "the live rule, mirrored",
       "label_zh": "\u5b9e\u76d8\u89c4\u5219\u955c\u50cf",
       "grain": "selection",
-      "n_open": 423,
+      "n_open": 425,
       "n_closed": 279,
       "win_rate_pct": 43.9,
       "avg_pct": -2.43,
@@ -99,7 +105,7 @@
         "T1_HIT": 49,
         "T2_HIT": 2
       },
-      "nights_recorded": 34,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true
     },
@@ -234,7 +240,7 @@
       "label": "cut dead money at 21 sessions",
       "label_zh": "21\u4e2a\u4ea4\u6613\u65e5\u6b62\u635f\u79bb\u573a",
       "grain": "closure",
-      "n_open": 411,
+      "n_open": 413,
       "n_closed": 291,
       "win_rate_pct": 34.2,
       "avg_pct": -2.15,
@@ -249,7 +255,7 @@
         "T2_HIT": 2,
         "time_stopped": 101
       },
-      "nights_recorded": 34,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
@@ -311,10 +317,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-11-01",
+    "asof": "2026-11-02",
     "standouts_as_of": "2026-10-30",
     "price_through": "2026-10-30",
-    "observed_at_utc": "2026-11-01T06:46:03.509954+00:00",
+    "observed_at_utc": "2026-11-02T07:18:12.903281+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -323,7 +329,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-11-01",
+      "artifact_as_of": "2026-11-02",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -354,28 +360,27 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 18.1
+        "runtime_s": 16.9
       }
     },
     "policies": {
       "C0_champion_mirror": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC",
           "HP",
           "CVCO",
-          "CRGY",
           "EPC",
+          "CRGY",
           "EPR",
           "CVNA",
           "VRT",
           "AM",
           "MTZ",
           "TKO",
+          "CC",
           "SJM",
           "MRCY",
           "LBRT",
@@ -386,29 +391,31 @@
           "VTR",
           "AVNT",
           "PJT",
-          "MC",
           "SUPN",
-          "CWT",
-          "MSEX",
-          "CF",
+          "MC",
           "BOOT",
+          "CF",
+          "MSEX",
+          "CWT",
           "FBK",
-          "POR",
           "IBP",
+          "NB",
+          "POR",
           "NOV",
           "NRG",
           "NBIX",
           "GTY",
           "HMN",
           "WWW",
-          "MRP",
           "TFIN",
-          "WPC",
+          "MRP",
           "PRI",
+          "WPC",
           "UE",
           "CARG",
           "TROW",
           "OSK",
+          "LQDA",
           "EMN",
           "FSLR",
           "VTOL",
@@ -421,31 +428,34 @@
           "CWK",
           "ORA",
           "INGR",
-          "CAR",
           "IP",
+          "CAR",
           "UVV",
           "MKC",
           "NVO",
           "SLVM"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "LQDA-BULL-20261029",
+          "NB-BULL-20261026"
+        ],
+        "n_plans": 2,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 67,
+          "offered": 68,
           "skipped_duplicate_id": 51,
           "skipped_open_plan": 10,
-          "skipped_clock_provenance": 6,
+          "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -455,14 +465,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
-              ]
-            },
-            {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
@@ -498,31 +500,31 @@
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 6
+          "originated": 2,
+          "validation_failed": 5
         },
-        "ledger_rows_appended": 0,
+        "ledger_rows_appended": 2,
         "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC",
           "HP",
           "CVCO",
-          "CRGY",
           "EPC",
+          "CRGY",
           "EPR",
-          "CVNA"
+          "CVNA",
+          "VRT",
+          "AM"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -530,13 +532,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 8,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 3,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -546,14 +548,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
-              ]
-            },
-            {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
@@ -566,21 +560,21 @@
             }
           ],
           "originated": 0,
-          "validation_failed": 3
+          "validation_failed": 2
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC",
           "HP",
           "CVCO",
+          "EPC",
+          "CRGY",
           "LHX",
           "TJX",
           "CRH",
@@ -592,7 +586,7 @@
         ],
         "n_plans": 2,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
           "door_w_offered": 38,
@@ -604,12 +598,12 @@
         "origination": {
           "offered": 12,
           "skipped_duplicate_id": 5,
-          "skipped_open_plan": 2,
-          "skipped_clock_provenance": 3,
+          "skipped_open_plan": 3,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -619,14 +613,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
-              ]
-            },
-            {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
@@ -639,24 +625,24 @@
             }
           ],
           "originated": 2,
-          "validation_failed": 3
+          "validation_failed": 2
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC"
+          "HP",
+          "CVCO"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": 6,
           "cap_applied": true
         },
@@ -668,7 +654,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -681,11 +667,11 @@
               ]
             },
             {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
+              "ticker": "CVCO",
+              "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
+                "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
               ]
             }
           ],
@@ -707,18 +693,18 @@
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
             "admitted": 6,
             "admitted_via_fallback": 4,
-            "excluded_misaligned": 61,
+            "excluded_misaligned": 62,
             "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
           "passed_gate": 6,
-          "excluded": 61
+          "excluded": 62
         },
         "origination": {
           "offered": 6,
@@ -728,7 +714,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [],
@@ -740,22 +726,21 @@
       },
       "C6_time_stop_21": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC",
           "HP",
           "CVCO",
-          "CRGY",
           "EPC",
+          "CRGY",
           "EPR",
           "CVNA",
           "VRT",
           "AM",
           "MTZ",
           "TKO",
+          "CC",
           "SJM",
           "MRCY",
           "LBRT",
@@ -766,29 +751,31 @@
           "VTR",
           "AVNT",
           "PJT",
-          "MC",
           "SUPN",
-          "CWT",
-          "MSEX",
-          "CF",
+          "MC",
           "BOOT",
+          "CF",
+          "MSEX",
+          "CWT",
           "FBK",
-          "POR",
           "IBP",
+          "NB",
+          "POR",
           "NOV",
           "NRG",
           "NBIX",
           "GTY",
           "HMN",
           "WWW",
-          "MRP",
           "TFIN",
-          "WPC",
+          "MRP",
           "PRI",
+          "WPC",
           "UE",
           "CARG",
           "TROW",
           "OSK",
+          "LQDA",
           "EMN",
           "FSLR",
           "VTOL",
@@ -801,31 +788,34 @@
           "CWK",
           "ORA",
           "INGR",
-          "CAR",
           "IP",
+          "CAR",
           "UVV",
           "MKC",
           "NVO",
           "SLVM"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "LQDA-BULL-20261029",
+          "NB-BULL-20261026"
+        ],
+        "n_plans": 2,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 67,
+          "offered": 68,
           "skipped_duplicate_id": 51,
           "skipped_open_plan": 10,
-          "skipped_clock_provenance": 6,
+          "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -835,14 +825,6 @@
               "stage": "clock_provenance",
               "errors": [
                 "formation_date '2026-10-29' postdates tier_event_date '2026-10-27'"
-              ]
-            },
-            {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
               ]
             },
             {
@@ -878,34 +860,34 @@
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 6
+          "originated": 2,
+          "validation_failed": 5
         },
-        "ledger_rows_appended": 0,
+        "ledger_rows_appended": 2,
         "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
+          "GM",
           "FLS",
           "VSAT",
           "JNJ",
-          "XNCR",
-          "GM",
-          "CC",
           "HP",
           "CVCO",
-          "CRGY",
           "EPC",
+          "CRGY",
           "EPR",
-          "CVNA"
+          "CVNA",
+          "VRT",
+          "AM"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 67,
+          "admitted": 68,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 68,
+          "admitted_with_widening": 69,
           "buy_soon_in_board": 1,
           "buy_soon_admitted_by_widening": 1,
           "buy_soon_selected": 0,
@@ -913,13 +895,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 8,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 3,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-01",
+          "recorded_at": "2026-11-02",
           "price_basis_date": "2026-10-30",
           "clock_errors": [],
           "validation_failures": [
@@ -932,14 +914,6 @@
               ]
             },
             {
-              "ticker": "XNCR",
-              "id": "XNCR-BULL-20261030",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-10-30' postdates tier_event_date '2026-10-27'"
-              ]
-            },
-            {
               "ticker": "CVCO",
               "id": "CVCO-BULL-20261029",
               "stage": "clock_provenance",
@@ -949,7 +923,7 @@
             }
           ],
           "originated": 0,
-          "validation_failed": 3
+          "validation_failed": 2
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0

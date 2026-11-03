@@ -86,3 +86,29 @@ sentence is the control, underlined on its steps only; an open hairline-topped e
 with clock and member grids; NEXT CHECK as label-over-line; Mark reviewed as a quiet bordered
 control always last on its own line. Every string, hook, state rule and the NEXT CHECK logic keep
 their R2 meaning. Evidence E1–E7 map to committed crops under `terminal/docs/pr-crops/news-r2/`.
+
+## Addendum 2026-11-02 — deferred P2 polish shipped
+
+Terminal [#1211](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1211) merged as master 70ebc639e0a6795f8bc100008fa609406db72f3f, deployed 2026-11-02T08:5xZ (public data-dpl-id readback match). Signed-in NVDA proof: the live CSSOM carries the NewsCatchup .change rule (color var(--flow-muted); font 450 11px/15px; margin 6px 0 0); 20 static ladders, 20 Mark-reviewed controls; no review-change line and no multi-report story were live, so the ink and aria-controls stay proven by the unit/e2e pins (data condition). The fabric lane news-r3-p2 was refused at host admission (reconciliation_hold_present: four hold markers of another owner's news-w4-v91 review lanes, left untouched); under the continuation law the seat executed the packet directly on the minted lane tree. Checks on the lane tree: vitest 11 files / 301 tests, npm test 1031 files / 17507 tests, 0 failed; tsc rc 0; playwright R2 evidence ladder 29 passed / 10 skipped; tablet static and collapsed crops differ. Spec §6 amended with the `.change` grant. Remaining open items are unchanged: the light-theme release (needs D-W1 amended) and the human-only items.
+
+## Addendum 2026-11-02 (late) — live multi-report proof, W8 closed, listener self-cancel recurrence
+
+- **Multi-report story proven live.** On the signed-in NFLX News rail, story ev2_6991e0a0fb6a8e56
+  (item_count 2) showed the R3 ladder button closed with aria-expanded=false and no aria-controls,
+  and open with aria-controls=news-evidence-ev2_6991e0a0fb6a8e56. That id resolves to the
+  role=group evidence block labelled "2 reports", with clocks, the grouping note and two Benzinga
+  member reports (Wedbush and Bernstein, each maintaining Outperform and lowering the target to
+  $80). The visual crop matched the frozen spec. This closes the never-seen-live gap above. One
+  observation belongs to the engine owner: two brokers' separate price-target actions were grouped
+  as one event.
+- **W8 closed.** #8807 is live-proven by the R2 manifest (updated_at 2026-11-01T02:59:00Z over
+  latest_date 2026-10-30), #8841 by the identity unit's lifted budget and its 21:35:12Z success, and
+  the ticker-news writer is active. #8816 runs green; its torn-pending branch has not fired since the
+  merge. D-options stays the Massive options-plan EXACT_HUMAN_GATE.
+- **Listener self-cancel recurred.** The 2026-11-02 nightly collect job was cut at 06:28:12Z by the
+  M2 listener's own broker-poll failure (DSC:M2-RUNNER-LISTENER-SELF-CANCELS-ITS-JOB-AFTER-TEN-BROKER-POLL-FAILURES,
+  now on runner 2.338.0 as ResponseEnded). The massive manifest publish was skipped, so technicals
+  v1 failed at 21:37:21Z on its 26-hour freshness bound, and technicals v2 at 04:07Z on 11-03 is
+  expected to refuse the same way. Both resume after the next successful nightly publish. The fix is
+  a runner-host operator act; the seat re-dispatched, cancelled and restarted nothing.
+
