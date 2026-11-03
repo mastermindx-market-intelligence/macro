@@ -385,6 +385,7 @@ def test_copy_law_summary_under_14_words_no_banned_token():
 def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     """The fold's asof_note appears ONLY when ledger_asof ≠ card asof."""
     stores = _stores()
+    stores["gex"]["SPY"]["meta"]["asof"] = "2026-09-24"
     # Same asof → no asof_note
     same = _payload(roots=[_full_root_spy()],
                     ledger_asof="2026-09-24", card_asof="2026-09-24")
@@ -399,6 +400,33 @@ def test_asof_note_only_when_ledger_asof_differs_from_card_asof():
     assert "2026-09-23" in ctx_diff["payoff_lab"]["SPY"]["asof_note_zh"]
     page = render(REPO, stores, payoff_lab=diff)
     assert "Structures as of 2026-09-23" in _visible_text(_workspace_fold(page, "SPY"))
+
+
+@pytest.mark.parametrize("card_date,expected", [
+    ("2026-09-24", True), ("2026-09-23", False),
+    ("2026-09-23T21:00:00Z", False), (None, False), ("not-a-date", False),
+])
+def test_native_payoff_emit_discloses_date_against_actual_card(tmp_path, card_date, expected):
+    """The native emitter's two dates agree even when the index card advances."""
+    import json
+    from scripts.build_options_payoff_lab import emit
+    data = tmp_path / "data"
+    data.mkdir()
+    raw = _payload(roots=[_full_root_spy()], ledger_asof="2026-09-23",
+                   card_asof="2026-09-23")
+    (data / "latest.json").write_text(json.dumps(raw))
+    payload = emit(data, tmp_path / "site")
+    assert payload["ledger_asof"] == payload["asof"] == "2026-09-23"
+    stores = _stores()
+    stores["gex"]["SPY"]["meta"]["asof"] = card_date
+    # A different index's date must not supply SPY's card date.
+    stores["gex"]["QQQ"]["meta"]["asof"] = "2026-09-25"
+    lab = build_payoff_lab(payload, stores)["SPY"]
+    assert lab["asof_note_en"] == ("Structures as of 2026-09-23" if expected else "")
+    assert lab["asof_note_zh"] == ("结构定价截至 2026-09-23" if expected else "")
+    if expected:
+        visible = _visible_text(_workspace_fold(render(REPO, stores, payoff_lab=payload), "SPY"))
+        assert "Structures as of 2026-09-23" in visible
 
 
 # ─────────────────────────────────────────────────────────────────────────────
