@@ -194,69 +194,72 @@
 
 <!-- Field guide remains available without interrupting the scan. -->
 <details class="ift-guide">
-  <summary><span>{{ t('How to read the scan', '如何读懂扫描') }}</span><span>{{ t('The rules, options tape and dealer map', '规则、期权资金带与做市商地图') }} ⌄</span></summary>
+  <summary><span>{{ t("How to read the scan", "如何读懂扫描") }}</span><span>{{ t("The rules, options tape and dealer map", "规则、期权资金带与做市商地图") }} ⌄</span></summary>
 
   <div class="playbook-section open">
     <button type="button" class="playbook-hd" aria-expanded="true">
-      <span>{{ t('1 · The one job of this board', '1 · 本看板的唯一任务') }}</span>
+      <span>{{ t("1 · Start with the evidence", "1 · 先核对依据") }}</span>
       <span class="caret">▸</span>
     </button>
     <div class="playbook-body">
-      <p class="l-en">This board watches a fixed list of institutional leaders — the Mag 7, AI infrastructure, AI software and semiconductors, semicap equipment, reshoring, defense and power-grid names. It looks for one specific thing: a leader that sold off, absorbed the selling, and is now being <em>bought back on real volume</em>. For every name it gives you a plain call — buy now, almost ready, in favour, take profits, watch, or stand aside — and the reason behind it. It is not a stock screener for cheap stocks; it is a timing board for continuation entries in names that already have sponsorship.</p>
-      <p class="l-zh">本看板跟踪一份固定的机构领涨股名单——Mag 7、AI基础设施、AI软件与半导体、半导体设备、回流制造、国防与电网标的。它只找一件事：某只领涨股经历下跌、消化卖压、如今正被<em>放量重新买入</em>。对每只标的给出一个通俗结论——现在买入、即将就绪、走势占优、获利了结、观望或暂时观望——并附上理由。这不是找廉价股的筛选器，而是为已有机构参与的标的把握延续入场时机的择时看板。</p>
+      <p class="l-en">This board follows a fixed watchlist of institutional leaders: the Mag 7, AI infrastructure and software, semiconductors and equipment, reshoring, defense and power-grid names. Each name has a rule-based classification, seven checks, options activity and reference levels in full evidence.</p>
+      <p class="l-en">These labels describe the model’s recorded assessment. Check Sources and each name’s evidence for the available observations and their source times. Availability alone does not confirm that the same conditions hold now; missing or old data remains a limitation.</p>
+      <p class="l-zh">本看板跟踪一份固定的机构领涨股名单：Mag 7、AI 基础设施与软件、半导体与设备、回流制造、国防及电网标的。各标的的完整依据包含规则分类、七项检查、期权活动与参考价位。</p>
+      <p class="l-zh">这些标签说明模型已有的评估。请查看“来源”及各标的的详细依据，核对可用观察与来源时间。数据可用并不代表相关条件当前仍然成立；缺失或较旧的数据仍是限制。</p>
     </div>
   </div>
 
   <div class="playbook-section">
     <button type="button" class="playbook-hd" aria-expanded="false">
-      <span>{{ t('2 · What each call means', '2 · 每个结论的含义') }}</span>
+      <span>{{ t("2 · What each label describes", "2 · 各标签描述什么") }}</span>
       <span class="caret">▸</span>
     </button>
     <div class="playbook-body">
       <ul class="l-en">
-        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> Buy now</b> — sold off recently, reclaimed above the day’s average price on durable (not one-spike) volume, and it is a clean leader. The continuation setup is live; stop goes below the washout base.</li>
-        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> Almost ready</b> — the base is built but price hasn’t reclaimed yet. Waiting for a push back above the average price on volume.</li>
-        <li><b>In favour</b> — already trending and holding above the average price, but with no fresh washout. Ride an existing position; not a fresh entry.</li>
-        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> Take profits</b> — stretched well above the average price, or jammed into a dealer ceiling / expiry pin. Expect a pullback; don’t chase.</li>
-        <li><b>Watch — don’t chase</b> — moving, but without a washout base, or a name with a history of faking breakouts. Wait for structure.</li>
-        <li><b>⚪ Stand aside</b> — quiet tape, no setup right now.</li>
+        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> Buy now</b> — The inputs met the washout, VWAP reclaim and holding-volume rules, with elevated volume or approximate options support. No known quality trap or nearby ceiling excluded the setup; the quality check may still be unknown.</li>
+        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> Almost ready</b> — A washout with a trend turn or squeeze is recorded. The reclaim above VWAP is pending, or the off-session assessment is waiting for the open.</li>
+        <li><b>In favour</b> — Recorded price is above VWAP, with a trend turn and volume support but no fresh washout.</li>
+        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> Take profits</b> — The recorded assessment identifies price extension, or risk near a dealer ceiling or expiry pin. These conditions do not establish that a reversal will follow.</li>
+        <li><b>Watch — don’t chase</b> — Recorded price or volume activity lacks a washout setup, or the name carries a known quality-trap flag.</li>
+        <li><b>⚪ Stand aside</b> — The recorded inputs did not match another setup, or the assessment is waiting for the open. This label alone does not mean the market is quiet.</li>
       </ul>
       <ul class="l-zh">
-        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> 现在买入</b> —— 近期下跌后，在持续（非单次）放量中收复当日均价，且为干净的领涨股。延续布局已成立；止损设在洗盘底部下方。</li>
-        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> 即将就绪</b> —— 底部已成，但价格尚未收复。等待放量重回均价上方。</li>
-        <li><b>走势占优</b> —— 已在趋势中并守住均价上方，但无新的洗盘。适合持有已有仓位，非新入场点。</li>
-        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> 获利了结</b> —— 大幅高于均价，或顶到做市商天花板/到期钉价。预期回落，勿追。</li>
-        <li><b>观望——勿追</b> —— 有异动，但无洗盘底部，或该标的有假突破前科。等待结构。</li>
-        <li><b>⚪ 暂时观望</b> —— 盘口平静，当前无布局。</li>
+        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> 现在买入</b> —— 已有输入满足洗盘、收复 VWAP 与量能持稳规则，并有放量或近似期权资金流支持。已知质量陷阱或邻近天花板未触发排除条件；质量检查仍可能未知。</li>
+        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> 即将就绪</b> —— 已有形态包括洗盘，以及趋势转强或挤压形态（squeeze）。收复 VWAP 尚待确认，或评估处于非交易时段、等待开盘。</li>
+        <li><b>走势占优</b> —— 已有价格位于 VWAP 上方，并有趋势转强与量能支持，但没有新的洗盘结构。</li>
+        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> 获利了结</b> —— 已有评估识别到价格过度延伸，或邻近做市商天花板／到期钉价区的风险。这些条件并不代表随后必然反转。</li>
+        <li><b>观望——勿追</b> —— 已有价格或成交量活动尚无洗盘结构，或该标的带有已知质量陷阱标记。</li>
+        <li><b>⚪ 暂时观望</b> —— 已有输入未匹配其他形态，或评估仍在等待开盘。这一标签本身不代表市场平静。</li>
       </ul>
     </div>
   </div>
 
   <div class="playbook-section">
     <button type="button" class="playbook-hd" aria-expanded="false">
-      <span>{{ t('3 · The options tape (approximate direction)', '3 · 期权资金带（方向为近似）') }}</span>
+      <span>{{ t("3 · The options tape (approximate direction)", "3 · 期权资金带（方向为近似）") }}</span>
       <span class="caret">▸</span>
     </button>
     <div class="playbook-body">
-      <p class="l-en">The options column shows tape activity and how persistently it leans call-heavy or put-heavy. <em>The direction is approximate</em> — it is signed by a tape rule, not by matching each trade to the bid/offer, so read it as a lean, never a confirmation (that is what the <span class="soft-tag">~soft</span> mark means). Unusual-size flags (big blocks, fresh positions, size-vs-open-interest) are exact counts. It is a supporting input, not a trigger on its own.</p>
-      <p class="l-zh">期权栏展示资金带的活跃度，以及其偏看涨或看跌的持续程度。<em>方向为近似</em>——它由盘口规则定向，而非将每笔交易与买卖报价匹配，故仅作倾向、绝非确认（这正是 <span class="soft-tag">~软性</span> 标记的含义）。异常规模标记（大单、新建仓、规模对比未平仓量）为精确计数。它是辅助输入，不单独作为触发。</p>
+      <p class="l-en">Call-only net premium supports an approximate estimate of call buying or selling using the tape rule, rather than bid/offer matching. Net premium across calls and puts is a separate total; it cannot establish call direction on its own. Missing observations remain unknown.</p>
+      <p class="l-en">The <span class="soft-tag">~soft</span> mark identifies this approximate direction. Unusual-size flags show recorded activity counts. Approximate flow is a supporting input, not confirmation by itself.</p>
+      <p class="l-zh">仅看涨期权的净权利金依据资金带规则，近似估计看涨期权的买入或卖出，并非逐笔匹配买卖报价。看涨与看跌期权合计净权利金是另一项总量，不能单独确定看涨期权的买卖方向。缺失观察仍属未知。</p>
+      <p class="l-zh"><span class="soft-tag">~软性</span> 标记表示这种近似方向。异常规模标记展示已有活动计数。近似资金流是辅助输入，不能单独作为确认。</p>
     </div>
   </div>
 
   <div class="playbook-section">
     <button type="button" class="playbook-hd" aria-expanded="false">
-      <span>{{ t('4 · The dealer map (levels &amp; stops, not direction)', '4 · 做市商地图（价位与止损，非方向）') }}</span>
+      <span>{{ t("4 · The dealer map (reference levels)", "4 · 做市商地图（参考价位）") }}</span>
       <span class="caret">▸</span>
     </button>
     <div class="playbook-body">
-      <p class="l-en">Built from daily options chains, the dealer map shows the nearby levels market-makers tend to defend — a <em>ceiling</em> above and a <em>floor</em> below — the day’s expected move, and whether price is being pinned near a big strike into expiry. Use it for timing and stop placement: a hard ceiling just overhead argues against chasing; a strong floor below is a logical stop reference. It is never a direction call, and for a single stock the long/short-gamma label is a near-constant trait of the product, not a live signal — so it is shown as context only.</p>
-      <p class="l-zh">做市商地图由每日期权链构建，展示做市商倾向防守的邻近价位——上方<em>天花板</em>与下方<em>地板</em>——当日预期波动幅度，以及价格是否在到期临近时被钉在某大行权价附近。用于择时与设置止损：头顶紧邻硬天花板则不宜追高；下方有强地板可作止损参考。它绝非方向判断；对单只股票而言，多头/空头gamma标签是产品近乎恒定的属性，而非实时信号——故仅供参考展示。</p>
+      <p class="l-en">The dealer map provides daily/nightly options-chain context: ceilings, floors, expected move and expiry pinning. The chain’s source time is unavailable here. The nightly stop and buy zone, VWAP, session low and dealer levels remain references, not confirmed execution or stop levels. The gamma label provides context and does not establish a live directional signal.</p>
+      <p class="l-zh">做市商地图提供每日／夜间期权链背景，包括天花板、地板、预期波动和到期钉价。本页无法提供期权链来源时间。夜间止损与买入区间、VWAP、时段低点及做市商价位均为参考，不能视为已确认的成交或止损价位。Gamma 标签用于解释背景，不代表实时方向信号。</p>
     </div>
   </div>
 
   <p class="foot-note">
-    {{ t('Options-tape direction is approximate (~soft — a tape rule, not bid/offer matching). Every call is a deterministic rule with no score and no black box. Reference levels and the dealer map are context for timing and stops, not trade advice.',
-         '期权带方向为近似（~软性——盘口规则，非买卖报价匹配）。每个结论均为确定性规则，无评分、无黑箱。参考价位与做市商地图仅为择时与止损背景，不构成交易建议。') }}
+    {{ t("Classifications follow deterministic rules, with no score and no black box. Reference levels and the dealer map supply context, not trade advice.", "分类遵循确定性规则，无评分、无黑箱。参考价位与做市商地图仅提供背景，不构成交易建议。") }}
   </p>
 </details>
 </main>

@@ -253,3 +253,55 @@ refresh while open, stale/missing/partial fixtures and viewport geometry. Retain
 all prior regression assertions; do not weaken the515browser or301pytest proof.
 
 No independent source/visual review or release acceptance is granted by this packet.
+
+## R4 · Field-guide meaning parity (2026-11-03)
+
+Prerequisite satisfied: the actual R3 source at `dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c`
+was captured canonically in all 24 requested cells and visually inspected in all 8 resting
+variants. Published proof checkpoint: `703f3c9c230730cf9f0f5dbb99c7bd416b85859b`.
+R3 source details and its main integration are retained.
+
+### Chosen approach
+Refine the existing bilingual field guide inside its native closed-by-default details.
+Keep the six classification labels, four subsections, seven checks and all advanced
+evidence. The scan's recorded assessment and the source panel's availability limits
+must retain the same meaning when a user reads the guide. A new warning panel or
+permanent status block would duplicate existing information and add scan height.
+
+### Frozen editorial and interaction contract
+- Begin with the evidence and source times. Recorded labels do not establish that
+  their conditions still hold now; missing or old observations remain limitations.
+- Buy now explains existing washout/reclaim/volume conditions without claiming that
+  an unknown quality check passed. Preserve every classifier and reason string.
+- Almost ready explains a pending reclaim or waiting for the open. In favour is
+  an existing trend assessment. Take profits describes extension/ceiling/pin risk
+  without predicting a reversal. Watch describes missing structure or a known trap.
+  Stand aside does not establish that the market is quiet.
+- Separate approximate call-only buying/selling estimates from calls+puts net premium;
+  the combined total alone cannot establish call direction. Missing stays unknown.
+  The tape rule is not bid/offer matching; activity counts are recorded observations.
+- Dealer information remains daily/nightly chain context. Its source time is unavailable
+  here. Nightly stop/buy zone, VWAP, session low and dealer levels stay reference values,
+  not confirmed execution or stop levels. Gamma context is not current direction.
+- Keep native guide/section controls, keyboard behavior, locale switching, filters,
+  selection and closed-state geometry. Add no fetches, timers, freshness thresholds,
+  scoring, source/model logic, CSS or shared-navigation change.
+- Light uses the existing white panel and neutral hierarchy; dark uses the existing
+  graphite panel and muted supporting text. Preserve canonical tokens and styles.
+
+### Editable design and discriminating proof
+Paper file `01M2WGNCX9475G79JRKJTCM08P`, page `p-26-1`:
+desktop light EN `71UJ-0`; mobile dark ZH `720J-0`. Both were inspected with all
+sections expanded, set to fit content after visible clipping, extracted to adjacent
+`paper_r4_guide_*.jsx`, and finished on their exact node IDs. These are guide-copy
+specimens; they do not add product headers or replace actual browser verification.
+No denied dark-ZH ticker-row batch was recreated.
+
+Implementation scope is the field-guide region in `templates/intraday_flow.html.j2`
+and its canonical optimized `site/intraday_flow.html`. Verify exact identity of
+all content outside that region, all script bodies, paired CSS and embedded board data
+against 703f3c9c. Exercise the real opened guide in 1440/390 × light/dark × EN/ZH, keyboard
+controls, locale visibility, overflow, and preservation of filters/selection. Retain
+prior model/source/recovery proof; do not manufacture mirror tests for static copy.
+Capture the final committed page through the incumbent canonical evidence driver.
+Draft/HOLD, denied-effect boundaries and independent acceptance gates remain unchanged.
