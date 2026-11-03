@@ -117,7 +117,7 @@ def test_scroll_memory_captured_before_the_view_swap() -> None:
     code = _code(_router())
     write = "if(current) SCROLL_MEM[current]=window.scrollY;"
     assert write in code, "per-view scroll capture line is gone or reworded"
-    activate_at = code.index("function activate(view,target){")
+    activate_at = code.index("function activate(view,target,user){")
     write_at = code.index(write)
     toggle_at = code.index("classList.toggle('on'")
     assert activate_at < write_at < toggle_at, (
@@ -159,7 +159,7 @@ def test_activation_generation_supersedes_pending_replay_frames() -> None:
     explicit-target activation must equally invalidate a pending frame."""
     code = _code(_router())
     assert "var SCROLL_GEN=0;" in code, "missing module-level activation generation counter"
-    act = code.split("function activate(view,target){", 1)[1]
+    act = code.split("function activate(view,target,user){", 1)[1]
     bump = act.find("var gen=++SCROLL_GEN;")
     assert bump >= 0, "activate() no longer bumps the generation counter"
     assert bump < act.index("if(current) SCROLL_MEM[current]="), (

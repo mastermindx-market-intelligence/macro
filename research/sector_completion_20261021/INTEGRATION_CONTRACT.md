@@ -5,6 +5,8 @@ Every claim cites `path:line` in this tree. Nothing here is a proposal.
 
 ## Routes
 
+_Amended by the Sector Cycles wave L1 (#7646): the `cycles` route and its section were added; the rest of this section is the SIC-I01 observation._
+
 The in-template router is `templates/si_workspace.js` (loaded by the shell at
 `templates/sector_central.html.j2:4058`). It is hash-based: `route()` reads
 `location.hash` (`templates/si_workspace.js:348-350`), is bound to `hashchange`
@@ -15,7 +17,7 @@ View switching is `activate()` (`templates/si_workspace.js:297-347`): it toggles
 `templates/si_workspace.js:100-110`) and dispatches `si:view` (`templates/si_workspace.js:340`).
 
 Observed route set (== expected set; no differences): **overview, map, moving, money,
-explore, confluence** (`var VIEWS` `templates/si_workspace.js:17`; rail buttons
+explore, confluence, cycles** (`var VIEWS` `templates/si_workspace.js:17`; rail buttons
 `templates/sector_central.html.j2:1495-1506`; view sections at 1509 / 2149 / 2284 / 2312 /
 2348 / 2404).
 
@@ -27,6 +29,7 @@ explore, confluence** (`var VIEWS` `templates/si_workspace.js:17`; rail buttons
 | money | `#money` | `section.si-view[data-view="money"]` (`sector_central.html.j2:2312`) | LAZY `heatmap.js` (`si_workspace.js:103`); internals cards inline (`sector_central.html.j2:2318-2332`) | `tests/test_si_workspace_shell.py` |
 | explore | `#explore` | `section.si-view[data-view="explore"]` (`sector_central.html.j2:2348`) | LAZY `subsector_rotation.js`,`time_machine.js` (`si_workspace.js:104`); table/chart inline (`sector_central.html.j2:2357-2383`) | `tests/test_si_workspace_shell.py`; `tests/test_xpv2_sector_r3_fixture.py` (`tm-mount` anchor) |
 | confluence | `#confluence` | `section.si-view[data-view="confluence"]#si-confluence` (`sector_central.html.j2:2404`) | LAZY `subsectors.js` self-boots into `#sc-app` (`si_workspace.js:105-109`) | `tests/test_si_workspace_shell.py:99-103` |
+| cycles | `#cycles`; `#cycles/f=&g=&m=&w=&s=` state form (`routeCycles` `si_workspace.js:419`, write-back `__siCyclesHash` `:424`); REHOME `#sc-cyclemap`/`#dossier` → cycles (`:415`, runs before LEGACY_ANCHORS) | `section.si-view[data-view="cycles"]#si-cycles`, between the two halves of the map view (`sector_central.html.j2:2220`); no rail button — entered from the Dossier/Cycles workflow links | LAZY `@cycles` → `loadCycles()` (`si_workspace.js:110,127`); SSR as-of / generation / coverage line from `cycles_context()` (`scripts/build_sector_central.py`) | `tests/test_sector_cycles_shell.py`; `tests/test_si_workspace_shell.py` |
 
 Non-view hash families the router handles:
 - `#theme-<id>` — router short-circuits to overview (`si_workspace.js:351`); the page's

@@ -24,7 +24,7 @@
    view reads use those classes; without this sheet the glyph spans render empty. #}
 <link rel="stylesheet" href="dashboard-icons.css">
 <link rel="stylesheet" href="cycle.css?v=4">
-<link rel="stylesheet" href="sector_cycles.css">
+<link rel="stylesheet" href="sector_cycles.css"><link rel="stylesheet" href="sector_cycles_platform.css"><link rel="stylesheet" href="sector_cycles_states.css">
 <link rel="stylesheet" href="rotation_glance.css">
 {# Preload the embedded cycle map's critical path (core data + engine + orchestrator) so the
    three download in PARALLEL from HTML-parse time instead of the old 3-hop load-event waterfall.
@@ -34,7 +34,7 @@
 <link rel="preload" href="sector_cycles_data.js" as="script">
 <link rel="preload" href="mm_charts.js" as="script">
 <link rel="preload" href="sector_cycles.js" as="script">
-<link rel="prefetch" href="sector_cycles_series_data.js" as="script">
+<link rel="prefetch" href="sector_cycles_series_data.js" as="script"><link rel="prefetch" href="sector_cycles_states.js" as="script"><link rel="prefetch" href="sector_cycles_face.js" as="script"><link rel="prefetch" href="sector_cycles_compare.js" as="script"><link rel="prefetch" href="sector_cycles_platform.js" as="script">
 <link rel="prefetch" href="sector_cycles_narr_data.js" as="script">
 <link rel="prefetch" href="sector_cycles_dna_data.js" as="script">
 <link rel="preload" href="sector_central_data.js" as="script">
@@ -1196,7 +1196,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   .si-trace-foot{margin-top:6px;font-size:12px}
   .si-trace-foot a{color:var(--ink-link, var(--link))}
   .si-vocab{cursor:help;border:1px solid var(--line);border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:11px;color:var(--muted)}
-  #si-map .cyc-stage{margin-top:14px}
+  #si-map .cyc-stage,#si-cycles .cyc-stage{margin-top:14px}
   #si-movement .sr-scope{margin-top:8px}
 
 </style>
@@ -1495,9 +1495,9 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
   </header>
   <nav class="si-workflow" aria-label="Sector Intelligence workflow">
     <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page">{{ t('Brief', '简报') }}</a>
-    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a>
+    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a><a class="si-workflow-link" data-si-workflow="dossier" href="#dossier">{{ t('Dossier', '档案') }}</a>
     <a class="si-workflow-link" data-si-workflow="research" href="#tm-mount">{{ t('Research', '研究') }}</a>
-    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a>
+    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a><a class="si-workflow-link" data-si-workflow="cycles" href="#cycles">{{ t('Cycles', '周期') }}</a>
     <span class="si-workflow-note">{{ t('Sectors, themes and industries, connected.', '串联板块、主题与行业。') }}</span>
   </nav>
   <nav class="si-side" aria-label="Sector Intelligence views" hidden>
@@ -2217,7 +2217,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         <div class="mr-early" id="mr-early"></div>
       </div>
     </section>
-    {# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
+  </section></section>{# /si-view map part 1 #}<section class="si-view" data-view="cycles" id="si-cycles" aria-labelledby="si-cycles-h">{% set _cc = cycles_ctx or {} %}{% set _cg = _cc.get('generation') or {} %}{% set _cv = _cc.get('coverage') %}<div class="rvx-sec-h"><h2 id="si-cycles-h" tabindex="-1">{{ t('Cycles', '周期') }}</h2></div><p class="muted sm si-cycles-ctx-line" id="si-cycles-asof">{{ t('As of', '截至') }} {% if _cc.get('asof') %}<time datetime="{{ _cc.get('asof') }}">{{ _cc.get('asof') }}</time>{% else %}{{ t('— unavailable', '— 不可用') }}{% endif %} · {{ t('Generation', '生成状态') }} <span id="si-cycles-gen">{% if _cg.get('status') == 'aligned' %}{{ t('Up to date', '已是最新') }}{% elif _cg.get('status') == 'incompatible_generation' %}{% set _gx = (_cg.get('artifact_session') or '—')|string %}{% set _gy = (_cg.get('consumer_session') or '—')|string %}<span data-tip-en="{{ 'History {x}, current read {y}. Not drawn, so the two are never mixed.'|replace('{x}', _gx)|replace('{y}', _gy) }}" data-tip-zh="{{ '历史 {x}，当前读数 {y}。不绘制，避免混用。'|replace('{x}', _gx)|replace('{y}', _gy) }}">{{ t('History is from a different day', '历史来自不同日期') }}</span>{% else %}{{ t('— unavailable', '— 不可用') }}{% endif %}</span></p>{% if _cv and _cv.get('expected') and (_cv.get('measured') or 0) < _cv.get('expected') %}<p class="muted sm" id="si-cycles-cov">{{ t('Partial coverage', '覆盖不完整') }} {{ _cv.get('measured') or 0 }} / {{ _cv.get('expected') }}{% if _cv.get('missing') %} · {{ _cv.get('missing')|join(', ') }}{% endif %}</p>{% elif not _cv %}<p class="muted sm" id="si-cycles-cov" data-tip-en="Coverage and its evidence date appear with the measured-sector read." data-tip-zh="覆盖情况与证据日期随板块实测数据一同显示。">{{ t('Sector measurement coverage unavailable', '板块测量覆盖暂不可用') }}</p>{% endif %}<script type="application/json" id="si-cycles-ctx">{{ {'asof': _cc.get('asof'), 'generation': _cc.get('generation'), 'coverage': _cc.get('coverage')}|tojson }}</script>{# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
 <section class="scc-cycle cyc-page sc-page" id="sc-cyclemap">
     <div class="scc-section-h">
       <h2><span class="l-en">Cycle map — every sector &amp; theme on one clock</span><span class="l-zh">周期图谱 — 各板块与主题同框</span></h2>
@@ -2268,7 +2268,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
       </aside>
     </section>
   </section>
-
+  </section>{# /si-view cycles #}<section class="si-view" data-view="map"><section class="rvx-sec" id="si-map-gated">
     {# ── One gated read per sector (11 cap-weighted ETFs) — basket-kind reads live in the lane expands above ── #}
     <div class="scc-boardhead" id="sc-board">
       <div class="scc-section-h">
@@ -3342,7 +3342,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     el.innerHTML='<h2>'+L('Self-grader — measured accuracy','自评分器 — 已衡量准确度')+'</h2>'+
       '<div class="muted sm">'+L('Realized directional hit-rate, cross-sectional rank-IC and excess-vs-SPY of the conviction calls, by horizon. Sparse until it accrues; never fed back into the live score.',
         '按时间跨度衡量信念判断的已实现方向命中率、横截面秩相关与超越SPY的超额收益。数据累积前较稀疏；绝不回灌入实时评分。')+'</div>'+
-      '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>'+
+      '<div class="muted sm">'+L('Conviction-call hit rate over all resolved calls, Neutral included. Not a win rate.','全部已结算判断（含中性）的条件命中率，并非胜率。')+'</div>'+'<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>'+
       graderVersionFrame();
   }
   /* RB13 F1: once score version 2 is active the top-level scorecard is the

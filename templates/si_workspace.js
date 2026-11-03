@@ -14,10 +14,10 @@
    deferred this side). It ships its own hero and its own payload (subsectors.js,
    lazy-mounted below), so it is a promise the data can keep. It has no si-read slot — its
    hero is its read. */
-var VIEWS=['overview','map','moving','money','explore','confluence'];
+var VIEWS=['overview','map','moving','money','explore','confluence','cycles'];
 var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
   moving:['Rotation','轮动'],money:['Breadth & money','广度与资金'],
-  explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据']};
+  explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据'],cycles:['Cycles','周期']};
 /* View glyphs = the estate's hand-drawn masked-icon family (product-nav-icons /
    dashboard-icons — the same set the nav mega-menus draw), tinted via currentColor.
    Never raw emoji beside the wordmark. */
@@ -27,7 +27,7 @@ var GLYPH={
   moving:'dash-icon submenu-icon-rotation',
   money:'dash-icon submenu-icon-flow',
   explore:'dash-icon dash-icon-search',
-  confluence:'dash-icon submenu-icon-confluence'};
+  confluence:'dash-icon submenu-icon-confluence',cycles:'dash-icon submenu-icon-rotation'};
 
 /* ── LEGACY_ANCHORS (§2b) ───────────────────────────────────────────────────────
    Every pre-V2 deep link on the estate — the two redirect stubs, chat citations,
@@ -106,7 +106,8 @@ var LAZY={
      now-visible view and fetches its board JSON. It writes innerHTML only — no clientWidth
      read — so it needs no laid-out box; it is lazy purely so that heavy fetch never fires
      on an Overview-only visit. */
-  confluence:['subsectors.js']
+  confluence:['subsectors.js'],
+  cycles:['@cycles']
 };
 var loaded={}, mounted={}, pendingTrace=null;
 
@@ -128,10 +129,30 @@ function loadCycles(){
   window.SC_LAZY_EXTRAS=true;                       // narr+dna wait for first sector focus
   window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];
   window.SC_SERIES_DATA='sector_cycles_series_data.js';
-  var files=['sector_cycles_data.js','mm_charts.js','sector_cycles.js'];
+  var files=['sector_cycles_data.js','mm_charts.js','sector_cycles_states.js','sector_cycles_face.js',
+             'sector_cycles_compare.js','sector_cycles_platform.js','sector_cycles.js'];
   files.forEach(function(f,i){
-    inject(f, i===0?function(){ document.dispatchEvent(new CustomEvent('sc:cycles-data')); }:null);
+    inject(f, i===0?function(){ document.dispatchEvent(new CustomEvent('sc:cycles-data')); }:
+              i===files.length-1?cyclesGenerationCheck:null);
   });
+}
+/* C24: the SSR context line states the build-time generation; once the cycles payload is
+   in, SC_STATES compares the page's as-of with the payload's own clock. A mismatch repaints
+   the line as incompatible — the two generations are never drawn together. Without
+   SC_STATES the server-rendered line stands. */
+function cyclesGenerationCheck(){
+  var S=window.SC_STATES, el=document.getElementById('si-cycles-gen'), ctx=null;
+  if(!S||!S.generationCheck||!el) return;
+  try{ ctx=JSON.parse((document.getElementById('si-cycles-ctx')||{}).textContent||'null'); }catch(e){ ctx=null; }
+  if(!ctx||!ctx.asof) return;
+  var meta=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta)||null, r=null;
+  if(!meta) return;
+  try{ r=S.generationCheck([{asOf:ctx.asof},meta]); }catch(e){ r=null; }
+  if(!r||r.ok) return;
+  var x=String(ctx.asof), y=String((meta&&(meta.asOf||meta.as_of))||'—');
+  el.innerHTML='<span data-tip-en="'+esc('History {x}, current read {y}. Not drawn, so the two are never mixed.'.replace('{x}',x).replace('{y}',y))+'"'
+    +' data-tip-zh="'+esc('历史 {x}，当前读数 {y}。不绘制，避免混用。'.replace('{x}',x).replace('{y}',y))+'">'
+    +L('History is from a different day','历史来自不同日期')+'</span>';
 }
 function loadAssets(view){
   var list=LAZY[view]||[];
@@ -263,9 +284,11 @@ function paintFoot(){
   }
   var bh=GR.by_horizon||{}, h=bh['21d']||bh['63d']||bh['126d']||null;
   g.innerHTML=((h&&h.dir_hit_rate!=null)
-    ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0),
-        '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0))
+    ? L('Self-grader: '+Math.round(h.dir_hit_rate*100)+'% hit · n='+(h.n||0)+' · Not a win rate',
+        '自评分器：命中 '+Math.round(h.dir_hit_rate*100)+'% · n='+(h.n||0)+' · 并非胜率')
     : L('Self-grader: accruing','自评分器：累积中'))+graderVersionFrame(GR);
+  g.title=isZh()?'全部已结算判断（含中性）的条件命中率，并非胜率。'
+    :'Conviction-call hit rate over all resolved calls, Neutral included. Not a win rate.';
 }
 /* RB13 F1: the rail summary is the version-1 cohort once version 2 is active — frame it. */
 function graderVersionFrame(GR){
@@ -312,7 +335,7 @@ var SCROLL_MEM={};
 var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes any
                        still-pending replay frame from an earlier activation — a stale
                        frame must not scroll a view that is no longer on screen */
-function activate(view,target){
+function activate(view,target,user){
   if(VIEWS.indexOf(view)<0) view='overview';
   var gen=++SCROLL_GEN;   /* every activation invalidates pending replay frames */
   /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
@@ -326,7 +349,7 @@ function activate(view,target){
   }
   /* Paper's workflow belongs to Macro. Research and watches land on existing
      Macro instruments; they do not introduce Terminal routes or storage. */
-  var group=view==='overview'?'brief':
+  var group=view==='overview'?'brief':view==='cycles'?'cycles':
     (target==='tm-mount'||target==='forming-narratives')?'research':
     target==='accumulation-section'?'watches':'explore';
   var workflow=document.querySelectorAll('[data-si-workflow]');
@@ -337,7 +360,7 @@ function activate(view,target){
     else workflow[i].removeAttribute('aria-current');
   }
   var subnav=document.querySelector('.si-side');
-  if(subnav) subnav.hidden=view==='overview';
+  if(subnav) subnav.hidden=view==='overview'||view==='cycles';
   try{ document.title=BASE_TITLE+' · '+TITLES[view][isZh()?1:0]; }catch(e){}
   current=view;
   /* First activation mounts the heavy organs. The view must be laid out first so the
@@ -359,6 +382,14 @@ function activate(view,target){
      display:none — lightweight-charts binds autoSize at creation and a chart born
      zero-wide never recovers — so they wait for this event to draw with a real box. */
   try{ document.dispatchEvent(new CustomEvent('si:view',{detail:view})); }catch(e){}
+  if(view==='cycles'&&user){
+    /* a user-initiated arrival moves focus to the view heading and says where it landed */
+    var hd=document.getElementById('si-cycles-h');
+    if(hd){ try{ hd.focus({preventScroll:!!target}); }catch(e){ hd.focus(); } }
+    if(window.SC_PLATFORM&&window.SC_PLATFORM.announce){
+      try{ window.SC_PLATFORM.announce(TITLES.cycles[isZh()?1:0]); }catch(e){}
+    }
+  }
   reads();
   if(target){
     var el=document.getElementById(target);
@@ -379,12 +410,34 @@ function activate(view,target){
     });
   }
 }
-function route(){
+/* The cycle map left the market-map view for its own Cycles view. These anchors are
+   checked before LEGACY_ANCHORS, which stays byte-identical for every other bookmark. */
+var REHOME={'sc-cyclemap':['cycles','sc-cyclemap'],'dossier':['cycles','sc-cyclemap']};
+var SPDR={XLB:1,XLC:1,XLE:1,XLF:1,XLI:1,XLK:1,XLP:1,XLRE:1,XLU:1,XLV:1,XLY:1};
+/* `#cycles/f=&g=&m=&w=&s=` — the router owns the hash; the renderer owns the state.
+   The query is parked on window before the event so a renderer that boots later reads it. */
+function routeCycles(qs,user){
+  window.__siCyclesPending=qs;
+  activate('cycles',null,user);
+  try{ document.dispatchEvent(new CustomEvent('si:cycles-state',{detail:{qs:qs}})); }catch(e){}
+}
+window.__siCyclesHash=function(qs){
+  qs=String(qs==null?'':qs);
+  try{ if(history.replaceState) history.replaceState(null,'','#cycles/'+qs); }catch(e){}
+  var m=/(?:^|&)s=([^&]*)/.exec(qs), sym='';
+  try{ sym=m?decodeURIComponent(m[1]).toUpperCase():''; }catch(e){ sym=''; }
+  var a=document.querySelector('[data-si-workflow="dossier"]');
+  if(a) a.setAttribute('href',SPDR[sym]===1?'sectors/'+sym+'.html#cycle':'#dossier');
+};
+function route(ev){
+  var user=!!(ev&&ev.type==='hashchange');
   var h=(location.hash||'').replace(/^#/,'');
   try{ h=decodeURIComponent(h); }catch(e){}
   if(h.indexOf('theme-')===0){ activate('overview',null); return; }  // resolver owns it
   if(h.indexOf('read-')===0){ pendingTrace=h.slice(5); activate('overview',null); return; }
-  if(VIEWS.indexOf(h)>=0){ activate(h,null); return; }
+  if(h.indexOf('cycles/')===0){ routeCycles(h.slice(7),user); return; }
+  if(VIEWS.indexOf(h)>=0){ activate(h,null,user); return; }
+  if(REHOME[h]){ activate(REHOME[h][0],REHOME[h][1],user); return; }
   if(LEGACY_ANCHORS[h]){ activate(LEGACY_ANCHORS[h][0],LEGACY_ANCHORS[h][1]); return; }
   activate('overview',null);                                        // unknown → overview
   if(!h&&history.replaceState) history.replaceState(null,'','#overview');

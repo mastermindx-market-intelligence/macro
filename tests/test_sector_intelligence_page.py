@@ -31,7 +31,8 @@ def _view_body(src: str, view: str) -> str:
     # re.split with one group → [pre, name, body, name, body, ...]
     names, bodies = opens[1::2], opens[2::2]
     assert view in names, f"no si-view for {view!r} (found {names})"
-    return bodies[names.index(view)]
+    # The map view is split around the Cycles view; membership is the union.
+    return "".join(b for n, b in zip(names, bodies) if n == view)
 
 
 # ---------------------------------------------------------------- stubs
@@ -104,7 +105,8 @@ VIEW_MEMBERSHIP = {
     "overview": ('id="ftr-tape-strip"', 'id="ftr-tape-band"', 'id="regime"',
                  'id="actnow-section"', '_us_act_now_board.html.j2', 'id="grader"'),
     "map": ('id="rotmap-section"', 'id="si-map"', 'id="rvx-rmap"', 'id="rvx-board"',
-            'id="sc-cyclemap"', 'id="sc-chart"', 'id="board"'),
+            'id="board"'),
+    "cycles": ('id="sc-cyclemap"', 'id="sc-chart"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
                'id="desk-watch-mount"', 'id="accumulation-section"',
                "_accumulation_watch.html.j2"),
@@ -133,7 +135,11 @@ def test_view_order_is_the_sidebar_order() -> None:
     leaves the five original tab positions where returning readers left them."""
     s = _read(TPL / "sector_central.html.j2")
     order = ["overview", "map", "moving", "money", "explore", "confluence"]
-    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', s) == order
+    # Cycles has no rail button (workflow links + #cycles/<qs>) and its section sits
+    # between the two halves of the map view, so section order != button order.
+    sections = ["overview", "map", "cycles", "map", "moving", "money", "explore",
+                "confluence"]
+    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', s) == sections
     assert re.findall(r'class="si-view-btn[^"]*" data-view="([a-z]+)"', s) == order
     # The funnel exit link is gone: it pointed at subsectors.html from one row below the
     # #confluence button, wearing the same glyph — two rail entries to the same board.

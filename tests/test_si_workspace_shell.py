@@ -64,7 +64,9 @@ def _view_body(src: str, view: str) -> str:
     parts = re.split(r'<section class="si-view[^"]*" data-view="([a-z]+)"', src)
     names, bodies = parts[1::2], parts[2::2]
     assert view in names, f"no si-view for {view!r} (found {names})"
-    return bodies[names.index(view)]
+    # A view may be split into several sibling sections (the map view wraps the
+    # Cycles view: map part 1, cycles, map part 2) - membership is the union.
+    return "".join(b for n, b in zip(names, bodies) if n == view)
 
 
 # ────────────────────────────────────────────────────────────── sidebar + views
@@ -81,10 +83,16 @@ def test_sidebar_present_with_six_view_buttons() -> None:
     assert 'aria-current="page"' in s
 
 
+#: Section order in the template. The Cycles view (no rail button; entered from
+#: the workflow links and #cycles/<qs>) sits between the two halves of the map view.
+SECTION_ORDER = ["overview", "map", "cycles", "map", "moving", "money", "explore",
+                 "confluence"]
+
+
 def test_six_views_in_partition_order() -> None:
     s = _page()
-    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', s) == NAV_VIEWS
-    assert s.count("{# /si-view") == 6, "a view wrapper is unclosed"
+    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', s) == SECTION_ORDER
+    assert s.count("{# /si-view") == 8, "a view wrapper is unclosed"
     # exactly one view ships pre-activated, so the correct panel is visible before
     # the router runs (no flash, and no blank page if the script fails to load)
     assert s.count('<section class="si-view on"') == 1
@@ -139,7 +147,8 @@ def test_mobile_switcher_keeps_the_workflow_and_labels() -> None:
 
 VIEW_ORGANS = {
     "overview": ('id="ftr-tape-strip"', 'id="regime"', 'id="actnow-section"', 'id="grader"'),
-    "map": ('id="rotmap-section"', 'id="si-map"', 'id="sc-cyclemap"', 'id="board"'),
+    "map": ('id="rotmap-section"', 'id="si-map"', 'id="board"'),
+    "cycles": ('id="sc-cyclemap"', 'id="si-cycles-h"', 'id="si-cycles-asof"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
                'id="desk-watch-mount"', 'id="accumulation-section"'),
     "money": ('id="si-money"', 'id="internals-section"', 'id="heatmap-scorecard"',
@@ -204,6 +213,11 @@ def test_legacy_anchor_is_routed(anchor: str, view: str) -> None:
     assert row in src, f"LEGACY_ANCHORS lost {anchor!r} → {view!r}"
 
 
+#: Router REHOME (si_workspace.js) runs before LEGACY_ANCHORS: the literal row
+#: above stays byte-identical, but these anchors now resolve to another view.
+REHOME = {"sc-cyclemap": "cycles"}
+
+
 @pytest.mark.parametrize("anchor,view", sorted(LEGACY_ANCHORS.items()))
 def test_legacy_anchor_target_exists_in_that_view(anchor: str, view: str) -> None:
     """The other half of the contract, and the half a router-only pin cannot see:
@@ -212,6 +226,7 @@ def test_legacy_anchor_target_exists_in_that_view(anchor: str, view: str) -> Non
     anchor and the scroll target are the same id; si-heat-section scrolls to
     the pre-existing <span id="theme-heat-section"> in #explore-section."""
     src = _page()
+    view = REHOME.get(anchor, view)
     if anchor == "forming-narratives":     # lives inside the included partial
         body = _view_body(src, view)
         assert "_forming_narratives.html.j2" in body
@@ -507,7 +522,7 @@ def test_page_renders_with_an_intact_head() -> None:
     assert title and title.group(1).strip(), "empty <title>"
     # and the shell survived the render, not just the source
     assert 'class="si-shell"' in html and html.count('class="si-view-read"') == 5
-    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', html) == NAV_VIEWS
+    assert re.findall(r'<section class="si-view[^"]*" data-view="([a-z]+)"', html) == SECTION_ORDER
 
 
 def test_no_i18n_macro_inside_an_html_attribute() -> None:
@@ -580,9 +595,10 @@ def _replay_router(hashes):
         const src = fs.readFileSync('templates/si_workspace.js', 'utf8');
         // Inject capture into activate() so we can read what route() resolved to.
         const patched = src.replace(
-          'function activate(view,target){',
-          'function activate(view,target){globalThis.__lastActivate=[view,target];'
+          'function activate(view,target,user){',
+          'function activate(view,target,user){globalThis.__lastActivate=[view,target];'
         );
+        if (patched === src) throw new Error('activate() signature drifted; capture not injected');
         const ctx = {
           document: {
             documentElement: { getAttribute: () => null },
