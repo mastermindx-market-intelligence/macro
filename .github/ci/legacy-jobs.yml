@@ -49825,6 +49825,13 @@ jobs:
       - "scripts/fit_cycle_hazard.py"
       - "scripts/probe_theme_exposure_axes.py"
       - "scripts/stock_liquidity_profile.py"
+      # Data closure through main code (R-36 item 36): app/government_revenue.py:116/141/145/149/153 and engine/catalyst_opportunity/reader.py:14 read these site/ files (widen only).
+      - "site/basketdata/sector_pulse.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
