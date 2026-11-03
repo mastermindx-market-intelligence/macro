@@ -3635,10 +3635,11 @@ def _publish_admission_reference(repo, read_token, write_token, admitted, refere
     root = f"{GITHUB_API}/repos/{repo}"
     status, result = _request("POST", root + f"/issues/{admitted.pr_number}/comments", read_token, {"body": body})
     if (status != 201 or not isinstance(result, dict) or type(result.get("id")) is not int
-            or result["id"] <= 0 or result.get("body") != body):
+            or result["id"] <= 0 or result.get("body") != body
+            or not admission_index_writer(result)):
         return False
     status, observed = _request("GET", root + f"/issues/comments/{result['id']}", read_token)
-    return status == 200 and isinstance(observed, dict) and observed.get("id") == result["id"] and observed.get("body") == body
+    return status == 200 and isinstance(observed, dict) and observed.get("id") == result["id"] and observed.get("body") == body and admission_index_writer(observed)
 
 
 def publish_prepared_shared_admission(repo, read_token, write_token, reference, *, repository_id,
@@ -3899,8 +3900,13 @@ def admission_index_writer(comment):
             or author["id"] <= 0 or not isinstance(author.get("login"), str)
             or not isinstance(author.get("type"), str)):
         raise ValueError("admission index author unavailable")
-    return (author["id"] == 41898282 and author["type"] == "Bot"
-            and author["login"] == "github-actions[bot]")
+    if author["id"] == 41898282:
+        if author["type"] != "Bot" or author["login"] != "github-actions[bot]":
+            raise ValueError("contradictory original bot identity")
+        return True
+    if author["login"] == "github-actions[bot]":
+        raise ValueError("contradictory original bot identifier")
+    return False
 
 
 def pr_admission_history(repo, token, number, comments, *, repository_id, protected_controller_sha, reference_catalog=None, allow_empty=False):

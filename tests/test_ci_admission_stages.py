@@ -384,3 +384,19 @@ def test_preintent_missing_proof_does_not_starve_later_original(controller,monke
     assert seen==[99,100] and state['publisher_calls']==1
     assert state['description']=='a2 idle'
     assert state['writes'][0][2]['description']=='a2 p=8 g=bbbbbbbbbbbb s=completing'
+
+
+@pytest.mark.parametrize('wrong_phase', ['POST','GET'])
+def test_stage_index_unknown_author_never_advances_to_association(controller,monkeypatch,wrong_phase):
+    calls=[];saved={}
+    bot={'id':41898282,'login':'github-actions[bot]','type':'Bot'}
+    def request(method,url,token,payload=None):
+        calls.append((method,url));assert '/comments' in url
+        if method=='POST':
+            assert token=='read';saved['body']=payload['body']
+        return (201 if method=='POST' else 200),dict(id=71,body=saved['body'],
+            user={'id':42,'login':'pat-owner','type':'User'} if method==wrong_phase else bot)
+    monkeypatch.setattr(mog,'_request',request)
+    with pytest.raises(RuntimeError,match='UNKNOWN'):
+        controller.index(7,mog.DEMAND_COMMENT_PREFIX,{})
+    assert sum(method=='POST' for method,_ in calls)==1

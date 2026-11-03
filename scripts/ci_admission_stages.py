@@ -206,10 +206,10 @@ class Stages:
         body = prefix + json.dumps(reference, sort_keys=True, separators=(',', ':'))
         root = f'{mog.GITHUB_API}/repos/{self.repo}'
         code, result = mog._request('POST', root + f'/issues/{number}/comments', self.read, {'body': body})
-        if code != 201 or not isinstance(result, dict) or type(result.get('id')) is not int or result.get('body') != body:
+        if code != 201 or not isinstance(result, dict) or type(result.get('id')) is not int or result.get('body') != body or not mog.admission_index_writer(result):
             raise RuntimeError('UNKNOWN original receipt index')
         code, observed = mog._request('GET', root + f"/issues/comments/{result['id']}", self.read)
-        if code != 200 or observed.get('id') != result['id'] or observed.get('body') != body:
+        if code != 200 or observed.get('id') != result['id'] or observed.get('body') != body or not mog.admission_index_writer(observed):
             raise RuntimeError('UNKNOWN original receipt index readback')
         code, _ = mog._request('POST', root + f'/issues/{number}/labels', self.write, {'labels': [mog.REFRESH_LEASE_LABEL]})
         if code != 200:

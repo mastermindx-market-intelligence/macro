@@ -259,7 +259,7 @@ def custody_harness(monkeypatch, *, fail_at=None):
         if url.endswith('/branches/main'):
             return 200,{'commit':{'sha':'4'*40}}
         if url.endswith('/comments') and method=='POST':
-            c={'id':100+len(state['comments']), 'body':payload['body']}
+            c={'id':100+len(state['comments']), 'body':payload['body'], 'user':{'id':41898282,'login':'github-actions[bot]','type':'Bot'}}
             state['comments'].append(c)
             return 201,c
         if '/issues/comments/' in url:
@@ -505,3 +505,19 @@ def test_open_census_cap_is_not_partial_eligibility(monkeypatch):
     monkeypatch.setattr(mog,'OPEN_PULL_PAGE_CAP',1)
     monkeypatch.setattr(mog,'_request',lambda *args:(200,[{'number':n} for n in range(1,101)]))
     with pytest.raises(RuntimeError,match='truncated'):mog.open_pulls('acme/widgets','read')
+
+
+def test_original_index_acknowledgement_requires_server_bot_provenance(monkeypatch):
+    from types import SimpleNamespace
+    writes=[]
+    def api(method,url,token,payload=None):
+        if method=='POST':writes.append(payload)
+        return (201 if method=='POST' else 200),dict(id=8,body=writes[0]['body'],user=dict(id=42,login='pat-owner',type='User'))
+    monkeypatch.setattr(mog,'_request',api)
+    assert mog._publish_admission_reference('acme/widgets','read','write',SimpleNamespace(pr_number=7),{}) is False
+    assert len(writes)==1
+
+
+def test_contradictory_immutable_bot_identity_is_unknown():
+    with pytest.raises(ValueError):
+        mog.admission_index_writer({'user':{'id':41898282,'login':'github-actions[bot]','type':'User'}})

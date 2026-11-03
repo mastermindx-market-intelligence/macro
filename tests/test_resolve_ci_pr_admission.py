@@ -79,7 +79,7 @@ class Harness:
         if path == "/issues/123/comments?per_page=100&page=1":
             self.readbacks += 1
             ids = [80] if self.readbacks <= self.wait_reads else [80, 81]
-            return 200, [{"body": resolver.mog.ADMISSION_COMMENT_PREFIX + json.dumps(self.refs[i])} for i in ids]
+            return 200, [{"user":{"id":41898282,"login":"github-actions[bot]","type":"Bot"},"body": resolver.mog.ADMISSION_COMMENT_PREFIX + json.dumps(self.refs[i])} for i in ids]
         if path == "/pulls/123":
             return 200, self.pull
         if path == "/git/commits/" + "3" * 40:
@@ -249,3 +249,14 @@ def test_get_only_deadline_wrapper_restores_incumbent_interfaces(h):
             resolver.mog._request("POST", "https://api.github.com/repos/" + resolver.REPOSITORY + "/actions", "test-token")
     assert resolver.mog._request == old_request
     assert resolver.mog.REQUEST_TIMEOUT_SECONDS == old_timeout
+
+
+def test_outsider_malformed_index_cannot_consume_admitted_original(h,monkeypatch):
+    original=resolver.mog.fetch_issue_comments
+    def comments(*a,**kw):
+        rows=original(*a,**kw)
+        return [{'id':9,'user':{'id':42,'login':'outsider','type':'User'},
+                 'body':resolver.mog.ADMISSION_COMMENT_PREFIX+'{'}]+rows
+    monkeypatch.setattr(resolver.mog,'fetch_issue_comments',comments)
+    assert resolver.resolve(**h.args())['semantic_role']=='pr_head'
+    assert not h.sleeps

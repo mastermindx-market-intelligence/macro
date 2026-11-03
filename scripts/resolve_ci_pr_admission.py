@@ -200,6 +200,8 @@ def resolve(inputs, *, repository, repository_id, run_id, run_attempt,
                     body = comment.get("body")
                     if not isinstance(body, str) or not body.startswith(mog.ADMISSION_COMMENT_PREFIX):
                         continue
+                    if not mog.admission_index_writer(comment):
+                        continue
                     if len(body) > 4096:
                         raise ResolutionError("oversized admission index")
                     reference = json.loads(body[len(mog.ADMISSION_COMMENT_PREFIX):], object_pairs_hook=admission._unique_object)
