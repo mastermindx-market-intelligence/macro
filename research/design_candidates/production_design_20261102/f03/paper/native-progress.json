@@ -1,0 +1,384 @@
+{
+  "schema": "f03.native_progress.v1",
+  "assignment": "F03",
+  "status": "NATIVE_AUTHORING_IN_PROGRESS",
+  "observed_at": "2026-11-03T06:03:02.657Z",
+  "source_base": "3dc736ef07090166a569cd5368b33b06b6dc2d42",
+  "protected_procedure": "b4a5a8925c6c1412dac67ba296cf65ee81c4d4c8",
+  "carrier": "Mastermind Paper direct app",
+  "catalog_policy": "TOOL_SCOPED_CONTRACT_V1",
+  "qualified_write_tools": 16,
+  "completed": {
+    "page_labels": [
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1H-0",
+        "name": "Bonds · Decision & Credit Studies · Revision index",
+        "artboard_ids_preserved": 12
+      },
+      {
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-10-0",
+        "name": "Crypto Intelligence · R4 · Design References",
+        "artboard_ids_preserved": 8
+      }
+    ],
+    "directory": {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G0X-2",
+      "canonical_families": 27,
+      "options_slices": 4,
+      "state": "editable first pass captured; advisory critique requires discovery improvements"
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "f03-20261103-page-labels-01",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:48:01.294Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-headings-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:50:12.067Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-style-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:50:25.539Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-columns-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:50:30.831Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-layout-01",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:51:08.110Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:51:18.061Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D04",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:52:55.683Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D06",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:53:02.558Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D08",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:53:08.317Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-link-treatment-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:53:45.749Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-link-truth-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:53:56.438Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D14",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:53:59.913Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D22",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:54:05.198Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D23",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:54:13.671Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D25",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:54:16.950Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-options-slices-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:54:26.081Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D02",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:54:52.395Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D03",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:55:01.803Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D05",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:55:11.437Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D15",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:55:19.405Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D16",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:55:25.426Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D17",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:14.285Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D18",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:21.564Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D19",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:31.611Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D20",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:38.893Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D21",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:45.223Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D07",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:56:54.581Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D09",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:57:02.521Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D10",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:57:08.697Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D11",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:57:15.302Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D12",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:58:13.727Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D13",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:58:24.509Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D24",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:58:52.287Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D26",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:59:17.842Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-family-D27",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:59:32.937Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-source-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "observed_at": "2026-11-03T05:59:44.892Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
+      "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    }
+  ],
+  "unresolved_effects": [],
+  "formal_review_receipt": null,
+  "foundation_input": {
+    "f02_commit": "245d70bbd3ac773f3074277c771095264b31269d",
+    "system": "F02-SYSTEM/1.0.0-candidate.2",
+    "f01_joint_freeze": null
+  },
+  "remaining": [
+    "Apply advisory discovery improvements to main directory",
+    "Compose and inspect lineage, coverage and Terminal anchors",
+    "Create Read me and content-width/state specimens",
+    "Apply safe existing-page organization and verify identities",
+    "Freeze complete evidence and update source companion",
+    "Formal review and parent CI base gate remain open"
+  ],
+  "held": [
+    "Folder creation/resource moves/archive operations blocked by adapter",
+    "Cross-file page transfer unsupported",
+    "Blank-file create/clone held by client publication contract",
+    "Native link activation and browser/assistive interaction acceptance unverified"
+  ],
+  "next_action": "Continue same direct carrier on F03 directory boards; preserve all original identities; consume the frozen advisory first pass.",
+  "no_merge_or_deploy": true
+}
