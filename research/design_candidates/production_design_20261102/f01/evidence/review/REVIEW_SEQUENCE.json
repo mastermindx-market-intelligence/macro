@@ -1,0 +1,75 @@
+{
+  "schema": "F01.review_sequence.v1",
+  "status": "REQUEST_CHANGES / PARTIAL / RIG draft",
+  "firstPassPublishedBeforeReveal": "09742de176f553bb30e89a0ade95643d76416c30",
+  "artifactOnlyManifestSha256": "f5092fa6ff999fefb8b00a3ed15d0157756fd5f5fbedeae9fa645e31f113ee1b",
+  "rationaleRevealSha256": "590be01ad7fe281ad6929e2e34036a0a3a728348d9921a345f9766653d9f6645",
+  "reports": [
+    {
+      "path": "evidence/review/PRODUCT_ADVISORY.md",
+      "classification": "ADVISORY_WITH_ADVANCE_CONTEXT",
+      "input": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+      "sha256": "86d8f75f4af2473a0668f6627108d680d867928108db535ab7b1595eebcebf39",
+      "bytes": 32752,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/VISUAL_ADVISORY.md",
+      "classification": "ADVISORY_WITH_ADVANCE_CONTEXT",
+      "input": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+      "sha256": "f2b00c6d00319a4592b494a907785abc562b370d7e29cad5025adce73109d0c2",
+      "bytes": 27560,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/PRODUCT_FOLLOWUP.md",
+      "classification": "SOURCE_ONLY_FOLLOWUP",
+      "input": "b55efe221d16ae5e64935af4c60572701b2a43a0 + explicit AppShell supplement",
+      "sha256": "55b362ba665beb7901d6ba03578c0be0234341ed7e4cd78a84f2afc425b60914",
+      "bytes": 20517,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/VISUAL_FOLLOWUP.md",
+      "classification": "RETAINED_STATE_FOLLOWUP",
+      "input": "b55efe221d16ae5e64935af4c60572701b2a43a0",
+      "sha256": "6df7ddfc51382d5ffafd61bb9a29199ee8050c8533da313d22a0d6632470d44f",
+      "bytes": 17119,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/CLOSED_PRODUCT_FIRST_PASS.md",
+      "classification": "ARTIFACT_ONLY_FIRST_PASS",
+      "input": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
+      "sha256": "a2b2512933686221fdb3b16ac917ab78fabef5312600e379d81eb56a0b2266b8",
+      "bytes": 21245,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/CLOSED_TASTE_FIRST_PASS.md",
+      "classification": "ARTIFACT_ONLY_FIRST_PASS",
+      "input": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae",
+      "sha256": "e54d3f96a8839c995199dd6fffa41b1a0008e9137c89dd1a8b7507de35448925",
+      "bytes": 31435,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/CLOSED_PRODUCT_AMENDMENT.md",
+      "classification": "POST_RATIONALE_AMENDMENT",
+      "input": "First pass 09742de176f553bb30e89a0ade95643d76416c30; source 3ec131bb4b515c5ede76f51e9d8e65f128bc19ae + reveal",
+      "sha256": "9add6cb08aae5157304b99969184badd2fb9c3dd48262c2a7d19bf5a6ea45210",
+      "bytes": 17058,
+      "formal_qualification": false
+    },
+    {
+      "path": "evidence/review/CLOSED_TASTE_AMENDMENT.md",
+      "classification": "POST_RATIONALE_AMENDMENT",
+      "input": "First pass 09742de176f553bb30e89a0ade95643d76416c30; source 3ec131bb4b515c5ede76f51e9d8e65f128bc19ae + reveal",
+      "sha256": "d660a444849f9b90ec7de0d8fdfdcc0ef75655df57c202274b2f00d0e885e416",
+      "bytes": 21833,
+      "formal_qualification": false
+    }
+  ],
+  "native_repairs_after_first_pass": false,
+  "current_source_supplements_outside_review": "Builder/measurement plan; 290-row directory proposal; attributed D02/D08 consumer notes and M01-M06; documentation/return consistency changes. No acceptance inherited."
+}

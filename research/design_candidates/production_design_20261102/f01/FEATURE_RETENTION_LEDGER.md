@@ -1,6 +1,6 @@
 # F01 — Feature and predecessor retention ledger
 
-**Disposition vocabulary:** Retain = preserve capability/identity; Improve = preserve capability while changing presentation; Source qualification = existing behavior or boundary must be proven by the owning path. No capability is intentionally removed. This ledger is a design commitment, not an assertion that implementation has passed.
+**Primary disposition vocabulary:** RETAIN preserves the capability/identity; IMPROVE preserves it while changing presentation or interaction. Qualification is a separate status, not a sixth disposition. No existing capability is intentionally relocated or removed. Counts:23 RETAIN,13 IMPROVE,0 RELOCATE,0 REMOVE,0 BLOCKED_DATA among these 36 existing-capability rows. Unsupported extra specimen fields are recorded separately below rather than fabricated. This ledger is a design commitment, not an assertion that implementation has passed.
 
 Baseline sources are pinned in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md). The current generated Terminal projection has 13,987 legacy paths, 17 native paths and 290 directory entries. Its generatedAt metadata is 2026-10-21T16:34:10Z; the inspected containing source is 3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9. The old timestamp is not proof of current freshness. The full 290-entry directory retention audit is a non-runtime source snapshot; F03 and the existing exporter retain authority.
 
@@ -8,42 +8,42 @@ Baseline sources are pinned in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CON
 
 | ID | Existing capability / exact boundary | Disposition and candidate treatment | Qualification / owner |
 | --- | --- | --- | --- |
-| F01-L01 | Six primary workspace routes | Retain; labeled desktop, explicit compact, one narrow drawer | AppNav/MobileNav; one current destination |
-| L02 | US/CN/HK/CA/International homes | Retain exact hrefs; improve separation of destination and context | No new persisted region API; F03/domain mapping |
-| L03 | Specialist and legacy deep links | Retain every admitted path, query and hash | Existing registry/export/resolver; no title-based merging |
-| L04 | Company search and exact manifest key | Retain existing SymbolPicker pipeline; improve naming/disambiguation | Search source contract and C01–C09 |
-| L05 | Recent results, category/market visibility and Show all markets | Retain actual owner and persistence semantics | Do not call a saved preference a temporary filter |
-| L06 | All tools, category/query matching and aliases | Improve labels/disambiguation; preserve search and exact routes | F01 + F03 exporter; all290 entries retained |
-| L07 | Result counts and Show more | Retain current48-item increments and no-prefetch | Search/category reset and focus tests |
-| L08 | Slash and Command/Control+K | Retain editable-control exclusions; name both entries | Cross-origin frame shortcut support unproven |
-| L09 | Company cursor propagation | Retain chart/Analysis-specific propagation | No speculative symbol on unrelated workspaces |
-| L10 | Analysis view grammar | Retain company/theses/investigations and validation | D07 analysisRoute; no second parser |
-| L11 | Seven Company sections | Retain Overview, Intelligence, Financials, Earnings, Market, Ownership, Lab | D07; all reachable on phone |
-| L12 | Financials depth | Retain Statements/Statistics/Revenue/Dividends/Compare, statement types, annual/quarterly | D07; composed specimen is not a replacement page |
-| L13 | Company historical periods/transcripts | Retain earlier/later periods, available history and transcripts | Live overview exposed2010–2026 valuation chart; no four-year truncation from specimen |
-| L14 | Saved research and Your theses | Retain destinations and immutable owner keys | D07/D11/D12/D23; navigation is not save |
-| L15 | Options seven-category IA and15 destinations | Retain real categories, subviews, aliases and Futures boundary | D08; exact source table in source contract |
-| L16 | Options filters/export/replay/temporal identity | Retain domain-owned controls and full rows/columns | No invented whole-market denominator or source clock |
-| L17 | Macro analytics and D02/D03 shared template | Retain; F01 supplies container/context slots only | D02 dashboard integration; D03 stock region |
-| L18 | Chart/table primary objects | Retain; widths and local overflow protect analytical depth | F02 patterns; domain exact-value path |
-| L19 | Evidence/source inspection | Improve one-object dock/modal behavior | Keep source precision, limitation, selection and focus |
-| L20 | Terminal current-chart entry | Retain exact ret and correct symbol priority | Entry paths tested separately; generic Terminal distinguished |
-| L21 | Focused Terminal/chart/Brain | Retain separate chrome and singleton | D06; no AppShell wrapper or second assistant |
-| L22 | Named return | Retain captured safe URL and owner behavior | Full native scroll/focus restoration still unproven |
-| L23 | Browser history and legacy view snapshots | Retain entry identity, bounded64-entry map and identity reset | Not unlimited persistent restoration |
-| L24 | Existing auth identity | Retain claims.sub ownership; email is presentation | Dynamic/private layout; domain access remains independent |
-| L25 | Account/settings/help entry | Retain in expanded/compact/drawer modes | D25; no duplicate preference store |
-| L26 | Guest/plan/expired/account failure distinctions | Retain/improve actual recovery with safe return | Require real owner input, not coming_soon inference |
-| L27 | Pending/failed/uncertain/saved outcomes | Retain owner write/readback semantics | D23; close does not cancel or justify unconditional retry |
-| L28 | Loading/read error/known-route failure | Retain scope, dates, retry and original-page actions | Host/domain source and native state atlas |
-| L29 | Unknown routes and host/content mismatch | Retain typed distinction and canonical target | Registry/status/message owner; no silent Today fallback |
-| L30 | Light/dark/auto and EN/ZH | Improve coherent roles; preserve actual preference effects | Focused chart exception, English public body retained |
-| L31 | Financial signs, zeros, nulls and clocks | Retain domain meaning; show units, periods, absence and coverage | No build/context timestamp promoted to data freshness |
-| L32 | Public acquisition, editorial, learning/utilities | Retain public chrome, anchors, canonical URLs and body language | D26; F02 comfortable reading patterns |
-| L33 | Anonymous shared charts /x/<slug> | Retain separate real access/renderer owner | No access inferred from listing or screenshot |
-| L34 | Internal OS/admin workflows | Retain distinct audience/navigation/authorization | D27; no public directory promotion by F01 |
-| L35 | Keyboard/skip-link/dialog focus | Retain existing strengths; improve modal coordination | WCAG/house targets; runtime proof pending |
-| L36 | Lazy runtime/directory and no-prefetch | Retain performance boundaries and active overlap owners | #1188/#1191/#1228/#1236; no duplicate implementation |
+| F01-L01 | Six primary workspace routes | IMPROVE — Retain; labeled desktop, explicit compact, one narrow drawer | AppNav/MobileNav; one current destination |
+| L02 | US/CN/HK/CA/International homes | IMPROVE — Retain exact hrefs; improve separation of destination and context | No new persisted region API; F03/domain mapping |
+| L03 | Specialist and legacy deep links | RETAIN — Retain every admitted path, query and hash | Existing registry/export/resolver; no title-based merging |
+| L04 | Company search and exact manifest key | IMPROVE — Retain existing SymbolPicker pipeline; improve naming/disambiguation | Search source contract and C01–C09 |
+| L05 | Recent results, category/market visibility and Show all markets | RETAIN — Retain actual owner and persistence semantics | Do not call a saved preference a temporary filter |
+| L06 | All tools, category/query matching and aliases | IMPROVE — Improve labels/disambiguation; preserve search and exact routes | F01 + F03 exporter; all 290 entries retained |
+| L07 | Result counts and Show more | RETAIN — Retain current48-item increments and no-prefetch | Search/category reset and focus tests |
+| L08 | Slash and Command/Control+K | RETAIN — Retain editable-control exclusions; name both entries | Cross-origin frame shortcut support unproven |
+| L09 | Company cursor propagation | RETAIN — Retain chart/Analysis-specific propagation | No speculative symbol on unrelated workspaces |
+| L10 | Analysis view grammar | RETAIN — Retain company/theses/investigations and validation | D07 analysisRoute; no second parser |
+| L11 | Seven Company sections | RETAIN — Retain Overview, Intelligence, Financials, Earnings, Market, Ownership, Lab | D07; all reachable on phone |
+| L12 | Financials depth | RETAIN — Retain Statements/Statistics/Revenue/Dividends/Compare, statement types, annual/quarterly | D07; composed specimen is not a replacement page |
+| L13 | Company historical periods/transcripts | RETAIN — Retain earlier/later periods, available history and transcripts | Live overview exposed2010–2026 valuation chart; no four-year truncation from specimen |
+| L14 | Saved research and Your theses | RETAIN — Retain destinations and immutable owner keys | D07/D11/D12/D23; navigation is not save |
+| L15 | Options seven-category IA and 15 destinations | RETAIN — Retain real categories, subviews, aliases and Futures boundary | D08; exact source table in source contract |
+| L16 | Options filters/export/replay/temporal identity | RETAIN — Retain domain-owned controls and full rows/columns | No invented whole-market denominator or source clock |
+| L17 | Macro analytics and D02/D03 shared template | RETAIN — Retain; F01 supplies container/context slots only | D02 dashboard integration; D03 stock region |
+| L18 | Chart/table primary objects | IMPROVE — Retain; widths and local overflow protect analytical depth | F02 patterns; domain exact-value path |
+| L19 | Evidence/source inspection | IMPROVE — Improve one-object dock/modal behavior | Keep source precision, limitation, selection and focus |
+| L20 | Terminal current-chart entry | IMPROVE — Retain exact ret and correct symbol priority | Entry paths tested separately; generic Terminal distinguished |
+| L21 | Focused Terminal/chart/Brain | RETAIN — Retain separate chrome and singleton | D06; no AppShell wrapper or second assistant |
+| L22 | Named return | RETAIN — Retain captured safe URL and owner behavior | Full native scroll/focus restoration still unproven |
+| L23 | Browser history and legacy view snapshots | RETAIN — Retain entry identity, bounded64-entry map and identity reset | Not unlimited persistent restoration |
+| L24 | Existing auth identity | RETAIN — Retain claims.sub ownership; email is presentation | Dynamic/private layout; domain access remains independent |
+| L25 | Account/settings/help entry | IMPROVE — Retain in expanded/compact/drawer modes | D25; no duplicate preference store |
+| L26 | Guest/plan/expired/account failure distinctions | IMPROVE — Retain/improve actual recovery with safe return | Require real owner input, not coming_soon inference |
+| L27 | Pending/failed/uncertain/saved outcomes | RETAIN — Retain owner write/readback semantics | D23; close does not cancel or justify unconditional retry |
+| L28 | Loading/read error/known-route failure | IMPROVE — Retain scope, dates, retry and original-page actions | Host/domain source and native state atlas |
+| L29 | Unknown routes and host/content mismatch | IMPROVE — Retain typed distinction and canonical target | Registry/status/message owner; no silent Today fallback |
+| L30 | Light/dark/auto and EN/ZH | IMPROVE — Improve coherent roles; preserve actual preference effects | Focused chart exception, English public body retained |
+| L31 | Financial signs, zeros, nulls and clocks | RETAIN — Retain domain meaning; show units, periods, absence and coverage | No build/context timestamp promoted to data freshness |
+| L32 | Public acquisition, editorial, learning/utilities | RETAIN — Retain public chrome, anchors, canonical URLs and body language | D26; F02 comfortable reading patterns |
+| L33 | Anonymous shared charts /x/<slug> | RETAIN — Retain separate real access/renderer owner | No access inferred from listing or screenshot |
+| L34 | Internal OS/admin workflows | RETAIN — Retain distinct audience/navigation/authorization | D27; no public directory promotion by F01 |
+| L35 | Keyboard/skip-link/dialog focus | IMPROVE — Retain existing strengths; improve modal coordination | WCAG/house targets; runtime proof pending |
+| L36 | Lazy runtime/directory and no-prefetch | RETAIN — Retain performance boundaries and active overlap owners | #1188/#1191/#1228/#1236; no duplicate implementation |
 
 ## 2. Exact retained p-23-0 predecessors
 
@@ -82,3 +82,13 @@ Unqualified items remain explicit: route-family presentation mapping, final F01/
 ## Candidate.3 review response
 
 The initial candidate.2 reviews remain bound to245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7. The source response adds the actual11-column Tape/30-column CSV mapping, compact-toggle scope, explicit Brain/evidence proposal and CF01–CF04 history/selection tests. It does not mark L11–L21 visually proven. C/D/E local navigation, C field selection, A/C/H current treatment and H control/tooltip anatomy remain native findings. Five more retained state boards were captured read-only; they do not complete the new atlas or reconcile its original effect.
+
+## Unsupported specimen fields and source dependencies
+
+| Proposed/specimen content | Disposition | Interim treatment / owner |
+| --- | --- | --- |
+| Tape bid/ask or precise at-ask quote classification | BLOCKED_DATA — no qualified field in the inspected Tape consumer contract | Use actual ~buy/~sell/mixed inferred classification; do not synthesize quotes. D08 decides whether a separate qualified quote source exists |
+| Tape exchange/venue value | BLOCKED_DATA — not supplied by the inspected event type | Distinguish ET time zone from venue; omit unsupported venue or say Not supplied. D08 owns a future source mapping |
+| Filing/vendor citation for illustrative C/D values | BLOCKED_DATA in the specimen — no actual record/citation attached | Keep illustrative/no-citation language; use the real D07 field-source or D08 event-source owner in the later integration |
+
+These are three unsupported specimen dependencies, not removal of existing production fields. The 36 capability counts and all 290 exact directory identities remain separate censuses. Initial product/taste findings and their source-only follow-up are in evidence/review; none of these dispositions is a reviewer approval.

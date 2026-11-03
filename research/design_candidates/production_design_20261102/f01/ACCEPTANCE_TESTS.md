@@ -159,7 +159,11 @@ These cases close specification omissions found against candidate.2. They are ca
 | O09 | Valid tapeView, malformed/unknown-version/extra-key/over-limit/duplicate tapeView; local tab switch and named return | Preserve the real strict filter codec, explicit invalid-view state and existing recovery. No auth/payload/event identity or historical-snapshot promise in share state. Keep the separately documented local query reserialization limitation visible. |
 | V01 | Corrected native C/D/E/H plus mapped/unmapped navigation samples; retained access/save references | Capture actual local-view selectors, complete analytical object, selected field/period, mode control, tooltip/focus labels and 44px important-action anatomy. A matrix or source commitment alone cannot close a missing visual state. |
 
-## 10. Review closure
+## 10. Supplemental consumer cases
+
+[CONSUMER_INTEGRATION_NOTES.md §5](CONSUMER_INTEGRATION_NOTES.md) adds M01–M06 for the exact D02/D08 inputs and resolved candidate geometry. The combined package has **85 unique cases: 79 here and six there, all NOT_RUN**. These six later cases were not part of the earlier 79-case source-review input.
+
+## 11. Review closure
 
 No case is passed by this document. Future implementation-entry evidence must bind the exact F01/F02 source versions, editable Paper candidates, supported captures/exports, actual source/data contracts and independent review findings. Preserve formal RIG state and predecessor conditions. Design acceptance, implemented code, deployment and served-production proof remain separate.
 

@@ -282,3 +282,7 @@ The F01 artifacts are shell stress compositions. Field units, observed dates and
 
 Meaningful test specifications are in [ACCEPTANCE_TESTS.md](ACCEPTANCE_TESTS.md). All remain unexecuted in this advisory work.
 
+
+## Existing consumer input supplement
+
+[CONSUMER_INTEGRATION_NOTES.md](CONSUMER_INTEGRATION_NOTES.md) attributes the existing D02 and D08 handoffs to their exact source commits, keeps Macro Command fragments distinct from public documents, and carries domain clock/refusal/region/save semantics unchanged. [CONSUMER_INPUT_RECEIPTS.json](evidence/source/CONSUMER_INPUT_RECEIPTS.json) records the inspected Git blobs. These are consumer-owner source reports; F01 does not claim to have rerun their producer, prototype or served-route tests.

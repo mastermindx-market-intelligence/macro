@@ -1,0 +1,257 @@
+{
+  "schema": "F01.final_source_checks.v1",
+  "observedAtUtc": "2026-11-03T08:14:33.472001+00:00",
+  "scope": "Author artifact-integrity checks, not executed product tests, native repairs or independent acceptance",
+  "directory": {
+    "baseline_records": 290,
+    "unique_ids": 290,
+    "unique_hrefs": 290,
+    "all_baseline_fields_exact": true,
+    "alias_evidence_verified_separately": 674,
+    "retained_labels": 195,
+    "rename_proposals": 95,
+    "browse_category_change_proposals": 256,
+    "semantic_holds": 102,
+    "all_entries_require_review": 290,
+    "automatic_application": false
+  },
+  "ledger": {
+    "existing_capabilities": 36,
+    "RETAIN": 23,
+    "IMPROVE": 13,
+    "RELOCATE": 0,
+    "REMOVE": 0,
+    "BLOCKED_DATA": 0,
+    "separate_unsupported_specimen_fields": 3
+  },
+  "caseSpecifications": {
+    "original": 79,
+    "supplemental": 6,
+    "total": 85,
+    "unique": true,
+    "status": "NOT_RUN"
+  },
+  "reports": [
+    {
+      "path": "evidence/review/PRODUCT_ADVISORY.md",
+      "sha256": "86d8f75f4af2473a0668f6627108d680d867928108db535ab7b1595eebcebf39",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/VISUAL_ADVISORY.md",
+      "sha256": "f2b00c6d00319a4592b494a907785abc562b370d7e29cad5025adce73109d0c2",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/PRODUCT_FOLLOWUP.md",
+      "sha256": "55b362ba665beb7901d6ba03578c0be0234341ed7e4cd78a84f2afc425b60914",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/VISUAL_FOLLOWUP.md",
+      "sha256": "6df7ddfc51382d5ffafd61bb9a29199ee8050c8533da313d22a0d6632470d44f",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/CLOSED_PRODUCT_FIRST_PASS.md",
+      "sha256": "a2b2512933686221fdb3b16ac917ab78fabef5312600e379d81eb56a0b2266b8",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/CLOSED_TASTE_FIRST_PASS.md",
+      "sha256": "e54d3f96a8839c995199dd6fffa41b1a0008e9137c89dd1a8b7507de35448925",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/CLOSED_PRODUCT_AMENDMENT.md",
+      "sha256": "9add6cb08aae5157304b99969184badd2fb9c3dd48262c2a7d19bf5a6ea45210",
+      "unchanged": true
+    },
+    {
+      "path": "evidence/review/CLOSED_TASTE_AMENDMENT.md",
+      "sha256": "d660a444849f9b90ec7de0d8fdfdcc0ef75655df57c202274b2f00d0e885e416",
+      "unchanged": true
+    }
+  ],
+  "image_count": 20,
+  "images": [
+    {
+      "path": "evidence/before/Account-unavailable-6OLH-0.jpg",
+      "format": "JPEG",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "path": "evidence/before/Expired-uncertain-save-6OK9-0.jpg",
+      "format": "JPEG",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "path": "evidence/before/Guest-tablet-6OS6-0.jpg",
+      "format": "JPEG",
+      "size": [
+        768,
+        1024
+      ]
+    },
+    {
+      "path": "evidence/before/Plan-denied-6OKV-0.jpg",
+      "format": "JPEG",
+      "size": [
+        390,
+        844
+      ]
+    },
+    {
+      "path": "evidence/before/Search-6NVJ-0.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/before/Terminal-6O5H-0.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "evidence/before/Today-6NMP-0.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        900
+      ]
+    },
+    {
+      "path": "evidence/before/Unknown-route-phone-6OQP-0.jpg",
+      "format": "JPEG",
+      "size": [
+        320,
+        844
+      ]
+    },
+    {
+      "path": "evidence/live/Company-overview.png",
+      "format": "JPEG",
+      "size": [
+        1853,
+        1204
+      ]
+    },
+    {
+      "path": "evidence/live/US-route-failure.png",
+      "format": "JPEG",
+      "size": [
+        1853,
+        1204
+      ]
+    },
+    {
+      "path": "evidence/paper/A.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "evidence/paper/B.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        960
+      ]
+    },
+    {
+      "path": "evidence/paper/C.jpg",
+      "format": "JPEG",
+      "size": [
+        1280,
+        1012
+      ]
+    },
+    {
+      "path": "evidence/paper/D.jpg",
+      "format": "JPEG",
+      "size": [
+        1024,
+        960
+      ]
+    },
+    {
+      "path": "evidence/paper/E.jpg",
+      "format": "JPEG",
+      "size": [
+        390,
+        1000
+      ]
+    },
+    {
+      "path": "evidence/paper/F.jpg",
+      "format": "JPEG",
+      "size": [
+        320,
+        960
+      ]
+    },
+    {
+      "path": "evidence/paper/G.jpg",
+      "format": "JPEG",
+      "size": [
+        768,
+        1024
+      ]
+    },
+    {
+      "path": "evidence/paper/H.jpg",
+      "format": "JPEG",
+      "size": [
+        1280,
+        960
+      ]
+    },
+    {
+      "path": "evidence/paper/I.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        735
+      ]
+    },
+    {
+      "path": "evidence/paper/Readme.jpg",
+      "format": "JPEG",
+      "size": [
+        1440,
+        900
+      ]
+    }
+  ],
+  "json_files_parsed": 19,
+  "relative_links": {
+    "unexpected_missing": 0,
+    "verbatim_external_source_base_links": [
+      {
+        "path": "evidence/source/F02_HANDSHAKE_AT_F7C25C4.md",
+        "target": "SOURCE_AND_DATA_CONTRACT.md"
+      },
+      {
+        "path": "evidence/source/F02_HANDSHAKE_AT_F7C25C4.md",
+        "target": "paper/CURRENT_DESIGN_AUTHORITY.md"
+      }
+    ],
+    "upstream_resolution": "evidence/source/README.md"
+  },
+  "F02_handshake_current_local_git_blob": "58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306",
+  "nativeRepairsAfterClosedReview": false,
+  "formalAcceptance": false
+}

@@ -77,11 +77,13 @@ Next effect action: the existing direct Paper operation owner must reconcile tha
 
 ## 6. Review evidence and gate truth
 
-The native shell_architecture_adviser performed a read-only source/geometry advisory task and returned exact owner/function findings and unexecuted tests. Its useful corrections include the1096px compact threshold, the bounded64-entry history map, the absence of a bridge region field, real Options IA and the actual company-manifest/preference contract. It was not an independent final design reviewer, admitted Opus review, formal GitHub approval or RIG receipt.
+The native shell_architecture_adviser performed a read-only source/geometry advisory task and returned exact owner/function findings and unexecuted tests. Its useful corrections include the 1096px compact threshold, the bounded64-entry history map, the absence of a bridge region field, real Options IA and the actual company-manifest/preference contract. It was not an independent final design reviewer, admitted Opus review, formal GitHub approval or RIG receipt.
 
 The exposed Fabric capabilities reported adapter_available=true but worker_admission and worker_start UNPROBED. No new Fabric request/Attempt was created without authenticated lineage/admission. This is not evidence of a started independent reviewer, and no alternate carrier is being used to replay a refused or uncertain review.
 
-Two independent native advisory agents inspected the closed candidate.2 packet at245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7 and verified all39 manifest members. Both requested changes and favored A as a direction. Their unchanged reports and author adjudication are in evidence/review/. Candidate.3 repairs source-only gaps; native findings remain open. This does not upgrade formal RIG. F02's existing BLOCK findings and ongoing repairs remain with its author until independently resolved. Only real qualification evidence can change acceptance.
+The first two native advisers verified the 39-member candidate.2 packet at 245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7 and requested changes. They received advance author/source context, so their reports are ADVISORY_WITH_ADVANCE_CONTEXT and do not satisfy the required artifact-only first pass. The source follow-up resolved the source portions of PA-01–PA-07; the visual follow-up added retained-state evidence only. All original reports remain unchanged.
+
+Two fresh isolated advisers subsequently received only the 29-member neutral brief/artifact packet, verified its hashes and each viewed all 19 images. Their artifact-only product/taste first passes were frozen and published at 09742de176f553bb30e89a0ade95643d76416c30 before rationale was disclosed. Separate amendments preserve all findings, refine the legitimate1024px sequential-modal remedy and identify unsupported native quote/venue semantics. [REVIEW_SEQUENCE.md](evidence/review/REVIEW_SEQUENCE.md) and its JSON retain exact inputs/hashes/method. These are bounded advisory judgments, not formal reviewer-class or QA01 approval. F02's first native Product/Taste BLOCK findings remain independently open; its historical static taste result does not approve its native set.
 
 ## 7. Acceptance matrix and next actions
 
@@ -89,11 +91,11 @@ Two independent native advisory agents inspected the closed candidate.2 packet a
 | --- | --- | --- |
 | Same-commit assignment/procedure/source baseline | Read and pinned | Re-read current protected procedure on continuation when needed |
 | F01 owner/collision check and existing source path | Established with scoped limitations | Preserve #10645 and live effects; no duplicate writer |
-| UX/retention/state/data/implementation/test specifications | Authored candidate | F01 adjudicates actual review findings |
+| UX/retention/state/data/implementation/test specifications | Candidate package authored;85 unexecuted cases; review findings adjudicated | Existing F01/F02/domain owners qualify the named clauses and later artifacts |
 | Native comparable directions and three domain stress compositions | Authored; visual QA and captures | Frozen hashes + independent review; not runtime proof |
 | Complete native exceptional-state atlas | PARTIAL, original effect unknown | Reconcile state-8; continue unattempted rows lawfully |
 | F01/F02 joint release | Reciprocal candidate interface concurrence; not released | Both final native identities, effect reconciliation, consumer and review evidence |
-| Independent product/taste and QA01 qualification | Two native advisory critiques obtained; formal qualification not established | Bind repaired native set and actual admitted reviewer/QA01 evidence |
+| Independent product/taste and QA01 qualification | Fresh artifact-only passes and separate rationale amendments obtained; findings open; formal qualification not established | Bind repaired native set and actual admitted reviewer/QA01 evidence |
 | Complete live return/mobile/keyboard/locale proof | Not established | Future authorized implementation/re-audit path |
 | Production code, merge, Ready, queue, relabel, deployment | Not performed | Outside this assignment |
 
@@ -101,6 +103,16 @@ Primary continuation is qualification of this exact existing F01 candidate, star
 
 ## 8. Review-driven continuation evidence
 
-Candidate.2 freeze:245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7. Its original manifest remains at evidence/CAPTURE_MANIFEST.json and must be evaluated against that immutable commit, not later changed source paths. Candidate.3 source repairs and the separate follow-up manifest preserve the initial critique unchanged. Five additional p-23-0 state screenshot/JSX pairs are read-only retained evidence:6OK9-0 expired/uncertain-save,6OKV-0 plan denied,6OLH-0 account unavailable,6OQP-0 unknown route phone and6OS6-0 guest presentation. They are not newly repaired F01 boards or proof of pending/confirmed/failed save transitions.
+Candidate.2 freeze:245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7. Its original manifest remains at evidence/CAPTURE_MANIFEST.json and must be evaluated against that immutable commit, not later changed source paths. Candidate.3 source repairs and the separate follow-up manifest preserve the initial critique unchanged. Five additional p-23-0 state screenshot/JSX pairs are read-only retained evidence:6OK9-0 expired/uncertain-save,6OKV-0 plan denied,6OLH-0 account unavailable,6OQP-0 unknown route phone and 6OS6-0 guest presentation. They are not newly repaired F01 boards or proof of pending/confirmed/failed save transitions.
 
 The material-closeout protected-source recheck pinned Mastermind e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c, schema mastermind.sol_skillpack.v1, version1.0.1, minimum bootstrap1. Thirteen relevant procedures/companions were fetched at that same commit and found byte-identical by Git blob to the original b2326bbe mission pin. Receipts are in evidence/source/PROCEDURE_RECHECK.json. This records a current bounded comparison; it does not rewrite which procedure was used for earlier actions.
+
+## 9. Consumer and directory continuation
+
+The existing D02/D08 comments were consumed on F01/F02's current source threads. Their correctly reported candidate.1 differences are superseded narrowly by F01's candidate.2 acceptance at 245a7d2; current candidate.3 retains600px gutters,440px modal and continuous fractional cutoffs. [CONSUMER_INTEGRATION_NOTES.md](CONSUMER_INTEGRATION_NOTES.md) binds their exact source pins, twelve-section Command/hash/Analyst requirements, domain truth/access/save boundaries and six new NOT_RUN cases. It does not claim consumer adoption or edit their source/prototypes.
+
+The complete [directory presentation proposal](DIRECTORY_PRESENTATION_PROPOSAL.json) preserves all 290 baseline records exactly, including identity, route, kind, payloadTier, labels, groups and questions. It proposes95 label changes and 256 browse-category changes, with 102 explicit semantic holds; all 290 require owner review before application. Literal aliases and unlinked breadcrumbs carry evidence, and the sixteen Macro-topic classification checks preserve F03's role. The author independently checked counts, exact baseline equality, held labels, route disambiguators and no automatic application. This is a presentation input, never a new runtime registry.
+
+[CAPABILITY_AND_EFFECT_BOUNDARY.md](evidence/CAPABILITY_AND_EFFECT_BOUNDARY.md) records the exact direct-Paper operation, same-carrier readbacks, missing operation-status reader, current source serviceability and reachable recovery owner. The remaining native/qualification gates must not be generalized to all tools or other domain sessions.
+
+The final package inventory hashes the cumulative source/evidence/return files. It is a persistence inventory, not a repaired-native freeze. Original CAPTURE_MANIFEST, REPAIR_MANIFEST and artifact-only INPUT_MANIFEST retain their original immutable input scopes. No later documentation supplement retroactively expands a critic's reviewed set.

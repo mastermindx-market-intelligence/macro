@@ -149,3 +149,7 @@ Before implementation, reconcile overlapping Terminal #1188/#1191/#1228/#1236 an
 Recommended implementation sequence after qualification: (1) owner-agreed presentation mapping and exact-return invariants; (2) scoped shell geometry and retained navigation; (3) inspector coordination and focus; (4) three domain integrations at measured widths; (5) locale/theme and failure cases; (6) source-head-bound browser/keyboard/regression evidence. Each step retains its existing owner. Rollback restores presentation independently of data schemas, writes and route admission.
 
 Implementation entry requires frozen F01/F02 references, reconciled Paper effects, the recorded F02 candidate concurrence, independent product/regression and visual/taste qualification, QA01 integration disposition and retained-feature coverage. This assignment performs design/research only. It authorizes no production implementation, merge, Ready transition, enqueue, relabel or deployment.
+
+## 11. Builder and existing-consumer supplements
+
+The [builder and measurement plan](BUILDER_AND_MEASUREMENT_PLAN.md) supplies the later owner-bound implementation sequence, performance/task measures, compatibility and rollback requirements. [Consumer integration notes](CONSUMER_INTEGRATION_NOTES.md) bind D02’s twelve-section Command and exact hash/Analyst requirements, D08’s current conformance input, and the already-resolved candidate.1 geometry discrepancies. These supplements preserve candidate.3’s shared geometry and current ownership; they do not release the foundation.

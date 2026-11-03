@@ -1,0 +1,55 @@
+{
+  "schema": "F01.consumer_source_receipts.v1",
+  "scope": "Read-only existing D02/D08 source; not authoring or qualification of their slices",
+  "inputs": [
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/README.md",
+      "git_blob": "9d0cedd0e174922e77e583796a5fb66bf23e1d62",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/README.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/IMPLEMENTATION_GUIDANCE.md",
+      "git_blob": "1edc506989edf94ce65a82a0ad33d72baeef3532",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/IMPLEMENTATION_GUIDANCE.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/INTERACTION_STATES.md",
+      "git_blob": "5b158f28d5094316ff4a44a5770deb66299d247d",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/INTERACTION_STATES.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/DATA_BACKEND_BUILD_CONTRACT.md",
+      "git_blob": "3e095b592e67e8a676c0d66d6846d1fcfdc994a4",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/DATA_BACKEND_BUILD_CONTRACT.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/PRODUCT_UX_SPEC.md",
+      "git_blob": "81c6376b2c400f104ce1941f83972b8ecf797961",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/PRODUCT_UX_SPEC.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "a5e4e86092a447a8f4c2e1ecc930b076e106bdac",
+      "path": "research/design_candidates/production_design_20261102/d02/EVIDENCE_AND_DEPENDENCIES.md",
+      "git_blob": "0792064d06a5552328208afa83a7b2bc65d108f7",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/a5e4e86092a447a8f4c2e1ecc930b076e106bdac/research/design_candidates/production_design_20261102/d02/EVIDENCE_AND_DEPENDENCIES.md"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "commit": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+      "path": "research/design_candidates/production_design_20261102/d08/CONFORMANCE_REVIEW_20261103.md",
+      "git_blob": "57601412cfd564452f2d2968abe4f1ebf1e6a668",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/e89f527e3267b1d1dd27ac7507e9a25983c0c903/research/design_candidates/production_design_20261102/d08/CONFORMANCE_REVIEW_20261103.md"
+    }
+  ]
+}

@@ -78,4 +78,3 @@ No conflicting rail/header value was found in this bounded source check. The rem
 5. Joint freeze requires F01's final slot/navigation/preference contract, F02's exact final native artifact identity, affected consumer qualification and actual independent review evidence. F01 has not yet accepted this artifact's cutoff/transition clarifications. Formal RIG remains draft and needs actual admitted reviewer-class evidence and the designated authority verdict.
 
 The next joint record should cite the two immutable source commits, precise versions, used roles, actual Paper targets, reviewed theme/locale/width/state coverage, any retained domain variant and all carried conditions. This concurrence may be used as a concrete input to that record. It is not a substitute for it.
-
