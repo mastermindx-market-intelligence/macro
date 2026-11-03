@@ -334,3 +334,27 @@ The About stylesheet fix has meaningful failing-before/passing-after tests and a
 The proposed October Sector standalone reference received two actual independent BLOCK reviews. Its separate authority decision is REVISE; it is not an approved replacement for the existing Sector page. The Shared Shell beta retains existing native content under the Chairman's gradual-migration intent. The three Sector migration packets require a substantive, independently reviewed phase amendment and an applicable reference binding before their repository gate can close. Neither successful fixture captures nor older reference approval certifies the deficient new design or today's native runtime.
 
 No beta service installation, DNS cutover or public acceptance is claimed by this update.
+
+
+## November 3, 2026 UTC - first-class intelligence integration
+
+The current Chairman-directed receiver continues the existing Shared Shell programme;
+this is not another product, route authority or signal engine. Terminal PR #1244
+(`sol/web-beta-intelligence-integration-20261103-sol`) is the single source carrier.
+Its implementation task tree is
+`terminal/docs/SHARED_SHELL_INTELLIGENCE_INTEGRATION_2026-11-03.md` in Terminal.
+
+The user outcome is a discoverable, connected Macro Dashboard / Prophet / Sector
+Cycles journey, with a source-backed overview and full incumbent workspaces.
+The first source slice is at Terminal 844e5a68a871b84ddfea7fb9c278981b565abe10.
+It composes existing Macro Command, sector-cycle and Prophet inputs; distinguishes
+source and publication clocks; retains paid and membership gates; and avoids
+loading multi-megabyte histories into the overview. Macro owns the three native
+route declarations and their generated consumer projection through the existing
+page registry. Existing complete Macro and Sector Cycles pages remain available
+inside the supported legacy boundary; they are not falsely called native rewrites.
+
+Acceptance still requires exact-head independent review, required checks, normal
+protected landing, beta-only installation and authenticated real-source journeys.
+Preserve accepted foundation/A1A/A1B work and active neighboring navigation, Today,
+sector and performance changes. No merged/live claim is made by this checkpoint.
