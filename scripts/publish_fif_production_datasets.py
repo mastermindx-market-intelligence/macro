@@ -187,6 +187,8 @@ EXCLUSION_ONLY_EVENT_PACKAGES = "only_event_packages"
 # listed in statement_graph.STATEMENT_REFUSAL_CODES (mirrored by the slug set
 # below); any other StatementGraphError is an unadjudicated engine fault and
 # still fails the WHOLE run (fail closed).
+# DEC:FIF-DISPLAYED-PARSE-REFUSAL-FAMILY-20261102 (2026-11-02) adds the
+# displayed_column_period_unbound and statement_role_presentation_absent families.
 EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED = "statement_reconstruction_refused"
 STATEMENT_REFUSAL_SLUGS = frozenset(
     {
@@ -195,6 +197,8 @@ STATEMENT_REFUSAL_SLUGS = frozenset(
         "displayed_columns_absent",
         "statement_role_not_consolidated",
         "displayed_cell_period_mismatch",
+        "displayed_column_period_unbound",
+        "statement_role_presentation_absent",
     }
 )
 _STATEMENT_REFUSAL_PIN_PATH = (
