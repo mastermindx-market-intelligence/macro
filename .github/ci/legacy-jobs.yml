@@ -49852,6 +49852,9 @@ jobs:
       - "engine/research_intelligence/__init__.py"
       - "engine/seasonality/__init__.py"
       - "tests/__init__.py"
+      # Closure growth from main 4ab1e79e (#8245): engine/earnings_narrative/private_publication.py:27 imports economic_interpretation, whose line 17 imports engine.company_intelligence.economic_observations (widen only).
+      - "engine/earnings_narrative/economic_interpretation.py"
+      - "engine/company_intelligence/economic_observations.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
