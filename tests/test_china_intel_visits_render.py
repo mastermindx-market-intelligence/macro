@@ -419,3 +419,68 @@ def test_ok_state_without_coverage_exception_has_no_incomplete_line():
     html = _render()
     assert "A further visit filing could not be read" not in html
     assert "另有调研备案无法读取" not in html
+
+
+def _visit_state_fixture(state: str, **extra) -> dict:
+    """Existing non-economic CIE UI fixture; no provider/current issuer proof."""
+    cmd = _cmd_full_cie_fixture()
+    cmd["command"][0]["visits"].update(state=state, stale_days=7, **extra)
+    return cmd
+
+
+def test_stale_visit_keeps_the_existing_record_and_exact_source_reference():
+    html = _render(cmd_full=_visit_state_fixture("stale"))
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert 'href="https://static.cninfo.com.cn/finalpage/2026-08-19/A-CIE-UI-1.PDF"' in section
+    assert "2026-08-19" in section
+    assert "IR activity record" in section
+    assert "某知名私募基金" in section
+    assert "treat as out of date" in section
+    assert "请视为过期数据" in section
+
+
+def test_stale_warning_precedes_record_and_incompleteness_follows_it():
+    html = _render(cmd_full=_visit_state_fixture(
+        "stale", coverage_exception={"scope": "company", "open": 1}))
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert section.index("treat as out of date") < section.index("A-CIE-UI-1.PDF")
+    assert section.index("A-CIE-UI-1.PDF") < section.index("this list may be incomplete")
+    assert "No investor-relations visit filings since coverage start" not in section
+    assert 'target="_blank"' in section
+    assert 'rel="noopener noreferrer"' in section
+
+
+def test_stale_without_records_keeps_warning_and_does_not_invent_a_source():
+    html = _render(cmd_full=_visit_state_fixture("stale", recent=[]))
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert "treat as out of date" in section
+    assert "Source filing" not in section
+    assert "A-CIE-UI-1.PDF" not in section
+    assert "No investor-relations visit filings since coverage start" not in section
+
+
+def test_source_failure_does_not_gain_record_authority_from_a_populated_field():
+    html = _render(cmd_full=_visit_state_fixture("source_failure"))
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert "Visit-record source unavailable" in section
+    assert "absence means nothing today" in section
+    assert "A-CIE-UI-1.PDF" not in section
+
+
+def test_rights_suppressed_does_not_expose_a_record_or_source_link():
+    html = _render(cmd_full=_visit_state_fixture("rights_suppressed"))
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert "A-CIE-UI-1.PDF" not in section
+    assert "某知名私募基金" not in section
+
+
+def test_stale_unknown_visitor_and_missing_reference_stay_unknown():
+    cmd = _visit_state_fixture("stale")
+    row = cmd["command"][0]["visits"]["recent"][0]
+    row.update(source_url=None, visitor_class="not_yet_available", visitor_raw="not_yet_available")
+    html = _render(cmd_full=cmd)
+    section = html.split("Institutional visits", 1)[1].split("<h2", 1)[0]
+    assert "2026-08-19" in section
+    assert "Visitors not yet identified in the filing" in section
+    assert "Source filing" not in section
+    assert "not_yet_available" not in section

@@ -717,7 +717,10 @@
     <div class="disc-card">
       <div class="disc-ticker">{{ d.ticker }}</div>
       <div class="disc-name">{{ d.name[:22] }}</div>
-      {%- if _v.state == 'ok' %}
+      {%- if _v.state == 'ok' or (_v.state == 'stale' and _v.recent) %}
+        {%- if _v.state == 'stale' %}
+        <div class="disc-reason">{{ t('Visit records last refreshed','调研记录最近一次刷新于') }} {{ _v.stale_days if _v.stale_days is not none else '?' }} {{ t('days ago — treat as out of date.','天前——请视为过期数据。') }}</div>
+        {%- endif %}
         {%- for r in (_v.recent or [])[:3] %}
         <div class="disc-reason">{{ (r.source_published_at or '')[:10] }} · {{ t(r.kind_en or 'investor visit', r.kind_zh or '机构调研') }}</div>
         {%- if r.first_seen_since_coverage_start %}
