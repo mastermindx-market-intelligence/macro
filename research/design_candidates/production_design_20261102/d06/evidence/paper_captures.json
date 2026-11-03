@@ -1,0 +1,258 @@
+[
+  {
+    "file": "chart_context_desktop.jpg",
+    "key": "1K9F-0",
+    "page": "p-W-0",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:08:19 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "c8922e1da1ca94c781b029435226463d93bea0a97ef75bf0a6bed71a50a14170",
+    "bytes": 161364,
+    "pixel_dimensions": [
+      1440,
+      900
+    ],
+    "path": "evidence/paper/chart_context_desktop.jpg"
+  },
+  {
+    "file": "chart_context_mobile.jpg",
+    "key": "1KNZ-0",
+    "page": "p-W-0",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:08:19 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "3fda718a041e9e8491722581fd435063e5cf10192648f596cc9a2c62ba804aad",
+    "bytes": 68063,
+    "pixel_dimensions": [
+      390,
+      1312
+    ],
+    "path": "evidence/paper/chart_context_mobile.jpg"
+  },
+  {
+    "file": "refraction_original_material.jpg",
+    "key": "1M58-0",
+    "page": "p-Z-0",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:08:19 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "d71b6d3cff8da58bf3ffcab78ca3acded7a5d6de5305dd09d69b5882bc496593",
+    "bytes": 80416,
+    "pixel_dimensions": [
+      1440,
+      650
+    ],
+    "path": "evidence/paper/refraction_original_material.jpg"
+  },
+  {
+    "file": "intelligence_summary.jpg",
+    "key": "19IC-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:08:19 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "7ba396a6cd92da498d5d78955a30facbde5c5db1bc2f52e9a6997afcc2e88cc2",
+    "bytes": 156666,
+    "pixel_dimensions": [
+      1600,
+      1000
+    ],
+    "path": "evidence/paper/intelligence_summary.jpg"
+  },
+  {
+    "file": "intelligence_oracle.jpg",
+    "key": "19WI-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:09:12 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "5ac4a3bad74da7616556cb9204340cbf979b4b169435967d4f9fd444362a0135",
+    "bytes": 157083,
+    "path": "evidence/paper/intelligence_oracle.jpg",
+    "pixel_dimensions": [
+      1600,
+      1000
+    ]
+  },
+  {
+    "file": "intelligence_research.jpg",
+    "key": "19PG-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:09:12 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "880ad1b49ea9766b54d724cf69c5908a394a6f4955199a5be09e1d72a38f7d7c",
+    "bytes": 162244,
+    "path": "evidence/paper/intelligence_research.jpg",
+    "pixel_dimensions": [
+      1600,
+      1000
+    ]
+  },
+  {
+    "file": "intelligence_activity.jpg",
+    "key": "1A3O-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:09:12 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "433a77720e3c5c9df922ffe28cac8b186a88bd5ed0bf6c1ac6e999ac8f48aba3",
+    "bytes": 160055,
+    "path": "evidence/paper/intelligence_activity.jpg",
+    "pixel_dimensions": [
+      1600,
+      1000
+    ]
+  },
+  {
+    "file": "intelligence_focus.jpg",
+    "key": "1AAY-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:09:12 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "9e5418c9ebe147b7097c767bf4f138fdc0badcb3c6adce2e28c667ee3abe9e8f",
+    "bytes": 90659,
+    "path": "evidence/paper/intelligence_focus.jpg",
+    "pixel_dimensions": [
+      1144,
+      900
+    ]
+  },
+  {
+    "file": "intelligence_mobile.jpg",
+    "key": "1AEB-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:09:12 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "70a0113ed821ff0cde98d6a9381ada127c31eb7e6a44363aea051a34f3bc92fd",
+    "bytes": 51078,
+    "path": "evidence/paper/intelligence_mobile.jpg",
+    "pixel_dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "file": "intelligence_mobile_oracle.jpg",
+    "key": "1AH7-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:25:00 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "524494021df8dfc1bdec1c60b5a3d708109aea68f9b84501e9851067ae7695b4",
+    "bytes": 51460,
+    "path": "evidence/paper/intelligence_mobile_oracle.jpg",
+    "pixel_dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "file": "intelligence_mobile_research.jpg",
+    "key": "1AKB-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:25:00 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "8e94e98c15d06091e8c6ba2296b983699876de2ba3671767b391968523f6da46",
+    "bytes": 54146,
+    "path": "evidence/paper/intelligence_mobile_research.jpg",
+    "pixel_dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "file": "intelligence_mobile_activity.jpg",
+    "key": "1AN7-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:25:00 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "8ce3062e4359e35e485b5a35136a6853a7b2305598d1f09e986489dd82f282f5",
+    "bytes": 52506,
+    "path": "evidence/paper/intelligence_mobile_activity.jpg",
+    "pixel_dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "file": "intelligence_design_language.jpg",
+    "key": "1AQG-0",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:25:00 UTC",
+    "mime": "image/jpeg",
+    "role": "predecessor/reference evidence; not proposed-after or approval",
+    "sha256": "c3aa86d522ed01788857538e08271c2b530a47fb32c547466540fca66bbc8666",
+    "bytes": 118242,
+    "path": "evidence/paper/intelligence_design_language.jpg",
+    "pixel_dimensions": [
+      1440,
+      900
+    ]
+  },
+  {
+    "file": "intelligence_previous_reference.jpg",
+    "key": "19BB-1",
+    "page": "p-I-1",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:26:07 UTC",
+    "mime": "image/jpeg",
+    "role": "historical/predecessor reference; not proposed-after or approval",
+    "sha256": "02af467dd5cb3339228a95074240a00ab6d350738206653753d07d2f6ed956a6",
+    "bytes": 179293,
+    "path": "evidence/paper/intelligence_previous_reference.jpg",
+    "pixel_dimensions": [
+      1600,
+      1000
+    ]
+  },
+  {
+    "file": "refraction_original_desktop.jpg",
+    "key": "1M4U-0",
+    "page": "p-Z-0",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:26:07 UTC",
+    "mime": "image/jpeg",
+    "role": "historical/predecessor reference; not proposed-after or approval",
+    "sha256": "7a3ef3a187e54a50ced0bff5ae742e70237007c4b03cfa9088909ba0baec2f1a",
+    "bytes": 88932,
+    "path": "evidence/paper/refraction_original_desktop.jpg",
+    "pixel_dimensions": [
+      1440,
+      900
+    ]
+  },
+  {
+    "file": "refraction_original_mobile.jpg",
+    "key": "1M53-0",
+    "page": "p-Z-0",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "captured_at_utc": "2026-11-03 07:26:07 UTC",
+    "mime": "image/jpeg",
+    "role": "historical/predecessor reference; not proposed-after or approval",
+    "sha256": "38ed3ad1fc65cbde79bc04030a8e0d7e214f67e6a8771b0e9d6b354c8da4d40a",
+    "bytes": 47203,
+    "path": "evidence/paper/refraction_original_mobile.jpg",
+    "pixel_dimensions": [
+      390,
+      844
+    ]
+  }
+]

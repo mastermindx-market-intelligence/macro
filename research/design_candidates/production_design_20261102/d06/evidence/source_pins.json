@@ -1,0 +1,51 @@
+{
+  "assignment": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "sha": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "required_files": [
+      "handoffs/D06-terminal.md",
+      "COMMON_SESSION_BRIEF.md",
+      "SESSION_INDEX.md",
+      "SHARED_SHELL_CONTRACT.md",
+      "RE_AUDIT_CHECKLIST.md"
+    ],
+    "root": "research/design_candidates/production_design_20261102"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "loaded_sha": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+    "schema": "mastermind.sol_skillpack.v1",
+    "version": "1.0.1",
+    "minimum_bootstrap_major": 1,
+    "late_index_only_check_sha": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c",
+    "mission_pin_retained": true
+  },
+  "product_source": {
+    "terminal": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "macro": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+    "served_release_attested": false
+  },
+  "later_foundations": {
+    "f01": {
+      "pr": 10645,
+      "sha": "b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5",
+      "draft": true
+    },
+    "f02": {
+      "pr": 10630,
+      "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "version": "F02-SYSTEM/1.0.0-candidate.2",
+      "draft": true,
+      "joint_v1_verified": false
+    }
+  },
+  "carrier": {
+    "pr": 10655,
+    "branch": "design/d06-terminal-phase2a-20261103-c4",
+    "initial_commit": "edf2b53c7c5100ea4b351df009509b3bc196f7ec",
+    "spec_checkpoint": "d0e6844a8fa03da4073eb4182cc473ed7b6b3e4b",
+    "parent_pr": 10617,
+    "parent_later_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
+    "final_identity": "containing immutable Git commit plus evidence/manifest.json"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "artifact": "D06 documentation/evidence integrity checks",
+  "checks": [
+    {
+      "check": "retained_registry_counts_and_drawing_uniqueness",
+      "status": "pass",
+      "counts": {
+        "drawing_tools": 99,
+        "classic_indicators": 29,
+        "suites": 5,
+        "suite_module_references": 31,
+        "research_panes": 15,
+        "timeframes": 19,
+        "chart_types": 9
+      }
+    },
+    {
+      "check": "capability_counts_and_human_ledger_parity",
+      "status": "pass",
+      "existing": 76,
+      "counts": {
+        "RETAIN": 40,
+        "IMPROVE": 35,
+        "RELOCATE": 0,
+        "REMOVE": 0,
+        "BLOCKED_DATA": 1
+      },
+      "proposals": 6
+    },
+    {
+      "check": "migration_case_identity_status_and_table_parity",
+      "status": "pass",
+      "cases": 67,
+      "runtime_executed": false
+    },
+    {
+      "check": "assigned_route_crosswalk",
+      "status": "pass",
+      "canonical_families": 9
+    },
+    {
+      "check": "raw_paper_exports_mime_dimensions_sha256",
+      "status": "pass",
+      "captures": 16,
+      "after_designs": 0
+    },
+    {
+      "check": "all_json_parse",
+      "status": "pass"
+    },
+    {
+      "check": "relative_markdown_links",
+      "status": "pass",
+      "resolved_local": 27,
+      "verified_programme_parent": "../RE_AUDIT_CHECKLIST.md",
+      "manifest_generated_next": true
+    }
+  ],
+  "status": "pass",
+  "limitations": [
+    "No runtime migration cases executed",
+    "No live screenshot or served-release attestation",
+    "No proposed-after Paper composition or RIG approval",
+    "No model/backtest/data-policy validation"
+  ]
+}

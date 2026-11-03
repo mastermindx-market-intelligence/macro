@@ -1,0 +1,128 @@
+# D06 builder and migration verification plan
+
+**Design-only handoff. No production implementation, runtime test execution or release is authorized by this package.** Cases below are specified acceptance requirements; they are not passing test results.
+
+## Implementation ownership and sequence
+
+1. **Freeze the accepted design inputs.** F01/F02 must provide actual reviewed joint v1 identities, slots, dimensions, tokens, navigation/return semantics and condition dispositions. Re-read exact Paper nodes and active writers. D06 then composes the held editable references, freezes their exports/annotations/captures and obtains actual independent product/taste review and RIG authority. A draft PR or native advisory is not that receipt.
+2. **Resolve data-truth seams before enabled UI promises.** Existing Terminal/data owners handle time-basis formatting, nested identity, optional provenance and source-clock states. D14 owns the explicit reader-bar→AI handoff. D07/D08/Terminal own exact incoming TF/bar. Origin owners own viewport restoration. D25/D26 own any public-share lifecycle. Macro producers and D12 resolve the documented model/copy/null contradictions.
+3. **Integrate shell presentation without replacing owners.** Keep /terminal outside non-chart AppShell; reuse TerminalShell, ChartPane, ChartPanel, ChartContextDock, paneSync, originNav and Brain. Map approved F02 roles to existing components. Keep native shell modes and compact embed separate. Reuse existing layout/settings/watchlist/script stores and per-owner epochs.
+4. **Implement local chart/context states incrementally.** Preserve renderer identity, visible range, human drawings and current active pane through dock/inline/focus transitions. Add attributable pending-generation, precise source clocks and selected-bar states. Preserve reader reset/layer/preferences/feedback functions and their existing callbacks.
+5. **Handle non-chart families through their existing owners.** Scripts remain in AppShell with existing server auth/CAS and URL guard. Public snapshot and embed receive truthful framing without invented metadata. Macro templates retain lib.pages publication and all lazy artifacts/secondary views. Dev harnesses stay out of customer navigation.
+6. **Verify contract and real-path behavior.** Use existing owner test suites and source fixtures, then actual served beta flows with release identity, auth class, viewport/content width, locale/theme and source observation clocks recorded. Synthetic harness, source read and Paper screenshot are distinct proof classes.
+7. **Commission rollout only after reference approval and implementation acceptance.** Preserve the existing deployment path and held PR ownership. This assignment does not merge, Ready, enqueue, deploy or authorize a new production flag. Test rollback compatibility before any future release.
+
+## Reuse and replacement map
+
+| Existing owner / source | Reuse | Changes requiring that owner's review |
+| --- | --- | --- |
+| TerminalShell / ChartPane / ChartPanel | Existing engine,state graph,paint readiness,owner epochs,tools,range/resize logic | Presentation/placement and attribution; no second renderer or monolithic state replacement |
+| AppShell / focused-shell integration / F01 | Existing route-group boundary,identity and singleBrain | Exact focused slots and return path; no double wrapping |
+| visualIntelligence / VisualIntelligencePanel / ChartContextDock | Rendered-bar analyzer,reader callbacks,source/calendar rules | Time basis,source states,explicit selection handoff,accessible focus/scroll |
+| dataCache / dataOrigin / intradaySources / feedFreshness | One cache,provenance/freshness states and provider rules | Missing-field/outcome adapters,identity validation,clock formatting; no new vendor feed |
+| paneSync / chartLinkGroups / layoutConfig | Calendar link owner,layout field ownership and legacy compatibility | Fit/resize integration; no symbol/TF sync or blanket layout restore |
+| PineEditor / scripts API / savedScriptStamp | Dirty buffer,CAS,owner filters,entitlement,synthetic diagnostic | Explicit access/conflict/uncertain copy and context-preserving Add contract |
+| snapshot / chartCapture / embed | Existing static/public/local-private separation,PNG validation,CSP | Truthful public states,visible dailyasOf,browser fullscreen,zoom recovery; lifecycle metadata separately approved |
+| Macro three templates / builders | Source graph,history,subviews,clocks,shared publication | Null/model/copy corrections and shell fit; no model authority or history truncation |
+| F03 source registry/generator | Canonical route/alias/export ownership | Reconcile S&P actual builder and evidence-backed access gaps through that owner |
+
+Exact paths and schemas: [ROUTE_DATA_CONTRACTS.md](ROUTE_DATA_CONTRACTS.md), [MACRO_ROUTE_CONTRACTS.md](MACRO_ROUTE_CONTRACTS.md). Preserve live Terminal writers identified in [EVIDENCE_AND_RETURN.md](EVIDENCE_AND_RETURN.md); a later builder must reconcile the current PR/branch overlap before editing.
+
+## Test execution protocol
+
+Each case records: exact implementation SHA and served release when applicable; fixture/source generation and truthful availability; principal/access class without private identifiers; viewport **and available content width**; theme/locale/input method; expected and actual outcome; screenshot/DOM/network evidence where authorized; failure owner. Mask private watchlist holdings, script source, account data and drawing text in shared evidence.
+
+Use positive and negative fixtures with true zeros, missing fields and correction generations. Add meaningful regression assertions to the existing suite; do not test a duplicated implementation formula and call that data validation. Existing e2e/chart-capture-review.spec.ts is a relevant capture suite, inspected but not run here. Other suite paths must be resolved from the implementation head rather than invented.
+
+All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are local test-plan references, not a new runtime registry.
+
+| ID | Input / action | Required outcome | Owner |
+| --- | --- | --- | --- |
+| NAV01 | Symbol/sym precedence, whitespace, case and preload/cache keys | Use one canonical token with no duplicate mismatched request or display-name substitution. | Terminal/D07 |
+| NAV02 | CN exchange suffix, HK leading zero, share classes and unsupported listing | Preserve exact listing or show unresolved/unsupported state; a region change never relabels cached US data. | D07/data |
+| NAV03 | Explicit-symbol entry into a saved multipane workspace, then ordinary launch | Temporary entry skips mm.ws restore/persist; the ordinary saved workspace remains recoverable. | Terminal workspace |
+| NAV04 | Close and reopen the same research pane; change symbol on the same route | Existing open/close events and revisions work; URL-only changes are not assumed reactive. | Terminal/D07 |
+| NAV05 | Valid, unsupported and missing incoming TF/bar requests; episode entry | Acknowledge exact applied state or explain the unsupported request; episode retains its 5m contract. | Terminal/D07/D08 |
+| NAV06 | Safe return URL with encoded query/hash; forbidden URL; trusted/untrusted parent | Preserve exact accepted href and allowlist/parent checks; prevent arbitrary redirects. | originNav/F01 |
+| NAV07 | Return to origin after research and pane changes | Restore row/scroll/selection only through supported origin-owner state; do not claim unimplemented fidelity. | D07/Macro/D08/D22 |
+| NAV08 | shell=app, tray=1, dossier=1 and ordinary web focus | Preserve native bridge and dossier exclusion; no duplicate chrome or Brain. | Terminal/F01 |
+| NAV09 | Valid/unknown /scripts?id, back/forward and dirty-switch cancellation | Unknown ID and cancellation preserve current script; prior ID is restored without discarding the buffer. | Scripts |
+| HIST01 | Inspect an old bar, ask AI, then switch symbol/TF/data generation during response | Bind the intended reader or locked selection explicitly and reject obsolete results. | D06/D14 |
+| HIST02 | ET daylight-saving boundary, CN/HK wall time, crypto UTC and daily dates | Format declared time basis correctly; no universal UTC suffix or shifted daily dates. | Intraday/reader |
+| HIST03 | Replay/historical selection while current calendar, quote and research are present | Withhold current calendar; date other sources separately and prevent future-known contamination. | Chart/research |
+| HIST04 | Truncated history with IPO versus feed session_anchor; 2D/3D grouping | Honor published phase; never claim reconstructed IPO alignment from a partial feed. | Ingest/chart |
+| HIST05 | Deep signal history versus recent backtest sample; ts versus known_ts | Keep windows and availability distinct; label normalized equity and qualify historical metrics. | Signals/D12 |
+| HIST06 | Replay invalidated by split mode, bad axis or missing span | Exit visibly and coherently; never leave an implicitly mixed historical/live workspace. | Chart |
+| DATA01 | True zero, missing volume, synthetic opens and nonfinite OHLC | Preserve bar quality and partial context; no missing-to-zero conversion or slice override of OHLC provenance. | Ingest/chart |
+| DATA02 | Missing/invalid view contract, unsupported basis/MIC/listing and mixed source segments | Keep unknown/refused/partial states distinct; reject unsupported views before fetch; no false verified styling. | Data provenance |
+| DATA03 | Seconds disabled, guest/denied, unsupported region, HK lunch, US extended session and stored-tail overlap | Preserve actual gates, cache identity and provider rules; no upsampling; current tail wins duplicate times. | Intraday |
+| DATA04 | Cold load, 404/410, transport failure, stale refresh and superseded generation | Distinguish absence from unavailability; label saved copies; separate cache freshness from observation and paint adoption. | dataCache |
+| DATA05 | Hidden/visible tab, three regular nulls, fast-lane miss and connection recovery | Keep polling bounded; fast misses preserve regular last-good data; no duplicate timer or invented socket. | Quote |
+| DATA06 | Correct top-level symbol with wrong nested slice/backtest ticker | Withhold affected research and resolve identity; never relabel cached data. | Research/data |
+| DATA07 | Missing/stale/wrong-ticker fund data, quote/statement currencies and insufficient samples | Show honest unknown/retry; no inferred currency, volume rank or range score. | Fund/reader |
+| DATA08 | Reader Latest, re-enable, Hide, layer switches, candle settings and Useful/Unclear | Preserve callbacks/preferences; reset exact selection; feedback follows explicit action and does not create a new store. | Reader/settings |
+| LAY01 | All seven widths with measured navigation, gutters and inspector | Record available content width; retain a useful chart and reachable actions without whole-page overflow. | D06/F01/F02 |
+| LAY02 | Rail resize, focus/maximize, rotation and 640/860 breakpoint crossings | Preserve renderer, active pane, logical range and drawings; persist final width; no unsolicited sheet reopening. | Chart |
+| LAY03 | Link same-TF panes with unequal histories; request mixed-TF linking | Align calendar window/crosshair, not raw indices or price; refuse mixed TF; never propagate symbol/TF. | paneSync |
+| LAY04 | Open context while research, table or native dossier owns its destination | Honor placement rules without an overlapping unreachable reader or chart remount. | Terminal |
+| LAY05 | Chart wheel, rail/page scroll, long reader, low-height landscape and software keyboard | Keep deliberate scroll ownership, reachable close/actions and meaningful return; prevent scroll traps. | D06/F01 |
+| KEY01 | Advertised shortcuts, rectangle binding, text/contenteditable, IME, modal and repeat | Match the registry; prevent accidental search/draw/share/delete while editing; preserve Escape priority. | Chart/palette |
+| DRAW01 | All 99 tools across desktop, phone and native payload; point grammar and favorites | Prove appropriate tool reachability and real creation/edit behavior; category counts alone do not pass. | Drawing |
+| DRAW02 | Pending drawing read/write followed by sign-out or account switch | Owner epoch rejects old callbacks and writes; no mutable-email ownership transfer. | Drawing/auth |
+| DRAW03 | Human drawings on same-symbol panes and auto drawings after TF change | Share only the rightful human set and reset transient auto drawings correctly. | ChartPane |
+| DRAW04 | Undo/redo, copy/paste, nudge, lock/hide/delete and replay | Preserve existing scope and semantics; replay blocks mutations; unrelated objects remain intact. | Drawing |
+| IND01 | All retained indicator/suite/pane/timeframe/chart-type registries | Preserve tiers, defaults, parameters and visibility; keep internal entries internal and lazy modules lazy. | Terminal/suites |
+| SAVE01 | Layout round-trip with nondefaults and legacy missing fields | Restore owned fields only; preserve drawings/watchlists/favorites/DTM state; missing fields mean no claim. | Layout |
+| SAVE02 | Workspace conflict, denied access, lost response, reload and blank-name collision | Show success only with authoritative revision; reconcile uncertainty and preserve the current workspace. | Layout/D25 |
+| SCRIPT01 | Save then type more; duplicate click; wrong ID or invalid stamp response | Save one captured buffer; clean only its matching acknowledged baseline; newer edits stay dirty. | Scripts |
+| SCRIPT02 | Two-tab CAS conflict, expired session and lost save receipt | Preserve the mounted buffer; reconcile server outcome before retry or full authentication navigation. | Scripts/D25 |
+| SCRIPT03 | Owner A script versus readable public B script; account switch during request | Enforce owner filter/server/RLS boundaries; prevent cross-owner writes or automatic imports. | Scripts/auth |
+| SCRIPT04 | Free-tier dirty Add, locked flagship, unknown saved ID and repeated consumption | Explain paid-save blocking; no silent stall or phantom indicator; consume a valid Add once. | Scripts/Terminal |
+| SCRIPT05 | Synthetic compile success/error/timeout/supersession and uncertain delete | Label 130-bar synthetic diagnostic and budget; reconcile delete through the own-script list. | Pine/Scripts |
+| SHARE01 | Valid PNG, wrong MIME, malformed PNG, oversize, rate limit and upstream failure | Map actual server validation/status honestly; client validation alone is not upload acceptance. | Snapshot |
+| SHARE02 | Lost upload response, clipboard failure and duplicate click | Show uncertainty without blind duplicate upload; expose the actual returned link for copying. | Snapshot/D26 |
+| SHARE03 | Valid/invalid slug, missing image, network failure and proposed lifecycle states | Keep current unavailable behavior honest; no invented expiry/revocation/restore; preserve footer until approved change. | D25/D26 |
+| SHARE04 | Private review during moving chart, half-switch or replay; annotations and privacy | Require stable before/after scene; no public upload; retain exclusions and unknown clocks; omit private owner/text metadata. | Capture |
+| EMBED01 | Repeated parameters, unsupported symbol grammar and every visual/range variant | Honor first-value parser and actual coverage; do not silently broaden accepted identities. | Embed |
+| EMBED02 | Daily as-of, empty bars, network/bad JSON and invalid OHLC/volume | Show final-bar clock when implemented and distinct source outcomes; no live-quote claim. | Embed/data |
+| EMBED03 | Native fullscreen, ordinary browser, CTA and allowed/forbidden frame ancestors | Provide meaningful behavior, disclose context loss until fixed and keep CSP scope narrow. | Embed/F01 |
+| MSP01 | Null versus zero, missing 2-sigma band and independently missing blocks | Render gaps and valid siblings; do not fabricate a wide band or observed inactivity. | Market Structure |
+| MSP02 | Friday/holiday/weekend anchor, latest flip, fallback root date and All history | Separate source/anchor/build clocks; All means embedded rows; retain actual observation/date summaries. | Market Structure |
+| MSP03 | 504-observation producer versus 500-row UI threshold, zero-vol VC and CTA units | Resolve one authoritative state and unknown policy; never attach dollar units to CTA. | Market/quant |
+| STAGE01 | Lifecycle-fresh but stale row, retirement, unresolved/frozen/ahead SPY and low coverage | Preserve tri-valued currentness and population receipt; no-target counts remain null. | Stage |
+| STAGE02 | Six hashes, invalid hash, history, every subview, regional gates and local watch | Preserve actual navigation; do not claim shareable filters or silently merge watchlists. | Stage/F03 |
+| STAGE03 | CSV units/provenance, display caps, stage sketch, earnings reader and snippet | Label all units and limits; do not claim actual candles, a full transcript or a full report. | Stage/earnings |
+| STAGE04 | Absent, corrupt, empty, stale and valid heterogeneous publisher inputs | Do not present an old file as current; preserve schema differences and working retry behavior. | Stage publication |
+| STAGE05 | No-target/warm-up dash counts through drawArc and accessible summary | Keep unknown distinct from observed zero; no NaN-to-zero advancing-count announcement. | Stage/a11y |
+| SPV01 | Missing leg/all missing, zero cash yield, mismatched clocks and confirmation bands | Separate actual policy from unknown inputs; no visual zero-risk inference. | D12/quant |
+| SPV02 | Decision marker versus next-bar holdings, 3bps cost, weekend carry and tax scenario | Preserve timing, units, window and assumptions; do not treat the check as performance validation. | D12/quant |
+| SPV03 | Shadow overlay veto while mechanical hero is unchanged | No active/live authority label without accepted activation evidence; keep outputs separate. | D12/overlay |
+| SPV04 | All ranges, y-rescale, synchronized panels, log growth, drawdown and thinning | Retain historical controls and meaningful scales; disclose sampling limits. | S&P UI |
+| A11Y01 | Keyboard open/close, modal versus dock, missing launcher and nested Escape | Restore visible focus without scroll jump; use a valid fallback and correct event ownership. | D06/F02 |
+| A11Y02 | Long EN/ZH labels, both themes, status colors, focus/disabled states and target bounds | Measure contrast, non-color semantics, 44px house targets and the separate AA minimum/spacing rule. | F02/D06 |
+| A11Y03 | 400% zoom/320CSSpx, evidence panel/table and embed viewport restrictions | Reflow surrounding content; contain essential 2D overflow; resolve or explicitly retain the embed zoom gap. | D06/embed |
+| A11Y04 | Reduced motion, Refraction open/close and state changes without animation | No full-pane wave; freeze/pause the edge; keep states understandable without movement. | F02/D06 |
+| A11Y05 | Screen-reader selected-bar/OHLC/source/time and chart/table alternatives | Provide bounded announcements and keyboard sample stepping without crosshair announcement floods. | Chart/a11y |
+| PERF01 | Cold/warm entry, rapid symbol/TF changes, hidden workspaces and rail dragging | Avoid duplicate kernel, polling and renderer; preserve lazy modules and measure p75 budgets separately. | Performance owners |
+| DEV01 | Production bench flag off/on, theater in production and customer navigation | Enforce developer-only boundaries; never present synthetic harness output as served-market proof. | F03/chart |
+
+## Accessibility and performance gates
+
+Evaluate 320,390,768,1024,1280,1440 and1600 CSSpx with actual F01 rail/gutters and inspector state. Include narrow expanded-nav+inspector, phone software keyboard, long Chinese labels, light/dark, keyboard/touch,400%zoom and reduced motion. Measure focus visibility, contrast,target bounds and scroll/reflow in actual rendered output.44px important-mobile target is a house rule; WCAG2.2AA2.5.8 uses24px or valid spacing/exceptions.
+
+Future performance targets: LCP≤2.5s,INP≤200ms,CLS≤0.1 atp75, mobile and desktop separately. No measurement is claimed. Preserve lazy MegaPane and suite runtime, single render kernel, bounded subscriptions, visibility-aware polling, coalesced resize and cleanup. Set a comparison baseline on the same device/network/data generation; a dev synthetic bench alone cannot prove served performance.
+
+## Migration compatibility and rollback
+
+- Keep existing paths,aliases,query precedence,hashes and accepted return bytes. No broad redirect migration to new names.
+- Preserve stored local keys,ownerUUID scopes,CAS stamps and legacy layout absent-field semantics. Do not clear users' workspace,drawings,watchlists or script buffers as a visual migration.
+- Adopt a field/schema extension only through the current producer/consumer owner, with tolerant older consumers and explicit version behavior. Missing view/source metadata remains unknown.
+- Preserve Macro history.parquet/ledger.parquet,backtest source windows,Stage14published artifacts and existing cache keys. A route redesign is not permission to rebuild,prune or backfill history.
+- Stage family rollout after actual reference approval; verify the exact changed source/route family and representative edge cases. One family passing does not certify all nine.
+- Future rollback returns the previous approved template/component/adapter through the existing source/release owner. Keep source data and saved-object state intact. Cancel or reconcile pending owner operations; don't duplicate them on a new carrier.
+- Any changed foundation version invalidates affected width/interaction compositions and reviews. Re-freeze affected artifacts and replay relevant cases rather than inheriting obsolete approval.
+
+## Acceptance accounting
+
+Artifact integrity checks performed by D06 are recorded separately in evidence/artifact_validation.json. They prove file/ledger/link/hash consistency only. Runtime cases, responsive/focus/scroll/resize,access/database enforcement,production performance and model validation remain unexecuted in this design phase. Acceptance requires the [programme checklist](../RE_AUDIT_CHECKLIST.md), real RIG receipts and later implementation/release/served evidence as separate facts.
+

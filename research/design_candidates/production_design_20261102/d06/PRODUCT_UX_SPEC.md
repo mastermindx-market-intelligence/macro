@@ -26,7 +26,7 @@ Interim behavior: retain symbol-only links and exact safe return href; say “Th
 
 ### Professional tools and contextual research
 
-Choose the active pane, use the existing drawing grammar and keyboard shortcuts, change or hide indicators, compare another symbol, save a permitted workspace, and open context or Intelligence. Local overlays must not capture typing intended for an editor, create a second chart engine or reset the view. A docked nonmodal reader retains chart access; a modal sheet traps focus while open. Closing a reader returns to the chart; leaving a dirty script asks an explicit save/discard/cancel question. No navigation or context selection may write watchlists, drawings, alerts or account preferences accidentally.
+Choose the active pane, use the existing drawing grammar and keyboard shortcuts, change or hide indicators, compare another symbol, save a permitted workspace, and open context or Intelligence. Local overlays must not capture typing intended for an editor, create a second chart engine or reset the view. A docked nonmodal reader retains chart access; a modal sheet traps focus while open. Closing a reader returns to the chart; the proposed broader leave flow asks an explicit save/discard/cancel question. Current verified guards cover script selection and its ID history; full route-exit/unload coverage remains to be tested. No navigation or context selection may write watchlists, drawings, alerts or account preferences accidentally.
 
 All 99 drawing tools, 29 classic indicator IDs, five suites, 19 gated intervals, nine chart types and 15 research panes retain their actual owner and semantics. The [retention ledger](FEATURE_RETENTION.md) and machine-readable registry define coverage. Internal `_lab` remains internal; unsupported intervals remain discoverable with a reason.
 
@@ -112,3 +112,7 @@ Acceptance needs an immutable after-artifact set plus independent product-regres
 
 Later implementation should measure successful exact-instrument entry, exact requested state acknowledgement, wrong-context suppression, return restoration, tool reachability and time to first useful chart. Report by device/locale/access class and include failures. Avoid recording private drawing text, portfolios, script source or full watchlists in analytics. Performance budgets are LCP≤2.5s, INP≤200ms and CLS≤0.1 atp75, separately for mobile and desktop; none was measured here. [Web Vitals](https://web.dev/articles/vitals) supplies the metric definitions.
 
+
+## Additional predecessor findings
+
+The older Intelligence reference 19BB-1 includes an illustrative “Suggested size 50%”; current R3 specimens instead show sizing unavailable. Keep the unavailable state until the existing sizing owner supplies an approved producer and access/decision contract. The mobile Activity predecessor omits a visible Re-entries filter, so the final composition must provide a reachable equivalent without losing that supported capability. The older Refraction settings grid omits 12h; source registry parity, not screenshot copying, governs the full 19-interval chooser.

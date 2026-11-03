@@ -22,7 +22,7 @@ Root fields: schema,asof,built_at,is_context_only=true,display_only=true,gamma,s
 | systematic.vc | SPX close data/yahoo/_GSPC.parquet; representative$300B AUM,10% annual volatility target; alloc_frac,alloc_bn,flow_1d_bn,flow_5d_bn | Fraction and modeled billions. Actual rolling sample count qualifies state. Not observed money movement |
 | systematic.cta | Same close history; normalized20/50/100/200-session trends; score,z,flow_1d,flow_5d,cta_near_flat | Dimensionless values, never dollars. Preserve near-flat producer qualifier and separate VC/CTA meanings |
 | vol | rv21,rv63; cboe/vix_curve.parquet tenor,settle,dte | Realized vol annualized fractions→percent; curve slope=M6−M1 in index points |
-| dispersion | CboeCOR1M,COR3M,DSPX; history and regime | COR1M percentage-point index units, not0–1correlation. Regime uses up to504prior observations, minimum20,20th/80th cutoffs; annual delta is level difference |
+| dispersion | CboeCOR1M,COR3M,DSPX; history and regime | COR1M percentage-point index units, not0–1correlation. Regime uses trailing available observations, up to504, minimum20,20th/80th cutoffs; annual delta is level difference |
 | week_map | SPX close andiv30 at/before last close strictly preceding targetMonday | Width=iv30×sqrt(5/252); ±1σ/±2σ SPX levels. 30-day→five-day scaling assumes flat volatility term structure. Model range, not a market boundary or guarantee |
 
 Root asof normally reflects latest SPX close; if those closes are absent it falls back to current UTC date, so it **cannot certify sibling freshness**. built_at is UTC generation. Gamma separately carries last_obs,expected_last_session,sessions_behind,missing-session lists and observed-versus-session counts. COR/VIX lack equivalent explicit last-observation clocks: display unknown when needed rather than borrowing root asof.
@@ -51,7 +51,7 @@ These are design/data defects to fix through existing owners after review. D06 d
 
 ### Product and source graph
 
-Stage Analysis helps an investor screen and compare a classification universe, inspect industry context, earnings/attention/research, then open the exact security for deeper investigation. Its source is weekly-native classification; a “daily” board does not imply a daily-native model.
+Stage Analysis helps an investor screen and compare a classification universe, inspect industry context, earnings/attention/research, then open the exact security for deeper investigation. Its source is weekly-native classification; a “daily” board does not imply a daily-native model. This is classification/context only, never a buy signal or sizing input. Keep the display-tier and reproduction-limit disclosure reachable. Coarse/fine agreement figures are source-reproduction claims, not predictive accuracy; their numerical qualification remains with the existing evidence owner.
 
 [scripts/build_stage_analysis.py](https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_stage_analysis.py) invokes engine.stage_analysis.build_context_feed, with separate earnings, alt-data and research producers. The engine uses engine.weinstein_stage.classify and current-population inputs for stage_industry and stage_flows. [Page builder](https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_stage_analysis_page.py) renders the initial context artifact data/stage_analysis/context/latest.json, schema stage_context.v1, and publishes14JSON files to site/stagedata/.
 
@@ -91,7 +91,7 @@ US is the sole enabled region button. Four other regions remain disabled with co
 
 Watchlist is browser-local sga_watch ticker array. Preserve it; do not silently merge it into Terminal account storage. D23 owns any future explicit migration/import. Ordinary navigation, filter or region changes must not write it.
 
-Expanded row is a labeled idealized stage sketch; it does not fetch historical candles. Earnings reader uses existing highlights,quote,tags from ERN.table; it does not retrieve full transcript text. Current company link is https://app.mastermind-x.com/analysis?symbol=<ticker>&page=intelligence; D07 owns whether that query is accepted, and the proposed chart return must preserve exact listing rather than assume ticker suffices.
+Expanded row is a labeled idealized stage sketch; it does not fetch historical candles. Earnings reader uses existing highlights,quote,tags from ERN.table; it does not retrieve full transcript text. Current company link is `https://app.mastermind-x.com/analysis?symbol=<ticker>&page=intelligence;` D07 owns whether that query is accepted, and the proposed chart return must preserve exact listing rather than assume ticker suffices.
 
 Research expansion shows a snippet, not a longer report. Screener display cap600rows and research cap240cards need visible narrowing guidance; counts/exports must not silently imply a full display.
 
@@ -103,6 +103,7 @@ Research expansion shows a snippet, not a longer report. Screener display cap600
 - Publisher revokes destination when source absent, but unreadable/invalidJSON may skip copying and leave yesterday's public file without newly declared stale state. Specify stale/revoke behavior with publication owner.
 - Preserve heterogeneous per-surface schemas; do not restore the universal-schema regression that stopped five valid outputs.
 - Keep source-aware null,zero,current/stale and seeded distinctions in every filter,heatmap,CSV and summary.
+- The Stage arc currently parses dash headline counts, converts NaN to zero and can announce zero advancing/base/topping/declining names. Require an explicit unknown/no-target visual and accessible summary; distinguish warm-up and unresolved population from genuinely observed zero.
 
 On narrow content widths, preserve dense comparison through a contained table with sticky identity where useful, an accessible column/value path and visible horizontal-scroll affordance. Expanded details reflow below the chosen row. Reader drawer traps focus only when modal and returns to the triggering call row. All six tabs and every secondary view remain reachable without hidden horizontal global navigation.
 

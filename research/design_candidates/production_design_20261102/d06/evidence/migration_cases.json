@@ -1,0 +1,475 @@
+{
+  "artifact": "D06 proposed migration cases",
+  "status": "SPECIFIED_NOT_EXECUTED",
+  "cases": [
+    {
+      "id": "NAV01",
+      "input": "Symbol/sym precedence, whitespace, case and preload/cache keys",
+      "expected": "Use one canonical token with no duplicate mismatched request or display-name substitution.",
+      "owner": "Terminal/D07",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV02",
+      "input": "CN exchange suffix, HK leading zero, share classes and unsupported listing",
+      "expected": "Preserve exact listing or show unresolved/unsupported state; a region change never relabels cached US data.",
+      "owner": "D07/data",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV03",
+      "input": "Explicit-symbol entry into a saved multipane workspace, then ordinary launch",
+      "expected": "Temporary entry skips mm.ws restore/persist; the ordinary saved workspace remains recoverable.",
+      "owner": "Terminal workspace",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV04",
+      "input": "Close and reopen the same research pane; change symbol on the same route",
+      "expected": "Existing open/close events and revisions work; URL-only changes are not assumed reactive.",
+      "owner": "Terminal/D07",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV05",
+      "input": "Valid, unsupported and missing incoming TF/bar requests; episode entry",
+      "expected": "Acknowledge exact applied state or explain the unsupported request; episode retains its 5m contract.",
+      "owner": "Terminal/D07/D08",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV06",
+      "input": "Safe return URL with encoded query/hash; forbidden URL; trusted/untrusted parent",
+      "expected": "Preserve exact accepted href and allowlist/parent checks; prevent arbitrary redirects.",
+      "owner": "originNav/F01",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV07",
+      "input": "Return to origin after research and pane changes",
+      "expected": "Restore row/scroll/selection only through supported origin-owner state; do not claim unimplemented fidelity.",
+      "owner": "D07/Macro/D08/D22",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV08",
+      "input": "shell=app, tray=1, dossier=1 and ordinary web focus",
+      "expected": "Preserve native bridge and dossier exclusion; no duplicate chrome or Brain.",
+      "owner": "Terminal/F01",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV09",
+      "input": "Valid/unknown /scripts?id, back/forward and dirty-switch cancellation",
+      "expected": "Unknown ID and cancellation preserve current script; prior ID is restored without discarding the buffer.",
+      "owner": "Scripts",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST01",
+      "input": "Inspect an old bar, ask AI, then switch symbol/TF/data generation during response",
+      "expected": "Bind the intended reader or locked selection explicitly and reject obsolete results.",
+      "owner": "D06/D14",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST02",
+      "input": "ET daylight-saving boundary, CN/HK wall time, crypto UTC and daily dates",
+      "expected": "Format declared time basis correctly; no universal UTC suffix or shifted daily dates.",
+      "owner": "Intraday/reader",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST03",
+      "input": "Replay/historical selection while current calendar, quote and research are present",
+      "expected": "Withhold current calendar; date other sources separately and prevent future-known contamination.",
+      "owner": "Chart/research",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST04",
+      "input": "Truncated history with IPO versus feed session_anchor; 2D/3D grouping",
+      "expected": "Honor published phase; never claim reconstructed IPO alignment from a partial feed.",
+      "owner": "Ingest/chart",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST05",
+      "input": "Deep signal history versus recent backtest sample; ts versus known_ts",
+      "expected": "Keep windows and availability distinct; label normalized equity and qualify historical metrics.",
+      "owner": "Signals/D12",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "HIST06",
+      "input": "Replay invalidated by split mode, bad axis or missing span",
+      "expected": "Exit visibly and coherently; never leave an implicitly mixed historical/live workspace.",
+      "owner": "Chart",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA01",
+      "input": "True zero, missing volume, synthetic opens and nonfinite OHLC",
+      "expected": "Preserve bar quality and partial context; no missing-to-zero conversion or slice override of OHLC provenance.",
+      "owner": "Ingest/chart",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA02",
+      "input": "Missing/invalid view contract, unsupported basis/MIC/listing and mixed source segments",
+      "expected": "Keep unknown/refused/partial states distinct; reject unsupported views before fetch; no false verified styling.",
+      "owner": "Data provenance",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA03",
+      "input": "Seconds disabled, guest/denied, unsupported region, HK lunch, US extended session and stored-tail overlap",
+      "expected": "Preserve actual gates, cache identity and provider rules; no upsampling; current tail wins duplicate times.",
+      "owner": "Intraday",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA04",
+      "input": "Cold load, 404/410, transport failure, stale refresh and superseded generation",
+      "expected": "Distinguish absence from unavailability; label saved copies; separate cache freshness from observation and paint adoption.",
+      "owner": "dataCache",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA05",
+      "input": "Hidden/visible tab, three regular nulls, fast-lane miss and connection recovery",
+      "expected": "Keep polling bounded; fast misses preserve regular last-good data; no duplicate timer or invented socket.",
+      "owner": "Quote",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA06",
+      "input": "Correct top-level symbol with wrong nested slice/backtest ticker",
+      "expected": "Withhold affected research and resolve identity; never relabel cached data.",
+      "owner": "Research/data",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA07",
+      "input": "Missing/stale/wrong-ticker fund data, quote/statement currencies and insufficient samples",
+      "expected": "Show honest unknown/retry; no inferred currency, volume rank or range score.",
+      "owner": "Fund/reader",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DATA08",
+      "input": "Reader Latest, re-enable, Hide, layer switches, candle settings and Useful/Unclear",
+      "expected": "Preserve callbacks/preferences; reset exact selection; feedback follows explicit action and does not create a new store.",
+      "owner": "Reader/settings",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY01",
+      "input": "All seven widths with measured navigation, gutters and inspector",
+      "expected": "Record available content width; retain a useful chart and reachable actions without whole-page overflow.",
+      "owner": "D06/F01/F02",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY02",
+      "input": "Rail resize, focus/maximize, rotation and 640/860 breakpoint crossings",
+      "expected": "Preserve renderer, active pane, logical range and drawings; persist final width; no unsolicited sheet reopening.",
+      "owner": "Chart",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY03",
+      "input": "Link same-TF panes with unequal histories; request mixed-TF linking",
+      "expected": "Align calendar window/crosshair, not raw indices or price; refuse mixed TF; never propagate symbol/TF.",
+      "owner": "paneSync",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY04",
+      "input": "Open context while research, table or native dossier owns its destination",
+      "expected": "Honor placement rules without an overlapping unreachable reader or chart remount.",
+      "owner": "Terminal",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY05",
+      "input": "Chart wheel, rail/page scroll, long reader, low-height landscape and software keyboard",
+      "expected": "Keep deliberate scroll ownership, reachable close/actions and meaningful return; prevent scroll traps.",
+      "owner": "D06/F01",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "KEY01",
+      "input": "Advertised shortcuts, rectangle binding, text/contenteditable, IME, modal and repeat",
+      "expected": "Match the registry; prevent accidental search/draw/share/delete while editing; preserve Escape priority.",
+      "owner": "Chart/palette",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DRAW01",
+      "input": "All 99 tools across desktop, phone and native payload; point grammar and favorites",
+      "expected": "Prove appropriate tool reachability and real creation/edit behavior; category counts alone do not pass.",
+      "owner": "Drawing",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DRAW02",
+      "input": "Pending drawing read/write followed by sign-out or account switch",
+      "expected": "Owner epoch rejects old callbacks and writes; no mutable-email ownership transfer.",
+      "owner": "Drawing/auth",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DRAW03",
+      "input": "Human drawings on same-symbol panes and auto drawings after TF change",
+      "expected": "Share only the rightful human set and reset transient auto drawings correctly.",
+      "owner": "ChartPane",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DRAW04",
+      "input": "Undo/redo, copy/paste, nudge, lock/hide/delete and replay",
+      "expected": "Preserve existing scope and semantics; replay blocks mutations; unrelated objects remain intact.",
+      "owner": "Drawing",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "IND01",
+      "input": "All retained indicator/suite/pane/timeframe/chart-type registries",
+      "expected": "Preserve tiers, defaults, parameters and visibility; keep internal entries internal and lazy modules lazy.",
+      "owner": "Terminal/suites",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SAVE01",
+      "input": "Layout round-trip with nondefaults and legacy missing fields",
+      "expected": "Restore owned fields only; preserve drawings/watchlists/favorites/DTM state; missing fields mean no claim.",
+      "owner": "Layout",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SAVE02",
+      "input": "Workspace conflict, denied access, lost response, reload and blank-name collision",
+      "expected": "Show success only with authoritative revision; reconcile uncertainty and preserve the current workspace.",
+      "owner": "Layout/D25",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT01",
+      "input": "Save then type more; duplicate click; wrong ID or invalid stamp response",
+      "expected": "Save one captured buffer; clean only its matching acknowledged baseline; newer edits stay dirty.",
+      "owner": "Scripts",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT02",
+      "input": "Two-tab CAS conflict, expired session and lost save receipt",
+      "expected": "Preserve the mounted buffer; reconcile server outcome before retry or full authentication navigation.",
+      "owner": "Scripts/D25",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT03",
+      "input": "Owner A script versus readable public B script; account switch during request",
+      "expected": "Enforce owner filter/server/RLS boundaries; prevent cross-owner writes or automatic imports.",
+      "owner": "Scripts/auth",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT04",
+      "input": "Free-tier dirty Add, locked flagship, unknown saved ID and repeated consumption",
+      "expected": "Explain paid-save blocking; no silent stall or phantom indicator; consume a valid Add once.",
+      "owner": "Scripts/Terminal",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SCRIPT05",
+      "input": "Synthetic compile success/error/timeout/supersession and uncertain delete",
+      "expected": "Label 130-bar synthetic diagnostic and budget; reconcile delete through the own-script list.",
+      "owner": "Pine/Scripts",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SHARE01",
+      "input": "Valid PNG, wrong MIME, malformed PNG, oversize, rate limit and upstream failure",
+      "expected": "Map actual server validation/status honestly; client validation alone is not upload acceptance.",
+      "owner": "Snapshot",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SHARE02",
+      "input": "Lost upload response, clipboard failure and duplicate click",
+      "expected": "Show uncertainty without blind duplicate upload; expose the actual returned link for copying.",
+      "owner": "Snapshot/D26",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SHARE03",
+      "input": "Valid/invalid slug, missing image, network failure and proposed lifecycle states",
+      "expected": "Keep current unavailable behavior honest; no invented expiry/revocation/restore; preserve footer until approved change.",
+      "owner": "D25/D26",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SHARE04",
+      "input": "Private review during moving chart, half-switch or replay; annotations and privacy",
+      "expected": "Require stable before/after scene; no public upload; retain exclusions and unknown clocks; omit private owner/text metadata.",
+      "owner": "Capture",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "EMBED01",
+      "input": "Repeated parameters, unsupported symbol grammar and every visual/range variant",
+      "expected": "Honor first-value parser and actual coverage; do not silently broaden accepted identities.",
+      "owner": "Embed",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "EMBED02",
+      "input": "Daily as-of, empty bars, network/bad JSON and invalid OHLC/volume",
+      "expected": "Show final-bar clock when implemented and distinct source outcomes; no live-quote claim.",
+      "owner": "Embed/data",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "EMBED03",
+      "input": "Native fullscreen, ordinary browser, CTA and allowed/forbidden frame ancestors",
+      "expected": "Provide meaningful behavior, disclose context loss until fixed and keep CSP scope narrow.",
+      "owner": "Embed/F01",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "MSP01",
+      "input": "Null versus zero, missing 2-sigma band and independently missing blocks",
+      "expected": "Render gaps and valid siblings; do not fabricate a wide band or observed inactivity.",
+      "owner": "Market Structure",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "MSP02",
+      "input": "Friday/holiday/weekend anchor, latest flip, fallback root date and All history",
+      "expected": "Separate source/anchor/build clocks; All means embedded rows; retain actual observation/date summaries.",
+      "owner": "Market Structure",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "MSP03",
+      "input": "504-observation producer versus 500-row UI threshold, zero-vol VC and CTA units",
+      "expected": "Resolve one authoritative state and unknown policy; never attach dollar units to CTA.",
+      "owner": "Market/quant",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "STAGE01",
+      "input": "Lifecycle-fresh but stale row, retirement, unresolved/frozen/ahead SPY and low coverage",
+      "expected": "Preserve tri-valued currentness and population receipt; no-target counts remain null.",
+      "owner": "Stage",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "STAGE02",
+      "input": "Six hashes, invalid hash, history, every subview, regional gates and local watch",
+      "expected": "Preserve actual navigation; do not claim shareable filters or silently merge watchlists.",
+      "owner": "Stage/F03",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "STAGE03",
+      "input": "CSV units/provenance, display caps, stage sketch, earnings reader and snippet",
+      "expected": "Label all units and limits; do not claim actual candles, a full transcript or a full report.",
+      "owner": "Stage/earnings",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "STAGE04",
+      "input": "Absent, corrupt, empty, stale and valid heterogeneous publisher inputs",
+      "expected": "Do not present an old file as current; preserve schema differences and working retry behavior.",
+      "owner": "Stage publication",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "STAGE05",
+      "input": "No-target/warm-up dash counts through drawArc and accessible summary",
+      "expected": "Keep unknown distinct from observed zero; no NaN-to-zero advancing-count announcement.",
+      "owner": "Stage/a11y",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SPV01",
+      "input": "Missing leg/all missing, zero cash yield, mismatched clocks and confirmation bands",
+      "expected": "Separate actual policy from unknown inputs; no visual zero-risk inference.",
+      "owner": "D12/quant",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SPV02",
+      "input": "Decision marker versus next-bar holdings, 3bps cost, weekend carry and tax scenario",
+      "expected": "Preserve timing, units, window and assumptions; do not treat the check as performance validation.",
+      "owner": "D12/quant",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SPV03",
+      "input": "Shadow overlay veto while mechanical hero is unchanged",
+      "expected": "No active/live authority label without accepted activation evidence; keep outputs separate.",
+      "owner": "D12/overlay",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "SPV04",
+      "input": "All ranges, y-rescale, synchronized panels, log growth, drawdown and thinning",
+      "expected": "Retain historical controls and meaningful scales; disclose sampling limits.",
+      "owner": "S&P UI",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "A11Y01",
+      "input": "Keyboard open/close, modal versus dock, missing launcher and nested Escape",
+      "expected": "Restore visible focus without scroll jump; use a valid fallback and correct event ownership.",
+      "owner": "D06/F02",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "A11Y02",
+      "input": "Long EN/ZH labels, both themes, status colors, focus/disabled states and target bounds",
+      "expected": "Measure contrast, non-color semantics, 44px house targets and the separate AA minimum/spacing rule.",
+      "owner": "F02/D06",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "A11Y03",
+      "input": "400% zoom/320CSSpx, evidence panel/table and embed viewport restrictions",
+      "expected": "Reflow surrounding content; contain essential 2D overflow; resolve or explicitly retain the embed zoom gap.",
+      "owner": "D06/embed",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "A11Y04",
+      "input": "Reduced motion, Refraction open/close and state changes without animation",
+      "expected": "No full-pane wave; freeze/pause the edge; keep states understandable without movement.",
+      "owner": "F02/D06",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "A11Y05",
+      "input": "Screen-reader selected-bar/OHLC/source/time and chart/table alternatives",
+      "expected": "Provide bounded announcements and keyboard sample stepping without crosshair announcement floods.",
+      "owner": "Chart/a11y",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "PERF01",
+      "input": "Cold/warm entry, rapid symbol/TF changes, hidden workspaces and rail dragging",
+      "expected": "Avoid duplicate kernel, polling and renderer; preserve lazy modules and measure p75 budgets separately.",
+      "owner": "Performance owners",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "DEV01",
+      "input": "Production bench flag off/on, theater in production and customer navigation",
+      "expected": "Enforce developer-only boundaries; never present synthetic harness output as served-market proof.",
+      "owner": "F03/chart",
+      "status": "specified_not_executed"
+    }
+  ]
+}

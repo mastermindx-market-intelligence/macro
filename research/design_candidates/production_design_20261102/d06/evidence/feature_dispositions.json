@@ -9,7 +9,7 @@
     "IMPROVE": 35,
     "RELOCATE": 0,
     "REMOVE": 0,
-    "BLOCKED_DATA": 0
+    "BLOCKED_DATA": 1
   },
   "existing": [
     {
@@ -277,7 +277,7 @@
       "id": "TC30",
       "capability": "Intelligence Summary/Oracle/Research/Activity and focus",
       "disposition": "IMPROVE",
-      "decision": "Reuse existing Paper panes; preserve chart return and separate source readouts.",
+      "decision": "Reuse existing Paper panes; preserve chart return and separate source readouts. Mobile Activity predecessor shows no explicit Re-entries filter; retain a reachable equivalent of every supported desktop filter.",
       "owner": "D06/D07",
       "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/OracleDash.tsx",
       "reviewer_decision": "not reviewed; RIG draft"
@@ -331,7 +331,7 @@
       "id": "TC36",
       "capability": "Theme, language and settings",
       "disposition": "RETAIN",
-      "decision": "Use existing preferences; F02 released semantic mapping; no second persistence system.",
+      "decision": "Retain theme/language and source-supported Terminal settings: market-search toggles, default interval and up/down-color preference. Map F02 tokens; no second store. Old Refraction grid omits 12h, so current 19-interval registry wins.",
       "owner": "F02/settings",
       "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/TerminalShell.tsx",
       "reviewer_decision": "not reviewed; RIG draft"
@@ -405,7 +405,7 @@
       "disposition": "IMPROVE",
       "decision": "Keep exact CSP ancestors; meaningful browser fallback; don't imply restored range/bar.",
       "owner": "Embed/F01",
-      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/EmbedChart.tsx",
+      "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/embed/chart/EmbedChart.tsx",
       "reviewer_decision": "not reviewed; RIG draft"
     },
     {
@@ -685,6 +685,15 @@
       "decision": "Reuse original restrained edge only; rejected full-pane variants remain history.",
       "owner": "D06/F02",
       "source": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Z-0",
+      "reviewer_decision": "not reviewed; RIG draft"
+    },
+    {
+      "id": "PA02",
+      "capability": "Suggested size in the preserved older Intelligence reference",
+      "disposition": "BLOCKED_DATA",
+      "decision": "Older Paper 19BB-1 illustrates Suggested size 50%; R3 shows sizing unavailable. Retain unavailable state until an approved sizing producer and owner contract exist; never revive the illustrative value as a recommendation.",
+      "owner": "D07/D12/D22 and existing sizing owner",
+      "source": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-I-1",
       "reviewer_decision": "not reviewed; RIG draft"
     }
   ],
