@@ -87,8 +87,11 @@ Schema per-ticker parquet:
 
 Ordering: a ticker with no data (404 / 0-volume bar) on a given date simply has no
 row for that date; per-TICKER gaps are legitimate (halted names, ETF launches).
-Whole-STORE day gaps are NOT legitimate — that is what processed_days + the
-massive_store audit guard.
+However, a sealed day where SPY has a bar and a normally liquid ETF lacks one
+may be a partial vendor file or R2 publish. Nightly selectively rechecks these
+recent ETF holes without re-upserting unrelated symbols or claiming freshness
+if the upstream row is still missing. Whole-STORE day gaps remain covered by
+processed_days and the massive_store audit guard.
 
 GIT / R2 BOUNDARY
 -----------------
@@ -560,16 +563,20 @@ def backfill(
     *,
     max_days: int | None = None,
     pace_s: float = 0.05,
+    recheck_etfs: dict[date, set[str]] | None = None,
 ) -> dict:
-    """Download and persist the entitled window, EARLIEST-FIRST, fetching ONLY the
-    trading days not already in processed_days (gap-aware: interior holes are
-    targeted the same as the leading edge).
+    """Persist unprocessed daily bars, and optionally repair diagnosed ETF gaps.
+
+    Normal days remain tip-first and fully written. Optional recheck_etfs is a
+    precise mapping of already-sealed sessions to missing liquid tickers; these
+    rechecks fetch only after normal work and upsert only missing named symbols.
 
     Args:
         start: first date to consider (default: EARLIEST_ENTITLED)
         end:   last date to consider (default: latest_available())
         max_days: stop after this many FETCHED days (smoke-tests / partial runs)
         pace_s: sleep between day fetches (S3 is self-throttled but be polite)
+        recheck_etfs: already-sealed day -> tickers missing that exact bar
 
     Returns dict with keys: days_fetched, days_skipped, days_failed, days_remaining,
     tickers_written, earliest_date, latest_date, store_tickers.
@@ -601,13 +608,19 @@ def backfill(
     # not be held hostage.  Earliest-first WITHIN each half preserves the rolling-window
     # rescue property: the days closest to aging out of the entitlement still go first.
     tip = max(processed) if processed else None
-    targets = (missing if tip is None
-               else [d for d in missing if d > tip] + [d for d in missing if d <= tip])
+    normal_targets = (missing if tip is None
+                      else [d for d in missing if d > tip] + [d for d in missing if d <= tip])
+    recheck = {d: set(tickers) for d, tickers in (recheck_etfs or {}).items()
+               if start <= d <= end and d in processed and tickers}
+    # Never sacrifice tip ingestion to a historical repair.  Only explicitly
+    # diagnosed liquid ETFs on already-sealed days are selectively re-upserted.
+    targets = normal_targets + [d for d in sorted(recheck) if d not in normal_targets]
     log.info("massive_stock_day backfill: %s → %s — %d missing day(s) to fetch "
              "(max_days=%s, %d already processed)",
              start, end, len(targets), max_days, len(processed))
 
     days_fetched = days_skipped = days_failed = 0
+    recheck_attempted = recheck_repaired_tickers = 0
     tickers_written: set[str] = set()
     earliest_date_written: date | None = None
     latest_date_written: date | None = None
@@ -624,6 +637,39 @@ def backfill(
             # NOT recorded as processed — retried on the next run.
             log.warning("massive_stock_day: fetch failed %s: %s", d, e)
             days_failed += 1
+            continue
+
+        if d in recheck:
+            recheck_attempted += 1
+            required = recheck[d]
+            # A vendor day file which is still short is NOT evidence of a repair.
+            # Do not touch unrelated 20k ticker parquets, or advance manifest
+            # freshness merely because a retry returned an incomplete frame.
+            subset = raw[raw["ticker"].isin(required)] if not raw.empty else raw
+            if subset.empty:
+                log.warning("massive_stock_day: sealed partial session %s still lacks %s",
+                            d, sorted(required))
+            else:
+                parsed = _parse_day(subset, d)
+                confirmed_on_day: set[str] = set()
+                for ticker, grp in parsed.groupby("ticker"):
+                    _upsert_ticker(ticker, grp.drop(columns=["ticker"]))
+                    try:
+                        idx = pd.to_datetime(pd.read_parquet(
+                            _ticker_path(ticker), columns=[]).index)
+                        verified = d in {stamp.date() for stamp in idx}
+                    except Exception:  # noqa: BLE001 — unreadable parquet cannot be healed here
+                        verified = False
+                    if verified:
+                        recheck_repaired_tickers += 1
+                        confirmed_on_day.add(ticker)
+                        tickers_written.add(ticker)
+                unresolved = required - confirmed_on_day
+                if unresolved:
+                    log.warning("massive_stock_day: sealed partial session %s unresolved %s",
+                                d, sorted(unresolved))
+            if pace_s > 0:
+                time.sleep(pace_s)
             continue
 
         if raw.empty:
@@ -658,16 +704,23 @@ def backfill(
     # Still-missing days in the requested window: failed fetches AND targets never
     # attempted (max_days cut).  Both retry on the next run.
     days_remaining = sum(1 for d in targets if d not in processed)
-    _save_backfill_state(processed)
+    # No-op short-file rechecks must not falsely refresh the committed anchor.
+    if normal_targets or recheck_repaired_tickers:
+        _save_backfill_state(processed)
     n_tickers = sum(1 for _ in iter_artifact_paths(_store_dir()))
     if processed:
-        _write_manifest(n_tickers, max(processed), processed)
+        if normal_targets or recheck_repaired_tickers:
+            _write_manifest(n_tickers, max(processed), processed)
+        else:
+            _refresh_manifest_if_stale(processed)
 
     result = {
         "days_fetched": days_fetched,
         "days_skipped": days_skipped,
         "days_failed": days_failed,
         "days_remaining": days_remaining,
+        "partial_recheck_attempted": recheck_attempted,
+        "partial_repaired_tickers": recheck_repaired_tickers,
         "tickers_written": len(tickers_written),
         "earliest_date": earliest_date_written.isoformat() if earliest_date_written else None,
         "latest_date": latest_date_written.isoformat() if latest_date_written else None,
@@ -675,6 +728,68 @@ def backfill(
     }
     log.info("massive_stock_day backfill complete: %s", result)
     return result
+
+
+# These broad ETFs trade every ordinary NYSE session.  Their missing single-day
+# rows are not equivalent to legitimate individual-stock halts.  A non-empty but
+# partial vendor file (or partial R2 publish) can otherwise seal the entire day in
+# processed_days and hide it from every future incremental run.
+_PARTIAL_DAY_ETFS = (
+    "QQQ", "IWM", "DIA", "XLB", "XLC", "XLE", "XLF", "XLI", "XLK",
+    "XLP", "XLRE", "XLU", "XLV", "XLY",
+)
+
+
+def _sealed_partial_etf_days(
+    processed: set[date], latest_ent: date, *, max_days: int = 3,
+) -> dict[date, set[str]]:
+    """Find recent *sealed* sessions present in SPY but absent in liquid ETFs.
+
+    Read only index columns of the local R2-restored parquets.  Do not rewrite the
+    state, infer a vendor bar, or equate a missing parquet with a zero-volume day.
+    Restrict rechecks to three NYSE sessions per run: the normal fresh tip keeps
+    priority and an upstream short file cannot create an unbounded nightly loop.
+    """
+    if not processed or max_days <= 0:
+        return {}
+    from lib import nyse_calendar
+
+    start = max(EARLIEST_ENTITLED, latest_ent - timedelta(days=160))
+    window = set(nyse_calendar.sessions_between(start, latest_ent)[-90:]) & processed
+    if not window:
+        return {}
+
+    def dates_for(ticker: str) -> set[date] | None:
+        path = _ticker_path(ticker)
+        if not path.is_file():
+            return None
+        try:
+            idx = pd.to_datetime(pd.read_parquet(path, columns=[]).index)
+            return {stamp.date() for stamp in idx}
+        except Exception as exc:  # noqa: BLE001 — corrupt R2 belongs to restore, not repair
+            log.warning("massive_stock_day: unreadable %s anchor (%s) — no auto-repair",
+                        ticker, exc)
+            return None
+
+    spy = dates_for("SPY")
+    if not spy:
+        return {}
+    observed = window & spy
+    if not observed:
+        return {}
+
+    gaps: dict[date, set[str]] = {}
+    for ticker in _PARTIAL_DAY_ETFS:
+        have = dates_for(ticker)
+        if not have:
+            continue  # missing/unreadable full parquet is a different repair class
+        # Do not flag a day before a symbol's first observed bar.
+        first = min(have)
+        for day in observed:
+            if first <= day and day not in have:
+                gaps.setdefault(day, set()).add(ticker)
+    newest = sorted(gaps, reverse=True)[:max_days]
+    return {day: gaps[day] for day in sorted(newest)}
 
 
 def _refresh_manifest_if_stale(processed: set[date]) -> bool:
@@ -701,10 +816,14 @@ def _refresh_manifest_if_stale(processed: set[date]) -> bool:
 
 def run_incremental(lookback_days: int = 5, pace_s: float = 0.05,
                     max_days: int | None = 40) -> dict:
-    """Nightly incremental fetch: capture every trading day not yet processed over the
-    FULL window [min(processed) … latest_available()] — the leading edge AND any
-    interior hole (self-healing).  Wired in the nightly collect lane via
-    MassiveStockDayAdapter.
+    """Nightly incremental: new dates, interior holes, and sealed partial ETFs.
+
+    Captures unprocessed sessions over [min(processed) ... latest_available()]
+    tip-first. Once the R2 store is restored, read-only index comparison of
+    liquid ETFs to SPY discovers already-sealed partial days. Recheck at most
+    three recent sessions, after new-tip work, using the same entitled source.
+    A short vendor file stays unresolved and generates a warning, never fake
+    manifest freshness. Wired into the nightly collect lane via the adapter.
 
     `max_days` caps the per-run work so a large discovered hole chips away across
     nights instead of blowing the collect lane's time budget; the remainder is logged
@@ -741,13 +860,25 @@ def run_incremental(lookback_days: int = 5, pace_s: float = 0.05,
         start = latest_ent - timedelta(days=lookback_days + 2)
         log.info("massive_stock_day: store empty, priming with last %d days", lookback_days)
 
-    if not any(d not in processed for d in _trading_days(start, latest_ent)):
+    recheck = _sealed_partial_etf_days(processed, latest_ent)
+    if recheck:
+        log.warning("massive_stock_day: %d already-sealed partial ETF session(s) "
+                    "require selective source recheck: %s",
+                    len(recheck), {d.isoformat(): sorted(t) for d, t in recheck.items()})
+    if not recheck and not any(d not in processed for d in _trading_days(start, latest_ent)):
         _refresh_manifest_if_stale(processed)
         log.info("massive_stock_day: already up to date (%d processed, entitled=%s)",
                  len(processed), latest_ent)
         return {"days_fetched": 0, "already_current": True}
 
-    result = backfill(start=start, end=latest_ent, max_days=max_days, pace_s=pace_s)
+    result = backfill(start=start, end=latest_ent, max_days=max_days,
+                      pace_s=pace_s, recheck_etfs=recheck)
+    if recheck:
+        still = _sealed_partial_etf_days(_processed_days(), latest_ent)
+        result["partial_etf_days_remaining"] = len(still)
+        if still:
+            print("::warning title=massive_stock_day partial sessions::"
+                  + str({d.isoformat(): sorted(t) for d, t in still.items()}), flush=True)
     if result.get("days_remaining"):
         log.warning(
             "massive_stock_day: %d missing day(s) REMAIN after this capped run "

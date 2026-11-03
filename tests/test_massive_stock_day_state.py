@@ -212,3 +212,106 @@ def test_manifest_reports_interior_missing_run(store):
     mf = json.loads(msd._manifest_path().read_text())
     assert mf["coverage"]["max_missing_run_weekdays"] == 6
     assert mf["coverage"]["missing_sample"][0] == DAYS[2].isoformat()
+
+
+# --- 2026-08-18 failure class: an already-sealed, per-ETF session gap --------
+
+
+def _plant_sealed_etf_hole(ticker: str, missing_day: date) -> None:
+    # Full store day already processed, but a single liquid ETF's published parquet
+    # has an older snapshot (or a short original vendor day). No vendor access.
+    source = msd.load_ticker("SPY")
+    assert missing_day in {t.date() for t in pd.to_datetime(source.index)}
+    source.drop(pd.Timestamp(missing_day)).to_parquet(msd._ticker_path(ticker))
+    # Keep manifest counts coherent: the test seeds a *published* partial store,
+    # not the independent stale-manifest incident handled by existing tests.
+    processed = msd._processed_days()
+    n = sum(1 for _ in msd.iter_artifact_paths(msd._store_dir()))
+    msd._write_manifest(n, max(processed), processed)
+
+
+def test_sealed_partial_etf_day_is_rechecked_and_repaired(store, monkeypatch):
+    msd.backfill(start=DAYS[0], end=DAYS[-1], pace_s=0)
+    target = DAYS[2]
+    _plant_sealed_etf_hole("QQQ", target)
+    _plant_sealed_etf_hole("XLE", target)
+    assert msd._processed_days() == set(DAYS)  # global state says complete
+
+    original_fetch = msd.fetch_aggs
+
+    def restored_vendor(d, **kwargs):
+        raw = original_fetch(d, **kwargs)
+        if d == target:
+            for ticker in ("QQQ", "XLE"):
+                row = raw.loc[raw["ticker"] == "SPY"].copy()
+                row["ticker"] = ticker
+                raw = pd.concat([raw, row], ignore_index=True)
+        return raw
+
+    monkeypatch.setattr(msd, "fetch_aggs", restored_vendor)
+    store["calls"].clear()
+    result = msd.run_incremental(pace_s=0)
+    assert store["calls"] == [target], "only the sealed defect should be requested"
+    assert result["partial_recheck_attempted"] == 1
+    assert result["partial_repaired_tickers"] == 2
+    assert result["partial_etf_days_remaining"] == 0
+    assert result["days_fetched"] == 0  # no fake new tip
+    for ticker in ("QQQ", "XLE"):
+        assert target in {t.date() for t in pd.to_datetime(msd.load_ticker(ticker).index)}
+    assert msd._processed_days() == set(DAYS)  # no state reset or deletion
+
+
+def test_vendor_still_short_keeps_gap_and_manifest_immutable(store, capsys):
+    msd.backfill(start=DAYS[0], end=DAYS[-1], pace_s=0)
+    target = DAYS[3]
+    _plant_sealed_etf_hole("QQQ", target)
+    state_before = msd._backfill_state_path().read_bytes()
+    manifest_before = msd._manifest_path().read_bytes()
+    store["calls"].clear()
+    result = msd.run_incremental(pace_s=0)
+    assert result["partial_recheck_attempted"] == 1
+    assert result["partial_repaired_tickers"] == 0
+    assert result["partial_etf_days_remaining"] == 1
+    assert store["calls"] == [target]
+    assert "::warning title=massive_stock_day partial sessions::" in capsys.readouterr().out
+    assert msd._backfill_state_path().read_bytes() == state_before
+    assert msd._manifest_path().read_bytes() == manifest_before
+
+    # It was never marked repaired, so tomorrow's normal incremental will retry.
+    store["calls"].clear()
+    second = msd.run_incremental(pace_s=0)
+    assert store["calls"] == [target]
+    assert second["partial_etf_days_remaining"] == 1
+
+
+def test_partial_etf_gap_scan_uses_nyse_sessions_not_weekdays(store):
+    # June 19 is Juneteenth (closed); a synthetic SPY holiday print must never
+    # make missing QQQ look like a market-session repair target.
+    begin, holiday, end = date(2026, 6, 18), date(2026, 6, 19), date(2026, 6, 22)
+    msd.backfill(start=begin, end=end, pace_s=0)
+    _plant_sealed_etf_hole("QQQ", holiday)
+    assert msd._sealed_partial_etf_days(msd._processed_days(), end) == {}
+
+
+def test_partial_etf_scan_bounded_to_recent_processed_sessions(store):
+    msd.backfill(start=DAYS[0], end=DAYS[-1], pace_s=0)
+    target = DAYS[2]
+    _plant_sealed_etf_hole("QQQ", target)
+    assert target in msd._sealed_partial_etf_days(msd._processed_days(), DAYS[-1])
+    # Old historical data must not consume today's bounded nightly fetch budget.
+    assert msd._sealed_partial_etf_days(msd._processed_days(), date(2027, 7, 2)) == {}
+
+
+def test_new_tip_is_fetched_before_sealed_etf_repair_under_day_cap(store):
+    # A capped nightly must never spend its only allowed fetched day on an
+    # older ETF repair while a new market session is still missing.
+    msd.backfill(start=DAYS[0], end=DAYS[4], pace_s=0)
+    target = DAYS[2]
+    _plant_sealed_etf_hole("QQQ", target)
+    store["calls"].clear()
+    result = msd.run_incremental(max_days=1, pace_s=0)
+    assert store["calls"] == [DAYS[5]]
+    assert result["days_fetched"] == 1
+    assert result["partial_recheck_attempted"] == 0
+    assert result["partial_etf_days_remaining"] >= 1
+    assert target not in {t.date() for t in pd.to_datetime(msd.load_ticker("QQQ").index)}
