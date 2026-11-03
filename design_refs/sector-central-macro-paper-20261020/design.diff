@@ -1,0 +1,1234 @@
+diff --git a/templates/_us_act_now_board.html.j2 b/templates/_us_act_now_board.html.j2
+index dcd9ee79a9a2..b981f028a291 100644
+--- a/templates/_us_act_now_board.html.j2
++++ b/templates/_us_act_now_board.html.j2
+@@ -306 +306 @@
+-    <div style="margin:6px 0 10px;padding:8px 12px;border-radius:8px;border-left:4px solid var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--panel2));font-size:13px;font-weight:600">
++    <div style="margin:6px 0 10px;padding:8px 12px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:var(--panel2);font-size:var(--fs-sm);font-weight:600">
+diff --git a/templates/_us_board_cards.html.j2 b/templates/_us_board_cards.html.j2
+index aecdcbf3e87d..d5ee8f8b74a5 100644
+--- a/templates/_us_board_cards.html.j2
++++ b/templates/_us_board_cards.html.j2
+@@ -122 +122,6 @@
+-        {% if n.get('sector_stance') and n.sector_stance in ('Reduce','Cautious') %}{% set _fl.rows = _fl.rows + [('Sector stance is ' ~ n.sector_stance|lower ~ '. This is a single-stock trigger, not a sector call.', '板块态度为' ~ (n.sector_stance_zh or n.sector_stance) ~ '。个股信号，非板块判断。')] %}{% endif %}
++        {# The sidecar snapshot has its own clock; keep its receipt in the same caution. #}
++        {% set _ss = n.get('sector_stance_source') if n.get('sector_stance_source') is mapping else {} %}
++        {% set _ss_id = (' (' ~ _ss.etf ~ ')') if _ss.get('etf') else '' %}
++        {% set _ss_en = ' Sector snapshot date' ~ _ss_id ~ ': ' ~ (_ss.get('snapshot_as_of') or 'unavailable') ~ '.' %}
++        {% set _ss_zh = ' 板块快照日期' ~ _ss_id ~ '：' ~ (_ss.get('snapshot_as_of') or '不可用') ~ '。' %}
++        {% if n.get('sector_stance') and n.sector_stance in ('Reduce','Cautious') %}{% set _fl.rows = _fl.rows + [('Sector stance is ' ~ n.sector_stance|lower ~ '. This is a single-stock trigger, not a sector call.' ~ _ss_en, '板块态度为' ~ (n.sector_stance_zh or n.sector_stance) ~ '。个股信号，非板块判断。' ~ _ss_zh)] %}{% endif %}
+diff --git a/templates/dashboard.html.j2 b/templates/dashboard.html.j2
+index b40d29a43bde..a251a97d257a 100644
+--- a/templates/dashboard.html.j2
++++ b/templates/dashboard.html.j2
+@@ -16379,0 +16380 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
++  {% if mode == "stocks" %}{% include "_sector_prophet_context.html.j2" %}{% endif %}
+@@ -20590,0 +20592,2 @@ function initStockTableView(){
++    sectorOptions: Object.keys(SECZH),
++    emptyMessage: ['No matching stocks in the loaded table. Clear filters to widen the view.', '当前已加载的股票中没有匹配结果。清除筛选条件以查看更多股票。'],
+@@ -20609,0 +20613 @@ function initStockTableView(){
++  var tableController = null;
+@@ -20611,0 +20616 @@ function initStockTableView(){
++    var sector = tableController && tableController.getSectorFilter ? tableController.getSectorFilter() : 'all';
+@@ -20617 +20622,2 @@ function initStockTableView(){
+-    StockTable.init(STINIT);
++    tableController = StockTable.init(STINIT);
++    if (tableController && tableController.setSectorFilter) tableController.setSectorFilter(sector);
+@@ -20618,0 +20625,23 @@ function initStockTableView(){
++    exposeSectorAction();
++  }
++
++  // Sector Central supplies a canonical identity. The native table remains
++  // the filter owner, and the existing source/view owners control navigation.
++  function selectSector(sector) {
++    if (typeof sector !== 'string' || !Object.prototype.hasOwnProperty.call(SECZH, sector) ||
++        !tableController || typeof tableController.setSectorFilter !== 'function' ||
++        !window.USProphetSource || typeof window.USProphetSource.set !== 'function') return false;
++    if (!tableController.setSectorFilter(sector)) return false;
++    window.USProphetSource.set('candidates');
++    applyView('table');
++    var toggle = document.getElementById('us-st-btn-table');
++    var tableHost = document.getElementById('us-stocktable-wrap');
++    if (toggle) toggle.focus({preventScroll:true});
++    if (tableHost) tableHost.scrollIntoView({block:'start'});
++    return true;
++  }
++
++  function exposeSectorAction() {
++    window.USStockTable._selectSector = tableController &&
++      typeof tableController.setSectorFilter === 'function' ? selectSector : null;
++    window.dispatchEvent(new Event('us-screener:availability'));
+@@ -20626 +20655 @@ function initStockTableView(){
+-  StockTable.init(STINIT);
++  tableController = StockTable.init(STINIT);
+@@ -20629,0 +20659 @@ function initStockTableView(){
++  exposeSectorAction();
+@@ -20688,0 +20719 @@ if (document.readyState === 'loading') {
++  window.dispatchEvent(new Event('us-screener:availability'));
+diff --git a/templates/sector_central.html.j2 b/templates/sector_central.html.j2
+index 1224e9695409..4a616b51f4c5 100644
+--- a/templates/sector_central.html.j2
++++ b/templates/sector_central.html.j2
+@@ -122 +122 @@
+-  .card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,#888); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
++  .card { background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 13px; cursor:pointer; transition:border-color .15s; }
+@@ -154 +154 @@
+-  .tcard { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--tc,#888);
++  .tcard { background:var(--panel); border:1px solid var(--line);
+@@ -316 +316 @@
+-  .pulse-size { border:1px solid color-mix(in srgb, var(--warn) 45%, var(--line)); border-left:3px solid var(--warn);
++  .pulse-size { border:1px solid var(--line);
+@@ -665 +665 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
+-.mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:inset 3px 0 0 var(--ink-info)}
++.mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:none}
+@@ -689 +689 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
+-.mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:var(--r-card,12px);background:var(--panel2)}
++.mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
+@@ -826 +826 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  #si-confluence .gcard { display:block; position:relative; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:13px; padding:12px 14px; transition:border-color .15s, transform .12s, box-shadow .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
++  #si-confluence .gcard { display:block; position:relative; background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 14px; transition:border-color .15s, transform .12s, box-shadow .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
+@@ -879 +879 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  #si-confluence .lcard { border:1px solid var(--line); border-left:3px solid var(--line); border-radius:12px; padding:10px 12px; background:var(--panel); transition:transform .12s, border-color .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
++  #si-confluence .lcard { border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:10px 12px; background:var(--panel); transition:transform .12s, border-color .15s; animation:sc-rise .4s cubic-bezier(.22,1,.36,1) backwards; }
+@@ -936,2 +936,2 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  html[data-theme="light"] #si-confluence .sc-best { background:color-mix(in srgb,var(--sc-l-buy) 6%,#fff); border-color:color-mix(in srgb,var(--sc-l-buy) 25%,#dde2ea); border-left:3px solid var(--sc-l-buy); }
+-  html[data-theme="light"] #si-confluence .sc-best.none { background:#f6f7fa; border-color:#dde2ea; border-left-color:#c4cbd7; }
++  html[data-theme="light"] #si-confluence .sc-best { background:var(--panel); border-color:var(--line); }
++  html[data-theme="light"] #si-confluence .sc-best.none { background:var(--panel2); border-color:var(--line); }
+@@ -967 +967 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-    border-left: 3px solid var(--link); border-radius: 11px; max-width: 96ch; }
++     border-radius:var(--r-card,12px); max-width: 96ch; }
+@@ -997 +997 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  .card { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--muted)); border-radius: 13px;
++  .card { border: 1px solid var(--line);  border-radius:var(--r-card,12px);
+@@ -1033,3 +1033,3 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-    border-left: 3px solid var(--link); border-radius: 8px; }
+-  .ft-rail.ft-top { border-left-color: var(--up); background: color-mix(in srgb, var(--up) 6%, var(--panel)); border-color: color-mix(in srgb, var(--up) 22%, var(--line)); }
+-  .ft-rail.ft-await { border-left-color: var(--muted); background: transparent; border-color: var(--line); }
++     border-radius:var(--r-card,12px); }
++  .ft-rail.ft-top { background:var(--panel2); border-color:var(--line); }
++  .ft-rail.ft-await {  background: transparent; border-color: var(--line); }
+@@ -1042 +1042 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  .xsr-split { font-size: 11px; color: var(--ink-warn, var(--warn)); border-left: 2px solid var(--warn); padding: 3px 7px; margin: 6px 0 0; line-height: 1.45; }
++  .xsr-split { font-size: 11px; color: var(--ink-warn, var(--warn));  padding: 3px 7px; margin: 6px 0 0; line-height: 1.45; }
+@@ -1106 +1106 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  .lead-drivers .chip.up { border-left-color: var(--up); } .lead-drivers .chip.dn { border-left-color: var(--down); }
++  .lead-drivers .chip.up {  } .lead-drivers .chip.dn {  }
+@@ -1123 +1123 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  .rc-card.rc-major { border-left:4px solid var(--warn); }
++  .rc-card.rc-major {  }
+@@ -1150,4 +1150,4 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  .rcf-lane.rcf-handoff    { border-left:4px solid var(--link); }
+-  .rcf-lane.rcf-into_strength { border-left:4px solid var(--up); }
+-  .rcf-lane.rcf-contagion_break { border-left:4px solid var(--warn); }
+-  .rcf-lane.rcf-faltering  { border-left:4px solid var(--muted); }
++  .rcf-lane.rcf-handoff    {  }
++  .rcf-lane.rcf-into_strength {  }
++  .rcf-lane.rcf-contagion_break {  }
++  .rcf-lane.rcf-faltering  {  }
+@@ -1201,76 +1200,0 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  /* ══════════════════════════════════════════════════════════════════════════
+-     SI WORKSPACE V2 shell (§1/§1b) — persistent rail + five hash-routed views.
+-     Var-native by law: not one literal colour in this block. Every tone comes
+-     from a theme.css var or a color-mix over one, so light mode is designed
+-     rather than inherited (gate 7).
+-     ══════════════════════════════════════════════════════════════════════════ */
+-  .si-shell { display:grid; grid-template-columns:var(--si-rail-w, 200px) minmax(0,1fr); align-items:start;
+-    /* Cancels body's own 18px bottom padding (declared at the top of this file) so the
+-       shell reaches the document bottom. The rail is sticky WITHIN the shell and is a
+-       full 100vh tall, so any slack left below the shell is slack the rail gets pushed
+-       up by at maximum scroll — which clips the top buttons off screen exactly when a
+-       reader is deepest into a view and most likely to want to switch. */
+-    margin-bottom:-18px; }
+-  .si-side { position:sticky; top:0; align-self:start; height:100vh; box-sizing:border-box; z-index:30;
+-    display:flex; flex-direction:column; gap:2px; padding:12px;
+-    background:var(--panel); border-right:1px solid var(--line); }
+-  .si-view-btn { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px;
+-    border-left:3px solid transparent; text-decoration:none; line-height:1.25;
+-    font-size:13px; font-weight:600; color:var(--muted); }
+-  .si-vb-g { flex:none; font-size:18px; line-height:1; }
+-  .si-view-btn:hover { color:var(--text); background:color-mix(in srgb, var(--link) 6%, transparent); }
+-  .si-view-btn.on { color:var(--text); background:color-mix(in srgb, var(--link) 11%, var(--panel));
+-    border-left-color:var(--link); }
+-  .si-side-out { display:flex; align-items:center; gap:10px; margin-top:8px; padding:11px 10px 0;
+-    border-top:1px solid var(--line); text-decoration:none;
+-    font-size:12.5px; font-weight:600; color:var(--muted); }
+-  .si-side-out:hover { color:var(--ink-link, var(--link)); }
+-  /* provenance lives with the navigation — visible from every view (§1b rail footer) */
+-  .si-side-foot { margin-top:auto; padding-top:10px; border-top:1px solid var(--line);
+-    display:flex; flex-direction:column; gap:3px;
+-    font-size:10.5px; line-height:1.45; color:var(--muted); }
+-  .si-stage { min-width:0; padding-left:20px; }
+-  .si-view { display:none; }
+-  .si-view.on { display:block; }
+-
+-  /* One plain-word line per view, with a ? receipt naming its inputs (§1b). */
+-  .si-view-read { display:flex; align-items:flex-start; gap:9px; margin:0 0 16px; padding:9px 13px;
+-    font-size:13.5px; line-height:1.5; color:var(--text);
+-    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--link);
+-    border-radius:10px; }
+-  .si-view-read[hidden] { display:none; }
+-  .si-vr-g { flex:none; font-size:15px; line-height:1.4; }
+-  .si-vr-t { flex:1 1 auto; min-width:0; }
+-  .si-vr-q { flex:none; display:inline-flex; align-items:center; justify-content:center;
+-    width:16px; height:16px; border:1px solid var(--line); border-radius:50%;
+-    font-size:9.5px; font-weight:700; color:var(--muted); cursor:help; }
+-
+-  /* What-changed strip — overview only, ≤3 chips, existing tc-chip idiom. */
+-  .si-changed { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin:18px 0 0; }
+-  .si-changed-l { font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+-    color:var(--muted); }
+-
+-  /* ≤1100px — rail narrows to a 56px icon rail; labels become data-tip tooltips. */
+-  @media (max-width:1100px) {
+-    .si-shell { --si-rail-w:56px; }
+-    .si-view-btn { justify-content:center; gap:0; padding:9px 0; }
+-    .si-view-btn .si-vb-l, .si-side-out .si-vb-l { display:none; }
+-    .si-side-out { justify-content:center; padding:11px 0 0; }
+-    .si-side-foot { display:none; }
+-    .si-stage { padding-left:12px; }
+-  }
+-  /* <768px — the rail becomes a sticky TOP segmented switcher: five equal tabs,
+-     icon over a 10.5px label, accent on border-bottom. Never a hamburger. */
+-  @media (max-width:767px) {
+-    .si-shell { display:block; }
+-    .si-side { position:sticky; top:0; height:auto; flex-direction:row; gap:0; padding:0;
+-      margin:0 -18px 14px; overflow-x:auto;
+-      border-right:0; border-bottom:1px solid var(--line); }
+-    .si-view-btn { flex:0 0 auto;min-width:84px; min-width:0; flex-direction:column; gap:3px; justify-content:center;
+-      padding:8px 2px; text-align:center; border-radius:0;
+-      border-left:0; border-bottom:3px solid transparent; }
+-    .si-view-btn .si-vb-l { display:block; font-size:10.5px; font-weight:600; }
+-    .si-view-btn.on { border-left:0; border-bottom-color:var(--link); }
+-    .si-side-out { display:none; }
+-    .si-stage { padding-left:0; }
+-  }
+@@ -1503,196 +1427 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-<style>
+-  /* ══════════════════════════════════════════════════════════════════════════
+-     V2.1 — VISUAL LANGUAGE (Fable, operator redesign order 2026-08-03).
+-     Reference = macro.html's panel system (operator-named): the estate's
+-     hand-drawn icon family, panel tokens (--desk-tile/--desk-hair-strong/
+-     --card-shadow/--desk-r-lg from macro-desk.css, already loaded here), and
+-     the macro h2 rail-tick idiom. Three moves:
+-       1. SURFACES — macro-idiom panels (tile bg + hair-strong border + card
+-          shadow); light additionally gets a deeper canvas so the white cards
+-          actually lift. Chips lose their boxes; ink carries state.
+-       2. SIGNATURE — the handoff card: full names, losing→taking tinted wash.
+-       3. RAIL — drawn icons (masked, currentColor), no wrap, no dead void.
+-     Composition only: var()/color-mix, zero literal colours (shell pin). */
+-
+-  /* — drawn-glyph sizing (masked spans need an explicit box) — */
+-  .si-vb-g { width:19px; height:19px; flex:none; }
+-  .si-vr-g { width:16px; height:16px; flex:none; margin-top:1px; }
+-  .si-view-btn .si-vb-g { color:var(--muted); }
+-  .si-view-btn.on .si-vb-g, .si-view-btn:hover .si-vb-g { color:var(--ink-link, var(--link)); }
+-  .si-vr-g { color:var(--ink-link, var(--link)); }
+-  .si-side-out .si-vb-g { color:var(--muted); }
+-
+-  /* — rail: macro-desk composure — */
+-  .si-side { padding:14px 11px; }
+-  .si-view-btn { font-size:13px; padding:8.5px 11px; position:relative; }
+-  /* The active accent is DRAWN, not a painted border-left. A left border on a
+-     border-radius:9px box follows BOTH corner arcs, so on a 36px pill a 3px
+-     accent spends 9px at each end tapering to a point: it reads as a bowed
+-     crescent sliding off the pill rather than a rule (operator crop, dark mode
+-     2026-08-03). Same rail tick the section heads already use
+-     (.rvx-sec-h h2::before), pinned over the 3px border box every button still
+-     reserves — so the tick sits flush on the pill's straight edge and nothing
+-     shifts between the on and off states. */
+-  .si-view-btn.on { border-left-width:3px; border-left-color:transparent; }
+-  .si-view-btn.on::before { content:""; position:absolute; left:-3px; top:50%;
+-    width:3px; height:18px; margin-top:-9px; border-radius:0 2px 2px 0;
+-    background:linear-gradient(180deg, var(--link),
+-      color-mix(in srgb, var(--link) 40%, transparent)); }
+-  /* <768px the rail is a top tab strip and the accent is a bottom border — the
+-     tick would hang off the tab's left edge. Declared here, after the tick, so
+-     it wins on source order (the ≤767px block above this style element cannot). */
+-  @media (max-width:767px) { .si-view-btn.on::before { display:none; } }
+-  .si-side-out { white-space:nowrap; }
+-  .si-side-out .si-vb-l { white-space:nowrap; }
+-  /* rail: COMPLETELY open in BOTH themes — no fill, no border. The aurora/gradient
+-     is the page's identity; any column fill (frosted dark or flat light) reads as a
+-     hard seam cutting across it (operator crops 2026-08-03 light + 2026-08-05 dark).
+-     The active pill and the content cards' shadows do all the structuring needed;
+-     the rail is a grid column, so nothing scrolls under it. */
+-  .si-side { background:transparent; border-right:0;
+-    backdrop-filter:none; -webkit-backdrop-filter:none; }
+-
+-  /* — surfaces: the macro.html container recipe — drop shadow does the definition,
+-       borders stay TRANSPARENT (layout-stable, invisible), and the stage itself stays
+-       transparent so the aurora gradient runs unbroken beneath every panel. A flat
+-       stage fill painted over the gradient is exactly the hard-seam defect the
+-       operator flagged — never reintroduce one. — */
+-  .si-stage { background:transparent; }
+-  .rvx-hero, .rvx-lane, .rvx-hocard, .si-view-read {
+-    background:var(--desk-tile, var(--panel));
+-    border:1px solid transparent;
+-    border-radius:var(--desk-r-lg, 14px);
+-    box-shadow:var(--card-shadow,
+-      0 1px 2px color-mix(in srgb, var(--text) 6%, transparent)); }
+-  html[data-theme="light"] .rvx-hero,
+-  html[data-theme="light"] .rvx-lane,
+-  html[data-theme="light"] .si-view-read {
+-    background:var(--panel);
+-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+-               0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
+-  /* the session tape floats as a container too — its old edge-to-edge flat band was
+-     the worst of the gradient cutoffs */
+-  .ftr-tape-strip.visible, .ftr-tape-full.open .ftr-tape-band {
+-    border-radius:var(--desk-r-lg, 14px);
+-    border:1px solid transparent;
+-    background:var(--panel);
+-    box-shadow:var(--card-shadow,
+-      0 1px 2px color-mix(in srgb, var(--text) 6%, transparent)); }
+-  html[data-theme="light"] .ftr-tape-strip.visible,
+-  html[data-theme="light"] .ftr-tape-full.open .ftr-tape-band {
+-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+-               0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
+-  .ftr-tape-strip { margin-bottom:10px; }
+-
+-  /* — the macro h2 rail-tick on every workspace section head — */
+-  .rvx-sec-h h2 { display:flex; align-items:center; gap:11px; }
+-  .rvx-sec-h h2::before { content:""; flex:none; width:3px; height:18px; border-radius:2px;
+-    background:linear-gradient(180deg, var(--link), color-mix(in srgb, var(--link) 35%, transparent)); }
+-
+-  /* — hero: committed verdict ink, chips demoted to a quiet context line — */
+-  .rvx-vword { letter-spacing:-.028em; }
+-  html[data-theme="light"] .rvx-hero .rvx-vword .ac {
+-    background:linear-gradient(94deg, var(--si-ink-up, var(--up)),
+-      color-mix(in srgb, var(--si-ink-up, var(--up)) 52%, var(--link)));
+-    -webkit-background-clip:text; background-clip:text; }
+-  html[data-theme="light"] .rvx-hero.strain .rvx-vword .ac {
+-    background:linear-gradient(94deg, var(--si-ink-warn, var(--warn)), var(--si-ink-down, var(--down)));
+-    -webkit-background-clip:text; background-clip:text; }
+-  /* ONE family for the hero context row (.rvx-chips.ctx): quiet ink + a state dot,
+-     no boxes — the row previously mixed FOUR treatments (plain text, green pill,
+-     amber pill, warn pill; operator: "each of ur 4 children look nothing like you").
+-     Covers the server chips (.rvx-chip), the seasonality tones (.fs-chip.*) and the
+-     client-injected lever/sizing chips (.tc-chip): the lever's inline border-COLOR
+-     cannot survive border:0, and each item's ink still carries its state. */
+-  .rvx-chips { gap:5px 15px; margin-top:12px; }
+-  .rvx-chips.ctx { gap:7px 20px; }
+-  .rvx-chips.ctx :is(.rvx-chip, .fs-chip, .tc-chip, .pulse-size) {
+-    border:0; background:transparent; padding:2px 0; font-size:12px; gap:7px;
+-    display:inline-flex; align-items:center; }
+-  .rvx-chips.ctx :is(.rvx-chip, .fs-chip, .tc-chip, .pulse-size)::before {
+-    content:''; width:7px; height:7px; border-radius:50%;
+-    background:currentColor; opacity:.5; flex:none; }
+-  .rvx-chips.ctx > .rvx-chip:not(.fs-chip) { color:var(--muted); }
+-  /* 红涨绿跌: with the boxes gone the INK is the only state carrier — flip it in ZH */
+-  html[data-lang="zh"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--ink-down, var(--down)); }
+-  html[data-theme="light"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--si-ink-up, var(--up)); }
+-  html[data-theme="light"][data-lang="zh"] .rvx-chips.ctx .fs-chip.tailwind { color:var(--si-ink-down, var(--down)); }
+-  html[data-theme="light"] .rvx-chips.ctx .fs-chip.headwind { color:var(--si-ink-warn, var(--warn)); }
+-  /* the action/receipt row: quiet text and links, no boxes, no dots */
+-  .rvx-chips:not(.ctx) .rvx-chip { border:0; background:transparent; padding:2px 0;
+-    color:var(--muted); gap:5px; }
+-  .rvx-chip.sz { border:0; background:transparent; color:var(--ink-warn, var(--warn)); }
+-  html[data-theme="light"] .rvx-chip.sz { color:var(--si-ink-warn, var(--warn)); }
+-  a.rvx-chip { color:var(--ink-link, var(--link)); }
+-  /* the stance banner joins the family: tint stays (it is the one instruction that
+-     earns a surface), the border goes; days-in-state rides inside it quietly */
+-  .rvx-stance { border:0; border-radius:11px; font-weight:600; }
+-  .rvx-stance-days { opacity:.72; font-weight:500; }
+-
+-  /* the session tape's rank chips: same boxless family — state ink + mono figure,
+-     no borders (the six outlined pills were their own mongrel row). 红涨绿跌 needs
+-     NO rule here: theme.css already swaps --up/--down (and the light --si-ink-* pair
+-     re-keys with them) on html[data-lang="zh"], so a chip painted from var(--up)
+-     flips on its own. The four zh overrides this block used to carry re-swapped it a
+-     SECOND time and handed Chinese readers 绿涨红跌 — gainers green, losers red — in
+-     both themes (measured dark+light, 2026-08-03; the standing double-flip trap).
+-
+-     The two rank groups are their OWN flex rows. Their chips are siblings inside a
+-     plain <span>, so the strip's own gap never reached them, and taking the boxes
+-     off left `padding:1px 0` — zero horizontal separation — so the six movers ran
+-     together as one word: "Mag7 +3.5%Data Center Power +2.3%" (operator crop,
+-     2026-08-03). Each chip is also one flat 400-weight run; typography now follows
+-     the sanctioned .dtp tape idiom (theme.css .dtp-mname/.dtp-mpct): name in text
+-     ink at 500, figure in mono tabular at 700 carrying the state colour. Chips never
+-     break internally — a wrapping strip drops whole movers to the next row. */
+-  .ftr-tape-strip .ftr-strip-chip { border:0; background:transparent; padding:1px 0;
+-    gap:6px; white-space:nowrap; }
+-  .ftr-tape-strip { gap:6px 22px; }
+-  .ftr-strip-grp { display:inline-flex; align-items:center; flex-wrap:wrap; gap:5px 14px;
+-    min-width:0; }
+-  .ftr-strip-nm { color:var(--text); font-weight:500; }
+-  .ftr-strip-pct { font-family:var(--font-mono,monospace); font-variant-numeric:tabular-nums;
+-    font-weight:700; letter-spacing:-.01em; }
+-  /* light only: reach for the text-grade ink when the strip renders outside the
+-     subtree where W3 rebinds --up/--down. Language-agnostic on purpose — see above. */
+-  html[data-theme="light"] .ftr-strip-chip.up { color:var(--si-ink-up, var(--up)); }
+-  html[data-theme="light"] .ftr-strip-chip.dn { color:var(--si-ink-down, var(--down)); }
+-
+-  /* typeface: SF first (Apple system faces), Inter everywhere else — operator
+-     directive for the sector pages */
+-  body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+-    Roboto, Helvetica, sans-serif; }
+-
+-  /* — the signature: this week's handoff — */
+-  .rvx-hocol .nm { white-space:normal; overflow:visible; text-overflow:clip;
+-    font-size:16px; line-height:1.28; letter-spacing:-.012em; }
+-  .rvx-hocol { padding:13px 16px; }
+-  .rvx-hocard .cap { letter-spacing:.09em; padding:10px 16px 0; }
+-  .rvx-hoarrow { width:54px; } .rvx-hoarrow svg { width:54px; }
+-  html[data-theme="light"] .rvx-hocard {
+-    background:linear-gradient(100deg,
+-      color-mix(in srgb, var(--si-ink-warn, var(--warn)) 6%, var(--panel)) 0%,
+-      var(--panel) 46%,
+-      color-mix(in srgb, var(--si-ink-up, var(--up)) 8%, var(--panel)) 100%);
+-    box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+-               0 12px 32px -14px color-mix(in srgb, var(--text) 10%, transparent); }
+-  html[data-theme="light"] .rvx-hocol.out .nm { color:var(--si-ink-warn, var(--warn)); }
+-  html[data-theme="light"] .rvx-hocol.in .nm  { color:var(--si-ink-up, var(--up)); }
+-
+-  /* — lanes as decision cards — */
+-  .rvx-lanes { align-items:start; }
+-  .rvx-lane { padding:14px 15px 10px; }
+-  .rvx-lane.buy   { border-left:3px solid color-mix(in srgb, var(--rvx-lead) 55%, transparent); }
+-  .rvx-lane.wait  { border-left:3px solid color-mix(in srgb, var(--rvx-improve) 55%, transparent); }
+-  .rvx-lane.trim  { border-left:3px solid color-mix(in srgb, var(--rvx-weak) 55%, transparent); }
+-  .rvx-lane.avoid { border-left:3px solid color-mix(in srgb, var(--rvx-lag) 45%, transparent); }
+-  .rvx-lane-desc { min-height:0; margin-bottom:8px; }
+-  .rvx-trow .tnm .rsn { color:color-mix(in srgb, var(--muted) 80%, transparent); }
+-  .rvx-trow .tick { display:none; }  /* the figure's colour already says it */
+-  .rvx-trow .tnm .mlcchip { border-color:transparent; border-radius:6px; padding:1px 6px;
+-    background:color-mix(in srgb, var(--warn) 13%, transparent); opacity:1; }
+-  html[data-theme="light"] .rvx-trow .tnm .mlcchip { color:var(--si-ink-warn, var(--warn)); }
+-
+-  /* — overview: the hero IS the read; no echo line beneath it — */
+-  .si-view[data-view="overview"] .si-view-read { display:none; }
+-</style>
++{% include "_sector_central_paper.css.j2" %}
+@@ -1746,2 +1475,2 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-     SI WORKSPACE V2 (§1/§1b) — a workspace, not a page. The persistent rail below
+-     drives five hash-routed same-page views; exactly one .si-view carries .on at a
++     MACRO PAPER R2 — horizontal workflow over the six existing hash routes.
++     The current router preserves the source-owned instruments; exactly one .si-view carries .on at a
+@@ -1758,25 +1487,4 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  <nav class="si-side" aria-label="Sector Intelligence views">
+-    {# View glyphs: the estate's hand-drawn icon family (product-nav-icons /
+-       dashboard-icons masked spans, same set the nav mega-menus use) — never raw
+-       emoji next to the wordmark. Masked with background:currentColor, so the
+-       rail's .on tint flows into the drawing. #}
+-    <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page"><span class="si-vb-g dash-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Overview</span><span class="l-zh">总览</span></span></a>
+-    <a class="si-view-btn" data-view="map" href="#map"><span class="si-vb-g dash-icon dash-icon-compass" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">The Map</span><span class="l-zh">全景图谱</span></span></a>
+-    <a class="si-view-btn" data-view="moving" href="#moving"><span class="si-vb-g dash-icon submenu-icon-rotation" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">What&#39;s Moving</span><span class="l-zh">正在轮动</span></span></a>
+-    <a class="si-view-btn" data-view="money" href="#money"><span class="si-vb-g dash-icon submenu-icon-flow" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Money &amp; Breadth</span><span class="l-zh">资金与广度</span></span></a>
+-    <a class="si-view-btn" data-view="explore" href="#explore"><span class="si-vb-g dash-icon dash-icon-search" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Explore</span><span class="l-zh">深入探索</span></span></a>
+-    {# 6th rail view — US parity with the China desk's #confluence (#4637), which
+-       deferred this deliberately ("the US page has no equivalent rail view yet").
+-       Same .si-view-btn idiom as the five above; glyph is the estate's masked
+-       confluence icon, and ZH reuses the estate's established 子行业汇聚 so the rail,
+-       the view's own hero and both global-nav rows read identically. #}
+-    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-g dash-icon submenu-icon-confluence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Confluence</span><span class="l-zh">子行业汇聚</span></span></a>
+-    {# The .si-side-out "Stock entry funnel →" exit link stood here, and its own comment
+-       read "a link, never a sixth view". It is a sixth view now, so the link became a
+-       second rail entry to the SAME content — wearing the SAME confluence glyph, one row
+-       below it, pointing off-page. Removed rather than retargeted: #confluence is already
+-       the button directly above. This is the move #4637 made on the China desk, whose
+-       test still pins it ("the old funnel exit LINK survived"). #}
+-    <div class="si-side-foot">
+-      <span id="si-side-asof"></span>
+-      <span id="si-side-grade"></span>
++  <header class="si-page-header">
++    <div class="si-page-identity">
++      <h1 class="si-page-title">{{ t('Sector Intelligence', '板块情报') }}</h1>
++      <span class="si-page-region">{{ t('United States', '美国') }}</span>
+@@ -1783,0 +1492,15 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
++    <div class="si-side-foot"><span id="si-side-asof"></span><span id="si-side-grade"></span></div>
++  </header>
++  <nav class="si-workflow" aria-label="Sector Intelligence workflow">
++    <a class="si-view-btn on" data-view="overview" href="#overview" aria-current="page">{{ t('Brief', '简报') }}</a>
++    <a class="si-workflow-link" data-si-workflow="explore" href="#map">{{ t('Explore', '探索') }}</a>
++    <a class="si-workflow-link" data-si-workflow="research" href="#tm-mount">{{ t('Research', '研究') }}</a>
++    <a class="si-workflow-link" data-si-workflow="watches" href="#accumulation-section">{{ t('Watches', '观察') }}</a>
++    <span class="si-workflow-note">{{ t('Sectors, themes and industries, connected.', '串联板块、主题与行业。') }}</span>
++  </nav>
++  <nav class="si-side" aria-label="Sector Intelligence views" hidden>
++    <a class="si-view-btn" data-view="map" href="#map"><span class="si-vb-l">{{ t('Market map', '市场图谱') }}</span></a>
++    <a class="si-view-btn" data-view="moving" href="#moving"><span class="si-vb-l">{{ t('Rotation', '轮动') }}</span></a>
++    <a class="si-view-btn" data-view="money" href="#money"><span class="si-vb-l">{{ t('Breadth & money', '广度与资金') }}</span></a>
++    <a class="si-view-btn" data-view="explore" href="#explore"><span class="si-vb-l">{{ t('Themes & compare', '主题与比较') }}</span></a>
++    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-l">{{ t('Entry evidence', '入场证据') }}</span></a>
+@@ -1786,0 +1510,55 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
++  {% set _tc_lead = theme_context.leadership if theme_context is defined and theme_context else none %}
++  {% set _tc_st = _tc_lead.state if _tc_lead else none %}
++  <section class="rvx-hero rvx-reveal"
++           data-si-as-of="{{ source_as_of | default('', true) }}"
++           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
++           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
++    <div class="rvx-eyebrow">
++      <span>{{ t('THE SECTOR BRIEF', '板块简报') }}</span>
++      <span class="rvx-mut" id="hero-count"></span>
++      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
++    </div>
++    <div class="rvx-hgrid">
++      <div>
++        <div class="rvx-vword">
++          {% if _tc_st == 'rotating' %}{{ t('Leadership is rotating.', '领涨正在轮动。') }}
++          {% elif _tc_st == 'strain' %}{{ t('Leadership under pressure.', '领涨开始承压。') }}
++          {% elif _tc_st == 'steady' %}{{ t('Leadership is holding.', '领涨格局延续。') }}
++          {% else %}{{ t('Leadership not measured.', '领涨状态暂无实测。') }}{% endif %}
++        </div>
++        <p class="rvx-vsub">{{ t('Follow leadership, check participation, then assess each stock’s entry.', '先看领涨，再查参与度，最后判断个股入场。') }}</p>
++        {% if _tc_lead and _tc_lead.stance_en %}
++        <span class="rvx-stance">{{ t(_tc_lead.stance_en, _tc_lead.stance_zh) }}{% if _tc_lead.days_in_state %}<span class="rvx-stance-days"> · {{ t(_tc_lead.days_in_state|string + ' days in', '已持续' + _tc_lead.days_in_state|string + '天') }}</span>{% endif %}</span>
++        {% endif %}
++        <div class="si-paper-actions">
++          <a class="si-paper-action" href="#map">{{ t('Inspect the leaders →', '查看领涨方向 →') }}</a>
++          <a class="si-paper-text-link" href="#moving">{{ t('What changed?', '发生了什么变化？') }}</a>
++        </div>
++        <div class="rvx-chips ctx"><span id="ftr-lever-chip"></span><span id="hero-sizing"></span></div>
++      </div>
++      <aside class="si-entry-read" aria-labelledby="si-entry-title">
++        <p class="cap">{{ t('The important distinction', '关键区别') }}</p>
++        <h2 id="si-entry-title">{{ t('Group strength.', '板块强势。') }}<br>{{ t('A separate stock decision.', '个股仍需独立判断。') }}</h2>
++        <dl>
++          <div><dt>{{ t('Current leadership', '当前领涨') }}</dt><dd>{% if _tc_lead and _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh or _tc_lead.strength[0].name) }}{% else %}{{ t('Not measured', '暂无实测') }}{% endif %}</dd></div>
++          <div><dt>{{ t('Stock entry', '个股入场') }}</dt><dd><a href="us_stocks.html" class="si-paper-text-link">{{ t('Open Prophet →', '打开 Prophet →') }}</a></dd></div>
++        </dl>
++        <p>{{ t('Strength tells you where to look. Entry conditions qualify the individual stock.', '强势提示研究方向，入场条件决定个股是否符合要求。') }}</p>
++      </aside>
++    </div>
++    <div class="rvx-chips">
++      {% if _tc_lead and _tc_lead.trailing_leader %}
++      <span class="rvx-chip rcpt" data-tip-en="Leadership comes from the existing nightly theme context. Group strength does not establish an individual stock entry." data-tip-zh="领涨判断沿用每晚生成的主题背景；板块强势并不等于个股符合入场条件。">ⓘ {{ t('How this works', '原理说明') }}</span>
++      {% endif %}
++      {% if factor_season is defined and factor_season %}
++      {% set _fs_tone = factor_season.tone if factor_season.tone in ('headwind','tailwind') else '' %}
++      <span id="factor-season" class="rvx-chip fs-chip {{ _fs_tone }}" data-tip-en="{{ factor_season.tip_en | e }}" data-tip-zh="{{ factor_season.tip_zh | e }}">{{ t(factor_season.chip_en, factor_season.chip_zh) }}</span>
++      {% endif %}
++      {% if theme_context is defined and theme_context and theme_context.alignment is defined and theme_context.alignment.sector_rotation_agrees %}
++      <span class="rvx-chip" data-tip-en="{{ theme_context.alignment.note_en | e }}" data-tip-zh="{{ theme_context.alignment.note_zh | e }}">✓ {{ t('sector rotation agrees', '板块轮动一致') }}</span>
++      {% endif %}
++      <a class="rvx-chip" href="allocation.html">{{ t('Open the playbook →', '打开操盘手册 →') }}</a>
++    </div>
++  </section>
++  {% include "_sector_central_brief.html.j2" %}
++
+@@ -2290,72 +2067,0 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-  {% if theme_context is defined and theme_context is not none %}
+-  {% set _tc_lead = theme_context.leadership %}
+-  {% set _tc_tl   = _tc_lead.trailing_leader %}
+-  {% set _tc_st   = _tc_lead.state %}
+-  {% set _hero_cls = 'strain' if _tc_st == 'strain' else ('steady' if _tc_st == 'steady' else '') %}
+-  <section class="rvx-hero rvx-reveal {{ _hero_cls }}"
+-           data-si-as-of="{{ source_as_of | default('', true) }}"
+-           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
+-           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
+-    <div class="rvx-eyebrow">
+-      <span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span>
+-      <span class="rvx-mut" id="hero-count"></span>
+-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+-    </div>
+-    <div class="rvx-hgrid">
+-      <div>
+-        <div class="rvx-vword">
+-          {% if _tc_st == 'rotating' %}{{ t('Money is', '资金正在') }} <span class="ac">{{ t('rotating', '轮动') }}</span>
+-          {% elif _tc_st == 'strain' %}{{ t('Leadership under', '领涨') }} <span class="ac">{{ t('strain', '承压') }}</span>
+-          {% else %}{{ t('Leadership', '领涨格局') }} <span class="ac">{{ t('steady', '稳定') }}</span>{% endif %}
+-        </div>
+-        <p class="rvx-vsub">{% if theme_context.migration is defined and theme_context.migration.note_en %}{{ t(theme_context.migration.note_en, theme_context.migration.note_zh) }} {% endif %}{{ t("Favour the fresh leaders — not last month's winners.", '顺势买入新领涨，而非上月的赢家。') }}</p>
+-        <span class="rvx-stance">⚑ {{ t(_tc_lead.stance_en, _tc_lead.stance_zh) }}{% if _tc_lead.days_in_state is not none and _tc_lead.days_in_state %}<span class="rvx-stance-days"> · {{ t(_tc_lead.days_in_state|string + " days in", _tc_lead.days_in_state|string + " 天") }}</span>{% endif %}</span>
+-        <div class="rvx-chips ctx">
+-          <span id="ftr-lever-chip"></span>
+-          <span id="hero-sizing"></span>
+-        </div>
+-      </div>
+-      <div class="rvx-hocard">
+-        <div class="cap">{{ t("THIS WEEK'S HANDOFF", '本周交棒') }}</div>
+-        <div class="rvx-handoff">
+-          <div class="rvx-hocol out">
+-            <div class="lbl">{{ t('Losing the lead', '失去领先') }}</div>
+-            <div class="nm">{{ t(_tc_tl.name, _tc_tl.name_zh) }}</div>
+-            <div class="meta" id="hero-out-meta" data-id="{{ _tc_tl.id }}">{{ t('was #1', '原第一') }}</div>
+-          </div>
+-          <div class="rvx-hoarrow"><svg viewBox="0 0 46 28"><defs><linearGradient id="rvxHo" x1="0" x2="1"><stop offset="0" stop-color="var(--rvx-weak)"/><stop offset="1" stop-color="var(--rvx-lead)"/></linearGradient></defs><path class="ln" d="M3 14 H37"/><path class="hd" d="M33 8 L43 14 L33 20 Z"/></svg></div>
+-          <div class="rvx-hocol in">
+-            <div class="lbl">{{ t('Taking the lead', '接过领先') }}</div>
+-            <div class="nm">{% if _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh) }}{% if _tc_lead.strength|length > 1 %} · {{ t(_tc_lead.strength[1].name, _tc_lead.strength[1].name_zh) }}{% endif %}{% else %}—{% endif %}</div>
+-            <div class="meta" id="hero-in-meta"{% if _tc_lead.strength %} data-id="{{ _tc_lead.strength[0].id }}"{% endif %}></div>
+-          </div>
+-        </div>
+-      </div>
+-    </div>
+-    <div class="rvx-chips" style="margin-top:14px">
+-      <span class="rvx-chip rcpt" data-tip-en="Trailing-momentum rank names {{ _tc_tl.name }} first; skips the most recent ~3 weeks by construction; suggested weights unchanged. Shape read only — not a forecast." data-tip-zh="趋势动量排名以{{ _tc_tl.name_zh }}居首；设计上跳过最近约3周数据；建议权重不变。仅为形态读数，非预测。">ⓘ {{ t('How this works', '原理说明') }}</span>
+-      {% if factor_season is defined and factor_season is not none %}
+-      {% set _fs_tone = factor_season.tone if factor_season.tone in ('headwind','tailwind') else '' %}
+-      <span id="factor-season" class="rvx-chip fs-chip {{ _fs_tone }}" data-tip-en="{{ factor_season.tip_en | e }}" data-tip-zh="{{ factor_season.tip_zh | e }}">{{ t(factor_season.chip_en, factor_season.chip_zh) }}</span>
+-      {% endif %}
+-      {% if theme_context.alignment is defined and theme_context.alignment.sector_rotation_agrees %}
+-      <span class="rvx-chip" style="color:var(--ink-up, var(--up))" data-tip-en="{{ theme_context.alignment.note_en | e }}" data-tip-zh="{{ theme_context.alignment.note_zh | e }}">✓ {{ t('sector rotation agrees', '板块轮动一致') }}</span>
+-      {% endif %}
+-      <a class="rvx-chip" href="allocation.html" style="color:var(--ink-link, var(--link))">{{ t('Open the playbook →', '打开操盘手册 →') }}</a>
+-    </div>
+-  </section>
+-  {% else %}
+-  {# ── Fallback hero when theme_context absent ── #}
+-  <section class="rvx-hero rvx-reveal"
+-           data-si-as-of="{{ source_as_of | default('', true) }}"
+-           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
+-           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
+-    <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span></div>
+-    <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
+-    <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>
+-    <div class="rvx-chips ctx" style="margin-top:12px">
+-      <span id="ftr-lever-chip"></span><span id="hero-sizing"></span>
+-    </div>
+-  </section>
+-  {% endif %}
+-
+@@ -2613 +2319 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
+-      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">—</div><div class="gm" id="mkt-breadth-sub"></div></div>
++      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">{{ t("Not measured", "暂无实测") }}</div><div class="gm" id="mkt-breadth-sub"></div></div>
+@@ -3141,0 +2848,2 @@ function renderRegimeSizing(){
++{% include "_sector_central_brief.js.j2" %}
++
+@@ -3260 +2968,2 @@ function renderInternals(){
+-  const vv=vmap[mc.verdict]||vmap.mixed;
++  const measured=Object.prototype.hasOwnProperty.call(vmap,mc.verdict);
++  const vv=measured?vmap[mc.verdict]:[zh?'暂无实测':'Not measured','var(--muted)'];
+@@ -3262 +2971 @@ function renderInternals(){
+-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
++  rvxSet('mkt-breadth-sub', !measured?(zh?'暂无广度判断，请查看可用数据。':'Breadth verdict unavailable. Review the available measures.'):mc.verdict==='broad'?(zh?'参与面广泛。':'Participation is broad.'):mc.verdict==='narrow'?(zh?'少数个股主导。':'A few names carry the move.'):(zh?'参与度表现不一。':'Participation is mixed.'));
+@@ -3276 +2985 @@ function boot(){
+-  try{ renderVerdictHero(); }catch(e){ console.warn('rvx hero',e); }
++  try{ renderVerdictHero(); renderBriefEvidence(); }catch(e){ console.warn('rvx hero',e); }
+@@ -3290 +2999 @@ function boot(){
+-  const rvxRerender=()=>{ try{ renderVerdictHero(); renderRotationMap(); renderRotBoard(); renderInternals(); }catch(e){} };
++  const rvxRerender=()=>{ try{ renderVerdictHero(); renderBriefEvidence(); renderRotationMap(); renderRotBoard(); renderInternals(); }catch(e){} };
+@@ -3355,0 +3065,4 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
++{% include "_sector_central_coverage.js.j2" %}
++{% include "_sector_prophet_context.js.j2" %}
++</script>
++<script>
+@@ -3982,0 +3696 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
++    var prophetHref = sectorProphetHref(g);
+@@ -3998,0 +3713,2 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
++      (prophetHref ? '<p class="mr-hint"><a href="' + esc(prophetHref) + '">' +
++        esc(L('Compare in Prophet →', '前往 Prophet 对照 →')) + '</a></p>' : '') +
+diff --git a/templates/si_workspace.js b/templates/si_workspace.js
+index 509cb27e8b1a..21977e310a22 100644
+--- a/templates/si_workspace.js
++++ b/templates/si_workspace.js
+@@ -18,3 +18,3 @@ var VIEWS=['overview','map','moving','money','explore','confluence'];
+-var TITLES={overview:['Overview','总览'],map:['The Map','全景图谱'],
+-  moving:["What's Moving",'正在轮动'],money:['Money & Breadth','资金与广度'],
+-  explore:['Explore','深入探索'],confluence:['Confluence','子行业汇聚']};
++var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
++  moving:['Rotation','轮动'],money:['Breadth & money','广度与资金'],
++  explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据']};
+@@ -48 +48 @@ var GLYPH={
+-   key-count of 23 on the merged table. Any future key added to S2 MUST NOT
++   key-count of 24 on the merged table. Any future key added to S2 MUST NOT
+@@ -50 +50 @@ var GLYPH={
+-   pins asserting the 21-key count or the live 23-key count are both
++   pins asserting the 21-key count or the live 24-key count are both
+@@ -85 +85,2 @@ var LEGACY_ANCHORS_S2={
+-  'si-heat-section':['explore','theme-heat-section']
++  'si-heat-section':['explore','theme-heat-section'],
++  'si-measured':['map','si-measured']
+@@ -304,0 +306,14 @@ function activate(view,target){
++  /* Paper's workflow belongs to Macro. Research and watches land on existing
++     Macro instruments; they do not introduce Terminal routes or storage. */
++  var group=view==='overview'?'brief':
++    (target==='tm-mount'||target==='forming-narratives')?'research':
++    target==='accumulation-section'?'watches':'explore';
++  var workflow=document.querySelectorAll('[data-si-workflow]');
++  for(i=0;i<workflow.length;i++){
++    var selected=workflow[i].getAttribute('data-si-workflow')===group;
++    workflow[i].classList.toggle('on',selected);
++    if(selected) workflow[i].setAttribute('aria-current','page');
++    else workflow[i].removeAttribute('aria-current');
++  }
++  var subnav=document.querySelector('.si-side');
++  if(subnav) subnav.hidden=view==='overview';
+diff --git a/templates/stocktable.js b/templates/stocktable.js
+index fe9b07af769d..3c11370da130 100644
+--- a/templates/stocktable.js
++++ b/templates/stocktable.js
+@@ -20,0 +21,2 @@
++ *   sectorOptions: [...],            // optional registered raw sector names, including zero-count choices
++ *   emptyMessage: [en, zh],           // optional message when the loaded table has no matching rows
+@@ -21,0 +24,3 @@
++ * Successful init returns {getSectorFilter, setSectorFilter}. The setter accepts
++ * an exact native option or 'all', returns a boolean, and never moves focus.
++ * Keep the latest handle when reinitializing a table after rows are loaded.
+@@ -702,0 +708,11 @@
++      if (view.length === 0 && Array.isArray(cfg.emptyMessage)) {
++        var emptyRow = document.createElement('tr');
++        var emptyCell = document.createElement('td');
++        emptyCell.colSpan = Math.max(1, cols.length);
++        emptyCell.className = 'st-muted';
++        emptyCell.style.whiteSpace = 'normal';
++        emptyCell.innerHTML = bi(esc(cfg.emptyMessage[0] || ''), esc(cfg.emptyMessage[1] || cfg.emptyMessage[0] || ''));
++        emptyRow.appendChild(emptyCell);
++        frag.appendChild(emptyRow);
++      }
++
+@@ -782,0 +799,8 @@
++      // Optional registered identities let a partial board retain zero-count
++      // sector choices. Counts still come only from the rows actually loaded.
++      if (Array.isArray(cfg.sectorOptions)) {
++        cfg.sectorOptions.forEach(function(value) {
++          if (typeof value === 'string' && value && value !== 'all' && sectors.indexOf(value) === -1) sectors.push(value);
++        });
++        sectors.sort();
++      }
+@@ -988 +1012 @@
+-    function _selectDDValue(name, value) {
++    function _selectDDValue(name, value, focus) {
+@@ -1007 +1031 @@
+-      n.btn.focus();
++      if (focus !== false) n.btn.focus();
+@@ -1011,0 +1036,14 @@
++    // A per-instance entry point: validate the native option before changing
++    // filters, labels, counts or rows. Hydration must not move keyboard focus.
++    function setSectorFilter(value) {
++      if (typeof value !== 'string') return false;
++      var n = _ddNodes.sector;
++      if (!n) return value === 'all' && filters.sector === 'all';
++      var valid = Array.from(n.menu.querySelectorAll('.stf-opt')).some(function(opt) {
++        return opt.getAttribute('data-value') === value;
++      });
++      if (!valid) return false;
++      _selectDDValue('sector', value, false);
++      return true;
++    }
++
+@@ -1321,0 +1360,5 @@
++
++    return {
++      getSectorFilter: function() { return filters.sector; },
++      setSectorFilter: setSectorFilter
++    };
+diff --git a/templates/_sector_central_paper.css.j2 b/templates/_sector_central_paper.css.j2
+new file mode 100644
+index 000000000000..d4d4100f68d9
+--- /dev/null
++++ b/templates/_sector_central_paper.css.j2
+@@ -0,0 +1,137 @@
++{# Paper R2 composition for Macro's existing Sector page. No new global shell. #}
++<style id="si-paper-layout">
++  .si-shell { display:block; margin:0; }
++  .si-page-header { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:28px 0 22px; }
++  .si-page-identity { display:flex; align-items:center; gap:20px; min-width:0; }
++  .si-page-title { margin:0; font:800 var(--fs-h1)/1.15 var(--font-ui); letter-spacing:-.03em; }
++  .si-page-region { padding-left:20px; border-left:1px solid var(--line); color:var(--muted); font-size:var(--fs-sm); }
++  .si-side-foot { display:flex; align-items:flex-end; flex-direction:column; gap:4px; margin:0; padding:0; border:0; color:var(--muted); font-size:var(--fs-label); }
++  .si-workflow { display:flex; align-items:center; gap:8px; padding:0 0 14px; border-bottom:1px solid var(--line); }
++  .si-workflow-link, .si-view-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:8px 14px; border:1px solid transparent; border-radius:var(--r-ctl,8px); font:500 var(--fs-body)/1.3 var(--font-ui); color:var(--muted); text-decoration:none; white-space:nowrap; }
++  .si-workflow-link:hover, .si-view-btn:hover { color:var(--text); background:var(--panel2); }
++  .si-workflow-link.on, .si-view-btn.on { color:var(--ink-link,var(--link)); font-weight:700; background:var(--panel2); border-color:transparent; }
++  .si-workflow-link:focus-visible, .si-view-btn:focus-visible, .si-paper-action:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
++  .si-workflow-note { margin-left:auto; font-size:var(--fs-sm); color:var(--muted); }
++  .si-side { position:static; display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; gap:4px; height:auto; margin:0; padding:12px 0; border:0; border-bottom:1px solid var(--line); background:transparent; }
++  .si-side[hidden] { display:none; }
++  .si-vb-g { display:none; }
++  .si-view-btn .si-vb-l { display:block; font-size:inherit; }
++  .si-side .si-view-btn { min-height:40px; font-size:var(--fs-sm); }
++  .si-stage { min-width:0; padding:0; background:transparent; }
++  .si-view { display:none; padding-top:28px; }
++  .si-view.on { display:block; }
++  .si-view[data-view="overview"] { padding-top:0; }
++  .si-view-read { display:flex; align-items:flex-start; gap:9px; margin:0 0 24px; padding:14px 18px; font-size:var(--fs-body); line-height:1.5; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); box-shadow:none; }
++  .si-view-read[hidden] { display:none; }
++  .si-view[data-view="overview"] .si-view-read { display:none; }
++  .si-vr-g { width:16px; height:16px; flex:none; color:var(--ink-link,var(--link)); }
++  .si-vr-t { flex:1; min-width:0; }
++  .si-vr-q { flex:none; display:inline-grid; place-items:center; width:18px; height:18px; border:1px solid var(--line); border-radius:var(--r-pill,999px); font-size:var(--fs-micro); color:var(--muted); }
++  .si-changed { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:20px 0; }
++  .si-changed-l { font:600 var(--fs-label)/1.5 var(--font-ui); color:var(--muted); }
++  .si-shell .rvx-hero, html[data-theme="light"] .si-shell .rvx-hero { margin:0; padding:32px 0 28px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; box-shadow:none; animation:none; opacity:1; transform:none; }
++  .si-shell .rvx-hero::before, .si-shell .rvx-hero::after { content:none; }
++  .si-shell .rvx-eyebrow { margin:0 0 18px; color:var(--ink-link,var(--link)); font:600 var(--fs-label)/1.4 var(--font-ui); letter-spacing:.08em; }
++  .si-shell .rvx-eyebrow .as-of { margin-left:auto; color:var(--muted); }
++  .si-shell .rvx-hgrid { display:grid; grid-template-columns:minmax(0,2fr) minmax(260px,1fr); gap:38px; align-items:start; }
++  .si-shell .rvx-vword { margin:0; max-width:22ch; font:800 var(--fs-display)/1.08 var(--font-ui); letter-spacing:-.035em; color:var(--text); }
++  .si-shell .rvx-vword .ac, html[data-theme="light"] .si-shell .rvx-vword .ac { color:var(--text); background:none; -webkit-text-fill-color:currentColor; }
++  .si-shell .rvx-vsub { max-width:66ch; margin:18px 0; color:var(--muted); font-size:var(--fs-md); line-height:1.7; }
++  .si-shell .rvx-stance { display:block; margin:0; font-size:var(--fs-sm); color:var(--muted); }
++  .si-shell .rvx-chips { gap:8px 18px; margin-top:16px; }
++  .si-shell .rvx-chips.ctx :is(.rvx-chip,.fs-chip,.tc-chip,.pulse-size) { padding:2px 0; border:0; background:transparent; font-size:var(--fs-sm); }
++  .si-entry-read { padding-left:30px; border-left:1px solid var(--line); }
++  .si-entry-read .cap, .si-brief-evidence .cap { margin:0 0 18px; color:var(--muted); font:500 var(--fs-label)/1.5 var(--font-ui); letter-spacing:.07em; text-transform:uppercase; }
++  .si-entry-read h2 { margin:0 0 20px; font:700 var(--fs-num-lg)/1.3 var(--font-ui); letter-spacing:-.02em; }
++  .si-entry-read dl { margin:0; }
++  .si-entry-read dl > div { display:flex; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px solid var(--line); font-size:var(--fs-body); }
++  .si-entry-read dt, .si-entry-read dd { margin:0; }
++  .si-entry-read dd { text-align:right; font-weight:600; }
++  .si-entry-read p { margin:18px 0 0; color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
++  .si-paper-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px 22px; margin-top:22px; }
++  .si-paper-action { display:inline-flex; justify-content:center; align-items:center; min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); color:var(--ink-link,var(--link)); background:var(--panel); font-weight:600; text-decoration:none; }
++  .si-paper-action:hover { background:var(--panel2); }
++  .si-paper-text-link { color:var(--ink-link,var(--link)); font-size:var(--fs-body); text-decoration:none; }
++  .si-paper-text-link:hover { text-decoration:underline; }
++  .si-brief-evidence { display:grid; grid-template-columns:minmax(0,2fr) minmax(260px,1fr); gap:38px; padding:28px 0; border-bottom:1px solid var(--line); }
++  .si-brief-evidence h2 { margin:0 0 18px; font-size:var(--fs-num-lg); line-height:1.3; letter-spacing:-.02em; }
++  .si-brief-figure { margin:0; min-width:0; }
++  .si-brief-figure figcaption, .si-brief-status { color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
++  .si-brief-chart { display:block; width:100%; height:auto; margin:14px 0; overflow:visible; }
++  .si-brief-chart .si-chart-grid { stroke:var(--line); stroke-width:1; }
++  .si-brief-chart .si-chart-series { fill:none; stroke:var(--link); stroke-width:2.5; }
++  .si-brief-chart text { fill:var(--muted); font-family:var(--font-ui); font-size:var(--fs-sm); }
++  .si-brief-chart .si-chart-last { fill:var(--ink-link,var(--link)); font-weight:700; }
++  .si-brief-coverage { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 20px; padding:14px 18px; margin:18px 0; border-radius:var(--r-ctl,8px); background:var(--panel2); }
++  .si-brief-coverage > div { flex:1 1 320px; min-width:0; }
++  .si-brief-coverage p { margin:0; font-size:var(--fs-sm); line-height:1.6; }
++  .si-brief-coverage p + p { margin-top:4px; color:var(--muted); }
++  .si-brief-coverage .si-paper-text-link { font-size:var(--fs-sm); }
++  .si-brief-list { display:grid; gap:0; padding:0; margin:0; list-style:none; counter-reset:si-look; }
++  .si-brief-list li { padding:18px 0; border-bottom:1px solid var(--line); counter-increment:si-look; }
++  .si-brief-list li:first-child { padding-top:0; }
++  .si-brief-list li:last-child { border-bottom:0; padding-bottom:0; }
++  .si-brief-list a { color:var(--text); font:600 var(--fs-h2)/1.4 var(--font-ui); text-decoration:none; }
++  .si-brief-list a:hover { color:var(--ink-link,var(--link)); }
++  .si-brief-list p { margin:8px 0 0; color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
++  .si-brief-list .cap { display:block; margin-bottom:6px; font-size:var(--fs-micro); }
++  .si-shell .rvx-hocard, html[data-theme="light"] .si-shell .rvx-hocard { margin-top:20px; padding:18px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
++  .si-shell .rvx-hocard::before, .si-shell .rvx-hocard::after { content:none; }
++  .si-shell .rvx-hocard .cap { margin-bottom:12px; }
++  .si-shell .rvx-handoff { display:flex; align-items:center; justify-content:space-between; gap:12px; }
++  .si-shell .rvx-hocol .nm { font-size:var(--fs-h2); line-height:1.4; }
++  .si-shell .rvx-sec { margin-top:28px; }
++  .si-shell .rvx-sec-h h2::before { content:none; }
++  .si-shell .rvx-sec-h h2 { font-size:var(--fs-num-lg); letter-spacing:-.02em; }
++  .si-shell .rvx-card, .si-shell .rvx-lane { border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
++  .si-shell .rvx-lane .ic { background:transparent; }
++  .si-shell .rvx-lane-desc { min-height:0; }
++  .si-shell .ftr-tape-strip { margin:22px 0 0; gap:8px 22px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
++  .si-shell .ftr-tape-strip .ftr-strip-ranks { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 18px; }
++  .si-shell .ftr-tape-strip .ftr-strip-chip { padding:0; border:0; background:transparent; }
++  .si-shell .ftr-strip-chip .ftr-strip-nm { font-weight:600; color:var(--text); }
++  .si-shell .ftr-strip-chip .ftr-strip-pct { font-variant-numeric:tabular-nums; }
++  .si-shell .mr-row[aria-pressed="true"] { background:var(--panel2); box-shadow:none; outline:1px solid var(--line); outline-offset:-1px; }
++  /* Legacy instruments can inject CSS after the page loads, and confluence
++     writes inline edge colors. Keep the operator's neutral-edge rule across
++     those existing instruments without changing chart glyphs or signal labels. */
++  .si-shell :is(.sc-leg,.sc-fcast,.sc-dna,.rc-card,.rcf-lane,.oracle-shock-note,.tm-ep-dir-in,.tm-ep-dir-out,.gcard,.lcard) { border-color:var(--line)!important; border-left-width:1px!important; }
++  .si-shell #actnow-section { padding-top:8px; }
++  html[data-theme="light"] .si-shell .rvx-card, html[data-theme="light"] .si-shell .rvx-lane { background:var(--panel); box-shadow:var(--card-shadow,none); }
++  html[data-lang="zh"] .si-shell :is(.si-page-title,.rvx-vword,.rvx-eyebrow,.si-entry-read h2,.si-entry-read .cap,.si-brief-evidence h2,.si-brief-list .cap) { letter-spacing:0; text-transform:none; }
++  @media (max-width:1000px) {
++    .si-workflow-note { display:none; }
++    .si-shell .rvx-hgrid, .si-brief-evidence { grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr); gap:24px; }
++    .si-entry-read { padding-left:24px; }
++    .si-shell .rvx-vword { font-size:var(--fs-num-xl); }
++  }
++  @media (max-width:767px) {
++    .si-page-header { padding:22px 0 16px; gap:12px; align-items:flex-start; }
++    .si-page-identity { display:block; }
++    .si-page-title { font-size:var(--fs-num-lg); letter-spacing:-.025em; }
++    .si-page-region { display:block; padding:6px 0 0; border:0; }
++    .si-side-foot { max-width:40%; font-size:var(--fs-micro); text-align:right; }
++    .si-workflow { gap:2px; justify-content:space-between; }
++    .si-workflow-link, .si-workflow > .si-view-btn { padding:8px 10px; font-size:var(--fs-sm); }
++    .si-side { flex-wrap:wrap; gap:4px; padding:10px 0; }
++    .si-side .si-view-btn { min-height:44px; padding:8px 10px; font-size:var(--fs-sm); }
++    .si-shell .rvx-hero { padding:24px 0; }
++    .si-shell .rvx-hgrid, .si-brief-evidence { grid-template-columns:minmax(0,1fr); gap:24px; }
++    .si-shell .rvx-vword { max-width:22ch; font-size:var(--fs-h1); line-height:1.15; }
++    .si-shell .rvx-eyebrow { margin-bottom:14px; flex-wrap:wrap; }
++    .si-shell .rvx-vsub { margin:14px 0; font-size:var(--fs-body); line-height:1.6; }
++    .si-entry-read { padding:20px 0 0; border-left:0; border-top:1px solid var(--line); }
++    .si-entry-read h2 { font-size:var(--fs-h2); margin-bottom:12px; }
++    .si-entry-read .cap { margin-bottom:10px; }
++    .si-entry-read p { margin-top:12px; }
++    .si-paper-actions { gap:12px; margin-top:16px; }
++    .si-paper-action { padding:10px 12px; font-size:var(--fs-sm); }
++    .si-paper-text-link { font-size:var(--fs-sm); }
++    .si-brief-evidence { padding:24px 0; }
++    .si-brief-evidence h2, .si-shell .rvx-sec-h h2 { font-size:var(--fs-h2); }
++    .si-brief-figure figcaption, .si-brief-status { font-size:var(--fs-sm); }
++  }
++  @media (prefers-reduced-motion:reduce) {
++    .si-shell .rvx-reveal { animation:none; transform:none; opacity:1; }
++  }
++</style>
+diff --git a/templates/_sector_central_brief.html.j2 b/templates/_sector_central_brief.html.j2
+new file mode 100644
+index 000000000000..d1df3cefbc32
+--- /dev/null
++++ b/templates/_sector_central_brief.html.j2
+@@ -0,0 +1,59 @@
++{# The Brief uses Macro's existing leadership context and comparison series.
++   No Paper illustration values, new ranking, or stock-entry verdict are seeded. #}
++{% set _brief_lead = theme_context.leadership if theme_context is defined and theme_context else none %}
++{% set _brief_groups = (_brief_lead.strength or []) if _brief_lead else [] %}
++{% set _brief_subject = _brief_groups[0] if _brief_groups else none %}
++<section class="si-brief-evidence" aria-labelledby="si-brief-evidence-title">
++  <figure class="si-brief-figure">
++    <h2 id="si-brief-evidence-title">{{ t('Follow the leadership', '追踪领涨变化') }}</h2>
++    <figcaption>
++      {% if _brief_subject %}{{ t(_brief_subject.name, _brief_subject.name_zh or _brief_subject.name) }} · {% endif %}
++      {{ t('20-session relative wealth · S&P 500', '20个交易日相对财富变化 · 标普500') }}
++    </figcaption>
++    {% if _brief_subject %}<p class="si-brief-status">{% if _brief_subject.id and _brief_subject.id.startswith('us_sector_') %}{{ t('Equal-weight sector basket · not the sector ETF', '等权重板块篮子 · 并非板块ETF') }}{% else %}{{ t('Theme basket', '主题篮子') }}{% endif %}</p>{% endif %}
++    <div id="si-brief-series"{% if _brief_subject %} data-id="{{ _brief_subject.id | e }}" data-name-en="{{ _brief_subject.name | e }}" data-name-zh="{{ (_brief_subject.name_zh or _brief_subject.name) | e }}"{% endif %} aria-live="polite">
++      <p class="si-brief-status">{{ t('The comparison appears when matching group and benchmark closes are available.', '取得同日期的板块与基准收盘数据后显示对比。') }}</p>
++    </div>
++    <div class="si-brief-coverage" id="si-brief-coverage" role="status" aria-live="polite">
++      <div>
++        <p id="si-brief-coverage-title">{{ t('Sector measurement coverage unavailable', '板块测量覆盖暂不可用') }}</p>
++        <p id="si-brief-coverage-note">{{ t('Coverage and its evidence date appear with the measured-sector read.', '覆盖情况与证据日期随板块实测数据一同显示。') }}</p>
++      </div>
++      <a class="si-paper-text-link" href="#si-measured">{{ t('Review sector evidence →', '查看板块证据 →') }}</a>
++    </div>
++    <a class="si-paper-text-link" href="#chart-section">{{ t('Compare groups and windows →', '比较板块与时间区间 →') }}</a>
++    {% if _brief_lead and _brief_lead.trailing_leader %}
++    {% set _brief_trailing = _brief_lead.trailing_leader %}
++    <div class="rvx-hocard">
++      <div class="cap">{{ t('Leadership handoff', '领涨交接') }}</div>
++      <div class="rvx-handoff">
++        <div class="rvx-hocol out">
++          <div class="lbl">{{ t('Trailing leader', '前期领涨') }}</div>
++          <div class="nm">{{ t(_brief_trailing.name, _brief_trailing.name_zh or _brief_trailing.name) }}</div>
++          <div class="meta" id="hero-out-meta" data-id="{{ _brief_trailing.id | e }}"></div>
++        </div>
++        <span class="rvx-mut" aria-hidden="true">→</span>
++        <div class="rvx-hocol in">
++          <div class="lbl">{{ t('Current strength', '当前强势') }}</div>
++          <div class="nm">{% if _brief_subject %}{{ t(_brief_subject.name, _brief_subject.name_zh or _brief_subject.name) }}{% else %}{{ t('Not measured', '暂无实测') }}{% endif %}</div>
++          <div class="meta" id="hero-in-meta"{% if _brief_subject %} data-id="{{ _brief_subject.id | e }}"{% endif %}></div>
++        </div>
++      </div>
++    </div>
++    {% endif %}
++  </figure>
++  <aside aria-labelledby="si-next-title">
++    <h2 id="si-next-title">{{ t('Where to look next', '下一步看哪里') }}</h2>
++    <ol class="si-brief-list">
++      <li><span class="cap">{{ t('01 · Rotation', '01 · 轮动') }}</span>
++        <a href="#moving">{{ t('Find the changing leaders →', '寻找领涨变化 →') }}</a>
++        <p>{{ t('Track emerging turns, relative moves and changes across industries.', '追踪早期拐点、相对走势与行业变化。') }}</p></li>
++      <li><span class="cap">{{ t('02 · Participation', '02 · 参与度') }}</span>
++        <a href="#money">{{ t('Check who is participating →', '确认上涨是否扩散 →') }}</a>
++        <p>{{ t('Check breadth and money flow before drawing a market-wide conclusion.', '结合市场广度与资金流，判断变化是否普遍。') }}</p></li>
++      <li><span class="cap">{{ t('03 · Stock evidence', '03 · 个股证据') }}</span>
++        <a href="#confluence">{{ t('Inspect the companies →', '查看成分股 →') }}</a>
++        <p>{{ t('Compare stock-level evidence and the existing entry conditions.', '比较个股证据与既有入场条件。') }}</p></li>
++    </ol>
++  </aside>
++</section>
+diff --git a/templates/_sector_central_brief.js.j2 b/templates/_sector_central_brief.js.j2
+new file mode 100644
+index 000000000000..6f51747718aa
+--- /dev/null
++++ b/templates/_sector_central_brief.js.j2
+@@ -0,0 +1,55 @@
++/* Paper Brief: source-aligned 20-session relative wealth, no forecast or rank. */
++function buildSectorBriefSeries(subjectId, chart){
++  if(!subjectId || !chart || !Array.isArray(chart.dates) ||
++     !Array.isArray(chart.bench) || !chart.baskets ||
++     !Array.isArray(chart.baskets[subjectId])) return null;
++  const dates=chart.dates, values=chart.baskets[subjectId], benchmark=chart.bench;
++  if(dates.length<21 || values.length!==dates.length || benchmark.length!==dates.length) return null;
++  const start=dates.length-21, windowDates=dates.slice(start);
++  const positive=n=>typeof n==='number' && Number.isFinite(n) && n>0;
++  for(let i=start;i<dates.length;i++){
++    if(typeof dates[i]!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(dates[i]) ||
++       !Number.isFinite(Date.parse(dates[i]+'T00:00:00Z')) ||
++       new Date(dates[i]+'T00:00:00Z').toISOString().slice(0,10)!==dates[i] ||
++       (i>start && dates[i]<=dates[i-1]) || !positive(values[i]) || !positive(benchmark[i])) return null;
++  }
++  const groupStart=values[start], benchmarkStart=benchmark[start];
++  const points=windowDates.map((date,k)=>({
++    date, value:((values[start+k]/groupStart)/(benchmark[start+k]/benchmarkStart)-1)*100
++  }));
++  if(points.some(p=>!Number.isFinite(p.value))) return null;
++  return {points,start:windowDates[0],end:windowDates[20],sessions:20,value:points[20].value};
++}
++
++function renderBriefEvidence(){
++  const root=document.getElementById('si-brief-series'); if(!root) return;
++  const zh=isZh(), subject=root.getAttribute('data-id');
++  const read=buildSectorBriefSeries(subject,CHART);
++  if(!read){
++    root.innerHTML='<p class="si-brief-status">'+(zh?
++      '暂无完整的同日期比较数据。请在市场图谱中查看可用证据。':
++      'Matching closes are not available for the full window. Review the available evidence in Market map.')+'</p>';
++    return;
++  }
++  const name=root.getAttribute(zh?'data-name-zh':'data-name-en')||subject;
++  const sign=v=>(v>0?'+':'')+v.toFixed(2)+'%';
++  const values=read.points.map(p=>p.value);
++  let low=Math.min(0,...values),high=Math.max(0,...values);
++  if(high-low<.5){low-=.25;high+=.25;}
++  const pad=(high-low)*.12; low-=pad;high+=pad;
++  const x=i=>48+i/20*596,y=v=>220-(v-low)/(high-low)*184;
++  const path=read.points.map((p,i)=>(i?'L':'M')+x(i).toFixed(2)+' '+y(p.value).toFixed(2)).join(' ');
++  const labels=[low+(high-low)*.1,0,low+(high-low)*.9]
++    .filter((v,i,a)=>a.findIndex(n=>Math.abs(n-v)<.01)===i).sort((a,b)=>a-b);
++  const ticks=labels.map(v=>'<line class="si-chart-grid" x1="48" x2="644" y1="'+y(v).toFixed(2)+'" y2="'+y(v).toFixed(2)+'"/><text x="0" y="'+(y(v)+4).toFixed(2)+'">'+(v>0?'+':'')+v.toFixed(1)+'%</text>').join('');
++  const title=(zh?'相对标普500的20个交易日财富变化':'20-session relative wealth versus the S&P 500')+
++    ': '+name+', '+read.start+' — '+read.end+', '+sign(read.value);
++  root.innerHTML='<svg class="si-brief-chart" viewBox="0 0 744 258" role="img" aria-label="'+esc(title)+'">'+
++    '<title>'+esc(title)+'</title>'+ticks+
++    '<path class="si-chart-series" d="'+path+'"/>'+
++    '<circle cx="644" cy="'+y(read.value).toFixed(2)+'" r="3.5" fill="var(--link)"/>'+
++    '<text class="si-chart-last" x="658" y="'+(y(read.value)+4).toFixed(2)+'">'+sign(read.value)+'</text>'+
++    '<text x="48" y="250">'+read.start+'</text><text x="644" y="250" text-anchor="end">'+read.end+'</text></svg>'+
++    '<p class="si-brief-status">'+esc(name)+' · '+read.start+' — '+read.end+' · '+sign(read.value)+
++    (zh?'。按相同收盘日计算相对财富变化；不代表个股入场信号。':'. Same closes; relative wealth, not an individual stock entry signal.')+'</p>';
++}
+diff --git a/templates/_sector_central_coverage.js.j2 b/templates/_sector_central_coverage.js.j2
+new file mode 100644
+index 000000000000..df89e673c191
+--- /dev/null
++++ b/templates/_sector_central_coverage.js.j2
+@@ -0,0 +1,92 @@
++/* Paper Brief coverage receipt. Reads the existing measured-sector projection.
++   Independent of basket loading; no new requests, ranking or signal decisions. */
++(function () {
++  'use strict';
++  var root = document.getElementById('si-brief-coverage');
++  var title = document.getElementById('si-brief-coverage-title');
++  var note = document.getElementById('si-brief-coverage-note');
++  if (!root || !title || !note) return;
++
++  function day(value) {
++    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
++    var stamp = Date.parse(value + 'T00:00:00Z');
++    return Number.isFinite(stamp) && new Date(stamp).toISOString().slice(0, 10) === value;
++  }
++  function coverage(doc) {
++    var read = doc && doc.measured_read;
++    if (!read) return {status:'missing'};
++    if (read.status === 'unavailable') return {status:'unavailable'};
++    var gen = read.generation || {}, cohort = read.cohort || {}, auth = read.authority || {};
++    var ids = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY'];
++    if (read.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
++        (read.status !== 'available' && read.status !== 'partial') ||
++        auth.tier !== 'display' || auth.may_rank !== false || auth.may_gate !== false ||
++        auth.may_size !== false || auth.may_trade !== false ||
++        gen.cohort_id !== 'us_sectors_11' || gen.benchmark !== 'SPY' ||
++        !['total_return','price_only'].includes(gen.price_basis) ||
++        cohort.horizon !== 'rs_63d' || cohort.window_sessions !== 63 ||
++        cohort.expected_n !== 11 || !Number.isInteger(cohort.measured_n) ||
++        cohort.measured_n < 0 || cohort.measured_n > 11 ||
++        !Array.isArray(read.groups) || read.groups.length !== 11 ||
++        !Array.isArray(cohort.missing)) return {status:'invalid'};
++    var seen = new Set(), measured = 0, missing = [];
++    for (var group of read.groups) {
++      if (!group || group.group_kind !== 'sector' || !ids.includes(group.group_id) ||
++          seen.has(group.group_id)) return {status:'invalid'};
++      seen.add(group.group_id);
++      var current = group.current || {};
++      if (current.status === 'measured') {
++        if (current.metric !== 'relative_wealth_pct' || current.units !== 'pct' ||
++            typeof current.rs_63d !== 'number' || !Number.isFinite(current.rs_63d))
++          return {status:'invalid'};
++        measured++;
++      } else if (current.status === 'unmeasured') {
++        missing.push(group.group_id);
++      } else return {status:'invalid'};
++    }
++    if (measured !== cohort.measured_n ||
++        (read.status === 'available') !== (measured === 11) ||
++        JSON.stringify(missing.sort()) !== JSON.stringify(cohort.missing.slice().sort()))
++      return {status:'invalid'};
++    if (!day(gen.session_end) || !day(doc.as_of)) return {status:'clock_unavailable'};
++    if (gen.session_end > doc.as_of) return {status:'clock_mismatch'};
++    return {status:read.status, measured:measured, expected:11,
++      as_of:gen.session_end, page_as_of:doc.as_of, basis:gen.price_basis};
++  }
++  function render() {
++    var read = coverage(window.SECTOR_CENTRAL);
++    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
++    root.setAttribute('data-status', read.status);
++    if (read.status !== 'available' && read.status !== 'partial') {
++      title.textContent = zh ? '板块测量覆盖暂不可用' : 'Sector measurement coverage unavailable';
++      var messages = {
++        missing:['The measured-sector read has not loaded. Open the full evidence for its status.',
++                 '板块实测数据尚未加载。请打开完整证据查看状态。'],
++        unavailable:['The source could not produce this read. Other evidence remains available.',
++                     '来源未能生成此项读数。其他证据仍可查看。'],
++        invalid:['The source coverage could not be checked. Open the full evidence for details.',
++                 '无法核验来源覆盖情况。请打开完整证据查看详情。'],
++        clock_unavailable:['The measurement date is unavailable. No current coverage is asserted.',
++                           '实测日期不可用，因此不声明当前覆盖情况。'],
++        clock_mismatch:['The measurement date is later than its source page. Review the source dates.',
++                        '实测日期晚于来源页面日期。请核对来源日期。']
++      };
++      note.textContent = messages[read.status][zh ? 1 : 0];
++      return;
++    }
++    title.textContent = zh
++      ? read.measured + ' / ' + read.expected + ' 个板块具备实测数据'
++      : read.measured + ' of ' + read.expected + ' sectors have qualified measurements';
++    var basis = read.basis === 'total_return'
++      ? (zh ? '含股息总回报' : 'total return') : (zh ? '仅价格' : 'price only');
++    note.textContent = zh
++      ? '板块 ETF · 63个交易日读数 · 相对标普500 · ' + basis + ' · 证据日期 ' + read.as_of
++      : 'Sector ETFs · 63-session read · S&P 500 · ' + basis + ' · Evidence date ' + read.as_of;
++    if (read.measured < read.expected) note.textContent += zh
++      ? '。未测板块保留在完整证据中。' : '. Unmeasured sectors remain in the full evidence.';
++    if (read.as_of < read.page_as_of) note.textContent += zh
++      ? '。早于来源页面日期 ' + read.page_as_of : '. Older than source page ' + read.page_as_of;
++  }
++  document.addEventListener('langchange', render);
++  render();
++})();
+diff --git a/templates/_sector_prophet_context.html.j2 b/templates/_sector_prophet_context.html.j2
+new file mode 100644
+index 000000000000..9d2d1c999578
+--- /dev/null
++++ b/templates/_sector_prophet_context.html.j2
+@@ -0,0 +1,15 @@
++{# Identity-only Sector -> Prophet context, outside stock cards and their owners. #}
++<style>{% include "_sector_prophet_context.css.j2" %}</style>
++<section class="si-prophet-context span12" id="sector-prophet-context" aria-labelledby="si-prophet-subject" hidden>
++  <div class="si-prophet-context-copy">
++    <p class="si-prophet-context-label">{{ t('From Sector Central', '来自板块情报') }}</p>
++    <h2 id="si-prophet-subject"></h2>
++    <p class="si-prophet-context-note" id="si-prophet-note" aria-live="polite"></p>
++  </div>
++  <div class="si-prophet-context-actions">
++    <button type="button" id="si-prophet-screener" aria-controls="us-stocktable-wrap" disabled>{{ t('View sector in Screener →', '在筛选器中查看该板块 →') }}</button>
++    <a id="si-prophet-return" href="sector_central.html#map">{{ t('Return to sector evidence →', '返回板块证据 →') }}</a>
++    <a id="si-prophet-clear" href="us_stocks.html">{{ t('Clear context', '清除板块背景') }}</a>
++  </div>
++</section>
++<script>{% include "_sector_prophet_context.js.j2" %}</script>
+diff --git a/templates/_sector_prophet_context.css.j2 b/templates/_sector_prophet_context.css.j2
+new file mode 100644
+index 000000000000..8f49220eedc6
+--- /dev/null
++++ b/templates/_sector_prophet_context.css.j2
+@@ -0,0 +1,43 @@
++/* A neutral context row beside the existing Prophet board. */
++.si-prophet-context {
++  display:flex;
++  align-items:center;
++  justify-content:space-between;
++  flex-wrap:wrap;
++  gap:12px;
++  padding:16px 0;
++  border:0;
++  border-block:1px solid var(--line);
++  color:var(--text);
++  scroll-margin-top:24px;
++}
++.si-prophet-context[hidden] { display:none !important; }
++.si-prophet-context-copy { flex:1 1 24rem; }
++.si-prophet-context-label {
++  margin:0 0 8px;
++  color:var(--muted);
++  font-size:var(--fs-label);
++}
++.si-prophet-context h2 { margin:0; font-size:var(--fs-h2); }
++.si-prophet-context-note {
++  max-width:65ch;
++  margin:8px 0 0;
++  color:var(--muted);
++  font-size:var(--fs-sm);
++  line-height:1.6;
++}
++.si-prophet-context-actions { display:flex; align-items:center; flex-wrap:wrap; gap:16px; }
++.si-prophet-context-actions a { color:var(--link); text-underline-offset:.2em; }
++.si-prophet-context-actions button {
++  border:0;
++  padding:0;
++  background:transparent;
++  color:var(--link);
++  font:inherit;
++  text-align:start;
++  text-decoration:underline;
++  text-underline-offset:.2em;
++  cursor:pointer;
++}
++.si-prophet-context-actions button:disabled { color:var(--muted); cursor:default; }
++.si-prophet-context-actions button[hidden] { display:none !important; }
+diff --git a/templates/_sector_prophet_context.js.j2 b/templates/_sector_prophet_context.js.j2
+new file mode 100644
+index 000000000000..c30f83b6805f
+--- /dev/null
++++ b/templates/_sector_prophet_context.js.j2
+@@ -0,0 +1,84 @@
++/* Sector Central -> Prophet identity contract. Canonical sector ETF identities
++   follow engine.spotlight.GICS_TO_ETF. URL context supplies identity only;
++   the native Screener owner applies its filter after an explicit click. */
++function sectorProphetIdentity(id) {
++  var sectors = {
++    XLB:['Materials','原材料'], XLC:['Communication Services','通信服务'],
++    XLE:['Energy','能源'], XLF:['Financials','金融'], XLI:['Industrials','工业'],
++    XLK:['Information Technology','信息技术'], XLP:['Consumer Staples','必需消费'],
++    XLRE:['Real Estate','房地产'], XLU:['Utilities','公用事业'],
++    XLV:['Health Care','医疗保健'], XLY:['Consumer Discretionary','可选消费']
++  };
++  if (typeof id !== 'string' || !Object.prototype.hasOwnProperty.call(sectors, id)) return null;
++  return {id:id, name_en:sectors[id][0], name_zh:sectors[id][1]};
++}
++function sectorProphetHref(group) {
++  if (!group || group.group_kind !== 'sector') return null;
++  var sector = sectorProphetIdentity(group.group_id);
++  return sector ? 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id) + '#sector-prophet-context' : null;
++}
++function sectorProphetSelection(search) {
++  var params = new URLSearchParams(search);
++  var values = params.getAll('si_sector');
++  if (!values.length) return {status:'absent'};
++  var sector = values.length === 1 ? sectorProphetIdentity(values[0]) : null;
++  if (!sector) return {status:'invalid'};
++  return {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
++    return_href:'sector_central.html?g=' + encodeURIComponent(sector.id) + '#map'};
++}
++(function () {
++  'use strict';
++  var root = document.getElementById('sector-prophet-context');
++  if (!root) return;
++  var subject = document.getElementById('si-prophet-subject');
++  var note = document.getElementById('si-prophet-note');
++  var back = document.getElementById('si-prophet-return');
++  var clear = document.getElementById('si-prophet-clear');
++  var screener = document.getElementById('si-prophet-screener');
++  if (!subject || !note || !back || !clear || !screener) return;
++  function screenerReady() {
++    return window.USStockTable && typeof window.USStockTable._selectSector === 'function' &&
++      window.USProphetSource && typeof window.USProphetSource.set === 'function';
++  }
++  function render() {
++    var read = sectorProphetSelection(window.location.search);
++    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
++    root.hidden = read.status === 'absent';
++    root.setAttribute('data-status', read.status);
++    screener.hidden = read.status !== 'selected';
++    screener.disabled = read.status !== 'selected' || !screenerReady();
++    if (read.status === 'absent') return;
++    var rest = new URLSearchParams(window.location.search);
++    rest.delete('si_sector');
++    var qs = rest.toString();
++    var hash = window.location.hash === '#sector-prophet-context' ? '#us-standouts' : window.location.hash;
++    clear.setAttribute('href', 'us_stocks.html' + (qs ? '?' + qs : '') + hash);
++    if (read.status === 'invalid') {
++      subject.textContent = zh ? '无法识别所选板块' : 'Selected sector unavailable';
++      note.textContent = zh ? '请返回板块证据，选择一个板块。Prophet 选股仍可查看。'
++        : 'Return to sector evidence to choose a sector. Prophet Stock Signals remains available.';
++      back.setAttribute('href', 'sector_central.html#map');
++      return;
++    }
++    subject.textContent = (zh ? read.name_zh : read.name_en) + ' · ' + read.id;
++    screener.textContent = zh ? '在筛选器中查看该板块 →' : 'View sector in Screener →';
++    screener.setAttribute('aria-label', zh ? '在筛选器中查看' + read.name_zh : 'View ' + read.name_en + ' in Screener');
++    note.textContent = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
++      : 'View this sector among the stocks loaded on this page; other filters still apply. Review each stock’s setup and entry conditions, and return to sector evidence for its dated readings.';
++    back.setAttribute('href', read.return_href);
++  }
++  screener.addEventListener('click', function () {
++    var read = sectorProphetSelection(window.location.search);
++    if (read.status !== 'selected') return;
++    if (!screenerReady() || !window.USStockTable._selectSector(read.name_en)) {
++      var zh = document.documentElement.getAttribute('data-lang') === 'zh';
++      note.textContent = zh ? '本页筛选器暂不可用。您仍可返回所选板块的证据。'
++        : 'The Screener is unavailable on this page. You can still return to the selected sector’s evidence.';
++    }
++  });
++  document.addEventListener('langchange', render);
++  window.addEventListener('popstate', render);
++  window.addEventListener('mmx:shell-location', render);
++  window.addEventListener('us-screener:availability', render);
++  render();
++})();
