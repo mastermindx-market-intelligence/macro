@@ -156,7 +156,9 @@ def main():
         key=(p['paper_file_id'],p['paper_page_id'])
         p['baseline_role']=p['role']
         if key==('01M2WGNCX9475G79JRKJTCM08P','p-7-1'):
+            p['baseline_role_evidence']=p['role_evidence']
             p['role']='historical'
+            p['role_evidence']='Explicit historical / not-for-build page notice in exact board 2TT5-0; evidence/china-hub-redirect.jsx'
             p['role_observation']='Exact board 2TT5-0 JSX says this page is archived / not for build; evidence/china-hub-redirect.jsx'
             for a in ledger:
                 if (a['source_file_id'],a['source_page_id'])==key:a['requested_organization_action']='retain observed historical role and conditions; no archive transfer until lineage and preservation qualified'

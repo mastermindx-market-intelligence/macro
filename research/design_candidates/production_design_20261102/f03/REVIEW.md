@@ -40,6 +40,10 @@ It identified four bounded residuals in intermediate directory digest `0e1bb0b72
 
 The reviewer also identified incomplete assembly links while README, REPRODUCE, REVIEW and CONTINUITY were being written. Those documents are present in the final package; the relative-link verifier runs after assembly. No prior review is represented as accepting absent files.
 
+### Final bounded recheck
+
+The reviewer verified closure of all four residual behaviors and the four assembly links. It caught one additional default-inventory case: an empty return fragment was mistaken for no inventory origin. That case now carries `page=0`. It also requested a clearer China metadata explanation; the original text is now preserved as `baseline_role_evidence`, and current `role_evidence` cites the historical notice. The reviewer independently confirmed the final row, embedded copy and directory hash. [Exact final recheck](review/final-source-recheck.md) retains its scope and limits. Final source probes: **20 PASS**. Final input/identity/inventory/link checks: **399 PASS**.
+
 ## Verification evidence
 
 | Check | Result and limits |

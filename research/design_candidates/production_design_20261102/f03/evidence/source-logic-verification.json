@@ -75,6 +75,10 @@
       "result": "PASS"
     },
     {
+      "name": "Default inventory row retains an explicit nonempty return fragment",
+      "result": "PASS"
+    },
+    {
       "name": "Complete member index preserves included and excluded rows",
       "result": "PASS"
     }

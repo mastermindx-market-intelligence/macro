@@ -24,6 +24,7 @@ def main():
     pages=read(out/'data/paper-page-directory.json');pk=lambda p:(p['paper_file_id'],p['paper_page_id']);pmap={pk(p):p for p in pages};baseline=read(src/'paper-files.json');expected={(f['file_id'],p['id']) for f in baseline for p in f['pages']}
     check('299 original pages and exactly two live observations',len(pages)==len(pmap)==301 and expected<=set(pmap) and len(set(pmap)-expected)==2)
     check('listed-only null counts are not empty pages',sum(p['board_count'] is None for p in pages)==106)
+    china=pmap[('01M2WGNCX9475G79JRKJTCM08P','p-7-1')];check('China current role evidence distinct from baseline',china['role']=='historical' and china['baseline_role']=='candidate_unqualified' and china['baseline_role_evidence']=='candidate/workspace; approval evidence not inferred' and 'historical / not-for-build' in china['role_evidence'])
     boards=read(out/'data/paper-artboard-directory.json');bm={(b['paper_file_id'],b['paper_page_id'],b['artboard_id']):b for b in boards};ob=read(src/'paper-artboards.json')
     check('2450 exact compound artboard identities',len(boards)==len(bm)==2450 and set(bm)=={(b['file_id'],b['page_id'],b['artboard_id']) for b in ob})
     check('artboard names/geometry/custody preserved',all(all(bm[(b['file_id'],b['page_id'],b['artboard_id'])][k]==b[k] for k in ['name','width','height','child_count','page_custodian']) and bm[(b['file_id'],b['page_id'],b['artboard_id'])]['product_owner']==b['primary_session'] for b in ob))

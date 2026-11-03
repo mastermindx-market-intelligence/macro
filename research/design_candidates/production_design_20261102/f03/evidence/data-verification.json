@@ -1,7 +1,7 @@
 {
   "kind": "pinned_input_identity_and_link_checks_not_visual_or_live_acceptance",
   "status": "PASS",
-  "check_count": 398,
+  "check_count": 399,
   "checks": [
     {
       "name": "immutable input README.md",
@@ -1489,6 +1489,10 @@
     },
     {
       "name": "listed-only null counts are not empty pages",
+      "result": "PASS"
+    },
+    {
+      "name": "China current role evidence distinct from baseline",
       "result": "PASS"
     },
     {

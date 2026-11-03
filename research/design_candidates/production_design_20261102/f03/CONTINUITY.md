@@ -49,3 +49,7 @@ If qualification remains absent, consume any newly returned F01/F02/domain contr
 ## Do not redo
 
 Do not repeat the whole 29-file census to recover this context. Use frozen inputs and the two explicit live deltas; re-read exact targets before modification. Do not rerun the fresh 14,025-path Macro inventory unless its source pin changes or the artifact digest fails. Do not re-poll unchanged catalog denial. Do not archive Refined vase, copies or test files by name. Do not invent GMI/equity-replay canonical IDs or Option query values. Do not count source-logical verification as actual visual/browser proof.
+
+## Foreground stop classification
+
+`ALL_SCOPED_LANES_BLOCKED` applies to the remaining effect/acceptance work after this source return is published and read back. Independent source-directory, specification, inventory, advisory-review and verification lanes are complete. The remaining assigned Paper effects require qualified supported operations and exact-target preservation/overlap evidence; foundation/domain acceptance and formal/rendered review retain their separate gates. This is PARTIAL/BLOCKED_RETURN, never F03 SUCCESS or an assertion of background continuation.
