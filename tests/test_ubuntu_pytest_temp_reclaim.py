@@ -99,6 +99,19 @@ class GeneratedGarbageTests(unittest.TestCase):
             gc._receipt(self.root / "log.jsonl", {"event": "test"})
         self.assertFalse((self.root / "log.jsonl").exists())
 
+    def test_unsettled_ledger_blocks_another_destructive_generation(self):
+        ledger = self.root / "ledger.jsonl"
+        ledger.write_text('{"schema": "mastermind.ubuntu_pytest_garbage_reclaim.v1", "event": "moved"}\n')
+        with self.assertRaisesRegex(gc.Refusal, "previous_reclaim_not_terminal"):
+            gc._hold_unreconciled(self.base, ledger)
+        ledger.write_text('{"schema": "mastermind.ubuntu_pytest_garbage_reclaim.v1", "event": "complete"}\n')
+        gc._hold_unreconciled(self.base, ledger)
+
+    def test_quarantine_left_by_prior_failure_blocks_replay(self):
+        (self.base / ".reclaim-old-operation-garbage-foo").mkdir()
+        with self.assertRaisesRegex(gc.Refusal, "quarantined_previous_effect"):
+            gc._hold_unreconciled(self.base, self.root / "missing-ledger")
+
     def test_apply_not_allowed_in_arbitrary_fixture_directory(self):
         with mock.patch.object(gc.os, "geteuid", return_value=0):
             with self.assertRaisesRegex(gc.Refusal, "requires_root_and_canonical_tmp"):
