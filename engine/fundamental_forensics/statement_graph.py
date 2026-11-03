@@ -1812,18 +1812,18 @@ class _StatementTableParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self._ended or self._hidden:
             return
-        if self._in_cell:
-            self._cell_text.append(data)
-        elif (
+        if (
             self._carried
-            and not self._capturing
             and not self._table_depth
             and re.sub(r"[\s\u200b\ufeff]+", "", data)
         ):
             # Carry pass: text printed between the title block and the table
-            # after it (a heading, a caption) belongs to that table, which is
-            # then no longer the untitled body of the block; drop the carry.
+            # after it (a heading, a caption, or a stray row outside any table,
+            # which a browser shows as plain text) belongs to that table, which
+            # is then no longer the untitled body of the block; drop the carry.
             self._discard_factless_capture()
+        elif self._in_cell:
+            self._cell_text.append(data)
         elif self._titles and self._title_hit(data) is not None:
             self._seen_title = True
         elif (

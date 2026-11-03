@@ -628,3 +628,30 @@ def test_tbc1_caption_inside_the_carried_table_still_carries() -> None:
     parsed = parse_displayed_primary_table(html, title=_TITLE)
     assert _rows(parsed) == _SERVED
     assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc1_stray_row_outside_any_table_declines_the_carry() -> None:
+    # A row outside every table is dropped by a browser, which shows its text
+    # as a plain heading between the block and the table: no carry, and the
+    # stray text never joins the carried statement as a row.
+    _absent(
+        _title_block(_COMPANY, _TITLE)
+        + "<tr><td>Segment Heading</td></tr>\n"
+        + _fact_table()
+    )
+
+
+def test_tbc1_text_after_a_blank_stray_row_declines_the_carry() -> None:
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + "<tr><td> </td></tr>\n<p>Segment Heading</p>\n"
+        + _fact_table()
+    )
+    _absent(html)
+
+
+def test_tbc1_blank_stray_row_still_carries() -> None:
+    html = _title_block(_COMPANY, _TITLE) + "<tr><td> </td></tr>\n" + _fact_table()
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
