@@ -2,7 +2,7 @@
   "schema": "f03.native_progress.v1",
   "assignment": "F03",
   "status": "NATIVE_AUTHORING_IN_PROGRESS",
-  "observed_at": "2026-11-03T06:03:02.657Z",
+  "observed_at": "2026-11-03T07:05:06.871Z",
   "source_base": "3dc736ef07090166a569cd5368b33b06b6dc2d42",
   "protected_procedure": "b4a5a8925c6c1412dac67ba296cf65ee81c4d4c8",
   "carrier": "Mastermind Paper direct app",
@@ -29,7 +29,28 @@
       "artboard_id": "5G0X-2",
       "canonical_families": 27,
       "options_slices": 4,
-      "state": "editable first pass captured; advisory critique requires discovery improvements"
+      "state": "Editable 27-family directory improved with 2-step builder/status guide; live JSX/JPEG captured; link behavior and formal approval unverified",
+      "builder_path_node": "70MN-0"
+    },
+    "link_map": {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G1H-2",
+      "state": "Bonds revision-index and Crypto R4 exact URLs updated; historical studies remain labeled, screenshot observed"
+    },
+    "coverage_map": {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G1Z-2",
+      "state": "Crypto R4 observed dark desktop/mobile specimens distinguished from unverified variants; screenshot observed"
+    },
+    "terminal_directory": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-R-0",
+      "original_artboard": "1BCX-0",
+      "exact_reference_artboard": "1NDQ-0",
+      "families": 6,
+      "state": "Original directory footer annotated; distinct six-family exact URL/contract/approval index created; full-artboard screenshots observed"
     }
   },
   "operations": [
@@ -356,6 +377,186 @@
       "target_file": "01M2WGNCX9475G79JRKJTCM08P",
       "expected_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6",
       "after_snapshot": "c7e9f834b66ee26d8e08f6d4b97bde74efe00e6ac398ef0aad2566741f83f1b6"
+    },
+    {
+      "operation_id": "f03-20261103-directory-builderpath-02",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G1A-2",
+        "70MN-0"
+      ],
+      "expected_snapshot": "bceb511067468aa16a32ec6ca25f3832209f764b9905cbe7088eee6546fd509f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-linkmap-coverage-corrections-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G1N-2",
+        "5G1Q-2",
+        "5G1R-2",
+        "5G2B-2",
+        "6ZS5-0"
+      ],
+      "expected_snapshot": "bceb511067468aa16a32ec6ca25f3832209f764b9905cbe7088eee6546fd509f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-directory-footer-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1BEG-0",
+        "1BEI-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-index-artboard-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "p-R-0",
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-index-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0",
+        "1NDR-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-company-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-options-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-heatmaps-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-returns-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-earnings-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-refrow-intelligence-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-terminal-index-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0",
+        "1NFL-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": true
+    },
+    {
+      "operation_id": "f03-20261103-finish-mastermind-directory-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0X-2",
+        "5G1H-2",
+        "5G1Z-2"
+      ],
+      "expected_snapshot": "bceb511067468aa16a32ec6ca25f3832209f764b9905cbe7088eee6546fd509f",
+      "screenshot_observed": false
+    },
+    {
+      "operation_id": "f03-20261103-finish-terminal-directory-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-03T07:05:06.871Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1BCX-0",
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+      "screenshot_observed": false
     }
   ],
   "unresolved_effects": [],
@@ -366,12 +567,11 @@
     "f01_joint_freeze": null
   },
   "remaining": [
-    "Apply advisory discovery improvements to main directory",
-    "Compose and inspect lineage, coverage and Terminal anchors",
-    "Create Read me and content-width/state specimens",
-    "Apply safe existing-page organization and verify identities",
-    "Freeze complete evidence and update source companion",
-    "Formal review and parent CI base gate remain open"
+    "Per-family exact candidate/complete build-contract/RIG status needs stronger in-Paper direct-choice mapping",
+    "Compose content-width/responsive, keyboard/touch, dark/light and EN/ZH states after F01/F02 joint freeze",
+    "Apply only supported resource organization; all 301 cross-file action rows remain NOT_DISPATCHED",
+    "Reconcile domain return/retention and review receipts before candidate promotion",
+    "Formal independent RIG review and parent #10617 CI-base gate remain open"
   ],
   "held": [
     "Folder creation/resource moves/archive operations blocked by adapter",
@@ -379,6 +579,8 @@
     "Blank-file create/clone held by client publication contract",
     "Native link activation and browser/assistive interaction acceptance unverified"
   ],
-  "next_action": "Continue same direct carrier on F03 directory boards; preserve all original identities; consume the frozen advisory first pass.",
-  "no_merge_or_deploy": true
+  "next_action": "Consume F01/F02 and domain frozen returns when admitted; refine in-Paper per-family candidate/contract/status mappings and responsive directory specimens. Do not dispatch unsupported folder/move/archive actions; preserve Draft/HOLD.",
+  "no_merge_or_deploy": true,
+  "continuation_source_head": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d",
+  "continuation_protected_procedure": "b2326bbe30e9988d26199f5e774a482b9c09068a"
 }

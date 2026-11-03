@@ -1,6 +1,6 @@
 # F03 — Paper organization, coverage and design integration
 
-**PARTIAL / BLOCKED_RETURN — source directory delivered; first native Paper directory and two page-label corrections applied.** Cross-file moves, folder creation, archives, complete preservation verification and formal design approval remain open. No product code has been implemented, merged or deployed. See [native progress](paper/native-progress.json) and the [interim evidence manifest](artifact-manifest.json).
+**PARTIAL / BLOCKED_RETURN — source directory delivered; three native directory boards refined and Terminal exact-reference board added; two page-label corrections preserved.** Cross-file moves, folder creation, archives, complete preservation verification and formal design approval remain open. No product code has been implemented, merged or deployed. See [native progress](paper/native-progress.json) and the [interim evidence manifest](artifact-manifest.json).
 
 ## Start here
 
@@ -35,7 +35,7 @@ MASTERMIND PAGES gained observed page `p-26-1`, **Intraday Flow · R1 · Discove
 
 ### Concrete labeling and lineage findings
 
-Bonds `p-1H-0` has live R30/R31/R32 material, an R33 implementation map and CDI boards despite its R18–R25 title. Its proposed correction is a neutral revision-index label, not a blanket R32 rename. Crypto `p-10-0` contains eight R4 boards despite its R3 Current Build title; the proposed label removes unsupported build authority. Both exact label changes remain unapplied.
+Bonds `p-1H-0` has live R30/R31/R32 material, an R33 implementation map and CDI boards despite its R18–R25 title. Its proposed correction is a neutral revision-index label, not a blanket R32 rename. Crypto `p-10-0` contains eight R4 boards despite its R3 Current Build title; the proposed label removes unsupported build authority. Both exact label changes were subsequently applied and screenshot-observed, without changing their original artboard identities.
 
 The original Earnings, Hub and Investor Shell notices contain exact destination URLs. Those relationships are now visible in the source directory while their original anchors remain retained. The early Hub/China notices name a successor family without an exact destination; those gaps remain specific. Rejected Prophet R6 is preserved; its read-me's earlier critique is not misrepresented as the actual R6 rejection receipt.
 
@@ -59,3 +59,10 @@ This return lives only under `research/design_candidates/production_design_20261
 No Paper effect is unknown because none was dispatched. Read-only exporter work loaded immutable source through Git and left shared checkout files/git state unchanged. No Slack/email commission, external product session, production build, merge or deployment was performed. This package stays draft/HOLD for review.
 
 F03 SUCCESS remains unavailable until the assigned physical organization is applied and verified with complete identity maps, preserved links/comments/annotations/assets and actual review evidence. A useful source directory is completed progress, not successful Paper organization.
+
+
+## F03 native continuation and evidence (2026-11-03T07:05:06.871Z)
+
+The Mastermind Paper direct carrier successfully applied 14 further F03 operation/indicator-release effects at valid exact-file target guards. MASTERMIND PAGES `p-1P-0` now has an explicit two-choice builder/status guide and corrected current-vs-historical Bonds/Crypto link/coverage labels. Terminal `p-R-0` retains its original product map and adds **`1NDQ-0 · Terminal Reference Index`**, a separate editable six-row exact Paper URL + contract/approval-state board. All five modified artboards were screenshot-observed after the edits.
+
+The ten new JPEG/JSX evidence members, native operation ledger and continuity/specification refresh are committed with Git/SHA256 digests in the artifact manifest. No new RIG approval, F01/F02 joint freeze, supported cross-file move/archive, responsive/browser acceptance, product code, merge or deployment occurred. F03 remains PARTIAL / Draft-HOLD. Continue from `CONTINUITY.md`; do not repeat accepted native operations.

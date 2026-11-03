@@ -1,6 +1,6 @@
 # F03 — editable Paper layout and annotation specification
 
-**Specification complete; first editable directory composition applied and screenshot-observed; full composition/review incomplete.** The original `5G0X-2` board now contains 27 product-family entries and four Options slices with preserved identity (see `paper/native-progress.json`). Its direct candidate/contract/status discovery, lineage/coverage boards, responsive specimens and independent acceptance remain open. Source HTML alone never substitutes for an editable and verified Paper experience.
+**Specification complete; three MASTERMIND PAGES directory boards refined, separate Terminal exact-reference index created and screenshot-observed; responsive composition/approval incomplete.** The original `5G0X-2` board now contains 27 product-family entries and four Options slices with preserved identity (see `paper/native-progress.json`). Its direct candidate/contract/status discovery, lineage/coverage boards, responsive specimens and independent acceptance remain open. Source HTML alone never substitutes for an editable and verified Paper experience.
 
 ## Existing anchors and intended content
 
@@ -57,3 +57,14 @@ Record immutable artifact digest, independent first/second-pass findings, actual
 ## Freeze and acceptance evidence
 
 After admitted edits: capture exact file/page/artboard IDs and UTC observation; export supported editable/source content; preserve before/after images; validate all direct links and legacy redirects; record preservation map and operation receipts; commit exports, annotations and verification evidence; bind independent review to that immutable artifact set. Until then, editable after-compositions, actual responsive screenshots and formal review remain open.
+
+
+## Applied F03 continuation references (2026-11-03T07:05:06.871Z)
+
+- `MASTERMIND PAGES / p-1P-0 / 5G0X-2` now has builder two-choice/status frame `70MN-0` near the top; original 27 family rows remain editable and preserved.
+- `5G1H-2` links distinguish current Bonds revision index and Crypto R4 from earlier historical studies with direct source Paper URLs.
+- `5G1Z-2` treats R4 desktop/mobile dark specimens as observed and other variants as unverified, not complete.
+- `Terminal / p-R-0 / 1BCX-0` retains original six-family layout with a clear F03 contract/RIG footer.
+- New editable `Terminal / p-R-0 / 1NDQ-0` contains six exact file+page reference URLs, family associations, held/unknown states and pinned F03 contract source. Current RIG approval remains null; Paper anchor click-through is untested.
+
+Actual screenshots and JSX for all five boards are retained under `paper/captures/` and `paper/exports/`, with SHA256/Git blob digests in `artifact-manifest.json`. These captures prove rendered layout observation only, not keyboard/touch, 320/390px, EN/ZH, light mode or production behavior.
