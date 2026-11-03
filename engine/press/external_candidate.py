@@ -94,13 +94,14 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
     complete object rows: silently skipping damaged evidence is inappropriate
     for a qualification pinned to an exact artifact snapshot.
 
-    ``observation_date`` is the opt-in for the retained Treasury parquet series:
+    ``observation_date`` is the opt-in for retained Treasury and ON RRP parquet:
     it is the only date those files may be read on, and only the market snapshot
     candidate supplies it. Without it every row keeps its incumbent meaning and
     the Treasury series stay closed.
     """
     from engine.press import desk_planner as planner
     from engine.press import treasury_context as treasury
+    from engine.press import rrp_context as rrp
 
     if not isinstance(rows, list) or not 1 <= len(rows) <= 20:
         raise ValueError("bounded reviewed first-party context required")
@@ -114,14 +115,18 @@ def _reviewed_context(rows: object, *, root: Path, as_of: date, window_days: int
             raise ValueError("reviewed context fields mismatch")
         fid, rel, digest, relevance = (row[k] for k in ("id", "artifact", "sha256", "relevance"))
         if (not isinstance(fid, str) or not fid or fid in seen
-                or not isinstance(rel, str) or (rel not in extractors and rel not in treasury.SERIES)
+                or not isinstance(rel, str)
+                or (rel not in extractors and rel not in treasury.SERIES and rel != rrp.ARTIFACT)
                 or not isinstance(relevance, str) or not 1 <= len(relevance.strip()) <= 500):
             raise ValueError("reviewed context identity or relevance invalid")
         seen.add(fid)
         path = root / rel
         if path.resolve() != path:
             raise ValueError("reviewed context artifact must not traverse a symlink")
-        if rel in treasury.SERIES:
+        if rel == rrp.ARTIFACT:
+            fact = rrp.reviewed_fact(fact_id=fid, path=path, digest=digest,
+                                     observation_date=observation_date, root=root)
+        elif rel in treasury.SERIES:
             fact, value = treasury.reviewed_fact(
                 rel, fact_id=fid, path=path, digest=digest,
                 observation_date=observation_date, root=root)

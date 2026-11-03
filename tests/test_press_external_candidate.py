@@ -872,3 +872,131 @@ def test_the_candidate_keeps_the_three_day_window_for_treasury_rows(tmp_path, mo
     with pytest.raises(ValueError, match='window'):
         plan_market_snapshot_candidate(**inputs, root=root,
                                        as_of='2026-11-02T00:00:00Z', cfg=CFG)
+
+# ON RRP adds one measurement, not a receipt multiplier or admission exemption.
+from engine.press import rrp_context as RRP
+from engine.press import validators as RRP_V
+
+
+def rrp_inputs(tmp_path, *, frame=None):
+    root = tmp_path / 'rrp'
+    if frame is None:
+        frame = frame_for('on_rrp', [('2026-10-30', 4.375), ('2026-11-02', 5.087)])
+    digest = write_frame(root, RRP.ARTIFACT, frame)
+    row = dict(id=RRP.FACT_ID, artifact=RRP.ARTIFACT, sha256=digest,
+               relevance='Dated overnight RRP usage only; no liquidity or causal inference.')
+    return root, row
+
+
+def rrp_select(root, row, *, observed='2026-11-02', cutoff=date(2026, 11, 3)):
+    return _reviewed_context([row], root=root, as_of=cutoff, window_days=3,
+                             observation_date=observed)
+
+
+def test_rrp_one_exact_measurement_preserves_units_origin_and_unknown_clocks(tmp_path):
+    root, row = rrp_inputs(tmp_path)
+    before = (root / RRP.ARTIFACT).read_bytes()
+    facts, revisions = rrp_select(root, row)
+    assert len(facts) == 1
+    fact = facts[0]
+    assert fact['values'] == ['5.087']
+    assert fact['dated'] == '2026-11-02'
+    assert fact['unit'] == 'billions of US dollars'
+    assert fact['source_series'] == 'RRPONTSYD'
+    assert 'Federal Reserve Bank of New York' in fact['source_name']
+    assert fact['source_url'] == 'https://fred.stlouisfed.org/series/RRPONTSYD'
+    assert revisions == {'artifact:' + RRP.ARTIFACT: 'sha256:' + row['sha256']}
+    assert all(fact['source_provenance'][key]['state'] == 'unavailable'
+               for key in ('publication_time', 'first_known_time', 'vintage'))
+    assert fact['source_provenance']['rights_admission'] == 'not_granted_by_extraction'
+    assert (root / RRP.ARTIFACT).read_bytes() == before
+
+
+@pytest.mark.parametrize('observed', [None, '2026-11-01', '2026-11-02T00:00:00',
+                                     '2026-02-30', '2026-11-04'])
+def test_rrp_missing_or_inexact_date_never_uses_latest(tmp_path, observed):
+    root, row = rrp_inputs(tmp_path)
+    with pytest.raises(ValueError):
+        rrp_select(root, row, observed=observed)
+
+
+@pytest.mark.parametrize('cutoff', [date(2026, 11, 1), date(2026, 11, 6)])
+def test_rrp_original_window_rejects_future_or_stale_measurement(tmp_path, cutoff):
+    root, row = rrp_inputs(tmp_path)
+    with pytest.raises(ValueError, match='window'):
+        rrp_select(root, row, cutoff=cutoff)
+
+
+@pytest.mark.parametrize('mutation', ['hash', 'id', 'path', 'symlink', 'duplicate_selection'])
+def test_rrp_custody_or_identity_mismatch_refuses(tmp_path, mutation):
+    root, row = rrp_inputs(tmp_path)
+    if mutation == 'hash':
+        row['sha256'] = '0' * 64
+    elif mutation == 'id':
+        row['id'] = 'rrp_counterparties'
+    elif mutation == 'path':
+        row['artifact'] = 'data/fred/OTHER.parquet'
+    elif mutation == 'symlink':
+        path = root / RRP.ARTIFACT
+        saved = path.with_suffix('.saved')
+        path.rename(saved)
+        path.symlink_to(saved)
+    with pytest.raises(ValueError):
+        _reviewed_context([row, row] if mutation == 'duplicate_selection' else [row],
+                          root=root, as_of=date(2026, 11, 3), window_days=3,
+                          observation_date='2026-11-02')
+
+
+@pytest.mark.parametrize('mutation', ['column', 'duplicate_date', 'unsorted', 'intraday',
+                                     'timezone', 'negative', 'nan', 'boolean'])
+def test_rrp_malformed_measurement_refuses(tmp_path, mutation):
+    frame = frame_for('on_rrp', [('2026-10-30', 4.375), ('2026-11-02', 5.087)])
+    if mutation == 'column':
+        frame.columns = ['counterparties']
+    elif mutation == 'duplicate_date':
+        frame.index = pd.DatetimeIndex(['2026-11-02', '2026-11-02'])
+    elif mutation == 'unsorted':
+        frame = frame.iloc[::-1]
+    elif mutation == 'intraday':
+        frame.index += pd.Timedelta(hours=1)
+    elif mutation == 'timezone':
+        frame.index = frame.index.tz_localize('UTC')
+    elif mutation == 'negative':
+        frame.iloc[-1, 0] = -5.087
+    elif mutation == 'nan':
+        frame.iloc[-1, 0] = float('nan')
+    elif mutation == 'boolean':
+        frame = frame.astype(bool)
+    root, row = rrp_inputs(tmp_path, frame=frame)
+    with pytest.raises(ValueError):
+        rrp_select(root, row)
+
+
+def test_rrp_packet_and_unchanged_validators_do_not_promote_one_fact(tmp_path):
+    root, row = rrp_inputs(tmp_path)
+    q = dict(schema='press.market_snapshot_qualification.v1',
+             proposition_id='overnight-rrp-usage-after-month-end', observation_date='2026-11-02',
+             first_party_context=[row], review_result='accepted_as_market_candidate_only',
+             allow_stage=False, allow_emit=False, publication_approved=False)
+    path = tmp_path / 'qualification.json'
+    digest = dump(path, q)
+    before = {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    result = plan_market_snapshot_candidate(qualification_path=path,
+        qualification_sha256=digest, root=root, as_of='2026-11-03T07:30:00Z', cfg=CFG)
+    slot = result['validation_context']
+    assert len(slot['facts']) == 1
+    # An offline source-text probe, never a generated/staged article.
+    probe = {'body_html': '<p>' + slot['facts'][0]['text'] + '</p>'}
+    receipts = RRP_V.check_receipts(probe, slot, CFG)
+    assert receipts['ok'] is False
+    assert receipts['metrics']['receipts'] == 1
+    assert receipts['metrics']['minimum'] == 5
+    share = RRP_V.check_our_value(probe, slot, CFG)
+    assert share['metrics']['floor'] == .4
+    assert share['metrics']['granularity'] == 'sentence'
+    # Repetition and rounded representations are still only one receipt.
+    probe['body_html'] *= 5
+    assert RRP_V.check_receipts(probe, slot, CFG)['metrics']['receipts'] == 1
+    assert RRP_V.check_fact_anchor({'body_html': '<p>Usage was 5.087 million dollars.</p>'}, slot, CFG)['ok'] is False
+    assert all(result[key] is False for key in ('allow_stage', 'allow_emit', 'publication_approved', 'cadence_consumed'))
+    assert before == {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
