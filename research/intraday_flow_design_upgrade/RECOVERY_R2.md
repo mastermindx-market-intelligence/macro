@@ -42,3 +42,11 @@ The previously platform-denied dark-Chinese ticker-row batch remains held and wa
 Base snapshot unchanged: a8b0f3d6609b844f4e88ba9155414196773e3fb11f04031a3b02cfc192ddc624. Embedded BASE_DATA equals that committed source. Canonical write_page plus make_optimizer used; optimization idempotence verified. No producer run. Recovery images use actual recorded board for search or explicitly named empty-watchlist browser-only TEST FIXTURES; no market observation fabricated or written to feeds.
 
 Next: canonical final source capture, independent exact-candidate source review, current-head CI, remaining Paper/qualified visual and shared-navigation gates. No merge, Ready, un-draft, enqueue or deployment.
+
+## Canonical capture and independent-review request result
+
+Fresh recovery-r2-canonical capture at material source55b651320d79f5a4ebf530eeb0175803b981baaa completed24/24 with all image hashes valid, zero console/response errors and no horizontal overflow. Added visual receipt passed.
+
+Distinct source-review request intraday-recovery-r2-review-20261103-c2-01 was refused before launch by the existing Fabric owner. Controller94761 returned MMX_FABRIC_EXIT=75; status is REQUEST_REFUSED_BEFORE_LAUNCH / EXECUTION_NOT_ELIGIBLE; no result, no reviewerSTART, retry_allowed=false and same_run_replay_allowed=false. No exact causal explanation beyond that classification was returned. It has not been retried, accepted, replaced or routed around. This is not an independent review pass.
+
+Final repeated scoped regression on the committed material source:301 passed,12warnings,14.96s; controller4403 exit0. Visual-receipt validation controller89865 exit0. Both are observed results, not pending promises.

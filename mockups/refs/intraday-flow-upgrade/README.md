@@ -1,3 +1,26 @@
+## R2 current recovery-state implementation
+
+Material source: `55b651320d79f5a4ebf530eeb0175803b981baaa`.
+Canonical [24-state matrix](recovery-r2-canonical/manifest.json) captures this source
+in desktop/mobile, EN/ZH and light/dark with resting, hover and keyboard-focus views.
+All24 images and hashes verified; zero console/response errors and horizontal overflow.
+
+[Recovery-specific browser proof](recovery-r2/verification.json) exercises244 checks
+and16 actual state captures. The empty-watchlist cells are explicit isolated TEST
+FIXTURES, never producer observations or authenticated feed proof. The filtered-empty
+cells use the committed board plus a user query.
+
+- [Phone dark / filtered recovery](recovery-r2/filtered-390-dark-en.png)
+- [Phone light / unavailable watchlist](recovery-r2/unavailable-390-light-en.png)
+- [Desktop dark / filtered recovery](recovery-r2/filtered-1440-dark-en.png)
+- [Desktop light / unavailable watchlist](recovery-r2/unavailable-1440-light-en.png)
+
+These proofs do not close independent visual review, current-base integration, shared
+navigation performance or served-production acceptance. Previous captures below retain
+their original identities; none has been relabeled as current.
+
+---
+
 # Intraday Flow — visual evidence
 
 Current capture source: `d927f82d4efab6f19104f196dfab1cf4e05d34d5`.

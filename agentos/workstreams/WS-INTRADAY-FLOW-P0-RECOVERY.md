@@ -86,10 +86,12 @@ waves:
     next_action: >
       Continue original claude/intraday-flow-design-upgrade-20261101-c2 and its
       task tree research/intraday_flow_design_upgrade/MASTER_PLAN.md. Preserve
-      verified source repairs and the normalized-r5 screenshot identity. Complete
-      the incumbent Paper direct-app release dependency, guarded editable Intraday
-      artboards, qualified independent visual review, final-head CI and normal
-      release with served desktop/phone proof. Keep PR-4 live-plane obligations
+      verified source repairs and historical screenshot identities. R2 source
+      55b651320d79f5a4ebf530eeb0175803b981baaa adds truthful recovery states;
+      consume the 2026-11-03 handoff, its canonical capture and exact review-refusal
+      evidence. Paper is write-qualified with six specimens, not fully accepted.
+      Complete qualified independent source/visual review, latest-base integration,
+      final-head CI and normal authorized release with served desktop/phone proof. Keep PR-4 live-plane obligations
       separate; this UI wave changes no classifier, feed or trade authority.
 decisions:
   - "DEC:INTRADAY-FLOW-PR4-MERGED-PRODUCTION-ACCEPTANCE-OWED"
@@ -98,7 +100,7 @@ discoveries:
   - "DSC:OPEX-FUTURE-MONTH-LAST-OBS-CLAMP"
   - "DSC:INTRADAY-FLOW-AGE-HEALTH-CAN-HIDE-EMPTY-BOARD"
 next_action: >
-  UI-1/#10498: continue the existing redesign task tree and dated 2026-11-02 handoff;
+  UI-1/#10498: continue the existing redesign task tree and dated 2026-11-03 handoff;
   complete Paper, qualified visual, final-head checks and served release proof on
   the original branch. Preserve the separate current-session obligation below.
   PR-4/#6105 is merged but BUILT_NOT_PROVEN. Execute exactly one genuine current-

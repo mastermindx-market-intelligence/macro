@@ -3,7 +3,7 @@
 This is not product closeout. The redesign remains unmerged and production proof
 is owed. The current recoverable frontier is the single dated Agent OS handoff:
 
-`agentos/handoffs/INTRADAY-FLOW-P0-RECOVERY-2026-11-02.md`.
+`agentos/handoffs/INTRADAY-FLOW-P0-RECOVERY-2026-11-03.md`.
 
 The pinned organizational plan remains
 `agentos/workstreams/WS-INTRADAY-FLOW-P0-RECOVERY.md`; this PR adds the bounded UI-1
