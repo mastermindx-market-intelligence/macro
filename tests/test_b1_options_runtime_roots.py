@@ -889,7 +889,9 @@ def _install_hub_fakes(mod, monkeypatch, data_root: Path, seen: dict) -> None:
     monkeypatch.setattr(mod, "OI_SUITE_ENABLED", False)
     monkeypatch.setattr(mod, "levels_payload_from_gex", lambda *_a, **_k: None)
     monkeypatch.setattr(mod, "moves_payload", lambda *_a, **_k: {"expected_move": None})
-    monkeypatch.setattr(mod, "build_cross_root", lambda *_a, **_k: ({"rows": []}, {"rows": []}))
+    monkeypatch.setattr(mod, "build_cross_root", lambda *_a, **_k: (
+        {"movers": []}, {"by_premium": [], "by_volume": []},
+    ))
     monkeypatch.setattr(mod, "compute_oi_change_cross", lambda *_a, **_k: {"rows": []})
 
     def build_root(root, asof, theta_store, polygon_gex_dir=None):

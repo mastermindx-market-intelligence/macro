@@ -330,10 +330,36 @@ def capture_built_scenario_sources(descriptor, viewer, *, operation_id: str,
         current_viewer=current_viewer, clock=clock)
 
 
+class _CrossRootRankings:
+    """Retain only the winners needed by the next aggregate checkpoint."""
+
+    def __init__(self, asof: str):
+        self.asof = asof
+        self.movers = {"schema": "options_hub.oi_movers/v1", "asof": asof, "movers": []}
+        self.hot = {"schema": "options_hub.hot/v1", "asof": asof, "by_premium": [], "by_volume": []}
+        self.failed_root: str | None = None
+
+    def include(self, root: str, theta_store) -> None:
+        try:
+            movers, hot = build_cross_root([root], self.asof, theta_store, strict=True)
+            # Stable sorting puts earlier roots first on ties, as in a full scan.
+            self.movers["movers"] = sorted(
+                self.movers["movers"] + movers["movers"],
+                key=lambda row: abs(row["d_oi"]), reverse=True,
+            )[:100]
+            for board, field, limit in (("by_premium", "premium", 100), ("by_volume", "vol", 50)):
+                self.hot[board] = sorted(
+                    self.hot[board] + hot[board], key=lambda row: row[field], reverse=True,
+                )[:limit]
+        except Exception:
+            self.failed_root = self.failed_root or root
+            log.exception("options_hub_builder: could not rank %s; preserving last good cross-root boards", root)
+
+
 def _publish_aggregates(
-    roots_ok: list[str],
+    roots_n: int,
+    rankings: _CrossRootRankings,
     asof: str,
-    theta_store,
     out_dir: Path,
     s3,
     bucket: str,
@@ -348,15 +374,17 @@ def _publish_aggregates(
     Called both incrementally (every INCREMENTAL_N roots) and at end-of-run.
     Returns the oi_movers payload (for oi_confirmed chaining) or None on failure.
     """
-    if not roots_ok:
+    if not roots_n:
         return None
     log.info(
         "options_hub_builder: [%s] publishing aggregates over %d roots …",
-        label, len(roots_ok),
+        label, roots_n,
     )
     oi_movers_payload: dict | None = None
     try:
-        oi_movers, hot_contracts = build_cross_root(roots_ok, asof, theta_store)
+        if rankings.failed_root is not None:
+            raise ValueError(f"missing ranking contribution for {rankings.failed_root}")
+        oi_movers, hot_contracts = rankings.movers, rankings.hot
         oi_movers_payload = oi_movers
         oi_path  = out_dir / "oi_movers.json"
         hot_path = out_dir / "hot_contracts.json"
@@ -374,7 +402,7 @@ def _publish_aggregates(
     try:
         if oi_change_rows is not None:
             cross = compute_oi_change_cross(
-                oi_change_rows, asof, roots_n=len(roots_ok))
+                oi_change_rows, asof, roots_n=roots_n)
             oc_path = out_dir / "oi_change.json"
             _write_json(oc_path, cross)
             if s3 and bucket:
@@ -677,6 +705,8 @@ def build_cross_root(
     roots_ok: list[str],
     asof: str,
     theta_store: str | Path | None,
+    *,
+    strict: bool = False,
 ) -> tuple[dict, dict]:
     """Build oi_movers.json and hot_contracts.json across all processed roots."""
     # OI movers: aggregate per-root, merge two latest sessions
@@ -716,6 +746,8 @@ def build_cross_root(
                     all_mover_rows.append(row)
 
         except Exception as e:  # noqa: BLE001
+            if strict:
+                raise
             log.warning("options_hub_builder: cross-root %s failed: %s", root, e)
 
     # top 100 by |d_oi| across all roots
@@ -1358,6 +1390,7 @@ def main() -> None:
     roots_timeout: list[str] = []      # roots skipped due to wall-clock budget
 
     _last_incremental: int = 0         # index of last incremental aggregate publish
+    rankings = _CrossRootRankings(asof)
     _oi_change_rows: list[dict] = []   # R3: per-root oi_change rows → cross-root top
     # WP-GEX-DATES: global self-heal budget for missed dated snapshots this run.
     # Roots are processed anchors-first, so the budget naturally goes to the
@@ -1587,13 +1620,19 @@ def main() -> None:
                                           or oi_change_payload.get("note")):
                         _upload_r2(s3, bucket, _oc_path,
                                    f"{R2_PREFIX}oi_change/{root}.json")
-                    _oi_change_rows.extend(oi_change_payload.get("rows") or [])
+                    if publish_aggregates:
+                        _oi_change_rows = compute_oi_change_cross(
+                            _oi_change_rows + (oi_change_payload.get("rows") or []),
+                            asof, roots_n=len(roots_ok) + 1,
+                        )["rows"]
             except Exception as _oi_pub_err:  # noqa: BLE001
                 log.warning(
                     "options_hub_builder: OI suite publish failed for %s — %s",
                     root, _oi_pub_err,
                 )
 
+            if publish_aggregates:
+                rankings.include(root, theta_store)
             roots_ok.append(root)
             log.info(
                 "options_hub_builder: %s done (%.1fs)", root,
@@ -1616,9 +1655,9 @@ def main() -> None:
         # rather than freezing all aggregates for the entire day.
         if publish_aggregates and len(roots_ok) >= _last_incremental + INCREMENTAL_N:
             _publish_aggregates(
-                roots_ok=list(roots_ok),   # snapshot
+                roots_n=len(roots_ok),
+                rankings=rankings,
                 asof=asof,
-                theta_store=theta_store,
                 out_dir=out_dir,
                 s3=s3,
                 bucket=bucket,
@@ -1635,9 +1674,9 @@ def main() -> None:
     oi_movers_payload = None
     if publish_aggregates:
         oi_movers_payload = _publish_aggregates(
-            roots_ok=roots_ok,
+            roots_n=len(roots_ok),
+            rankings=rankings,
             asof=asof,
-            theta_store=theta_store,
             out_dir=out_dir,
             s3=s3,
             bucket=bucket,
@@ -1651,7 +1690,8 @@ def main() -> None:
     # ── summary / completion sentinel ────────────────────────────────────────
     _total_roots = len(roots)
     _processed   = len(roots_ok) + len(roots_skipped) + len(roots_timeout)
-    _is_partial  = (roots_skipped or roots_timeout or _processed < _total_roots)
+    _is_partial = bool(roots_skipped or roots_timeout or _processed < _total_roots
+                       or rankings.failed_root is not None)
 
     log.info(
         "options_hub_builder: COMPLETE asof=%s roots_ok=%d roots_skipped=%d "
@@ -1688,6 +1728,7 @@ def main() -> None:
             "status":                "ok" if not _is_partial else "partial",
             "roots_ok":              len(roots_ok),
             "roots_skipped":         len(roots_skipped),
+            "first_ranking_error":   rankings.failed_root,
             "roots_timeout":         len(roots_timeout),
             "roots_gex_guarded":     len(roots_gex_skipped),
             "roots_gex_guarded_list": roots_gex_skipped,

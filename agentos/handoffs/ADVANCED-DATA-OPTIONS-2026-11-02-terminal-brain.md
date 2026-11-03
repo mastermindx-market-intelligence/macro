@@ -32,6 +32,9 @@ verified:
   - claim: The vendor terminal recovered and the six original ticker stores now have the October 30 session.
     command: "Inspect the enrolled launchd and listener ownership, record a stalled local HTTP 429 with no established clients, use the documented window-stall restart, verify HTTP 200, run the installed locked one-day writer and read exact session partitions."
     result: "200 with 107555 bytes; all six EOD/Greek/OI root partitions restored through October 30. GOOG November 27 280 put bid 9.40, ask 10.10, IV 30.13%, OI 878 on October 30. The same-day November 2 historical wildcard returned no rows. An additional 311/318 roots completed all three tiers; seven returned no rows."
+  - claim: Running cross-root Hub rankings preserve each full-prefix result and cutoff ties while visiting each successful root once.
+    command: "Run the publisher, options hub, retention, OI suite, contract and runtime-root tests."
+    result: "201 passed. At 3,445 successful roots with 50-root checkpoints, the previous algorithm made 120,745 cross-root visits. The new collector performs 3,445 and retains at most 100 movers, 100 premium leaders, 50 volume leaders and 100 OI changes. A failed contribution preserves the last good combined boards and marks the full run partial."
 unverified:
   - claim: Production options quotes for the requested GOOG contract.
     what_would_verify: "A signed-in Brain replay after release with a matching option root, strike, side, expiry, field timestamps and a separately qualified bid/ask source."
