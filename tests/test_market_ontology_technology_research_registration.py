@@ -9,13 +9,14 @@ evidence selector has something real to select from.
 
 The adapter is pinned to the PROPOSED §8 company-first shape
 (CURATION_ASSERTION_V1_1_PROPOSAL_2026-09-24.md @ 382c0b399d5c on macro#7870,
-under Sol adjudication). Nothing here registers anything. On this carrier
-base the shared shell is absent (``shared_shell_unavailable``). When the
-#7870 registry is present, ``company_profile`` facts (anchor None, empty
-slice set) are held before ``VerticalRegistration`` construction
-(``vertical_registration_held:company_profile``). Theme-registrable facts
-still reach construction, so a shell refusal keeps the shell's exception
-type and a constructor ``TypeError`` still propagates.
+under Sol adjudication). Nothing here registers anything. The shell is the
+registry/binding pair (``SHARED_SHELL_MODULES``). When both import,
+``company_profile`` facts (anchor None, empty slice set) are held before
+``VerticalRegistration`` construction
+(``vertical_registration_held:company_profile``). A registry without the
+binding is ``shared_shell_unavailable``. Theme-registrable facts still
+reach construction, so a shell refusal keeps the shell's exception type
+and a constructor ``TypeError`` still propagates.
 """
 from __future__ import annotations
 
@@ -607,6 +608,42 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     _evidence_validator().validate(envelope)
 
 
+def test_select_evidence_returns_the_conformant_assertion() -> None:
+    """The fixture object, not the synthetic stand-in. No loader monkeypatch."""
+    payload = json.loads(base.CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
+    assert "theme_ref" not in payload["scope"]
+    assert payload["scope"]["canonical_theme_id"] == base.THEME
+    assert payload["source"]["retention_ref"] == "synthetic-doc-role-conformant"
+    assert "object_id" not in payload["source"]
+    bundle = _bundle(assertions=(payload,))
+    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-conformant")
+    assert envelope["schema"] == "technology_economic_change.evidence.v1"
+    assert (
+        envelope["assertion"]["curation_revision"]
+        == "gmirca_36e46fc0522eddc0eb823a0f171cdd7e"
+    )
+    assert envelope["authority"] == {
+        "rank": False,
+        "gate": False,
+        "size": False,
+        "veto": False,
+        "originate": False,
+        "open_entry": False,
+    }
+
+
+def test_theme_ref_and_canonical_theme_id_conflict_refuses() -> None:
+    assertion = _themed(base.ROLE)
+    assertion["scope"] = {
+        **assertion["scope"],
+        "canonical_theme_id": "theme:other-vertical",
+    }
+    assert assertion["scope"]["theme_ref"] != assertion["scope"]["canonical_theme_id"]
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.compose(QUERY, _bundle(assertions=(assertion,)))
+    assert excinfo.value.code == "theme_ref_unavailable"
+
+
 def test_select_evidence_generation_is_the_composed_dossier_id(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
     bundle = _bundle()
@@ -964,28 +1001,45 @@ def test_shell_modules_import_is_lazy_only():
         elif isinstance(node, ast.ImportFrom):
             top_level.append(node.module or "")
     assert not any(
-        "theme_research_registry" in name or "semiconductor_theme_research" in name
+        "theme_research_registry" in name
+        or "theme_research_binding" in name
+        or "semiconductor_theme_research" in name
         for name in top_level
     )
 
 
 def test_shared_shell_unavailable_on_carrier_base(monkeypatch):
+    """The vertical query owner resolves on this tree; blocking it does not.
+
+    ``_load_shared_shell`` still reads OwnerBundle/ResearchQuery from the
+    semiconductor module. Registration does not use that resolver.
+    """
     # #7870 is on this tree: the three shell symbols resolve.
     present = reg._load_shared_shell()
     assert present is not None
     assert [symbol.__name__ for symbol in present] == [
         "VerticalRegistration", "OwnerBundle", "ResearchQuery",
     ]
+    assert "vertical query owner" in (reg._load_shared_shell.__doc__ or "")
+    with monkeypatch.context() as blocked:
+        blocked.setitem(
+            sys.modules,
+            "engine.market_ontology.semiconductor_theme_research",
+            None,
+        )
+        assert reg._load_shared_shell() is None
     # Without either shell module (the pre-#7870 carrier base) it is None.
     _block_shared_shell(monkeypatch)
     assert reg._load_shared_shell() is None
 
 
 def test_registration_attempt_is_typed_unavailable_on_carrier_base(monkeypatch):
+    """Both shell modules import here, so company_profile is held."""
     # Present shell: the company_profile hold, before construction.
     with pytest.raises(TechnologyRegistrationRefusal) as held:
         reg.registration_entry_or_refusal()
     assert held.value.code == "vertical_registration_held:company_profile"
+    assert str(held.value) == "vertical_registration_held:company_profile"
     # Absent shell: typed unavailable.
     _block_shared_shell(monkeypatch)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
@@ -1077,14 +1131,12 @@ def _install_shell_with_renamed_sibling_symbols(
 
 
 def test_accepting_shell_with_renamed_sibling_symbols_still_returns_the_entry(monkeypatch):
-    # X2, first limb: the registration path depends ONLY on
-    # VerticalRegistration. A shell whose registry ACCEPTS a theme-registrable
-    # entry while the sibling module's bundle/query symbols have drifted must
-    # still return the entry — a full-shell gate would drown it in
-    # shared_shell_unavailable. The real company_profile facts are held
-    # before construction; this double is what reaches the constructor.
-    # The FULL resolver keeps its three-symbol gate: the bundle/query
-    # consumers are not weakened here.
+    # Registration depends on VerticalRegistration and ResearchRefusal, not on
+    # the vertical query owner's OwnerBundle/ResearchQuery. A registry that
+    # accepts a theme-registrable entry while those sibling symbols have
+    # drifted must still return the entry. The real company_profile facts are
+    # held before construction; this double is what reaches the constructor.
+    # The three-symbol resolver keeps its own gate.
     def _accepting_shell(**kwargs):
         return SimpleNamespace(**kwargs)
 
@@ -1194,7 +1246,7 @@ def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
 
 
 def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
-    """Both arms of the #7870 registration pin.
+    """TypeError arm of the #7870 registration pin.
 
     Absent shell (the registry module blocked in ``sys.modules``):
     ``shared_shell_unavailable``, unchanged. Injected #7870 registry: the
@@ -1209,16 +1261,6 @@ def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
     assert str(absent.value) == "shared_shell_unavailable"
 
     vertical_registration = _install_post_7870_registry(monkeypatch)
-    calls: list[dict] = []
-
-    class _CountingRegistration(vertical_registration):
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            calls.append(kwargs)
-            super().__init__(*args, **kwargs)
-
-    sys.modules[
-        "engine.market_ontology.theme_research_registry"
-    ].VerticalRegistration = _CountingRegistration
     try:
         vertical_registration(
             anchor_theme_id="technology",
@@ -1240,9 +1282,54 @@ def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
     else:
         raise AssertionError("11-field construction must TypeError")
 
+
+def test_registry_without_binding_is_shared_shell_unavailable(monkeypatch):
+    """Shell present means both registry and binding import, not the sibling.
+
+    A registry that exposes ``VerticalRegistration`` while
+    ``theme_research_binding`` cannot be imported is ``shared_shell_unavailable``.
+    The company_profile hold runs only once both symbols import.
+    """
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.theme_research_registry",
+        types.SimpleNamespace(VerticalRegistration=object),
+    )
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.market_ontology.theme_research_binding",
+        None,
+    )
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.registration_entry_or_refusal()
+    assert excinfo.value.code == "shared_shell_unavailable"
+    assert str(excinfo.value) == "shared_shell_unavailable"
+
+
+def test_company_profile_hold_imports_the_real_vertical_registration(monkeypatch):
+    """Real ``VerticalRegistration`` is not constructed for company_profile facts.
+
+    The hold is raised before the shell constructor. This replaces the local
+    double for the hold arm; the TypeError arm above keeps that double.
+    The class is loaded through the registration module's name-argument
+    importer. A static import of ``theme_research_registry`` in this file
+    would follow that module's function-body semiconductor reads into the
+    exclusive-scope closure.
+    """
+    registry = reg._import_shell_module(reg.SHARED_SHELL_MODULES[0])
+    assert registry is not None
+
+    calls: list[dict] = []
+    real = registry.VerticalRegistration
+
+    class _CountingRegistration(real):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            calls.append(dict(kwargs))
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(registry, "VerticalRegistration", _CountingRegistration)
     with pytest.raises(TechnologyRegistrationRefusal) as held:
         reg.registration_entry_or_refusal()
     assert calls == []
-    assert held.value.code == reg.VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE
     assert held.value.code == "vertical_registration_held:company_profile"
     assert str(held.value) == "vertical_registration_held:company_profile"
