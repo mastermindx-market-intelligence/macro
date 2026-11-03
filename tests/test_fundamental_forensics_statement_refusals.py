@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 _STATEMENT_GRAPH = ROOT / "engine/fundamental_forensics/statement_graph.py"
 
 _PINNED_RAISE_SITES = (
-    (194, "StatementGraphError", None),    (201, "StatementGraphError", None),    (205, "StatementGraphError", None),    (207, "StatementGraphError", None),    (216, "StatementGraphError", None),    (220, "StatementGraphError", None),    (222, "StatementGraphError", None),    (224, "StatementGraphError", None),    (232, "StatementGraphError", None),    (234, "StatementGraphError", None),    (236, "StatementGraphError", None),    (239, "StatementGraphError", None),    (243, "StatementGraphError", None),    (245, "StatementGraphError", None),    (247, "StatementGraphError", None),    (256, "StatementGraphError", None),    (260, "StatementGraphError", None),    (262, "StatementGraphError", None),    (267, "StatementGraphError", None),    (269, "StatementGraphError", None),    (272, "StatementGraphError", None),    (274, "StatementGraphError", None),    (277, "StatementGraphError", None),    (280, "StatementGraphError", None),    (282, "StatementGraphError", None),    (286, "StatementGraphError", None),    (289, "StatementGraphError", None),    (295, "StatementGraphError", None),    (298, "StatementGraphError", None),    (301, "StatementGraphError", None),    (303, "StatementGraphError", None),    (315, "StatementGraphError", None),    (317, "StatementGraphError", None),    (323, "StatementGraphError", None),    (329, "StatementGraphError", None),    (332, "StatementGraphError", None),    (336, "StatementGraphError", None),    (339, "StatementGraphError", None),    (341, "StatementGraphError", None),    (350, "StatementGraphError", None),    (361, "StatementGraphError", None),    (363, "StatementGraphError", None),    (394, "StatementGraphError", None),    (406, "StatementGraphError", None),    (408, "StatementGraphError", None),    (411, "StatementGraphError", None),    (415, "StatementGraphError", None),    (464, "StatementGraphError", None),    (476, "StatementGraphError", None),    (494, "StatementGraphError", None),    (500, "StatementGraphError", None),    (561, "StatementGraphError", None),    (840, "_layout_unsupported", "displayed_layout_unsupported"),    (852, "_layout_unsupported", "displayed_layout_unsupported"),    (859, "_layout_unsupported", None),    (923, "_layout_unsupported", None),    (930, "_layout_unsupported", None),    (936, "_layout_unsupported", None),    (942, "_layout_unsupported", None),    (1006, "_layout_unsupported", None),    (1278, "StatementGraphError", None),    (1284, "StatementGraphError", "displayed_table_absent"),    (1372, "_layout_unsupported", None),    (1376, "StatementGraphError", "displayed_columns_absent"),    (1386, "_layout_unsupported", None),    (1481, "StatementGraphError", None),    (1497, "StatementGraphError", None),    (1500, "StatementGraphError", None),    (1505, "StatementGraphError", None),    (1520, "StatementGraphError", None),    (1525, "StatementGraphError", None),    (1530, "StatementGraphError", None),    (2086, "StatementGraphError", "statement_role_not_consolidated"),    (2114, "StatementGraphError", None),    (2117, "StatementGraphError", None),    (2264, "StatementGraphError", None),)
+    (196, "StatementGraphError", None),    (203, "StatementGraphError", None),    (207, "StatementGraphError", None),    (209, "StatementGraphError", None),    (218, "StatementGraphError", None),    (222, "StatementGraphError", None),    (224, "StatementGraphError", None),    (226, "StatementGraphError", None),    (234, "StatementGraphError", None),    (236, "StatementGraphError", None),    (238, "StatementGraphError", None),    (241, "StatementGraphError", None),    (245, "StatementGraphError", None),    (247, "StatementGraphError", None),    (249, "StatementGraphError", None),    (258, "StatementGraphError", None),    (262, "StatementGraphError", None),    (264, "StatementGraphError", None),    (269, "StatementGraphError", None),    (271, "StatementGraphError", None),    (274, "StatementGraphError", None),    (276, "StatementGraphError", None),    (279, "StatementGraphError", None),    (282, "StatementGraphError", None),    (284, "StatementGraphError", None),    (288, "StatementGraphError", None),    (291, "StatementGraphError", None),    (297, "StatementGraphError", None),    (300, "StatementGraphError", None),    (303, "StatementGraphError", None),    (305, "StatementGraphError", None),    (317, "StatementGraphError", None),    (319, "StatementGraphError", None),    (325, "StatementGraphError", None),    (331, "StatementGraphError", None),    (334, "StatementGraphError", None),    (338, "StatementGraphError", None),    (341, "StatementGraphError", None),    (343, "StatementGraphError", None),    (352, "StatementGraphError", None),    (363, "StatementGraphError", None),    (365, "StatementGraphError", None),    (396, "StatementGraphError", None),    (408, "StatementGraphError", None),    (410, "StatementGraphError", None),    (413, "StatementGraphError", None),    (417, "StatementGraphError", None),    (466, "StatementGraphError", "statement_role_presentation_absent"),    (481, "StatementGraphError", None),    (499, "StatementGraphError", None),    (505, "StatementGraphError", None),    (566, "StatementGraphError", None),    (845, "_layout_unsupported", "displayed_layout_unsupported"),    (857, "_layout_unsupported", "displayed_layout_unsupported"),    (864, "_layout_unsupported", "displayed_layout_unsupported"),    (931, "_layout_unsupported", "displayed_layout_unsupported"),    (941, "_layout_unsupported", "displayed_layout_unsupported"),    (950, "_layout_unsupported", "displayed_layout_unsupported"),    (959, "_layout_unsupported", "displayed_layout_unsupported"),    (1026, "_layout_unsupported", "displayed_layout_unsupported"),    (1301, "StatementGraphError", None),    (1307, "StatementGraphError", "displayed_table_absent"),    (1395, "_layout_unsupported", "displayed_layout_unsupported"),    (1400, "StatementGraphError", "displayed_columns_absent"),    (1410, "_layout_unsupported", "displayed_layout_unsupported"),    (1506, "StatementGraphError", "displayed_columns_absent"),    (1525, "StatementGraphError", "displayed_column_period_unbound"),    (1531, "StatementGraphError", "displayed_column_period_unbound"),    (1539, "StatementGraphError", "displayed_columns_absent"),    (1557, "StatementGraphError", "displayed_column_period_unbound"),    (1565, "StatementGraphError", "displayed_column_period_unbound"),    (1573, "StatementGraphError", "displayed_column_period_unbound"),    (2132, "StatementGraphError", "statement_role_not_consolidated"),    (2160, "StatementGraphError", None),    (2163, "StatementGraphError", None),    (2310, "StatementGraphError", None),)
 
 
 def _collect_raise_sites() -> list[tuple[int, str, str | None]]:
@@ -65,6 +65,8 @@ def test_statement_refusal_codes_export_order() -> None:
         "displayed_columns_absent",
         "statement_role_not_consolidated",
         "displayed_cell_period_mismatch",
+        "displayed_column_period_unbound",
+        "statement_role_presentation_absent",
     )
 
 
@@ -243,3 +245,110 @@ def test_uncoded_statement_graph_error_still_reraises() -> None:
     ):
         with pytest.raises(StatementGraphError, match="no numeric rows"):
             reconstruct_primary_statements(package=package, registry=registry)
+
+
+def test_bsdate_family_sites_carry_their_ruled_codes() -> None:
+    sites = _collect_raise_sites()
+    period_unbound = [site for site in sites if site[2] == "displayed_column_period_unbound"]
+    presentation_absent = [site for site in sites if site[2] == "statement_role_presentation_absent"]
+    assert len(period_unbound) == 5
+    assert all(site[1] == "StatementGraphError" for site in period_unbound)
+    assert len(presentation_absent) == 1
+    assert presentation_absent[0][1] == "StatementGraphError"
+    assert not [site for site in sites if site[1] == "_layout_unsupported" and site[2] is None]
+
+
+def test_bsdate_column_period_unbound_becomes_a_coded_entry() -> None:
+    registry = load_core_registry(ROOT)
+    package = load_golden_aapl_package(ROOT, accession=sorted(GOLDEN_AAPL_FIXTURES)[0])
+    real_reconstruct = statement_graph.reconstruct_statement
+
+    def _bsdate_on_balance(*, statement_type, **kwargs):
+        if statement_type == "balance_sheet":
+            raise StatementGraphError(
+                "displayed balance-sheet column is not bound to the filing date",
+                refusal_code="displayed_column_period_unbound",
+            )
+        return real_reconstruct(statement_type=statement_type, **kwargs)
+
+    with patch(
+        "engine.fundamental_forensics.statement_graph.reconstruct_statement",
+        side_effect=_bsdate_on_balance,
+    ):
+        result = reconstruct_primary_statements(package=package, registry=registry)
+    assert [s["statement_type"] for s in result["statements"]] == [
+        "income_statement",
+        "balance_sheet",
+        "cash_flow",
+    ]
+    balance = result["statements"][1]
+    assert balance["refusal"] == {"code": "displayed_column_period_unbound"}
+    assert balance["rows"] == []
+    assert balance["row_count"] == 0
+    assert balance["columns"] == []
+    assert balance["role_uri"]
+    assert balance["title"]
+
+
+def test_bsdate_presentation_absent_becomes_a_coded_entry() -> None:
+    registry = load_core_registry(ROOT)
+    package = load_golden_aapl_package(ROOT, accession=sorted(GOLDEN_AAPL_FIXTURES)[0])
+    real_reconstruct = statement_graph.reconstruct_statement
+    role_uri = PRIMARY_STATEMENT_ROLES["income_statement"]
+
+    def _bsdate_on_income(*, statement_type, **kwargs):
+        if statement_type == "income_statement":
+            raise StatementGraphError(
+                f"presentation role is absent: {role_uri}",
+                refusal_code="statement_role_presentation_absent",
+            )
+        return real_reconstruct(statement_type=statement_type, **kwargs)
+
+    with patch(
+        "engine.fundamental_forensics.statement_graph.reconstruct_statement",
+        side_effect=_bsdate_on_income,
+    ):
+        result = reconstruct_primary_statements(package=package, registry=registry)
+    assert [s["statement_type"] for s in result["statements"]] == [
+        "income_statement",
+        "balance_sheet",
+        "cash_flow",
+    ]
+    income = result["statements"][0]
+    assert income["refusal"] == {"code": "statement_role_presentation_absent"}
+    assert income["rows"] == []
+    assert income["row_count"] == 0
+    assert income["columns"] == []
+    assert income["role_uri"]
+    assert income["title"]
+
+
+def test_bsdate_presentation_absent_raises_coded() -> None:
+    role_uri = "http://fasb.org/us-gaap/role/StatementOfIncome"
+    with pytest.raises(StatementGraphError) as caught:
+        statement_graph.parse_presentation_tree(b"<linkbase/>", role_uri=role_uri)
+    assert caught.value.refusal_code == "statement_role_presentation_absent"
+    assert str(caught.value) == f"presentation role is absent: {role_uri}"
+
+
+def test_bsdate_columns_from_display_codes() -> None:
+    with pytest.raises(StatementGraphError) as unbound:
+        statement_graph._columns_from_display(
+            statement_type="balance_sheet",
+            iso_dates=["2026-09-26", "2025-09-27"],
+            displayed_rows=[],
+            facts_by_id={},
+            contexts={},
+        )
+    assert unbound.value.refusal_code == "displayed_column_period_unbound"
+    assert str(unbound.value) == "displayed balance-sheet column is not bound to the filing date"
+    with pytest.raises(StatementGraphError) as absent:
+        statement_graph._columns_from_display(
+            statement_type="balance_sheet",
+            iso_dates=["2026-09-26"],
+            displayed_rows=[],
+            facts_by_id={},
+            contexts={},
+        )
+    assert absent.value.refusal_code == "displayed_columns_absent"
+    assert str(absent.value) == "displayed statement columns are absent"
