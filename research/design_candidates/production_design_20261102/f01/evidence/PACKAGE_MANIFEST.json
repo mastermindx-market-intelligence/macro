@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Cumulative candidate.4 source/review/evidence persistence inventory; not a full-set native acceptance freeze",
+  "kind": "Cumulative candidate.4 semantic package plus exact owner-delivery receipts; not design acceptance",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; do not interpret a moving branch name as the receipt",
-  "parent_before_package": "8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177",
-  "files_excluding_self": 122,
-  "total_member_bytes": 5372495,
+  "parent_before_package": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "files_excluding_self": 123,
+  "total_member_bytes": 5400639,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "fd17d966d63aa000f3a9ee09a14e8973209662992750908db9f25a0794fb44d9",
+  "aggregate_sha256": "e030c1b7c5cb6202991ca905d26203ba06525a0faa2f0e81182e5ec7c5122908",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -18,7 +18,8 @@
     "six_board_taste_first_pass_sha256": "6199dc781403d93da9cc30bebc75c1afef99ca227260820ce5ac78103a24d121",
     "three_board_followup_input": "8ee1a8d1dc81dd8bf28d4bfcf2d7ba3316d45177",
     "product_followup_sha256": "ec149927bd5bedea111a80bf64492d13a7514463d774a9dc4da699ddc4494b31",
-    "taste_followup_sha256": "de13e454a1ef929b5c0e154dc8a54a62fc8b61a2c758be160fba82f88e887e67"
+    "taste_followup_sha256": "de13e454a1ef929b5c0e154dc8a54a62fc8b61a2c758be160fba82f88e887e67",
+    "candidate4_semantic_review_input": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff"
   },
   "files": [
     {
@@ -77,15 +78,15 @@
     },
     {
       "path": "README.md",
-      "bytes": 8508,
-      "sha256": "e58d8865fa7b1006abaa58d774375fd1c72986d45779b7c6217bda58a49ac01f",
-      "gitBlobSha1": "60aae2d78cbfa8523faf94465607130f75af1b95"
+      "bytes": 9541,
+      "sha256": "1cc0333243d7a065a35652adbe4312a87a17c3f459c2188a2100b32eed603424",
+      "gitBlobSha1": "a458e3347a0169a161d52ee60642e30a3eef1185"
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 17842,
-      "sha256": "e38b1b815563ba77b6753605192f821447ad2870e83345bde401904656f175f6",
-      "gitBlobSha1": "41921716979c12ccae6771d6ab8bcd0544eb3dd2"
+      "bytes": 20877,
+      "sha256": "5dd2f5c57f0b59a3e3176aaf79704c637fbf0fada9899a362b11c3a43f696915",
+      "gitBlobSha1": "7b0023b6ab9f3aab3d2b610b53969bfadb751c6e"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -98,6 +99,12 @@
       "bytes": 148406,
       "sha256": "9198fc5664cb609dfe1436159cff102387ffe3dca84e14b483fe4b433914648d",
       "gitBlobSha1": "ced8fcee7ee6b91adba8dc574ffd70a3bf4a1d90"
+    },
+    {
+      "path": "evidence/CANDIDATE4_COORDINATION_RECEIPTS.json",
+      "bytes": 24076,
+      "sha256": "b87415f914fd35164a31894a0ccb41911c792e78444a4caeb0412812aa80d61f",
+      "gitBlobSha1": "66c8b9cca5056c440e04e0784ea2d427d2c30757"
     },
     {
       "path": "evidence/CANDIDATE4_SOURCE_CHECKS.json",

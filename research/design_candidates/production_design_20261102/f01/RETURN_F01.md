@@ -103,6 +103,22 @@ All authored source/evidence remains under the existing f01/ path. Git updates u
 
 **Do not redo:** unchanged programme/procedure inputs without a material change; candidate.2 geometry reconciliation; retained-feature/directory audit; preserved first reports; actual reviewed captures; source-only GitHub approval at its bound commit. Never re-key/replay the original atlas effect, create a replacement atlas/writer, or treat absent nodes/catalog readiness/CI/source merge as terminal effect or design acceptance.
 
-At this source freeze the remaining delivery step is to send exact candidate.4 links and scoped asks to the already assigned owners and record their actual acknowledgments or absence. No response, runtime START, background executor or automatic continuation is presumed. The final foundation remains incomplete even when the safe source/design phase is durable.
+The semantic candidate.4 review input is frozen at **8926b16af4e0c3e5310cdb4cf057390ec04d18ff**. Its exact joint-contract and manifest blobs were read back. The later enclosing commit adds this delivery record and its updated cumulative inventory; it does not change the joint contract or extend prior review scope. [CANDIDATE4_SOURCE_CHECKS.json](evidence/CANDIDATE4_SOURCE_CHECKS.json) binds the main-document hashes at that semantic freeze, including the then-current README/return, rather than claiming to re-review this later coordination metadata.
 
-**FINALIZATION_CLASSIFICATION: MORE_WORK_EXISTS for publication/coordination; acceptance remains PARTIAL. MISSION_COMPLETE: false.**
+### Actual owner handoffs
+
+All seven comments were persisted and their complete bodies read back exactly. These are delivered requests, not owner acknowledgments or acceptance. The PR body was updated and read back; Draft, existing base and incumbent owner remained unchanged.
+
+| Existing carrier | Exact delivered record | Required next action |
+| --- | --- | --- |
+| F02 #10630 | [6617496947](https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6617496947) | Respond to the exact changed shared-layer/focus/variant clauses; unchanged geometry remains the candidate.2 agreement |
+| D06 #10655 | [6617497415](https://github.com/mastermindx-market-intelligence/macro/pull/10655#issuecomment-6617497415) | Concur or object to the latest reader/cursor/Brain/return integration through its existing source owner |
+| D02 #10646 | [6617497993](https://github.com/mastermindx-market-intelligence/macro/pull/10646#issuecomment-6617497993) | Consume resolved geometry for Phase2A source work; preserve12-section Command; identify the exact D02/D03/template complete-view binding |
+| D08 #10649 | [6617498479](https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6617498479) | Update existing source-conformance mapping and return concrete residual shell objections, preserving its own holds |
+| F03 #10631 | [6617498900](https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6617498900) | Review proposed directory presentation through exporter/domain owners; no automatic application or organization mutation |
+| Existing F01 reviewer #10645 | [6617499383](https://github.com/mastermindx-market-intelligence/macro/pull/10645#issuecomment-6617499383) | Review the changed semantic source at the actual current head; retain be157007 approval's exact historical scope |
+| Programme #10617 | [6617499892](https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6617499892) | Project this return through the current integration owner; route D14/host, D07/Search and template dependencies without new writers |
+
+At the readback boundary, no later owner response was observed on these requests, and no answer followed the existing P00 original-receipt request. Exact identities, body hashes and readback state are durable in [CANDIDATE4_COORDINATION_RECEIPTS.json](evidence/CANDIDATE4_COORDINATION_RECEIPTS.json). No response, runtime START, background executor or automatic continuation is presumed.
+
+**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining final qualification.** The authorized source specification, disjoint native repairs, bounded critique/follow-up, publication and owner coordination phase is delivered. Remaining work depends on the original-effect disposition, affected-owner source response and independent complete-set/QA01/RIG qualification recorded above. **Acceptance remains PARTIAL; final joint v1 unreleased; MISSION_COMPLETE: false.**
