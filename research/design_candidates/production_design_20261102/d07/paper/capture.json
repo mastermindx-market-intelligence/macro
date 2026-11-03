@@ -84,5 +84,13 @@
     "build-contract.jpg": "668b9276c72b1c64bb128937d0f46abd369bf49aae859df3c813d302918c7404",
     "build-contract.jsx": "e76b86926ffa931deeced61a3e17b7347b8bbcc0343748ac3a7ccc38021f4e65",
     "operations.json": "fa5d4c78c5b79b4e6506cd9819aeadd5337ed752ef7acca859405337c7d0e0f9"
+  },
+  "joint_shell_role": "agreed geometry input consumed by this captured documentation",
+  "later_source_dependency": {
+    "commit": "b55efe221d16ae5e64935af4c60572701b2a43a0",
+    "version": "F01-F02-SHELL/1.0.0-candidate.3",
+    "changed_geometry": false,
+    "interaction_concurrence": "pending F02/D06 review",
+    "reference": "../CONTINUATION.md#post-publication-foundation-delta"
   }
 }

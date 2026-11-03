@@ -22,6 +22,10 @@ Current source/native divergence remains explicit. F01 board D `6ZYC-0` still dr
 
 D07's fresh read-only Paper token observation for Terminal file `01M3NSZGE8JWN2EZCSF0DT05RM` reports `--sp-8=44px`, `--sp-7=32px`, token content hash `55dd37b7`. This is a Paper projection observation. F02's inspected production Terminal/public source mapping assigns 32px to `--sp-8`. Bind the eventual composition to the actual source namespace and semantic spacing role. Record a fresh token receipt with its final reference evidence. [F02 token mapping](https://github.com/mastermindx-market-intelligence/macro/blob/c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82/research/design_candidates/production_design_20261102/f02/token-map.json)
 
+### Later interaction proposal
+
+The post-publication dependency read observed F01 `F01-F02-SHELL/1.0.0-candidate.3` at `b55efe221d16ae5e64935af4c60572701b2a43a0`. It preserves the candidate 2 geometry and token roles. D07 continues to use the bilateral candidate 2 geometry for the arithmetic below. Candidate 3 adds source-level compact-control, field/history and generic-versus-company chart-entry clarifications, plus a proposed suspension of contextual evidence while the existing Brain is open. F02/D06 review of those additions remains pending. D06 must bind an actual open/close/focus lifecycle before D07 relies on evidence restoration. The inspected typed bridge supplies no close acknowledgement for this proposal. [Latest joint proposal](https://github.com/mastermindx-market-intelligence/macro/blob/b55efe221d16ae5e64935af4c60572701b2a43a0/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md)
+
 ## Content geometry
 
 Let C be the measured usable content width after shell navigation, both content gutters and any reserved local chrome. The shared candidate permits a 320px dock and 24px gap only when C is at least 984px and the primary object retains at least 640px, or a larger independently qualified domain minimum. An explicit compact navigation preference uses 72px. Evidence never forces a preference change.

@@ -1,8 +1,8 @@
 {
   "schema": "d07.pinned-source-target-verification.v1",
-  "observed_at": "2026-11-03T07:39:19.016Z",
+  "observed_at": "2026-11-03T07:44:32.711Z",
   "scope": "Existence and Git blob identity of each immutable source file cited by D07 markdown. Full-source semantic findings are documented in the domain chapters.",
-  "verified": 95,
+  "verified": 98,
   "files": [
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -401,6 +401,27 @@
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
+      "ref": "b55efe221d16ae5e64935af4c60572701b2a43a0",
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "4e530d698cab8a6230c1fb368aaa87bbfeb7a8e3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "b55efe221d16ae5e64935af4c60572701b2a43a0",
+      "path": "research/design_candidates/production_design_20261102/f01/evidence/review/ADJUDICATION.md",
+      "used_by": [
+        "CONTINUATION.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "2cd1e056a8223923998998ec39ec8f32d81f567f"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
       "ref": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
       "path": "research/design_candidates/production_design_20261102/f02/SYSTEM_CONTRACT.md",
       "used_by": [
@@ -472,6 +493,16 @@
       ],
       "status": "VERIFIED",
       "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "b55efe221d16ae5e64935af4c60572701b2a43a0",
+      "path": "research/design_candidates/production_design_20261102/f01/README.md",
+      "used_by": [
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a4501b1ec3d7b62f8152337f838612d2122da7ba"
     },
     {
       "repo": "mastermindx-market-intelligence/macro",
@@ -683,8 +714,7 @@
         "ANALYSIS.md"
       ],
       "status": "VERIFIED",
-      "blob": "69dd9b36abc8b9598e930d1548293a28829ebd23",
-      "url_path": "terminal/app/%28shell%29/analysis/page.tsx"
+      "blob": "69dd9b36abc8b9598e930d1548293a28829ebd23"
     },
     {
       "repo": "mastermindx-market-intelligence/mastermind-terminal",
