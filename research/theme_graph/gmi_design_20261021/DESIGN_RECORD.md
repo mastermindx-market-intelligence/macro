@@ -397,3 +397,37 @@ The generator re-rendered all 60 matrix PNGs: 7 stems × 1440/390 × dark/light 
    path boxes or rungs.
 6. Keep S1 at two elevation levels. Keep the five light mechanisms of D2 as written CSS, not as a token swap.
 7. Keep the S2 phone jump strip, the 57px sticky headers and the hash-preserving chip click. Keep the 371-row gate.
+
+
+## 10. GMI editable makeover — 2026-11-03
+
+Current Chairman assignment: substantially upgrade the UI/UX and GMI theme system in the exact original Paper file. This is a design and visual-acceptance phase, not production implementation.
+
+- Operation: `gmi-paper-makeover-20261103-sol`
+- Paper file: `01M5H6EARN9YHQV17JC6ZG9BRY`
+- New page: [GMI · Noir / Production design](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0)
+- Governing source: Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`
+- Product/data source: Macro `21444bcfd9001654935eb4b43b0005eb5a7eb47b`
+- Root remains the single writer for the new page's targets through native Mastermind Paper. Original reference boards remain intact.
+
+### Outcome and task tree
+
+| Task | Outcome / DONE_WHEN | Dependencies | Evidence / current state |
+|---|---|---|---|
+| GMI-D1 | Inspect original boards and current product semantics | None | Complete: original 16 boards are predominantly raster references; current source census obtained |
+| GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | 46 tokens created; atlas `9A-0` visually inspected; independent static review passed after two wording corrections |
+| GMI-D3 | Coherent theme-detail/value-chain, index, issuer, relationship and coverage views | D2 | In progress |
+| GMI-D4 | Dark/light, EN/ZH and 390px mobile designs plus meaningful failure/loading/empty/permission/success states | D3 | Pending |
+| GMI-D5 | Actual screenshots reviewed; defects repaired; exact board map, JSX and design handoff saved | D3,D4 | Pending |
+
+### Design decisions and preserved semantics
+
+Use Mastermind Noir foundations with consistent light-mode counterparts. Inter/PingFang SC and mono numerals, restrained information blue, explicit state labels and shapes, no colored container rails. Replace tiny status-square walls with category navigation, readable theme results, and a contextual evidence inspector. Preserve complete index access, optional subthemes and multi-parent taxonomy, coverage/value-chain lenses, issuer explanations, directed relationships, receipts and unknown states.
+
+Use the dated current committed snapshot, not the historical October fixture: 371 micros = 68 Core +303 Extended, one reviewed Micron company/link, zero held. Current category allocations differ from round1. Micron's reviewed theme admission and separate graph-use permission remain distinct. Relationships package:248 documented,281 companies read, proposed/unreviewed; selected Cirrus Logic→Apple displays91% of seller revenue FY2026 with original period and rights withheld excerpt state. Snapshot dates stay visible; no live feed or production acceptance is claimed.
+
+### Verified milestone and next action
+
+Atlas `9A-0` in page `p-2-0` is editable and uses the new tokens. Actual 1440px screenshot reviewed for spacing, typography, contrast, alignment, clipping and density. Independent review found no layout defect; changed “In the theme graph” to “Taxonomy path” and clarified “Universe:68 Core/303 Extended.” Acceptance is static desktop composition only.
+
+Continue GMI-D3, then D4 and D5 in the same design operation. Do not redo historical reference import, change parent runtime waves, or infer production shipment from the canvas. All canvas effects to this milestone returned APPLIED_RESPONSE_OBSERVED; no unresolved modifying effect.
