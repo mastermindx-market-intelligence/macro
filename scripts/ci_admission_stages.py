@@ -299,6 +299,19 @@ class Stages:
         inventory = mog.shared_admission_inventory(self.repo, self.read)
         if not inventory.complete or inventory.mode != 'shared':
             return dict(disposition='not_shared')
+        # The complete association read retains closed PRs precisely because
+        # original unknown or in-flight effects cannot expire on PR closure.
+        # Do not claim a clean completion, or touch a different original,
+        # while the singleton launch pointer still belongs to a closed PR.
+        if inventory.launch is not None:
+            owners = [issue for issue in inventory.issues
+                      if issue.get('number') == inventory.launch[0]]
+            if len(owners) != 1:
+                return dict(disposition='unknown',
+                            detail='original launch owner missing from complete inventory')
+            if owners[0].get('state') == 'closed':
+                return dict(disposition='held',
+                            detail='closed original PR retains launch custody; no completion effect')
         root = f'{mog.GITHUB_API}/repos/{self.repo}'
         register_url = root + '/labels/' + urllib.parse.quote(mog.REFRESH_LEASE_LABEL, safe='')
         outcomes = []

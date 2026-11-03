@@ -332,6 +332,35 @@ def test_unknown_completion_retains_custody_and_never_reposts(controller,monkeyp
     assert state['publisher_calls']==1 and len(state['writes'])==1
 
 
+@pytest.mark.parametrize('launch_started,issues', [
+    (False, ({'number':7,'state':'closed'},)),
+    (True, ({'number':8,'state':'open'},{'number':7,'state':'closed'})),
+])
+def test_closed_original_launch_cannot_claim_reconciled_or_touch_other_effects(
+        controller,monkeypatch,launch_started,issues):
+    # Preserve the original prepared/started/completing custody; no read or
+    # publication on a different OPEN PR may precede the closed-owner refusal.
+    inventory=mog.SharedAdmissionInventory('shared',True,issues,(7,'a'*12),launch_started)
+    monkeypatch.setattr(mog,'shared_admission_inventory',lambda *a:inventory)
+    monkeypatch.setattr(mog,'fetch_issue_comments',
+                        lambda *a,**k:pytest.fail('closed original blocks other completion'))
+    assert controller.complete()=={
+        'disposition':'held',
+        'detail':'closed original PR retains launch custody; no completion effect',
+    }
+
+
+def test_missing_original_launch_association_is_unknown_not_clean(controller,monkeypatch):
+    inventory=mog.SharedAdmissionInventory('shared',True,({'number':8,'state':'open'},),(7,'a'*12))
+    monkeypatch.setattr(mog,'shared_admission_inventory',lambda *a:inventory)
+    monkeypatch.setattr(mog,'fetch_issue_comments',
+                        lambda *a,**k:pytest.fail('missing original blocks completion'))
+    assert controller.complete()=={
+        'disposition':'unknown',
+        'detail':'original launch owner missing from complete inventory',
+    }
+
+
 def test_legacy_cleanup_cannot_erase_shared_association(monkeypatch):
     p=pull();p['labels']=[{'name':mog.REFRESH_LEASE_LABEL}]
     lease=mog.RefreshLease('acme/widgets','read','write',readable=False)
