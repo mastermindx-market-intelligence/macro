@@ -259,7 +259,7 @@ def reclaim(
         try:
             call = subprocess.run(["/usr/bin/rm", "-rf", "--one-file-system",
                                    "--", str(quarantine)],
-                                  capture_output=True, text=True, timeout=180)
+                                  capture_output=True, text=True, timeout=120)
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise Refusal("delete_effect_unknown_held") from exc
         if call.returncode != 0 or quarantine.exists():
