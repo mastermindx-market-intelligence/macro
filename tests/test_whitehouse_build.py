@@ -579,3 +579,40 @@ def test_source_capture_refuses_publicly_readable_existing_document(tmp_path):
     with pytest.raises(ValueError, match='existing source document'):
         wf.retain_source_document(tmp_path, _source_item())
     assert path.stat().st_mode & 0o777 == 0o644
+
+
+@pytest.mark.parametrize('section', ['news', 'treasury'])
+def test_report_source_action_and_incumbent_disclaimer_name_actual_agency(section):
+    """Display ownership only; retained analysis, source href and row stay exact."""
+    from copy import deepcopy
+    row = _rec('wh-source-agency', 4, 5, 72)
+    row.update(section=section, disclaimer=bw.wb.DISCLAIMER,
+               source_url=('https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance'
+                           if section == 'treasury' else 'https://www.whitehouse.gov/releases/2026/10/fixture/'))
+    row['generated_at'] = datetime.now(timezone.utc).isoformat()
+    before = deepcopy(row)
+    html = bw._render_page(config.ROOT, [row])
+    assert 'href="' + row['source_url'] + '" target="_blank" rel="noopener noreferrer"' in html
+    assert row['analysis'].split('\n')[0] in html
+    assert row == before
+    if section == 'treasury':
+        assert 'Read the primary Treasury source' in html
+        assert '阅读财政部一手来源' in html
+        assert 'primary-source U.S. Treasury event' in html
+        assert 'primary-source White House announcement' not in html
+    else:
+        assert 'Read the primary White House source' in html
+        assert '阅读白宫一手来源' in html
+        assert bw.wb.DISCLAIMER in html
+    assert 'read written' in html
+
+
+@pytest.mark.parametrize('custom', [None, 'Custom retained context disclaimer.'])
+def test_treasury_display_disclaimer_preserves_custom_and_honest_missing_default(custom):
+    from copy import deepcopy
+    row = _rec('tw-disclaimer-agency', 2, 3, 70)
+    row.update(section='treasury', disclaimer=custom)
+    before = deepcopy(row)
+    html = bw._render_page(config.ROOT, [row])
+    assert row == before
+    assert (custom or 'primary-source U.S. Treasury event') in html

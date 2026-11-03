@@ -305,8 +305,8 @@
       </table>
       {% endif %}
 
-      <p class="wh-src">🔗 <a href="{{ a.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the primary White House source', '阅读白宫一手来源') }} →</a></p>
-      <div class="wh-disc">{{ a.disclaimer or disclaimer }}</div>
+      <p class="wh-src">🔗 <a href="{{ a.source_url }}" target="_blank" rel="noopener noreferrer">{% if a.section == 'treasury' %}{{ t('Read the primary Treasury source', '阅读财政部一手来源') }}{% else %}{{ t('Read the primary White House source', '阅读白宫一手来源') }}{% endif %} →</a></p>
+      <div class="wh-disc">{{ a.display_disclaimer or a.disclaimer or disclaimer }}</div>
     </section>
   {% endfor %}
   </div>
