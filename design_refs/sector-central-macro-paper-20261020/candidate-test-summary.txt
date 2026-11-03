@@ -1,0 +1,33 @@
+{
+  "scope": "Thirteen named local suites on the unchanged candidate source; not repository-wide or hosted CI",
+  "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "started_utc": "2026-10-20T11:07:07.447856+00:00",
+  "completed_utc": "2026-10-20T11:07:55.420672+00:00",
+  "argv": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_sector_central_paper.py",
+    "tests/test_sector_central_gate.py",
+    "tests/test_sector_central_data_is_sync.py",
+    "tests/test_si_workspace_shell.py",
+    "tests/test_sector_intelligence_page.py",
+    "tests/test_sector_central_measured_panel.py",
+    "tests/test_leadership_rotation_countercases.py",
+    "tests/test_p_mp1_shell_nonus_byte_parity.py",
+    "tests/test_us_stocks_w8g_table.py",
+    "tests/test_stocktable_load_order.py",
+    "tests/test_rlt_sector_stance_enrich.py",
+    "tests/test_prophet_options_context.py",
+    "tests/test_stock_personality_w4_surfaces.py",
+    "-q",
+    "--tb=short",
+    "--basetemp=/Volumes/Mastermind 2/agent-workspaces/macro/web/sector-central-macro-paper-pivot-20261020-sol-001/design_refs/sector-central-macro-paper-20261020/pytest-tmp"
+  ],
+  "suite_count": 13,
+  "exit_code": 0,
+  "result_line": "565 passed in 45.35s",
+  "source_unchanged_during_run": true,
+  "source_set_sha256": "04237259b7ec0d741e2a28b474603d65581a7b651f0e409384ee43a14e3d5290",
+  "log_sha256": "6c9427fc59882619aacc88fd95d1faa721a8c53464a60fc3f52b093e88f74ec1"
+}
