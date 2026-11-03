@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from scripts.export_shared_shell_routes import ROOT, derive_projection, document_heading_label, document_inventory, is_html_document, navigation_labels, normalized_path
+from scripts.export_shared_shell_routes import ROOT, calculator_directory_titles, derive_projection, document_heading_label, document_inventory, is_html_document, navigation_labels, normalized_path
 
 PIN = "a" * 40
 
@@ -44,6 +45,69 @@ def test_families_expand_only_concrete_tracked_documents_and_keep_payload_gates(
     assert all("<" not in path for path in p["legacyPaths"])
     assert p["nativePaths"] == ["/analysis"]
     assert next(r for r in p["directory"] if r["href"] == "/macro.html")["payloadTier"] == "public_shell_premium_payload"
+
+
+def test_calculator_titles_require_authored_bilingual_metadata_and_keep_historical_directory():
+    historical = '- slug: cagr\n  title: CAGR Calculator\n'
+    assert calculator_directory_titles(historical) == {}
+    owner = row("/tools/<id>.html", kind="family", page_id="macro:tools_family")
+    doc = catalog(owner)
+    kwargs = {"registry_digest": "digest", "inventory_ref": PIN}
+    before = derive_projection(doc, ["/tools/calculators/cagr.html"], {"exact": set(), "prefixes": ()}, {}, **kwargs)
+    after = derive_projection(doc, ["/tools/calculators/cagr.html"], {"exact": set(), "prefixes": ()}, {},
+                              calculator_titles=calculator_directory_titles(historical), **kwargs)
+    assert after == before
+    titles = calculator_directory_titles('- slug: cagr\n  title: CAGR Calculator\n  title_zh: 复合年增长率计算器\n'
+                                        '- slug: compounding\n  title: Compound Interest Calculator\n'
+                                        '  title_zh: 复利计算器\n')
+    assert titles["/tools/calculators/cagr.html"] == {"en": "CAGR Calculator", "zh": "复合年增长率计算器"}
+    assert titles["/tools/calculators/compounding.html"] == {"en": "Compound Interest Calculator", "zh": "复利计算器"}
+    for invalid in ('{}', '- slug: ../admin\n  title: Bad\n  title_zh: 坏',
+                    '- slug: cagr\n  title: ""\n  title_zh: 空',
+                    '- slug: cagr\n  title: "<script>bad</script>"\n  title_zh: 坏',
+                    '- slug: cagr\n  title: Good\n  title_zh: null',
+                    '- slug: cagr\n  title: Good\n  title_zh: 好\n- slug: cagr\n  title: Duplicate\n  title_zh: 重复'):
+        with pytest.raises(ValueError, match="canonical calculator"):
+            calculator_directory_titles(invalid)
+
+
+def test_current_canonical_calculator_names_cover_the_measured_bilingual_tool_set():
+    titles = calculator_directory_titles((ROOT / "content/seo/calculators.yml").read_text())
+    assert len(titles) == 26
+    assert titles["/tools/calculators/cagr.html"] == {
+        "en": "CAGR Calculator", "zh": "复合年增长率计算器"}
+    assert titles["/tools/calculators/compounding.html"] == {
+        "en": "Compound Interest Calculator", "zh": "复利计算器"}
+    assert all(re.search(r"[\u3400-\u9fff]", title["zh"]) for title in titles.values())
+
+
+def test_calculator_directory_rows_are_only_metadata_for_already_admitted_exact_members():
+    owner = row("/tools/<id>.html", kind="family", page_id="macro:tools_family")
+    doc = catalog(owner, row("/tools/calculators/retired.html", lifecycle="retired"),
+                  row("/tools/calculators/private.html", access="signed_in"),
+                  row("/tools/calculators/nonindex.html", tier="internal"),
+                  row("/stocks/<id>.html", kind="family"), row("/macro.html"))
+    paths = ["/tools/calculators/cagr.html", "/tools/calculators/missing-title.html",
+             "/tools/calculators/denied.html", "/tools/calculators/retired.html",
+             "/tools/calculators/private.html", "/tools/calculators/nonindex.html",
+             "/tools/spreadsheets/journal.html", "/stocks/CAGR.html", "/macro.html"]
+    deny = {"exact": {"/tools/calculators/denied.html"}, "prefixes": ()}
+    titles = {p: {"en": "Canonical title", "zh": "Canonical title"} for p in paths}
+    titles.pop("/tools/calculators/missing-title.html")
+    titles["/tools/calculators/unpublished.html"] = {"en": "Not published", "zh": "Not published"}
+    kwargs = {"registry_digest": "digest", "inventory_ref": PIN}
+    before = derive_projection(doc, paths, deny, {}, **kwargs)
+    after = derive_projection(doc, paths, deny, {}, calculator_titles=titles, **kwargs)
+    for key in before:
+        if key != "directory":
+            assert after[key] == before[key], key
+    added = [item for item in after["directory"] if item not in before["directory"]]
+    assert [item["href"] for item in added] == ["/tools/calculators/cagr.html"]
+    assert added[0]["id"] == "macro:tools_family:/tools/calculators/cagr.html"
+    assert all(item in after["directory"] for item in before["directory"])
+    # The same title cannot enroll a different PARAM family or a caller-invented tools owner.
+    other = catalog(row("/tools/<id>.html", kind="family", page_id="macro:other_family"))
+    assert not derive_projection(other, paths[:1], deny, {}, calculator_titles=titles, **kwargs)["directory"]
 
 
 def test_exact_deny_and_prefix_deny_win_over_live_family():
@@ -519,3 +583,260 @@ def test_cli_positive_source_metadata_preserves_projection_and_check(
     checked, _ = run_exporter(tmp_path, fx, *flags, "--check")
     assert checked.returncode == 0, checked.stderr
     assert output.read_bytes() == before
+
+
+@pytest.mark.parametrize("inventory", [False, True])
+@pytest.mark.parametrize("marked_family", [False, True])
+def test_cli_withholds_only_the_marked_consumer_row(
+        tmp_path, inventory_fixture, inventory, marked_family):
+    fx = inventory_fixture
+    selected = fx.registry["pages"][int(marked_family)]
+    selected["known_contracts"].append("shared_shell:admission_withheld")
+    # Source serving facts remain truthful and the canonical row stays valid.
+    assert selected["lifecycle"] == "live"
+    assert selected["access_shell"] == "anonymous"
+    assert registry_owner.validate(fx.registry) == []
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    flags = []
+    if inventory:
+        _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+        tip = _commit(fx.repo, "canonical consumer withholding contract")
+        _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+        flags = ["--inventory-ref", tip]
+    done, output = run_exporter(tmp_path, fx, *flags)
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    family_paths = ["/stocks/Alpha.html"]
+    if inventory:
+        family_paths += [f"/stocks/earnings/member-{n:03}.html" for n in range(104)]
+    withheld = family_paths if marked_family else ["/macro.html"]
+    assert result["legacyPaths"] == (["/macro.html"] if marked_family else family_paths)
+    assert [x["href"] for x in result["directory"]] == (["/macro.html"] if marked_family else [])
+    assert result["coverage"]["familyMembers"] == (
+        {"macro:stocks_family": 105} if inventory and not marked_family else {})
+    assert {x["path"] for x in result["coverage"]["excluded"]
+            if x["reason"] == "consumer_admission_withheld"} == set(withheld)
+    assert result["nativePaths"] == []
+    checked, _ = run_exporter(tmp_path, fx, *flags, "--check")
+    assert checked.returncode == 0, checked.stderr
+
+
+def test_exact_consumer_marker_does_not_spread_to_other_family_members():
+    family = row("/stocks/<id>.html", kind="family", page_id="macro:stocks_family")
+    blocked = row("/stocks/held.html")
+    blocked["known_contracts"] = ["shared_shell:admission_withheld"]
+    native = row("/terminal", repo="terminal")
+    doc = catalog(family, blocked, native)
+    paths = ["/stocks/Alpha.html", "/stocks/Beta.html", "/stocks/held.html"]
+    result = project(doc, paths)
+    assert result["legacyPaths"] == paths[:2]
+    assert result["nativePaths"] == ["/terminal"]
+    assert result["coverage"]["familyMembers"] == {"macro:stocks_family": 2}
+    assert result["coverage"]["excluded"] == [
+        {"path": "/stocks/held.html", "reason": "consumer_admission_withheld"}]
+    assert not any(x["href"] == "/stocks/held.html" for x in result["directory"])
+    # Removing the exact source-owned marker restores ordinary eligibility.
+    blocked["known_contracts"] = []
+    assert project(doc, paths)["legacyPaths"] == paths
+
+
+@pytest.mark.parametrize("contracts", [[], "unknown", ["site_access.v1:public"],
+                                      ["shared_shell:admission_withheld_extra"],
+                                      ["SHARED_SHELL:admission_withheld"]])
+def test_unmarked_or_near_marker_contracts_preserve_ordinary_projection(contracts):
+    ordinary = row("/macro.html")
+    ordinary["known_contracts"] = contracts
+    result = project(catalog(ordinary), ["/macro.html"])
+    assert result["legacyPaths"] == ["/macro.html"]
+    assert [x["href"] for x in result["directory"]] == ["/macro.html"]
+    assert result["coverage"]["excluded"] == []
+
+
+@pytest.mark.parametrize("stronger", ["serving_policy_denied", "html_fragment",
+                                      "lifecycle_lab", "not_a_public_document_shell"])
+def test_consumer_marker_keeps_stronger_exclusion_reasons(stronger):
+    marked = row("/macro.html")
+    marked["known_contracts"] = ["shared_shell:admission_withheld"]
+    deny = {"exact": set(), "prefixes": ()}
+    documents = {"/macro.html"}
+    if stronger == "serving_policy_denied":
+        deny["exact"].add("/macro.html")
+    elif stronger == "html_fragment":
+        documents.clear()
+    elif stronger == "lifecycle_lab":
+        marked["lifecycle"] = "lab"
+    else:
+        marked["access_shell"] = "signed_in"
+    result = derive_projection(catalog(marked), ["/macro.html"], deny, {},
+                               registry_digest="digest", inventory_ref=PIN,
+                               document_paths=documents)
+    assert result["legacyPaths"] == []
+    assert result["directory"] == []
+    assert result["coverage"]["familyMembers"] == {}
+    assert result["coverage"]["excluded"] == [{"path": "/macro.html", "reason": stronger}]
+
+
+@pytest.mark.parametrize("availability_recorded", [False, True])
+def test_publication_source_helper_is_pure_and_keeps_legacy_metadata(
+        monkeypatch, availability_recorded):
+    from scripts import export_shared_shell_routes as exporter
+
+    def forbidden_io(*args, **kwargs):
+        pytest.fail("publication source metadata validation must not invoke git")
+
+    monkeypatch.setattr(exporter.subprocess, "run", forbidden_io)
+    monkeypatch.setattr(exporter.subprocess, "check_output", forbidden_io)
+    registry = catalog()
+    if availability_recorded:
+        for source in registry["sources"].values():
+            source["available"] = True
+    original = copy.deepcopy(registry)
+    assert exporter.validate_publication_sources(registry) == PIN
+    assert registry == original
+
+
+@pytest.mark.parametrize("repo", ["macro", "terminal", "mastermind"])
+@pytest.mark.parametrize("problem", ["unavailable", "missing_sha"])
+def test_publication_source_helper_rejects_each_incomplete_input(repo, problem):
+    from scripts import export_shared_shell_routes as exporter
+
+    registry = catalog()
+    if problem == "unavailable":
+        registry["sources"][repo]["available"] = False
+    else:
+        del registry["sources"][repo]["sha"]
+    with pytest.raises(ValueError, match=repo.title() + " source"):
+        exporter.validate_publication_sources(registry)
+
+
+@pytest.mark.parametrize("heading,expected", [
+    ('<h1 class="gmi-h1"><span class="l-en">All micro-themes</span><span class="l-zh">全部细分主题</span></h1>',
+     {"en": "All micro-themes", "zh": "全部细分主题"}),
+    ('<h1 class="gmi-h1"><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>',
+     {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}),
+    ('<h1><span class="l-en title"><strong>Coverage</strong> &amp; receipts</span><span class="l-zh">覆盖率与<em>凭证</em></span></h1>',
+     {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}),
+])
+def test_rendered_heading_uses_existing_locale_span_text(heading, expected):
+    assert document_heading_label(heading) == expected
+
+
+@pytest.mark.parametrize("heading", [
+    '<h1><span class="l-en">English</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-en">Other</span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en l-zh">Both</span></h1>',
+    '<h1><span class="l-en"> </span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English<span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-zh">中文</h1>',
+    '<h1>Unqualified <span class="l-en">English</span><span class="l-zh">中文</span></h1>',
+    '<h1><span class="l-en">English</span><span class="l-zh">中文</span></h1><h1>Other</h1>',
+])
+def test_rendered_heading_refuses_partial_or_ambiguous_locales(heading):
+    with pytest.raises(ValueError):
+        document_heading_label(heading)
+
+
+def _add_gmi_heading_documents(fx, *, index_heading=None, nav=False):
+    headings = {
+        "/gmi-index.html": index_heading or '<h1><span class="l-en">All micro-themes</span><span class="l-zh">全部细分主题</span></h1>',
+        "/gmi-coverage.html": '<h1><span class="l-en">Coverage &amp; receipts</span><span class="l-zh">覆盖率与凭证</span></h1>',
+    }
+    for path, heading in headings.items():
+        fx.registry["pages"].append(fixture_registry_row(path))
+        _write(fx.repo, "site" + path, '<!doctype html><html><head><title>GMI</title></head><body>' + heading + '</body></html>')
+    if nav:
+        _write(fx.repo, FIXTURE_TEMPLATES[0], FIXTURE_NAV +
+               '<a href="gmi-index.html">{{ t(\'Index nav\', \'目录导航\') }}</a>')
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+    tip = _commit(fx.repo, "existing rendered bilingual GMI headings")
+    _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+    return tip
+
+
+def test_cli_sources_gmi_labels_without_changing_membership_or_old_inventories(
+        tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx)
+    # Its old Macro pin has neither GMI document. No missing-source read occurs.
+    historical, output = run_exporter(tmp_path, fx)
+    assert historical.returncode == 0, historical.stderr
+    assert json.loads(output.read_text())["legacyPaths"] == ["/macro.html", "/stocks/Alpha.html"]
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    titles = {x["href"]: x["title"] for x in result["directory"]}
+    assert titles["/gmi-index.html"] == {"en": "All micro-themes", "zh": "全部细分主题"}
+    assert titles["/gmi-coverage.html"] == {"en": "Coverage & receipts", "zh": "覆盖率与凭证"}
+    expected_paths = sorted(["/macro.html", "/stocks/Alpha.html", "/gmi-index.html", "/gmi-coverage.html"] +
+                            [f"/stocks/earnings/member-{n:03}.html" for n in range(104)])
+    assert result["legacyPaths"] == expected_paths
+    assert result["nativePaths"] == []
+    assert result["coverage"]["familyMembers"] == {"macro:stocks_family": 105}
+    assert [x["href"] for x in result["directory"]] == ["/gmi-index.html", "/gmi-coverage.html", "/macro.html"]
+
+
+def test_cli_keeps_bilingual_nav_precedence_over_document_heading(tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx, index_heading='<h1>Partial English heading</h1>', nav=True)
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode == 0, done.stderr
+    entry = next(x for x in json.loads(output.read_text())["directory"] if x["href"] == "/gmi-index.html")
+    assert entry["title"] == {"en": "Index nav", "zh": "目录导航"}
+
+
+def test_cli_refuses_partial_gmi_heading_before_replacing_output(tmp_path, inventory_fixture):
+    fx = inventory_fixture
+    tip = _add_gmi_heading_documents(fx, index_heading='<h1><span class="l-en">English only</span></h1>')
+    output = tmp_path / "projection.json"
+    output.write_text("previous complete projection\n")
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    assert done.returncode != 0
+    assert "bilingual" in done.stderr
+    assert output.read_text() == "previous complete projection\n"
+
+
+@pytest.mark.parametrize("translation", [None, "复合年增长率计算器", ""])
+def test_cli_binds_calculator_titles_to_inventory_and_preserves_historical_output(
+        tmp_path, inventory_fixture, translation):
+    fx = inventory_fixture
+    fx.registry["pages"].append(fixture_registry_row(
+        "/tools/<id>.html", kind="family", page_id="macro:tools_family"))
+    fx.registry_bytes = (json.dumps(fx.registry, ensure_ascii=False, indent=2) + "\n").encode()
+    fx.registry_path.write_bytes(fx.registry_bytes)
+    _write(fx.repo, REGISTRY_PATH_IN_REPO, fx.registry_bytes.decode())
+    _write(fx.repo, "site/tools/calculators/cagr.html", FIXTURE_DOCUMENT.format(stem="cagr"))
+    metadata = [{"slug": "cagr", "title": "CAGR Calculator"}]
+    if translation is not None:
+        metadata[0]["title_zh"] = translation
+    _write(fx.repo, "content/seo/calculators.yml", json.dumps(metadata, ensure_ascii=False))
+    tip = _commit(fx.repo, "source-owned calculator metadata")
+    _git(fx.repo, "update-ref", "refs/remotes/origin/main", tip)
+    # Uncommitted metadata cannot supply publication titles for the bound revision.
+    _write(fx.repo, "content/seo/calculators.yml", "malformed working tree metadata")
+    historical, output = run_exporter(tmp_path, fx)
+    assert historical.returncode == 0, historical.stderr
+    assert json.loads(output.read_text()) == expected_projection(fx, fx.pin)
+    output.write_text("previous complete projection\n")
+    done, output = run_exporter(tmp_path, fx, "--inventory-ref", tip)
+    if translation == "":
+        assert done.returncode != 0
+        assert "canonical calculator metadata" in done.stderr
+        assert output.read_text() == "previous complete projection\n"
+        return
+    assert done.returncode == 0, done.stderr
+    result = json.loads(output.read_text())
+    baseline = expected_projection(fx, tip)
+    baseline["sources"]["inventory"] = tip
+    for key in baseline:
+        if key != "directory":
+            assert result[key] == baseline[key], key
+    additions = [entry for entry in result["directory"] if entry not in baseline["directory"]]
+    if translation is None:
+        assert additions == []
+    else:
+        assert len(additions) == 1
+        assert additions[0]["href"] == "/tools/calculators/cagr.html"
+        assert additions[0]["title"] == {"en": "CAGR Calculator", "zh": translation}
