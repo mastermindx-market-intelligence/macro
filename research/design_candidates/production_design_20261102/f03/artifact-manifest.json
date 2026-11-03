@@ -221,9 +221,9 @@
     },
     {
       "path": "CONTINUITY.md",
-      "bytes": 7191,
-      "sha256": "03d6ddaa5f0410b39f8c75ea8e98e12a5081677de4b5569af50c3d8b3a9b1bf2",
-      "git_blob_sha": "05d06eb3db5fb5a599cb27b7c5b7d86ad54847ed"
+      "bytes": 9385,
+      "sha256": "3e920303490df769bcd902e6823676d4a5f9b3a01c3c22e9ced51e46f6de6ced",
+      "git_blob_sha": "d617d65afaae83456faaa583cc7646d5bf6204c8"
     },
     {
       "path": "CONTRACT.md",
@@ -467,15 +467,15 @@
     },
     {
       "path": "OPERATIONS.md",
-      "bytes": 12736,
-      "sha256": "3bb394dba0582e010c72aaf4b8ae57f6834cd124e73595a1cef0e325ae609a07",
-      "git_blob_sha": "535e97b9077065ef49509f7b9a5fc4e86e882152"
+      "bytes": 13106,
+      "sha256": "a3da84b713537cc3bce585f9a4535e166f65ce64143e189bacb8d2e33c68f1ec",
+      "git_blob_sha": "fbc1ff59b919624381cb8295a4fc138eadaadbc8"
     },
     {
       "path": "PAPER_LAYOUT_SPEC.md",
-      "bytes": 6858,
-      "sha256": "a0376cab58b38b337b6418118762c00f034e817fbfaa0f45fc7ed0ce97107d80",
-      "git_blob_sha": "64ef9077b9b612faaa94321f3c47734f842c30d3"
+      "bytes": 7077,
+      "sha256": "8426d7d10f9611f23a821d12ea987bd3e48df74162c61901830131f0d919f29a",
+      "git_blob_sha": "4bdbc6da7b6a5cd8bf6a0c737e034b3742a4a0fa"
     },
     {
       "path": "paper/before/before-start.jsx",
@@ -509,9 +509,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 8627,
-      "sha256": "59008dabbf50242dfe524b72c0c02d65836133fd8c57175e853ac12fe2b21eb0",
-      "git_blob_sha": "268bced507d0f37dea0beda7746118161d366482"
+      "bytes": 8801,
+      "sha256": "d8c9a7e5c4595e0af9bbf23a92d1505239f51fca1e0e94133e40704bc1070365",
+      "git_blob_sha": "c28c2b85adc2f0df142098b23d20cae6a0d79591"
     },
     {
       "path": "REPRODUCE.md",
