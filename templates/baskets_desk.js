@@ -121,8 +121,8 @@ const badge = (cls,c,en,zh)=>`<span class="${cls}" style="background:${c[0]};bor
 // what the chip says changes. Amber, descriptive, no forward verb.
 const RECO_NOENTRY = [TINT('--warn',16), TINT('--warn',55), 'var(--ink-warn, var(--warn))'];
 const recoNoEntry = t => (t.reco==='accumulate'||t.reco==='enter') && !(((t.textures||{}).clean_entry)||{}).flag;
-const recoChip = t => recoNoEntry(t)
-  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" title="In favour, but no member has a clean entry — do not chase; wait for a setup.">${L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
+const recoChip = (t, compact=false) => recoNoEntry(t)
+  ? `<span class="treco" style="background:${RECO_NOENTRY[0]};border:1px solid ${RECO_NOENTRY[1]};color:${RECO_NOENTRY[2]}" title="In favour, but no member has a clean entry — do not chase; wait for a setup.">${compact?L('In favour · no entry','看好 · 暂无入场点'):L('IN FAVOUR — NO ENTRY','看好但无干净入场')}</span>`
   : badge('treco',recoColor(t.reco),t.reco_en,t.reco_zh);
 const RECO_NOENTRY_WHY = () => L('In favour, but no member has a clean entry — do not chase; wait for a setup.','看好，但无成分股具备干净入场点 — 勿追，等待入场时机。');
 const COMP_COLOR = {trend:'#5aa7ff',breadth:'#4ade80',impulse:'#a78bfa',macro:'#2dd4bf',crowding:'#fb7185'};
@@ -216,10 +216,10 @@ function reasonLine(x){
   const zh=(x&&x.reasons_zh&&x.reasons_zh.length===en.length)?x.reasons_zh:en;
   return L(esc(en.join(' · ')),esc(zh.join(' · ')));
 }
-function themeCard(t){
+function themeCard(t, chinaExplore=false){
   const lc=labelColor(t.label);
   const r20=t.perf&&t.perf['20d']?t.perf['20d'].rel:null;
-  const spk=sparkTail(ratio(CHART.baskets[t.id]||[]),40);
+  const spk=sparkTail(ratio(CHART.baskets?.[t.id]||[]),40);
   const b=t.breadth||{}, im=t.impulse||{}, tx=t.textures||{};
   const ba=tx.bull_age||{}, ob=tx.overbought||{}, ce=tx.clean_entry||{}, rr=tx.rollover_risk||{};
   const top=(t.leadership&&t.leadership.top)||[];
@@ -238,52 +238,63 @@ function themeCard(t){
   if(ck){
     const tipEn=`CRACKS — falling in absolute terms: 5d ${ck.p5!=null?fmtPct(ck.p5):'—'} abs${ck.legImp?' · ±3% impulse '+ck.up3+' up / '+ck.down3+' down':''}`;
     const tipZh=`裂痕 — 绝对价格下行：5日${ck.p5!=null?fmtPct(ck.p5):'—'}${ck.legImp?' · ±3%脉冲 '+ck.up3+'升 / '+ck.down3+'降':''}`;
-    glyphRow=`<div class="tglyph"><span class="tflag wn" style="opacity:.88" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">▾</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag wn" style="opacity:.88" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${chinaExplore?L('Price falling','价格下跌'):'▾'}</span></div>`;
   } else if(rr.band==='high'||rr.band==='elevated'){
     const tipEn=`Roll-over risk ${rr.band}${rr.reasons&&rr.reasons.length?': '+rr.reasons.join(' · '):''}`;
     const tipZh=`回落风险${rr.band_zh||rr.band}${rr.reasons&&rr.reasons.length?'：'+rr.reasons.join(' · '):''}`;
-    glyphRow=`<div class="tglyph"><span class="tflag ${rr.band==='high'?'dn':'wn'}" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">⚠</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag ${rr.band==='high'?'dn':'wn'}" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${chinaExplore?L('Reversal risk','回落风险'):'⚠'}</span></div>`;
   } else if(ss&&ss.grade==='backtested'){
     const tipEn=`${ss.en||''} (HAC t ${ss.t_hac}, n ${ss.n})`;
-    glyphRow=`<div class="tglyph"><span class="tflag dn" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(ss.zh||ss.en||'')}">🔬</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag dn" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(ss.zh||ss.en||'')}">${chinaExplore?L('Risk flag','风险提示'):'🔬'}</span></div>`;
   } else if(earlyCracks(t)){
     const tipEn=`Early cracks: ${(rr.reasons||[]).join(' · ')} — descriptive, a shape/fragility read`;
     const tipZh=`初现裂痕：${(rr.reasons||[]).join(' · ')} — 描述性，形态读数`;
-    glyphRow=`<div class="tglyph"><span class="tflag mut" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">◌</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag mut" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${chinaExplore?L('Early weakness','初现弱势'):'◌'}</span></div>`;
   } else if(ce.flag){
     const tipEn='Clean entry — member setups align with the theme direction';
     const tipZh='干净入场 — 成分股入场信号与主题方向一致';
-    glyphRow=`<div class="tglyph"><span class="tflag up" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">✦</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag up" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${chinaExplore?L('Clean entry','入场条件满足'):'✦'}</span></div>`;
   }
   const bullPill = ba.in_bull
     ? `🐂 ${ba.approx_months!=null?ba.approx_months+'mo':''} ${L(ba.stage||'','')||esc(ba.stage_zh||'')}`
     : `🐻 ${L('downtrend','下行')}`;
   const contested=isContested(t);
   const cTex=contested?contestedTextures(t,(_basketOf(t.id)||{}).cycle):[];
+  const titleCase = value => value?value[0]+value.slice(1).toLowerCase():'—';
+  const labelEn=chinaExplore?titleCase(t.label_en):t.label_en;
   const labelChip = contested
-    ? `<span class="tlabel" style="background:${lc[0]};border:1px solid ${lc[1]};color:${lc[2]}" title="contested — faster descriptive textures disagree with the validated label: ${esc(cTex.map(x=>x[0]).join(' | '))}. A shape/fragility read, not a forecast.">${L(t.label_en+' · contested',(t.label_zh||t.label_en)+' · 存在分歧')}</span>`
-    : badge('tlabel',lc,t.label_en,t.label_zh);
+    ? `<span class="tlabel" style="background:${lc[0]};border:1px solid ${lc[1]};color:${lc[2]}" title="contested — faster descriptive textures disagree with the validated label: ${esc(cTex.map(x=>x[0]).join(' | '))}. A shape/fragility read, not a forecast.">${L(esc(labelEn)+(chinaExplore?' · mixed signals':' · contested'),(t.label_zh||t.label_en)+' · 存在分歧')}</span>`
+    : badge('tlabel',lc,esc(labelEn),esc(t.label_zh||labelEn));
   const W=(THEME&&THEME.weights)||{trend:.34,breadth:.22,impulse:.10,macro:.20,crowding:.14};
   // W8-R5: tape-state chip for CN baskets (read turn_state field from payload).
   // dualChip shown when trend reco (avoid/trim) disagrees with tape turning state.
   const tc = tapeChip(t);
   const dc = dualChip(t);
+  const name = `<a class="nm" href="${(window.BASKET_BASE||'basket/')}${encodeURIComponent(t.id)}.html">${L(esc(t.name||t.id),esc(t.name_zh||t.name||t.id))}</a>`;
+  const score = `<span class="sc">${t.score??'—'}<small>/100</small></span>`;
+  const rank = `<span class="rank">#${t.rank??'—'}</span>`;
+  const signals = labelChip + (chinaExplore?'':heatDot(t)) + tc;
+  const action = recoChip(t,chinaExplore);
+  const spark = sparkSvg(spk,{w:84,h:24,color:lc[2]});
+  const context = (dc?`<div class="txrow">${dc}</div>`:'') + grCardChips(t.id);
+  let summary;
+  if(chinaExplore){
+    const benchmark = L(esc(BASKETS.benchmark_label||'CSI 300'),esc(BASKETS.benchmark_label_zh||'沪深300'));
+    summary = `<div class="top">${rank}${name}${score}</div>
+      <div class="signals">${signals}${action}</div>${context}
+      <div class="performance-row">
+        <div><span class="metric-label">${L('20d vs','20日相对')} ${benchmark}</span><strong class="${cls(r20)}">${fmtPct(r20)}</strong></div>
+        <div class="trend"><span class="metric-label">${spark?L('Trend · '+spk.length+' closes',spk.length+'个收盘日走势'):L('No trend data','暂无走势')}</span>
+          <span class="spark" aria-hidden="true">${spark}</span></div>
+      </div>`;
+  } else {
+    summary = `<div class="top">${signals}${name}${score}</div>${context}
+      <div class="subrow">${rank}${action}<span class="${cls(r20)}">${fmtPct(r20)} 20d</span><span class="spark">${spark}</span></div>`;
+  }
   return `<div class="tcard" id="theme-${t.id}" style="--tc:${lc[2]}">
-    <div class="top">
-      ${labelChip}${heatDot(t)}${tc}
-      <a class="nm" href="${(window.BASKET_BASE||'basket/')}${t.id}.html" title="open full theme detail">${L(esc(t.name),esc(t.name_zh))}</a>
-      <span class="sc">${t.score}<small>/100</small></span>
-    </div>
-    ${dc?`<div class="txrow" style="margin:2px 0 4px">${dc}</div>`:''}
-    ${grCardChips(t.id)}
-    <div class="subrow">
-      <span>#${t.rank}</span>
-      ${recoChip(t)}
-      <span class="${cls(r20)}">${fmtPct(r20)} 20d</span>
-      <span class="spark">${sparkSvg(spk,{w:84,h:24,color:lc[2]})}</span>
-    </div>
-    ${glyphRow}
-    <details class="tmore"><summary>${L('More','更多')}</summary>
+    ${summary}${glyphRow}
+    <details class="tmore"><summary>${chinaExplore?L('Details','详情'):L('More','更多')}</summary>
+      ${chinaExplore && HEAT_PILL[t.pulse_heat]? `<p class="why">${L('Rank trend','排名走势')} · ${L(HEAT_PILL[t.pulse_heat][2],HEAT_PILL[t.pulse_heat][3])}</p>`:''}
       ${flipCaption(t)}
       ${compBar(t.components,W)}
       ${compLegend(t.components)}
@@ -394,9 +405,17 @@ function renderGroupPulse(){
 
 function renderThemeDesk(){
   const sec=document.getElementById('theme-desk-section');
-  if(!THEME||!(THEME.themes||[]).length){ if(sec) sec.style.display='none'; return; }
+  const status=document.getElementById('theme-desk-status');
+  if(!THEME||!(THEME.themes||[]).length){
+    if(status){ status.hidden=false; status.innerHTML=L('No themes ranked for this update.','本次暂无主题排名。'); }
+    else if(sec) sec.style.display='none';
+    return;
+  }
   grResetShowMore();
-  document.getElementById('theme-desk').innerHTML=grDeskThemes().map(themeCard).join('');
+  const desk=document.getElementById('theme-desk');
+  const chinaExplore=desk.dataset.layout==='china-explore';
+  desk.innerHTML=grDeskThemes().map(t=>themeCard(t,chinaExplore)).join('');
+  if(status) status.hidden=true;
   const d=THEME.disclaimer||{}; document.getElementById('theme-disclaimer').innerHTML=L(esc(d.en||''),esc(d.zh||''));
   try{ grOrderBar(); }catch(e){}
   // cap the freshly-built desk at 3 rows behind a "show more" (theme.js, idempotent).
@@ -549,6 +568,16 @@ function renderSleeveChip(){
   if(!sc||sc.sleeve_factor==null){ host.innerHTML=''; return; }
   const st=String(sc.radar_state||'').toLowerCase();
   const sev=/stress|risk_off|riskoff|high/.test(st)?'var(--down)':/caution|elevated|warn/.test(st)?'var(--warn)':'var(--muted)';
+  if(document.getElementById('theme-desk')?.dataset.layout==='china-explore'){
+    const state={calm:['Calm','平静'],caution:['Caution','谨慎'],stress:['Stress','承压'],elevated:['Elevated','偏高']};
+    const reading=state[st]||[sc.radar_state||'—',sc.radar_state||'—'];
+    host.innerHTML=`<details class="sleeve-chip explore-risk"><summary>
+      ${L('Drawdown risk','回撤风险')} <b style="color:${sev}">${L(esc(reading[0]),esc(reading[1]))}</b>
+      · ${L('Exposure','组合仓位')} <b>×${Number(sc.sleeve_factor).toFixed(2)}</b></summary>
+      <p>${L(esc(sc.dominant_driver_en||''),esc(sc.dominant_driver_zh||sc.dominant_driver_en||''))}
+      ${L('Sizes the theme portfolio.','仅用于调整主题组合仓位。')}</p></details>`;
+    return;
+  }
   host.innerHTML=`<div class="sleeve-chip" style="border-left:3px solid ${sev}" title="${esc((sc.passport&&sc.passport.note)||'')}">
     <span class="sl-main">🛰️ <b>${L(esc(sc.label_en||''),esc(sc.label_zh||sc.label_en||''))}</b></span>
     ${sc.dominant_driver_en?`<span class="muted sm">· ${L(esc(sc.dominant_driver_en),esc(sc.dominant_driver_zh||sc.dominant_driver_en))}</span>`:''}
@@ -709,7 +738,11 @@ function renderScorecards(){
   box.innerHTML=c1+c2+c3;
   box.querySelectorAll('.scard.clk').forEach(c=>c.onclick=()=>openSc(c.dataset.sc));
 }
-function openTheme(id){const d=document.getElementById('theme-'+id);if(!d)return;const det=d.querySelector('details');if(det)det.open=true;
+function openTheme(id){const d=document.getElementById('theme-'+id);if(!d)return;
+  if(d.classList.contains('sm-hidden') && d.parentElement?.dataset.layout==='china-explore'){
+    d.parentElement.nextElementSibling?.querySelector('.sm-ghost')?.click();
+  }
+  const det=d.querySelector('details');if(det)det.open=true;
   d.scrollIntoView({behavior:'smooth',block:'center'});d.style.transition='box-shadow .3s';d.style.boxShadow='0 0 0 2px var(--link)';setTimeout(()=>{d.style.boxShadow='';},1200);}
 
 // MLC-W2b: inject split-view / mixed-reads chips on theme-desk tcards.

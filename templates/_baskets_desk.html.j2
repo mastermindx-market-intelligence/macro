@@ -367,43 +367,63 @@
   </section>{% endif %}
 
   <section id="theme-desk-section" style="margin-top:6px">
+    {% if china_explore|default(false) %}
+    <h2>{{ t('Theme rankings', '主题排名') }}</h2>
+    <p id="theme-desk-status" class="muted" role="status">{{ t('Loading themes…', '正在加载主题…') }}</p>
+    <details class="explore-guide"><summary>{{ t('How rankings work', '评分说明') }}</summary>
+    {% else %}
     <h2>{{ t('Theme Rotation Desk', '主题轮动台') }}
       <span class="sect-tag">{{ t('scored · labeled · actionable', '评分 · 标注 · 可执行') }}</span></h2>
     <p class="sub">{{ t(
       'Each theme gets a 0–100 score, a trend label and an action read based on trend, breadth, impulse, macro support and crowding.',
       '每个主题按趋势、广度、脉冲、宏观支持与拥挤度给出 0–100 分、趋势标签和操作结论。') }}</p>
+    {% endif %}
     <div class="mctx" id="macro-ctx"></div>
     <p class="muted" id="theme-disclaimer" style="font-size:11.5px;margin:0 0 11px"></p>
+    {% if china_explore|default(false) %}</details>{% endif %}
     {# GR1 ordering control — filled by baskets_desk.js only when the group-pulse artifact
        is present (US board). Stays empty everywhere else. #}
     <div id="gr-order"></div>
     {# capped at 3 rows (theme.js initShowMore row-mode); reveals 3 more rows per click. #}
-    <div class="desk" id="theme-desk" data-showmore-rows="3"></div>
+    <div class="desk" id="theme-desk"{% if china_explore|default(false) %} data-layout="china-explore"{% endif %} data-showmore-rows="3"></div>
   </section>
 
   <section id="concentration-section">
+    {% if china_explore|default(false) %}
+    <h2>{{ t('Market leadership', '市场领涨主题') }}</h2>
+    {% else %}
     <h2>{{ t('Market concentration & theme leadership', '市场集中度与主题领导力') }}
       <span class="sect-tag">{{ t('who owns the advance vs the decline', '谁主导上涨 vs 谁在下跌') }}</span></h2>
     <p class="sub">{{ t(
       'Shows whether leadership is broad or narrow, and which themes own the advance or the decline.',
       '显示上涨是广泛还是集中，以及哪些主题主导上涨或下跌。') }}</p>
+    {% endif %}
     <div id="concentration"></div>
   </section>
 
   <section id="rotation-section">
+    {% if china_explore|default(false) %}
+    <h2>{{ t('Weekly movers', '本周排名变化') }}</h2>
+    <p class="sub">{{ t('5-day returns vs CSI 300 and changes in rank.', '相对沪深300的5日收益与排名变化。') }}</p>
+    {% else %}
     <h2>{{ t('5-Day Theme Rotation', '5日主题轮动') }}
       <span class="sect-tag">{{ t('weekly climbers & fallers', '本周上升与下降') }}</span></h2>
     <p class="sub">{{ t(
       'Weekly movers ranked by 5-day return versus ' ~ (bench_en|default('S&P 500')) ~ ', plus the change in 20-day relative-strength rank.',
       '按相对' ~ (bench_zh|default('标普 500')) ~ '的 5 日回报排序，并显示 20 日相对强度排名变化。') }}</p>
-    <div class="rotwrap" id="rotation"></div>
+    {% endif %}
+    <div{% if not china_explore|default(false) %} class="rotwrap"{% endif %} id="rotation"></div>
   </section>
 
   <section id="impulse-section">
+    {% if china_explore|default(false) %}
+    <h2>{{ t('Big moves and 52-week records', '大幅波动与52周新高新低') }}</h2>
+    {% else %}
     <h2>{{ t('Impulse & Extremes', '脉冲与极值') }}
       <span class="sect-tag">{{ t('across the thematic universe', '覆盖全部主题成分') }}</span></h2>
     <p class="sub">{{ t(
       'Daily breadth across basket members: big movers and new 52-week highs or lows.',
       '篮子成分的日度广度：大涨大跌个股，以及 52 周新高/新低。') }}</p>
+    {% endif %}
     <div class="scards" id="scorecards"></div>
   </section>

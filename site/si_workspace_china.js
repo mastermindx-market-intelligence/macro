@@ -183,19 +183,18 @@ function readMoving(){
 function readExplore(){
   var p=P(), n=((p&&p.baskets)||[]).length;
   if(!n) return null;
-  return [n+' baskets — every member, every record.', n+' 个篮子 — 全部成分，全部记录。'];
+  return [n+(n===1?' basket':' baskets'), n+' 个主题篮子'];
 }
 var RECEIPTS={
   map:['Counts the sectors the nightly cycle read already places at the washed-out end of their own clock, named by that same read. Display only — it adds no call.',
        '统计今晚周期读数已判定处于自身周期超跌端的板块，命名沿用同一读数。仅为展示 — 不新增判断。'],
   moving:['Counts how many themes moved up or down this week’s ranking in the payload. A context lens — it ranks nothing and gates nothing.',
-          '统计本周排名上升或下降的主题数量。仅供参考视角 — 不排序、不门控。'],
-  explore:['Counts the baskets carried in tonight’s payload — the same set the table below lists.',
-           '统计今晚数据中的篮子数量 — 与下方表格所列相同。']
+          '统计本周排名上升或下降的主题数量。仅供参考视角 — 不排序、不门控。']
 };
 function paint(view,pair){
   var el=document.getElementById('si-read-'+view); if(!el) return;
   if(!pair){ el.hidden=true; el.innerHTML=''; return; }
+  if(view==='explore'){ el.innerHTML=L(pair[0],pair[1]); el.hidden=false; return; }
   var r=RECEIPTS[view]||['',''];
   el.innerHTML='<span class="si-vr-g '+GLYPH[view]+'" aria-hidden="true"></span>'
     +'<span class="si-vr-t">'+L(pair[0],pair[1])+'</span>'

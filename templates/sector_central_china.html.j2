@@ -355,17 +355,54 @@
   .see-more-wrap { display:flex; justify-content:center; padding:10px 0 4px; }
   .see-more { border:1px solid var(--line); background:var(--panel2); color:var(--text); border-radius:8px; padding:7px 12px; font-size:12px; font-weight:650; cursor:pointer; }
   .see-more:hover { border-color:var(--muted); }
-  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:13px; }
-  .cards .card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,#888); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr)); gap:13px; }
+  .cards .card { min-width:0; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
   .cards .card:hover { border-color:var(--muted); }
-  .cards .card .nm { font-weight:650; font-size:14px; }
+  #si-explore .holdings-link { display:inline-block; margin-top:8px; color:var(--ink-link,var(--link)); }
+  #si-explore .detail h4 { flex-wrap:wrap; overflow-wrap:anywhere; }
+  #si-explore .explore-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:8px 12px; margin-bottom:10px; }
+  #si-explore .explore-heading h2 { margin:0; }
+  #si-read-explore { color:var(--muted); font-variant-numeric:tabular-nums; }
+  #si-explore .explore-guide { margin:0 0 12px; }
+  #theme-desk-section:has(#theme-desk-status:not([hidden])) .explore-guide { display:none; }
+  #si-explore .explore-risk { display:block; padding:0; }
+  #si-explore .explore-risk summary { padding:8px 12px; cursor:pointer; }
+  #si-explore .explore-risk p { margin:0; padding:0 12px 8px; }
+  #si-explore .explore-guide summary, #si-explore .tmore > summary { cursor:pointer; color:var(--ink-link,var(--link)); }
+  #si-explore .desk { grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr)); align-items:stretch; }
+  #si-explore .tcard { display:flex; flex-direction:column; min-width:0; padding:14px; border:1px solid var(--line); }
+  #si-explore .top { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:baseline; gap:8px; }
+  #si-explore .top .nm { min-width:0; overflow:visible; white-space:normal; overflow-wrap:anywhere; font-size:1rem; line-height:1.25; }
+  #si-explore .rank, #si-explore .metric-label { color:var(--muted); font-size:.75rem; }
+  #si-explore .sc { white-space:nowrap; font-size:1.25rem; }
+  #si-explore .signals { display:flex; flex-wrap:wrap; align-items:center; gap:5px 7px; margin:9px 0; }
+  #si-explore .signals > span { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+  #si-explore .signals .tlabel, #si-explore .signals .treco { font-size:.7rem; line-height:1.45; letter-spacing:normal; text-transform:none; }
+  #si-explore .performance-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,6.5rem);
+    align-items:end; gap:8px; padding-top:8px; border-top:1px solid var(--line); }
+  #si-explore .metric-label { display:block; line-height:1.4; }
+  #si-explore .performance-row strong { font-size:1.1rem; font-variant-numeric:tabular-nums; }
+  #si-explore .trend { text-align:right; }
+  #si-explore .trend svg { display:block; margin-left:auto; width:100%; max-width:84px; height:auto; }
+  #si-explore .tmore { margin-top:auto; }
+  #si-explore .tmore > summary { min-height:28px; width:fit-content; text-transform:none; letter-spacing:normal; }
+  #si-explore :is(a,summary):focus-visible { outline:2px solid var(--ink-link,var(--link)); outline-offset:2px; }
+  #si-explore .rotrow { flex-wrap:wrap; }
+  #si-explore .rotrow .rn { flex:1 1 8rem; white-space:normal; overflow:visible; overflow-wrap:anywhere; }
+  #si-explore .rotcol { min-width:0; }
+  html[data-theme="light"] #si-explore .tcard { box-shadow:0 1px 3px color-mix(in srgb,var(--text) 7%,transparent); }
+  @media (max-width:680px) {
+    #si-explore .desk { grid-template-columns:minmax(0,1fr); }
+    #si-explore .tmore > summary { min-height:40px; }
+  }
+  .cards .card .nm { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; overflow-wrap:anywhere; font-weight:650; font-size:14px; }
   .cards .card .nm .blink { font-size:14px; }
   .cards .card .meta { color:var(--muted); font-size:11.5px; margin:3px 0 6px; }
-  .cards .card .th { font-size:12px; line-height:1.45; color:var(--text); opacity:.9; margin-bottom:9px; min-height:50px; }
-  .cards .card .perf { display:flex; align-items:center; gap:16px; }
+  .cards .card .kpi { min-width:0; overflow-wrap:anywhere; }
+  .cards .card .perf { display:grid; grid-template-columns:1fr 1fr minmax(0,1fr); align-items:center; gap:8px; }
   .cards .card .kpi .v { font-size:16px; font-weight:650; font-variant-numeric:tabular-nums; }
   .cards .card .kpi .k { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
-  .cards .card .spark { margin-left:auto; }
+  .cards .card .spark svg { display:block; max-width:100%; height:auto; margin-left:auto; }
   .detail { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:13px 15px; margin-top:12px; scroll-margin-top:14px; }
   .detail h4 { margin:0 0 4px; font-size:15px; display:flex; align-items:center; gap:8px; }
   .detail h4 .blink { font-size:15px; }
@@ -637,6 +674,12 @@ html[data-theme="light"] .si-side {
    rail fill is needed for legibility. */
 .si-side { background:transparent; border-right:0;
   backdrop-filter:none; -webkit-backdrop-filter:none; }
+@media (max-width:767px) {
+  /* The narrow-screen switcher is an overlay when scrolling. */
+  .si-shell .si-side { padding:2px 0; background:var(--panel); }
+  .si-shell .si-view-btn { padding:7px 2px; }
+  #si-explore, #si-explore [id] { scroll-margin-top:5rem; }
+}
 .rvx-hero, .rvx-hocard, .si-view-read {
   background:var(--desk-tile, var(--panel));
   border:1px solid transparent;
@@ -1244,15 +1287,16 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   </section>{# /si-view moving #}
 
   <section class="si-view" data-view="explore">
-    <p class="si-view-read" id="si-read-explore" hidden></p>
   <section class="si-sec" id="si-explore">
-    <div class="si-sec-h">
-      <h2><span class="l-en">Explore — every basket in depth</span><span class="l-zh">深入探索 — 每个篮子的深读</span></h2>
-      <span class="si-sec-sub"><span class="l-en">The performance table, overlay chart, categories, entry radar and forming narratives.</span><span class="l-zh">表现一览、叠加图表、类别分组、入场雷达与成形叙事。</span></span>
-    </div>
+    <header class="explore-heading">
+      <h2>{{ t('Explore', '深入探索') }}</h2>
+      <span id="si-read-explore" hidden></span>
+    </header>
   {% if not lite %}
   {% set si_hide_actnow_desk = true %}{# Overview owns the single #actnow-section (V2 act-now board); suppress the desk's duplicate here #}
+  {% with china_explore=true, bench_en='CSI 300', bench_zh='沪深300' %}
   {% include "_baskets_desk.html.j2" %}
+  {% endwith %}
 
   {# Entry Radar — baskets in the washout/basing/turning/confirmed lifecycle ONLY (adjudicated 07-18); clean-entry shows as a chip, never as an admission #}
   <div id="entry-radar"></div>
@@ -1271,9 +1315,6 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
 
     <section id="table-section">
       <h2><span class="idx">01</span>{{ t('Performance table', '表现一览') }}</h2>
-      <p class="sub">{{ t(
-        "Every basket, sortable. Switch between plain return, return against the CSI 300, and how unusual the move is for that basket. Filter by category, or click one to see what is in it.",
-        '所有篮子都在这里，可以排序。可以在原始涨跌、相对沪深300、以及这波对它自己来说算不算反常之间切换。可以按类别筛选，点开就能看成分股。') }}</p>
       <div class="cat-filter-bar" id="tbl-cat-filter"></div>
       <div class="chartbar"><span></span><span class="tabs" id="btbl-mode" role="group"></span></div>
       <div class="panel"><div class="ts"><table id="btable"></table></div></div>
@@ -1283,8 +1324,8 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
     <section id="chart-section">
       <h2><span class="idx">02</span>{{ t('Performance', '走势对比') }}</h2>
       <p class="sub">{{ t(
-        'Every line starts at 0% so they can be compared directly. Use the legend to show or hide a basket.',
-        '所有曲线都从 0% 起画，方便直接比较。用图例可以显示或隐藏某个篮子。') }}</p>
+        'Select themes to compare.',
+        '选择要比较的主题。') }}</p>
       <div class="chartbar">
         <span class="tabs" id="chart-scope" role="group"></span>
         <span class="tabs" id="chart-modes" role="group"></span>
@@ -1551,7 +1592,9 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
    assigned, never re-declared inside the wrapper, or the desk silently renders nothing. */
 var BASKETS = null, CHART = null, THEME = null;
 function __csiInitPage(payload){
-  BASKETS = payload; CHART = payload.chart || {};
+  BASKETS = payload;
+  const chartData=payload.chart||{};
+  CHART={...chartData, dates:chartData.dates||[], bench:chartData.bench||[], baskets:chartData.baskets||{}};
 
 THEME = BASKETS.theme_intel || null;
 window.BASKET_BASE = '{{ basket_base }}';
@@ -1657,7 +1700,7 @@ function winZ(levels,col){ const n=parseInt(col,10); if(!n||!levels) return null
   const hr=[]; for(let i=li-252;i<=li;i++) hr.push((levels[i]!=null&&levels[i-n]!=null)?levels[i]/levels[i-n]-1:null);
   const cur=hr[hr.length-1]; const base=hr.slice(0,-1).filter(v=>v!=null); if(cur==null||base.length<200) return null;
   const m=base.reduce((a,b)=>a+b,0)/base.length; const sd=Math.sqrt(base.reduce((a,b)=>a+(b-m)**2,0)/(base.length-1)); return sd>0?(cur-m)/sd:null; }
-const ratio = a => a.map((v,i)=>(v!=null&&CHART.bench[i]!=null)?v/CHART.bench[i]:null);
+const ratio = a => a.map((v,i)=>(v!=null&&CHART.bench[i]>0)?v/CHART.bench[i]:null);
 
 function sparkSvg(values,{w=92,h=26,color=''}={}){
   const vs=(values||[]).filter(v=>v!=null); if(vs.length<2) return '';
@@ -1788,7 +1831,7 @@ function chartSets(){
     .map(b=>({key:b.id,label:bn(b),color:colorOf[b.id]||'#888',levels:sourceLevels(b.id)}));
   return chartMode==='abs' ? [...sets,{key:'bench',label:BENCH(),color:BENCH_COLOR(),levels:CHART.bench}] : sets;
 }
-function rangeStart(dates){ if(chartRange==='ytd'){ const y=dates[dates.length-1].slice(0,4); const i=dates.findIndex(d=>d.startsWith(y)); return i<=0?0:i-1; }
+function rangeStart(dates){ if(!dates.length) return 0; if(chartRange==='ytd'){ const y=dates[dates.length-1].slice(0,4); const i=dates.findIndex(d=>d.startsWith(y)); return i<=0?0:i-1; }
   return chartRange?Math.max(0,dates.length-chartRange):0; }
 function chartOpts(){ return { autoSize:true,
   layout:{ background:{type:'solid',color:'transparent'}, textColor:cssv('--muted')||'#9aa4b2', fontSize:11 },
@@ -1928,13 +1971,19 @@ function renderCards(){
         return `<div class="card" style="--c:${colorOf[b.id]}" data-id="${b.id}">
           <div class="nm"><span class="dot" style="background:${colorOf[b.id]}"></span>${nameLink(b)}${sxBadge}${scoreBadge}${turnChip}</div>
           <div class="meta">${b.n_members}${memberW}${since} ${esc(b.created)}${ref}</div>
-          <div class="th">${esc(bth(b))}</div>
           <div class="perf">${kpi(hzLabel(bhz),b.perf?.[bhz])}${kpi('YTD',b.perf?.ytd)}<span class="spark">${sparkSvg(spk,{w:96,h:30,color:colorOf[b.id]})}</span></div>
+          <a class="holdings-link" href="#b-${encodeURIComponent(b.id)}">${_bl('Holdings','成分股')}</a>
         </div>`; }).join('');
     return cards?`<h3 class="cat">${esc(catLabel(cat))}</h3><div class="cards">${cards}</div>`:'';
   }).join('');
   el.querySelectorAll('.card').forEach(c=>c.onclick=()=>openBasket(c.dataset.id));
   el.querySelectorAll('a[data-nav="detail"]').forEach(a=>a.onclick=e=>e.stopPropagation());
+  el.querySelectorAll('.holdings-link').forEach(a=>a.onclick=e=>{
+    e.stopPropagation();
+    const id=a.closest('.card').dataset.id;
+    openBasket(id);
+    document.getElementById('b-'+id)?.querySelector('summary')?.focus({preventScroll:true});
+  });
 }
 const SIG_TIER_ORDER = {T1:0, T2:1, T3:2};
 function memRows(b){
@@ -1974,7 +2023,7 @@ function detailSection(b){
     ${scoreRow}<p class="th">${esc(bth(b))}</p>
     <div class="kpirow">${kr('20d','20d')}${kr('60d','60d')}${kr('MTD','mtd')}${kr('YTD','ytd')}${kr(zh?'全程':'Full','full')}</div>
     ${ref}${overlapHtml}<div>${warns.join(' ')}</div>
-    <details open><summary>${zh?'成分':'Members'} (${b.n_members}) &amp; ${zh?'变更记录':'changelog'}</summary>
+    <details><summary>${zh?'成分':'Members'} (${b.n_members}) &amp; ${zh?'变更记录':'changelog'}</summary>
       <div class="ts"><table><thead><tr><th>${memHdr[0]}</th><th>${memHdr[1]}</th><th class="num">${memHdr[2]}</th><th class="num">${memHdr[3]}</th><th class="num">${memHdr[4]}</th><th class="num">${memHdr[5]}</th></tr></thead><tbody>${memRows(b)}</tbody></table></div>
       <ul class="clog">${clog}</ul>
     </details></div>`;
@@ -2124,7 +2173,9 @@ window.ratio = ratio; window.sparkSvg = sparkSvg; window.sparkTail = sparkTail;
 if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
 }
 (function(){
-  function fail(){ var el=document.getElementById('table-section');
+  function fail(){ var rankings=document.getElementById('theme-desk-status');
+    if(rankings){ rankings.hidden=false; rankings.innerHTML='<span class="l-en">Theme data could not load.</span><span class="l-zh">主题数据加载失败。</span>'; }
+    var el=document.getElementById('table-section');
     if(el) el.insertAdjacentHTML('beforebegin','<p class="muted sm" style="margin:12px 2px">'+
       '<span class="l-en">Basket data is unavailable right now — the rest of the page still works.</span>'+
       '<span class="l-zh">篮子数据暂不可用 — 页面其余部分不受影响。</span></p>'); }
