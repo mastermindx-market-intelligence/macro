@@ -31,6 +31,7 @@ from calendar import month_abbr
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
@@ -506,15 +507,36 @@ def _issuer_clocks(per: dict, intel: dict | None, news_rec: dict | None) -> dict
                           ("brief", "brief_as_of")):
         if per.get(artifact):
             dates.append(per.get(key))
-    if isinstance(intel, dict) and any(
-            value for key, value in intel.items()
-            if key not in {"ticker", "asof", "as_of", "generated_at"}):
-        dates.append(intel.get("asof") or intel.get("as_of"))
-    headlines = [h for h in ((news_rec or {}).get("top") or [])
-                 if isinstance(h, dict) and h.get("title") and h.get("url")]
-    if headlines:
-        dates.append(news_rec.get("asof") or news_rec.get("as_of"))
-        dates.extend(h.get("published") for h in headlines)
+    if isinstance(intel, dict):
+        # Only existing semantic channels qualify, not schema/version/receipt
+        # metadata or has_* flags. A measured numeric zero remains evidence.
+        read = intel.get("read") if isinstance(intel.get("read"), dict) else {}
+        brain = intel.get("brain") if isinstance(intel.get("brain"), dict) else {}
+        alt = intel.get("alt") if isinstance(intel.get("alt"), dict) else {}
+        radar = intel.get("radar") if isinstance(intel.get("radar"), dict) else {}
+        texts = (intel.get("note"), read.get("read"), read.get("label"),
+                 brain.get("evidence"), radar.get("note"))
+        numbers = (brain.get("confidence"), alt.get("signal_score"), radar.get("edge_score"))
+        if (any(isinstance(text, str) and _clean_str(text) for text in texts)
+                or any(finite(number) is not None for number in numbers)):
+            dates.append(intel.get("asof") or intel.get("as_of"))
+    headlines = news_rec.get("top") if isinstance(news_rec, dict) else None
+    for headline in headlines if isinstance(headlines, list) else []:
+        if not isinstance(headline, dict):
+            continue
+        title, url, published = (headline.get(key) for key in ("title", "url", "published"))
+        if not all(isinstance(value, str) and value.strip() for value in (title, url, published)) or not _clean_str(title):
+            continue
+        try:
+            source = urlsplit(url)
+            if (source.scheme not in {"http", "https"} or not source.hostname
+                    or source.username or source.password):
+                continue
+        except ValueError:
+            continue
+        # Publication of an actual issuer headline is a dated source; the
+        # row/global collection receipt is not a substitute for that date.
+        dates.append(published)
     return {"freshness": page_freshness(dates), "price_as_of": price_as_of,
             "daily_as_of": daily_as_of, "price_stale": is_stale(price_as_of)}
 

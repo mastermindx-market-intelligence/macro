@@ -2909,3 +2909,29 @@ def test_unknown_generation_does_not_reuse_an_observation_as_publication_date():
     meta = _build_meta("HTFL", "HTFL", None, "Watch", "2026-10-30", False, "")
     schema = json.loads(meta["jsonld_str"])
     assert "datePublished" not in schema and "dateModified" not in schema
+
+
+@pytest.mark.parametrize('intel', [
+    {'ticker': 'HTFL', 'asof': '2026-11-03', 'schema': 'intel.v1', 'version': 1, 'has_news': True},
+    {'asof': '2026-11-03', 'read': {'generated_at': '2026-11-03'}},
+    {'asof': '2026-11-03', 'brain': {'confidence': True}},
+])
+def test_metadata_only_intelligence_cannot_advance_an_issuer_clock(intel):
+    from scripts.build_ticker_pages import _issuer_clocks
+    per = {'blob': {'asof': '2026-10-30', 'tech': {'price': 59.05, 'price_asof': '2026-10-30'}},
+           'blob_asof': '2026-10-30'}
+    assert _issuer_clocks(per, intel, None)['freshness'] == '2026-10-30'
+    assert _issuer_clocks(per, {'asof': '2026-11-03', 'alt': {'signal_score': 0}}, None)['freshness'] == '2026-11-03'
+
+
+@pytest.mark.parametrize('top', [None, {}, {'title': 'metadata'}, [True],
+    [{'title': True, 'url': True, 'published': '2026-11-03'}],
+    [{'title': 'Headline', 'url': 'javascript:void(0)', 'published': '2026-11-03'}],
+    [{'title': 'Headline', 'url': 'https://example.org', 'published': None}],
+    [{'title': 'Headline', 'url': 'https://example.org', 'published': 'not-a-date'}],
+])
+def test_malformed_or_undated_news_cannot_borrow_the_row_receipt(top):
+    from scripts.build_ticker_pages import _issuer_clocks
+    per = {'blob': {'asof': '2026-10-30', 'tech': {'price': 59.05, 'price_asof': '2026-10-30'}},
+           'blob_asof': '2026-10-30'}
+    assert _issuer_clocks(per, None, {'asof': '2026-11-03', 'top': top})['freshness'] == '2026-10-30'
