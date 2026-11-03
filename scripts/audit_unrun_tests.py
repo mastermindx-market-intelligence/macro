@@ -473,10 +473,57 @@ def _workflow_blob() -> str:
     return "\n".join(chunks)
 
 
+def ci_proof_paths(workflows_dir: Path | None = None,
+                   manifest_path: Path | None = None) -> list[str] | None:
+    """Canonical ownership, independent of native versus admitted delivery.
+
+    This source coverage contract does not establish installed admission. Native
+    foundation paths must agree while present; old native fixtures need no new
+    metadata. None retains the legacy meaning of an unfiltered native workflow.
+    """
+    workflows_dir = WORKFLOWS if workflows_dir is None else workflows_dir
+    manifest_path = CI_MANIFEST if manifest_path is None else manifest_path
+    try:
+        doc = yaml.safe_load((workflows_dir / "ci.yml").read_text())
+        if not isinstance(doc, dict):
+            raise ValueError("workflow is not a mapping")
+        events = doc.get("on", doc.get(True))
+        if isinstance(events, str):
+            events = {events: None}
+        elif isinstance(events, list) and all(isinstance(event, str) for event in events):
+            events = dict.fromkeys(events)
+        if not isinstance(events, dict):
+            raise ValueError("events are not a mapping")
+        dispatch = events.get("workflow_dispatch")
+        inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
+        admitted = isinstance(inputs, dict) and {"proof_role", "admission_generation"} <= inputs.keys()
+        native = events.get("pull_request")
+        native_paths = native.get("paths") if isinstance(native, dict) else None
+        if admitted:
+            manifest = yaml.safe_load(manifest_path.read_text())
+            canonical = manifest.get("proof_paths") if isinstance(manifest, dict) else None
+            if (not isinstance(canonical, list) or not canonical
+                    or any(not isinstance(p, str) or not p or p.startswith("!") for p in canonical)
+                    or not any(p != "**" for p in canonical)):
+                raise ValueError("canonical proof_paths missing or malformed")
+            if "pull_request" in events and native_paths != canonical:
+                raise ValueError("native paths differ from canonical proof_paths")
+            return list(canonical)
+        if "pull_request" not in events:
+            raise ValueError("neither native nor admitted PR proof declared")
+        if native_paths is None:
+            return None
+        if (not isinstance(native_paths, list)
+                or any(not isinstance(p, str) or not p or p.startswith("!") for p in native_paths)):
+            raise ValueError("native proof paths malformed")
+        return list(native_paths)
+    except (OSError, ValueError, TypeError, yaml.YAMLError) as exc:
+        raise RuntimeError(f"CI proof ownership unavailable: {exc}") from exc
+
+
 def _ci_paths() -> list[str]:
-    doc = yaml.safe_load((WORKFLOWS / "ci.yml").read_text())
-    on = doc[True] if True in doc else doc["on"]
-    return list((on.get("pull_request") or {}).get("paths") or [])
+    return list(ci_proof_paths() or [])
+
 
 
 def _matched(rel: str, patterns: list[str]) -> bool:

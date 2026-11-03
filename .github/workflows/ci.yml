@@ -4979,7 +4979,8 @@ jobs:
   trusted-ci:
     name: trusted-ci
     needs: ci-plan
-    if: needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
+    if: >-
+      !cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
     uses: mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main
     # Foundation: the protected @main callee must install its optional input
     # contract before the separate bridge supplies admission bindings here.
@@ -5400,7 +5401,8 @@ jobs:
     # this job — see ci-gate's handling of this job's `result` below, which
     # treats `skipped` as OK precisely because non-PR events skip it here.
     needs: [ci-plan]
-    if: needs.ci-plan.outputs.semantic_role == 'pr_head'
+    if: >-
+      !cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.semantic_role == 'pr_head'
     name: contract-delta
     runs-on: ubuntu-latest
     # 25 -> 45 (2026-08-19). PR #6013's contract-delta job was CANCELLED at

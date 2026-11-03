@@ -4034,9 +4034,15 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         command = PACK.render_command(step["run"], base_ref="main", head_ref="feature")
         # Keep the actual manifest command and the current interpreter's exact
         # path, including the venv/relocatable runtime context it identifies.
-        environment = _cm_python_environment(self.parent, _cm_sys.executable)
+        # Reproduce the hosted parent control-root environment even locally.
+        # The subprocess is testing its own checkout, not the parent workspace.
+        with _cm_mock.patch.dict(os.environ, {
+            "MASTERMIND_TRUSTED_CI_REPO_ROOT": str(ROOT),
+        }):
+            environment = _cm_python_environment(self.parent, _cm_sys.executable)
         environment.update({
             "PYTHONPATH": str(ROOT),
+            "MASTERMIND_TRUSTED_CI_REPO_ROOT": str(f["checkout"]),
             # Base replay has its own exact tree; inherited parent-run identity
             # must not replace it. Neither event-base value is canonical main.
             "CI_TESTED_TREE_SHA": f["tested"],

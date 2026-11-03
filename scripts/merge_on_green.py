@@ -3574,7 +3574,7 @@ def admitted_dispatch_source_ready(repo, ci_document, executor_document):
         if (caller.get("uses") != f"{repo}/.github/workflows/trusted-ci-executor.yml@main"
                 or not needs(caller, "ci-plan") or not bindings(supplied, expected_call)
                 or set(supplied) != set(expected_call)
-                or expression(caller.get("if")) != "needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'"):
+                or expression(caller.get("if")) != "!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'"):
             return False
         declared = callee_events["workflow_call"]["inputs"]
         if set(declared) != set(expected_call) or any(not isinstance(declared.get(key), dict)

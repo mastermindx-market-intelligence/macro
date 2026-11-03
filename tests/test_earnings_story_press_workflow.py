@@ -139,7 +139,8 @@ def test_journal_initialization_is_manual_main_only_and_receipt_bound() -> None:
 
 def test_story_packet_projection_paths_and_suites_are_ci_reachable() -> None:
     ci = yaml.load(CI_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    paths = set(ci["on"]["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = set(ci_proof_paths())
     assert STORY_CI_PATHS <= paths
 
     manifest = yaml.safe_load(CI_MANIFEST.read_text(encoding="utf-8"))

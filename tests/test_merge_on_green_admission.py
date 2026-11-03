@@ -564,6 +564,7 @@ def test_bootstrap_bridge_ready_but_foundation_and_old_callee_not_ready():
     'raw-identity-input', 'raw-resolver-output', 'candidate-checkout', 'candidate-resolver',
     'missing-dispatch-input', 'required-callee-input', 'nonempty-callee-default', 'wrong-callee-type',
     'extra-required-callee-input', 'extra-required-dispatch-input',
+    'implicit-caller-success',
 ])
 def test_bootstrap_rejects_unbound_or_incompatible_source(mutation):
     ci, executor = bridge_documents()
@@ -571,6 +572,7 @@ def test_bootstrap_rejects_unbound_or_incompatible_source(mutation):
     call = jobs['trusted-ci']
     callee = executor.get('on', executor.get(True))['workflow_call']['inputs']
     if mutation == 'raw-head': call['with']['admitted_head'] = '${{ inputs.subject_head_sha }}'
+    elif mutation == 'implicit-caller-success': call['if'] = call['if'].removeprefix("!cancelled() && needs.ci-plan.result == 'success' && ")
     elif mutation == 'empty-generation': call['with']['admission_generation'] = ''
     elif mutation == 'missing-field': call['with'].pop('admitted_base')
     elif mutation == 'extra-field': call['with']['raw_authority'] = '${{ inputs }}'

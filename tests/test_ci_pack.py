@@ -1438,7 +1438,8 @@ def test_derived_scopes_are_startable_by_the_ci_workflow(real_manifest_scopes) -
     """
     jobs, _ = real_manifest_scopes
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
-    triggers = tuple(on["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    triggers = tuple(ci_proof_paths())
     gaps: list[tuple[str, str]] = []
     for job in jobs:
         for path in job.paths + job.fallback_paths:
@@ -3833,7 +3834,8 @@ def test_workflow_scopes_only_pull_requests() -> None:
     assert "steps.identity.outputs.tested_base_sha" in scope_arg
     assert "github.base_ref" not in scope_arg
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
-    pull_paths = on["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    pull_paths = ci_proof_paths()
     assert "**" in pull_paths
     assert "worker/**" in pull_paths
     assert "content/**" in pull_paths
@@ -3962,7 +3964,8 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # A manifest edit must trigger CI even though GitHub does not interpret the
     # manifest itself as a workflow.
     triggers = workflow.get("on") or workflow.get(True)
-    assert ".github/ci/legacy-jobs.yml" in triggers["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    assert ".github/ci/legacy-jobs.yml" in ci_proof_paths()
     assert triggers["pull_request"]["types"] == [
         "opened", "synchronize", "reopened"
     ]
@@ -3972,7 +3975,8 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     """Both public product faces must trigger CI and run their focused suites."""
     workflow = _yaml(WORKFLOW)
     triggers = workflow.get("on") or workflow.get(True)
-    paths = set(triggers["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = set(ci_proof_paths())
     required_paths = {
         "app/company_intelligence.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "app/earnings.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -4378,7 +4382,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
     )
 
     workflow = _yaml(WORKFLOW)
-    triggers = (workflow.get("on") or workflow.get(True))["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    triggers = ci_proof_paths()
     unmatched = [rel for rel in contracts if not CLOSURE.matched(rel, triggers)]
 
     assert not unmatched, (

@@ -1175,7 +1175,8 @@ def test_the_property_suite_can_be_triggered_by_the_changes_it_guards():
     ci = yaml.safe_load((_REPO / ".github" / "workflows" / "ci.yml").read_text(
         encoding="utf-8"))
     triggers = ci.get("on") if "on" in ci else ci[True]
-    paths = triggers["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = ci_proof_paths()
     for needed in ("engine/press/**", "scripts/build_press_properties.py",
                    "templates/press/**", "properties/**", "content/press/**",
                    "app/deploy/Caddyfile", "app/deploy/update.sh"):

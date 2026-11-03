@@ -1,6 +1,8 @@
 """Protected dispatch wiring: candidate code cannot authenticate its own proof."""
 from pathlib import Path
 import yaml
+import ast
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -147,3 +149,54 @@ def test_foundation_keeps_legacy_protected_call_until_callee_contract_installed(
     assert "steps.admission_prepare.outputs.ready == 'true'" in reserve['if']
     complete = next(s for s in steps if s.get('name') == 'reconcile original admitted completion')
     assert 'ready' not in complete.get('if', '')
+
+
+def _source_only_job_predicate(expression, values):
+    """Evaluate only this source boolean subset, not GitHub scheduling semantics.
+
+    No model of implicit success(), ancestor propagation, or hosted execution is
+    claimed. Explicit status-function presence is asserted separately below.
+    """
+    for key in sorted(values, key=len, reverse=True):
+        expression = expression.replace(key, repr(values[key]))
+    expression = expression.replace('&&', ' and ').replace('||', ' or ')
+    expression = expression.replace('!', ' not ').strip()
+    tree = ast.parse(expression, mode='eval')
+    allowed = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp,
+               ast.Not, ast.Compare, ast.Eq, ast.Constant)
+    assert all(isinstance(node, allowed) for node in ast.walk(tree))
+    return eval(compile(tree, '<source-only-job-predicate>', 'eval'), {'__builtins__': {}}, {})
+
+
+@pytest.mark.parametrize('job', ['contract-delta', 'trusted-ci'])
+def test_proof_consumers_have_explicit_status_and_successful_plan(job):
+    condition = workflow()['jobs'][job]['if']
+    assert condition.startswith("!cancelled() && needs.ci-plan.result == 'success' && ")
+
+
+@pytest.mark.parametrize('job,changes,expected', [
+    ('contract-delta', {}, True),
+    ('contract-delta', {'cancelled()': True}, False),
+    ('contract-delta', {'needs.ci-plan.result': 'failure'}, False),
+    ('contract-delta', {'needs.ci-plan.result': 'skipped'}, False),
+    ('contract-delta', {'needs.ci-plan.outputs.semantic_role': 'main'}, False),
+    ('trusted-ci', {}, True),
+    ('trusted-ci', {'cancelled()': True}, False),
+    ('trusted-ci', {'needs.ci-plan.result': 'failure'}, False),
+    ('trusted-ci', {'needs.ci-plan.result': 'skipped'}, False),
+    ('trusted-ci', {'vars.CI_EXECUTION_ROUTE': 'hosted'}, False),
+    ('trusted-ci', {'needs.ci-plan.outputs.same_repository': 'false'}, False),
+    ('trusted-ci', {'needs.ci-plan.outputs.has_work': 'false'}, False),
+])
+def test_explicit_consumer_predicate_source_cases(job, changes, expected):
+    # Native PR shape: resolver skipped, plan independently succeeded. This
+    # establishes the expression's value only; GitHub must qualify scheduling.
+    values = {'cancelled()': False, 'needs.ci-admission.result': 'skipped',
+              'needs.ci-plan.result': 'success',
+              'needs.ci-plan.outputs.semantic_role': 'pr_head',
+              'needs.ci-plan.outputs.same_repository': 'true',
+              'needs.ci-plan.outputs.has_work': 'true',
+              'vars.CI_EXECUTION_ROUTE': 'pc'}
+    values.update(changes)
+    condition = workflow()['jobs'][job]['if']
+    assert _source_only_job_predicate(condition, values) is expected

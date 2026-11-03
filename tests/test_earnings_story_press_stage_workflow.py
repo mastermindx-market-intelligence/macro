@@ -95,7 +95,8 @@ def test_ingress_cli_has_only_three_immutable_inputs_and_no_authority_knobs() ->
 
 def test_ingress_subjects_and_suites_are_ci_reachable() -> None:
     ci = yaml.load(CI_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    paths = set(ci["on"]["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = set(ci_proof_paths())
     required_paths = {
         "scripts/stage_earnings_story_press.py",
         ".github/workflows/earnings-story-press-stage.yml",

@@ -1120,8 +1120,8 @@ def test_start_worker_hands_the_head_spec_to_the_base(
     monkeypatch.setattr(CCD.subprocess, "Popen", FakePopen)
     spec = {"probes": [["a.py", 1, 2]], "max_packs": 3}
     CCD._start_worker(tmp_path, spec)
-    assert seen["args"][:3] == [sys.executable, "-c", CCD._WORKER_SOURCE]
-    assert json.loads(seen["args"][3]) == spec
+    assert seen["args"][:4] == [sys.executable, "-I", "-c", CCD._WORKER_SOURCE]
+    assert json.loads(seen["args"][4]) == spec
     assert seen["kwargs"]["cwd"] == tmp_path
 
 
@@ -1319,3 +1319,137 @@ def test_head_control_plane_findings_bind_the_tree_inventory_and_the_head_spec(
     assert payload["skip_only"] == [{"test": "tests/test_x.py", "needs": ["numpy"]}]
     assert payload["trigger_gaps"] == []
     assert set(payload["timings"]) == set(CCD.CONTROL_PLANE_CLASSES)
+
+
+# Copied control source is intentionally outside the tested checkout. No Git
+# worktree or remote is created by these fixtures; .git is only the root marker
+# consumed by the shared audit validation, and malformed probes stop CLI early.
+_CONTROL_MODULES = (
+    'check_contract_delta', 'run_ci_pack', 'audit_unrun_tests',
+    'check_ci_trigger_closure', 'check_skip_only_suites', 'ci_scope_dependencies',
+    'ci_semantic_proof', 'ci_authority_paths', 'workflow_run_source',
+)
+
+
+def _copied_contract_case(tmp_path):
+    control = tmp_path / 'control'
+    candidate = tmp_path / 'candidate'
+    for root in (control, candidate):
+        (root / 'scripts').mkdir(parents=True)
+        (root / 'scripts/__init__.py').write_text('')
+    for name in _CONTROL_MODULES:
+        (control / 'scripts' / (name + '.py')).write_text(
+            (Path(CCD.__file__).parent / (name + '.py')).read_text())
+    (candidate / '.git').mkdir()
+    (candidate / 'tests').mkdir()
+    # This data file must be parsed, never imported. Both the module and any
+    # candidate control replacement leave a marker if accidentally executed.
+    marker = tmp_path / 'candidate-code-executed'
+    poison = 'from pathlib import Path\nPath(' + repr(str(marker)) + ').write_text("bad")\nraise RuntimeError("untrusted candidate control executed")\n'
+    (candidate / 'tests/test_ci_pack.py').write_text(poison)
+    for name in _CONTROL_MODULES:
+        (candidate / 'scripts' / (name + '.py')).write_text(poison)
+    env = dict(os.environ, MASTERMIND_TRUSTED_CI_REPO_ROOT=str(candidate),
+               GITHUB_WORKSPACE=str(candidate), PYTHONPATH=str(candidate))
+    # Match setup-python's installed dependency availability without relying on
+    # this developer host's user site (which -I correctly excludes). No network.
+    import venv
+    runtime = tmp_path / 'isolated-python'
+    venv.EnvBuilder(with_pip=False, symlinks=True).create(runtime)
+    python = runtime / 'bin/python'
+    purelib = Path(subprocess.check_output([str(python), '-I', '-c',
+        'import sysconfig; print(sysconfig.get_path("purelib"))'], text=True).strip())
+    shutil.copytree(Path(yaml.__file__).parent, purelib / 'yaml')
+    return control, candidate, marker, env, python
+
+
+def test_copied_contract_cli_reads_candidate_probes_without_importing_candidate_code(tmp_path):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    result = subprocess.run([str(python), '-I', str(control / 'scripts/check_contract_delta.py'),
+        '--base', '4' * 40], cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 1
+    assert str(candidate / 'tests/test_ci_pack.py') in result.stdout
+    assert 'must define PACKING_PROBES' in result.stdout
+    assert str(control / 'tests/test_ci_pack.py') not in result.stdout
+    assert not marker.exists(), result.stderr
+
+
+def test_copied_contract_imports_keep_code_and_candidate_data_roots_distinct(tmp_path):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    code = """
+import json, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from scripts import check_contract_delta as c, audit_unrun_tests as a, ci_scope_dependencies as d
+from scripts import run_ci_pack as p, check_ci_trigger_closure as t, check_skip_only_suites as s
+print(json.dumps({'roots': [str(m.ROOT) for m in (c,a,d,t,s)],
+ 'defaults': [str(c.run.__kwdefaults__['repo_root']), str(c.materialize_base_tree.__kwdefaults__['repo_root'])],
+ 'code': [str(Path(m.__file__).resolve()) for m in (c,a,d,p,t,s)]}))
+"""
+    result = subprocess.run([str(python), '-I', '-c', code, str(control)],
+        cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode == 0, result.stderr
+    found = json.loads(result.stdout)
+    assert found['roots'] == [str(candidate)] * 5
+    assert found['defaults'] == [str(candidate)] * 2
+    assert all(Path(path).is_relative_to(control) for path in found['code'])
+    assert not marker.exists()
+
+
+@pytest.mark.parametrize('bad_root', ['relative', 'wrong-cwd', 'not-checkout'])
+def test_copied_contract_refuses_invalid_candidate_root(tmp_path, bad_root):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    if bad_root == 'relative': env['MASTERMIND_TRUSTED_CI_REPO_ROOT'] = 'candidate'
+    elif bad_root == 'wrong-cwd': env['MASTERMIND_TRUSTED_CI_REPO_ROOT'] = str(control)
+    else: (candidate / '.git').rmdir()
+    result = subprocess.run([str(python), '-I', str(control / 'scripts/check_contract_delta.py'),
+        '--base', '4' * 40], cwd=candidate, env=env, capture_output=True, text=True, timeout=20)
+    assert result.returncode != 0
+    assert 'MASTERMIND_TRUSTED_CI_REPO_ROOT' in result.stderr
+    assert not marker.exists()
+
+
+def test_selected_base_worker_does_not_inherit_the_head_data_root(tmp_path, monkeypatch):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    baseline = tmp_path / 'selected-baseline'
+    shutil.copytree(control, baseline)
+    (baseline / '.git').mkdir()
+    probe = """
+import sys, json, os
+sys.path.insert(0, '.')
+from scripts import audit_unrun_tests as audit
+print(json.dumps({'root': str(audit.ROOT), 'code': audit.__file__,
+ 'isolated': sys.flags.isolated, 'override': os.environ.get('MASTERMIND_TRUSTED_CI_REPO_ROOT'),
+ 'spec': json.loads(sys.argv[1])}))
+"""
+    monkeypatch.setattr(CCD, '_WORKER_SOURCE', probe)
+    monkeypatch.setenv('MASTERMIND_TRUSTED_CI_REPO_ROOT', str(candidate))
+    monkeypatch.setenv('PYTHONPATH', str(candidate))
+    spec = {'probes': [['engine/example.py', 3, 8]], 'max_packs': 12}
+    monkeypatch.setattr(CCD.sys, 'executable', str(python))
+    proc = CCD._start_worker(baseline, spec)
+    stdout, stderr = proc.communicate(timeout=20)
+    assert proc.returncode == 0, stderr
+    found = json.loads(stdout)
+    assert found['root'] == str(baseline)
+    assert Path(found['code']).resolve().is_relative_to(baseline)
+    assert found['isolated'] == 1 and found['override'] is None
+    assert found['spec'] == spec
+    assert os.environ['MASTERMIND_TRUSTED_CI_REPO_ROOT'] == str(candidate)
+    assert not marker.exists()
+
+
+def test_selected_base_worker_cannot_fall_back_to_candidate_pythonpath(tmp_path, monkeypatch):
+    control, candidate, marker, env, python = _copied_contract_case(tmp_path)
+    baseline = tmp_path / 'selected-baseline'
+    baseline.mkdir()
+    (candidate / 'candidate_only.py').write_text(
+        'from pathlib import Path\nPath(' + repr(str(marker)) + ').write_text("bad")\n')
+    probe = "import sys; sys.path.insert(0, '.'); import candidate_only"
+    monkeypatch.setattr(CCD, '_WORKER_SOURCE', probe)
+    monkeypatch.setenv('PYTHONPATH', str(candidate))
+    monkeypatch.setattr(CCD.sys, 'executable', str(python))
+    proc = CCD._start_worker(baseline, {})
+    stdout, stderr = proc.communicate(timeout=20)
+    assert proc.returncode != 0 and 'candidate_only' in stderr
+    assert not marker.exists()

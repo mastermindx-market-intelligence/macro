@@ -75,7 +75,10 @@ def test_real_foundation_metadata_is_exact_native_provenance(tmp_path):
     workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
     manifest = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())
     events = workflow.get("on", workflow.get(True))
-    assert manifest["proof_paths"] == events["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    # The reader enforces native parity while present; below both delivery
+    # shapes exercise the exact real inventory as explicit fixtures.
+    assert manifest["proof_paths"] == ci_proof_paths()
     # Metadata is orthogonal to the incumbent executable jobs mapping.
     assert isinstance(manifest["jobs"], dict) and manifest["jobs"]
     # Exercise every real path, retaining order, duplicates and start-only globs.

@@ -187,20 +187,22 @@ import time
 from pathlib import Path
 from typing import Any, Iterable, NamedTuple
 
-ROOT = Path(__file__).resolve().parent.parent
+_CONTROL_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_REL = ".github/ci/legacy-jobs.yml"
 # Where the packing-probe ceilings live; read, never imported (`packing_probe_spec`).
 PACKING_PROBE_SUITE_REL = "tests/test_ci_pack.py"
 CONTROL_PLANE_CLASSES = ("probes", "skip_only", "trigger_gaps")
 
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(_CONTROL_ROOT))
 
 from scripts.run_ci_pack import (  # noqa: E402
     curated_exclusive_closure_findings,
     packing_probe_breaches,
     packing_probe_measurements,
 )
-from scripts.audit_unrun_tests import gated_unrun_suites  # noqa: E402
+# Code stays in the protected bundle; candidate data uses the same validated
+# explicit checkout root as every imported census, never the bundle directory.
+from scripts.audit_unrun_tests import ROOT, gated_unrun_suites  # noqa: E402
 from scripts.check_ci_trigger_closure import trigger_gap_findings  # noqa: E402
 from scripts.check_skip_only_suites import skip_only_findings  # noqa: E402
 from scripts.ci_scope_dependencies import (  # noqa: E402
@@ -626,9 +628,14 @@ def _start_worker(repo_root: Path, spec: dict[str, Any]) -> subprocess.Popen:
     them one after another. `spec` is the head's packing-probe ceilings
     (`packing_probe_spec`), so the base is measured against the same ones.
     """
+    # The selected baseline owns its code and data root. Do not carry the
+    # protected head bundle's candidate-root override into this distinct cwd.
+    worker_env = os.environ.copy()
+    worker_env.pop("MASTERMIND_TRUSTED_CI_REPO_ROOT", None)
     return subprocess.Popen(
-        [sys.executable, "-c", _WORKER_SOURCE, json.dumps(spec)],
-        cwd=repo_root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        [sys.executable, "-I", "-c", _WORKER_SOURCE, json.dumps(spec)],
+        cwd=repo_root, env=worker_env,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
     )
 
 
