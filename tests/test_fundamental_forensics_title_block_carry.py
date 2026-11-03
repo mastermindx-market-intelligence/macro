@@ -655,3 +655,289 @@ def test_tbc1_blank_stray_row_still_carries() -> None:
     parsed = parse_displayed_primary_table(html, title=_TITLE)
     assert _rows(parsed) == _SERVED
     assert parsed["table_source"] == "carried_title_block"
+
+
+# --- a continued statement and in-table loose text keep the refusal (R3) ---
+
+_PART1_IDS = ("tbc-rev-2025", "tbc-rev-2024")
+_SPLIT_HEADING = "<p>Consolidated Statements of<br>Operations</p>\n"
+
+
+def _part1(heading: str = _SPLIT_HEADING) -> str:
+    """A first statement part whose br-split heading arms no carry itself."""
+    return heading + _fact_table(label="Revenue", ids=_PART1_IDS)
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [
+        pytest.param((_COMPANY, _TITLE, "(Continued)"), id="continued-row"),
+        pytest.param((_COMPANY, "(Continued)", _TITLE), id="continued-row-first"),
+        pytest.param((_COMPANY, f"{_TITLE} (Continued)"), id="title-continued"),
+        pytest.param((_COMPANY, f"{_TITLE} - Continued"), id="title-dash-continued"),
+        pytest.param((_COMPANY, f"{_TITLE} (cont'd)"), id="title-contd"),
+        pytest.param(
+            (_COMPANY, f"{_TITLE} (continued from previous page)"), id="title-from-previous-page"
+        ),
+    ],
+)
+def test_tbc3_title_block_marking_a_continued_statement_does_not_carry(
+    rows: tuple[str, ...],
+) -> None:
+    _absent(_title_block(*rows) + _fact_table())
+    _absent(_part1() + _title_block(*rows) + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "part1",
+    [
+        pytest.param(
+            _title_block(_COMPANY, _TITLE, "(In millions)", "Years Ended December 31,", "", "", "")
+            + _fact_table(label="Revenue", ids=_PART1_IDS),
+            id="seven-row-part-one",
+        ),
+        pytest.param(
+            _title_block(_COMPANY, _TITLE.upper()) + _fact_table(label="Revenue", ids=_PART1_IDS),
+            id="uppercase-part-one",
+        ),
+        pytest.param(
+            _title_block(_COMPANY, _TITLE)
+            + "<p>(In millions)</p>\n"
+            + _fact_table(label="Revenue", ids=_PART1_IDS),
+            id="caption-paragraph-part-one",
+        ),
+    ],
+)
+def test_tbc3_continued_second_part_after_an_unarmed_first_part_does_not_carry(
+    part1: str,
+) -> None:
+    _absent(part1 + _title_block(_COMPANY, _TITLE, "(Continued)", "(In millions)") + _fact_table())
+
+
+@pytest.mark.parametrize("with_part1", [False, True], ids=["alone", "after-part-one"])
+def test_tbc3_carried_table_opening_with_a_continuation_row_does_not_carry(
+    with_part1: bool,
+) -> None:
+    html = _title_block(_COMPANY, _TITLE) + _fact_table(lead_row="<tr><td>(Continued)</td></tr>")
+    _absent((_part1() if with_part1 else "") + html)
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        pytest.param("Consolidated Statements of Cash Flows", id="other-statement"),
+        pytest.param("(Continued)", id="continued"),
+        pytest.param(f"{_TITLE} (Continued)", id="title-continued"),
+    ],
+)
+def test_tbc3_caption_inside_the_carried_table_naming_a_heading_does_not_carry(
+    caption: str,
+) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table(lead_row=f"<caption>{caption}</caption>"))
+
+
+def test_tbc3_loose_entity_text_inside_the_title_block_table_does_not_carry() -> None:
+    html = f"<table>Parent Company Only<tr><td>{_TITLE}</td></tr></table>\n" + _fact_table()
+    _absent(html)
+
+
+@pytest.mark.parametrize(
+    "companion",
+    [
+        "Report of Independent Registered Public Accounting Firm",
+        "XYZ Bancorp (Parent Only)",
+        "XYZ Bancorp (Holding Company Only)",
+        "XYZ Bank (Bank Only)",
+        "Consolidated Cash Flow Statement",
+    ],
+)
+def test_tbc3_companion_naming_another_report_or_entity_does_not_carry(companion: str) -> None:
+    _absent(_title_block(companion, _TITLE) + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "repeat",
+    [
+        pytest.param(_SPLIT_HEADING, id="br-split"),
+        pytest.param("<p><b>Consolidated</b> Statements of Operations</p>\n", id="span-split"),
+        pytest.param(
+            f"<p>{_TITLE} and Comprehensive Income (Continued)</p>\n", id="longer-title-continued"
+        ),
+    ],
+)
+def test_tbc3_repeat_heading_after_the_capture_is_a_split(repeat: str) -> None:
+    ids = ("tbc-p2-2025", "tbc-p2-2024")
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + repeat + _fact_table(ids=ids))
+
+
+def test_tbc3_row_split_longer_title_continued_after_the_capture_is_a_split() -> None:
+    longer = f"{_TITLE} and Comprehensive Income"
+    block = _title_block(_COMPANY, _TITLE, "and Comprehensive Income")
+    ids = ("tbc-p2-2025", "tbc-p2-2024")
+    _absent(block + _fact_table() + f"<p>{longer} (Continued)</p>\n" + _fact_table(ids=ids))
+    parsed = parse_displayed_primary_table(block + _fact_table(), title=_TITLE)
+    assert _rows(parsed) == _SERVED
+
+
+def test_tbc3_continued_part_inside_the_skipped_rest_of_a_table_is_a_split() -> None:
+    table = (
+        "<table>\n"
+        "<tr><td>Line</td><td>September 27, 2025</td><td>September 28, 2024</td></tr>\n"
+        '<tr><td>Revenue</td><td><ix:nonFraction name="a" contextRef="d2025" id="s-1">1'
+        '</ix:nonFraction></td><td><ix:nonFraction name="a" contextRef="d2024" id="s-2">2'
+        "</ix:nonFraction></td></tr>\n"
+        "<tr><td>See accompanying notes.</td></tr>\n"
+        f"<tr><td>{_TITLE} (Continued)</td></tr>\n"
+        '<tr><td>Net income</td><td><ix:nonFraction name="b" contextRef="d2025" id="s-3">3'
+        '</ix:nonFraction></td><td><ix:nonFraction name="b" contextRef="d2024" id="s-4">4'
+        "</ix:nonFraction></td></tr>\n"
+        "</table>\n"
+    )
+    _absent(_title_block(_COMPANY, _TITLE) + table)
+
+
+@pytest.mark.parametrize(
+    "newline", [pytest.param("\r\n", id="crlf"), pytest.param("\r", id="cr")]
+)
+def test_tbc3_repeat_title_block_split_survives_other_line_endings(newline: str) -> None:
+    ids = ("tbc-p2-2025", "tbc-p2-2024")
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(_COMPANY, _TITLE)
+        + _fact_table(ids=ids)
+    )
+    _absent(html.replace("\n", newline))
+    parsed = parse_displayed_primary_table(
+        (_title_block(_COMPANY, _TITLE) + _fact_table()).replace("\n", newline), title=_TITLE
+    )
+    assert _rows(parsed) == _SERVED
+
+
+def test_tbc3_invisible_only_cell_beside_the_title_is_no_companion_line() -> None:
+    block = (
+        f"<table>\n<tr><td>{_COMPANY}</td></tr>\n"
+        f"<tr><td>{_TITLE}</td><td>​­⁠</td></tr>\n</table>\n"
+    )
+    parsed = parse_displayed_primary_table(block + _fact_table(), title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc3_discontinued_operations_is_no_continuation_marker() -> None:
+    label = "Loss from discontinued operations"
+    parsed = parse_displayed_primary_table(
+        _title_block(_COMPANY, _TITLE) + _fact_table(label=label), title=_TITLE
+    )
+    assert [row["label"] for row in parsed["rows"]] == [label]
+    assert parsed["table_source"] == "carried_title_block"
+
+
+# --- R3 guards each read their own form of the marker ---------------------
+
+_LONGER = f"{_TITLE} and Comprehensive Income"
+_PART2_IDS = ("tbc-p2-2025", "tbc-p2-2024")
+
+
+def _block_with_loose(*, pre: str = "", mid: str = "", post: str = "") -> str:
+    """The company/title block with text its table prints outside any cell."""
+    return (
+        f"<table>\n{pre}<tr><td>{_COMPANY}</td></tr>\n{mid}"
+        f"<tr><td>{_TITLE}</td></tr>\n{post}</table>\n"
+    )
+
+
+@pytest.mark.parametrize(
+    "loose",
+    [
+        pytest.param({"pre": "(Continued)\n"}, id="marker-before-rows"),
+        pytest.param({"mid": "(Continued)\n"}, id="marker-between-rows"),
+        pytest.param({"pre": f"{_TITLE}<br>and Comprehensive Income<br>Continued\n"}, id="br-split-before-rows"),
+        pytest.param({"post": f"{_LONGER} (Continued)\n"}, id="longer-title-continued-after-rows"),
+    ],
+)
+def test_tbc3_block_loose_text_marking_a_continued_statement_does_not_carry(
+    loose: dict[str, str],
+) -> None:
+    _absent(_block_with_loose(**loose) + _fact_table())
+
+
+def test_tbc3_block_row_naming_a_longer_continued_title_does_not_carry() -> None:
+    _absent(_title_block(_COMPANY, _TITLE, f"{_LONGER} (Continued)") + _fact_table())
+
+
+def test_tbc3_continuation_cell_beside_the_company_line_does_not_carry() -> None:
+    block = (
+        f"<table>\n<tr><td>{_COMPANY}</td><td>(Continued)</td></tr>\n"
+        f"<tr><td>{_TITLE}</td></tr>\n</table>\n"
+    )
+    _absent(block + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "loose",
+    [
+        pytest.param(_LONGER, id="longer-title"),
+        pytest.param(f"{_COMPANY} {_TITLE}", id="company-and-title"),
+    ],
+)
+def test_tbc3_carried_table_loose_text_naming_the_title_does_not_carry(loose: str) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table(lead_row=f"{loose}\n"))
+
+
+def test_tbc3_continuation_cell_in_the_first_fact_row_does_not_carry() -> None:
+    table = _fact_table().replace(
+        "<td>Net income</td>", "<td>Net income</td><td>(Continued)</td>", 1
+    )
+    _absent(_title_block(_COMPANY, _TITLE) + table)
+
+
+@pytest.mark.parametrize(
+    "loose",
+    [
+        pytest.param("(Contin<b>ued)</b>", id="markup-split-marker"),
+        pytest.param("(Continued)<span>Amounts in millions</span>", id="marker-then-caption"),
+    ],
+)
+def test_tbc3_carried_table_loose_continuation_before_its_facts_does_not_carry(
+    loose: str,
+) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table(lead_row=f"{loose}\n"))
+
+
+@pytest.mark.parametrize(
+    "after",
+    [
+        pytest.param(
+            f"<p>{_LONGER}<br>Contin<b>ued</b></p>\n"
+            + _fact_table(label="Revenue", ids=_PART2_IDS),
+            id="br-and-markup-split-paragraph",
+        ),
+        pytest.param(
+            f"<table><tr><td>{_TITLE}<br>and Comprehensive Income<br>Continued</td></tr></table>\n"
+            + _fact_table(label="Revenue", ids=_PART2_IDS),
+            id="br-split-cell",
+        ),
+        pytest.param("Contin<b>ued</b>", id="markup-split-marker-at-end"),
+        pytest.param(f"<p><b>{_TITLE}</b> and Comprehensive Income</p>\n", id="bold-title-at-end"),
+    ],
+)
+def test_tbc3_split_marker_after_the_capture_does_not_carry(after: str) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + after)
+
+
+@pytest.mark.parametrize(
+    "earlier",
+    [
+        pytest.param(f"<table><tr><td>{_LONGER} (Continued)</td></tr></table>\n", id="row"),
+        pytest.param(f"<table>{_TITLE}<br>and Comprehensive Income<br>Continued</table>\n", id="loose"),
+    ],
+)
+def test_tbc3_continued_heading_in_an_earlier_table_does_not_reach_the_block(
+    earlier: str,
+) -> None:
+    parsed = parse_displayed_primary_table(
+        earlier + _title_block(_COMPANY, _TITLE) + _fact_table(), title=_TITLE
+    )
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
