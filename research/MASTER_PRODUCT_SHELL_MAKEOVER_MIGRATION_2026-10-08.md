@@ -20,6 +20,7 @@ Deliverables: [audit and commissioning package](design_candidates/production_des
 [route crosswalk](design_candidates/production_design_20261102/census/ROUTE_COVERAGE.md),
 [re-audit contract](design_candidates/production_design_20261102/RE_AUDIT_CHECKLIST.md).
 Publication carrier: Macro draft PR #10617; documentation only, no merge or release.
+Readback: [publication receipt](design_candidates/production_design_20261102/evidence/PUBLICATION_RECEIPT.md).
 
 | Task | Scope | Completion evidence | Audit state |
 |---|---|---|---|
@@ -27,7 +28,7 @@ Publication carrier: Macro draft PR #10617; documentation only, no merge or rele
 | AUD-02 | Route/source and accessible beta census | 348 canonical records assigned; 9 verified source additions/exclusions; current Terminal modules and Macro root pages reconciled | completed bounded audit; fresh nested inventory remains F03 dependency |
 | AUD-03 | Organization/archive and shared-shell requirements | exact page ownership/destination map, supported-operation gate, shell/system contracts | plan completed; physical application is not complete |
 | AUD-04 | Manual Astra Pro design-session briefs | P00, F01–F03, D01–D27, D08A–D08D, QA01 with source, scope, retention, builder and return contracts | completed; not launched |
-| AUD-05 | Independent package review and publication | architecture/programme/visual-handoff findings reconciled; validation and publication readback recorded in package | publication / readback pending until final receipt |
+| AUD-05 | Independent package review and publication | architecture/programme/visual-handoff findings reconciled; validation and publication readback recorded in package | completed; exact source readback recorded in package |
 
 Execution children remain unlaunched. P00 qualifies the original Paper writing/resource path.
 F01/F02 jointly freeze shell/system v1; F03 maintains organization and coverage.
