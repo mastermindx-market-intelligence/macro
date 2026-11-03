@@ -1,6 +1,6 @@
 """Retain the existing native test-renderer outputs; no site build or browser launch."""
 from pathlib import Path
-import importlib.util
+import types
 import sys
 import json
 import hashlib
@@ -10,9 +10,14 @@ from bs4 import BeautifulSoup
 repo, out = map(Path, sys.argv[1:3])
 sys.path.insert(0, str(repo))
 out.mkdir(parents=True, exist_ok=True)
-spec = importlib.util.spec_from_file_location('tooltip_contract_tests', repo / 'tests/test_intl_tooltip_locale.py')
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
+# The original assertion module is retained at the reviewed source commit;
+# CI integration relocated it into existing owned suites. Replay the exact
+# historical helper without depending on a now-removed standalone filename.
+module = types.ModuleType('tooltip_contract_tests')
+module.__file__ = str(repo / 'tests/test_intl_tooltip_locale.py')
+helper = subprocess.check_output(['git', 'show',
+    '7411fadab71789f4cd4a92e22229dcf93a0c5014:tests/test_intl_tooltip_locale.py'], cwd=repo)
+exec(compile(helper, module.__file__, 'exec'), module.__dict__)
 network_guard = module.no_network.__wrapped__()
 next(network_guard)
 try:
