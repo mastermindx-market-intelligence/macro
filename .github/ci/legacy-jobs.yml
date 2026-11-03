@@ -43320,6 +43320,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "config/us_turn_watch_universe.v1.json"
+      - "config/us_turn_watch_universe.v2.json"
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_turn_watch.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
