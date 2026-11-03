@@ -32,7 +32,8 @@ def payload():
                  reco="accumulate", reco_en="ACCUMULATE", reco_zh="增持",
                  rs_pctile=0.99, components={}, perf={"20d": {"rel": 0.12}})
     return {"as_of": "2026-11-02", "benchmark_label": "CSI 300", "benchmark_label_zh": "沪深300",
-            "categories": [], "baskets": [{"id": theme["id"], "name": NAME, "members": []}],
+            "categories": ["Industry"], "baskets": [{"id": theme["id"], "name": NAME,
+                "category": "Industry", "members": [], "n_members": 0}],
             "chart": {"dates": ["2026-10-29", "2026-10-30", "2026-11-02"],
                       "bench": [100, 101, 102], "baskets": {"long_name": [100, 105, 110]}},
             "theme_intel": {"themes": [theme]}}
@@ -81,6 +82,10 @@ def test_long_theme_and_chart_fit_with_no_entry(browser, html, width, lang):
         page.keyboard.press("Enter")
         expect(card.locator("details")).to_have_attribute("open", "")
         expect(name).to_have_attribute("href", "basket_china/long_name.html")
+        page.locator("#cards .holdings-link").focus()
+        page.keyboard.press("Enter")
+        expect(page).to_have_url(PAGE + "#b-long_name")
+        expect(page.locator("#b-long_name summary")).to_be_focused()
     finally:
         page.close()
 

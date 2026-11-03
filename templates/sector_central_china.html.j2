@@ -1700,7 +1700,7 @@ function winZ(levels,col){ const n=parseInt(col,10); if(!n||!levels) return null
   const hr=[]; for(let i=li-252;i<=li;i++) hr.push((levels[i]!=null&&levels[i-n]!=null)?levels[i]/levels[i-n]-1:null);
   const cur=hr[hr.length-1]; const base=hr.slice(0,-1).filter(v=>v!=null); if(cur==null||base.length<200) return null;
   const m=base.reduce((a,b)=>a+b,0)/base.length; const sd=Math.sqrt(base.reduce((a,b)=>a+(b-m)**2,0)/(base.length-1)); return sd>0?(cur-m)/sd:null; }
-const ratio = a => a.map((v,i)=>(v!=null&&CHART.bench[i]>0)?v/CHART.bench[i]:null);
+const ratio = a => (a||[]).map((v,i)=>(v!=null&&CHART.bench[i]>0)?v/CHART.bench[i]:null);
 
 function sparkSvg(values,{w=92,h=26,color=''}={}){
   const vs=(values||[]).filter(v=>v!=null); if(vs.length<2) return '';
@@ -1980,6 +1980,9 @@ function renderCards(){
   el.querySelectorAll('a[data-nav="detail"]').forEach(a=>a.onclick=e=>e.stopPropagation());
   el.querySelectorAll('.holdings-link').forEach(a=>a.onclick=e=>{
     e.stopPropagation();
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    e.preventDefault();
+    if(location.hash!==a.hash) location.hash=a.hash;
     const id=a.closest('.card').dataset.id;
     openBasket(id);
     document.getElementById('b-'+id)?.querySelector('summary')?.focus({preventScroll:true});
