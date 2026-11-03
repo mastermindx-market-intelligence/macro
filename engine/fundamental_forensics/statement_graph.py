@@ -168,6 +168,8 @@ STATEMENT_REFUSAL_CODES = (
     "displayed_columns_absent",
     "statement_role_not_consolidated",
     "displayed_cell_period_mismatch",
+    "displayed_column_period_unbound",
+    "statement_role_presentation_absent",
 )
 
 
@@ -461,7 +463,10 @@ def parse_presentation_tree(content: bytes, *, role_uri: str) -> list[dict[str, 
             link = el
             break
     if link is None:
-        raise StatementGraphError(f"presentation role is absent: {role_uri}")
+        raise StatementGraphError(
+            f"presentation role is absent: {role_uri}",
+            refusal_code="statement_role_presentation_absent",
+        )
     locs: dict[str, str] = {}
     for loc in link.findall(f"{{{LINK}}}loc"):
         label = _xlink(loc, "label")
@@ -856,7 +861,10 @@ def _compose_grouped_duration_year_row(
         per_group[covers[0]].append(year)
     for years in per_group:
         if not years or years != sorted(years, reverse=True) or len(set(years)) != len(years):
-            raise _layout_unsupported("grouped duration years are not strictly descending")
+            raise _layout_unsupported(
+                "grouped duration years are not strictly descending",
+                refusal_code="displayed_layout_unsupported",
+            )
     columns_periods: list[dict[str, Any]] = []
     for group, years in zip(groups, per_group):
         for year in years:
@@ -920,26 +928,38 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     def place(row: int, col: int, cell: dict[str, Any]) -> None:
         slot = occupied.setdefault(row, {})
         if col in slot:
-            raise _layout_unsupported(f"overlapping cell at row {row} column {col}")
+            raise _layout_unsupported(
+                f"overlapping cell at row {row} column {col}",
+                refusal_code="displayed_layout_unsupported",
+            )
         slot[col] = cell
 
     for row_index, raw in enumerate(raw_rows):
         column = 0
         for source in raw:
             if source.get("span_overflow"):
-                raise _layout_unsupported("span exceeds the supported bound")
+                raise _layout_unsupported(
+                    "span exceeds the supported bound",
+                    refusal_code="displayed_layout_unsupported",
+                )
             colspan = int(source.get("colspan") or 1)
             rowspan = int(source.get("rowspan") or 1)
             if rowspan == 0:
                 rowspan = row_count - row_index
             if colspan < 1 or rowspan < 1:
-                raise _layout_unsupported("span is not a positive occupancy")
+                raise _layout_unsupported(
+                    "span is not a positive occupancy",
+                    refusal_code="displayed_layout_unsupported",
+                )
             while column in occupied.get(row_index, {}):
                 column += 1
             for row_delta in range(rowspan):
                 target_row = row_index + row_delta
                 if target_row >= row_count:
-                    raise _layout_unsupported("rowspan overruns the table")
+                    raise _layout_unsupported(
+                        "rowspan overruns the table",
+                        refusal_code="displayed_layout_unsupported",
+                    )
                 for col_delta in range(colspan):
                     target_col = column + col_delta
                     if row_delta == 0 and col_delta == 0:
@@ -1003,7 +1023,10 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         for column in range(max_col):
             cell = row_map.get(column)
             if cell is None and (k is None or column < k or row_has_facts):
-                raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+                raise _layout_unsupported(
+                    f"ragged grid at row {row_index} column {column}",
+                    refusal_code="displayed_layout_unsupported",
+                )
             if cell is None:
                 cell = _grid_slot(
                     text="",
@@ -1370,7 +1393,8 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
             or years_per_group[0] * len(years_per_group) != fact_columns
         ):
             raise _layout_unsupported(
-                "grouped duration groups do not match the displayed fact columns"
+                "grouped duration groups do not match the displayed fact columns",
+                refusal_code="displayed_layout_unsupported",
             )
     if len(header_dates) < 2:
         raise StatementGraphError(
@@ -1384,7 +1408,8 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     for spec in display_rows:
         if len(spec["value_facts"]) > len(header_dates):
             raise _layout_unsupported(
-                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns"
+                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns",
+                refusal_code="displayed_layout_unsupported",
             )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
@@ -1478,7 +1503,10 @@ def _columns_from_display(
     """
     if explicit_periods is not None:
         if len(explicit_periods) < 2:
-            raise StatementGraphError("displayed statement columns are absent")
+            raise StatementGraphError(
+                "displayed statement columns are absent",
+                refusal_code="displayed_columns_absent",
+            )
         columns: list[dict[str, Any]] = []
         seen: set[tuple[str, str | None, str]] = set()
         for index, spec in enumerate(explicit_periods):
@@ -1494,15 +1522,24 @@ def _columns_from_display(
                 require_start=start,
             )
             if period is None or period.get("start_date") != start:
-                raise StatementGraphError("displayed duration column is not bound to the filing period")
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
             identity: tuple[str, str | None, str] = ("duration", start, iso)
             if identity in seen:
-                raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+                raise StatementGraphError(
+                    "displayed statement columns collapse distinct filing periods",
+                    refusal_code="displayed_column_period_unbound",
+                )
             seen.add(identity)
             columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
         return columns
     if len(iso_dates) < 2:
-        raise StatementGraphError("displayed statement columns are absent")
+        raise StatementGraphError(
+            "displayed statement columns are absent",
+            refusal_code="displayed_columns_absent",
+        )
     prefer_kind = "instant" if statement_type == "balance_sheet" else "duration"
     columns: list[dict[str, Any]] = []
     seen: set[tuple[str, str | None, str]] = set()
@@ -1517,17 +1554,26 @@ def _columns_from_display(
         )
         if prefer_kind == "instant":
             if not period:
-                raise StatementGraphError("displayed balance-sheet column is not bound to the filing date")
+                raise StatementGraphError(
+                    "displayed balance-sheet column is not bound to the filing date",
+                    refusal_code="displayed_column_period_unbound",
+                )
             identity: tuple[str, str | None, str] = ("instant", None, iso)
             columns.append({"kind": "instant", "start": None, "end": iso, "label": iso})
         else:
             if not period:
-                raise StatementGraphError("displayed duration column is not bound to the filing period")
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
             start = str(period.get("start_date"))
             identity = ("duration", start, iso)
             columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
         if identity in seen:
-            raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+            raise StatementGraphError(
+                "displayed statement columns collapse distinct filing periods",
+                refusal_code="displayed_column_period_unbound",
+            )
         seen.add(identity)
     return columns
 
