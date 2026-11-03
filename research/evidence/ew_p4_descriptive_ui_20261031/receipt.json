@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "0603423234187dc3afce0d6365aa8d714be63ff4",
+  "source_revision": "2f2ddb9d39bc27cacb0f8262e4b67beca1b9634f",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,197 +1992,166 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were re-rendered by the Sector Intelligence seat (macro#7646, PR #9917; local Playwright Chromium, the same probe) at source_revision because that branch changes three of the bound render inputs — templates/dashboard.html.j2 (the Sector Prophet context island include under mode == \"stocks\"), templates/sector_central.html.j2 (the Sector Central Paper pivot) and templates/si_workspace.js — so the EW-P5 FU2 shots no longer depicted the tree under test. Band, glance, tokens, fixtures and probe are byte-identical to the FU2 capture; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "0603423234187dc3afce0d6365aa8d714be63ff4",
+    "note": "Shots were re-rendered by the edge-stripe sweep (PR #10654; local Playwright Chromium, the same probe) at source_revision because that branch changes three of the bound render inputs — templates/theme.css and site/theme.css (the .anv2-lane-hd and .lst-ovl-hd edge bars removed) and templates/dashboard.html.j2 (the .acth, .wnx-card, .rr-modal, .nbcard, st-row and .cb-tab edge stripes removed) — so the earlier shots no longer depicted the tree under test. Band, glance, fixtures and probe are byte-identical to the previous capture; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "pr_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+    "pr_parent_of_evidence_commit": "2f2ddb9d39bc27cacb0f8262e4b67beca1b9634f",
+    "all_equal": true,
     "render_files": [
       {
         "path": "site/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52"
       },
       {
         "path": "templates/_risk_envelope_band.css.j2",
         "blob_at_source_revision": "09c15c1a022beba816a4adc92dd1a83751dab638",
-        "blob_on_pr_branch": "09c15c1a022beba816a4adc92dd1a83751dab638",
-        "equal": true
+        "blob_on_pr_branch": "09c15c1a022beba816a4adc92dd1a83751dab638"
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
         "blob_at_source_revision": "57af6f51d5f68d30eae9e7e913efd258c306681f",
-        "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f",
-        "equal": true
+        "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f"
       },
       {
         "path": "templates/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/conflict_20s.json",
         "blob_at_source_revision": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
-        "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
-        "equal": true
+        "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/corrected.json",
         "blob_at_source_revision": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
-        "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
-        "equal": true
+        "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
         "blob_at_source_revision": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
-        "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
-        "equal": true
+        "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_b_both_fell.json",
         "blob_at_source_revision": "6f65172c44453228dfc26f39b59c93163e02d3e9",
-        "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9",
-        "equal": true
+        "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_c_envelope_1d253e1d.json",
         "blob_at_source_revision": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
-        "blob_on_pr_branch": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
-        "equal": true
+        "blob_on_pr_branch": "819773e4d725f2f729d8b72c8a80f32b587aecdf"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
         "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
-        "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
-        "equal": true
+        "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
         "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
-        "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
-        "equal": true
+        "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_ratio.json",
         "blob_at_source_revision": "608562757447a71e569c63ad72d3c1e3e60f6f54",
-        "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54",
-        "equal": true
+        "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/observed_rise.json",
         "blob_at_source_revision": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
-        "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
-        "equal": true
+        "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_missing_20s.json",
         "blob_at_source_revision": "33c0d74f9dbce45e46e001a7569169c83422fdce",
-        "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce",
-        "equal": true
+        "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_window_mismatch.json",
         "blob_at_source_revision": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
-        "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
-        "equal": true
+        "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/reversal.json",
         "blob_at_source_revision": "a5db3baed08990c12abfc655e774c347b0b6ee85",
-        "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85",
-        "equal": true
+        "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/stale_obs.json",
         "blob_at_source_revision": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
-        "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
-        "equal": true
+        "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/withdrawn.json",
         "blob_at_source_revision": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
-        "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
-        "equal": true
+        "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca"
       },
       {
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
         "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "equal": true
+        "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
         "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "equal": true
+        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
         "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "equal": true
+        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
         "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "equal": true
+        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b"
       },
       {
         "path": "templates/rotation_glance.css",
         "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda"
       },
       {
         "path": "site/rotation_glance.css",
         "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda"
       },
       {
         "path": "templates/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed"
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
-        "blob_on_pr_branch": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
-        "equal": true
+        "blob_at_source_revision": "a38a1049838ffb796b55e10f5f719da20dcc7193",
+        "blob_on_pr_branch": "a38a1049838ffb796b55e10f5f719da20dcc7193"
       },
       {
         "path": "templates/_risk_radar_workspace.html.j2",
         "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "equal": true
+        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9"
       },
       {
         "path": "templates/sector_central.html.j2",
         "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "equal": true
+        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d"
       },
       {
         "path": "templates/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc"
       },
       {
         "path": "site/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed"
       },
       {
         "path": "site/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc"
       }
-    ],
-    "all_equal": true
+    ]
   }
 }
