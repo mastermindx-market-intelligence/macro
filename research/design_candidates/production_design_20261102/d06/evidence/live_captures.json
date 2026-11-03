@@ -1,0 +1,640 @@
+[
+  {
+    "id": "LC01",
+    "path": "evidence/live/d06-native-chart-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL&shell=app",
+    "caption": "Loaded AAPL native-shell chart",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:55:05.510500+00:00",
+    "persisted_at_chicago": "2026-11-03T01:55:05.510500-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 119437,
+    "sha256": "e942281f8fefcb77f9c7db56ccd2fb7d3adcd4dd265d09ebd087c27f6e3919a1"
+  },
+  {
+    "id": "LC02",
+    "path": "evidence/live/d06-workspace-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Ordinary AAPL chart-first workspace",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:55:40.359107+00:00",
+    "persisted_at_chicago": "2026-11-03T01:55:40.359107-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 156539,
+    "sha256": "8a0bac4d3476ac707e2e5e70d0b453032e309a027007866d04ee0c32d834582f"
+  },
+  {
+    "id": "LC03",
+    "path": "evidence/live/d06-context-latest-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Latest plotted AAPL bar and reader context",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:55:49.867282+00:00",
+    "persisted_at_chicago": "2026-11-03T01:55:49.867282-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 154338,
+    "sha256": "7c2773a0ef55872641cbd00e6caa9c44b26e40010b29aad84afeedb5dacb3617"
+  },
+  {
+    "id": "LC04",
+    "path": "evidence/live/d06-context-history-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Historical AAPL reader with current calendar withheld",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:56:25.135901+00:00",
+    "persisted_at_chicago": "2026-11-03T01:56:25.135901-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 158325,
+    "sha256": "95f57ce3f15152d36eb94a0fdb61c7dde3da0d28a8c1b6ece7b98430dff479ee"
+  },
+  {
+    "id": "LC05",
+    "path": "evidence/live/d06-context-resized-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Reader resized to460px with independent scroll retained",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:57:13.460731+00:00",
+    "persisted_at_chicago": "2026-11-03T01:57:13.460731-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 152289,
+    "sha256": "f05bff529bac3471bfcf49b811e1d5402f2a76c6588bcc43a1b723bcb1865ea4"
+  },
+  {
+    "id": "LC06",
+    "path": "evidence/live/d06-brain-context-open-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Brain overlays the still-present historical reader",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:57:39.625175+00:00",
+    "persisted_at_chicago": "2026-11-03T01:57:39.625175-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 114460,
+    "sha256": "dad8809c903f6fa6c208ad1bdf7f3c75f2bd541f430ba81aaeea50b663b9d41d"
+  },
+  {
+    "id": "LC07",
+    "path": "evidence/live/d06-brain-context-disclosure-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Brain context disclosure identifies AAPL without visible exact-bar acknowledgement",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:57:57.045466+00:00",
+    "persisted_at_chicago": "2026-11-03T01:57:57.045466-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 112567,
+    "sha256": "6158c63f7c783f4669d7dd4c9b1e939867af95abacead0cb869fa5ed3193d16e"
+  },
+  {
+    "id": "LC08",
+    "path": "evidence/live/d06-data-origin-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Legacy daily source qualification with unknown basis/as-of/generation",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:58:34.598084+00:00",
+    "persisted_at_chicago": "2026-11-03T01:58:34.598084-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 152992,
+    "sha256": "6bd66d2a7fe6783569132e4910beb5c391e10e67650d07db04531accddd3b8f2"
+  },
+  {
+    "id": "LC09",
+    "path": "evidence/live/d06-comparison-basis-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "SPY percent comparison with explicit anchor, adjustment and unequal coverage",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:59:25.482924+00:00",
+    "persisted_at_chicago": "2026-11-03T01:59:25.482924-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 169383,
+    "sha256": "176af0bdeeec6e81cc0c559360c1a5d39c76ecdff948ff0ee3cbfb7b4ff80153"
+  },
+  {
+    "id": "LC10",
+    "path": "evidence/live/d06-focused-context-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?sym=AAPL",
+    "caption": "Focused chart with below-chart context; hover-dependent sample, not committed-selection proof",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T07:59:42.487206+00:00",
+    "persisted_at_chicago": "2026-11-03T01:59:42.487206-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 133449,
+    "sha256": "2858ca3b64b0831c8320f5733c7145ca030429e886f8120beed64ef076f937c1"
+  },
+  {
+    "id": "LC11",
+    "path": "evidence/live/d06-origin-analysis-gate-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/analysis?symbol=AAPL",
+    "caption": "Guest Analysis gate at the exact named origin",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:01:28.200948+00:00",
+    "persisted_at_chicago": "2026-11-03T02:01:28.200948-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 51975,
+    "sha256": "f2370a10486c822df9d97d87ed661f28ccee2416fcec522a4945129e8b4de267"
+  },
+  {
+    "id": "LC12",
+    "path": "evidence/live/d06-named-return-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?from=macro&ret=https%3A%2F%2Fbeta.mastermind-x.com%2Fanalysis%3Fsymbol%3DAAPL&symbol=AAPL",
+    "caption": "AAPL Terminal with named Back to Analysis return",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:01:45.105222+00:00",
+    "persisted_at_chicago": "2026-11-03T02:01:45.105222-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 151698,
+    "sha256": "41778fce0103b01f6985e472f19d39413edfd0cecb00c6d63f0c2a999f3786ce"
+  },
+  {
+    "id": "LC13",
+    "path": "evidence/live/d06-hk-identity-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=0700.HK&sym=AAPL",
+    "caption": "Canonical0700.HK wins over sym=AAPL; Tencent/HKEX identity",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:04:06.231555+00:00",
+    "persisted_at_chicago": "2026-11-03T02:04:06.231555-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 148968,
+    "sha256": "134929ffae65ec0ed17cb3cc67d90e1fdce2231a469d5b173f1289a647341b08"
+  },
+  {
+    "id": "LC14",
+    "path": "evidence/live/d06-intelligence-research-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=0700.HK&sym=AAPL",
+    "caption": "Independent Research source/outcome in Intelligence",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:04:57.336445+00:00",
+    "persisted_at_chicago": "2026-11-03T02:04:57.336445-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 145120,
+    "sha256": "4b36e6d8e60a17a455f10524062ab40d4aee4133ac0a33ab1a12cb63847db1d4"
+  },
+  {
+    "id": "LC15",
+    "path": "evidence/live/d06-intelligence-activity-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=0700.HK&sym=AAPL",
+    "caption": "Intelligence Activity and retained event/filter depth",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:05:35.513306+00:00",
+    "persisted_at_chicago": "2026-11-03T02:05:35.513306-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 151009,
+    "sha256": "44d5b12660a7065b22e3b8cad10fe2b4aa4cff0f7e2948bc98afba5357afbc1c"
+  },
+  {
+    "id": "LC16",
+    "path": "evidence/live/d06-intelligence-event-location-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=0700.HK&sym=AAPL",
+    "caption": "Historical Intelligence event located in chart viewport",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:05:51.209608+00:00",
+    "persisted_at_chicago": "2026-11-03T02:05:51.209608-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 150796,
+    "sha256": "b7c4838e7ee8e183104ec7d5d0aba982e8ca33d5e8148c3b8e3a30c2a27ad6cc"
+  },
+  {
+    "id": "LC17",
+    "path": "evidence/live/d06-event-reader-separation-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=0700.HK&sym=AAPL",
+    "caption": "Historical viewport alongside truthfully labeled latest reader context",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:06:17.302105+00:00",
+    "persisted_at_chicago": "2026-11-03T02:06:17.302105-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 145886,
+    "sha256": "94073a61235ebde5e823239ac9aa8e6be90d6f27e29b8571600549735931fcdb"
+  },
+  {
+    "id": "LC18",
+    "path": "evidence/live/d06-scripts-guest-gate-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/scripts",
+    "caption": "Scripts guest gate; editor/save unproved",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:07:45.583701+00:00",
+    "persisted_at_chicago": "2026-11-03T02:07:45.583701-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 52084,
+    "sha256": "8469c9d237f4f6fa55d496103063f74f97ed3762990aa52aef27d7b396de7c51"
+  },
+  {
+    "id": "LC19",
+    "path": "evidence/live/d06-scripts-light-zh-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/scripts",
+    "caption": "Scripts light/Chinese guest presentation",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:07:56.227890+00:00",
+    "persisted_at_chicago": "2026-11-03T02:07:56.227890-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 50073,
+    "sha256": "8f7745e4b98ac00f50cfdf386978330de4dce4742c7cd244aee28a4d92450c53"
+  },
+  {
+    "id": "LC20",
+    "path": "evidence/live/d06-embed-light-zh-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/embed/chart?symbol=AAPL&theme=light&lang=zh&range=1Y",
+    "caption": "Loaded light/Chinese daily embed; entry URL remains1Y",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:08:25.052402+00:00",
+    "persisted_at_chicago": "2026-11-03T02:08:25.052402-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 95107,
+    "sha256": "7312bff0ceae3823415ae016413d1f550251e32292bbfa9a6c5340a1890fb42e"
+  },
+  {
+    "id": "LC21",
+    "path": "evidence/live/d06-market-structure-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/market_structure.html",
+    "caption": "Market Structure source-clock and chart overview",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:10:03.146101+00:00",
+    "persisted_at_chicago": "2026-11-03T02:10:03.146101-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 122615,
+    "sha256": "86f7218f68c1f6443266c79dc7c19e8c121d88dfe65b16ca21ae0acb8961c302"
+  },
+  {
+    "id": "LC22",
+    "path": "evidence/live/d06-market-source-clocks-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/market_structure.html",
+    "caption": "Lower Market Structure chart/source-clock view inside iframe",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:10:47.506847+00:00",
+    "persisted_at_chicago": "2026-11-03T02:10:47.506847-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 106173,
+    "sha256": "0ef0ed160c2f6320aaba84852147d34daa3163de9411529a8dda0a49ca17c66a"
+  },
+  {
+    "id": "LC23",
+    "path": "evidence/live/d06-stage-screener-partial-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/stage_analysis.html#screener",
+    "caption": "Stage overview after shell Retry; before table-error scroll settled",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:12:45.272906+00:00",
+    "persisted_at_chicago": "2026-11-03T02:12:45.272906-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 115150,
+    "sha256": "13c6471be3776966599a469e9c92ac287c012e5b1b5e747e70f87efb86bdbe98"
+  },
+  {
+    "id": "LC24",
+    "path": "evidence/live/d06-stage-screener-error-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/stage_analysis.html#screener",
+    "caption": "Settled Screener failure and unconditional sibling-health copy",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:14:04.102273+00:00",
+    "persisted_at_chicago": "2026-11-03T02:14:04.102273-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 104025,
+    "sha256": "a2302e921dad9b9b637be22da308425db9e5aae77d504d6057a3cbfb51a0b299"
+  },
+  {
+    "id": "LC25",
+    "path": "evidence/live/d06-spvector-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/spvector.html",
+    "caption": "S&P Vector allocation, score and advisory overlay presentation; not model validation",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:14:04.142273+00:00",
+    "persisted_at_chicago": "2026-11-03T02:14:04.142273-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 116630,
+    "sha256": "09280ed14d6cca88555956df917564d31de92ef90509f68b0386cabb3977f949"
+  },
+  {
+    "id": "LC26",
+    "path": "evidence/live/d06-stage-board-partial-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/stage_analysis.html#board",
+    "caption": "Settled Stage Board failure despite prior unaffected claim",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:19:06.319301+00:00",
+    "persisted_at_chicago": "2026-11-03T02:19:06.319301-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 94228,
+    "sha256": "6a64c12cdd03ecc633a23d68309f88b710f060932d6159d24c433bf9c7804dd6"
+  },
+  {
+    "id": "LC27",
+    "path": "evidence/live/d06-stage-industries-error-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/stage_analysis.html#industries",
+    "caption": "Settled Industries failure and contradictory sibling-health copy",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:20:26.548643+00:00",
+    "persisted_at_chicago": "2026-11-03T02:20:26.548643-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 103159,
+    "sha256": "d139bb974e2cf24720356a6f0d26a7e0f2d1a82b536461311a23e834aef59866"
+  },
+  {
+    "id": "LC28",
+    "path": "evidence/live/d06-spvector-range-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/spvector.html",
+    "caption": "Actual1Y chart range after activation",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:21:26.437793+00:00",
+    "persisted_at_chicago": "2026-11-03T02:21:26.437793-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 108456,
+    "sha256": "69df733ff8f48390d0d64820847e583af144dd60939ea62376f6dfee8c0ce1ac"
+  },
+  {
+    "id": "LC29",
+    "path": "evidence/live/d06-dev-bench-exclusion-20261103.jpg",
+    "url": "https://beta.mastermind-x.com/dev/chart-bench",
+    "caption": "Beta chart-bench URL returned404; no flag changed; runtime cause unproved",
+    "role": "raw existing-product beta baseline; not proposed-after, full-case pass or approval",
+    "persisted_at_utc": "2026-11-03T08:22:47.027255+00:00",
+    "persisted_at_chicago": "2026-11-03T02:22:47.027255-06:00",
+    "timestamp_semantics": "local file persistence following screenshot, not a source observation/build/release timestamp",
+    "mime": "image/jpeg",
+    "pixel_dimensions": [
+      1363,
+      936
+    ],
+    "viewport_css_px": [
+      1363,
+      936
+    ],
+    "device_pixel_ratio": 1,
+    "bytes": 15424,
+    "sha256": "2fe7259674588645f01e8d9123f7b9bd0e49bb41142e9432fe51a99d143ec7df"
+  }
+]

@@ -156,3 +156,16 @@ Original Refraction is top-edge only. Rejected full-paneR2`1MFJ-0`/`1ML8-0`/`1MN
 
 The JSON [registry snapshot](evidence/retained_registry.json) and [capability rows](evidence/feature_dispositions.json) are evidence artifacts subordinate to the existing source, not new runtime registries. A later source drift that adds or changes a capability requires a ledger delta before candidate freeze. Builder tests must prove reachability, permissions and source fidelity; merely matching these counts is insufficient.
 
+
+## Live baseline refinement, with counts unchanged
+
+The [approved beta audit](LIVE_BASELINE_AUDIT.md) supplies before-design evidence for existing dispositions. No existing capability was removed, relocated or newly declared accepted. All76 rows retain their existing40/35/1 counts and pending review status.
+
+- TC02 retains the actual Brain singleton and adds source-qualified lifecycle/focus coordination under its existing owners; close already exists in widget source.
+- TC25's improvement includes keyboard splitter semantics and deliberate focused-state retention; successful pointer resize alone does not pass it.
+- TC35 preserves the actual session-origin cache and exact accepted href; viewport restoration remains a separate proposal.
+- Intelligence Entries currently reaches RE-ENTRY records. Preserve that record reachability. Dedicated Re-entries filter isolation/count/scope parity remains unqualified, including narrow layouts; retain its obligation until the existing owner resolves it.
+- Comparison must retain adjustment basis, common anchor and unequal history coverage while qualifying the observed readout discrepancy.
+- Embed and Stage improvements now have concrete language/zoom and per-slice recovery-copy evidence. These are refinements of existing capabilities, not invented new datasets or coverage.
+
+Four additional migration cases cover real gaps; the six BLOCKED_DATA extensions and older Paper sizing field remain unchanged. No AI prompt, account save, public upload or model decision was exercised or accepted.

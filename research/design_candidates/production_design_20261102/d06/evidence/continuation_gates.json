@@ -1,0 +1,65 @@
+{
+  "artifact": "D06 separately observed foundation and authoring gates",
+  "assembled_at_utc": "2026-11-03T08:34:56.362208+00:00",
+  "f01": {
+    "pr": 10645,
+    "sha": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+    "draft": true,
+    "merged": false,
+    "version": "F01-F02-SHELL/1.0.0-candidate.3",
+    "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
+    "joint_v1_released": false,
+    "unresolved_operation": "F01-20261103-c4-state-8-v1",
+    "joint_contract_blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
+    "product_spec_blob": "63418f0ec69d02c8c3a1a8d55caa58688a85a4f5",
+    "return_blob": "432ed78fd85f5764538d27daa4ea70cd911b949b"
+  },
+  "f02": {
+    "pr": 10630,
+    "sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "draft": true,
+    "merged": false,
+    "state": "PARTIAL / NATIVE_WRITES_PAUSED_EFFECT_UNRESOLVED / RIG draft",
+    "unresolved_operation": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+    "native_product": "BLOCK",
+    "native_taste": "BLOCK",
+    "complete_repaired_freeze": false
+  },
+  "p00": {
+    "pr": 10626,
+    "sha": "3f27e859438f5ba2d8288735c4d04aa087bfc45c",
+    "state": "BLOCKED_RETURN / PARTIAL",
+    "paper_desktop": "0.5.18",
+    "qualified_write_tools": 16,
+    "incompatible_write_tools": 0,
+    "review_id": 5747709189,
+    "reviewer": "mastermindxryan",
+    "review_scope": "exact P00 evidence package only; no new Paper permission or D06 design approval"
+  },
+  "authoring": {
+    "d06_c4_account_app_target_write_admission": "NOT_ESTABLISHED",
+    "current_native_reads": "prior accepted reads retained; no redo",
+    "file_wide_exclusive_lock_required": false,
+    "original_c4_sequence_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6596509579",
+    "later_hold_comment": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6598834570",
+    "latest_owner_census": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6598862718",
+    "latest_owner_census_at_utc": "2026-11-03T08:25:36Z",
+    "conclusion": "Current source/host progress and C2 proof do not establish this D06/C4 exact write admission. No Paper mutation attempted.",
+    "census_evidence_scope": "Separate installed Studio host lifecycle; not the connected direct native app runtime or permission. Direct native hold rests on original acceptance sequence and absent exact account/app/target admission."
+  },
+  "browser": {
+    "approval": "explicitly cleared by user",
+    "used": true,
+    "details": "browser_gate.json"
+  },
+  "d06": {
+    "pr": 10655,
+    "branch": "design/d06-terminal-phase2a-20261103-c4",
+    "prepublication_head": "217477f80a405af56778563535e5314813897b49",
+    "draft": true,
+    "formal_rig": "draft",
+    "editable_after_designs": 0,
+    "production_changes": 0,
+    "mission_complete": false
+  }
+}

@@ -1,6 +1,6 @@
 # D06 Terminal product and UX specification
 
-**Candidate status: draft. Phase 2A source specification; final editable composition held.** This document defines proposed behavior for later reference review and implementation. Existing behavior is identified as observed source or Paper precedent. No requirement below is a claim of implementation, usability measurement or reference approval.
+**Candidate status: draft. Phase 2A source specification; final editable composition held.** This document defines proposed behavior for later reference review and implementation. Existing behavior is identified as observed source, Paper precedent or the separately recorded [live beta baseline](LIVE_BASELINE_AUDIT.md). No requirement below is a claim of implementation, usability measurement or reference approval.
 
 ## Product and success
 
@@ -80,9 +80,9 @@ Height is also a constraint: chart fills the remaining workspace after actual ch
 
 ## Focus, overlays, scrolling and motion
 
-The chart remains mounted through reader and rail toggles. Each destination has one active scroll owner: chart pan/zoom for the plot, independent rail scroll for long research, a bounded modal body for sheets, normal document scroll on Macro pages. Wheel behavior must not trap a user who is trying to reach the next page section. A visible “Back to chart” action and keyboard path accompany focused research.
+The chart remains mounted through reader and rail toggles. Each destination has one active scroll owner: chart pan/zoom for the plot, independent rail scroll for long research, a bounded modal body for sheets, the existing content document/iframe scroll owner on Macro pages while shared chrome stays fixed. Do not introduce competing outer-page scrolling or duplicate shell chrome. Wheel behavior must not trap a user who is trying to reach the next page section. A visible “Back to chart” action and keyboard path accompany focused research.
 
-Use nonmodal semantics for a docked reader and modal semantics for a blocking sheet. Do not trap focus in the docked reader. On open, focus its heading/close control; on close, restore its recorded launcher with `preventScroll`, or a valid chart fallback if the launcher disappeared. Escape dismisses the topmost overlay before drawing cancel/reset; input, contenteditable and IME composition suppress global shortcuts. Resize handles must have keyboard increments and reset controls as alternatives to drag.
+Use nonmodal semantics for a docked reader and modal semantics for a blocking sheet. Do not trap focus in the docked reader. On open, focus its heading/close control; on close, restore its recorded launcher with `preventScroll`, or a valid chart fallback if the launcher disappeared. Escape is owned by the active layer before chart drawing cancel/reset; input, contenteditable and IME composition suppress unrelated global shortcuts. Brain has its own state-dependent chain, including Stop versus Close. Its source/live discrepancy, actual close method and conditional focus hook are bound in [BRAIN_SHELL_HANDSHAKE.md](BRAIN_SHELL_HANDSHAKE.md); do not promise universal panel closure or infer request cancellation from hiding. Resize handles must have keyboard increments and reset controls as alternatives to drag, with focusability, a visible focus state and accurate minimum, maximum and current value. The live 360→460px pointer resize retained reader context/scroll, but the observed separator lacked keyboard/range semantics; that baseline does not pass the keyboard requirement.
 
 Only the original top-edge Refraction material is eligible. The predecessor specifies a slow16-second drift, no pulse/flash/waveform, and a still panel. Final motion tokens and applicability await F02. Reduced motion stops decorative movement, preserves status and keeps chart/source state changes understandable without animation.
 
@@ -92,13 +92,14 @@ Target WCAG2.2 AA with an accessible chart-data path: focusable selected-bar sum
 
 Important mobile controls use the programme's44px house target. WCAG2.2 AA2.5.8 is24×24 CSS px or its spacing/exception rules; these are different requirements. At400% zoom, surrounding text and controls reflow to a320CSS-px equivalent; essential2D chart/table interaction may be contained within its component. Verify text/nontext contrast, visible and unobscured focus, keyboard operation, target spacing and text resize using real rendered colors and measured bounds. The source embed currently sets `userScalable:false` / `maximumScale:1`; retain this as an accessibility issue to resolve with the widget/native owner, not a passed zoom test.
 
-EN/ZH share semantics and source values. Translate labels and failure reasons, not canonical symbols/IDs. Preserve Chinese exchange identifiers/leading zeros, CJK wrapping and numeric alignment. Do not infer currency or exchange from language/region. Light and dark must use the released F02 semantic surfaces and chart colors; no local competing token system. Validate dense candlesticks, volume, drawings, selection, disabled items, stale states and focus in both themes.
+EN/ZH share semantics and source values. Set the document or relevant content language to match rendered text; the live Chinese embed retained document lang=en, so visual translation alone does not satisfy assistive-language requirements. Translate labels and failure reasons, not canonical symbols/IDs. Preserve Chinese exchange identifiers/leading zeros, CJK wrapping and numeric alignment. Do not infer currency or exchange from language/region. Light and dark must use the released F02 semantic surfaces and chart colors; no local competing token system. Validate dense candlesticks, volume, drawings, selection, disabled items, stale states and focus in both themes.
 
 Primary standards: [W3C target size](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html), [W3C reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html). No conformance measurement is claimed.
 
 ## Paper composition plan and acceptance
 
 Reuse the exact inspected references:
+
 - [Chart Context](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-W-0): `1K9F-0`, `1KNZ-0`.
 - [Intelligence](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-I-1): desktop Summary`19IC-1`, Oracle`19WI-1`, Research`19PG-1`, Activity`1A3O-1`; compact focus`1AAY-1`; mobile Summary`1AEB-1` and existing detail variants.
 - [Refraction](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Z-0): original material`1M58-0`; original desktop/mobile`1M4U-0`/`1M53-0`. Preserve rejected R2`1MFJ-0`/`1ML8-0`/`1MNZ-0` as history, never successors.
@@ -115,4 +116,20 @@ Later implementation should measure successful exact-instrument entry, exact req
 
 ## Additional predecessor findings
 
-The older Intelligence reference 19BB-1 includes an illustrative “Suggested size 50%”; current R3 specimens instead show sizing unavailable. Keep the unavailable state until the existing sizing owner supplies an approved producer and access/decision contract. The mobile Activity predecessor omits a visible Re-entries filter, so the final composition must provide a reachable equivalent without losing that supported capability. The older Refraction settings grid omits 12h; source registry parity, not screenshot copying, governs the full 19-interval chooser.
+The older Intelligence reference 19BB-1 includes an illustrative “Suggested size 50%”; current R3 specimens instead show sizing unavailable. Keep the unavailable state until the existing sizing owner supplies an approved producer and access/decision contract. The mobile Activity predecessor omits a visible Re-entries filter, so the final composition must provide a reachable equivalent without losing that supported capability. Live desktop Entries exposes RE-ENTRY records, proving their current reachability. Exact parity with the predecessor’s dedicated Re-entries filtering, including isolation, counts, scope and narrow/touch access, remains to be qualified. Retain that filtering obligation until the existing owner resolves it. The older Refraction settings grid omits 12h; source registry parity, not screenshot copying, governs the full 19-interval chooser.
+
+## Live-informed refinements for the existing owners
+
+These are candidate requirements grounded in the [baseline audit](LIVE_BASELINE_AUDIT.md), not changes applied to the product.
+
+| Journey | Required refinement | Existing owner |
+| --- | --- | --- |
+| Generic versus company entry | Generic Open Terminal uses its qualified workspace/default path; named Open [symbol] chart uses an explicitly qualified current identity. A valid Analysis URL identity wins over stale shared cursor; an explicitly invalid identity never silently opens the previous company. | F01/D07/Terminal; NAV10 |
+| Evidence and Brain | Retain one Brain and existing selection/request owners. Qualify real close/visibility/focus before adopting candidate.3 evidence suspension; do not automatically reopen the reader after Brain closes. Terminal width remains independently owned. | D14/F01/F02/Terminal; BRAIN01 |
+| Focus and historical context | Separate committed reader selection, transient hover and AI locked selection. Test focus transitions with the pointer outside the plot; preserve owner-defined pinned state, logical range and explicit disclosure policy. | Chart/reader/D14; LAY06 |
+| Event location | A located historical event can pan the chart without selecting the same reader bar. Keep Latest truthful until an explicit selection bridge is supported; retain Intelligence's observed launcher focus return. | Intelligence/ChartPanel; HIST01/LAY06 |
+| Comparison | Expose primary/overlay identity, actual common anchor, adjustment basis and unequal coverage dates. Readouts must identify their interval or absence; no fabricated zero returns. Qualify the observed anchor/readout discrepancy with its producer owner. | Comparison/data; COMP01 |
+| Shared current navigation | Mark only the actual matching destination current; zero current destinations is valid for an unmapped utility route. The live Scripts Today marker does not satisfy this requirement. | F01 navigation |
+| Partial publication | Each Stage slice reports its own observed load state. Do not promise a sibling works when its state is unknown or failed; preserve valid overview/siblings and targeted retry. | Stage publication; STAGE04 |
+
+The source Read me content is independently useful before final composition. Its actual Paper placement requires current D06/C4 account/app/target admission; final shell-dependent composition additionally requires verified joint F01/F02 v1. Neither supported v20 edit schemas nor another account's accepted write supplies that grant.

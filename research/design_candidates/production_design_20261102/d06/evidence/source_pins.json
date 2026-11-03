@@ -17,19 +17,33 @@
     "schema": "mastermind.sol_skillpack.v1",
     "version": "1.0.1",
     "minimum_bootstrap_major": 1,
-    "late_index_only_check_sha": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c",
-    "mission_pin_retained": true
+    "late_index_only_check_sha": "d47cdb5652096e038a8bfb24e431ebe48ccf7ff2",
+    "mission_pin_retained": true,
+    "prior_index_only_check_sha": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c"
   },
   "product_source": {
     "terminal": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
     "macro": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
-    "served_release_attested": false
+    "served_release_attested": false,
+    "later_brain_file_drift_check": {
+      "terminal_sha": "c8a1d0e23255c2d5374258b52197bdf1aed85b27",
+      "macro_sha": "00438de71e1d67e051d5e2f3938ef49762ecbe97",
+      "relevant_lifecycle_blobs_unchanged": true,
+      "macro_widget_blob": "e4d7bd63261c4065d720430589377ff0a7f758f8",
+      "terminal_typed_bridge_blob": "8bad1568a715d3603331db492eced30fe33f98de",
+      "terminal_widget_integration_blob": "5bf6fb83c02222e0c1682890c982beb91c515536"
+    },
+    "observed_deployment_token": "ac3762717ad150fd4f18614afd78072115a7c80a"
   },
   "later_foundations": {
     "f01": {
       "pr": 10645,
-      "sha": "b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5",
-      "draft": true
+      "sha": "d6ebeefcba90387b42817f8e87792e630d5862eb",
+      "draft": true,
+      "version": "F01-F02-SHELL/1.0.0-candidate.3",
+      "state": "PARTIAL / REQUEST_CHANGES / RIG draft",
+      "joint_v1_verified": false,
+      "prior_consumed_candidate3_sha": "3ec131bb4b515c5ede76f51e9d8e65f128bc19ae"
     },
     "f02": {
       "pr": 10630,
@@ -46,6 +60,18 @@
     "spec_checkpoint": "d0e6844a8fa03da4073eb4182cc473ed7b6b3e4b",
     "parent_pr": 10617,
     "parent_later_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
-    "final_identity": "containing immutable Git commit plus evidence/manifest.json"
+    "final_identity": "containing immutable Git commit plus evidence/manifest.json",
+    "prior_evidence_freeze": "217477f80a405af56778563535e5314813897b49"
+  },
+  "later_p00": {
+    "pr": 10626,
+    "sha": "3f27e859438f5ba2d8288735c4d04aa087bfc45c",
+    "state": "BLOCKED_RETURN / PARTIAL",
+    "paper_desktop": "0.5.18",
+    "qualified_write_tools": 16,
+    "incompatible_write_tools": 0,
+    "review_id": 5747709189,
+    "reviewer": "mastermindxryan",
+    "review_scope": "exact P00 evidence package only; no new Paper permission or D06 design approval"
   }
 }

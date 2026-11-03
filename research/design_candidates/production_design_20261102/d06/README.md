@@ -1,79 +1,93 @@
 # D06 Terminal Phase 2A specification and evidence
 
-**Delivery: PARTIAL overall; source specification delivered.** The package defines the product, retained capabilities, interactions, real data contracts, responsive/accessibility requirements, builder ownership and67 migration cases. Live visual/interaction verification and final editable shell composition remain blocked. **RIG: draft; no approval receipt. Product implementation: not performed.**
+**Delivery: source specification and bounded live baseline delivered; overall PARTIAL. RIG: draft.** The existing D06 package now includes actual beta interaction evidence across all nine assigned route families, a source-bound Brain/shell handoff and 71 proposed migration cases. Final shell-dependent editable composition and independent design acceptance remain held. Product implementation was not performed.
 
-The current D06 owner remains the Chairman-assigned Astra Pro receiver, ChatGPT4. This is the bounded D06 assignment in the existing whole-estate programme. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) is the isolated documentation carrier under programme [Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No product session, implementation branch, lifecycle system or shared return ledger was created.
+The current owner remains the Chairman-assigned D06 Astra Pro receiver, ChatGPT4 / `mastermidx4`. [Draft PR #10655](https://github.com/mastermindx-market-intelligence/macro/pull/10655) and branch `design/d06-terminal-phase2a-20261103-c4` remain the only D06 carrier under [programme Draft #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No replacement session, production branch, lifecycle system or shared return ledger was created.
 
-## Read the package
+## Read the complete package
 
 | Artifact | Purpose |
 | --- | --- |
-| [Product and UX specification](PRODUCT_UX_SPEC.md) | Complete normal journeys, keep/change decisions, chart-first/focused layout, measured available-width rules, accessibility and Paper reuse |
-| [Feature retention ledger](FEATURE_RETENTION.md) |76 existing capability groups:40 RETAIN,35 IMPROVE,1 BLOCKED_DATA; no removals or relocations; six separate proposed extensions |
-| [Route and backend contracts](ROUTE_DATA_CONTRACTS.md) |Nine canonical families, exact URL/identity/access/state owners, actual producers/APIs, clocks, units, cache and write/readback |
-| [Macro research contracts](MACRO_ROUTE_CONTRACTS.md) |Market Structure, Stage Analysis and S&P Vector depth, actual builders, source/model limitations and required corrections |
-| [Interaction states](INTERACTION_STATES.md) |Control outcomes, keyboard/touch/focus/scroll, EN/ZH copy and pending/failed/conflict/uncertain writes |
-| [Builder and migration plan](BUILD_AND_TEST_PLAN.md) |Owner-preserving implementation sequence,67 specified cases, performance/a11y targets and rollback |
-| [Prepared Paper annotations](PAPER_BUILD_ANNOTATIONS.md) |Read me and adjacent-control instructions ready for later qualified composition; not yet written to Paper |
-| [Evidence and ownership return](EVIDENCE_AND_RETURN.md) |Exact pins, inspected Paper identities, live-browser limits, advisory corrections, acceptance and next owners |
-| [Evidence manifest](evidence/manifest.json) |Immutable member hashes bound by this containing Git commit; baseline captures are not an approved after-design |
+| [Product and UX specification](PRODUCT_UX_SPEC.md) | Normal journeys, keep/change decisions, chart-first/focused layout, measured available-width rules, responsive/accessibility requirements and Paper reuse |
+| [Feature retention ledger](FEATURE_RETENTION.md) | 76 existing capability groups: 40 RETAIN, 35 IMPROVE, one BLOCKED_DATA; zero removals/relocations; six separate proposed extensions |
+| [Route and backend contracts](ROUTE_DATA_CONTRACTS.md) | Nine canonical families, URL/entity/access/state owners, real producers/APIs, clocks, units, cache and write/readback |
+| [Macro research contracts](MACRO_ROUTE_CONTRACTS.md) | Market Structure, Stage Analysis and S&P Vector depth, actual builders, source/model limitations and required corrections |
+| [Interaction states](INTERACTION_STATES.md) | Control outcomes, keyboard/touch/focus/scroll, EN/ZH states and pending/failed/conflict/uncertain writes |
+| [Builder and migration plan](BUILD_AND_TEST_PLAN.md) | Existing ownership, implementation sequence, 71 specified cases, performance/a11y targets and rollback |
+| [Live beta baseline audit](LIVE_BASELINE_AUDIT.md) | Actual chart, identity, history, overlays, scroll/resize, focus, deep-link/return, source-clock and route observations; 29 raw captures |
+| [Brain and shell qualification](BRAIN_SHELL_HANDSHAKE.md) | Actual close/focus API, missing host acknowledgement, served/source discrepancy and proposed owner-bound arbitration |
+| [Prepared Paper annotations](PAPER_BUILD_ANNOTATIONS.md) | Complete Read me and adjacent-control copy; no Paper placement claimed |
+| [Evidence and ownership return](EVIDENCE_AND_RETURN.md) | Exact source/Paper identities, current gate dispositions, acceptance limits and next actions |
+| [Evidence manifest](evidence/manifest.json) | Immutable member hashes bound by the containing Git commit; baseline captures are not an approved after-design |
 
-Exact retained registries: **99 drawing tools,29 classic indicators,5 suites with31 module references,15 research panes,19 gated intervals and9 chart types**. Machine-readable [registry](evidence/retained_registry.json), [dispositions](evidence/feature_dispositions.json) and [migration cases](evidence/migration_cases.json) accompany the prose.
+Exact retained registries: **99 drawing tools, 29 classic indicators, five suites with 31 module references, 15 research panes, 19 gated intervals and nine chart types**. Machine-readable [registry](evidence/retained_registry.json), [feature decisions](evidence/feature_dispositions.json), [migration cases](evidence/migration_cases.json), [live coverage](evidence/live_coverage.json) and [capture metadata](evidence/live_captures.json) accompany the prose.
 
-## Source identity
+## What the approved continuation established
 
-| Input | Immutable identity |
+The user explicitly approved further browser work. The earlier browser-fallback approval gate is cleared and preserved only as historical context in [browser_gate.json](evidence/browser_gate.json).
+
+At the actual guest beta viewport of 1363×936, the chart loaded with professional controls; a historical reader withheld current calendar data; independent reader scrolling and a 360→460px pointer resize retained the observed context; `symbol=0700.HK&sym=AAPL` correctly rendered Tencent/HKEX; Intelligence exposed distinct judgments and history; and one Analysis→Terminal→Analysis journey returned to the exact accepted href.
+
+Material changes now specified from that evidence:
+
+- Qualify Brain's real close/visibility/focus integration. The widget already has `close`; the Terminal type and host lack the complete acknowledged lifecycle. Keep one assistant and distinguish presentation Close from request Stop.
+- Separate committed reader selection, hover, AI locked selection and historical event location. A visually historical viewport does not prove exact reader/AI attachment.
+- Preserve comparison source basis, anchor and unequal coverage; require the existing owner to qualify the observed percent-readout discrepancy.
+- Distinguish generic Open Terminal from a named current-company action, avoiding stale shared cursor entry and false current navigation.
+- Correct embed content-language/zoom/source-clock requirements and Stage's unconditional claims that failed sibling views are unaffected.
+
+Four meaningful cases—BRAIN01, LAY06, NAV10 and COMP01—extend the original 67 to **71 specified, not executed** migration cases. Existing cases were strengthened where they already covered the issue. Successful before-design observations are recorded separately; no full migration pass is inferred from them.
+
+## Immutable inputs and separately observed updates
+
+| Input | Exact identity |
 | --- | --- |
 | All five required programme inputs and scoped census | Macro `6e1862867193ec6486a22001a0e4fb515da20448` |
-| Protected procedure loaded for this mission | Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`; skillpack 1.0.1/bootstrap major 1 compatible |
-| Terminal implementation source | mastermind-terminal `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` |
-| Macro implementation source | macro `fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9` |
-| Later F01 input, separately read | Draft #10645 atb2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5 |
-| Later F02 input, separately read | Draft #10630 atf7c25c4b9870cff260c2a4b998be18d6c04d36d0; F02-SYSTEM/1.0.0-candidate.2 |
-| Parent carrier observed later | Draft #10617 at4c0e54e378dc0b3a447e05372d95f8707259f076; original assignment remains6e186… |
-| D06 branch | design/d06-terminal-phase2a-20261103-c4, created from6e186…; source checkpoints edf2b53… andd0e6844… retained |
+| Protected procedure loaded for this mission | Mastermind `b2326bbe30e9988d26199f5e774a482b9c09068a`; skillpack 1.0.1/bootstrap major1 compatible |
+| Later current INDEX compatibility check | Mastermind `d47cdb5652096e038a8bfb24e431ebe48ccf7ff2`; same compatibility and mission-pin reuse rule; not a claim of reloading all companions at that later pin |
+| Terminal implementation source | `3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9` |
+| Macro implementation source | `fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9` |
+| Brain-relevant later source drift checks | Terminal `c8a1d0e23255c2d5374258b52197bdf1aed85b27`; Macro `00438de71e1d67e051d5e2f3938ef49762ecbe97`; relevant inspected lifecycle blobs unchanged |
+| F01 latest consumed candidate | Draft #10645 at `d6ebeefcba90387b42817f8e87792e630d5862eb`; F01/1.0.0-candidate.3 and joint candidate.3; PARTIAL / REQUEST_CHANGES / RIG draft |
+| F02 consumed candidate | Draft #10630 at `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`; F02-SYSTEM/1.0.0-candidate.2; partial native writes paused |
+| P00 evidence return | Draft #10626 at `3f27e859438f5ba2d8288735c4d04aa087bfc45c`; BLOCKED_RETURN/PARTIAL, with an actual evidence-only approved review |
+| Prior D06 evidence freeze | `217477f80a405af56778563535e5314813897b49`; retained as history, extended on the same branch |
 
-Source pins do not prove served release identity. A late protected INDEX compatibility check at e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c confirmed the same1.0.1 compatibility and atomic-load/reuse law; the mission's loaded procedure pin remainsb2326….
+The original assignment pin is unchanged. Later foundation, procedure-INDEX and lifecycle observations are separately identified inputs. The observed beta deployment token is not a verified Git/release mapping; the external Brain asset was not byte-attested.
 
-## Material design decisions
+## Progress and acceptance
 
-- Keep the chart primary, one Brain, existing distributed chart/state owners, native-shell modes and professional keyboard/tool depth.
-- Reuse the Chart Context and Intelligence hierarchy. Refraction stays at the original top edge; rejected full-pane variants remain excluded.
-- Make selected reader bar versus AI locked bar explicit. Preserve data generation, historical cutoff, time basis and per-source clocks.
-- Treat exact TF/bar incoming links and origin viewport restoration as source-owned extensions until they actually work.
-- Describe public shares as PNG snapshots. Do not invent restore, expiry or revocation metadata.
-- Preserve data qualifications, including synthetic opens, descriptive intraday provenance, weekly-native Stage classification and S&P Vector shadow overlay.
-- Retain the old Paper sizing field as **unavailable** until an approved producer exists; never revive its illustrative50% value.
-- Preserve every Macro range, secondary view and local watch/export behavior while correcting unknown/zero and model-authority presentation.
+These are editorial package states, not Executive lifecycle transitions or reviewer approval.
 
-## Task tree and current acceptance
-
-Editorial labels below are source-package progress, not Executive lifecycle or reviewer acceptance.
-
-| Node | State | Evidence / remaining work |
+| Node | State | Evidence / remaining boundary |
 | --- | --- | --- |
-| D06.2A.1 Baselines and boundaries | partial |Exact source and Paper review complete to recorded depth; initial beta DOM obtained; live visual/interaction proof blocked |
-| D06.2A.2 Product and retention | specified |Complete source/Paper ledger and exact registries; reviewer decision still pending |
-| D06.2A.3 Interaction and data | specified |Identity,bar/session/clocks,permissions,scroll/resize/return and failure contracts |
-| D06.2A.4 Builder and migration | specified |Owner map,sequence,67 cases and rollback; cases not executed |
-| D06.2A.5 Source evidence return | delivered |16 predecessor/reference images,2 structure reads,hash manifest and artifact integrity checks |
-| D06.2B Composition and review | blocked |Verified joint F01/F02 v1,qualified exact Paper operation,editable after-artifacts and actual independent RIG review |
+| D06.2A.1 Baselines and boundaries | delivered to recorded depth | Exact source and Paper inspection plus real beta observation of all nine families; guest/fixed-viewport/negative-fixture limits explicit |
+| D06.2A.2 Product and retention | specified | Complete source/Paper ledger and retained registries; no feature removal |
+| D06.2A.3 Interaction and data | specified with live findings | Real identity, clocks, owner/state boundaries and Brain handoff; source extensions remain proposed |
+| D06.2A.4 Builder and migration | specified | 71 unique cases, all specified-not-executed; owner-preserving sequence and rollback |
+| D06.2A.5 Evidence return | delivered | 29 beta captures, 16 Paper reference captures, two structure reads, source pins and hash manifest |
+| D06.2B Editable composition and review | blocked | Verified joint F01/F02 v1, exact D06/C4 authoring admission, frozen after-artifacts and actual independent RIG/QA01 qualification |
 
-## Exact Paper references
+No phone/tablet/touch/400% proof, authenticated save/access/race proof, positive public-snapshot proof, performance measurement, model validation or served-release attestation is claimed. Paper mobile references are not browser-responsive evidence.
 
-[Chart Context](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-W-0): desktop1K9F-0 and mobile1KNZ-0.  
-[Intelligence](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-I-1): all 11 listed predecessor/current-reference boards inspected and captured.  
-[Refraction](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Z-0): original desktop1M4U-0,mobile1M53-0,material1M58-0; rejectedR2 not reused.  
-[Source-only baselines](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-G-0): directory/tree inspected; group screenshot unusable and not counted as visual proof.  
-[Shared shell input](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0): F01 custody retained.
+## Exact existing Paper references
 
-No Paper mutation occurred. All retained images are before/reference evidence, with illustrative data and old-header qualifications. No candidate after-composition is frozen.
+| Existing page | Exact references to preserve |
+| --- | --- |
+| [Chart Context](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-W-0) | Desktop `1K9F-0`; mobile `1KNZ-0` |
+| [Intelligence](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-I-1) | Eleven inspected predecessor/current-reference boards, including four desktop views, compact focus and phone views |
+| [Refraction](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Z-0) | Original desktop `1M4U-0`, mobile `1M53-0`, material `1M58-0`; rejected full-pane `1MFJ-0`/`1ML8-0`/`1MNZ-0` excluded |
+| [Source-only baselines](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-G-0) | Directory/tree inspected; `YYM-0` group capture unusable and not counted as visual proof |
+| [F01 current native candidate](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0) | F01 custody; retained predecessors on [p-23-0](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-23-0) |
 
-## Gates and exact next action
+No D06 Paper mutation occurred. The prepared Read me can be placed independently of final shell composition once its actual authoring admission is established; it must not be used as a replacement canary. Final shell-dependent composition remains held for joint v1.
 
-**Primary continuation:** after F01/F02 publish a verified joint v1 with immutable references and review/condition evidence, the same D06 owner re-reads target writers and composes the held editable references using this package, then seeks the required independent review.
+## Current gates and exact continuation
 
-**Independent proof gate:** automatic browser approval review rejected further beta navigation as unapproved fallback/origin access. User approval is required before another browser attempt. The initial DOM and source/Paper work remain useful; actual loaded-chart,scroll,resize,focus,return and responsive proof remains open.
+F01's `F01-20261103-c4-state-8-v1` and F02's `f02-c2-macro-light-zh-390-chart-footer-20261103-01` still require original-owner terminal/canonical reconciliation, repairs, a frozen native set and review. D06 must not replay either operation or take either target. Candidate geometry concurrence is not release.
 
-Finalization at this source return: **ALL_SCOPED_LANES_BLOCKED; MISSION_COMPLETE:false.** The bounded specification is durable; the full D06 design assignment and parent programme are not complete. No merge,un-draft,Ready,enqueue,relabel,deploy or production code change was performed. The shared SESSION_RETURNS.md collision and all other live writers remain untouched.
+P00 corrected the old catalog mismatch: 16 native write schemas qualify. That is not D06/C4 account/app/target admission. The original Paper owner still carries C4 native-write acceptance conditions. Its separate installed Studio host enrollment/activation records do not identify this connected direct app’s runtime or grant admission. Another account’s accepted write and source review are not transferable. [Current gate evidence](EVIDENCE_AND_RETURN.md) records the narrow distinction.
 
+After those exact gates clear, the **same D06 owner** rechecks target writers, composes the held editable variants using this package, freezes the after-artifacts and enters genuine independent review. The existing product owners later implement and prove their assigned contracts only under a separate authorized commission.
+
+**FINALIZATION_CLASSIFICATION: ALL_SCOPED_LANES_BLOCKED for remaining composition/qualification work. MISSION_COMPLETE: false.** The currently executable Phase2A research/source work is durable; the fully accepted design assignment and parent programme remain incomplete. No merge, un-draft, Ready, enqueue, held-PR relabel, deployment or production code change occurred. Shared `SESSION_RETURNS.md` and all other writers remain untouched; no background watcher or automatic continuation is armed.

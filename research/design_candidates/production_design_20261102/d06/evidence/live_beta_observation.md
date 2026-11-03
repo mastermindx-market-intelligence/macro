@@ -1,3 +1,5 @@
+> Historical initial-extension receipt. The later explicit user approval cleared the fallback gate; see [the approved live audit](../LIVE_BASELINE_AUDIT.md) and [current browser gate](browser_gate.json). The limits below describe the earlier attempt, not the current delivery.
+
 # Sanitized live beta observation
 
 Target: https://beta.mastermind-x.com/terminal. Evidence class: real initial DOM read through the preferred Browser extension. Exact browser-read timestamp was not retained; the observation preceded the initial D06 source checkpoint edf2b53c7c5100ea4b351df009509b3bc196f7ec at2026-11-03T06:24:05Z. This is a bounded session observation, not a served-release attestation.

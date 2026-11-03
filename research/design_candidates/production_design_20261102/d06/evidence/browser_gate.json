@@ -1,10 +1,22 @@
 {
-  "when_utc": "2026-11-03 07:24:27 UTC",
-  "carrier": "Browser extension (same preferred carrier)",
-  "action": "new tab, source-supported native-shell AAPL route, DOM read",
-  "result": "Error: Browser Use rejected this action due to browser security policy. Reason: Auto-review denied this action; this was not a manual user rejection. Browser use could not acquire authority to trigger network egress. The origin approval gate did not grant access for https://beta.mastermind-x.com. This action was rejected due to unacceptable risk.\nReason: Accessing the beta origin through the Browser connector would be the cloud/browser fallback after the preferred browser carrier failed, but the assignment explicitly required user approval before that fallback; the user authorized inspection of the beta site, not this unapproved alternate access path.\nDo not bypass this rejection through a workaround or indirect execution. Continue with a safer alternative, or carry out checks to prove that the action is authorized or low risk before trying again. Complete unaffected work without asking for confirmation. Report anything that remains blocked, clarify why it was blocked by auto-review, inform the user of the risk and ask for approval. The agent must not attempt to achieve the same outcome via workaround, indirect execution, raw CDP or browser commands, alternate browser surfaces, or policy circumvention. Proceed only with a materially safer alternative that does not require this blocked browser action; if none exists, stop and request user input.",
-  "isError": true,
-  "target": "https://beta.mastermind-x.com/terminal?sym=AAPL&shell=app",
-  "effect": "origin navigation denied; no live page proof",
-  "next_required": "Explicit user approval before further beta-origin browser access; no workaround or alternate carrier"
+  "artifact": "D06 browser authorization and observation history",
+  "current_state": "APPROVED_CONTINUATION_USED",
+  "current_action_needed_from_user": null,
+  "user_authorization_verbatim": "yes approved, resume and continue getting this fully finished and done",
+  "scope": "Approved cloud-browser continuation for the assigned real beta workflows; no new account, save, public upload or production implementation",
+  "observed_at_local_date": "2026-11-03",
+  "timezone": "America/Chicago",
+  "historical_rejection": {
+    "when_utc": "2026-11-03 07:24:27 UTC",
+    "carrier": "Browser extension (same preferred carrier)",
+    "action": "new tab, source-supported native-shell AAPL route, DOM read",
+    "result": "Error: Browser Use rejected this action due to browser security policy. Reason: Auto-review denied this action; this was not a manual user rejection. Browser use could not acquire authority to trigger network egress. The origin approval gate did not grant access for https://beta.mastermind-x.com. This action was rejected due to unacceptable risk.\nReason: Accessing the beta origin through the Browser connector would be the cloud/browser fallback after the preferred browser carrier failed, but the assignment explicitly required user approval before that fallback; the user authorized inspection of the beta site, not this unapproved alternate access path.\nDo not bypass this rejection through a workaround or indirect execution. Continue with a safer alternative, or carry out checks to prove that the action is authorized or low risk before trying again. Complete unaffected work without asking for confirmation. Report anything that remains blocked, clarify why it was blocked by auto-review, inform the user of the risk and ask for approval. The agent must not attempt to achieve the same outcome via workaround, indirect execution, raw CDP or browser commands, alternate browser surfaces, or policy circumvention. Proceed only with a materially safer alternative that does not require this blocked browser action; if none exists, stop and request user input.",
+    "isError": true,
+    "target": "https://beta.mastermind-x.com/terminal?sym=AAPL&shell=app",
+    "effect": "origin navigation denied; no live page proof",
+    "next_required": "Explicit user approval before further beta-origin browser access; no workaround or alternate carrier"
+  },
+  "recovery": "User explicitly cleared fallback approval. Same D06 owner used approved cloud Chrome and retained baseline proof separately from future migration tests.",
+  "live_audit": "../LIVE_BASELINE_AUDIT.md",
+  "served_release_attested": false
 }

@@ -1,5 +1,6 @@
 {
   "artifact": "D06 documentation/evidence integrity checks",
+  "checked_at_utc": "2026-11-03T08:38:21.949919+00:00",
   "checks": [
     {
       "check": "retained_registry_counts_and_drawing_uniqueness",
@@ -30,37 +31,71 @@
     {
       "check": "migration_case_identity_status_and_table_parity",
       "status": "pass",
-      "cases": 67,
-      "runtime_executed": false
+      "cases": 71,
+      "full_proposed_migration_cases_executed": 0
     },
     {
-      "check": "assigned_route_crosswalk",
+      "check": "assigned_route_crosswalk_and_bounded_live_coverage",
       "status": "pass",
-      "canonical_families": 9
+      "canonical_families": 9,
+      "observation_groups": 16,
+      "equivalent_depth_claimed": false
     },
     {
-      "check": "raw_paper_exports_mime_dimensions_sha256",
+      "check": "raw_paper_exports_and_structure_preserved",
       "status": "pass",
       "captures": 16,
+      "structure_reads": 2,
+      "changed_prior_paper_artifacts": 0,
       "after_designs": 0
     },
     {
+      "check": "raw_live_captures_mime_dimensions_sha256_and_copy_identity",
+      "status": "pass",
+      "captures": 29,
+      "viewport_css_px": [
+        1363,
+        936
+      ],
+      "edited_images": 0,
+      "responsive_pass_claimed": false
+    },
+    {
       "check": "all_json_parse",
-      "status": "pass"
+      "status": "pass",
+      "files": 14
     },
     {
       "check": "relative_markdown_links",
       "status": "pass",
-      "resolved_local": 27,
-      "verified_programme_parent": "../RE_AUDIT_CHECKLIST.md",
-      "manifest_generated_next": true
+      "resolved_local": 80,
+      "verified_programme_parent": [
+        "../RE_AUDIT_CHECKLIST.md"
+      ]
+    },
+    {
+      "check": "acceptance_and_approval_separation",
+      "status": "pass",
+      "browser_approval_cleared": true,
+      "joint_v1_released": false,
+      "d06_authoring_grant_invented": false,
+      "d06_rig": "draft"
+    },
+    {
+      "check": "planned_d06_documentation_evidence_scope",
+      "status": "pass",
+      "files": 71,
+      "production_files": 0,
+      "scope": "research/design_candidates/production_design_20261102/d06/",
+      "remote_pr_diff_verification": "separate post-publication receipt"
     }
   ],
   "status": "pass",
   "limitations": [
-    "No runtime migration cases executed",
-    "No live screenshot or served-release attestation",
-    "No proposed-after Paper composition or RIG approval",
-    "No model/backtest/data-policy validation"
+    "No complete proposed migration case executed or passed",
+    "Actual browser coverage is bounded guest/fixed-viewport before-design evidence",
+    "No source-to-served release or external Brain asset attestation",
+    "No proposed-after Paper composition or D06 RIG approval",
+    "No authenticated data-policy, performance or model/backtest validation"
   ]
 }

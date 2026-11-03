@@ -34,7 +34,7 @@ Each case records: exact implementation SHA and served release when applicable; 
 
 Use positive and negative fixtures with true zeros, missing fields and correction generations. Add meaningful regression assertions to the existing suite; do not test a duplicated implementation formula and call that data validation. Existing e2e/chart-capture-review.spec.ts is a relevant capture suite, inspected but not run here. Other suite paths must be resolved from the implementation head rather than invented.
 
-All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are local test-plan references, not a new runtime registry.
+All 71 cases below have status **SPECIFIED — NOT EXECUTED**. Actual guest beta subsets are separately recorded in [LIVE_BASELINE_AUDIT.md](LIVE_BASELINE_AUDIT.md); they are not whole-case passes. Their IDs are local test-plan references, not a new runtime registry.
 
 | ID | Input / action | Required outcome | Owner |
 | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are loc
 | NAV07 | Return to origin after research and pane changes | Restore row/scroll/selection only through supported origin-owner state; do not claim unimplemented fidelity. | D07/Macro/D08/D22 |
 | NAV08 | shell=app, tray=1, dossier=1 and ordinary web focus | Preserve native bridge and dossier exclusion; no duplicate chrome or Brain. | Terminal/F01 |
 | NAV09 | Valid/unknown /scripts?id, back/forward and dirty-switch cancellation | Unknown ID and cancellation preserve current script; prior ID is restored without discarding the buffer. | Scripts |
-| HIST01 | Inspect an old bar, ask AI, then switch symbol/TF/data generation during response | Bind the intended reader or locked selection explicitly and reject obsolete results. | D06/D14 |
+| HIST01 | Inspect an old bar, inspect exact pre-dispatch attachment, ask AI, then switch symbol/TF/data generation during response | Bind symbol, interval, bar/time basis and generation through the intended reader or locked owner; a symbol-only chip is insufficient; reject obsolete results. | D06/D14 |
 | HIST02 | ET daylight-saving boundary, CN/HK wall time, crypto UTC and daily dates | Format declared time basis correctly; no universal UTC suffix or shifted daily dates. | Intraday/reader |
 | HIST03 | Replay/historical selection while current calendar, quote and research are present | Withhold current calendar; date other sources separately and prevent future-known contamination. | Chart/research |
 | HIST04 | Truncated history with IPO versus feed session_anchor; 2D/3D grouping | Honor published phase; never claim reconstructed IPO alignment from a partial feed. | Ingest/chart |
@@ -62,7 +62,7 @@ All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are loc
 | DATA07 | Missing/stale/wrong-ticker fund data, quote/statement currencies and insufficient samples | Show honest unknown/retry; no inferred currency, volume rank or range score. | Fund/reader |
 | DATA08 | Reader Latest, re-enable, Hide, layer switches, candle settings and Useful/Unclear | Preserve callbacks/preferences; reset exact selection; feedback follows explicit action and does not create a new store. | Reader/settings |
 | LAY01 | All seven widths with measured navigation, gutters and inspector | Record available content width; retain a useful chart and reachable actions without whole-page overflow. | D06/F01/F02 |
-| LAY02 | Rail resize, focus/maximize, rotation and 640/860 breakpoint crossings | Preserve renderer, active pane, logical range and drawings; persist final width; no unsolicited sheet reopening. | Chart |
+| LAY02 | Rail pointer/keyboard resize and reset, focus/maximize, rotation and640/860 breakpoint crossings | Preserve renderer, active pane, logical range and drawings; persist final width; expose focusable separator with correct min/max/current values; no unsolicited sheet reopening. | Chart |
 | LAY03 | Link same-TF panes with unequal histories; request mixed-TF linking | Align calendar window/crosshair, not raw indices or price; refuse mixed TF; never propagate symbol/TF. | paneSync |
 | LAY04 | Open context while research, table or native dossier owns its destination | Honor placement rules without an overlapping unreachable reader or chart remount. | Terminal |
 | LAY05 | Chart wheel, rail/page scroll, long reader, low-height landscape and software keyboard | Keep deliberate scroll ownership, reachable close/actions and meaningful return; prevent scroll traps. | D06/F01 |
@@ -83,7 +83,7 @@ All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are loc
 | SHARE02 | Lost upload response, clipboard failure and duplicate click | Show uncertainty without blind duplicate upload; expose the actual returned link for copying. | Snapshot/D26 |
 | SHARE03 | Valid/invalid slug, missing image, network failure and proposed lifecycle states | Keep current unavailable behavior honest; no invented expiry/revocation/restore; preserve footer until approved change. | D25/D26 |
 | SHARE04 | Private review during moving chart, half-switch or replay; annotations and privacy | Require stable before/after scene; no public upload; retain exclusions and unknown clocks; omit private owner/text metadata. | Capture |
-| EMBED01 | Repeated parameters, unsupported symbol grammar and every visual/range variant | Honor first-value parser and actual coverage; do not silently broaden accepted identities. | Embed |
+| EMBED01 | Repeated parameters, unsupported symbol grammar and every visual/range variant; load1Y, choose6M, reload and inspect CTA | Honor first-value parser and actual coverage; distinguish entry URL from local range and CTA context loss; no silent URL synchronization or broader identity promise. | Embed |
 | EMBED02 | Daily as-of, empty bars, network/bad JSON and invalid OHLC/volume | Show final-bar clock when implemented and distinct source outcomes; no live-quote claim. | Embed/data |
 | EMBED03 | Native fullscreen, ordinary browser, CTA and allowed/forbidden frame ancestors | Provide meaningful behavior, disclose context loss until fixed and keep CSP scope narrow. | Embed/F01 |
 | MSP01 | Null versus zero, missing 2-sigma band and independently missing blocks | Render gaps and valid siblings; do not fabricate a wide band or observed inactivity. | Market Structure |
@@ -92,19 +92,23 @@ All 67 cases below have status **SPECIFIED — NOT EXECUTED**. Their IDs are loc
 | STAGE01 | Lifecycle-fresh but stale row, retirement, unresolved/frozen/ahead SPY and low coverage | Preserve tri-valued currentness and population receipt; no-target counts remain null. | Stage |
 | STAGE02 | Six hashes, invalid hash, history, every subview, regional gates and local watch | Preserve actual navigation; do not claim shareable filters or silently merge watchlists. | Stage/F03 |
 | STAGE03 | CSV units/provenance, display caps, stage sketch, earnings reader and snippet | Label all units and limits; do not claim actual candles, a full transcript or a full report. | Stage/earnings |
-| STAGE04 | Absent, corrupt, empty, stale and valid heterogeneous publisher inputs | Do not present an old file as current; preserve schema differences and working retry behavior. | Stage publication |
+| STAGE04 | Absent, corrupt, empty, stale and valid publisher inputs; working overview with independently failing/recovering lazy slices | Preserve schema and per-slice outcomes; targeted retry must not reset valid siblings or relabel stale data current; never claim unobserved or failed siblings work. | Stage publication |
 | STAGE05 | No-target/warm-up dash counts through drawArc and accessible summary | Keep unknown distinct from observed zero; no NaN-to-zero advancing-count announcement. | Stage/a11y |
 | SPV01 | Missing leg/all missing, zero cash yield, mismatched clocks and confirmation bands | Separate actual policy from unknown inputs; no visual zero-risk inference. | D12/quant |
 | SPV02 | Decision marker versus next-bar holdings, 3bps cost, weekend carry and tax scenario | Preserve timing, units, window and assumptions; do not treat the check as performance validation. | D12/quant |
 | SPV03 | Shadow overlay veto while mechanical hero is unchanged | No active/live authority label without accepted activation evidence; keep outputs separate. | D12/overlay |
 | SPV04 | All ranges, y-rescale, synchronized panels, log growth, drawdown and thinning | Retain historical controls and meaningful scales; disclose sampling limits. | S&P UI |
 | A11Y01 | Keyboard open/close, modal versus dock, missing launcher and nested Escape | Restore visible focus without scroll jump; use a valid fallback and correct event ownership. | D06/F02 |
-| A11Y02 | Long EN/ZH labels, both themes, status colors, focus/disabled states and target bounds | Measure contrast, non-color semantics, 44px house targets and the separate AA minimum/spacing rule. | F02/D06 |
+| A11Y02 | Long EN/ZH labels, Chinese embed language metadata, both themes, status colors, focus/disabled states and target bounds | Match document/content language and accessible labels to rendered text; measure contrast, non-color semantics,44px house targets and the separate AA minimum/spacing rule. | F02/D06 |
 | A11Y03 | 400% zoom/320CSSpx, evidence panel/table and embed viewport restrictions | Reflow surrounding content; contain essential 2D overflow; resolve or explicitly retain the embed zoom gap. | D06/embed |
 | A11Y04 | Reduced motion, Refraction open/close and state changes without animation | No full-pane wave; freeze/pause the edge; keep states understandable without movement. | F02/D06 |
 | A11Y05 | Screen-reader selected-bar/OHLC/source/time and chart/table alternatives | Provide bounded announcements and keyboard sample stepping without crosshair announcement floods. | Chart/a11y |
 | PERF01 | Cold/warm entry, rapid symbol/TF changes, hidden workspaces and rail dragging | Avoid duplicate kernel, polling and renderer; preserve lazy modules and measure p75 budgets separately. | Performance owners |
 | DEV01 | Production bench flag off/on, theater in production and customer navigation | Enforce developer-only boundaries; never present synthetic harness output as served-market proof. | F03/chart |
+| BRAIN01 | Evidence open→Brain open→nested Escape→Close; request evidence/modal while Brain open; repeat during existing request | Qualify actual lifecycle and served asset; preserve one Brain/request owner; suspend evidence only under adopted policy; restore invoker/fallback without automatic reader reopening; hiding is not cancellation. | D14/F01/F02/Terminal |
+| LAY06 | Commit historical reader selection with pointer outside plot; enter/exit focus, then hover another bar and move away | Distinguish committed reader, hover sample and AI locked bar; preserve owner-defined pinned state and logical range; make disclosure reset deliberate; hover cannot silently bind an exact Ask. | Chart/reader/D14 |
+| NAV10 | Generic Terminal entry with stale cursor; named URL-selected company with different cursor; invalid explicit identity and named return | Generic entry follows qualified workspace/default intent; named entry uses valid current identity; invalid explicit identity never falls back to stale company; preserve exact return without a second cursor store. | F01/D07/Terminal |
+| COMP01 | Percent comparison with unequal start/end coverage; viewport/range/primary change, remove/re-add and unavailable common anchor | Attribute both identities, common anchor, adjustment and covered dates; qualify readout interval/numeric oracle with comparison owner; never fabricate zero-return observations from missing history. | Terminal comparison/data |
 
 ## Accessibility and performance gates
 
@@ -124,5 +128,4 @@ Future performance targets: LCP≤2.5s,INP≤200ms,CLS≤0.1 atp75, mobile and d
 
 ## Acceptance accounting
 
-Artifact integrity checks performed by D06 are recorded separately in evidence/artifact_validation.json. They prove file/ledger/link/hash consistency only. Runtime cases, responsive/focus/scroll/resize,access/database enforcement,production performance and model validation remain unexecuted in this design phase. Acceptance requires the [programme checklist](../RE_AUDIT_CHECKLIST.md), real RIG receipts and later implementation/release/served evidence as separate facts.
-
+Artifact integrity checks performed by D06 are recorded separately in evidence/artifact_validation.json. They prove file/ledger/link/hash consistency only. The proposed migration cases remain unexecuted. Bounded existing-product guest focus/scroll/pointer-resize/route observations were performed and are recorded separately; responsive/touch/400%zoom,access/database enforcement,production performance and model validation remain unproved. Acceptance requires the [programme checklist](../RE_AUDIT_CHECKLIST.md), real RIG receipts and later implementation/release/served evidence as separate facts.

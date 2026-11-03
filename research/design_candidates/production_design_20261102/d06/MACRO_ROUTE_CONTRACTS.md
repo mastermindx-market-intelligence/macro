@@ -75,6 +75,7 @@ Rows include ticker,name,sector,region,source,industry; industry percentile,SATA
 Target is population's modal completed week, later week wins ties. SPY corroborates rather than overrides this mode; unresolvedSPY means no target. Stale comments describing aSPY cap are not the implemented resolver. Divergence or<60%current coverage creates an explicit population warning. With no target, headline counts/weather become null; stale/unknown rows stay browsable without current rank.
 
 Clocks remain separate:
+
 - rootasof: caller/build-date label;
 - built: UTC generation;
 - target_stage_week: actual completed classification week;
@@ -152,3 +153,11 @@ All three templates retain shared imports from the existing Macro shell/generato
 
 Implementing these requirements is a later commission after reference review. Migration tests in [BUILD_AND_TEST_PLAN.md](BUILD_AND_TEST_PLAN.md) specify missing/corrupt/stale/null/zero/clock/region/history cases. Rollback must restore prior template/adapter behavior without deleting history, changing model ledgers or overwriting saved local state.
 
+
+## Live baseline qualification added on 3 November 2026
+
+The [actual beta audit](LIVE_BASELINE_AUDIT.md) supplements the pinned source without replacing it. Market Structure loaded with separate source/build/weekly-anchor clocks, missing-session disclosure and independently changing GEX range. S&P Vector loaded its long historical structure and the1Y range changed the displayed dates; no performance or allocation claim was independently validated.
+
+Stage's first shell error recovered after one visible Retry. Its overview loaded and all six top-level hashes changed correctly when clicked. Screener, Stage Board, Industries and Earnings then each reported failure, while their copy claimed failed siblings remained unaffected. Alt-Data showed an empty-topic presentation; Research showed an unpublished-primer presentation. Those messages do not establish whether underlying inputs are absent, empty, blocked or failed. Extend STAGE04 to preserve per-slice outcome evidence and targeted recovery. Never use unconditional sibling-health text or interpret a failed table as zero current companies. The displayed overview's2706current/53stale/0unresolved belongs to its own published population receipt.
+
+Generic shared-shell chart links carried the previous0700.HK cursor across these pages. F01 candidate.3 proposes explicit generic versus named-entry intent; NAV10 qualifies that handoff without taking the Macro builder's state ownership. A page-specific range or Stage subview is not automatically a portable Terminal context.

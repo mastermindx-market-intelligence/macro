@@ -16,7 +16,7 @@
 | terminal:dev_chart_bench | /dev/chart-bench?engine=mm or lwc | Developer-only; production notFound unless NEXT_PUBLIC_CHART_BENCH=1 | [route](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/dev/chart-bench/page.tsx); lib/chart-engine/select and bench/mount |
 | terminal:dev_theater | /dev/theater | Production notFound; synthetic demonstration | [route](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/app/dev/theater/page.tsx); real ChartConductor/command queue with synthetic backdrop |
 
-The browser inspected beta.mastermind-x.com/terminal. Source references also contain app.mastermind-x.com and www.mastermind-x.com legacy links. No served release mapping for every route was proven. F01/F03 own canonical host/alias admission and generation; preserve existing exact routes until that mapping is accepted.
+The approved browser continuation inspected all nine assigned beta route families to the explicitly bounded depths in [LIVE_BASELINE_AUDIT.md](LIVE_BASELINE_AUDIT.md). Source references also contain app.mastermind-x.com and www.mastermind-x.com legacy links. No served release mapping for every route was proven. F01/F03 own canonical host/alias admission and generation; preserve existing exact routes until that mapping is accepted.
 
 ## URL and navigation compatibility
 
@@ -27,11 +27,11 @@ The browser inspected beta.mastermind-x.com/terminal. Source references also con
 | Native Terminal | shell=app chart-only/native bridge; tray=1 and dossier=1 interpreted in native mode; dossier excludes chart workspace | Do not use these flags as a substitute for web focus mode or inject duplicate native chrome |
 | Research pane | Existing pane parser; analyst aliases forecast; same-route open/close uses mm:open-pane/mm:close-pane | Retain event and URL coupling; router.push alone is not proven reactive |
 | Add script | `addScript=<savedID>,` resolved after library loads, consumed once | UnknownID doesn't add; current link loses symbol/TF/origin. Extension requires scripts/navigation owner |
-| Return | originNav accepts safe ret/return, captures exact href; hard navigation or trusted terminal:close | Preserve query/hash bytes and allowlist. Exact href is not exact viewport restoration |
+| Return | originNav accepts safe ret/return and stores existing session origin (`mm.fromMacro` / `mm.macroHref`); fresh accepted origin takes precedence, otherwise cached session origin can persist; hard navigation or trusted terminal:close | Preserve query/hash bytes, cache owner and allowlist. Symbol-only entry does not guarantee cleared origin. Exact href is not exact viewport restoration |
 | Exact TF/bar | Generic incoming tf/selected-bar URL reader not found in inspected route/shell | **Proposed dependency**, not existing guarantee. Define acknowledgement and unsupported outcome before enabling links |
 | Scripts | `/scripts?id=<id>` after mount and back/forward through dirty-switch guard; cancel restores priorID; unknownID leaves current script | Preserve this existing script identity history; do not replace with unaddressable local tabs |
 | Embed | First repeated values; symbol trimmed and uppercased, leading letter plus up to9 letters/digits/dot/hyphen | Numeric HK/CN and '=' futures fail this grammar; broader Terminal coverage is not embed parity |
-| Embed visuals | theme=light else dark; lang=zh else en; transparent=1/true; range=1M/3M/6M/1Y/2Y/5Y/MAX default1Y; hdr=0; clean=1; fs=1 | Ranges are approximate daily-bar counts, not calendar guarantees. Native fs message may no-op in ordinary browser |
+| Embed visuals | theme=light else dark; lang=zh else en; transparent=1/true; range=1M/3M/6M/1Y/2Y/5Y/MAX default1Y; hdr=0; clean=1; fs=1 | Ranges are approximate daily-bar counts, not calendar guarantees. Live range selection is local: selecting6M left entry URL range1Y unchanged. Native fs message may no-op in ordinary browser |
 | Embed CTA | `https://app.mastermind-x.com/terminal?sym=<symbol>&from=embed` | Current link doesn't preserve bar/range/theme/lang/exact origin. Contextual restore is proposed |
 | Snapshot | Exactly10 lowercase base36 characters; PNG lookup | Current footer links to '/', not original chart or /terminal. Generic Terminal CTA is a proposed D26 change |
 | Market Structure | Independent local range keys, no page-specific query/hash range parser | Keep actual ranges and legacy URL. Do not promise shareable filters without owner extension |
@@ -96,6 +96,7 @@ Fund quote_currency and nullable stmt_currency are separate; they do not retroac
 ## Clock and null rules for every builder
 
 Use explicit field semantics, not one global “Live” label:
+
 - observation: source quote print, bar/session date, model input cutoff;
 - publication/known time: when evidence was available, e.g. signal known_ts; missing stays unknown;
 - ingestion/assembly/build: pipeline events, never substituted for market observation;
@@ -109,3 +110,13 @@ True zero remains0 only when the producer means measured/computed zero. Unknown,
 
 No new endpoint is specified as live. Exact incoming chart state, origin viewport return, public share lifecycle, broader embed identity and universal unit/listing attestation remain the named dependencies in the retention ledger. Stage real-candle/transcript extensions likewise need actual sources. Keep useful current behavior, label limits and withhold unsupported controls rather than manufacture metadata. All future writes stay with the existing owner and authoritative readback.
 
+
+## Additional source and live binding
+
+The actual [Macro Brain widget](https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/mm_brain.js) exports close/toggle/expand as well as open/mounted/setPrincipal. The [Terminal type](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/mastermindBrain.ts) omits those methods; [BrainWidget](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/BrainWidget.tsx) does not bind the existing conditional onClose focus hook. Installation readiness is not visibility acknowledgement. The [qualified handoff](BRAIN_SHELL_HANDSHAKE.md) preserves this distinction and the external served-asset identity gap.
+
+The live Analysis→AAPL Terminal→Analysis round trip preserved the exact accepted href. A subsequent0700.HK symbol entry retained the cached Analysis return, consistent with originNav. It did not prove origin row/scroll or trusted-parent behavior. The live `symbol=0700.HK&sym=AAPL` result confirmed canonical symbol precedence for this pair only.
+
+The malformed public slug `d06-invalid` violates the actual [ten-character lowercase base36 validator](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/snapshotSlug.ts) and returned404. This is a negative route observation, not positive storage/image/HEAD proof. Both developer beta URLs returned404 without any flag change. Runtime environment/flag disposition and the cause of exclusion were not independently attested; the bench-enabled branch was not exercised.
+
+The live external script token `ac3762717ad150fd4f18614afd78072115a7c80a` is recorded only as a deployment hint. No Git-to-served release mapping or Brain byte hash was established. Source API contracts and current baseline presentation remain separate evidence classes.

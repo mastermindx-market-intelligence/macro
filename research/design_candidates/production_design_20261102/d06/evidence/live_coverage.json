@@ -1,0 +1,225 @@
+{
+  "artifact": "D06 bounded current-product observations, separate from migration acceptance",
+  "observed_date_local": "2026-11-03",
+  "timezone": "America/Chicago",
+  "access": "guest presentation; no authenticated principal established",
+  "viewport_css_px": [
+    1363,
+    936
+  ],
+  "device_pixel_ratio": 1,
+  "canonical_families_observed": 9,
+  "deployment_token_observed": "ac3762717ad150fd4f18614afd78072115a7c80a",
+  "served_release_attested": false,
+  "external_brain_url": "https://www.mastermind-x.com/mm_brain.js",
+  "external_brain_bytes_attested": false,
+  "proposed_migration_cases": 71,
+  "full_proposed_migration_cases_executed": 0,
+  "records": [
+    {
+      "id": "LO01",
+      "family": "terminal:terminal",
+      "action": "AAPL web and native shell; HK conflicting symbol/sym query",
+      "observed": "Loaded chart and correct identity for observed inputs",
+      "related_case_ids": [
+        "NAV01",
+        "NAV02",
+        "NAV08"
+      ],
+      "limits": "Other listings/flags/access tiers and all tool operations unproved",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO02",
+      "family": "terminal:terminal",
+      "action": "Latest→previous reader bar; Range & Events",
+      "observed": "Historical context excludes current calendar",
+      "related_case_ids": [
+        "HIST03",
+        "DATA07",
+        "DATA08"
+      ],
+      "limits": "Replay, time zones and full derived-metric correctness unproved",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO03",
+      "family": "terminal:terminal",
+      "action": "Reader scroll177px and pointer rail360→460",
+      "observed": "Reader context and settled scroll retained; no page scroll",
+      "related_case_ids": [
+        "LAY02",
+        "LAY05"
+      ],
+      "limits": "Keyboard splitter and persistence not proved; role lacks observed min/max/current and tabindex",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO04",
+      "family": "terminal:terminal",
+      "action": "Brain open/disclosure/Escape/visible Close",
+      "observed": "Nested disclosure closes; Brain remains on Escape; visible close leaves BODY focus",
+      "related_case_ids": [
+        "BRAIN01",
+        "A11Y01",
+        "HIST01"
+      ],
+      "limits": "No prompt; no exact-bar attachment, lifecycle acknowledgement or request-state test",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO05",
+      "family": "terminal:terminal",
+      "action": "SPY percent comparison and basis",
+      "observed": "Primary retained; anchor/basis/unequal coverage exposed; zero readout requires qualification",
+      "related_case_ids": [
+        "COMP01"
+      ],
+      "limits": "No independent numeric oracle or producer diagnosis",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO06",
+      "family": "terminal:terminal",
+      "action": "Enter/exit focused chart",
+      "observed": "Context relocates; local disclosure/scroll resets; hover sample differs",
+      "related_case_ids": [
+        "LAY02",
+        "LAY06"
+      ],
+      "limits": "Escape did not exit in the bounded attempt; visible Exit did and focus became BODY. Committed selection loss was not established; this is not a whole-case result.",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO07",
+      "family": "terminal:terminal",
+      "action": "Analysis→AAPL Terminal→Analysis",
+      "observed": "Exact accepted origin href round trip",
+      "related_case_ids": [
+        "NAV06",
+        "NAV07"
+      ],
+      "limits": "Guest gate prevents row/scroll/selection return proof",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO08",
+      "family": "terminal:terminal",
+      "action": "Intelligence four tabs and event location",
+      "observed": "Distinct dated judgments, unavailable states,173events,RE-ENTRY reachable; event pans; Escape restores launcher",
+      "related_case_ids": [
+        "HIST01",
+        "HIST05",
+        "A11Y01",
+        "LAY06"
+      ],
+      "limits": "Event location does not bind latest reader automatically; no performance/model qualification",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO09",
+      "family": "terminal:scripts",
+      "action": "Restoring account→guest gate; light/zh presentation",
+      "observed": "Gate and locale/theme rendered",
+      "related_case_ids": [
+        "SCRIPT01",
+        "SCRIPT02",
+        "A11Y02",
+        "NAV10"
+      ],
+      "limits": "No editor/CAS/save/owner/auth access path executed",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO10",
+      "family": "terminal:embed_chart",
+      "action": "AAPL light/zh1Y→local6M; HK rejection; CTA inspected",
+      "observed": "Loaded widget, local range, unsupported identity; lang=en and zoom restrictions observed",
+      "related_case_ids": [
+        "EMBED01",
+        "EMBED02",
+        "EMBED03",
+        "A11Y02",
+        "A11Y03"
+      ],
+      "limits": "No served source clock, positive parent/nativefullscreen or actual zoom/reflow proof",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO11",
+      "family": "terminal:x_slug",
+      "action": "Malformed d06-invalid",
+      "observed": "404 page observed",
+      "related_case_ids": [
+        "SHARE03"
+      ],
+      "limits": "No valid snapshot, upload, storage or HEAD failure distinction exercised",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO12",
+      "family": "macro:market_structure",
+      "action": "Loaded dashboard; GEX1month; iframe scroll",
+      "observed": "Independent range21observations; separate as-of/build/weekly clocks",
+      "related_case_ids": [
+        "MSP01",
+        "MSP02",
+        "LAY05"
+      ],
+      "limits": "No source formula/model verification or full range matrix",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO13",
+      "family": "macro:stage_analysis",
+      "action": "Shell Retry then all six tabs",
+      "observed": "Overview recovered; Screener/Board/Industries/Earnings errors; Alt-Data empty and Research unpublished presentation; outer hashes changed",
+      "related_case_ids": [
+        "STAGE02",
+        "STAGE04",
+        "STAGE05"
+      ],
+      "limits": "Sibling-health copy contradicted observed failures; backend root cause and empty-versus-error not independently established",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO14",
+      "family": "macro:spvector",
+      "action": "Loaded page and1Y range",
+      "observed": "Long-history structure, source/method presentation and range change observed",
+      "related_case_ids": [
+        "SPV01",
+        "SPV02",
+        "SPV03",
+        "SPV04"
+      ],
+      "limits": "No performance/authority/claim validation; no full synchronized range matrix",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO15",
+      "family": "terminal:dev_chart_bench",
+      "action": "Beta route without any flag change",
+      "observed": "Visible404 page observed at the beta URL",
+      "related_case_ids": [
+        "DEV01"
+      ],
+      "limits": "Flag-on branch not executed Runtime environment/flag disposition and cause of exclusion not independently attested.",
+      "status": "observed_before_design_subset"
+    },
+    {
+      "id": "LO16",
+      "family": "terminal:dev_theater",
+      "action": "Beta route without any flag change",
+      "observed": "Visible404 page observed at the beta URL",
+      "related_case_ids": [
+        "DEV01"
+      ],
+      "limits": "Synthetic theater not executed Runtime environment/flag disposition and cause of exclusion not independently attested.",
+      "status": "observed_before_design_subset"
+    }
+  ],
+  "responsive_limit": "No viewport resize exposed; attempted zoom shortcut left1363x936/DPR1/scale1 unchanged; not responsive or400percent proof",
+  "raw_captures": 29,
+  "source_audit": "../LIVE_BASELINE_AUDIT.md"
+}

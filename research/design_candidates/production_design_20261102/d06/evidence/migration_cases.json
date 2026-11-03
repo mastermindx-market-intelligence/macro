@@ -67,8 +67,8 @@
     },
     {
       "id": "HIST01",
-      "input": "Inspect an old bar, ask AI, then switch symbol/TF/data generation during response",
-      "expected": "Bind the intended reader or locked selection explicitly and reject obsolete results.",
+      "input": "Inspect an old bar, inspect exact pre-dispatch attachment, ask AI, then switch symbol/TF/data generation during response",
+      "expected": "Bind symbol, interval, bar/time basis and generation through the intended reader or locked owner; a symbol-only chip is insufficient; reject obsolete results.",
       "owner": "D06/D14",
       "status": "specified_not_executed"
     },
@@ -172,8 +172,8 @@
     },
     {
       "id": "LAY02",
-      "input": "Rail resize, focus/maximize, rotation and 640/860 breakpoint crossings",
-      "expected": "Preserve renderer, active pane, logical range and drawings; persist final width; no unsolicited sheet reopening.",
+      "input": "Rail pointer/keyboard resize and reset, focus/maximize, rotation and640/860 breakpoint crossings",
+      "expected": "Preserve renderer, active pane, logical range and drawings; persist final width; expose focusable separator with correct min/max/current values; no unsolicited sheet reopening.",
       "owner": "Chart",
       "status": "specified_not_executed"
     },
@@ -319,8 +319,8 @@
     },
     {
       "id": "EMBED01",
-      "input": "Repeated parameters, unsupported symbol grammar and every visual/range variant",
-      "expected": "Honor first-value parser and actual coverage; do not silently broaden accepted identities.",
+      "input": "Repeated parameters, unsupported symbol grammar and every visual/range variant; load1Y, choose6M, reload and inspect CTA",
+      "expected": "Honor first-value parser and actual coverage; distinguish entry URL from local range and CTA context loss; no silent URL synchronization or broader identity promise.",
       "owner": "Embed",
       "status": "specified_not_executed"
     },
@@ -382,8 +382,8 @@
     },
     {
       "id": "STAGE04",
-      "input": "Absent, corrupt, empty, stale and valid heterogeneous publisher inputs",
-      "expected": "Do not present an old file as current; preserve schema differences and working retry behavior.",
+      "input": "Absent, corrupt, empty, stale and valid publisher inputs; working overview with independently failing/recovering lazy slices",
+      "expected": "Preserve schema and per-slice outcomes; targeted retry must not reset valid siblings or relabel stale data current; never claim unobserved or failed siblings work.",
       "owner": "Stage publication",
       "status": "specified_not_executed"
     },
@@ -431,8 +431,8 @@
     },
     {
       "id": "A11Y02",
-      "input": "Long EN/ZH labels, both themes, status colors, focus/disabled states and target bounds",
-      "expected": "Measure contrast, non-color semantics, 44px house targets and the separate AA minimum/spacing rule.",
+      "input": "Long EN/ZH labels, Chinese embed language metadata, both themes, status colors, focus/disabled states and target bounds",
+      "expected": "Match document/content language and accessible labels to rendered text; measure contrast, non-color semantics,44px house targets and the separate AA minimum/spacing rule.",
       "owner": "F02/D06",
       "status": "specified_not_executed"
     },
@@ -470,6 +470,35 @@
       "expected": "Enforce developer-only boundaries; never present synthetic harness output as served-market proof.",
       "owner": "F03/chart",
       "status": "specified_not_executed"
+    },
+    {
+      "id": "BRAIN01",
+      "input": "Evidence open→Brain open→nested Escape→Close; request evidence/modal while Brain open; repeat during existing request",
+      "expected": "Qualify actual lifecycle and served asset; preserve one Brain/request owner; suspend evidence only under adopted policy; restore invoker/fallback without automatic reader reopening; hiding is not cancellation.",
+      "owner": "D14/F01/F02/Terminal",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "LAY06",
+      "input": "Commit historical reader selection with pointer outside plot; enter/exit focus, then hover another bar and move away",
+      "expected": "Distinguish committed reader, hover sample and AI locked bar; preserve owner-defined pinned state and logical range; make disclosure reset deliberate; hover cannot silently bind an exact Ask.",
+      "owner": "Chart/reader/D14",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "NAV10",
+      "input": "Generic Terminal entry with stale cursor; named URL-selected company with different cursor; invalid explicit identity and named return",
+      "expected": "Generic entry follows qualified workspace/default intent; named entry uses valid current identity; invalid explicit identity never falls back to stale company; preserve exact return without a second cursor store.",
+      "owner": "F01/D07/Terminal",
+      "status": "specified_not_executed"
+    },
+    {
+      "id": "COMP01",
+      "input": "Percent comparison with unequal start/end coverage; viewport/range/primary change, remove/re-add and unavailable common anchor",
+      "expected": "Attribute both identities, common anchor, adjustment and covered dates; qualify readout interval/numeric oracle with comparison owner; never fabricate zero-return observations from missing history.",
+      "owner": "Terminal comparison/data",
+      "status": "specified_not_executed"
     }
-  ]
+  ],
+  "baseline_observation_note": "Actual current-product subsets are recorded separately in live_coverage.json. No entire proposed migration case is marked executed or passed."
 }

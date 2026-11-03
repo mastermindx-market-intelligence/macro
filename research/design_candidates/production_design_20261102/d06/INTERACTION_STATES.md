@@ -72,9 +72,10 @@ N/A rules: static Macro pages have no account-save lifecycle unless a real share
 ## Keyboard contract
 
 Retain canonical bindings and advertise the executable registry:
+
 - Symbol search: type alphanumeric outside text entry; Cmd/Ctrl+K. Palette: `>` outside input/contenteditable/modal/IME and without repeat or modifier conflicts.
 - Draw: Alt+T trendline, Alt+J ray, Alt+H horizontal, Alt+V vertical, Alt+C crossline, Alt+F Fibonacci, **Alt+Shift+R rectangle**, Alt+M measure, Alt+X text, Alt+N note. An old ChartPanel comment says Alt+R; registry exact-modifier behavior wins.
-- Escape: dismiss top overlay; drawing pending cancel → armed tool retire → selection clear. Double Escape≤500ms resets chart only when the chart owns the event.
+- Escape: the active layer owns dismissal before chart actions. Brain source priority is slash palette → context inspector → streaming Stop → search close → panel close; live second-Escape closure was not observed, so qualify the discrepancy and exact focus return before acceptance. Drawing pending cancel → armed tool retire → selection clear. Double Escape≤500ms resets chart only when the chart owns the event. See [Brain lifecycle](BRAIN_SHELL_HANDSHAKE.md).
 - Drawing edit: Delete/Backspace; Cmd/Ctrl+Z undo; Shift+Z or Y redo; Cmd/Ctrl+C/V drawing copy/paste; arrows nudge, Shift ten-unit step. No replay mutation.
 - Hide drawings: Cmd/Ctrl+Alt+H. Alert: Alt+A at latest loaded close, under D23 ownership.
 - Day Trade Mode: Alt+D; while active Alt+1/2/3/4 selects1m/5m/15m/1h.
@@ -90,3 +91,17 @@ Saved layouts own only their defined fields: arrangement, paneTFs, split, active
 
 Closing a drawer, changing region or navigating back must not save or delete anything. A mutation starts only from the user action that names the target; server owner/entitlement validation and matching readback determine success.
 
+
+## Additional qualified-state requirements from the live baseline
+
+| State transition | Proposed outcome | Evidence boundary |
+| --- | --- | --- |
+| Reader open → Brain requested | Where the shared-shell policy applies, suspend evidence presentation/width and preserve domain identity through its current owner; open the existing Brain. Focused Terminal adoption requires its own qualified integration. | Current Terminal retained the 460px reader under Brain. No new close event or second store is authorized. |
+| Brain close → evidence available | Confirm the actual lifecycle, restore connected invoker or logical fallback without stealing focus, and expose the reader trigger. Reopen only on explicit action after remeasuring space. | Actual close exists; Terminal does not bind conditional onClose. Visible close is not request cancellation. |
+| Focused layout → settled hover | Distinguish pinned reader bar, live hover sample and AI locked bar. A resize-induced pointer sample cannot silently become an exact-bar Ask attachment. | Observed local accordion/scroll reset; committed selection loss was not established. |
+| Intelligence event → reader | Event location preserves its event date/known date and chart coordinate. Reader either explicitly acknowledges a supported event selection or continues to say Latest truthfully. | Live historical viewport and latest reader date coexisted under separate current owners. |
+| Comparison anchor/readout unavailable | Keep primary and comparison identities and actual coverage. Show a reason rather than imply a measured zero or shared price basis. | Owner qualification still needed for observed 1993 anchor/readout. |
+| Stage slice failure | “This view could not be loaded.” / “无法加载此视图。” Offer the existing affected-source retry where supported; keep other states independently attributed. | Do not append “other views are unaffected” unless their current successful state is actually known. |
+| Chinese embed | Preserve canonical identity while exposing matching document/content language and meaningful source clock. | Live visual translation with lang=en and zoom-restricting meta is an unresolved accessibility finding. |
+
+Existing session origin state may persist after a new symbol-only entry. A new accepted ret/return or qualifying origin supersedes it; absent fresh origin, existing session context remains eligible. Retain originNav's actual cache and hard-navigation/trusted-parent rules, not a new generic history store.
