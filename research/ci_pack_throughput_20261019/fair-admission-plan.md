@@ -93,8 +93,10 @@ composed stage module had 104 passing cases, including failures after original
 reservation that retain custody and hold the next sweep. The five other affected
 controller/helper modules retain their passing composed results. These are local
 source checks, not production token or installed admission qualification. A
-hypothetical 875 armed existing-proof population still exhausts the incumbent
-REST budget and refuses. Uncovered expired age artifacts also still refuse. Unchanged pending ages now
+hypothetical 875 armed existing-proof population exhausted the original all-at-once
+REST budget. The bounded prefix implementation below addresses that source path;
+875 actual dispatched/completed proofs remain unqualified. Uncovered expired age
+artifacts still refuse. Unchanged pending ages now
 renew within the final24hours of the original authenticated server artifact expiry,
 using the existing conserved snapshot, upload, original indexing intent and positive
 readback. No API call or capacity slot is added. Missing or invalid expiry metadata
@@ -109,3 +111,31 @@ The incoming zero-input protected PC executor stays separate. Admitted workflow-
 A protected hosted-capability bridge must be ready while the installed main workflow still retains its native PR trigger. Candidate-native detection prevents a duplicate authored proof for an exact candidate that still owns that trigger. A candidate removing the native trigger can therefore obtain its first original admitted proof before that candidate is installed. Refresh purpose and original request age survive this transition; neither a missing check nor a failed original proof grants replay.
 
 The existing fences workflow provides the ordinary authored wake: it is named `fences`, receives unfiltered main-targeting pull_request activities, and its successful non-main-branch completion reaches the same serialized merge-on-green controller. Failed fences and head branches named main rely on another ordinary complete sweep or schedule. Source predicates and synthetic cases do not prove an actual installed wake, token enrollment or downstream publication; those remain prospective acceptance obligations.
+
+## Bounded age learning and fresh eligibility prefix
+
+Every sweep still requires complete current PR discovery, authenticated age and
+admission history, and complete all-active capacity accounting. Eligibility can
+be evaluated within the existing request budget. Affirmatively learned ages are
+conserved through the existing v2 artifact and original indexing/readback path.
+A partial batch cannot launch a newly minted same-sweep demand: the random
+generation tie-break means an unseen same-time demand could precede it.
+
+A later original freshly evaluates registered demands in canonical age/generation
+order. Every preceding demand must be affirmatively ineligible; earlier UNKNOWN
+blocks overtaking. A selected prefix must have an authenticated timestamp strictly
+before the new-demand timestamp. Age gives ordering only, never cached freshness.
+Clock ambiguity, missing advertised original CI, malformed status, incomplete
+records, expired uncovered artifacts and uncertain publication retain refusal.
+Decision output distinguishes complete discovery/capacity from partial eligibility.
+
+The real SweepBudget fixture learns 360, 719 and 875 native-proof demand ages over
+three test-owned originals, using 766, 769 and 363 core calls including indexing.
+The complete integrated affected stage module passes 134 tests. A separate
+in-process API fixture exercises partial learning, fresh oldest selection, seven
+active proofs plus one reservation, the server-issued original run, authenticated
+terminal evidence, and three subject-head checks. Lost completion remains UNKNOWN
+and repeated completion does not repost. These are local source/composition
+results, not 875 production dispatches or installed admission. Archive schemas,
+limits, cap eight, original reservation helpers and completion implementation are
+unchanged. Natural authored/refresh proof and downstream publication remain owed.

@@ -625,21 +625,26 @@ class Stages:
             return 'pull_request' in events
         raise ValueError('candidate CI entrypoints unknown')
 
-    def demand_kind(self, pull, runs, freshness, native_pr_enabled):
+    def demand_evaluation(self, pull, runs, freshness, native_pr_enabled, *, expected_ci=False):
+        """Current eligibility, distinct from unavailable original proof facts."""
         anchors = mog.proof_anchor_runs(runs)
         ci = [v for k, v in anchors.items() if k in {'ci-plan', 'contract-delta', 'ci-gate'} or k.startswith('ci-pack')]
+        if any(r.get('status') not in contract.ACTIVE_STATUSES | {'completed'} for r in ci):
+            return 'unknown', None
         if any(r.get('status') != 'completed' for r in ci):
-            return None
+            return 'ineligible', None
+        if not ci and expected_ci:
+            return 'unknown', None  # fresh REST contradicts advertised original CI
         if not ci:
-            # During foundation installation the original native PR event owns
-            # first proof. No race with its indexing gap or duplicate launch.
-            return None if native_pr_enabled else 'authored'
+            return ('ineligible', None) if native_pr_enabled else ('eligible', 'authored')
         if not mog.is_sweep_candidate(pull):
-            return None
-        # Refresh only an affirmative current-input invalidator. Red alone,
-        # missing evidence and unchanged source do not authorize a rerun.
+            return 'ineligible', None
+        if freshness is None:
+            return 'unknown', None
         stale, _reason = freshness.stale_for(pull, runs)
-        return 'refresh' if stale is True else None
+        if stale is None:
+            return 'unknown', None
+        return ('eligible', 'refresh') if stale is True else ('ineligible', None)
 
     def prepare(self, *, native_pr_enabled, freshness):
         self.authority()
@@ -666,64 +671,116 @@ class Stages:
             protected_controller_sha=self.context['protected_controller_sha'],age_snapshot=self._age_snapshot)
         if not workload.complete:
             raise ValueError('incomplete shared workload')
-        demands, changed = [], []
-        now = datetime.now(timezone.utc).isoformat()
-        for index, pull in enumerate(pulls):
-            if not budget.may_continue(index)[0]:
-                raise ValueError('incomplete demand census at budget boundary; no selection')
-            if (pull.get('state') != 'open' or (pull.get('base') or {}).get('ref') != 'main'):
-                continue
+        # Complete age/history custody precedes any bounded eligibility window.
+        # Ages order evaluation; they never supply a cached freshness verdict.
+        subjects = {}
+        history_reads = 0
+        for pull in pulls:
+            comments = facts[pull['number']]['comments']
+            # Empty/non-ledger histories perform no API reads. Poll the existing
+            # budget only for histories that can authenticate original receipts.
+            if any(str(c.get('body', '')).startswith((mog.ADMISSION_COMMENT_PREFIX,
+                    mog.DEMAND_COMMENT_PREFIX, mog.CHECKPOINT_COMMENT_PREFIX)) for c in comments):
+                if not budget.may_continue(history_reads)[0]:
+                    raise ValueError('incomplete original demand history at budget boundary')
+                history_reads += 1
+            if pull.get('state') != 'open' or (pull.get('base') or {}).get('ref') != 'main':
+                raise ValueError('incomplete open PR census identity')
             head = (pull.get('head') or {}).get('sha')
             if not isinstance(head, str) or not re.fullmatch('[0-9a-f]{40}', head):
                 raise ValueError('incomplete open PR identity')
             own = [a for a in workload.admissions if a.pr_number == pull['number']]
-            if any(not a.settled for a in own):
-                continue
-            records, prior = self.history(pull,facts[pull['number']]['comments'])
-            prior=prior+[d for d in ages if d.pr_number==pull['number']]
-            if facts[pull['number']]['ci_present']:
-                if not mog.is_sweep_candidate(pull):continue
-                # GraphQL presence is not a proof base. Keep exact original
-                # REST/evidence and current freshness for an armed refresh.
-                runs=mog.head_check_runs(self.repo,head,self.read)
-            else:
-                runs=[]
-            # The candidate owns the pull_request entrypoint. During the
-            # staged cutover, protected main may still have native PR events
-            # while this exact candidate has removed them (or the reverse).
-            candidate_native = facts[pull['number']]['native']
-            if candidate_native is None:
-                continue  # no exact merge object: not currently eligible
-            kind = self.demand_kind(pull, runs, freshness, candidate_native)
-            if kind is None:
-                continue
-            if any(a.head_sha == head and a.base_sha == self.context['protected_controller_sha']
-                   for a in own):
-                continue  # terminal UNKNOWN/red is served, never a replay request
+            records, prior = self.history(pull, comments)
+            prior = prior + [d for d in ages if d.pr_number == pull['number']]
+            pending = contract.pending_demand_for_pr(prior, [*records, *own], pull['number'], head)
+            subjects[pull['number']] = (pull, own, prior, pending)
+        pending = contract.ordered_demands(row[3] for row in subjects.values() if row[3] is not None)
+        now = datetime.now(timezone.utc).isoformat()
+        learned, changed, evaluated = [], [], []
+        stopped = False
+        prefix = None
+        unknown = False
+
+        def evaluate(number):
+            pull, own, prior, old = subjects[number]
+            head = pull['head']['sha']
+            fact = facts[number]
+            if any(not a.settled for a in own) or any(
+                    a.head_sha == head and a.base_sha == self.context['protected_controller_sha'] for a in own):
+                return 'ineligible', None
+            if fact['ci_present'] and not mog.is_sweep_candidate(pull):
+                return 'ineligible', None
+            if fact['native'] is None:
+                return 'unknown', None
+            runs = mog.head_check_runs(self.repo, head, self.read) if fact['ci_present'] else []
+            state, kind = self.demand_evaluation(pull, runs, freshness, fact['native'], expected_ci=fact['ci_present'])
+            if state != 'eligible':
+                return state, None
             if kind == 'authored' and any(a.head_sha == head for a in own):
-                continue  # missing completion cannot mint another source attempt
-            pending = contract.pending_demand_for_pr(prior, records, pull['number'], head)
-            demand = pending or contract.Demand(pull['number'], head, kind, now, secrets.token_hex(6))
-            demands.append(demand)
+                return 'ineligible', None
+            demand = old or contract.Demand(number, head, kind, now, secrets.token_hex(6))
+            learned.append(demand)
             if demand not in prior:
                 changed.append(demand)
-        # Selection cannot happen from a truncated or partially indexed census.
-        contract.ordered_demands(demands)
-        self.save('census', dict(context=self.context, pulls=pulls, demands=[asdict(d) for d in demands]))
-        publish_demands=bool(changed)
+            return state, demand
+
+        # Cheap authored-only censuses retain their complete legacy behavior.
+        # Existing-proof prefixes need not reread every later original before
+        # learning previously unregistered candidates within the SAME budget.
+        costly = any(facts[d.pr_number]['ci_present'] for d in pending)
+        for demand in pending:
+            if not budget.may_continue(len(evaluated))[0]:
+                stopped = True
+                break
+            state, current = evaluate(demand.pr_number)
+            evaluated.append(dict(pr_number=demand.pr_number, disposition=state))
+            if state == 'unknown':
+                unknown = True
+                break  # Never overtake an unresolved older registered demand.
+            if current is not None and prefix is None:
+                prefix = current
+                if costly and contract._demand_time(current) < datetime.fromisoformat(now):
+                    break
+        # Partial learning may publish conserved ages, but NEVER grants a new
+        # same-original selection: all new ages share now and random IDs break ties.
+        for number, row in subjects.items():
+            if row[3] is not None:
+                continue
+            if not budget.may_continue(len(evaluated))[0]:
+                stopped = True
+                break
+            state, _current = evaluate(number)
+            evaluated.append(dict(pr_number=number, disposition=state))
+            unknown = unknown or state == 'unknown'
+        complete = len(evaluated) == len(subjects) and not stopped and not unknown
+        # A prior-original rank is before every possible as-yet-unregistered
+        # demand only under a STRICT clock comparison. No clock repair or new rank.
+        earlier_unknown = any(row['disposition'] == 'unknown' for row in evaluated[:
+            next((i for i, row in enumerate(evaluated) if prefix is not None and row['pr_number'] == prefix.pr_number), len(evaluated))])
+        prefix_complete = (prefix is not None and not earlier_unknown
+            and contract._demand_time(prefix) < datetime.fromisoformat(now))
+        # Preserve provider order for the historical complete-census handoff;
+        # reserve still applies the canonical age ordering before any effect.
+        learned_by_pr = {d.pr_number: d for d in learned}
+        demands = ([learned_by_pr[n] for n in subjects if n in learned_by_pr]
+            if complete else ([prefix] if prefix_complete else []))
+        eligibility = dict(complete=complete, prefix_complete=prefix_complete,
+            evaluated=evaluated, unresolved_pr_numbers=sorted((set(subjects)-{r['pr_number'] for r in evaluated})
+                | {r['pr_number'] for r in evaluated if r['disposition']=='unknown'}),
+            new_demand_time=now, selected_rank=(dict(requested_at=prefix.requested_at,
+                demand_id=prefix.demand_id, pr_number=prefix.pr_number) if not complete and prefix_complete else None))
+        self.save('census', dict(context=self.context, pulls=pulls,
+            demands=[asdict(d) for d in demands], eligibility=eligibility))
+        publish_demands = bool(changed)
         if changed or self._age_renewal_due:
-            # Keep other still-open unserved ages even if temporarily ineligible.
-            witnesses={d.pr_number:d for d in demands}
-            for pull in pulls:
-                if pull['number'] in witnesses:continue
-                prior=[d for d in ages if d.pr_number==pull['number']]
-                pending=contract.pending_demand_for_pr(prior,workload.admissions,pull['number'],pull['head']['sha'])
-                if pending is not None:witnesses[pull['number']]=pending
-            carried=contract.ordered_demands(witnesses.values())
-            conserve_age_witnesses(ages,carried,pulls,workload.admissions)
+            witnesses = {d.pr_number: d for d in learned}
+            for demand in pending:
+                witnesses.setdefault(demand.pr_number, demand)
+            carried = contract.ordered_demands(witnesses.values())
+            conserve_age_witnesses(ages, carried, pulls, workload.admissions)
             if carried:
-                self.receipt('demands', [asdict(d) for d in carried], 'demands',covered_comments=self._age_coverage)
-                publish_demands=True
+                self.receipt('demands', [asdict(d) for d in carried], 'demands', covered_comments=self._age_coverage)
+                publish_demands = True
         return dict(ready=True, changed=publish_demands, count=len(demands))
 
     def index(self, number, prefix, reference):
@@ -775,9 +832,13 @@ class Stages:
             if retirement['disposition'] in {'unknown','partial','held'}:
                 return dict(prepared=False,disposition=retirement['disposition'])
         demands = contract.ordered_demands(contract.Demand(**d) for d in census['demands'])
-        # This is the complete saved prepare census after all changed demands
-        # were indexed. Live eligibility is still rechecked in order below.
-        self.emit_decision('ordered_demands', census_complete=True,
+        eligibility = census.get('eligibility', {'complete': True, 'prefix_complete': False})
+        if not eligibility['complete'] and not eligibility['prefix_complete']:
+            if demands:
+                raise ValueError('incomplete eligibility has no selectable prefix')
+        self.emit_decision('ordered_demands', census_complete=eligibility['complete'],
+            discovery_complete=True, eligibility_prefix_complete=eligibility['prefix_complete'],
+            eligibility=eligibility,
             eligibility_phase='prepare', live_eligibility_recheck_required=True,
             ordered_demands=[asdict(d) for d in demands])
         for demand in demands:

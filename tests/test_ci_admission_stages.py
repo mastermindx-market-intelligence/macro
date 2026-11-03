@@ -981,9 +981,12 @@ def test_bulk_mixed_native_refresh_uses_actual_freshness_budget(monkeypatch,tmp_
     freshness=mog.ProofFreshness(s.repo,s.read,[{'workflow':'ci.yml','patterns':['engine/**']}],
         [{'sha':'4'*40,'message':'source change'},{'sha':'b'*40,'message':'old proof base'}])
     if expected is None:
-        with pytest.raises(ValueError,match='incomplete demand census at budget boundary'):
-            s.prepare(native_pr_enabled=False,freshness=freshness)
-        assert not (s.directory/'census.json').exists()
+        result=s.prepare(native_pr_enabled=False,freshness=freshness)
+        assert result=={'ready':True,'changed':True,'count':0}
+        census=s.load('census')
+        assert not census['eligibility']['complete'] and not census['eligibility']['prefix_complete']
+        learned=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())['demands']
+        assert 0<len(learned)<count and all(d['purpose']=='refresh' for d in learned)
     else:
         result=s.prepare(native_pr_enabled=False,freshness=freshness)
         assert result['count']==expected
@@ -1359,3 +1362,327 @@ def test_age_renewal_uses_server_artifact_expiry_not_pr_or_comment_clock(monkeyp
     assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':3}
     assert s.load('census')['demands']==ages
     assert not (s.directory/'demands-digest.json').exists()
+
+
+def native_budget_population(monkeypatch,tmp_path,count=875):
+    s,p,indexer=bulk_stage(monkeypatch,tmp_path,count)
+    selected=(set(range(601,711)) if count==871 else set(p.pulls))
+    for number,row in p.pulls.items():
+        row['draft']=number<=600 if count==871 else False
+        row['labels']=([{'name':'merge-on-green'}] if number in selected or count==871 and number<=4 else [])
+        if number in sorted(selected)[:86]:row['labels'].append({'name':'merge-blocked'})
+    if count==871:
+        assert sum(row['draft'] for row in p.pulls.values())==600
+        assert sum(mog.is_sweep_candidate(row) for row in p.pulls.values())==110
+    original=p.gql
+    def with_ci(query):
+        data=original(query)
+        for key,row in data['data']['repository'].items():
+            if key.startswith('h'):
+                row['checkSuites']=p.connection([dict(id='S'+key,repository={'nameWithOwner':'acme/widgets'},commit={'oid':row['oid']},app={'databaseId':15368,'slug':'github-actions'},checkRuns=p.connection([dict(id='R'+key,name='ci-gate',status='COMPLETED')]))])
+        return data
+    p.gql=with_ci
+    request=p.request
+    def rest(method,url,token,payload=None):
+        from urllib.parse import urlparse
+        path=urlparse(url).path.removeprefix('/repos/acme/widgets')
+        if '/check-runs' in path:
+            p.core-=1;p.calls.append((method,path,payload,p.now));head=path.split('/')[2];n=int(head,16)
+            return 200,{'total_count':1,'check_runs':[dict(id=n,name='ci-gate',status='completed',conclusion='success',app={'id':15368,'slug':'github-actions'},pull_requests=[{'number':n,'head':{'sha':head},'base':{'sha':'b'*40}}])]}
+        if path=='/commits/'+'4'*40:
+            p.core-=1;p.calls.append((method,path,payload,p.now));return 200,{'files':[{'filename':'engine/a.py'}]}
+        if path.startswith('/pulls/') and path.endswith('/files'):
+            p.core-=1;p.calls.append((method,path,payload,p.now));return 200,[{'filename':'engine/a.py'}]
+        return request(method,url,token,payload)
+    monkeypatch.setattr(mog,'_request',rest)
+    def freshness():return mog.ProofFreshness(s.repo,s.read,[{'workflow':'ci.yml','patterns':['engine/**']}],
+        [{'sha':'4'*40,'message':'source change'},{'sha':'b'*40,'message':'old proof base'}])
+    return s,p,indexer,freshness
+
+
+def test_ranked_875_partial_learning_then_fresh_prefix_finite_progress(monkeypatch,tmp_path):
+    s,p,indexer,freshness=native_budget_population(monkeypatch,tmp_path)
+    original_ages={};observations=[]
+    for iteration in range(4):
+        if iteration:
+            s.directory=tmp_path/f'original-{iteration}'
+            later_original_controller(s,p,70+iteration)
+            p.core=1000;p.points=1000
+        calls_before=len(p.calls)
+        result=s.prepare(native_pr_enabled=False,freshness=freshness())
+        census=s.load('census');eligibility=census['eligibility']
+        if iteration==0:
+            assert result['count']==0 and result['changed'] is True
+            assert not eligibility['complete'] and not eligibility['prefix_complete']
+        else:
+            assert result['count']==1 and eligibility['prefix_complete']
+            chosen=pa.Demand(**census['demands'][0])
+            expected=pa.ordered_demands(pa.Demand(**d) for d in original_ages.values())[0]
+            assert chosen==expected
+            reads=[path for method,path,_,_ in p.calls[calls_before:] if '/check-runs' in path]
+            assert f'/commits/{chosen.head_sha}/check-runs' in reads
+        if result['changed']:
+            payload=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
+            current={d['pr_number']:d for d in payload['demands']}
+            assert all(current[n]==d for n,d in original_ages.items())
+            assert len(current)>len(original_ages)
+            assert len((s.directory/'demands/ci-proof-admission.json').read_bytes())<=262144
+            aid=p.upload(s);i=indexer();i.start(aid,min(current));assert i.advance()['disposition']=='indexed'
+            original_ages=current
+        observations.append(dict(original=70+iteration,known=len(original_ages),core_used=1000-p.core,
+            graphql_used=1000-p.points,evaluated=len(eligibility['evaluated']),selected=result['count'],
+            total_api_calls=len(p.calls)-calls_before,rate_reads=sum(path=='/rate_limit' for _,path,_,_ in p.calls[calls_before:]),
+            graphql_calls=sum(path=='/graphql' for _,path,_,_ in p.calls[calls_before:]),
+            content_writes=sum(method in {'POST','PATCH','DELETE'} and path!='/graphql' for method,path,_,_ in p.calls[calls_before:])))
+        assert 0<p.core<=1000 and 0<p.points<=1000
+        if len(original_ages)==875:break
+    assert len(original_ages)==875 and len(observations)>1
+    assert all(d['purpose']=='refresh' for d in original_ages.values())
+    assert len([x for x in p.calls if x[0]=='POST' and x[1].endswith('/comments')])==len(observations)
+    print('RANKED_875_ORIGINALS='+json.dumps(observations,sort_keys=True))
+
+
+@pytest.mark.parametrize('old_state',['unknown','ineligible','eligible'])
+def test_ranked_earlier_refresh_last_in_provider_order_never_overtaken(controller,monkeypatch,old_state):
+    newer=pull(7);older=pull(8);older['draft']=False;older['labels']=[{'name':'merge-on-green'}]
+    old=pa.Demand(8,older['head']['sha'],'refresh','2026-01-01T00:00:00Z','a'*12)
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[newer,older])
+    monkeypatch.setattr(controller,'history',lambda p,*_:([],[old] if p['number']==8 else []))
+    ci=[dict(id=1,name='ci-gate',app={'slug':'github-actions'},status='completed',conclusion='success')]
+    monkeypatch.setattr(mog,'head_check_runs',lambda *a:ci)
+    def facts(pulls):return {p['number']:dict(comments=[],ci_present=p['number']==8,native=False) for p in pulls}
+    monkeypatch.setattr(stages,'BulkReader',lambda *a,**k:SimpleNamespace(facts=facts))
+    freshness=SimpleNamespace(stale_for=lambda *a:({'unknown':None,'ineligible':False,'eligible':True}[old_state],''))
+    controller.prepare(native_pr_enabled=False,freshness=freshness)
+    census=controller.load('census')
+    if old_state=='unknown':
+        assert census['demands']==[] and not census['eligibility']['prefix_complete']
+        payload=json.loads((controller.directory/'demands/ci-proof-admission.json').read_text())
+        assert asdict(old) in payload['demands']
+    elif old_state=='eligible':assert pa.ordered_demands(pa.Demand(**d) for d in census['demands'])[0]==old
+    else:assert [d['pr_number'] for d in census['demands']]==[7]
+
+
+def test_ranked_partial_same_clock_random_generation_cannot_select_new(controller,monkeypatch):
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[pull(7),pull(8)])
+    checks=[]
+    def budget(self,index):
+        checks.append(index);return (len(checks)<=1,'bounded original')
+    monkeypatch.setattr(mog.SweepBudget,'may_continue',budget)
+    monkeypatch.setattr(stages.secrets,'token_hex',lambda *a:'f'*12)
+    assert controller.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':True,'count':0}
+    c=controller.load('census');assert c['eligibility']['unresolved_pr_numbers']==[8]
+    assert not c['eligibility']['prefix_complete']
+    payload=json.loads((controller.directory/'demands/ci-proof-admission.json').read_text())
+    unseen=pa.Demand(8,'1'*40,'authored',payload['demands'][0]['requested_at'],'0'*12)
+    assert pa.ordered_demands([pa.Demand(**payload['demands'][0]),unseen])[0]==unseen
+
+
+def test_ranked_partial_future_age_does_not_assume_clock_order(controller,monkeypatch):
+    old=pa.Demand(7,'1'*40,'refresh','2099-01-01T00:00:00Z','a'*12)
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[pull(7),pull(8)])
+    monkeypatch.setattr(controller,'history',lambda p,*_:([],[old] if p['number']==7 else []))
+    checks=[]
+    def budget(self,index):
+        checks.append(index);return (len(checks)<=1,'bounded original')
+    monkeypatch.setattr(mog.SweepBudget,'may_continue',budget)
+    controller.prepare(native_pr_enabled=False,freshness=None)
+    c=controller.load('census');assert c['demands']==[] and not c['eligibility']['prefix_complete']
+
+
+
+def test_ranked_partial_index_unknown_preserves_custody_no_repost(monkeypatch,tmp_path):
+    s,p,indexer,freshness=native_budget_population(monkeypatch,tmp_path)
+    assert s.prepare(native_pr_enabled=False,freshness=freshness())['count']==0
+    aid=p.upload(s);p.lose_post=True;p.deliver_lost=False
+    assert s.reserve(aid)['disposition']=='unknown'
+    assert p.description.endswith('s=indexing')
+    posts=sum(method=='POST' and path.endswith('/comments') for method,path,_,_ in p.calls)
+    p.lose_post=False;s.directory=tmp_path/'next-original';later_original_controller(s,p,71)
+    p.core=1000;p.points=1000
+    assert s.prepare(native_pr_enabled=False,freshness=freshness())=={'ready':True,'changed':False,'count':0}
+    assert s.reserve()['disposition']=='unknown'
+    assert sum(method=='POST' and path.endswith('/comments') for method,path,_,_ in p.calls)==posts
+    assert not any(path.endswith('/dispatches') for _,path,_,_ in p.calls)
+
+
+def test_ranked_registered_head_change_preserves_age_but_rechecks_current_source(controller,monkeypatch):
+    prior=pa.Demand(7,'2'*40,'refresh','2026-01-01T00:00:00Z','a'*12)
+    subject=pull(7);subject['draft']=False;subject['labels']=[{'name':'merge-on-green'}]
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[subject])
+    monkeypatch.setattr(controller,'history',lambda *a:([],[prior]))
+    calls=[]
+    def checks(repo,head,token):
+        calls.append(head);return [dict(id=1,name='ci-gate',app={'slug':'github-actions'},status='completed')]
+    monkeypatch.setattr(mog,'head_check_runs',checks)
+    seen=[]
+    def stale(p,r):seen.append(p['head']['sha']);return True,'current main changed'
+    controller.prepare(native_pr_enabled=False,freshness=SimpleNamespace(stale_for=stale))
+    assert seen==['1'*40] and calls[-1]=='1'*40
+    assert controller.load('census')['demands']==[asdict(replace(prior,head_sha='1'*40))]
+
+
+def test_ranked_prefix_output_does_not_claim_complete_eligibility(controller,monkeypatch,capsys):
+    prior=pa.Demand(7,'1'*40,'refresh','2026-01-01T00:00:00Z','a'*12)
+    controller.save('census',dict(context=CTX,pulls=[],demands=[asdict(prior)],
+        eligibility=dict(complete=False,prefix_complete=True,evaluated=[dict(pr_number=7,disposition='eligible')],unresolved_pr_numbers=[8])))
+    calls=[]
+    def held(*a,**kw):calls.append(a[3]);return mog.AdmissionDispatchResult('held',detail='cap8 remains full')
+    monkeypatch.setattr(mog,'reserve_shared_admission',held)
+    assert controller.reserve()['disposition']=='held' and calls==[prior]
+    row=json.loads(capsys.readouterr().out.splitlines()[0])
+    assert row['census_complete'] is False and row['discovery_complete'] is True
+    assert row['eligibility_prefix_complete'] is True
+
+
+def test_ranked_eighth_arrival_still_reaches_original_capacity_guard(controller,monkeypatch):
+    prior=pa.Demand(7,'1'*40,'refresh','2026-01-01T00:00:00Z','a'*12)
+    controller.save('census',dict(context=CTX,pulls=[],demands=[asdict(prior)],eligibility=dict(complete=False,prefix_complete=True)))
+    def reserve(*a,**kw):
+        assert pa.capacity([pa.Run(i,1,'in_progress','pr_head') for i in range(1,9)],[],census_complete=True,records_complete=True)==0
+        return mog.AdmissionDispatchResult('held',detail='cap8')
+    monkeypatch.setattr(mog,'reserve_shared_admission',reserve)
+    assert controller.reserve()['disposition']=='held'
+
+
+class PrefixOriginalServer(OriginalServer):
+    """Extend the existing in-process API server, not a hosted GitHub run."""
+    def __init__(self):
+        super().__init__()
+        self.controllers={70:self.control};self.core=1000;self.rate_reads=0;self.stop_poll=3
+        self.subject_checks=[];self.semantic_artifact=None;self.lose_check=None
+    def upload(self,s,suffix,name):
+        ident=super().upload(s,suffix,name)
+        self.artifacts[ident]['workflow_run']['id']=int(s.context['current_run_id'])
+        return ident
+    def request(self,method,url,token,payload=None):
+        from urllib.parse import urlparse
+        path=urlparse(url).path.removeprefix('/repos/acme/widgets')
+        if path=='/rate_limit':
+            self.rate_reads+=1
+            # Test-owned concurrent quota use: after five subjects are evaluated,
+            # the real SweepBudget observes less than its unchanged reserve.
+            if self.rate_reads==self.stop_poll:self.core=200
+            return 200,{'resources':{'core':{'limit':1000,'remaining':self.core}}}
+        self.core-=1
+        assert self.core>=0
+        if path=='':return 200,{'id':17,'full_name':'acme/widgets','default_branch':'main'}
+        if path=='/pulls':return 200,[pull(n,head=('1'*40 if n==7 else f'{n:040x}')) for n in range(7,13)]
+        if path.startswith('/actions/runs/'):
+            ident=int(path.split('/')[3])
+            if ident in self.controllers:return 200,self.controllers[ident]
+            if path.endswith('/artifacts'):return 200,{'total_count':1,'artifacts':[self.semantic_artifact]}
+            if path.endswith('/jobs'):
+                return 200,{'total_count':3,'jobs':[dict(name=n,status='completed',conclusion='success',run_id=ident,run_attempt=1) for n in mog.ADMITTED_SUBJECT_CHECK_NAMES]}
+        if '/check-runs' in path and method=='GET':return 200,{'total_count':len(self.subject_checks),'check_runs':self.subject_checks}
+        if path=='/check-runs' and method=='POST':
+            assert token=='checks' and self.description.endswith('s=completing')
+            self.writes.append((method,path,payload))
+            row=dict(payload,id=1000+len(self.subject_checks),app={'slug':'github-actions'})
+            self.subject_checks.append(row)
+            if row['name']==self.lose_check:raise TimeoutError('original check response lost')
+            return 201,row
+        return super().request(method,url,token,payload)
+    def terminal_semantic_proof(self, admission):
+        """A test-owned child publishes typed semantic bytes for its issued ID."""
+        import io,zipfile,hashlib
+        proof=mog.semantic_proof
+        run=self.runs[admission.run_id]
+        run.update(status='completed',name='ci',run_number=admission.run_id,created_at='2026-11-03T00:00:00Z')
+        identity=dict(workflow_run_id=str(admission.run_id),workflow='ci',event='workflow_dispatch',role='pr_head',
+            tested_tree_sha=admission.merge_sha,subject_head_sha=admission.head_sha,base_sha=admission.base_sha,
+            admission_generation=admission.generation)
+        job=dict(logical_job_id='test-job',pack_index=0,job_exec_sha256='5'*64,steps=[dict(proof_id='test-step',step_spec_sha256='6'*64)])
+        plan=dict(identity,schema=proof.PLAN_SCHEMA,authority_changed=False,changed_from=admission.base_sha,
+            scope_mode='active',reason='test-owned original',scope_summary='test-owned original',
+            legacy_job_count=1,eligible_job_count=1,changed_files_sha256='',changed_files_count=0,
+            eligible_jobs=['test-job'],skipped_job_count=0,skipped_jobs=[],packs=[dict(index=0,weight=1,jobs=['test-job'])],
+            nonempty_pack_indices=[0],matrix={'include':[{'pack':0}]},has_work=True,plan_sha256='4'*64,semantic_jobs=[job])
+        plan['plan_sha256']=proof.authoritative_plan_sha256(plan)
+        fragment=dict(identity,schema=proof.FRAGMENT_SCHEMA,plan_sha256=plan['plan_sha256'],pack_index=0,infrastructure=[],
+            jobs=[dict(logical_job_id='test-job',job_exec_sha256='5'*64,infrastructure={'outcome':'passed'},
+                steps=[dict(proof_id='test-step',step_spec_sha256='6'*64,outcome='passed',failure_signature=None)])])
+        evidence=proof.reconcile_evidence(plan,[fragment]);out=io.BytesIO()
+        with zipfile.ZipFile(out,'w') as z:z.writestr('ci-semantic-evidence.json',json.dumps(evidence))
+        data=out.getvalue();ident=80+len(self.artifacts);self.archives[ident]=data
+        self.semantic_artifact=dict(id=ident,name=f'ci-semantic-evidence-{admission.run_id}',expired=False,
+            digest='sha256:'+hashlib.sha256(data).hexdigest(),workflow_run=dict(id=admission.run_id,repository_id=17,head_sha='4'*40))
+        self.artifacts[ident]=self.semantic_artifact
+
+
+@pytest.mark.parametrize('lost_check',[None,'ci-plan'])
+def test_ranked_partial_to_original_dispatch_and_completion_chain(monkeypatch,tmp_path,lost_check):
+    server=PrefixOriginalServer()
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True)
+    monkeypatch.setattr(mog,'_request',server.request)
+    monkeypatch.setattr(mog,'_download_semantic_artifact',lambda url,token:server.archives[int(url.split('/')[-2])])
+    def facts(pulls):return {p['number']:dict(comments=server.comments if p['number']==7 else [],ci_present=False,native=False) for p in pulls}
+    monkeypatch.setattr(stages,'BulkReader',lambda *a,**k:SimpleNamespace(facts=facts))
+    serial=iter(range(1,20));monkeypatch.setattr(stages.secrets,'token_hex',lambda *a:f'{next(serial):012x}')
+    s=stages.Stages('acme/widgets','read','write','checks',CTX,tmp_path/'learn')
+    clock=[1800000000]
+    def sleep(seconds):clock[0]+=seconds
+    monkeypatch.setattr(s,'anchor_indexer',lambda:stages.AnchorIndexer(mog,s.repo,s.read,s.context,deadline=clock[0]+240,clock=lambda:clock[0],sleep=sleep))
+    for n in range(201,208):server.runs[n]=dict(id=n,run_attempt=1,status='queued',event='pull_request')
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':True,'count':0}
+    learned=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())['demands']
+    assert len(learned)==5 and learned[0]['pr_number']==7
+    assert s.reserve(server.upload(s,'demands','ci-proof-demands-70-1'))=={'prepared':False}
+    assert not any(path.endswith('/dispatches') for _,path,_ in server.writes)
+    # New exact original controller; the earlier authenticated age now bounds
+    # the unseen same-sweep candidate, despite another finite quota window.
+    server.controllers[71]=dict(server.control,id=71);server.core=1000;server.rate_reads=0;server.stop_poll=4
+    s.context={**CTX,'current_run_id':'71'};s.directory=tmp_path/'select'
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':1}
+    assert s.load('census')['eligibility']['prefix_complete']
+    assert s.load('census')['demands']==[learned[0]]
+    result=s.reserve();assert result['prepared'] and result['generation']==learned[0]['demand_id']
+    g=result['generation']
+    prepared=server.upload(s,'prepared',f'ci-proof-admission-71-1-{g}-prepared')
+    checkpoint=server.upload(s,'checkpoint','ci-proof-checkpoint-71-1-7')
+    assert s.dispatch(prepared,checkpoint)==dict(bound=True,generation=g)
+    bound=server.upload(s,'bound',f'ci-proof-admission-71-1-{g}-bound')
+    assert s.finalize(bound)=={'finalized':True}
+    workload=mog.shared_proof_workload(s.repo,s.read,repository_id=17,protected_controller_sha='4'*40)
+    assert pa.capacity(workload.runs,workload.admissions,census_complete=True,records_complete=True)==0
+    admission=next(a for a in workload.admissions if a.generation==g)
+    assert admission.run_id==99 and admission.run_id in server.runs
+    server.terminal_semantic_proof(admission)
+    server.lose_check=lost_check
+    if lost_check:
+        assert s.complete()['disposition']=='unknown'
+        assert server.description.endswith('s=completing')
+        writes=len(server.writes)
+        assert s.complete()['disposition']=='unknown' and len(server.writes)==writes
+        assert sum(path.endswith('/dispatches') for _,path,_ in server.writes)==1
+        return
+    assert s.complete()=={'disposition':'reconciled','count':1,'held':0}
+    assert {c['name'] for c in server.subject_checks}==set(mog.ADMITTED_SUBJECT_CHECK_NAMES)
+    assert all(c['head_sha']==admission.head_sha and c['conclusion']=='success' for c in server.subject_checks)
+    assert server.description=='a2 idle'
+    assert s.complete()=={'disposition':'reconciled','count':0,'held':0}
+    assert len(server.subject_checks)==3
+    assert sum(path.endswith('/dispatches') for _,path,_ in server.writes)==1
+    workload=mog.shared_proof_workload(s.repo,s.read,repository_id=17,protected_controller_sha='4'*40)
+    assert pa.capacity(workload.runs,workload.admissions,census_complete=True,records_complete=True)==1
+    server.controllers[72]=dict(server.control,id=72);server.core=1000;server.rate_reads=0
+    s.context={**CTX,'current_run_id':'72'};s.directory=tmp_path/'after-terminal'
+    s.prepare(native_pr_enabled=False,freshness=None)
+    assert all(d['pr_number']!=7 for d in s.load('census')['demands'])
+    assert sum(path.endswith('/dispatches') for _,path,_ in server.writes)==1
+
+
+
+@pytest.mark.parametrize('checks',[[],[dict(id=1,name='ci-gate',app={'slug':'github-actions'})]])
+def test_ranked_advertised_original_missing_check_or_status_blocks_earlier_prefix(controller,monkeypatch,checks):
+    older=pull(8);older['draft']=False;older['labels']=[{'name':'merge-on-green'}]
+    old=pa.Demand(8,older['head']['sha'],'refresh','2026-01-01T00:00:00Z','a'*12)
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[pull(7),older])
+    monkeypatch.setattr(controller,'history',lambda p,*_:([],[old] if p['number']==8 else []))
+    monkeypatch.setattr(mog,'head_check_runs',lambda *a:checks)
+    def facts(pulls):return {p['number']:dict(comments=[],ci_present=p['number']==8,native=False) for p in pulls}
+    monkeypatch.setattr(stages,'BulkReader',lambda *a,**k:SimpleNamespace(facts=facts))
+    controller.prepare(native_pr_enabled=False,freshness=SimpleNamespace(stale_for=lambda *a:(True,'')))
+    c=controller.load('census')
+    assert c['demands']==[] and not c['eligibility']['prefix_complete']
+    assert c['eligibility']['evaluated'][0]==dict(pr_number=8,disposition='unknown')
