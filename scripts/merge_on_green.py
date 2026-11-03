@@ -467,6 +467,7 @@ COMMIT_FILES_TRUNCATED_AT = 300
 # source, and `run_ci_pack.py` is itself a global invalidator, so the copy and the
 # original cannot drift without a full-suite run that fails on the difference.
 LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
+CI_SCOPE_MODE_ENV = "MERGE_ON_GREEN_CI_SCOPE_MODE"
 PACK_JOB_ID = "ci-pack"
 PACK_GLOBAL_INVALIDATORS = (
     ".github/workflows/**",
@@ -2267,6 +2268,9 @@ class ProofFreshness:
         # Parsed legacy-jobs.yml keyed by blob ID, and each main commit's changed
         # jobs as ``{job_id: (before, after)}`` (``None``: not a bounded edit).
         self._manifest_documents: dict[str, object] = {}
+        # Match the incumbent bounded-manifest contract: off/shadow/unknown
+        # scopes run the whole suite, so per-job reuse needs positive active proof.
+        self.ci_scope_active = os.environ.get(CI_SCOPE_MODE_ENV, "") == "active"
         self._manifest_deltas: dict[str, dict[str, tuple[Any, Any]] | None] = {}
         self._pr_files: dict[Any, list[str] | None] = {}
         # Exact checked head -> newest main commit already contained by that head.
@@ -2683,6 +2687,9 @@ class ProofFreshness:
         whose files cannot be listed is stale.
         """
         short = commit_sha[:12]
+        if not self.ci_scope_active:
+            return (f"main commit {short} changed the legacy manifest while pull-request "
+                    "CI scoping is not active; existing proof cannot exclude any job")
         try:
             delta = self._manifest_job_delta(commit_sha)
         except RuntimeError as exc:

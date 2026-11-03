@@ -10646,3 +10646,52 @@ def test_the_sweepers_pinned_constants_still_match_the_ci_pack():
     assert ast.literal_eval(constants["GLOBAL_INVALIDATORS"]) == MOG.PACK_GLOBAL_INVALIDATORS
     assert ast.literal_eval(constants["PACK_JOB_ID"]) == MOG.PACK_JOB_ID
     assert ast.literal_eval(constants["LEGACY_MANIFEST_PATH"]) == MOG.LEGACY_MANIFEST_PATH
+
+
+@pytest.fixture(autouse=True)
+def _explicit_workflow_scope_for_existing_freshness_cases(monkeypatch):
+    # Existing fixtures model the CI workflow's active default. Mode-boundary
+    # cases below override/remove this observation, rather than assuming it.
+    monkeypatch.setenv("MERGE_ON_GREEN_CI_SCOPE_MODE", "active")
+
+
+@pytest.mark.parametrize("mode,active", [
+    (None, False), ("", False), ("off", False), ("shadow", False),
+    ("unknown", False), ("ACTIVE", False), (" active ", False), ("active", True),
+])
+def test_triage_bounded_manifest_requires_positive_scope_mode(monkeypatch, mode, active):
+    if mode is None:
+        monkeypatch.delenv("MERGE_ON_GREEN_CI_SCOPE_MODE", raising=False)
+    else:
+        monkeypatch.setenv("MERGE_ON_GREEN_CI_SCOPE_MODE", mode)
+    # The same disjoint job edit is safe only with positively active selection.
+    after = _edited("fx-guard", run="python -m pytest -q --disable-warnings")
+    stale, reason = _judge_manifest_edit(after, ["engine/unrelated.py"])  # ci-trigger-closure: data - fixture name, never opened
+    assert stale is (not active), (mode, reason)
+    if not active:
+        assert "scoping is not active" in reason
+
+
+def test_triage_inactive_scope_refuses_before_manifest_reads(monkeypatch):
+    monkeypatch.delenv("MERGE_ON_GREEN_CI_SCOPE_MODE", raising=False)
+    freshness = MOG.ProofFreshness("acme/widgets", "fixture-token", [], [])
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("inactive scoping must not spend manifest/read budget")
+    monkeypatch.setattr(freshness, "_manifest_job_delta", unexpected)
+    assert "scoping is not active" in freshness._bounded_manifest_verdict("1" * 40, 4242)
+
+
+def test_triage_sweep_scope_expression_matches_actual_ci_default():
+    ci = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    expressions = {
+        step["env"]["CI_SCOPE_MODE"]
+        for job in ci["jobs"].values()
+        for step in job.get("steps", [])
+        if isinstance(step.get("env"), dict) and "CI_SCOPE_MODE" in step["env"]
+    }
+    assert len(expressions) == 1
+    sweep = yaml.safe_load(WORKFLOW.read_text())
+    step = next(step for job in sweep["jobs"].values()
+                for step in job.get("steps", [])
+                if step.get("name") == "sweep merge-on-green pull requests")
+    assert step["env"].get("MERGE_ON_GREEN_CI_SCOPE_MODE") == expressions.pop()
