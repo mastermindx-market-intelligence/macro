@@ -15221,6 +15221,14 @@ jobs:
       - "lib/pages.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
+      # Ancestor package __init__.py for declared modules (test_ancestor_init_census_does_not_grow; widen only).
+      - "engine/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/press/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
     # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
     #
     # The three Technology ex-Semis suites were named only in `gate: data` jobs
