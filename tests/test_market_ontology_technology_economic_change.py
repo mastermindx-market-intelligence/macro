@@ -509,6 +509,28 @@ def test_shared_assertion_roundtrip_through_pinned_contract():
     assert isinstance(module.source_ref_for(validated), str)
 
 
+def test_conformant_fixture_renders_one_product_workload_role_row():
+    """One schema-valid assertion becomes one product_workload_role row.
+
+    The shared schema's predicate enum does not include the Technology
+    allowlist token, so the fixture's schema predicate is the shell's
+    PRODUCT_CAPABILITY and its statement_mode is ATTRIBUTED_INTERPRETATION.
+    The rendered row uses the allowlist pair.
+    """
+    module = _real_curation_module()
+    payload = json.loads(CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
+    validated = module.validate_assertion(payload)
+    revision = module.curation_revision(validated)
+    assert re.fullmatch(r"gmirca_[0-9a-f]{32}", revision)
+    dossier = _compose(business_assertions=[validated])
+    rows = dossier["business"]["rows"]
+    assert len(rows) == 1
+    assert rows[0]["predicate"] == "product_workload_role"
+    assert rows[0]["statement_mode"] == "attributed"
+    assert re.fullmatch(r"gmirca_[0-9a-f]{32}", rows[0]["curation_revision"])
+    assert rows[0]["curation_revision"] == revision
+
+
 def test_invalid_assertion_is_counted_never_rendered(monkeypatch):
     broken = _assertion(predicate="product_workload_role", seed="broken", drop=("temporal",))
     dossier = _compose_happy(monkeypatch, business_assertions=[ROLE, broken])
