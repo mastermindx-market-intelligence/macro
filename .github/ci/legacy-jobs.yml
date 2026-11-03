@@ -1351,6 +1351,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3516,6 +3520,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4605,6 +4613,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9107,6 +9119,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17640,6 +17656,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -45466,6 +45486,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -51642,6 +51666,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9124: theme_research_registry.py lazily loads the nuclear composer, owner bundle and uranium anchor (widen only).
+      - "engine/market_ontology/nuclear_owner_bundle.py"
+      - "engine/market_ontology/nuclear_theme_research.py"
+      - "engine/market_ontology/uranium_miners_anchor.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
