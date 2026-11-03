@@ -1,0 +1,224 @@
+# RIG round 4 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize4.py; values copied, not rewritten.
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: visual_taste
+artifact_sha: 1ad748c8e785eda0a3e1f13167a9290c194d07ae
+review_round: 4
+supersedes:
+  artifact_sha: 5432d5a0b63a7ed3b6f4131270d58d2bec7c293e
+  receipt: reviews/round3_5432d5a0/visual_taste.yml
+reviewer:
+  identity: opus-auditor-visual-taste-sic-20261021-r4
+  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-3
+    agent resumed by message, no re-spawn)'
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (41 frozen boards 0-40 incl. HTML specimen boards 23-40 + design_refs/sector-paper-20261021
+    at 1ad748c8)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-3 receipt (reviews/round3_5432d5a0/<role>.yml)
+  - the round-3 verdict conditions SIC-V3-C01..C17 and the stance adjudication SIC-ADJ-01 as stated in the commission
+  first_pass_path: critic_return/first_pass_visual_taste.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-11-02T02:16:38.104Z'
+  verdict: BLOCK
+  round3_dispositions:
+  - finding: VTC-021
+    status: partially_cured
+    evidence: 'EN is cured. Boards 28/29/39/40 name one phase per card face ("Rolling over" chip and "in a Rolling
+      over phase" read). XLF "Downturn" appears only in the drawer (cycles.html XLF drawer "clocks phase Downturn
+      · ladder RALLY ON"). The XLC legacy "Bottoming" appears only inside the labeled Clocks-disagree state that
+      names both clocks. ZH is not cured. Board 34, XLF card: the chip says 回落中 but the read says "金融下行阶段" and the
+      note says "阶段时钟为下行". Face-only count with drawers and the hidden desk removed: 回落中 x5, 下行 x7. The ZH face
+      therefore still names the phase two ways.'
+  - finding: VTC-022
+    status: cured
+    evidence: brf-lane-qual count is 0 in brief.html. "Buy now", "Take profits" and "Hold what you own · no new
+      buying" appear only inside the lane-provenance drawer (brief.html:295, ab-buy-fold / ab-trim-fold / dash-hold-fold).
+      The hero face is "Leadership is holding." plus participation facts (brief.html:272). "Leadership steady —
+      stay with the leaders." appears only in the drawer as the labeled line "Production regime read" (brief.html:275).
+      Lane subtitles state membership criteria, e.g. "Entry condition confirmed on the as-of date" and "Setup forming;
+      trigger not yet confirmed". Board 38 shows the same in ZH.
+  - finding: VTC-023
+    status: cured
+    evidence: 'Judged under SIC-ADJ-01. STANCE_MAP is gone from build_cycles.py (:9) and the null path is coded
+      at :68. Each of the 6 card faces has exactly one data-stance chip (watch x4, protect x2) with the "Engine
+      mapping · Sector Cycles" eyebrow (cycles.html, 6/6). Each drawer opens with "Resolved stance · engine" followed
+      by engine word + tone (XLF "HOLD · tone bullish", XLK "HIGH-RISK BOUNCE · tone caution", XLC "SELL · tone
+      bearish"), then doctrine_stance with its engine/cycle_ontology.py :147/:179/:948 citation. Stance ink is warn
+      for watch and protect. Gap: no specimen cell has a null stance ("Stance unavailable" count is 0), so the C02
+      null rendering is code-only and appears on no board.'
+  - finding: VTC-024
+    status: partially_cured
+    evidence: 'Fixed: the ZH as-of stamp now reads 板块周期情报 (build_cycles.py:36; board 34 head). ZH sector names render
+      (金融, 科技, 通讯服务). rank-IC is rendered as 横截面秩相关 on the ZH face. Remaining: "W5.1" stays on the ZH face (board
+      34 Methods and limits, card 4, "W5.1 研究已停止"; cycles.html:369, outside any drawer). The capture.log claim zh-latin=0
+      cannot detect it: components/zh_latin_grep.py tokenizes with [A-Za-z][A-Za-z''\-]+, which needs two letters
+      and never matches "W5.1" or "P(". The EN face also carries the internal study id ("The W5.1 study stopped",
+      board 28), which breaks the plain-words rule (Law 2).'
+  - finding: VTC-025
+    status: cured
+    evidence: cycles_repair/README.md:55-63 heights equal the boards_manifest png_px for boards 28/29/30/31/34/35/36/39/40
+      (2352, 2352, 4326, 4967, 2206, 2206, 4326, 4863, 3348). capture.log wave-3 blocks print data-w="390" data-ovf=""
+      for 30/31/36/39 and 25/26/37/38, plus switcher=6 with the current item, on every re-rendered board.
+  - finding: VTC-026
+    status: cured
+    evidence: 'Board 28 hero is "Where each sector sits in its cycle" with no title repeat and no chart promise.
+      The context card is filled (as-of, generation sector_cycles.semantic_families.v2, hazard epoch, scope chips).
+      The grader eyebrow is "Conviction-call grader" with a DEFINITION caption and no rate. Nit: the hero card stretches
+      to the context-card height and leaves a large empty lower half (board 28, upper left).'
+  - finding: VTC-027
+    status: cured
+    evidence: 'Board 38 lane rows put the name on line 1 and metrics ("+5.6% 20日对比市场 68 评分") on line 2. capture.log
+      shows data-ovf="" on 25/26/37/38. Judged at downscaled resolution: the 390x4604 board displays at 169 px wide.'
+  - finding: VTC-008
+    status: withdrawn
+    evidence: Withdrawal condition holds in every visible file. coverage_matrix.html (board 27) cites 38 and 39
+      and never 21. README Boards cites no 21. Manifest row 21 is marked "retained as a reviewer index only". proposal.yml
+      is quarantined in pass 1 and was not checked.
+  - finding: VTC-016
+    status: partially_cured
+    evidence: 'Tied to VTC-024: the W5.1 internal id remains on the ZH face (board 34). Everything else in the row
+      is cured.'
+  - finding: VTC-017
+    status: cured
+    evidence: Board 40 draws the composite desk. The production chart capture is labeled "Production capture · As
+      of 2026-10-20" with a caption naming site/sector_cycles.html at d86344b93a0b. The face states that the specimen
+      cards are as of 2026-10-20, the Brief specimen as of 2026-10-19, and that the dates differ by design (cycles.html
+      desk caption). The prod_capture.json fields match the caption. The hero no longer promises an undrawn chart.
+  - finding: VTC-019
+    status: cured
+    evidence: No legacy numerals appear on any face. The legacy phase word survives only as the named clock inside
+      the labeled XLC "Clocks disagree" state, which SIC-V3-C03 requires. The remaining XLC face contradiction comes
+      from the hazard leg and the rhythm projection, not the read, and is filed as VTC-028.
+  - finding: VTC-020
+    status: cured
+    evidence: The duplicated lane qualifiers left with VTC-022. The coverage card title is "Sector measurement coverage"
+      with no "unavailable" (brief.html coverage block; board 38 bottom). Producer em dashes remain a declared producer
+      item.
+  findings:
+  - id: VTC-028
+    severity: major
+    finding: 'Each Cycles card face states a next turn that contradicts its own leg. XLF and XLK hazard ladders
+      read "down · trough" while their timing cards read "Projected next peak ≈ 2026-07" and "≈ 2026-10" (boards
+      28/29/34/35/39/40). XLC wears the "Rolling over" chip but its hazard leg reads "up · peak" and its projection
+      "next peak ≈ 2026-08, Overdue". Source: example_dataset.json sectors[0..1] have rhythm.next_turn=peak against
+      now.hazard.turn_kind=trough; sectors[2] has hazard.direction=up and turn_kind=peak against phase_v2 Downturn.
+      Both are drawn verbatim at build_cycles.py:150. The family-match rule covers only the legacy read against
+      the phase clock, so these other clocks reach the face unlabeled. Cure: reconcile them under the same family
+      rule, or show them inside the labeled disagree state.'
+  - id: VTC-029
+    severity: blocker
+    finding: 'The ZH stance vocabulary is forked and collides with another stance. The Cycles chip renders Watch
+      as 观望——勿追高 and Protect as 保护收益 (engine/cycle_ontology.py:137-138, stamped into example_dataset.json:207/403/586).
+      The production deck renders them as 观察，别追 and 保护利润 (copy_deck.json:239-240, source templates/stage_analysis.html.j2:1497-1499),
+      and Brief board 38 draws those. On the Brief, 观望 is the Stand aside stance (暂时观望 on the face, 观望 in the drawer,
+      copy_deck.json:241). On boards 30/34/35/36, a ZH reader therefore sees the Stand aside word on the single
+      stance chip SIC-ADJ-01 makes authoritative: eight ZH strings for six stances, one of them ambiguous. This
+      breaks doctrine Law 1. It sits in the landed producer, not only in the specimen. Cure: give DOCTRINE_STANCE
+      zh the deck/production strings and re-render the ZH boards.'
+  - id: VTC-030
+    severity: minor
+    finding: One label carries two meanings in two places. On XLF the "Clocks disagree" chip in the card head means
+      phase clock versus timing ladder, and its note names only one value ("timing ladder disagrees — the ladder
+      state ... in the provenance drawer"; RALLY ON is drawer-only). On XLC, "Clocks disagree" inside The read means
+      legacy read versus phase clock and names both clocks (boards 28/34/39/40). Either name both clocks in both
+      states, or use distinct labels.
+  - id: VTC-031
+    severity: minor
+    finding: 'Board 40: the production chart''s "Where they stand" chips read "Rolling over 2" of 11 sectors (Topping
+      0, Trending 3, Rolling over 2, Prime entry 1, Bottoming 5). The three specimen cards beside it, at the same
+      as-of 2026-10-20, all read "Rolling over". The chart and the cards disagree on phase membership at the same
+      date, and the face does not say that the chart counts the legacy family.'
+  - id: VTC-032
+    severity: minor
+    finding: In boards_manifest.yml rows 32 and 33, states_shown still lists "ZH deck copy end-to-end (lane titles
+      + production qualifiers ...)" and "coverage unavailable (measured-sector read withheld)". Both contradict
+      the wave-3 PNGs and the later wave-3 bullet in the same rows. These states are no longer drawn, so the bullets
+      should be annotated or removed.
+  - id: VTC-033
+    severity: minor
+    finding: 'The fixture card face uses producer field jargon: "fell back to the KM prior: source PRIOR, cell_verdict
+      PRIOR, epoch in the drawer" (boards 28/40; ZH 单元判定 on 34). SIC-V2-C04 moved field identifiers into drawers.
+      Otherwise the card meets C17: exactly one labeled Fixture card, dashed and neutral, outside the live grid,
+      with the PRIOR cell shape.'
+  - id: VTC-034
+    severity: minor
+    severity_as_filed: nit
+    finding: The ZH read "金融下行阶段，位于200日均线" drops "above" from "above its 200-day" (board 34). The ZH drawer line
+      reads "持有 · 语气 bullish" with the tone left untranslated; drawers are exempt from C06, so this is polish only.
+  strengths:
+  - 'Board 40 is a strong composite: the labeled production chart instrument sits beside the correction cards, and
+    the as-of difference is stated in prose on the face.'
+  - Light (28/34) and dark (29/40/39) each read as designed themes with neutral surface hierarchy, even borders
+    and no edge stripes. Stance ink is warn and the fixture card is dashed. The six-link switcher with Cycles/Brief
+    current shows on every re-rendered board (capture.log switcher=6).
+  - The Brief hero and lanes are now descriptive. Instruction idioms live only in labeled drawers.
+  round1_residuals: []
+  production_preferable_for: []
+  quarantine_breaches: []
+second_pass:
+  amended_at: '2026-11-02T02:21:34.811Z'
+  rationale_received: true
+  amendments:
+  - finding: VTC-030
+    action: upheld
+    action_as_filed: upgraded
+    severity_after_pass2: major
+    note: 'Upgraded from minor to major and reworded. The binding condition SIC-V3-C03 (verdict.yml:198-201) says
+      the family-match test decides, "not clocks.agree". It also says XLC and XLF each demonstrate the labeled "Clocks
+      disagree" state naming both clocks. The wave-3 proof (proposal.yml:1725) says XLF "keeps the face read on
+      family match under the amber clocks chip". XLF family-matches (cycles.html XLF drawer: read_family_match legacy
+      Downturn · phase_v2 Downturn · match true). So the XLF chip is driven by clocks.agree=false (ladder RALLY
+      ON), the input C03 excludes. Its face note names only one clock ("phase clock says Rolling over · timing ladder
+      disagrees"; the ladder state is drawer-only). XLF therefore does not demonstrate the C03 state, and the same
+      label carries two meanings in two placements (boards 28/34/39/40). Cure: XLF either shows no clocks chip on
+      a family match, or names both clocks under a distinct label.'
+  - finding: VTC-029
+    action: upheld
+    note: 'SIC-ADJ-01 (verdict.yml:136-154) fixes the stance map and its English strings only; it names no ZH stance
+      string. The chip ZH comes from engine/cycle_ontology.py:137-138, so it carries a production file:line and
+      meets the tagging clause of SIC-V3-C06 (verdict.yml:211-214). It still forks the six-stance vocabulary of
+      doctrine Law 1 (docs/DESIGN_DOCTRINE.md:44). The production ZH strings exist (copy_deck.json:239-241 from
+      templates/stage_analysis.html.j2:1497-1500) and the Brief draws them (board 38: 观察，别追 / 保护利润 / 暂时观望). On ZH
+      boards 30/34/35/36 the one authoritative chip begins with 观望, which is the Brief''s Stand aside word. Nothing
+      in the rationale addresses this. Severity stays blocker.'
+  - finding: VTC-024
+    action: upheld
+    note: The wave-3 proof (proposal.yml:1752) rests entirely on zh_latin_grep.py = 0. That tokenizer needs two
+      consecutive Latin letters, so it cannot see "W5.1". PRC-009 (proposal.yml:1455-1457) places the W5.1 STOP
+      on the methods row by design, and it renders on the ZH face (board 34, Methods and limits card 4). SIC-V3-C06
+      (verdict.yml:211-212) admits only tickers, SPY, MODEL/PRIOR and numerals. Status stays partially_cured; VTC-016
+      stays tied to it.
+  - finding: VTC-032
+    action: upheld
+    action_as_filed: reworded
+    note: 'Standard named: SIC-V2-C07 (verdict.yml:305-307) and the VTC-019 cure (proposal.yml:1667-1668) require
+      boards_manifest states_shown to match what is drawn. Rows 32/33 still list "lane titles + production qualifiers"
+      and "coverage unavailable (measured-sector read withheld)", which the wave-3 PNGs no longer draw. Severity
+      stays minor.'
+  - finding: VTC-033
+    action: withdrawn
+    note: SIC-V3-C17 (verdict.yml:251-253) explicitly requires the fixture card to show "a KM PRIOR cell in the
+      producer field shape (source PRIOR, cell_verdict, epoch in the drawer)" on the face. The field names on the
+      fixture face are therefore mandated by the condition, not jargon leakage. The card meets C17 (boards 28/34/40).
+  verdict: BLOCK
+  inputs_opened_pass2:
+  - research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml lines 1380-1859 (tail of the round-1
+    mandate, revision_mandate_round2, revision_mandate_round3 in full); the coverage section and the screenshots
+    entries 38-40 were not opened
+  - research/reference_integrity/sector-intelligence-cycles-20261021/verdict.yml lines 120-395 (round-3 resolutions
+    incl. SIC-ADJ-01, conditions SIC-V3-C01..C17, preserved_strengths, round-2 and round-1 conditions)
+  - wc -l of proposal.yml / verdict.yml / continuity.yml and git rev-parse HEAD (a2c374ab) only; continuity.yml
+    content not opened
+  quarantine_breaches: []
+  second_pass_path: critic_return/second_pass_visual_taste.md
+  disposition_notes: Judged as frozen at 1ad748c8; the pass-2 grant revealed proposal.yml revision_mandate_round3,
+    verdict.yml (SIC-V3-C01..C17, SIC-ADJ-01) and continuity.yml only. Amendment actions are normalized to the checker
+    vocabulary (upheld/downgraded/withdrawn); the critic's own wording is kept in action_as_filed and a raised severity
+    in severity_after_pass2.

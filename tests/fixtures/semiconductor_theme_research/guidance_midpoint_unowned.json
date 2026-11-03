@@ -1,0 +1,117 @@
+{
+  "synthetic": true,
+  "case_key": "guidance_midpoint_unowned",
+  "task_refs": ["T06"],
+  "expected_regression": "No displayed derived midpoint without exact-input financial-owner receipt",
+  "status": "ready",
+  "inputs_variants": {
+    "no_native_derivations": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4150,
+        "high": 4350,
+        "unit": "USD_m",
+        "horizon": "2026Q2",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue_usd_m",
+        "value": 4280,
+        "unit": "USD_m",
+        "fiscal_period": "2026Q2",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4500,
+        "high": 4700,
+        "unit": "USD_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": null
+    },
+    "prior_midpoint_owned_only": {
+      "prior": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4150,
+        "high": 4350,
+        "unit": "USD_m",
+        "horizon": "2026Q2",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-1", "locator": "paragraph 3"}
+      },
+      "actual": {
+        "metric": "revenue_usd_m",
+        "value": 4280,
+        "unit": "USD_m",
+        "fiscal_period": "2026Q2",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "table 1 row 4"}
+      },
+      "next_outlook": {
+        "schema": "guidance_item.v1",
+        "metric": "revenue_usd_m",
+        "low": 4500,
+        "high": 4700,
+        "unit": "USD_m",
+        "horizon": "2026Q3",
+        "status": "introduced",
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
+        "definition": "revenue_net_of_returns",
+        "source_span": {"synthetic": true, "document_id": "syn-doc-2", "locator": "paragraph 7"}
+      },
+      "native_derivations": {
+        "prior_midpoint": {
+          "value": 4243.5,
+          "inputs": [
+            {"role": "prior_outlook", "field": "low", "value": 4150},
+            {"role": "prior_outlook", "field": "high", "value": 4350}
+          ],
+          "receipt": {"receipt_id": "syn-rcpt-1", "byte_start": 120, "byte_end": 132, "literal": "midpoint: 4243.5"},
+          "owner": "guidance_narrative_synthesizer"
+        }
+      }
+    }
+  },
+  "expected_per_variant": {
+    "no_native_derivations": {
+      "derived": {
+        "prior_midpoint": {"status": "unavailable", "reason": "derivation_unowned"},
+        "next_outlook_midpoint": {"status": "unavailable", "reason": "derivation_unowned"}
+      }
+    },
+    "prior_midpoint_owned_only": {
+      "derived": {
+        "prior_midpoint": {"status": "ready", "value": 4243.5, "owner": "guidance_narrative_synthesizer"},
+        "next_outlook_midpoint": {"status": "unavailable", "reason": "derivation_unowned"}
+      }
+    }
+  }
+}
