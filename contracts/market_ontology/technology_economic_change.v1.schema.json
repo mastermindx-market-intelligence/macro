@@ -361,7 +361,7 @@
     "coverage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["population_mode", "known_population_total", "counts", "assertion_counts_available", "family_labels", "completeness"],
+      "required": ["population_mode", "known_population_total", "counts", "assertion_counts_available", "limitations", "family_labels", "completeness"],
       "properties": {
         "population_mode": {"enum": ["known_population", "unknown_scope"]},
         "known_population_total": {"type": ["integer", "null"], "minimum": 0},
@@ -383,6 +383,12 @@
           }
         },
         "assertion_counts_available": {"type": "boolean"},
+        "limitations": {
+          "description": "Assertions excluded by their review disposition: held_present and rejected_present, the robotics and nuclear sibling codes. Only accepted dispositions render. Null when assertion_counts_available is false.",
+          "type": ["array", "null"],
+          "items": {"enum": ["held_present", "rejected_present"]},
+          "uniqueItems": true
+        },
         "family_labels": {
           "type": "object",
           "additionalProperties": false,

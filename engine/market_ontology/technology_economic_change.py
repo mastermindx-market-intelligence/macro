@@ -740,12 +740,27 @@ class _AssertionOutcome:
     after_cutoff: int = 0
     undatable_withheld: int = 0
     source_unavailable: int = 0
+    # Disposition limitation codes (held_present / rejected_present).
+    limitations: set[str] = dataclasses.field(default_factory=set)
     entity_meta: dict[str, list[tuple[str, str | None, str | None]]] = dataclasses.field(
         default_factory=dict
     )
 
 
 _ABSENT = object()
+
+#: Review dispositions excluded from rendering, with the coverage limitation code
+#: each one records. The codes match the robotics and nuclear siblings. Only
+#: ``accepted`` renders or publishes.
+_EXCLUDED_DISPOSITION_LIMITATIONS = {
+    "held": "held_present",
+    "rejected": "rejected_present",
+}
+
+
+def _review_disposition(validated: Mapping[str, Any]) -> Any:
+    review = validated.get("review")
+    return review.get("disposition") if isinstance(review, Mapping) else None
 
 
 def _clock_on_or_before(value: str, cutoff_day: str, helpers: Any) -> bool:
@@ -967,6 +982,21 @@ def _process_assertions(payloads: Iterable[Any], shared: Any, cutoff_day: str,
         source_ref = _assertion_source_ref(source, schema_id=validated.get("schema"))
         if source_ref is None:
             out.source_unavailable += 1
+            continue
+        disposition = _review_disposition(validated)
+        if disposition != "accepted":
+            # Only accepted dispositions render or publish. Held and rejected
+            # rows are excluded and named in coverage.limitations. Any other
+            # value has no disposition the shared contract admits, so the row
+            # is counted invalid.
+            limitation = (
+                _EXCLUDED_DISPOSITION_LIMITATIONS.get(disposition)
+                if isinstance(disposition, str) else None
+            )
+            if limitation is None:
+                out.invalid += 1
+            else:
+                out.limitations.add(limitation)
             continue
         subject_id, subject_name, _ = _entity_side(validated.get("subject"))
         object_id, object_name, paid_unit = _entity_side(validated.get("object"))
@@ -1386,6 +1416,7 @@ def compose_technology_economic_change(
             "source_unavailable": out.source_unavailable if assertion_counts_available else None,
         },
         "assertion_counts_available": assertion_counts_available,
+        "limitations": sorted(out.limitations) if assertion_counts_available else None,
         "family_labels": {
             "are_baskets": False,
             "denominator": "known" if cov.population_mode == "known_population" else "unknown",

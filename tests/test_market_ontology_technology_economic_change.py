@@ -14,6 +14,7 @@ the module in ``sys.modules``.
 from __future__ import annotations
 
 import ast
+import copy
 import hashlib
 import importlib
 import json
@@ -117,7 +118,10 @@ def _assertion(
     payload = {
         "schema": "theme_graph.curation_assertion.v1",
         "curation_revision": "gmirca_" + _sha(seed)[:32],
-        "review": {"reviewed_by": "synthetic-reviewer", "reviewed_on": "2026-06-01"},
+        "review": {
+            "reviewed_by": "synthetic-reviewer", "reviewed_on": "2026-06-01",
+            "disposition": "accepted",
+        },
         "source": source or _src("synthetic-doc-role-1"),
         "subject": {"entity_id": subject[0], "display_name": subject[1]},
         "object": {"entity_id": object_[0], "display_name": object_[1], "paid_unit": object_[2]},
@@ -706,6 +710,102 @@ def test_shared_contract_assertion_outside_the_technology_form_is_unsupported():
     _assert_rendered(_real_compose(payload), payload)
 
 
+# --- review disposition (#9111 F2: only accepted dispositions render or publish) ---
+
+
+def _with_disposition(disposition: str, **change) -> dict:
+    review = json.loads(CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))["review"]
+    return _conformant(top={"review": {**review, "disposition": disposition}}, **change)
+
+
+def _assert_excluded_by_disposition(dossier: dict, limitation: str) -> None:
+    assert dossier["business"]["rows"] == []
+    assert dossier["counter_observations"] == []
+    assert _withheld(dossier) == {}
+    assert dossier["coverage"]["counts"]["invalid_assertions"] == 0
+    assert dossier["coverage"]["limitations"] == [limitation]
+    tech.validate_dossier(dossier)
+
+
+def test_f2_held_disposition_is_excluded_with_held_present():
+    _assert_excluded_by_disposition(_real_compose(_with_disposition("held")), "held_present")
+
+
+def test_f2_rejected_disposition_is_excluded_with_rejected_present():
+    _assert_excluded_by_disposition(
+        _real_compose(_with_disposition("rejected")), "rejected_present"
+    )
+
+
+def test_f2_accepted_control_renders_with_no_limitation():
+    payload = _with_disposition("accepted")
+    dossier = _real_compose(payload)
+    _assert_rendered(dossier, payload)
+    assert dossier["coverage"]["limitations"] == []
+    tech.validate_dossier(dossier)
+
+
+def test_f2_only_the_accepted_row_of_a_mixed_bundle_renders():
+    accepted = _with_disposition("accepted")
+    held = _with_disposition("held")
+    rejected = _with_disposition("rejected")
+    dossier = _real_compose(rejected, accepted, held)
+    _assert_rendered(dossier, accepted)
+    assert dossier["coverage"]["limitations"] == ["held_present", "rejected_present"]
+    entity_ids = {entity["entity_id"] for entity in dossier["identity"]["entities"]}
+    assert dossier["identity"]["entities"] == _real_compose(accepted)["identity"]["entities"]
+    assert COMPANY in entity_ids
+
+
+def test_f2_excluded_revisions_do_not_enter_the_dossier_identity():
+    accepted = _with_disposition("accepted")
+    alone = _real_compose(accepted)
+    mixed = _real_compose(accepted, _with_disposition("held"), _with_disposition("rejected"))
+    assert mixed["dossier_id"] == alone["dossier_id"]
+
+
+def test_f2_held_counter_observation_is_not_rendered(monkeypatch):
+    held = copy.deepcopy(COUNTER)
+    held["review"] = {**held["review"], "disposition": "held"}
+    dossier = _compose_happy(monkeypatch, business_assertions=[held])
+    assert dossier["counter_observations"] == []
+    assert dossier["coverage"]["limitations"] == ["held_present"]
+    accepted = _compose_happy(monkeypatch, business_assertions=[COUNTER])
+    assert len(accepted["counter_observations"]) == 1
+    assert accepted["coverage"]["limitations"] == []
+
+
+def test_f2_missing_or_unknown_disposition_is_invalid_not_rendered(monkeypatch):
+    # The real contract refuses both at validation; the composer still fails
+    # closed if a contract hands one through.
+    rows = []
+    for review in (
+        {"reviewed_by": "synthetic-reviewer"},
+        {"reviewed_by": "synthetic-reviewer", "disposition": "pending"},
+        {"reviewed_by": "synthetic-reviewer", "disposition": ["accepted"]},
+        "accepted",
+    ):
+        payload = _assertion(predicate="product_workload_role", seed=f"disp:{review!r}")
+        payload["review"] = review
+        rows.append(payload)
+    dossier = _compose_happy(monkeypatch, business_assertions=rows)
+    assert dossier["business"]["rows"] == []
+    assert dossier["coverage"]["counts"]["invalid_assertions"] == 4
+    assert dossier["coverage"]["limitations"] == []
+
+
+def test_f2_coverage_limitations_is_a_closed_required_contract_field():
+    dossier = _real_compose(_with_disposition("held"))
+    for bad in (_DROP, ["accepted_present"], ["held_present", "held_present"], "held_present"):
+        broken = copy.deepcopy(dossier)
+        if bad is _DROP:
+            del broken["coverage"]["limitations"]
+        else:
+            broken["coverage"]["limitations"] = bad
+        with pytest.raises(EconomicChangeDossierError, match=r"^dossier_schema_violation: coverage"):
+            tech.validate_dossier(broken)
+
+
 def test_shared_time_helpers_unavailable_refuses_business(monkeypatch):
     # G5: the clock helpers are imported inside the contract loader's try; a
     # missing binding module is the typed shared_contract_unavailable refusal.
@@ -716,6 +816,7 @@ def test_shared_time_helpers_unavailable_refuses_business(monkeypatch):
     assert dossier["business"]["refused"] is True
     assert dossier["business"]["reason_code"] == "shared_contract_unavailable"
     assert dossier["coverage"]["counts"]["undatable_withheld"] is None
+    assert dossier["coverage"]["limitations"] is None
 
 
 def test_shared_time_helpers_incomplete_refuses_business(monkeypatch):
