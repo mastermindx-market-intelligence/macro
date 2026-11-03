@@ -57,3 +57,4 @@ Every step below is a seat or Chairman act. ORCH-2 performs none of them.
 ## C.5 GAP
 
 - `OPTIONS_FROZEN_DELIVERY_ENABLED`: the observed value in receipt 48179 is **UNKNOWN**. ORCH-2 cannot read host environment, and no public receipt states the value. Resolution: an operator or seat read on the drain host, recorded once.
+- **Resolved by the seat read, 2026-11-01 12:22:34Z (read-only; recorded once):** `OPTIONS_FROZEN_DELIVERY_ENABLED` UNSET and `ALERT_DRAIN_ENABLE` UNSET on the drain host (both observed OFF); `macro-alert-drain.service` LoadState=not-found, so the drain unit is not installed. No host change was made. Census §5 and §9.3 carry the same observation.
