@@ -88,7 +88,7 @@ The broader plan remains [Macro PR #10673](https://github.com/mastermindx-market
 3. Prove the signed-in production journey and actual RTH source behavior. Opening the monitor requests quotes five seconds after a completed regular-session read and history sixty seconds after completion; neither cadence proves source latency.
 4. Continue prospective pivot watches through Radar/TOI and the saved original research protocol. Leadership durability, regime and cycle-duration work retain the earlier specification's scientific gates.
 
-The concrete reviewed surface, commands, clock contracts and screenshots are in the [Terminal R1 evidence document](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/17798f2331ab24c0821cc76d9d6761e3c195e842/terminal/docs/rotation-regime/r1/README.md), with [source hashes and local observations](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/17798f2331ab24c0821cc76d9d6761e3c195e842/terminal/docs/rotation-regime/r1/local_validation.json).
+The concrete review surface, commands, clock contracts and screenshots are in the [Terminal R1 evidence document](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/17798f2331ab24c0821cc76d9d6761e3c195e842/terminal/docs/rotation-regime/r1/README.md), with [source hashes and local observations](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/17798f2331ab24c0821cc76d9d6761e3c195e842/terminal/docs/rotation-regime/r1/local_validation.json).
 
 ## §2 What will bite you
 
