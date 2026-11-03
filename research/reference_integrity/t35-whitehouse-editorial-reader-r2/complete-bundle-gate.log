@@ -1,0 +1,3 @@
+::notice title=reference-integrity::sparse checkout: data/ is not present, skipping the compiled page registry (enforced in CI, where the root exists)
+::error title=reference-integrity::packet-without-rig-receipt: research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md — a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG §8 L8)
+reference-integrity: 1 finding(s) across 13 artifact set(s)

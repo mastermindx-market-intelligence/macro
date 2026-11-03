@@ -9,3 +9,7 @@ The actual producer provides generated banner_title/summary and a literal source
 continuity.yml was derived using the incumbent --mandate command, not reconstructed from memory. All9 mandated predecessor findings/conditions are accounted, and all7 critic findings have explicit supplemental dispositions. Semantic structural changes are recorded as source-resolved; minor mobile/table/ZH concerns and real changed-state evidence remain carried. No inherited assistant overlap is reclassified as a new T35 defect.
 
 The current local capture refusal remains. The next lawful review needs actual changed-state images on an admitted capture route and fresh quarantined nonauthor judgment on the new bytes. Do not use the predecessor's21 after images or two-pass receipts as R2 approval. Family independently ships only its other four families; this complete T35 bundle stays held.
+
+## Complete packet coupling
+
+The actual migration packet is now amended to the same attribution/degraded contract and explicitlyFullRIGdraft. Its original packet-only omission is not used to ship code. The complete four-path repair is retained separately from the original three-path code patch. Running the existing source gate with this actual packet included produces exactly one L8 packet-without-approved-receipt error, as it must. Draft continuity/schema validation remains valid; complete-bundle release is not qualified. No source/runtime-only publication is authorized.

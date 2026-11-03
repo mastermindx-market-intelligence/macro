@@ -1,0 +1,25 @@
+{
+  "complete_source_and_packet_commit": "5574d9a5309c936399b29a71e8eb84dbe77ed947",
+  "runtime_frozen_commit": "ff74c6a33d6af10125626cd20f82a7d37fdd5c36",
+  "predecessor_immutable_case": "1d04617423229e37871b1615a7fb05433b35a3b3",
+  "patch_base": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+  "patch_path": "research/reference_integrity/t35-whitehouse-editorial-reader-r2/complete-source-and-packet-vs-349e12c9.patch",
+  "patch_sha256": "7ce691d99c969903870ba684763a6925ab80eed7857931530cb3c1156c9a5e76",
+  "patch_bytes": 26543,
+  "paths": [
+    "scripts/build_whitehouse.py",
+    "templates/whitehouse.html.j2",
+    "tests/test_whitehouse_build.py",
+    "research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md"
+  ],
+  "apply_check_exit": 0,
+  "runtime_tests": "69PASS/2existingSparseSKIP; finalno-lazy-fetch asset case1PASS;17old-source causalFAIL retained.",
+  "source_gate": {
+    "valid_draft_continuity_before_packet_coupling": 0,
+    "complete_bundle_gate_exit": 1,
+    "sole_finding": "L8 packet-without-rig-receipt for realT35packet; intentional real dependency, not waived.",
+    "approval": false
+  },
+  "source_return_scope": "The earlier3-path source patch remains immutable and is not a standalone release. This four-path patch additionally amends the actual designpacket, retains complete-bundle coupling and supersedes earlier preparation for eventual integration. The entire original38-fileT34+T35 bundle stays held; no packet omission or runtime-only publication.",
+  "next": "Changed-state captures/fresh reference review only after the real capture route is admitted; no retry/profile/engine/host alternative is authorized by this source return."
+}
