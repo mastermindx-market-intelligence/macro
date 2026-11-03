@@ -8024,6 +8024,8 @@ jobs:
       - "tests/fixtures/semiconductor_theme_research/**"
       - "tests/test_theme_research_shell_ast_binding.py"
       - "tests/test_theme_research_shell_equality.py"
+      # Closure edge from #9112: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which #9112 adds (widen only; R-36 item 40 E2).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15353,6 +15355,8 @@ jobs:
       - "engine/press/__init__.py"
       - "lib/dataos/__init__.py"
       - "tests/__init__.py"
+      # Closure edge from #9112: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which #9112 adds (widen only; R-36 item 40 E2).
+      - "engine/company_intelligence/communications_profiles.py"
     # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
     #
     # The three Technology ex-Semis suites were named only in `gate: data` jobs
@@ -49202,6 +49206,8 @@ jobs:
       - "tests/test_robotics_research_temporal.py"
       - "tests/test_robotics_shared_type_mirror.py"
       - "tests/test_robotics_theme_non_regression.py"
+      # Closure edge from #9112: engine/company_intelligence/issuer_profiles.py:1923/1928/1933 lazily import .communications_profiles, which #9112 adds (widen only; R-36 item 40 E2).
+      - "engine/company_intelligence/communications_profiles.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
