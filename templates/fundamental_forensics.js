@@ -1156,31 +1156,68 @@
     return span[0] < span[1];
   }
 
-  function loadedDrawerSource(url) {
-    var controls = [];
-    if (state.financial.phase === 'ready' && Array.isArray(state.queryNodes)) {
-      controls = state.queryNodes.map(function (node) { return controlFromQueryNode(node, ''); });
-    }
-    if (state.statements.phase === 'ready' && Array.isArray(state.statements.statements)) {
-      state.statements.statements.filter(objectValue).forEach(function (statement) {
-        (Array.isArray(statement.rows) ? statement.rows : []).filter(objectValue).forEach(function (row) {
-          (Array.isArray(row.cells) ? row.cells : []).forEach(function (cell) {
-            if (cell && cell.quality_state === 'available') controls.push(controlFromStatementCell(cell, ''));
-          });
-        });
+  function drawerOwnerScopeMatches(owner, expected) {
+    owner = objectValue(owner) || {};
+    expected = objectValue(expected) || {};
+    var actualPolicy = objectValue(owner.policy) || {};
+    var expectedPolicy = objectValue(expected.policy) || {};
+    return !!expected.entity_id && owner.entity_id === expected.entity_id &&
+      ['selection', 'source_snapshot_at', 'recorded_at'].every(function (key) {
+        return !!expectedPolicy[key] && actualPolicy[key] === expectedPolicy[key];
       });
+  }
+
+  function drawerAddressMatches(control, url) {
+    return spanOk(control) && (!url.occ || control.occurrenceId === url.occ) &&
+      (!url.cell || control.rootCellId === url.cell) && control.snapshotId === url.snap &&
+      control.spanStart + '-' + control.spanEnd === url.span;
+  }
+
+  function loadedDrawerSource(url) {
+    var expected = activePinnedRequest() || buildQueryBody();
+    if (state.savedRefusal) return null;
+    var financial = state.financial;
+    if (financial.phase === 'ready' && drawerOwnerScopeMatches(financial.queryBody, expected) &&
+        JSON.stringify(financial.queryBody.metric_ids) === JSON.stringify(expected.metric_ids) &&
+        JSON.stringify(financial.queryBody.periods) === JSON.stringify(expected.periods)) {
+      // These are the three request variants the incumbent revisions renderer
+      // actually displays. Never search arbitrary financial object properties.
+      var vintages = ['asReported', 'latest', 'restated'];
+      for (var vintage = 0; vintage < vintages.length; vintage += 1) {
+        var nodes = Array.isArray(financial[vintages[vintage]]) ? financial[vintages[vintage]] : [];
+        for (var index = 0; index < nodes.length; index += 1) {
+          if (drawerAddressMatches(controlFromQueryNode(nodes[index], ''), url)) {
+            return { kind: 'query', node: nodes[index] };
+          }
+        }
+      }
     }
-    return controls.some(function (control) {
-      return spanOk(control) && (!url.occ || control.occurrenceId === url.occ) &&
-        (!url.cell || control.rootCellId === url.cell) && control.snapshotId === url.snap &&
-        control.spanStart + '-' + control.spanEnd === url.span;
-    });
+    var statements = state.statements;
+    var request = objectValue(statements.requestBody) || {};
+    if (statements.phase === 'ready' && drawerOwnerScopeMatches(statements.deskScope, expected) &&
+        request.entity_id === expected.entity_id && !!request.accession && request.accession === currentAccession() &&
+        Array.isArray(statements.statements)) {
+      var owners = statements.statements.filter(objectValue);
+      for (var statementIndex = 0; statementIndex < owners.length; statementIndex += 1) {
+        var rows = Array.isArray(owners[statementIndex].rows) ? owners[statementIndex].rows : [];
+        for (var rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+          var cells = Array.isArray((rows[rowIndex] || {}).cells) ? rows[rowIndex].cells : [];
+          for (var cellIndex = 0; cellIndex < cells.length; cellIndex += 1) {
+            var cell = cells[cellIndex];
+            if (cell && cell.quality_state === 'available' &&
+                drawerAddressMatches(controlFromStatementCell(cell, ''), url)) return { kind: 'statement' };
+          }
+        }
+      }
+    }
+    return null;
   }
 
   function openDrawerFromUrl(url) {
     if (!url || !url.drawer || state.access !== 'open') return false;
     var control = null;
-    if (sourceDrawerMatchesDesk(url) && loadedDrawerSource(url)) {
+    var owner = sourceDrawerMatchesDesk(url) ? loadedDrawerSource(url) : null;
+    if (owner) {
       // Exact string comparisons avoid interpreting query text as CSS. A
       // matching occurrence alone cannot silently cross snapshots/cells/spans.
       var controls = document.querySelectorAll('.ff-source-control');
@@ -1205,7 +1242,7 @@
              '此公司、截止日与快照下的所请求来源不可用。') + '</p>');
       return false;
     }
-    activateSourceControl(control, false);
+    activateSourceControl(control, false, owner);
     return true;
   }
 
@@ -1932,11 +1969,11 @@
   // §2.5 — activating a control pushes one drawer frame (§6.2) and renders
   // the cell evidence view: plain-word title, exact API bytes, compact
   // secondary, bounded excerpt, technical ids folded into a details block.
-  function activateSourceControl(control, updateUrl) {
+  function activateSourceControl(control, updateUrl, restoredOwner) {
     if (!control || control.disabled) return;
     state.lastFocus = control;
     state.evidenceKind = 'cell';
-    state.cellEvidence = cellEvidenceFromControl(control);
+    state.cellEvidence = cellEvidenceFromControl(control, restoredOwner);
     if (updateUrl !== false) writeUrl(true, {
       drawer: true,
       occ: control.getAttribute('data-occurrence-id') || '',
@@ -1957,7 +1994,7 @@
     return wanted ? pair(prettify(wanted), prettify(wanted)) : '';
   }
 
-  function cellEvidenceFromControl(control) {
+  function cellEvidenceFromControl(control, restoredOwner) {
     var cell = {
       kind: control.getAttribute('data-source-kind') || 'cell',
       occurrenceId: control.getAttribute('data-occurrence-id') || '',
@@ -1977,7 +2014,8 @@
     // Exact facts attach only when this control backs onto a query node whose
     // value is canonical decimal text; a JSON number is a contract break and
     // renders unavailable rather than Number()-ed (A38 / AM1).
-    var nodes = Array.isArray(state.queryNodes) ? state.queryNodes : [];
+    var nodes = restoredOwner ? (restoredOwner.node ? [restoredOwner.node] : [])
+      : (Array.isArray(state.queryNodes) ? state.queryNodes : []);
     for (var index = 0; index < nodes.length; index += 1) {
       var node = objectValue(nodes[index]);
       if (!node) continue;
@@ -1994,7 +2032,7 @@
     }
     // Statement-tree cells resolve against the flat cell list the tree
     // renderer collected; the as-reported label is the plain-word title.
-    if (!cell.titlePair) {
+    if (!cell.titlePair && !(restoredOwner && restoredOwner.node)) {
       var statementCells = Array.isArray(state.statementCells) ? state.statementCells : [];
       for (var cellIndex = 0; cellIndex < statementCells.length; cellIndex += 1) {
         var entry = statementCells[cellIndex];
@@ -2360,7 +2398,8 @@
     // X2-s r1: the exported body is the pinned bytes while the pinned view is
     // active, otherwise the DESK's own selection (buildQueryBody() with no
     // argument) — never the forced latest_known_as_of leg above.
-    state.financial = { phase: 'loading', queryBody: pinnedBody || buildQueryBody() };
+    var queryBody = pinnedBody || buildQueryBody();
+    state.financial = { phase: 'loading', queryBody: queryBody };
     renderRevisions();
     var latestMeta = {};
     Promise.all([
@@ -2378,7 +2417,7 @@
         restated: queryNodesFrom(answers[2]),
         revisions: revisionsRowsFrom(answers[3]),
         receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
-        queryBody: pinnedBody || buildQueryBody(),
+        queryBody: queryBody,
         // X2-s: the verified digest and the dataset generation the answer was
         // served from — refs for saved_against, never values.
         responseSha256: latestMeta.responseSha256 || '',
@@ -2683,11 +2722,12 @@
   }
 
   function fetchStatements(entityId, accession) {
-    return financialPost(FINANCIAL_STATEMENTS_URL, {
+    var requestBody = {
       schema: 'fundamental_forensics.financial_statement_request/v1',
       entity_id: entityId,
       accession: accession
-    }).then(function (payload) {
+    };
+    return financialPost(FINANCIAL_STATEMENTS_URL, requestBody).then(function (payload) {
       var statements = Array.isArray(payload && payload.statements) ? payload.statements.filter(objectValue) : [];
       var columns = [];
       // PF-1: every statement repeats its comparative periods, so columns are
@@ -2709,7 +2749,7 @@
           }
         });
       });
-      return { statements: statements, columns: columns, filing: objectValue(payload && payload.filing) };
+      return { statements: statements, columns: columns, filing: objectValue(payload && payload.filing), requestBody: requestBody };
     });
   }
 
@@ -2755,6 +2795,7 @@
       renderStatementTree();
       return;
     }
+    var deskScope = activePinnedRequest() || buildQueryBody();
     var token = state.statementsToken + 1;
     state.statementsToken = token;
     state.statements = { phase: 'loading' };
@@ -2764,7 +2805,9 @@
       state.statements = {
         phase: result.statements.length ? 'ready' : 'empty',
         statements: result.statements,
-        filing: result.filing
+        filing: result.filing,
+        requestBody: result.requestBody,
+        deskScope: deskScope
       };
       state.statementCells = [];
       state.statementColumns = result.columns;
