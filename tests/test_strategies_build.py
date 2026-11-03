@@ -367,16 +367,19 @@ def test_w20e_hub_intro_is_current_not_live():
 # Same numbers as the tiles: engine/equity_alloc.py rounds them before the
 # template compares, so an equal pair is equal on the page and the note calls
 # it level (a shallower drawdown is the greater number, drawdowns are negative).
-# Removing the branch puts the fixed "does NOT reliably beat" sentence back on
-# a page whose tiles are all ahead.
+# Removing a branch puts the CAGR-behind sentence (_W38_TRAILED) on a page whose
+# tiles say otherwise.
 # --------------------------------------------------------------------------- #
-_W38_HONEST_EN = (
+_W38_TRAILED = "trailed buy-and-hold on CAGR"
+# The CAGR-behind sentence until 2026-11-02, printed on every strategy page of that
+# shape. No branch may print it again: see test_w38_framing_cagr_behind_names_the_trade.
+_W38_OLD_EN = (
     "Honest framing: this does NOT reliably beat buy-and-hold on CAGR — sitting in the cash leg "
     "through stress gives up some carry. The edge is the higher Sharpe and the much shallower max "
     "drawdown: it times the LEFT TAIL that destroys the yield (the recession/credit/rate shock), "
     "not the yield itself."
 )
-_W38_HONEST_ZH = (
+_W38_OLD_ZH = (
     "诚实说明：本策略在年化收益上并不稳定跑赢买入持有 —— 压力期退守现金腿会让出部分套息。"
     "优势在于更高的夏普与明显更浅的最大回撤：它择时的是吞噬收益的左尾（衰退/信用/利率冲击），而非收益本身。"
 )
@@ -397,7 +400,7 @@ def test_w38_framing_all_three_ahead():
     html = _w38_detail({"years": 19.3, "cagr": 6.49, "hodl_cagr": 2.07, "sharpe": 0.43,
                         "hodl_sharpe": 0.25, "maxdd": -43.5, "hodl_maxdd": -86.8})
     assert en in html and zh in html
-    assert "does NOT reliably beat" not in html
+    assert _W38_TRAILED not in html
     assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html
 
 
@@ -410,7 +413,7 @@ def test_w38_framing_tie_on_every_leg_says_level():
     assert "在这 19.3 年回测中，对比买入持有：年化收益持平，夏普持平，最大回撤持平（见下方数据）。" in tied
     assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in tied
     assert "均优于买入持有" not in tied
-    assert "does NOT reliably beat" not in tied
+    assert _W38_TRAILED not in tied
 
 
 def test_w38_framing_net_liquidity_shape_drawdown_level():
@@ -425,19 +428,19 @@ def test_w38_framing_net_liquidity_shape_drawdown_level():
 
 def test_w38_framing_one_tied_leg_leaves_the_two_fixed_sentences():
     """The two fixed sentences claim strict leads, so one equal pair sends the page to the mixed form."""
-    # CAGR behind and Sharpe tied: the honest sentence would claim "the higher Sharpe".
+    # CAGR behind and Sharpe tied: the CAGR-behind sentence would claim "the higher Sharpe".
     sharpe_tied = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.66,
                                "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
     assert ("against buy-and-hold: CAGR behind, Sharpe level, max drawdown shallower "
             "(tiles below).") in sharpe_tied
-    assert "does NOT reliably beat" not in sharpe_tied
-    # CAGR tied, the rest ahead: "does NOT reliably beat on CAGR" and "beat on CAGR" would both misread it.
+    assert _W38_TRAILED not in sharpe_tied
+    # CAGR tied, the rest ahead: "trailed on CAGR" and "beat on CAGR" would both misread it.
     cagr_tied = _w38_detail({"years": 26.2, "cagr": 7.0, "hodl_cagr": 7.0, "sharpe": 0.8,
                              "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
     assert ("against buy-and-hold: CAGR level, Sharpe ahead, max drawdown shallower "
             "(tiles below).") in cagr_tied
     assert "年化收益持平，夏普领先，最大回撤更浅" in cagr_tied
-    assert "does NOT reliably beat" not in cagr_tied
+    assert _W38_TRAILED not in cagr_tied
     assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in cagr_tied
     # CAGR and Sharpe ahead, drawdown tied: "beat on ... max drawdown" would claim a lead the tiles do not show.
     dd_tied_ahead = _w38_detail({"years": 26.2, "cagr": 8.0, "hodl_cagr": 7.0, "sharpe": 0.8,
@@ -446,26 +449,49 @@ def test_w38_framing_one_tied_leg_leaves_the_two_fixed_sentences():
             "(tiles below).") in dd_tied_ahead
     assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in dd_tied_ahead
     assert "均优于买入持有" not in dd_tied_ahead
-    # CAGR behind, Sharpe ahead, drawdown tied: the honest sentence would claim "the much shallower max drawdown".
+    # CAGR behind, Sharpe ahead, drawdown tied: the CAGR-behind sentence would claim "the shallower max drawdown".
     dd_tied_behind = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.8,
                                   "hodl_sharpe": 0.66, "maxdd": -44.4, "hodl_maxdd": -44.4})
     assert ("against buy-and-hold: CAGR behind, Sharpe ahead, max drawdown level "
             "(tiles below).") in dd_tied_behind
     assert "年化收益落后，夏普领先，最大回撤持平" in dd_tied_behind
-    assert "does NOT reliably beat" not in dd_tied_behind
+    assert _W38_TRAILED not in dd_tied_behind
 
 
-def test_w38_framing_cagr_behind_keeps_honest_sentence():
-    """CAGR behind, Sharpe and drawdown ahead: the pre-existing sentence, both languages."""
+def _w38_note(html: str) -> str:
+    start = html.index('<div class="note b" style="margin-top:14px">')
+    return html[start:html.index("</div>", start)]
+
+
+def test_w38_framing_cagr_behind_names_the_trade():
+    """CAGR behind, Sharpe and drawdown ahead: the three comparisons the tiles show, nothing more.
+
+    Until 2026-11-02 this branch printed one fixed sentence on every page of this shape, the
+    gold and copper swaps and dual momentum among them: a cash leg giving up carry, a
+    strategy that times "the LEFT TAIL that destroys the yield", a "much shallower" drawdown.
+    The tiles show none of that.
+    """
+    en = ("Over this 26.2-year backtest it trailed buy-and-hold on CAGR but had the higher "
+          "Sharpe and the shallower max drawdown (tiles below): it gave up some return for a "
+          "shallower worst fall. That is one backtest, not a promise.")
+    zh = ("在这 26.2 年回测中，本策略的年化收益落后于买入持有，但夏普更高、最大回撤更浅（见下方数据）："
+          "以部分收益换取了更浅的最大跌幅。这只是一段回测，不代表未来。")
     html = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.68,
                         "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
-    assert _W38_HONEST_EN in html and _W38_HONEST_ZH in html
+    assert en in html and zh in html
+    assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html
     assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in html
-    assert "against buy-and-hold:" not in html
-    assert "年化收益领先" not in html and "年化收益落后" not in html
+    assert "against buy-and-hold:" not in html and "对比买入持有：" not in html
+    assert _W38_OLD_EN not in html and _W38_OLD_ZH not in html
+    note = _w38_note(html)
+    for gone in ("Honest framing", "reliably", "cash leg", "carry", "LEFT TAIL", "yield",
+                 "much shallower", "诚实说明", "现金腿", "套息", "左尾", "明显更浅"):
+        assert gone not in note, (gone, note)
     # The shared detail fixture is this same shape (4.3 < 4.95, 0.75 > 0.5, -14.7 > -34.2).
     default = _w20e_detail_html(_detail_vm())
-    assert _W38_HONEST_EN in default and _W38_HONEST_ZH in default
+    assert "Over this 19.2-year backtest it trailed buy-and-hold on CAGR" in default
+    assert "在这 19.2 年回测中，本策略的年化收益落后于买入持有" in default
+    assert _W38_OLD_EN not in default and _W38_OLD_ZH not in default
 
 
 def test_w38_framing_mixed_names_each_leg():
@@ -476,6 +502,6 @@ def test_w38_framing_mixed_names_each_leg():
     html = _w38_detail({"years": 11.5, "cagr": 8.0, "hodl_cagr": 5.0, "sharpe": 0.2,
                         "hodl_sharpe": 0.9, "maxdd": -50.0, "hodl_maxdd": -20.0})
     assert en in html and zh in html
-    assert "does NOT reliably beat" not in html
+    assert _W38_TRAILED not in html
     assert "均优于买入持有" not in html
     assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html
