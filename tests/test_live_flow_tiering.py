@@ -634,7 +634,7 @@ class TestProductionLiveFlowConfig:
 
         poller = _import_poller()
         config = yaml.safe_load((Path(__file__).resolve().parents[1] / "config.yml").read_text())
-        monkeypatch.setattr(options_universe, "baskets_universe", lambda: [])
+        monkeypatch.setattr(options_universe, "baskets_universe", lambda **_: [])
         roots = poller._resolve_universe(config["live_flow"])
         required = {"GOOG", "GOOGL", "AMZN", "JPM", "XOM", "WMT", "UBER"}
         assert required <= set(roots)
@@ -645,8 +645,38 @@ class TestProductionLiveFlowConfig:
         from engine import options_universe
 
         poller = _import_poller()
-        monkeypatch.setattr(options_universe, "gex_symbols", lambda: ["SPY", "GOOG", "AMD", "MU"])
+        monkeypatch.setattr(options_universe, "gex_symbols", lambda **_: ["SPY", "GOOG", "AMD", "MU"])
         cfg = {"etf_anchors": ["spy", "SPY"], "priority_names": ["googl", "GOOG", "GOOG"], "top_names": 3}
         assert poller._resolve_universe(cfg) == ["SPY", "GOOGL", "GOOG", "AMD"]
         assert poller._resolve_universe({**cfg, "top_names": 0}) == ["SPY"]
         assert poller._resolve_universe({"etf_anchors": ["SPY"], "top_names": 2}) == ["SPY", "GOOG", "AMD"]
+
+    def test_sparse_checkout_uses_deployed_membership_only_for_live_flow(self, monkeypatch, tmp_path):
+        import subprocess
+        from engine import options_universe
+
+        def git(*args):
+            subprocess.run(["git", "-C", str(tmp_path), *args], check=True, capture_output=True)
+
+        git("init", "-q")
+        membership = tmp_path / "data/baskets/membership.json"
+        membership.parent.mkdir(parents=True)
+        membership.write_text(json.dumps({"baskets": {"sample": {"members": [
+            {"ticker": "AAA"}, {"ticker": "BBB", "removed": "2026-01-02"},
+        ]}}}))
+        git("add", "data")
+        git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "membership")
+        git("sparse-checkout", "set", "--cone", "scripts")
+        assert not membership.exists()
+        monkeypatch.setattr(options_universe.config, "ROOT", tmp_path)
+        monkeypatch.setattr(options_universe.config, "data_dir", lambda: tmp_path / "data")
+        monkeypatch.setattr(options_universe.config, "load", lambda: {
+            "polygon": {"gex": {"symbols": ["SPY"], "include_baskets": True}},
+        })
+        cfg = {"etf_anchors": ["SPY"], "priority_names": ["GOOG", "GOOGL"], "top_names": 3}
+        assert _import_poller()._resolve_universe(cfg) == ["SPY", "GOOG", "GOOGL", "AAA"]
+        assert options_universe.gex_symbols() == ["SPY"]
+        assert not membership.exists()
+        git("sparse-checkout", "disable")
+        membership.unlink()  # A deliberate deletion in a full checkout is authoritative.
+        assert _import_poller()._resolve_universe(cfg) == ["SPY", "GOOG", "GOOGL"]

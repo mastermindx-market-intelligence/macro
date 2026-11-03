@@ -1141,7 +1141,7 @@ def _resolve_universe(cfg: dict) -> list[str]:
     seen = dict.fromkeys(anchors)
     seen.update(dict.fromkeys(root.strip().upper() for root in priority))
     try:
-        seen.update(dict.fromkeys(root.upper() for root in gex_symbols()))
+        seen.update(dict.fromkeys(root.upper() for root in gex_symbols(include_sparse_baskets=True)))
     except Exception as e:  # noqa: BLE001
         log.warning("poller: gex_symbols failed: %s", e)
 
