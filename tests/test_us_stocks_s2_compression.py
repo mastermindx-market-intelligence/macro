@@ -208,9 +208,12 @@ def test_worded_nulls_and_dtp_loading_and_mtf_skeleton():
     assert 'id="dtp-token-lbl">—' not in tape
     mtf = html[html.index('id="dash-mtf-body"'):html.index('id="holdings"')]
     assert 'class="mtf-skel"' in mtf
-    assert "No stock is showing early bottoming signs tonight." in mtf
-    assert 'hidden' in mtf
-    assert "Loading turn setup data" not in html
+    assert 'aria-hidden="true" hidden' in mtf
+    assert 'aria-busy="false"' in mtf
+    assert "No stock is showing early bottoming signs tonight." not in html
+    assert 'id="dash-mtf-status"' in html and 'id="dash-mtf-retry"' in html
+    assert "Turn setup data has not loaded." in html
+    assert "Enable JavaScript to load the published checklist." in html
     js = html[html.index("function renderMtfTable"):html.index("function tryRender")]
     assert "L('no signal yet','暂无信号')" in js
     assert "L('—','—')" not in js

@@ -104,11 +104,15 @@ function entry(extra = {}) {
 function quote(price = 99, extra = {}) {
   return { price, source: "tencent", ts: NOW, prevClose: 10, changePct: 890, delayMin: 0, ...extra };
 }
-async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, quoteClocks = false } = {}) {
+async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, quoteClocks = false, prerenderedStrip = false } = {}) {
   let now = NOW;
   const root = element("html", { "data-lang": "en" });
   const head = root.appendChild(element("head")), body = root.appendChild(element("body"));
   const nav = body.appendChild(element("nav", { class: "site-nav" }));
+  const initialStrip = prerenderedStrip ? body.appendChild(element("div", {
+    id: "market-session-status", class: "dtp-row", role: "status",
+    "aria-live": "polite", "data-session-state": "unverified",
+  }, "US · Status unverified · Next open unverified")) : null;
   const main = body.appendChild(element("main"));
   const px = {}, chg = {};
   for (const sym of symbols) {
@@ -164,7 +168,7 @@ async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"]
   async function flush() { await new Promise(resolve => setImmediate(resolve)); }
   await flush();
   return {
-    root, nav, main, px, chg, requests, response, sockets,
+    root, nav, main, px, chg, requests, response, sockets, initialStrip,
     strip: () => document.getElementById("market-session-status"),
     async refresh() { window.LiveQuotes.refresh(); await flush(); },
     async advance(ms) { now += ms; intervals.forEach(fn => fn()); await flush(); },
@@ -598,4 +602,17 @@ test("restored price with no original date stays explicitly undated", async () =
   const c = await client({ quoteClocks: true, sessions: {cn: session('cn', {state: 'unverified', calendar_verified: false})} });
   assert.equal(c.px['600519.SS'].textContent, '10.00');
   assert.match(c.main.querySelector('[data-quote-clock]').textContent, /Close date unavailable/);
+});
+
+test("pre-rendered session strip is reused across verified and expired receipts", async () => {
+  const c = await client({ pathname: "/us_stocks.html", symbols: ["SPY"],
+    sessions: {us: session({market: "us"})}, prerenderedStrip: true });
+  assert.equal(c.strip(), c.initialStrip);
+  assert.equal(c.root.querySelectorAll("#market-session-status").length, 1);
+  assert.equal(c.strip().getAttribute("data-session-state"), "holiday");
+  await c.advance(2 * 60 * 60 * 1000);
+  assert.equal(c.strip(), c.initialStrip);
+  assert.equal(c.root.querySelectorAll("#market-session-status").length, 1);
+  assert.equal(c.strip().getAttribute("data-session-state"), "unverified");
+  assert.match(c.strip().textContent, /Status unverified/);
 });

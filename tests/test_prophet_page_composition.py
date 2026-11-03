@@ -81,3 +81,41 @@ def test_missing_regime_has_a_readable_status_in_both_languages():
                   if el.select_one(":scope > .l-en") and el.select_one(":scope > .l-en").get_text() == "Regime")
     assert status.select_one("strong .l-en").get_text(strip=True) == "Unavailable"
     assert status.select_one("strong .l-zh").get_text(strip=True) == "暂无数据"
+
+
+def test_session_status_is_present_before_first_paint_without_a_calendar_claim():
+    doc = render(_base_vm())
+    strips = doc.select("#market-session-status")
+    assert len(strips) == 1
+    strip = strips[0]
+    assert strip["role"] == "status"
+    assert strip["aria-live"] == "polite"
+    assert strip["data-session-state"] == "unverified"
+    assert "US · Status unverified" in strip.get_text()
+    assert "美股 · 状态未确认" in strip.get_text()
+    assert "Next open unverified" in strip.get_text()
+    assert "Market open" not in strip.get_text()
+    nodes = list(doc.find_all(True))
+    assert nodes.index(doc.select_one(".site-nav")) < nodes.index(strip)
+    assert nodes.index(strip) < nodes.index(doc.select_one(".grid"))
+    macro = BeautifulSoup(_env().get_template("dashboard.html.j2").render(**_base_vm(), mode="macro"), "html.parser")
+    assert not macro.select("#market-session-status")
+
+
+def test_turn_setups_have_truthful_no_script_and_accessible_recovery_boundaries():
+    panel = render(_base_vm()).select_one("#dash-mtf-section")
+    assert panel["data-mtf-state"] == "idle"
+    heading = panel.select_one("#dash-mtf-heading")
+    assert heading["tabindex"] == "-1"
+    status = panel.select_one("#dash-mtf-status")
+    assert status["role"] == "status" and status["aria-live"] == "polite"
+    assert "has not loaded" in status.get_text()
+    assert "尚未加载" in status.get_text()
+    retry = panel.select_one("#dash-mtf-retry")
+    assert retry["type"] == "button" and retry.has_attr("hidden")
+    assert retry.find_parent().get("id") != "dash-mtf-body"
+    body = panel.select_one("#dash-mtf-body")
+    assert body["aria-busy"] == "false" and body["aria-labelledby"] == heading["id"]
+    assert body.select_one(".mtf-skel").has_attr("hidden")
+    assert panel.select_one("noscript")
+    assert not panel.select(".dash-mtf-absent")

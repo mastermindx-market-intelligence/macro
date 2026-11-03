@@ -34,4 +34,20 @@ The current source includes three local commits after remote PR #9495 head 60a3a
 
 The three editable and independently reviewed native Paper boards are desktop light YW1-0, mobile light ZRL-0 and mobile dark Chinese 1092-0. The original Paper file is 01M3NT5Y3G5HTJHVR0K5W2MDJM, page p-C-0; p-A-0 remains untouched. Their native JSX and screenshots are in paper-r8/. Desktop dark ZE5-0 is incomplete because palette operation prophet-r8-20261103-desktop-dark-colors-200 has an unresolved transport effect; do not replay it.
 
-The separate Fabric UX refinement run prophet-page-revamp-20261102-ux-refinement also remains EFFECT_UNKNOWN, unverified and retry-denied. Its requested shorter pre-card layout, focus-return behavior, section-link discoverability and honest Turn Setups states are not accepted as native implementation. No work on those overlapping source surfaces should be reissued until original effect reconciliation. This candidate still needs R8 implementation review, eligible signed-in Sources to Plan journey proof, and an independent eligible release owner. A successful CI, Paper board, or local anonymous build is not a production replacement.
+The historical Fabric UX refinement run prophet-page-revamp-20261102-ux-refinement remains EFFECT_UNKNOWN, unverified and retry-denied. Do not retry that operation or count it as implementation evidence. The Chairman has separately authorized ChatGPT2 to own and continue direct source implementation on this existing branch; an archived session or an imagined "original Executive/Fabric owner" is not a prerequisite. Do not route this work to Grok Secretary. Preserve the held untracked tests/test_prophet_plan_review_integration.py and all unrelated work.
+
+## Direct robustness continuation — 3 November 2026
+
+Starting source: 19fbe0bd63e24b122a7759b0bc454dff0e14d857. The direct source changes implement:
+
+- The existing neutral, bilingual session strip in first-paint HTML, reused by live.js without adding a second calendar or fetch owner.
+- A tighter narrow-screen Today header, with warning copy and 44px controls retained.
+- Turn Setups idle/loading/ready/empty/unavailable states, a four-second request deadline, manual retry, obsolete-response suppression, keyboard focus recovery, and independence from tape/name fetches.
+- Strict snapshot/row/cohort validation. Failed or unverifiable sources cannot become "no setups"; missing leg/trend values cannot become bearish boxes. Legacy populated v1 rows remain supported, but legacy empty output without evaluated coverage is unavailable.
+- Additive producer evaluated_n/failed_n diagnostics; all-computation failure is explicit, partial results are disclosed, and signal/ledger rules are unchanged.
+- Two-week insufficient history is unknown, not negative. The mobile table has a keyboard-focusable region, scroll guidance and a sticky ticker.
+- Attribute-safe tooltip escaping and preservation of fold/focus when optional basket names arrive late.
+
+Final component verification: 121 focused Python/Node tests passed, plus 38 live calendar tests. Four real Chromium component cases (320/390/768/1440, EN/ZH, light/dark) passed failure → keyboard retry → partial success, focus return, hostile-text escaping, keyboard table scrolling with a sticky ticker, no overflow and no uncaught page errors. JavaScript-disabled fallback also passed. Source-bound receipts and screenshots are in verification/prophet-mtf-robustness-20261103-c2-final/. Two independent read-only source review passes found and closed incomplete-row/cohort-consistency/null-health defects; the final pass found no additional concrete defect. These are synthetic component proofs, not a native publication or authenticated product claim. A fresh native publication build is next.
+
+Outstanding acceptance is concrete: fresh native responsive/performance/public-private pair verification, source-head CI and independent review, and eligible signed-in Sources-to-Plan journey proof. Keep non-merge status unchanged; no Ready/un-draft/relabel/enqueue/merge/deploy action is authorized by this checkpoint. Do not misreport a passing local build as the live replacement.

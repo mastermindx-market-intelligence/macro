@@ -2358,6 +2358,17 @@
 {% endif %}
 {% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
+{% if mode == 'stocks' %}
+{# Match live.js's neutral initial state before first paint. The existing session
+   renderer reuses this node; no calendar claim or extra status owner is created. #}
+<div id="market-session-status" class="dtp-row" role="status" aria-live="polite"
+     data-session-state="unverified"
+     data-tip-en="Calendar status is unverified. Displayed data keeps its original date."
+     data-tip-zh="交易日历状态未确认。已显示数据保留原始日期。">
+  <span class="dtp-chip dtp-chip--behind">{{ t('US · Status unverified', '美股 · 状态未确认') }}</span>
+  <span class="dtp-asof">{{ t('Next open unverified', '开市时间待确认') }}</span>
+</div>
+{% endif %}
 <div class="grid">
 
   {% if mode == 'stocks' %}
@@ -18280,10 +18291,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
   {# TS-U3 / TS-R7: Per-stock Turn Setups — multi-timeframe momentum (mode=stocks only).
      Client-side from stockdata/mtf_upturn.json (U2 nightly artifact).
-     Schema: mtf_upturn.v1. Fail-open: absent until tonight's nightly. #}
+     Schema: mtf_upturn.v1. Missing or invalid sources are unavailable, never an empty result. #}
   {% if mode == 'stocks' %}
-  <div class="panel span12 dash-mtf-section" id="dash-mtf-section">
-    <h2>{{ t('Turn Setups — early bottoming signs by stock', '拐点形态 — 个股早期筑底迹象') }}
+  <div class="panel span12 dash-mtf-section" id="dash-mtf-section" data-mtf-state="idle">
+    <h2 id="dash-mtf-heading" tabindex="-1">{{ t('Turn Setups — early bottoming signs by stock', '拐点形态 — 个股早期筑底迹象') }}
       <span class="help">?<span class="tip tip-wide">
         <span class="l-en">
           A per-stock checklist of early bottoming signs — more filled boxes = more timeframes agreeing.
@@ -18305,8 +18316,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
       </span></span>
     </h2>
-    <div id="dash-mtf-body">
-      <div class="mtf-skel" aria-hidden="true">
+    <div class="dash-mtf-feedback">
+      <p id="dash-mtf-status" class="muted" role="status" aria-live="polite" aria-atomic="true">{{ t('Turn setup data has not loaded.', '拐点形态数据尚未加载。') }}</p>
+      <button id="dash-mtf-retry" class="dash-mtf-retry" type="button" hidden>{{ t('Retry turn setups', '重试拐点形态') }}</button>
+      <noscript><p class="muted">{{ t('Enable JavaScript to load the published checklist. Other server-rendered research remains available.', '启用 JavaScript 可加载已发布的检查表。其他服务端渲染的研究内容仍可查看。') }}</p></noscript>
+    </div>
+    <div id="dash-mtf-body" aria-busy="false" aria-labelledby="dash-mtf-heading">
+      <div class="mtf-skel" aria-hidden="true" hidden>
         <div class="mtf-skel-hd"></div>
         <div class="mtf-skel-row"></div>
         <div class="mtf-skel-row"></div>
@@ -18315,8 +18331,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mtf-skel-row"></div>
         <div class="mtf-skel-row"></div>
       </div>
-      <p class="dash-mtf-absent mx-empty l-en" hidden>No stock is showing early bottoming signs tonight. <span class="empty-why">The checklist needs at least two timeframes to agree, and none cleared that bar in the latest run.</span></p>
-      <p class="dash-mtf-absent mx-empty l-zh" hidden>今晚没有个股出现早期筑底迹象。<span class="empty-why">该检查表要求至少两个时间框架同向，最近一次运行中没有标的达到这一门槛。</span></p>
     </div>
   </div>
   {% endif %}
@@ -18705,7 +18719,7 @@ window.__CHART_SWAP__ = {
 (function(){
 'use strict';
 function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
-function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function L(en,zh){return'<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>';}
 function fmtPct(v){if(v==null)return'—';return(v>=0?'+':'')+v.toFixed(2)+'%';}
 function clsPct(v){return v==null?'muted':v>=0?'up':'dn';}
@@ -19008,36 +19022,88 @@ function _mtfPhasePlain(raw){
     +L(esc(en.join(' · ')),esc(zh.join(' · ')))+'</span>';
 }
 
+/* Validate display data before drawing a factual row or an empty-state claim.
+   The source is a dated nightly snapshot, not a live trade recommendation. */
+function mtfObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
+function mtfDate(value){
+  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  var date=new Date(value+'T00:00:00Z');
+  return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===value;
+}
+function validMtfPayload(data){
+  if(!mtfObject(data)||data.schema!=='mtf_upturn.v1'||data.error!=null||
+     !mtfDate(data.as_of)||!Number.isInteger(data.universe_n)||data.universe_n<1||
+     !mtfObject(data.tickers)||!mtfObject(data.cohort)) return false;
+  // Older v1 artifacts have no health counts. When supplied, both are binding.
+  if(Object.prototype.hasOwnProperty.call(data,'evaluated_n')||
+     Object.prototype.hasOwnProperty.call(data,'failed_n')){
+    if(!Number.isInteger(data.evaluated_n)||data.evaluated_n<1||
+       !Number.isInteger(data.failed_n)||data.failed_n<0||
+       data.evaluated_n+data.failed_n!==data.universe_n) return false;
+  }
+  var seen=new Set();
+  var valid=['confirmed','watch'].every(function(group){
+    var symbols=data.cohort[group];
+    return Array.isArray(symbols)&&symbols.every(function(sym){
+      if(typeof sym!=='string'||!sym.trim()||seen.has(sym)||
+         !Object.prototype.hasOwnProperty.call(data.tickers,sym)) return false;
+      seen.add(sym);
+      var row=data.tickers[sym];
+      if(!mtfObject(row)||row.state!==(group==='confirmed'?'UPTURN_CONFIRMED':'UPTURN_WATCH')) return false;
+      // Hysteresis can retain confirmed at K=2, never below the watch floor.
+      if(!Number.isInteger(row.k)||row.k<2||row.k>4) return false;
+      if(row.htf_coverage!=null&&typeof row.htf_coverage!=='boolean') return false;
+      if(row.monthly_phase!=null&&typeof row.monthly_phase!=='string') return false;
+      if(row.since!=null&&!mtfDate(row.since)) return false;
+      if(row.basket_ids!=null&&(!Array.isArray(row.basket_ids)||
+         !row.basket_ids.every(function(id){return typeof id==='string';}))) return false;
+      if(!mtfObject(row.legs)||!['d_macd','d3_confluence','w2_macd'].every(function(key){
+        return typeof row.legs[key]==='boolean';
+      })) return false;
+      if(['cross','approaching','none'].indexOf(row.legs.w_macd)<0) return false;
+      if(!mtfObject(row.trend)||!['d','d3','w','w2'].every(function(key){
+        var trend=row.trend[key];
+        return mtfObject(trend)&&typeof trend.pos==='boolean'&&
+          (trend.bars_since_cross==null||
+           (Number.isInteger(trend.bars_since_cross)&&trend.bars_since_cross>=0));
+      })) return false;
+      return true;
+    });
+  });
+  // Empty is a factual result only when the ticker map and cohort agree.
+  return valid&&seen.size<=(data.evaluated_n==null?data.universe_n:data.evaluated_n)&&
+    !(seen.size===0&&(data.evaluated_n==null||data.failed_n>0))&&Object.keys(data.tickers).every(function(sym){
+    var row=data.tickers[sym];
+    return mtfObject(row)&&(row.state==='NONE'?!seen.has(sym):
+      (row.state==='UPTURN_CONFIRMED'||row.state==='UPTURN_WATCH')&&seen.has(sym));
+  });
+}
+
 function renderMtfTable(mtfUpturn){
   var bodyEl=document.getElementById('dash-mtf-body');
-  if(!bodyEl) return;
-
-  if(!mtfUpturn||!mtfUpturn.tickers){
-    /* Artifact not in yet — leave the true-geometry skeleton in place. */
-    return;
-  }
-
+  if(!bodyEl) return {shown:0,total:0};
   var tickers=mtfUpturn.tickers;
-  var asOf=mtfUpturn.as_of||'';
+  var asOf=mtfUpturn.as_of;
 
   // Build row list: CONFIRMED first, then WATCH. A name earns a row only when it
   // has a live early-turn signal — no fixed roster is force-shown (Mag7 pin removed).
   var confirmed=[], watch=[];
   var seen=new Set();
   (mtfUpturn.cohort&&mtfUpturn.cohort.confirmed||[]).forEach(function(sym){
-    if(tickers[sym]){confirmed.push(sym);seen.add(sym);}
+    if(tickers[sym]&&!seen.has(sym)){confirmed.push(sym);seen.add(sym);}
   });
   (mtfUpturn.cohort&&mtfUpturn.cohort.watch||[]).forEach(function(sym){
     if(tickers[sym]&&!seen.has(sym)){watch.push(sym);seen.add(sym);}
   });
 
+  var total=confirmed.length+watch.length;
   var rows=confirmed.concat(watch).slice(0,40);
 
   if(!rows.length){
-    var skel=bodyEl.querySelector('.mtf-skel');
-    if(skel) skel.remove();
-    bodyEl.querySelectorAll('.dash-mtf-absent').forEach(function(p){p.hidden=false;});
-    return;
+    bodyEl.innerHTML='<p class="dash-mtf-absent mx-empty">'+L(
+      'No qualifying turn setups in this snapshot. <span class="empty-why">The checklist needs at least two timeframes to agree. This is an early-warning checklist, not a buy list.</span>',
+      '此快照中没有符合条件的拐点形态。<span class="empty-why">检查表要求至少两个时间框架同向。这是早期预警检查表，非买入清单。</span>')+'</p>';
+    return {shown:0,total:0};
   }
 
   // Leg glyphs — 3 visual states (U7):
@@ -19089,7 +19155,8 @@ function renderMtfTable(mtfUpturn){
   var html='<p class="muted" style="font-size:11px;margin:0 0 5px">'
     +L('as of '+esc(asOf)+' · an early-warning checklist, not a buy list',
        '截至 '+esc(asOf)+' · 早期预警检查表，非买入清单')+'</p>';
-  html+='<div class="tbl-scroll"><table class="dash-mtf-tbl"><thead><tr>'
+  html+='<p class="dash-mtf-scroll-hint">'+L('Scroll the table to see every timeframe and source detail.','横向滚动表格可查看全部时间框架与来源详情。')+'</p>';
+  html+='<div class="tbl-scroll dash-mtf-scroll" role="region" aria-labelledby="dash-mtf-heading" tabindex="0"><table class="dash-mtf-tbl"><thead><tr>'
     +'<th>'+L('ticker','代码')+'</th>'
     +'<th>'+L('state','状态')+'</th>'
     +'<th class="r">'+L('boxes','格数')+'</th>'
@@ -19116,16 +19183,19 @@ function renderMtfTable(mtfUpturn){
     html+='<tr>'
       +'<td><b>'+esc(sym)+'</b></td>'
       +'<td><span class="dash-mtf-badge '+stateCls+'">'+stateLbl+'</span></td>'
-      +'<td class="r"><span class="dash-mtf-k">'+(t.k||0)+'</span></td>'
+      +'<td class="r"><span class="dash-mtf-k">'+(t.k==null?'—':t.k)+'</span></td>'
       +'<td><div class="dash-mtf-legs">'
         +legEl3(!!legs.d_macd,trend.d||null,'D')
         +legEl3(!!legs.d3_confluence,trend.d3||null,'3D')
         +wMacdEl3(legs.w_macd||'none',trend.w||null)
-        +legEl3(!!legs.w2_macd,trend.w2||null,'2W')
-      +'</div></td>'
+        +(t.htf_coverage===false
+          ?'<span class="dash-mtf-leg unknown" data-tip-en="2W: history is insufficient. Unknown, not negative." data-tip-zh="双周：历史数据不足。状态未知，并非看跌。">?</span>'
+          :legEl3(!!legs.w2_macd,trend.w2||null,'2W'))
+      +'</div>'+(t.htf_coverage===false?'<span class="dash-mtf-coverage">'+L(
+        '2W history limited','双周历史不足')+'</span>':'')+'</td>'
       +'<td class="dash-mtf-phase">'+_mtfPhasePlain(t.monthly_phase)+'</td>'
       +'<td class="dash-mtf-since">'+esc(t.since||'—')+'</td>'
-      +'<td class="dash-mtf-baskets">'+(_bids.length?L(esc(basketEn),esc(basketZh)):'—')+'</td>'
+      +'<td class="dash-mtf-baskets" data-mtf-symbol="'+esc(sym)+'">'+(_bids.length?L(esc(basketEn),esc(basketZh)):'—')+'</td>'
       +'</tr>';
   });
   html+='</tbody></table></div>';
@@ -19148,38 +19218,122 @@ function renderMtfTable(mtfUpturn){
       _mtfBtn.setAttribute('aria-expanded', nowCollapsed?'false':'true');
     });
   }
+  return {shown:rows.length,total:total};
 }
 
 /* ────────────────────────────────────────────────────────────────────────
    FETCH + ORCHESTRATE
    ──────────────────────────────────────────────────────────────────────── */
 var pulse=null, mtfUpturn=null;
-var pulseDone=false, mtfDone=false, namesDone=false;
+var pulseDone=false, namesDone=false;
+var mtfPanel=document.getElementById('dash-mtf-section');
+var mtfBody=document.getElementById('dash-mtf-body');
+var mtfStatus=document.getElementById('dash-mtf-status');
+var mtfRetry=document.getElementById('dash-mtf-retry');
+var mtfSkeleton=mtfBody?mtfBody.innerHTML:'';
+var mtfRequest=0, mtfPending=false;
 
 function tryRender(){
-  if(!pulseDone||!mtfDone||!namesDone) return;
-  renderTapeBand(pulse);
-  renderMtfTable(mtfUpturn);
+  if(pulseDone&&namesDone) renderTapeBand(pulse);
 }
 
+function setMtfState(state,en,zh){
+  mtfPanel.setAttribute('data-mtf-state',state);
+  mtfBody.setAttribute('aria-busy',state==='loading'?'true':'false');
+  mtfStatus.innerHTML=L(esc(en),esc(zh));
+  mtfRetry.disabled=state==='loading';
+  if(state!=='loading') mtfRetry.hidden=state!=='unavailable';
+}
+
+function refreshMtfNames(){
+  if(!mtfUpturn||!mtfBody) return;
+  mtfBody.querySelectorAll('[data-mtf-symbol]').forEach(function(cell){
+    var row=mtfUpturn.tickers[cell.getAttribute('data-mtf-symbol')];
+    if(!row) return;
+    var ids=(row.basket_ids||[]).slice(0,3);
+    var more=(row.basket_ids||[]).length>3?'…':'';
+    cell.innerHTML=ids.length?L(esc(ids.map(_dtpNameEn).join(', ')+more),
+      esc(ids.map(_dtpNameZh).join('、')+more)):'—';
+  });
+}
+
+function loadMtf(){
+  if(!mtfPanel||!mtfBody||!mtfStatus||!mtfRetry||mtfPending) return;
+  var restoreFocus=document.activeElement===mtfRetry;
+  var request=++mtfRequest, settled=false;
+  var controller=typeof AbortController==='function'?new AbortController():null;
+  mtfPending=true;
+  mtfUpturn=null;
+  mtfBody.innerHTML=mtfSkeleton;
+  var skeleton=mtfBody.querySelector('.mtf-skel');
+  if(skeleton) skeleton.hidden=false;
+  setMtfState('loading','Loading the published turn-setup checklist…','正在加载已发布的拐点形态检查表…');
+
+  function finish(data){
+    if(settled||request!==mtfRequest) return;
+    settled=true;
+    clearTimeout(timeout);
+    mtfPending=false;
+    var result=null;
+    if(validMtfPayload(data)){
+      try {result=renderMtfTable(data); mtfUpturn=data;} catch(ignore){result=null;}
+    }
+    if(!result){
+      mtfBody.innerHTML='';
+      setMtfState('unavailable',
+        'Turn setups unavailable. The source could not be verified; no result has been inferred. You can retry.',
+        '拐点形态暂不可用。无法验证数据源，未据此推断结果。可点击重试。');
+    }else{
+      var count=result.total>result.shown?result.shown+' of '+result.total:result.total;
+      var countZh=result.total>result.shown?'显示 '+result.shown+' / '+result.total:result.total;
+      var partialEn=data.failed_n>0?' · Partial: '+data.failed_n+' calculations unavailable':'';
+      var partialZh=data.failed_n>0?' · 部分结果：'+data.failed_n+' 个标的计算不可用':'';
+      setMtfState(result.total?'ready':'empty',
+        count+' qualifying setup'+(result.total===1?'':'s')+' · as of '+data.as_of+partialEn,
+        countZh+' 个符合条件的形态 · 截至 '+data.as_of+partialZh);
+    }
+    // Return focus only for a retry initiated here, and never steal it back
+    // after the reader has moved to another control while the request runs.
+    if(restoreFocus&&(document.activeElement===mtfRetry||document.activeElement===document.body)){
+      var target=result?document.getElementById('dash-mtf-heading'):mtfRetry;
+      if(target) target.focus({preventScroll:true});
+    }
+  }
+
+  var timeout=setTimeout(function(){
+    finish(null);
+    if(controller) controller.abort();
+  },4000);
+  var options={cache:'no-cache'};
+  if(controller) options.signal=controller.signal;
+  Promise.resolve().then(function(){return fetch('stockdata/mtf_upturn.json',options);})
+    .then(function(response){if(!response.ok) throw new Error('mtf-unavailable'); return response.json();})
+    .then(finish,function(){finish(null);});
+}
+
+if(mtfRetry) mtfRetry.addEventListener('click',loadMtf);
+loadMtf();
 fetchJson('live/basket_pulse.json',function(d){pulse=d;pulseDone=true;tryRender();});
-fetchJson('stockdata/mtf_upturn.json',function(d){mtfUpturn=d;mtfDone=true;tryRender();});
-/* Parallel fetch: display names for tape and turn-setup rows (FT-R8: graceful fail).
-   Unlike the data fetches, a names failure must not stall the band behind the 4s
-   backstop — fall through to prettified slugs immediately. */
+/* Display names are optional. Their failure cannot hold the checklist loading,
+   and a late success updates only name cells, preserving row focus and folds. */
 fetch('basketdata/baskets.json',{cache:'no-cache'})
   .then(function(r){if(!r.ok)throw 0;return r.json();})
   .then(function(d){
-    var list=(d&&d.baskets)||[];
+    var list=d&&Array.isArray(d.baskets)?d.baskets:[];
     list.forEach(function(b){
-      if(b.id){ _dtpNames[b.id]={en:b.name||_dtpSlug(b.id), zh:b.name_zh||b.name||_dtpSlug(b.id)}; }
+      if(b&&typeof b.id==='string'){
+        var fallback=_dtpSlug(b.id);
+        _dtpNames[b.id]={en:typeof b.name==='string'?b.name:fallback,
+          zh:typeof b.name_zh==='string'?b.name_zh:typeof b.name==='string'?b.name:fallback};
+      }
     });
+    refreshMtfNames();
   })
   .catch(function(){})
   .then(function(){namesDone=true;tryRender();});
 
-// Fail-open: if any fetch doesn't resolve, still render with what we have
-setTimeout(function(){pulseDone=true;mtfDone=true;namesDone=true;tryRender();},4000);
+// The tape has its own backstop; it never settles or retries the MTF request.
+setTimeout(function(){pulseDone=true;namesDone=true;tryRender();},4000);
 
 // See-more folds — V2 action board + sector setups table. Page-scoped;
 // theme.js .lst-wrap handler ignores .act-more buttons.
