@@ -1,0 +1,36 @@
+{
+  "kind": "D07 advisory client diagnostics",
+  "status": "BASELINE_REPRODUCED",
+  "scope": "Original request/index functions in an isolated VM with controlled completion and a minimal DOM adapter. The substituted afterLoad recorder observes callback delivery. The original afterLoad rendering path is source-inspected, with browser verification pending. Passing probes reproduce baseline behavior.",
+  "source_blob": "51d99c9ac76557e2dce356a53231416f5fe84a44",
+  "executed": 4,
+  "results": [
+    {
+      "case": "late-response-reaches-presentation-callback",
+      "query": "BBB",
+      "url": "?t=BBB#es-explorer",
+      "afterLoadTicker": "AAA",
+      "required": "Retain request identity, disregard late completions and verify payload ticker before changing chart/card."
+    },
+    {
+      "case": "mismatching-successful-payload",
+      "requested": "CCC",
+      "afterLoadPayload": {
+        "ticker": "WRONG",
+        "financial_influence": true
+      },
+      "required": "Validate ticker, reserved authority flags and expected response shape before presentation. Show scoped retrieval failure on mismatch."
+    },
+    {
+      "case": "failed-index-frozen-as-empty",
+      "fetches": 1,
+      "indexAfterFailure": [],
+      "required": "Distinguish index loading/failure from an authoritative empty index. Offer bounded read retry."
+    },
+    {
+      "case": "source-route-contract",
+      "existing": "?t=<SYMBOL>#es-explorer; row/pick replaceState; search/deep source actions differ",
+      "required": "Preserve unrelated query keys, document exact selection/history semantics, and reconcile 12-character UI versus 15-character producer symbols without a parallel parser."
+    }
+  ]
+}

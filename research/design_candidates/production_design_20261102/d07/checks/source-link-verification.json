@@ -1,0 +1,981 @@
+{
+  "schema": "d07.pinned-source-target-verification.v1",
+  "observed_at": "2026-11-03T07:39:19.016Z",
+  "scope": "Existence and Git blob identity of each immutable source file cited by D07 markdown. Full-source semantic findings are documented in the domain chapters.",
+  "verified": 95,
+  "files": [
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "templates/stock.html.j2",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "8659d49333a9169ea166eef28ef8b761a18a9f4d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "scripts/build_stock_library.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a911a4f000a4caf79d7f9069fe0904f9d4215a3c"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "config/site_access.yml",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "28a06a56f6452b975885793a08f3520913828fa4"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "templates/ticker_index.html.j2",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a5b023233dc0ef365aa22ffb9fde16a7a1c5b067"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "scripts/build_ticker_pages.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "templates/ticker.html.j2",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "5ffa0868253f94bd3e2c3c7a9c8f097d102de5c3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "lib/pages.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "db175c463a31828263b57a3287afba661439a765"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "scripts/build_capital_structure_page.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "3895aa83ae0040db0bf50339075c47309560afad"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "templates/capital_structure.js",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "18f793b774002108e9d736e29a248ac46ca964cd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "app/capital_structure.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "67ea69cc96a9af7633546e614f0ee8dc9eac4ebb"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "agentos/decisions/DEC-CS-V2-SIX-QUESTION-ONTOLOGY.md",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "258610b02c8dcd8d113b0d4b29d93dbe3f0a575c"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "site/financial_lineage.html",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "07d01f3371638fa55ed799265a4e70b378b8e92d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "app/forensics.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "569e8a19a2e5e74c0257e3bf4053a227cb66759a"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "tests/test_fundamental_forensics_cross_filing_lineage.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "22a8e7bfb3c78ec5b4c1e9e1b26ccb0f94419a9f"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "scripts/build_earnings_public_wire.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "00490a81355544e5d55733852e38c2881e4e827c"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "site/stocks/earnings/aapl-2026q3-call-record.html",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "6da18fd668934c80c89c2e8df3bfd7749e0a08a1"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "engine/company_intelligence/event_id_adapter.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "site/assets/js/company-intelligence-dossier.js",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "app/company_intelligence.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "research/earnings_intelligence/g0/G0_EVENT_CLOCK_AND_CONTRACT_CENSUS.md",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "c4063ef52c86d7c16e70132f82aaaac92392df85"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "templates/expectation_surface.html.j2",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "research/alpha_intelligence/expectation_market_dynamics/EXPECTATION_SURFACE_PAGE_CONTRACT_2026-10-21.md",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "bfa98c7e0316fd9f46d8e74c6e724c6cc9fe4961"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "scripts/build_expectation_surface.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "site/expectation_surface/summary.json",
+      "used_by": [
+        "MACRO.md",
+        "checks/README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "d8a377c2ac42a8c56e42798146db6ed5be31d24a"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "site/expectation_surface/summary.json",
+      "used_by": [
+        "MACRO.md",
+        "checks/README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "ddf20f7a1023cded3930715425713969ea324c1d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "site/expectation_surface/tickers/AAPL.json",
+      "used_by": [
+        "MACRO.md",
+        "baseline/OBSERVATIONS.md",
+        "checks/README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "15d5e943cb490176db663e59ad4dcf63acca9980"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "collectors/equity_revisions.py",
+      "used_by": [
+        "MACRO.md",
+        "checks/EXPECTATION_ADVISORY.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "f543f2ff2e5d4078f5ddc4626d9ba8dc98fec2f9"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "agentos/decisions/DEC-SRC-A1-PROSPECTIVE-EXPECTATION-SOURCE-CONTRACT.md",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "692a150735914eb689bea5680db743dc2a039d37"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "research/alpha_intelligence/expectation_market_dynamics/DATA_CLOCK_RIGHTS_MATRIX.md",
+      "used_by": [
+        "MACRO.md",
+        "checks/EXPECTATION_ADVISORY.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "b2cd6cfacfba92a1bf9c929450b0cdcabb68ecdd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "scripts/build_expectation_surface.py",
+      "used_by": [
+        "MACRO.md",
+        "checks/EXPECTATION_ADVISORY.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1b39e3a519a548d2187130498dd05b58a256ccdd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/expectation_surface.html.j2",
+      "used_by": [
+        "MACRO.md",
+        "checks/README.md",
+        "checks/EXPECTATION_ADVISORY.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "51d99c9ac76557e2dce356a53231416f5fe84a44"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "tests/test_build_expectation_surface.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "17f4b59ec98883cfaeb7953a755b63ff30a55357"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "tests/test_company_intelligence_dossier_js.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "00c2c1f0d8c3091d775dd155ff1d61b542c437ab"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "path": "tests/test_earnings_public_wire.py",
+      "used_by": [
+        "MACRO.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "6630254e78061d1875906e556a9b220101abb404"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+      "path": "research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "RESPONSIVE.md",
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "611e72560cc74f90c1b4ee2cb46f046b60cb95b4"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "path": "research/design_candidates/production_design_20261102/f02/F01_HANDSHAKE_CANDIDATE.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "58b18e3ef094f1c24dfe4f583d73cb2ae9aa7306"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+      "path": "research/design_candidates/production_design_20261102/f01/README.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "4dddc09e99842d80ecf576797803e30a84b438f0"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "path": "research/design_candidates/production_design_20261102/f02/RETURN_F02.md",
+      "used_by": [
+        "CONTINUATION.md",
+        "RESPONSIVE.md",
+        "README.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "e754ed29943f1ef2e3e7d38db2f9774abcac7333"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+      "path": "research/design_candidates/production_design_20261102/f02/SYSTEM_CONTRACT.md",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "175e56ba17fd1f1e923535cf2f7d3377e7a6fd5d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+      "path": "research/design_candidates/production_design_20261102/f02/token-map.json",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/NATIVE_BOARD_INDEX.md",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "d200364c1f84ff381ddea8ec41fb37e67f56e1c3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/CURRENT_DESIGN_AUTHORITY.md",
+      "used_by": [
+        "RESPONSIVE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "54c5c0852cdb107411cdd60f4ddb9e08a4857974"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/ResearchWorkspaceNav.tsx",
+      "used_by": [
+        "RESPONSIVE.md",
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "49049cac5652efd5d515d5a8a31ed4d732094d39"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/MegaPane.tsx",
+      "used_by": [
+        "RESPONSIVE.md",
+        "EARNINGS.md",
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "02c5e865f1a7dddea906b0ca2cb04722eb3751a7"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/Mastermind",
+      "ref": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+      "path": "docs/sol_skills/INDEX.md",
+      "used_by": [
+        "README.md",
+        "baseline/OBSERVATIONS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "site/stocks/earnings/aal-2026q3-call-record.html",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1a046569f077edcdf6b8e61ddf91306a571b5dc5"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "350a61f9bae0ae61b2ab188ec99cc73552496ad2",
+      "path": "terminal/docs/verification/shared-shell-published-coverage-20261102.md",
+      "used_by": [
+        "EARNINGS.md",
+        "baseline/OBSERVATIONS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "5a7851304a35ff1c1a226524dbbf2b8957d7475e"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/watchlistEventPlanner.ts",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "131b7c0a6881d65d8a7023363969748542a495aa"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "collectors/equity_earnings.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "3cf263cdc561697cd003366937d0807c8b3f0025"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "scripts/audit_earnings_freshness.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "7652a31cc06c7b88b6a872b8b7b92d77bb41689b"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "engine/company_intelligence/event_id_adapter.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "068e3186af91d708f49c4ef924ca207efebaa0bf"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "engine/company_intelligence/event_workspace.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1c29b43396f077189a008516950a72675d8c7bb5"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "scripts/build_earnings_public_wire.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "00490a81355544e5d55733852e38c2881e4e827c"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "engine/earnings_narrative/public_wire.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "d2ed6d41344b72d793335164d73cd78422da6098"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/earnings_wire/earnings_wire_article.html.j2",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1f5d27e2894ffdf4a8116c7374547362358ff925"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "app/company_intelligence.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "85bb04b1feef71b3c4af623c6f8c3b89351dda42"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "site/assets/js/company-intelligence-dossier.js",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "f211bb2aa8fa5cbfe78c522159402231c1267840"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/earnings_wire/earnings-wire.js",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "12216b31e5a747d959051ca2295bc690270335ac"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "templates/theme.js",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "21a1fb1627ac34badc6078cff486f98486e9b773"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "engine/earnings_narrative/private_publication.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "0ee93909693893f419f0109f9eba1994d94e2b46"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "app/earnings.py",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "3b8251388c8e9ae59b933212a7384faaea61eb27"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/TranscriptDrawer.tsx",
+      "used_by": [
+        "EARNINGS.md",
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "221134c8c734ef5a490cde5c634edd0d42d79706"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/transcriptSearch.ts",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1e6bc5c80127386d40513144c72e74febddadfee"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "653fcf2295749bc8c7b4cef101f75a75274928aa",
+      "path": "docs/RETURNS_CALENDAR_DATA_CONTRACT_2026-10-04.md",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "ae5d10b19881cc27fff325f73420b2399a764bcd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "be69d3c7881d454638313d9671920c850673f595",
+      "path": "docs/RETURNS_DATA_QUALIFICATION_2026-10-18.md",
+      "used_by": [
+        "EARNINGS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "58d9c0f691009e3c94a29341b323062490c9c9dd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/app/(shell)/analysis/page.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "69dd9b36abc8b9598e930d1548293a28829ebd23",
+      "url_path": "terminal/app/%28shell%29/analysis/page.tsx"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/analysisRoute.ts",
+      "used_by": [
+        "ANALYSIS.md",
+        "baseline/OBSERVATIONS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "549d94e4ba6dd3d6b278d9849dc3c4852f8d5ebd"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/workspaces/AnalysisWorkspace.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "24855b1df2d8077706ddea5257c83d32e379e7b6"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/RegionalIntelligenceWorkspace.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "6e8b41d376c1f5380a8a0df3a73d2400f7c28766"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/finPageFamilies.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "2b0b398a8656d7a6a62fcd832b8ff867530c9791"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/CompanyIntelligenceV2Current.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "594cff2b78961e481c9afa941ac9fc83d4f5c45b"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/OwnershipPage.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "a093722c180a61cd6863604333412af5c02160d3"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/workspaces/ThesisWorkspace.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "65a600184185c258e5e572bcf0d7dcaa0a50220d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/workspaces/InvestigationWorkspace.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "4126bd73348aa3fdd95f31451e570ce089a631e7"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/fund.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "ingest/gen_fund_us.py",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "267880845d395985d5dfb566def5971d99774bfc"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "ingest/gen_fund_cn.py",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "eaa974c278ded18d4f20b29684fd7cbec2b01f14"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "ingest/gen_fund_hk.py",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "40b5bfe366f53762daa10e25f0c56d1aec7d2285"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "ops/nightly_fund.sh",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "b6dec9b01102e04d4d0c4676ee46e5e841cc1404"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/ForecastPage.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "ef781f5f763ee77a70b15ac9278be9d79357ac88"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/app/api/investigations/baseline/route.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "f5498e598205bee5bd73ba780a502dde7955df64"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/companyRetainedContext.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "b4581b1d38d4a6fd112b61f954fb2bf5490fc2a1"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/earningsExpectationBoundary.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "2a0d2d716953535b42a1f17d80e1446a87cba938"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/components/fin/CompanyWatchSave.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "7dab903014873180aae2e50be4a05fb1618c7801"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/app/api/theses/route.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "421f9ea972fd7956d30190f15dbd9fe23e642694"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/app/api/investigations/route.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "59be1b31ee28ed983906ea57949220fa51637a09"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/app/fin.css",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "3e57ffb79edbb4e3665b40e28a77276f596b59f9"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/__tests__/analysisRoute.test.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "2b1bf19d08acf463c7f6ea104dabab4695aa3111"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/__tests__/companyRetainedContextOwnerIntegration.test.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "45472f56bf166d493a8dad00e903717d360e971b"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/__tests__/earningsExpectationBoundary.test.tsx",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "b8ba8b8f585a4bbfbba882df7068eeec85671b60"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/e2e/research-workspace-nav.spec.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "18a189709ad1d1cdd184a954e70e4915d4964ba7"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/e2e/company-intelligence.spec.ts",
+      "used_by": [
+        "ANALYSIS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "122749e095ef69098b71c687ca4456b042e7138d"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+      "path": "research/design_candidates/production_design_20261102/f02/paper/NATIVE_BOARD_INDEX.md",
+      "used_by": [
+        "ACCEPTANCE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "b1c08d0c3cb3b3ae6282e051cf345920c807d7af"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "ed7e3f47ae5fb0e4d5b75a5f777ace2e917b0764",
+      "path": "research/design_candidates/production_design_20261102/f03/README.md",
+      "used_by": [
+        "ACCEPTANCE.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "268bced507d0f37dea0beda7746118161d366482"
+    },
+    {
+      "repo": "mastermindx-market-intelligence/macro",
+      "ref": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+      "path": "scripts/build_ticker_pages.py",
+      "used_by": [
+        "baseline/OBSERVATIONS.md"
+      ],
+      "status": "VERIFIED",
+      "blob": "1e706f5e2b47d735ccc6e3bc987587ffc6dc2ef6"
+    }
+  ]
+}

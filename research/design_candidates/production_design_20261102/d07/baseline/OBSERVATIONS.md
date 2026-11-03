@@ -1,6 +1,6 @@
 # D07 before-state evidence
 
-Observed 3 November 2026 UTC in the D07 design/research session. This is a baseline. There is no after-image, edited artboard, new page ID or independent design verdict.
+Observed 3 November 2026 UTC in the D07 design/research session. This file preserves the initial before-state evidence published at `d8ff43f6bf8cbadcf3a72bc6f47007b93d841910`. The later editable documentation page and its captured export are recorded separately in [the continuation](../CONTINUATION.md) and [Paper receipt](../paper/capture.json). Final screen composition and independent reference review remain open.
 
 ## Signed-in beta
 

@@ -1,0 +1,259 @@
+[
+  {
+    "operation_id": "D07-20261103-c3-readme-prepare-v1",
+    "tool": "paper_prepare",
+    "state": "PAPER_READY",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
+    "recorded_at": "2026-11-03T07:21:06.658Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-page-v1",
+    "tool": "create_page",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "pageId": "p-11-0",
+    "recorded_at": "2026-11-03T07:21:06.658Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-artboard-v1",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "pageId": "p-11-0",
+    "nodeId": "1NFS-0",
+    "recorded_at": "2026-11-03T07:21:06.658Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-heading-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 heading\" style=\"display:flex;flex-direction:column;gap:12px;width:100%;padding-bottom:16px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"font-family:Inter;font-size:14px;font-weight:600;color:var(--mx-light-muted);letter-spacing:1px;\">MASTERMIND · COMPANY INTELLIGENCE · D07</div><div style=\"font-family:Inter;font-size:36px;line-height:44px;font-weight:600;color:var(--mx-light-text);\">Read me &amp; Build contract</div><div style=\"font-family:Inter;font-size:16px;line-height:24px;color:var(--mx-light-muted);\">Phase 2A · 3 November 2026 · Source/specification continuation · Reference acceptance open</div></div>"
+    },
+    "observed_at": "2026-11-03T07:21:10.762Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-job-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 job\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">The analyst’s job</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">Form and challenge a company thesis after a report. Identify what changed, which expectation is comparable and which evidence could invalidate the view. Keep Company, Earnings and Expectations connected by exact listing, period and source identity.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:21:26.213Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-journey-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 journey\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Complete task flow</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">Company brief → reported result + prior guidance or analyst estimate → same-period comparison → source receipt → invalidation evidence → deliberate watch → return. Calendar entry retains the selected event, date, filters, row focus and scroll. Reading or changing context is a local action.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:21:27.566Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-routes-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 routes\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Route and object ownership</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">/analysis uses terminal/lib/analysisRoute.ts for Company, Your theses and Saved investigations. Keep page/pane compatibility and ci_* historical identity. Macro owns /stock.html#symbol, /stocks/&lt;id&gt;.html, /capital_structure.html and /financial_lineage.html. Expectation explorer uses ?t=AAPL#es-explorer. Generated articles keep their exact slugs and anchors.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:21:28.961Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-data-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 data\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Comparisons and clocks</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">Keep quarter, fiscal year, half-year and YTD distinct even when period-end dates match. A usable delta needs matched listing/issuer scope, metric, currency, unit, basis, period and allowed source vintage. Show filing publication, producer collection, estimate acquisition and page-build clocks separately. A missing benchmark stays unavailable. Zero stays zero.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:21:50.538Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-rights-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 rights\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Evidence, access and saves</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">Historical evidence keeps its receipt and revision. A tx-only transcript bookmark reopens a call and needs requalification for an exact passage. Private content follows the current account and rights epoch. Public earnings v2 reads coverage_states; formatted reported/guidance values are display text. Watch requires explicit action and owner/list/symbol readback after an uncertain response.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:22:06.084Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-responsive-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 responsive\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Responsive acceptance</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">320px gives 288px of content and 390px gives 358px under both foundation candidates. Show identity → period → metric/comparator → result → evidence. Keep important controls at least 44px high. At 1280px, the candidate expanded rail + docked inspector leaves 664px for the primary task. Qualify that density with full labels, tabular values, keyboard focus, EN/ZH, light/dark and reflow.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:22:17.989Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-references-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 references\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Retained Paper references</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\"><a href=\"https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-S-0\" style=\"color:var(--mx-light-ink-link);\">Company R3 · p-S-0</a> keeps brief 1BEK-0 and Expectations 1CD3-0. Its 390px frame 1D9K-0 is the known empty successor. R2 p-M-1 supplies Chinese/320 patterns and p-L-1 supplies lineage states. <a href=\"https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0\" style=\"color:var(--mx-light-ink-link);\">Expectation Surface R1 · p-1-0</a> supplies the descriptive family. Final composition follows verified F01/F02 v1.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:22:48.892Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-foundation-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 foundation\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Foundation and review state</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">F01-F02-SHELL/1.0.0-candidate.1 at b2d00ddc · F02-SYSTEM/1.0.0-candidate.2 at c6eb32e1. F02 concurrence at f7c25c4b still needs F01 resolution. Gutter cutoffs and overlay widths differ. Delivery PARTIAL across the full assignment. D07 reference RIG remains draft / unsubmitted. The in-Paper contract records completed research and open dependencies.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:22:55.919Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-source-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 source\" style=\"display:flex;gap:32px;width:100%;padding-bottom:20px;border-bottom:1px solid var(--mx-light-line);\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Build from the source return</div><div style=\"flex:1;font-family:Inter;font-size:16px;line-height:25px;\">D07 owns product composition. Filing, estimates, Earnings OS, Terminal, Macro and save owners retain data and write authority. Read EXPERIENCE, ANALYSIS, MACRO, EARNINGS, RESPONSIVE, RETENTION and ACCEPTANCE in <a href=\"https://github.com/mastermindx-market-intelligence/macro/tree/design/paper-production-audit-20261102-ryan/research/design_candidates/production_design_20261102/d07\" style=\"color:var(--mx-light-ink-link);\">the D07 source package on Draft #10617</a>. Source baseline d8ff43f6 · assignment 6e186286 · procedure b2326bbe. Diagnostic reproductions establish current source behavior. Review requires an immutable candidate export set and independent product/taste findings.</div></div>"
+    },
+    "observed_at": "2026-11-03T07:23:03.850Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-fit-v1",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "updates": [
+        {
+          "nodeIds": [
+            "1NFS-0"
+          ],
+          "styles": {
+            "height": "fit-content"
+          }
+        }
+      ]
+    },
+    "observed_at": "2026-11-03T07:23:16.261Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-copy-v1",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "updates": [
+        {
+          "nodeId": "1NGG-0",
+          "html": "Historical evidence keeps its receipt and revision. A tx-only transcript bookmark reopens a call and needs requalification for an exact passage. Private content follows the current account and rights epoch. Public earnings v2 reads coverage_states. Formatted reported/guidance values are display text. Watch requires explicit action and owner/list/symbol readback after an uncertain response."
+        }
+      ]
+    },
+    "observed_at": "2026-11-03T07:24:36.150Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "nodeIds": [
+      "1NFS-0"
+    ],
+    "observed_at": "2026-11-03T07:24:45.232Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-addresses-v1",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "targetNodeId": "1NFS-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"D07 exact source addresses\" style=\"display:flex;gap:32px;width:100%;padding-bottom:4px;\"><div style=\"width:240px;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;\">Exact source and reference addresses</div><div style=\"display:flex;flex:1;flex-direction:column;gap:12px;font-family:Inter;font-size:14px;line-height:22px;color:var(--mx-light-text);\"><div>Source continuation · https://github.com/mastermindx-market-intelligence/macro/tree/design/paper-production-audit-20261102-ryan/research/design_candidates/production_design_20261102/d07</div><div>Company R3 · https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-S-0</div><div>Expectation Surface · https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0</div></div></div>"
+    },
+    "observed_at": "2026-11-03T07:29:42.538Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-addresses-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "nodeIds": [
+      "1NFS-0"
+    ],
+    "observed_at": "2026-11-03T07:29:58.051Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-foundation-candidate2-v1",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "updates": [
+        {
+          "nodeId": "1NGS-0",
+          "html": "F01-F02-SHELL/1.0.0-candidate.2 at 245a7d2c accepts the F02 concurrence at f7c25c4b. F02-SYSTEM/1.0.0-candidate.2 remains at c6eb32e1. The joint source agrees on 600px gutters, 440px tablet overlay and continuous breakpoints. Native-effect reconciliation and independent qualification remain open. Delivery PARTIAL across the full assignment. D07 reference RIG remains draft / unsubmitted."
+        }
+      ]
+    },
+    "observed_at": "2026-11-03T07:31:30.937Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-candidate2-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "nodeIds": [
+      "1NFS-0"
+    ],
+    "observed_at": "2026-11-03T07:31:35.034Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-candidate2-copy-v1",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "arguments": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "updates": [
+        {
+          "nodeId": "1NGS-0",
+          "html": "F01-F02-SHELL/1.0.0-candidate.2 at 245a7d2c accepts the F02 concurrence at f7c25c4b. F02-SYSTEM/1.0.0-candidate.2 remains at c6eb32e1. The joint source agrees on the 600px gutter breakpoint, a 440px tablet overlay and continuous breakpoints. Native-effect reconciliation and independent qualification remain open. Delivery PARTIAL across the full assignment. D07 reference RIG remains draft / unsubmitted."
+        }
+      ]
+    },
+    "observed_at": "2026-11-03T07:34:18.461Z"
+  },
+  {
+    "operation_id": "D07-20261103-c3-readme-final-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "nodeIds": [
+      "1NFS-0"
+    ],
+    "observed_at": "2026-11-03T07:34:24.049Z"
+  }
+]

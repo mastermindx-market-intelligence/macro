@@ -1,0 +1,47 @@
+D07 foundation candidate arithmetic
+F01 245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7
+F02 f7c25c4b9870cff260c2a4b998be18d6c04d36d0
+PASS 01 | F01 expanded 320 | (Fraction(288, 1), Fraction(288, 1), 'overlay')
+PASS 02 | F01 expanded 390 | (Fraction(358, 1), Fraction(358, 1), 'overlay')
+PASS 03 | F01 expanded 768 | (Fraction(728, 1), Fraction(728, 1), 'overlay')
+PASS 04 | F01 expanded 1024 | (Fraction(788, 1), Fraction(788, 1), 'overlay')
+PASS 05 | F01 expanded 1280 | (Fraction(1008, 1), Fraction(664, 1), 'dock')
+PASS 06 | F01 expanded 1440 | (Fraction(1168, 1), Fraction(824, 1), 'dock')
+PASS 07 | F01 expanded 1600 | (Fraction(1328, 1), Fraction(984, 1), 'dock')
+PASS 08 | F01 expanded 1255 | (Fraction(983, 1), Fraction(983, 1), 'overlay')
+PASS 09 | F01 expanded 1256 | (Fraction(984, 1), Fraction(640, 1), 'dock')
+PASS 10 | F01 compact 1095 | (Fraction(983, 1), Fraction(983, 1), 'overlay')
+PASS 11 | F01 compact 1096 | (Fraction(984, 1), Fraction(640, 1), 'dock')
+PASS 12 | F01 1280 with local32 | (Fraction(976, 1), Fraction(976, 1), 'overlay')
+PASS 13 | F02 expanded 320 | (Fraction(288, 1), Fraction(288, 1), 'overlay')
+PASS 14 | F02 expanded 390 | (Fraction(358, 1), Fraction(358, 1), 'overlay')
+PASS 15 | F02 expanded 768 | (Fraction(728, 1), Fraction(728, 1), 'overlay')
+PASS 16 | F02 expanded 1024 | (Fraction(788, 1), Fraction(788, 1), 'overlay')
+PASS 17 | F02 expanded 1280 | (Fraction(1008, 1), Fraction(664, 1), 'dock')
+PASS 18 | F02 expanded 1440 | (Fraction(1168, 1), Fraction(824, 1), 'dock')
+PASS 19 | F02 expanded 1600 | (Fraction(1328, 1), Fraction(984, 1), 'dock')
+PASS 20 | F02 expanded 1255 | (Fraction(983, 1), Fraction(983, 1), 'overlay')
+PASS 21 | F02 expanded 1256 | (Fraction(984, 1), Fraction(640, 1), 'dock')
+PASS 22 | F02 compact 1095 | (Fraction(983, 1), Fraction(983, 1), 'overlay')
+PASS 23 | F02 compact 1096 | (Fraction(984, 1), Fraction(640, 1), 'dock')
+PASS 24 | F02 1280 with local32 | (Fraction(976, 1), Fraction(976, 1), 'overlay')
+PASS 25 | F01 gutter at 600 | (Fraction(568, 1), Fraction(568, 1), 'overlay')
+PASS 26 | F02 gutter at 600 | (Fraction(568, 1), Fraction(568, 1), 'overlay')
+PASS 27 | F01 gutter at 601 | (Fraction(561, 1), Fraction(561, 1), 'overlay')
+PASS 28 | F02 gutter at 601 | (Fraction(561, 1), Fraction(561, 1), 'overlay')
+PASS 29 | F01 gutter at 767 | (Fraction(727, 1), Fraction(727, 1), 'overlay')
+PASS 30 | F02 gutter at 767 | (Fraction(727, 1), Fraction(727, 1), 'overlay')
+PASS 31 | current candidates at 860 | (Fraction(820, 1), Fraction(820, 1), 'overlay')
+PASS 32 | current candidates at 861 | (Fraction(625, 1), Fraction(625, 1), 'overlay')
+PASS 33 | current candidates at 1199 | (Fraction(963, 1), Fraction(963, 1), 'overlay')
+PASS 34 | current candidates at 1200 | (Fraction(928, 1), Fraction(928, 1), 'overlay')
+PASS 35 | F01 fractional navigation at 860.5 | (Fraction(1249, 2), Fraction(1249, 2), 'overlay')
+PASS 36 | F02 fractional navigation at 860.5 | (Fraction(1249, 2), Fraction(1249, 2), 'overlay')
+PASS 37 | F01 fractional navigation at 1199.5 | (Fraction(1927, 2), Fraction(1927, 2), 'overlay')
+PASS 38 | F02 fractional navigation at 1199.5 | (Fraction(1927, 2), Fraction(1927, 2), 'overlay')
+PASS 39 | two 320px control cells with 8px gap | 140.0
+PASS 40 | two 390px control cells with 8px gap | 175.0
+PASS 41 | 664px table, 196 label + 3 x 156 periods | 664
+PASS 42 | 600 to 768 candidate agreement | 0
+PASS 42/42 specification arithmetic assertions
+No served viewport, font metric, control fit, focus, browser or RIG qualification is asserted.

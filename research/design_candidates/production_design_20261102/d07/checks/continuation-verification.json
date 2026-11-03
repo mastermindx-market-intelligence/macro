@@ -1,0 +1,123 @@
+{
+  "schema": "d07.phase2a.continuation-verification.v1",
+  "observed_at": "2026-11-03T07:39:19.016Z",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "procedure_pin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "source_carrier": {
+    "pr": 10617,
+    "branch": "design/paper-production-audit-20261102-ryan",
+    "observed_head": "4c0e54e378dc0b3a447e05372d95f8707259f076",
+    "draft": true
+  },
+  "foundations": {
+    "joint": {
+      "version": "F01-F02-SHELL/1.0.0-candidate.2",
+      "commit": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+      "release": "unreleased"
+    },
+    "system": {
+      "version": "F02-SYSTEM/1.0.0-candidate.2",
+      "commit": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+      "current_return": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+      "release": "unreleased"
+    }
+  },
+  "tests": [
+    {
+      "name": "actual Analysis parser",
+      "cases": 45,
+      "assertions": 180,
+      "source_blobs_verified": 4,
+      "status": "PASS",
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "original estimate observations",
+      "cases": 6,
+      "status": "BASELINE_REPRODUCED",
+      "known_defect_cases": 1,
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "estimate producer",
+      "cases": 9,
+      "status": "BASELINE_REPRODUCED",
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "estimate client request/index seam",
+      "cases": 4,
+      "status": "BASELINE_REPRODUCED",
+      "presentation_callback": "recorder",
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "earnings member loader",
+      "cases": 6,
+      "status": "BASELINE_REPRODUCED",
+      "recorded_output_reproduced": true
+    },
+    {
+      "name": "joint candidate specification arithmetic",
+      "assertions": 42,
+      "status": "PASS",
+      "recorded_output_reproduced": true
+    }
+  ],
+  "retention": {
+    "total": 29,
+    "RETAIN": 13,
+    "IMPROVE": 10,
+    "RELOCATE": 2,
+    "BLOCKED_DATA": 4,
+    "REMOVE": 0
+  },
+  "paper": {
+    "observed_at": "2026-11-03T07:37:43.874Z",
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "page_id": "p-11-0",
+    "artboard_id": "1NFS-0",
+    "children": 11,
+    "operation_count": 22,
+    "operation_states": [
+      "PAPER_READY",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED",
+      "APPLIED_RESPONSE_OBSERVED"
+    ]
+  },
+  "pinned_source_targets": 95,
+  "reference_acceptance": "open",
+  "rig_submission": "unsubmitted",
+  "phase2a": "complete",
+  "full_assignment": "PARTIAL",
+  "finalization_classification": "CHECKPOINTED_CONTINUATION",
+  "mission_complete": false,
+  "served_article_continuation": "body verification incomplete after browser timeout",
+  "source_qa_amendments": [
+    "Public glance projection fields and display-string arithmetic",
+    "Catalog fallback age distinct from serving expiry",
+    "Client callback delivery distinct from browser repaint",
+    "Original integrated page/pane cleanup retained",
+    "Interrupted publication asserts exact index output",
+    "Changed raw observations require owner-selected revision and preserved lineage"
+  ]
+}

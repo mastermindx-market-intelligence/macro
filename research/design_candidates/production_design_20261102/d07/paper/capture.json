@@ -1,0 +1,88 @@
+{
+  "schema": "d07.paper-documentation.capture.v1",
+  "observed_at": "2026-11-03T07:37:43.874Z",
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "page_id": "p-11-0",
+  "artboard_id": "1NFS-0",
+  "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0",
+  "role": "Phase 2A editable Read me and Build contract",
+  "reference_rig": "draft / unsubmitted",
+  "final_visual_composition": "pending verified F01/F02 v1",
+  "carrier": "Mastermind Paper direct app",
+  "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+  "token_content_hash": "55dd37b7",
+  "capture": "build-contract.jpg",
+  "editable_export": "build-contract.jsx",
+  "operations": "operations.json",
+  "source_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10617",
+  "source_baseline": "d8ff43f6bf8cbadcf3a72bc6f47007b93d841910",
+  "procedure_pin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "source_contract_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "existing_r3_artboards_observed": [
+    {
+      "id": "1BEK-0",
+      "name": "01 \u00b7 R3 \u00b7 Intelligence Brief \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1CD3-0",
+      "name": "06 \u00b7 R3 \u00b7 Lab Expectations \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1CIP-0",
+      "name": "07 \u00b7 R3 \u00b7 Lab Valuation \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1COB-0",
+      "name": "08 \u00b7 R3 \u00b7 Lab Replay \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1BKQ-0",
+      "name": "02 \u00b7 R3 \u00b7 Financials \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1BQC-0",
+      "name": "03 \u00b7 R3 \u00b7 Earnings \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1BVY-0",
+      "name": "04 \u00b7 R3 \u00b7 Market \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1C1K-0",
+      "name": "05 \u00b7 R3 \u00b7 Ownership \u00b7 Desktop",
+      "childCount": 2
+    },
+    {
+      "id": "1D9K-0",
+      "name": "09 \u00b7 R3 \u00b7 Lab Expectations \u00b7 Mobile",
+      "childCount": 0
+    }
+  ],
+  "joint_shell_version": "F01-F02-SHELL/1.0.0-candidate.2",
+  "joint_shell_source": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
+  "system_version": "F02-SYSTEM/1.0.0-candidate.2",
+  "system_source": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+  "concurrence_source": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+  "captured_dimensions": [
+    1440,
+    1452
+  ],
+  "direct_children": 11,
+  "operations_count": 22,
+  "edit_response_counts": {
+    "APPLIED_RESPONSE_OBSERVED": 21,
+    "PAPER_READY": 1
+  },
+  "artifact_sha256": {
+    "build-contract.jpg": "668b9276c72b1c64bb128937d0f46abd369bf49aae859df3c813d302918c7404",
+    "build-contract.jsx": "e76b86926ffa931deeced61a3e17b7347b8bbcc0343748ac3a7ccc38021f4e65",
+    "operations.json": "fa5d4c78c5b79b4e6506cd9819aeadd5337ed752ef7acca859405337c7d0e0f9"
+  }
+}
