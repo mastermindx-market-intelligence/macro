@@ -941,3 +941,195 @@ def test_tbc3_continued_heading_in_an_earlier_table_does_not_reach_the_block(
     )
     assert _rows(parsed) == _SERVED
     assert parsed["table_source"] == "carried_title_block"
+
+
+# --- R4: the backward guard, the follower's cells, invisible characters ---
+_PART2 = _fact_table(label="Net sales", ids=("tbc-ns-2025", "tbc-ns-2024"))
+_PART2_BODY = _PART2[len("<table>") :]
+
+
+@pytest.mark.parametrize(
+    "first_part",
+    [
+        _title_block(_TITLE),
+        _title_block(_COMPANY, _TITLE) + "<p>(In millions)</p>\n",
+        _title_block(_COMPANY, _TITLE, "(In millions)", "Years ended", "x", "y", "z"),
+        _title_block(_COMPANY, _TITLE, "F-4"),
+        _title_block(_COMPANY, _TITLE),
+    ],
+)
+def test_tbc4_block_after_a_titled_first_part_does_not_carry(first_part: str) -> None:
+    # The title printed before the first fact table heads that table, so a
+    # block after it opens the statement's second part, not the statement.
+    _absent(first_part + _fact_table() + _title_block(_COMPANY, _TITLE) + _PART2)
+
+
+def test_tbc4_list_title_block_after_a_titled_first_part_does_not_carry() -> None:
+    html = _title_block(_TITLE) + _fact_table() + _title_block(_COMPANY, _TITLE) + _PART2
+    _absent(html, title=[_TITLE])
+
+
+def test_tbc4_exact_pass_still_serves_a_titled_first_part() -> None:
+    html = f"<p>{_TITLE}</p>\n" + _fact_table() + _title_block(_COMPANY, _TITLE) + _PART2
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert "table_source" not in parsed
+
+
+def test_tbc4_another_statement_heading_after_the_first_part_lets_a_block_carry() -> None:
+    # A heading naming the next statement ends the titled statement, so a
+    # block printed after it starts afresh.
+    html = (
+        _title_block(_TITLE)
+        + _fact_table(ids=("tbc-x-2025", "tbc-x-2024"))
+        + "<p>Consolidated Balance Sheets</p>\n"
+        + _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+    )
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+@pytest.mark.parametrize(
+    "heading",
+    [
+        f"<table><tr><td>{_TITLE} (Continued)</tr>",
+        f"<table><tr><td>{_TITLE} (Continued)<td></td></tr>",
+    ],
+)
+def test_tbc4_continued_heading_in_an_unclosed_cell_is_a_split(heading: str) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + heading + _PART2_BODY)
+
+
+@pytest.mark.parametrize(
+    "heading",
+    [
+        "<p>Consolidated Statements of Opera&shy;tions (Continued)</p>\n",
+        "<p>Consolidated Statements of Opera&#8203;tions (Continued)</p>\n",
+        "<table><tr><td>Consolidated Statements</td><td>of Operations</td></tr></table>\n",
+    ],
+)
+def test_tbc4_heading_broken_by_invisible_characters_or_cells_is_a_split(heading: str) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + heading + _PART2)
+
+
+@pytest.mark.parametrize(
+    "lead", ["Consolidated Balance&#8203;Sheets", "Consolidated Balance Sh&shy;eets"]
+)
+def test_tbc4_carried_table_naming_another_statement_through_invisible_characters_does_not_carry(
+    lead: str,
+) -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table(lead_row=f"<tr><td>{lead}</td></tr>"))
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [
+        (_TITLE, "Independent Auditors' Report"),
+        (_TITLE, "Independent Auditors&#8217; Report"),
+        (_TITLE, "Report of Independent Auditors"),
+        (_COMPANY, _TITLE, "(Parent Corporation Only)"),
+        (_COMPANY, _TITLE, "f-4"),
+        (_COMPANY, _TITLE, "Page F-4"),
+    ],
+)
+def test_tbc4_block_naming_an_audit_report_a_parent_or_a_page_does_not_carry(
+    rows: tuple[str, ...],
+) -> None:
+    _absent(_title_block(*rows) + _fact_table())
+
+
+@pytest.mark.parametrize("newline", ["\r\n", "\r"])
+def test_tbc4_designed_carry_serves_under_other_line_endings(newline: str) -> None:
+    html = (_title_block(_COMPANY, _TITLE) + _fact_table()).replace("\n", newline)
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc4_hidden_text_between_the_block_and_the_table_still_carries() -> None:
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + "<ix:hidden>Parent Company Only</ix:hidden>\n"
+        + _fact_table()
+    )
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc4_a_financial_statements_heading_does_not_end_the_titled_statement() -> None:
+    # "Consolidated Financial Statements of ..." names the statements as a
+    # set, not the next statement, so the first part's title still holds.
+    html = (
+        _title_block(_TITLE)
+        + _fact_table()
+        + "<p>Consolidated Financial Statements of Corning Incorporated</p>\n"
+        + _title_block(_COMPANY, _TITLE)
+        + _PART2
+    )
+    _absent(html)
+
+
+@pytest.mark.parametrize(
+    "heading",
+    [
+        "<p>Consolidated Statements of Opera&shy;tions</p>\n",
+        f"<p>{_COMPANY} Consolidated Statements of Opera&shy;tions</p>\n",
+    ],
+)
+def test_tbc4_a_title_broken_by_a_soft_hyphen_still_heads_the_first_part(heading: str) -> None:
+    _absent(heading + _fact_table() + _title_block(_COMPANY, _TITLE) + _PART2)
+
+
+def test_tbc4_a_caption_naming_the_title_heads_the_first_part() -> None:
+    caption = f"<table><caption>{_COMPANY} Consolidated Statements of Opera&shy;tions</caption>"
+    first_part = _fact_table().replace("<table>", caption, 1)
+    _absent(first_part + _title_block(_COMPANY, _TITLE) + _PART2)
+
+
+@pytest.mark.parametrize(
+    "line", ["(Contin&#8203;ued)", "F-&shy;4", "(Parent Com&#8203;pany Only)"]
+)
+def test_tbc4_block_line_broken_by_invisible_characters_still_declines(line: str) -> None:
+    _absent(_title_block(_COMPANY, _TITLE, line) + _fact_table())
+
+
+@pytest.mark.parametrize("caption", ["(Contin&shy;ued)", "(Contin&#8203;ued)"])
+def test_tbc4_carried_table_caption_broken_by_invisible_characters_still_declines(
+    caption: str,
+) -> None:
+    carried = _fact_table().replace("<table>", f"<table><caption>{caption}</caption>", 1)
+    _absent(_title_block(_COMPANY, _TITLE) + carried)
+
+
+_SPLIT_CELLS = "<td>Consolidated Statements</td><td>of Operations</td>"
+_LONGER_TITLE_CELL = "<td>and Comprehensive Income</td>"
+
+
+@pytest.mark.parametrize(
+    "heading",
+    [
+        f"<table><tr>{_SPLIT_CELLS}<tr>{_LONGER_TITLE_CELL}</tr></table>\n",
+        f"<table><tr>{_SPLIT_CELLS}</tr>{_LONGER_TITLE_CELL}</table>\n",
+        f"<table><tr>{_SPLIT_CELLS}</table><table>{_LONGER_TITLE_CELL}</tr></table>\n",
+    ],
+)
+def test_tbc4_a_row_ends_where_the_next_row_or_table_starts(heading: str) -> None:
+    # Each row is read joined on its own: the next row's cell does not turn
+    # the repeated title into the head of a longer statement title.
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + heading + _PART2)
+
+
+def test_tbc4_a_longer_statement_title_in_one_row_is_no_split() -> None:
+    heading = f"<table><tr>{_SPLIT_CELLS}{_LONGER_TITLE_CELL}</tr></table>\n"
+    parsed = parse_displayed_primary_table(
+        _title_block(_COMPANY, _TITLE) + _fact_table() + heading + _PART2, title=_TITLE
+    )
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc4_split_heading_cells_left_open_at_the_end_are_a_split() -> None:
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table() + f"<table><tr>{_SPLIT_CELLS}")
