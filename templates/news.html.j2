@@ -113,14 +113,20 @@
 </main>
 <dialog class="nd-dialog" id="ndFilters" aria-labelledby="ndFiltersTitle">
   <div class="nd-dialog-header"><h2 id="ndFiltersTitle">{{ t('Refine your news','筛选你的新闻') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close filters" data-label-zh="关闭筛选">{{ icon('close') }}</button></div>
-  <form id="ndFiltersForm" class="nd-dialog-body">
+  <form id="ndFiltersForm" class="nd-filter-form">
+    <div class="nd-dialog-body nd-filter-fields">
     <div class="nd-form-grid nd-filter-primary" id="ndFiltersPrimary" hidden></div>
     <div class="nd-form-grid"><div class="nd-form-row"><label for="ndCategorySelect">{{ t('Coverage','报道领域') }}</label><select id="ndCategorySelect">{% for key,ic,en,zh in CATS %}<option value="{{ key }}" data-en="{{ en|e }}" data-zh="{{ zh|e }}">{{ en|e }}</option>{% endfor %}</select></div>
     <div class="nd-form-row"><label for="ndSourceKind">{{ t('Source type','来源类型') }}</label><select id="ndSourceKind"><option value="all" data-en="All reporting" data-zh="全部报道">All reporting</option><option value="official" data-en="Official sources" data-zh="官方来源">Official sources</option><option value="reporting" data-en="News reporting" data-zh="新闻报道">News reporting</option><option value="social" data-en="Social statements" data-zh="社交声明">Social statements</option></select></div></div>
     <div class="nd-form-row"><label class="nd-form-check"><input type="checkbox" id="ndUnread">{{ t('Unread stories only','仅未读报道') }}</label><label class="nd-form-check"><input type="checkbox" id="ndIncludeSocial">{{ t('Include social statements','包括社交声明') }}</label></div>
     <div class="nd-form-row"><label for="ndSourceSearch">{{ t('Source contains','来源包含') }}</label><input type="search" id="ndSourceSearch" maxlength="100" placeholder="Reuters, BBC, Federal Reserve"></div>
     <p class="nd-note">{{ t('Region filters match places mentioned in the reporting. Source labels describe provenance; they do not confirm a claim.','地区筛选匹配报道中提及的地点。来源标签描述出处，并不代表内容已核实。') }}</p>
-    <button type="submit" class="nd-btn">{{ t('Apply filters','应用筛选') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndSaveViewMobile">{{ t('Save this view','保存当前视图') }}</button>
+    <button type="button" class="nd-btn nd-btn-quiet" id="ndSaveViewMobile">{{ t('Save this view','保存当前视图') }}</button>
+    </div>
+    <div class="nd-filter-actions">
+      <button type="button" class="nd-btn" id="ndFilterCancel" data-close-dialog>{{ t('Cancel','取消') }}</button>
+      <button type="submit" class="nd-btn nd-filter-apply">{{ t('Apply filters','应用筛选') }}</button>
+    </div>
   </form>
 </dialog>
 <dialog class="nd-dialog" id="ndCoverage" aria-labelledby="ndCoverageTitle"><div class="nd-dialog-header"><h2 id="ndCoverageTitle">{{ t('Coverage & freshness','覆盖范围与时效') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close coverage" data-label-zh="关闭覆盖范围">{{ icon('close') }}</button></div><div class="nd-dialog-body" id="ndCoverageBody"></div></dialog>

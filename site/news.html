@@ -391,7 +391,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 .nd-detail-scroll{padding:26px 26px 36px}
 .nd-detail h2{font-size:25px;line-height:1.35;letter-spacing:-.025em}
 .nd-detail-sub{font-size:12px;line-height:1.75}
-.nd-detail .nd-section p{font-size:14px;line-height:1.8}
+.nd-detail .nd-section p{font-size:15px;line-height:1.75}
 .nd-detail-actions .nd-btn{min-height:40px;font-size:12px!important}
 .nd-detail-tabs button{min-height:44px;font-size:12px!important}
 .nd-receipt small{line-height:1.7}
@@ -399,6 +399,22 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 .nd-workspace-settings .nd-btn{min-height:44px}
 .nd-btn[aria-pressed="true"]{border-color:var(--nd-line,var(--line))}
 .nd-update-bar{border-color:var(--line)}
+/* Reserve scrollbar space so tab changes do not reflow the reader headline. */
+.nd-detail-scroll,.nd-feed-scroll,.nd-filter-fields{scrollbar-gutter:stable}
+.nd-detail-head{flex:none}
+.nd-detail-scroll{flex:1;min-height:0}
+/* Keep filter decisions visible while the field area scrolls. */
+#ndFilters[open]{display:flex;flex-direction:column;max-height:min(760px,calc(100dvh - 32px));overflow:hidden}
+#ndFilters .nd-dialog-header{flex:none}
+.nd-filter-form{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.nd-filter-fields{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.nd-filter-actions{display:flex;flex:none;justify-content:flex-end;gap:10px;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--panel)}
+.nd-filter-actions .nd-btn{min-height:44px;min-width:96px}
+.nd-filter-actions .nd-filter-apply{min-width:140px;background:var(--text);color:var(--panel);border-color:transparent;font-weight:600}
+.nd-filter-actions .nd-filter-apply:hover{opacity:.9}
+html[data-theme="dark"] .news-desk,html[data-theme="dark"] .nd-dialog{color-scheme:dark}
+html[data-theme="light"] .news-desk,html[data-theme="light"] .nd-dialog{color-scheme:light}
+.news-desk input[type="checkbox"],.nd-dialog input[type="checkbox"]{accent-color:var(--ink-link,var(--link))}
 @media(min-width:761px) and (max-width:1180px){
   .nd-toolbar{grid-template-columns:1fr}
   .nd-detail-scroll{padding:22px}
@@ -406,11 +422,15 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 }
 @media(max-width:760px){
   .nd-header{padding:14px 2px 16px;gap:10px}
-  .nd-header h1{font-size:25px}
-  #ndWorkspaceOpen{width:auto;padding-inline:11px;gap:7px}
+  .nd-header>div:first-child{min-width:0;flex:1}
+  .news-desk .nd-header h1{font-size:25px;white-space:normal}
+  .nd-header-tools{flex-shrink:0}
+  #ndWorkspaceOpen{width:auto;min-height:44px;padding-inline:11px;gap:7px}
   #ndWorkspaceOpen .nd-workspace-label{display:inline;font-size:12px}
   .nd-header-tools{gap:0}
-  .nd-shell{min-height:360px;height:calc(100dvh - 190px)}
+  .news-desk{display:flex;flex-direction:column;height:calc(100dvh - 210px);min-height:480px}
+  .nd-header,.nd-footer{flex:none}
+  .nd-shell{flex:1;min-height:360px;height:auto;max-height:none}
   .nd-toolbar{grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:10px}
   .nd-search{min-height:44px;padding-inline:10px}
   .nd-search input{font-size:16px}
@@ -419,17 +439,21 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
   .nd-filter-row .nd-reset{padding-inline:6px}
   .nd-tabs{gap:22px}
   .nd-tab{min-height:48px;padding-block:12px}
-  .nd-list-top{padding:4px 12px 8px;gap:2px 8px}
-  .nd-list-top label{min-height:40px}
-  .nd-list-top #ndFreshness{max-width:none;font-size:10px;margin:0}
-  .nd-connection-mobile{flex-basis:auto;order:4;margin-left:auto;font-size:10px}
-  .nd-row{padding:16px 12px;grid-template-columns:41px minmax(0,1fr);gap:10px;min-height:110px}
-  .nd-title{font-size:15px!important;line-height:1.5}
-  .nd-row-meta{font-size:11px;gap:6px}
+  .nd-list-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;gap:0 8px;padding:4px 12px}
+  .nd-list-top #ndResultCount{grid-column:1;grid-row:1;font-size:11px}
+  .nd-list-top #ndFreshness{grid-column:2;grid-row:1;max-width:none;font-size:10px;margin:0;justify-self:end}
+  .nd-list-top label{grid-column:3;grid-row:1 / span 2;min-height:44px;align-self:center}
+  .nd-connection-mobile{grid-column:1 / span 2;grid-row:2;order:0;margin:0;font-size:10px;justify-self:start}
+  .nd-row{padding:16px 12px;grid-template-columns:41px minmax(0,1fr);column-gap:10px;row-gap:0;min-height:0}
+  .nd-row-body{display:contents}
+  .nd-title{grid-column:1 / -1;grid-row:1;font-size:15px!important;line-height:1.5}
+  .nd-row-summary{grid-column:1 / -1;grid-row:2}
+  .nd-row-time{grid-column:1;grid-row:3;align-self:center;margin-top:8px;padding-top:0;gap:2px}
+  .nd-row-meta{grid-column:2;grid-row:3;position:relative;min-height:44px;padding-right:78px;margin-top:8px;font-size:11.5px;column-gap:6px;row-gap:2px;align-content:center}
   .nd-feed>.nd-row:first-child{padding-block:18px}
   .nd-feed>.nd-row:first-child .nd-title{font-size:19px!important;line-height:1.4}
   .nd-feed>.nd-row:first-child .nd-row-summary{font-size:13px;line-height:1.65}
-  .nd-report-pick{min-height:44px}
+  .nd-row-meta .nd-report-pick{position:absolute;right:0;top:50%;transform:translateY(-50%);min-height:44px;min-width:72px;margin:0}
   .nd-detail-head{padding:12px 18px}
   .nd-detail-head .nd-btn{width:44px;min-height:44px}
   .nd-detail-scroll{padding:24px 22px 40px}
@@ -892,14 +916,20 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 <dialog class="nd-dialog" id="ndFilters" aria-labelledby="ndFiltersTitle">
   <div class="nd-dialog-header"><h2 id="ndFiltersTitle"><span class="l-en">Refine your news</span><span class="l-zh">筛选你的新闻</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close filters" data-label-zh="关闭筛选"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
 </svg></button></div>
-  <form id="ndFiltersForm" class="nd-dialog-body">
+  <form id="ndFiltersForm" class="nd-filter-form">
+    <div class="nd-dialog-body nd-filter-fields">
     <div class="nd-form-grid nd-filter-primary" id="ndFiltersPrimary" hidden></div>
     <div class="nd-form-grid"><div class="nd-form-row"><label for="ndCategorySelect"><span class="l-en">Coverage</span><span class="l-zh">报道领域</span></label><select id="ndCategorySelect"><option value="all" data-en="All coverage" data-zh="全部报道">All coverage</option><option value="markets" data-en="Markets" data-zh="市场">Markets</option><option value="economy" data-en="Economy" data-zh="经济">Economy</option><option value="central_banks" data-en="Central banks" data-zh="央行">Central banks</option><option value="companies" data-en="Companies" data-zh="公司">Companies</option><option value="geopolitics" data-en="Geopolitics" data-zh="地缘政治">Geopolitics</option><option value="energy" data-en="Energy &amp; materials" data-zh="能源与原料">Energy &amp; materials</option><option value="technology" data-en="Technology" data-zh="科技">Technology</option></select></div>
     <div class="nd-form-row"><label for="ndSourceKind"><span class="l-en">Source type</span><span class="l-zh">来源类型</span></label><select id="ndSourceKind"><option value="all" data-en="All reporting" data-zh="全部报道">All reporting</option><option value="official" data-en="Official sources" data-zh="官方来源">Official sources</option><option value="reporting" data-en="News reporting" data-zh="新闻报道">News reporting</option><option value="social" data-en="Social statements" data-zh="社交声明">Social statements</option></select></div></div>
     <div class="nd-form-row"><label class="nd-form-check"><input type="checkbox" id="ndUnread"><span class="l-en">Unread stories only</span><span class="l-zh">仅未读报道</span></label><label class="nd-form-check"><input type="checkbox" id="ndIncludeSocial"><span class="l-en">Include social statements</span><span class="l-zh">包括社交声明</span></label></div>
     <div class="nd-form-row"><label for="ndSourceSearch"><span class="l-en">Source contains</span><span class="l-zh">来源包含</span></label><input type="search" id="ndSourceSearch" maxlength="100" placeholder="Reuters, BBC, Federal Reserve"></div>
     <p class="nd-note"><span class="l-en">Region filters match places mentioned in the reporting. Source labels describe provenance; they do not confirm a claim.</span><span class="l-zh">地区筛选匹配报道中提及的地点。来源标签描述出处，并不代表内容已核实。</span></p>
-    <button type="submit" class="nd-btn"><span class="l-en">Apply filters</span><span class="l-zh">应用筛选</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndSaveViewMobile"><span class="l-en">Save this view</span><span class="l-zh">保存当前视图</span></button>
+    <button type="button" class="nd-btn nd-btn-quiet" id="ndSaveViewMobile"><span class="l-en">Save this view</span><span class="l-zh">保存当前视图</span></button>
+    </div>
+    <div class="nd-filter-actions">
+      <button type="button" class="nd-btn" id="ndFilterCancel" data-close-dialog><span class="l-en">Cancel</span><span class="l-zh">取消</span></button>
+      <button type="submit" class="nd-btn nd-filter-apply"><span class="l-en">Apply filters</span><span class="l-zh">应用筛选</span></button>
+    </div>
   </form>
 </dialog>
 <dialog class="nd-dialog" id="ndCoverage" aria-labelledby="ndCoverageTitle"><div class="nd-dialog-header"><h2 id="ndCoverageTitle"><span class="l-en">Coverage & freshness</span><span class="l-zh">覆盖范围与时效</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close coverage" data-label-zh="关闭覆盖范围"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>

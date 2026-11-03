@@ -1,0 +1,3219 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "date_utc": "2026-11-03",
+  "paper_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-3-1",
+  "carrier": "Mastermind Paper direct app",
+  "source_law_pin": "ea4f893103a1c0354f28843241848cae91336bd7",
+  "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+  "boards": [
+    "6FXR-0",
+    "6GMY-0",
+    "6GUZ-0",
+    "6H8F-0"
+  ],
+  "preserved_board": "6ITC-0",
+  "operations": [
+    {
+      "evidence_key": "newsNov3PaperWorkspaceDarkEdit",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-workspace-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "2d30bf991587e2c5a6ea8361e5760831e6bc8f504301a7125668114db46d2aad",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z6W-1",
+                "name": "Workspace entry"
+              },
+              {
+                "id": "6Z6X-1",
+                "name": "SVG"
+              },
+              {
+                "id": "6Z6Y-1",
+                "name": "Path"
+              },
+              {
+                "id": "6Z6Z-1",
+                "name": "Workspace"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileToolbarDarkEdit",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-toolbar-dark-20261103",
+        "tool": "update_styles",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "920dd88486c595fcded7f7bfeab47668ec434f370c46420cb4a625e5bb06f633",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6H1Q-0",
+                "name": null
+              },
+              {
+                "id": "6H1R-0",
+                "name": null
+              },
+              {
+                "id": "6H1S-0",
+                "name": null
+              },
+              {
+                "id": "6H1U-0",
+                "name": null
+              },
+              {
+                "id": "6H1W-0",
+                "name": null
+              },
+              {
+                "id": "6H1T-0",
+                "name": null
+              },
+              {
+                "id": "6H1Y-0",
+                "name": null
+              },
+              {
+                "id": "6H1Z-0",
+                "name": null
+              },
+              {
+                "id": "6H61-0",
+                "name": null
+              },
+              {
+                "id": "6H60-0",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperSummaryDarkFix",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-summary-dark-20261103",
+        "tool": "set_text_content",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "318a056b40c00a668051b5f2d2218970209024b7c48d497fd49b99c90ce276f7",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6Z73-1",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLightEdit",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-workspace-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "2fc9a6cc13f98b51b51212d3eaa16aa2c9d8e7ca7a18760e73305eeea870ecb5",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z8D-1",
+                "name": "Workspace entry"
+              },
+              {
+                "id": "6Z8E-1",
+                "name": "SVG"
+              },
+              {
+                "id": "6Z8F-1",
+                "name": "Path"
+              },
+              {
+                "id": "6Z8G-1",
+                "name": "Workspace"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileToolbarLightEdit",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-toolbar-light-20261103",
+        "tool": "update_styles",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "d6e2ed48e12b6727f93ebc7b38b602973633573244f7903e9e4a0aa11cf9c015",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6H9J-0",
+                "name": null
+              },
+              {
+                "id": "6H9R-0",
+                "name": null
+              },
+              {
+                "id": "6H9S-0",
+                "name": null
+              },
+              {
+                "id": "6H9P-0",
+                "name": null
+              },
+              {
+                "id": "6H9N-0",
+                "name": null
+              },
+              {
+                "id": "6H9K-0",
+                "name": null
+              },
+              {
+                "id": "6H9L-0",
+                "name": null
+              },
+              {
+                "id": "6H9M-0",
+                "name": null
+              },
+              {
+                "id": "6HAB-0",
+                "name": null
+              },
+              {
+                "id": "6H9Z-0",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileClocks_dark",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-clocks-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "f912575182adefb5f0270d45685c70e021eeb3684a54f6fafb070afc37ba29c0",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z9U-1",
+                "name": "Publication clock and stream state"
+              },
+              {
+                "id": "6Z9V-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9W-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9X-1",
+                "name": "14 stories"
+              },
+              {
+                "id": "6Z9Y-1",
+                "name": "Latest publication 3\u2026"
+              },
+              {
+                "id": "6Z9Z-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZA0-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZA1-1",
+                "name": "Stream connected"
+              },
+              {
+                "id": "6ZA2-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZA3-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZA4-1",
+                "name": "Follow live"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileClocks_light",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-clocks-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "79a8be868b6a701e881e6b81d689e429bb9cb2c0de867888c1301bf734d1f9e0",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZA6-1",
+                "name": "Publication clock and stream state"
+              },
+              {
+                "id": "6ZA7-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZA8-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZA9-1",
+                "name": "14 stories"
+              },
+              {
+                "id": "6ZAA-1",
+                "name": "Latest publication 3\u2026"
+              },
+              {
+                "id": "6ZAB-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAC-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZAD-1",
+                "name": "Stream connected"
+              },
+              {
+                "id": "6ZAE-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAF-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZAG-1",
+                "name": "Follow live"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopReadability",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-readability-20261103",
+        "tool": "update_styles",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "a788749c846015daf4a3e0c03b26db6181b23044425b10d9a4dd42da0ff1b049",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6G4V-0",
+                "name": null
+              },
+              {
+                "id": "6G88-0",
+                "name": null
+              },
+              {
+                "id": "6G8F-0",
+                "name": null
+              },
+              {
+                "id": "6GA2-0",
+                "name": null
+              },
+              {
+                "id": "6GA9-0",
+                "name": null
+              },
+              {
+                "id": "6GAH-0",
+                "name": null
+              },
+              {
+                "id": "6GAU-0",
+                "name": null
+              },
+              {
+                "id": "6GB5-0",
+                "name": null
+              },
+              {
+                "id": "6GBI-0",
+                "name": null
+              },
+              {
+                "id": "6GBS-0",
+                "name": null
+              },
+              {
+                "id": "6GC2-0",
+                "name": null
+              },
+              {
+                "id": "6GNW-0",
+                "name": null
+              },
+              {
+                "id": "6GQA-0",
+                "name": null
+              },
+              {
+                "id": "6GPV-0",
+                "name": null
+              },
+              {
+                "id": "6GPP-0",
+                "name": null
+              },
+              {
+                "id": "6GNX-0",
+                "name": null
+              },
+              {
+                "id": "6GPD-0",
+                "name": null
+              },
+              {
+                "id": "6GP3-0",
+                "name": null
+              },
+              {
+                "id": "6GOR-0",
+                "name": null
+              },
+              {
+                "id": "6GOI-0",
+                "name": null
+              },
+              {
+                "id": "6GO9-0",
+                "name": null
+              },
+              {
+                "id": "6GNY-0",
+                "name": null
+              },
+              {
+                "id": "6G4W-0",
+                "name": null
+              },
+              {
+                "id": "6GAB-0",
+                "name": null
+              },
+              {
+                "id": "6GAF-0",
+                "name": null
+              },
+              {
+                "id": "6GN4-0",
+                "name": null
+              },
+              {
+                "id": "6GNT-0",
+                "name": null
+              },
+              {
+                "id": "6GN5-0",
+                "name": null
+              },
+              {
+                "id": "6GCE-0",
+                "name": null
+              },
+              {
+                "id": "6GCR-0",
+                "name": null
+              },
+              {
+                "id": "6GCX-0",
+                "name": null
+              },
+              {
+                "id": "6GD1-0",
+                "name": null
+              },
+              {
+                "id": "6GNP-0",
+                "name": null
+              },
+              {
+                "id": "6GND-0",
+                "name": null
+              },
+              {
+                "id": "6GNA-0",
+                "name": null
+              },
+              {
+                "id": "6GN6-0",
+                "name": null
+              },
+              {
+                "id": "6GAF-0",
+                "name": null
+              },
+              {
+                "id": "6GN5-0",
+                "name": null
+              },
+              {
+                "id": "6GAB-0",
+                "name": null
+              },
+              {
+                "id": "6GNT-0",
+                "name": null
+              },
+              {
+                "id": "6GCG-0",
+                "name": null
+              },
+              {
+                "id": "6GNR-0",
+                "name": null
+              },
+              {
+                "id": "6GCZ-0",
+                "name": null
+              },
+              {
+                "id": "6GD3-0",
+                "name": null
+              },
+              {
+                "id": "6GNB-0",
+                "name": null
+              },
+              {
+                "id": "6GN8-0",
+                "name": null
+              },
+              {
+                "id": "6GCH-0",
+                "name": null
+              },
+              {
+                "id": "6GNQ-0",
+                "name": null
+              },
+              {
+                "id": "6G8F-0",
+                "name": null
+              },
+              {
+                "id": "6GPV-0",
+                "name": null
+              },
+              {
+                "id": "6G9M-0",
+                "name": null
+              },
+              {
+                "id": "6GQ3-0",
+                "name": null
+              },
+              {
+                "id": "6G9Q-0",
+                "name": null
+              },
+              {
+                "id": "6GQ6-0",
+                "name": null
+              },
+              {
+                "id": "6G9U-0",
+                "name": null
+              },
+              {
+                "id": "6GPW-0",
+                "name": null
+              },
+              {
+                "id": "6G9V-0",
+                "name": null
+              },
+              {
+                "id": "6G9X-0",
+                "name": null
+              },
+              {
+                "id": "6G9Z-0",
+                "name": null
+              },
+              {
+                "id": "6GQ1-0",
+                "name": null
+              },
+              {
+                "id": "6GPZ-0",
+                "name": null
+              },
+              {
+                "id": "6GPX-0",
+                "name": null
+              },
+              {
+                "id": "6GA2-0",
+                "name": null
+              },
+              {
+                "id": "6GPP-0",
+                "name": null
+              },
+              {
+                "id": "6GA9-0",
+                "name": null
+              },
+              {
+                "id": "6GNX-0",
+                "name": null
+              },
+              {
+                "id": "6GAH-0",
+                "name": null
+              },
+              {
+                "id": "6GPD-0",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopViewport",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-viewport-20261103",
+        "tool": "update_styles",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "37b928b0bf3d44281aa935620f62fe028a32e7edb6233016c5b3c5536694328d",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6FXR-0",
+                "name": null
+              },
+              {
+                "id": "6GMY-0",
+                "name": null
+              },
+              {
+                "id": "6G4T-0",
+                "name": null
+              },
+              {
+                "id": "6G4U-0",
+                "name": null
+              },
+              {
+                "id": "6G4V-0",
+                "name": null
+              },
+              {
+                "id": "6G4W-0",
+                "name": null
+              },
+              {
+                "id": "6GN3-0",
+                "name": null
+              },
+              {
+                "id": "6GQG-0",
+                "name": null
+              },
+              {
+                "id": "6GNW-0",
+                "name": null
+              },
+              {
+                "id": "6GN4-0",
+                "name": null
+              },
+              {
+                "id": "6GAF-0",
+                "name": null
+              },
+              {
+                "id": "6GN5-0",
+                "name": null
+              },
+              {
+                "id": "6GA9-0",
+                "name": null
+              },
+              {
+                "id": "6GNX-0",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperReaderActions_dark",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-reader-actions-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "498ea1ef23d5440e65dc3874cdb7b384f419a8d337bcb0f6b0f0d6b2d4835e9f",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZEE-1",
+                "name": "Reader actions"
+              },
+              {
+                "id": "6ZEF-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEG-1",
+                "name": "Read original \u2197"
+              },
+              {
+                "id": "6ZEH-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEI-1",
+                "name": "Save story"
+              },
+              {
+                "id": "6ZEJ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEK-1",
+                "name": "Copy link"
+              },
+              {
+                "id": "6ZEL-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEM-1",
+                "name": "Select to compare"
+              },
+              {
+                "id": "6ZEN-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEO-1",
+                "name": "Add to investigation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperReaderActions_light",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-reader-actions-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "949f83c6fd93986ee273a773c0ff8226f76acbcdc9461c7fda3f4ef7d3af1bc8",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZEQ-1",
+                "name": "Reader actions"
+              },
+              {
+                "id": "6ZER-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZES-1",
+                "name": "Read original \u2197"
+              },
+              {
+                "id": "6ZET-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEU-1",
+                "name": "Save story"
+              },
+              {
+                "id": "6ZEV-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEW-1",
+                "name": "Copy link"
+              },
+              {
+                "id": "6ZEX-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEY-1",
+                "name": "Select to compare"
+              },
+              {
+                "id": "6ZEZ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZF0-1",
+                "name": "Add to investigation"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLabels",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-paths-20261103",
+        "tool": "set_text_content",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "dc584042a977bfe145cf339a12398104ae604d8cc0a42df9e9b8a71cb8f5a739",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "updates": [
+              {
+                "id": "6HJN-0",
+                "name": null
+              },
+              {
+                "id": "6HJT-0",
+                "name": null
+              },
+              {
+                "id": "6HJO-0",
+                "name": null
+              },
+              {
+                "id": "6HJU-0",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowDark1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row1-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "a2a810c26b5bca7dc0a82669d73e8dce6e072ba5c94a5ee49a9296cc60a73f41",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z71-1",
+                "name": "Lead reporting \u00b7 Reuters"
+              },
+              {
+                "id": "6Z72-1",
+                "name": "Energy markets weigh\u2026"
+              },
+              {
+                "id": "6Z73-1",
+                "name": "Oil markets are asse\u2026"
+              },
+              {
+                "id": "6Z74-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z75-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z76-1",
+                "name": "09:42"
+              },
+              {
+                "id": "6Z77-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z78-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z79-1",
+                "name": "Reuters"
+              },
+              {
+                "id": "6Z7A-1",
+                "name": "Energy & materials"
+              },
+              {
+                "id": "6Z7B-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7C-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowDark2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row2-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "e20461faf0c86d2b4ba064b1a286e91e869e65509749af16947d4fc41cd64c89",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z7E-1",
+                "name": "Reporting \u00b7 Federal Reserve"
+              },
+              {
+                "id": "6Z7F-1",
+                "name": "Central bank minutes\u2026"
+              },
+              {
+                "id": "6Z7G-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7H-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7I-1",
+                "name": "09:35"
+              },
+              {
+                "id": "6Z7J-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z7K-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7L-1",
+                "name": "Federal Reserve"
+              },
+              {
+                "id": "6Z7M-1",
+                "name": "Central banks \u00b7 Offi\u2026"
+              },
+              {
+                "id": "6Z7N-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7O-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowDark3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row3-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "973c5db391c134b62858e71316f26bfeb7f657ff764dfec97173a72f54edbc8d",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z7Q-1",
+                "name": "Reporting \u00b7 Bloomberg"
+              },
+              {
+                "id": "6Z7R-1",
+                "name": "Semiconductor compan\u2026"
+              },
+              {
+                "id": "6Z7S-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7T-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7U-1",
+                "name": "09:28"
+              },
+              {
+                "id": "6Z7V-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z7W-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z7X-1",
+                "name": "Bloomberg"
+              },
+              {
+                "id": "6Z7Y-1",
+                "name": "Technology \u00b7 NVDA \u00b7 \u2026"
+              },
+              {
+                "id": "6Z7Z-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z80-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowDark4",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row4-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "a5dfb99f71311497ef8375840a6353345271969f935b320cfc341b59952c9faa",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z82-1",
+                "name": "Reporting \u00b7 Financial Times"
+              },
+              {
+                "id": "6Z83-1",
+                "name": "European officials d\u2026"
+              },
+              {
+                "id": "6Z84-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z85-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z86-1",
+                "name": "09:21"
+              },
+              {
+                "id": "6Z87-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z88-1",
+                "name": "Financial Times"
+              },
+              {
+                "id": "6Z89-1",
+                "name": "Geopolitics"
+              },
+              {
+                "id": "6Z8A-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8B-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row1-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "1657bc6043636da659ee794c50bac4b1b4891811baa309241b00129846df0813",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZAI-1",
+                "name": "Lead story \u00b7 Reuters"
+              },
+              {
+                "id": "6ZAJ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAK-1",
+                "name": "09:42"
+              },
+              {
+                "id": "6ZAL-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZAM-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAN-1",
+                "name": "Energy markets weigh\u2026"
+              },
+              {
+                "id": "6ZAO-1",
+                "name": "Oil markets are asse\u2026"
+              },
+              {
+                "id": "6ZAP-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAQ-1",
+                "name": "Reuters\u3000\u00b7\u3000Energy & m\u2026"
+              },
+              {
+                "id": "6ZAR-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZAS-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAT-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row2-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "c753ac2515ba0f440aa746178d91c46fe088eac97345145fe87485b69206f429",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZAV-1",
+                "name": "Story \u00b7 Federal Reserve"
+              },
+              {
+                "id": "6ZAW-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZAX-1",
+                "name": "09:35"
+              },
+              {
+                "id": "6ZAY-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZAZ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZB0-1",
+                "name": "Central bank minutes\u2026"
+              },
+              {
+                "id": "6ZB1-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZB2-1",
+                "name": "Federal Reserve\u3000\u00b7\u3000Ce\u2026"
+              },
+              {
+                "id": "6ZB3-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZB4-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZB5-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row3-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "d1b05145191c2508e8e6629057f1f26bf9b3a5fdf66981c27df1b2fab665f092",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZB7-1",
+                "name": "Story \u00b7 Bloomberg"
+              },
+              {
+                "id": "6ZB8-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZB9-1",
+                "name": "09:28"
+              },
+              {
+                "id": "6ZBA-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZBB-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBC-1",
+                "name": "Semiconductor compan\u2026"
+              },
+              {
+                "id": "6ZBD-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBE-1",
+                "name": "Bloomberg\u3000\u00b7\u3000Technolo\u2026"
+              },
+              {
+                "id": "6ZBF-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZBG-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBH-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark4",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row4-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "8c4227800a6a333fbf7dd292aec9d2b14b0d94267dc16687e1848a2973209c9b",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZBJ-1",
+                "name": "Story \u00b7 Financial Times"
+              },
+              {
+                "id": "6ZBK-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBL-1",
+                "name": "09:21"
+              },
+              {
+                "id": "6ZBM-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBN-1",
+                "name": "European officials d\u2026"
+              },
+              {
+                "id": "6ZBO-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBP-1",
+                "name": "Financial Times\u3000\u00b7\u3000Ge\u2026"
+              },
+              {
+                "id": "6ZBQ-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZBR-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBS-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark5",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row5-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "6ba2926060f9d4ca39ea917b745321f51d2d6ca4d00dd81768fb60fda92e0515",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZBU-1",
+                "name": "Story \u00b7 Nikkei Asia"
+              },
+              {
+                "id": "6ZBV-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBW-1",
+                "name": "09:14"
+              },
+              {
+                "id": "6ZBX-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZBY-1",
+                "name": "Japan manufacturers \u2026"
+              },
+              {
+                "id": "6ZBZ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZC0-1",
+                "name": "Nikkei Asia\u3000\u00b7\u3000Econom\u2026"
+              },
+              {
+                "id": "6ZC1-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZC2-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZC3-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowDark6",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row6-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "4b73387210c45b6395a300427061a044f7c4a207aa57b9c80738a7d71a89f26f",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZC5-1",
+                "name": "Story \u00b7 CNBC"
+              },
+              {
+                "id": "6ZC6-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZC7-1",
+                "name": "09:07"
+              },
+              {
+                "id": "6ZC8-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZC9-1",
+                "name": "Major US banks repor\u2026"
+              },
+              {
+                "id": "6ZCA-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCB-1",
+                "name": "CNBC\u3000\u00b7\u3000Companies \u00b7 J\u2026"
+              },
+              {
+                "id": "6ZCC-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZCD-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCE-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowLight1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row1-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "663a300032ce7ea5664460d2e78bb05a7c94811c856a2715bba352b14e9ce4ae",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z8I-1",
+                "name": "Lead reporting \u00b7 Reuters"
+              },
+              {
+                "id": "6Z8J-1",
+                "name": "Energy markets weigh\u2026"
+              },
+              {
+                "id": "6Z8K-1",
+                "name": "Oil markets are asse\u2026"
+              },
+              {
+                "id": "6Z8L-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8M-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8N-1",
+                "name": "09:42"
+              },
+              {
+                "id": "6Z8O-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z8P-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8Q-1",
+                "name": "Reuters"
+              },
+              {
+                "id": "6Z8R-1",
+                "name": "Energy & materials"
+              },
+              {
+                "id": "6Z8S-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8T-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowLight2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row2-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "49deda11bcc178cf1458a57293669f1c38b368ddb4a1c62b55790e4b17659760",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z8V-1",
+                "name": "Reporting \u00b7 Federal Reserve"
+              },
+              {
+                "id": "6Z8W-1",
+                "name": "Central bank minutes\u2026"
+              },
+              {
+                "id": "6Z8X-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8Y-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z8Z-1",
+                "name": "09:35"
+              },
+              {
+                "id": "6Z90-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z91-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z92-1",
+                "name": "Federal Reserve"
+              },
+              {
+                "id": "6Z93-1",
+                "name": "Central banks \u00b7 Offi\u2026"
+              },
+              {
+                "id": "6Z94-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z95-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowLight3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row3-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "818b6a80e5fa1dcce9c9fa2951c3e083f65e9a4badb70a522d1c78667cfd4215",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z97-1",
+                "name": "Reporting \u00b7 Bloomberg"
+              },
+              {
+                "id": "6Z98-1",
+                "name": "Semiconductor compan\u2026"
+              },
+              {
+                "id": "6Z99-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9A-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9B-1",
+                "name": "09:28"
+              },
+              {
+                "id": "6Z9C-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6Z9D-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9E-1",
+                "name": "Bloomberg"
+              },
+              {
+                "id": "6Z9F-1",
+                "name": "Technology \u00b7 NVDA \u00b7 \u2026"
+              },
+              {
+                "id": "6Z9G-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9H-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperMobileRowLight4",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-mobile-row4-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "3cc2921a6cbf4edb53d9d4f92d2637cc9422e6827f6c16ccfeb903b5c30cc136",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6Z9J-1",
+                "name": "Reporting \u00b7 Financial Times"
+              },
+              {
+                "id": "6Z9K-1",
+                "name": "European officials d\u2026"
+              },
+              {
+                "id": "6Z9L-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9M-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9N-1",
+                "name": "09:21"
+              },
+              {
+                "id": "6Z9O-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9P-1",
+                "name": "Financial Times"
+              },
+              {
+                "id": "6Z9Q-1",
+                "name": "Geopolitics"
+              },
+              {
+                "id": "6Z9R-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6Z9S-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row1-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "dbaf267a89f6c7abe1a88983b70e3d574c401c43e5e417ebcf0fa3d4525dad52",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZCG-1",
+                "name": "Lead story \u00b7 Reuters"
+              },
+              {
+                "id": "6ZCH-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCI-1",
+                "name": "09:42"
+              },
+              {
+                "id": "6ZCJ-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZCK-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCL-1",
+                "name": "Energy markets weigh\u2026"
+              },
+              {
+                "id": "6ZCM-1",
+                "name": "Oil markets are asse\u2026"
+              },
+              {
+                "id": "6ZCN-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCO-1",
+                "name": "Reuters\u3000\u00b7\u3000Energy & m\u2026"
+              },
+              {
+                "id": "6ZCP-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZCQ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCR-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row2-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "f276b08324436989caf50096c635416a01d28a48d7c4927185fe4650c91c7257",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZCT-1",
+                "name": "Story \u00b7 Federal Reserve"
+              },
+              {
+                "id": "6ZCU-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCV-1",
+                "name": "09:35"
+              },
+              {
+                "id": "6ZCW-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZCX-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZCY-1",
+                "name": "Central bank minutes\u2026"
+              },
+              {
+                "id": "6ZCZ-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZD0-1",
+                "name": "Federal Reserve\u3000\u00b7\u3000Ce\u2026"
+              },
+              {
+                "id": "6ZD1-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZD2-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZD3-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row3-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "88b58795a639242430bf54c039439f71b19cfd61cfc90013b079d8b235b4553e",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZD5-1",
+                "name": "Story \u00b7 Bloomberg"
+              },
+              {
+                "id": "6ZD6-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZD7-1",
+                "name": "09:28"
+              },
+              {
+                "id": "6ZD8-1",
+                "name": "PRIORITY"
+              },
+              {
+                "id": "6ZD9-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDA-1",
+                "name": "Semiconductor compan\u2026"
+              },
+              {
+                "id": "6ZDB-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDC-1",
+                "name": "Bloomberg\u3000\u00b7\u3000Technolo\u2026"
+              },
+              {
+                "id": "6ZDD-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZDE-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDF-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight4",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row4-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "05c97f7cd33f084844d29328c0995acc047917043e9e7fb0a1c9dedea890d477",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZDH-1",
+                "name": "Story \u00b7 Financial Times"
+              },
+              {
+                "id": "6ZDI-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDJ-1",
+                "name": "09:21"
+              },
+              {
+                "id": "6ZDK-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDL-1",
+                "name": "European officials d\u2026"
+              },
+              {
+                "id": "6ZDM-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDN-1",
+                "name": "Financial Times\u3000\u00b7\u3000Ge\u2026"
+              },
+              {
+                "id": "6ZDO-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZDP-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDQ-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight5",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row5-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "79a40b58c874a7ad2bfc98b1381ce607cb790f180196d4f71a836c38928c78f6",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZDS-1",
+                "name": "Story \u00b7 Nikkei Asia"
+              },
+              {
+                "id": "6ZDT-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDU-1",
+                "name": "09:14"
+              },
+              {
+                "id": "6ZDV-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDW-1",
+                "name": "Japan manufacturers \u2026"
+              },
+              {
+                "id": "6ZDX-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZDY-1",
+                "name": "Nikkei Asia\u3000\u00b7\u3000Econom\u2026"
+              },
+              {
+                "id": "6ZDZ-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZE0-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZE1-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperDesktopRowLight6",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-desktop-row6-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "31e34d98a71f79e1e019289a404e7a31508da22d095c84b6357b948dfc4ff9a1",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZE3-1",
+                "name": "Story \u00b7 CNBC"
+              },
+              {
+                "id": "6ZE4-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZE5-1",
+                "name": "09:07"
+              },
+              {
+                "id": "6ZE6-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZE7-1",
+                "name": "Major US banks repor\u2026"
+              },
+              {
+                "id": "6ZE8-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZE9-1",
+                "name": "CNBC\u3000\u00b7\u3000Companies \u00b7 J\u2026"
+              },
+              {
+                "id": "6ZEA-1",
+                "name": "Rectangle"
+              },
+              {
+                "id": "6ZEB-1",
+                "name": "Frame"
+              },
+              {
+                "id": "6ZEC-1",
+                "name": "Compare"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_dark_1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link1-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "78e1a15c0eb368e59b078aa13d55c72cf1bff669fbb6b9a6b2b37c8ffe933736",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZF2-1",
+                "name": "Updates inbox"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_dark_2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link2-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "6deeade6d5def2a1af771a414afd3dc936918a7159cbaab1e5faa4d07dc38c45",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZF4-1",
+                "name": "Company news"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_dark_3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link3-dark-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "e58bd2fb851c430aae7e7dbf27e84e6d2df2b13ecf7877b1797d12628fc22132",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZF6-1",
+                "name": "+ Save this view"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_light_1",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link1-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "7396e0ea5f9bb0d30736f70b77d8cf80221af01c38ae30ecd9fa70dfc4e22a0d",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZF8-1",
+                "name": "Updates inbox"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_light_2",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link2-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "91ae42111df792d461e9bce04088e1556444adde030f9767f2ec0f57eee25ffb",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZFA-1",
+                "name": "Company news"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "evidence_key": "newsNov3PaperWorkspaceLink_light_3",
+      "receipt": {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "news9612-workspace-link3-light-20261103",
+        "tool": "write_html",
+        "retry_allowed": false,
+        "production_acceptance": false,
+        "original_receipt_sha256": "6a119a763e62804388b45de73fff0de9a4c676aa5ee3de1a823b65e0c482b35e",
+        "before": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "identity": {
+            "kind": "file-id",
+            "id": "01M2WGNCX9475G79JRKJTCM08P"
+          },
+          "snapshot_sha256": "044f55245b248ddc999f81418525c1bea7a854f0a7b34e5d231a6dea7232e535",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "result_summary": [
+          {
+            "file": {
+              "id": "01M2WGNCX9475G79JRKJTCM08P",
+              "name": "MASTERMIND PAGES"
+            },
+            "contentHash": {
+              "tokens": "cfd3d65c"
+            }
+          },
+          {
+            "createdNodes": [
+              {
+                "id": "6ZFC-1",
+                "name": "+ Save this view"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Existing active Sector Intelligence file was not switched or edited.",
+    "Design specimen uses illustrative reporting; no claim of current market facts.",
+    "Actual runtime remains Jinja/CSS/JS with semantic controls; exported Paper JSX is reference material."
+  ]
+}

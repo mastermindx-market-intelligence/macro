@@ -1,0 +1,42 @@
+{
+  "baseline_head": "ae7e4cd13daa9c48aea8e505daa753460b8f196a",
+  "tested_working_files": {
+    "templates/news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "templates/news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "templates/news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4",
+    "site/news.html": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf"
+  },
+  "results": [
+    {
+      "name": "visual-python",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_news_page_render.py",
+        "tests/test_news_desk_js.py",
+        "tests/test_news_translate_render_gate.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 14.61,
+      "log": "docs/evidence/news-cockpit-20261102/visual-python-20261103.log",
+      "log_sha256": "39cf756ad8120492dae3b5ceb7fc26417461462416d2c40d69f409f049a37f12",
+      "tail": "n(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4/system/control-dependencies\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4/system/control-dependencies'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4/system\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4/system'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af/test_race_check_refuses_profil4'\n    warnings.warn(\n\n../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-b990575c-4125-44ca-adc5-374e8858b6af'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n114 passed, 12 warnings in 13.48s\n"
+    },
+    {
+      "name": "visual-mounted",
+      "command": [
+        "npm",
+        "--prefix",
+        "tests/news-desk",
+        "test"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.22,
+      "log": "docs/evidence/news-cockpit-20261102/visual-mounted-20261103.log",
+      "log_sha256": "fedfa21f48b14d855e16914a02df23270c4cb3cf4aae8b49072f1f103cb1aa50",
+      "tail": "ginated with the same query and no live arrivals (101.269291ms)\n\u2714 a changed history descriptor clears an open historical comparison and preserves saved IDs (125.679833ms)\n\u2714 returning to an open comparison closes later dialogs and a new query clears its historical body immediately (147.844709ms)\n\u2714 a 409 history cursor clears prior results and needs an explicit restart (97.988959ms)\n\u2714 a newer history page waits for the accepted live descriptor without rendering its bodies (107.891833ms)\n\u2714 a fresh accepted snapshot permits a deliberate retry after a transient history revision (94.53325ms)\n\u2714 history pagination rejects a changed match total within the same revision (89.566208ms)\n\u2714 retained search generations abort and ignore superseded queries (89.80825ms)\n\u2714 retained search has a real deadline even when a late fixture ignores abort (87.012333ms)\n\u2714 history HTTP 401 clears protected dialogs and fences the active stream (153.602542ms)\n\u2714 history HTTP 403 clears protected dialogs and fences the active stream (216.191708ms)\n\u2714 a 503 retained page does not keep the last successful historical body (106.477833ms)\n\u2714 coverage keeps missing collection counters unknown and updates an open disclosure without taking focus (109.864833ms)\n\u2714 embedded News sign-in delegates once to the shell while initialization is pending (134.825792ms)\n\u2714 News sign-in retains standalone and modified-link navigation (156.362ms)\n\u2714 News sign-in respects a previously handled click (125.694584ms)\n\u2714 a claimed News sign-in never starts a second route after shell refusal or failure (122.42925ms)\n\u2714 mobile filters stage changes until Apply and count time and region (103.313375ms)\n\u2714 cancelled mobile filter changes do not alter the feed or saved scope (166.388292ms)\n\u2714 responsive controls preserve applied filters and return focus to a visible trigger (152.650708ms)\n\u2714 mobile workspace keeps coverage and reading density available (131.916333ms)\n\u2714 story triggers expose the current reader selection to assistive technology (123.066ms)\n\u2714 resizing an open filter sheet keeps keyboard focus inside its dialog (141.055958ms)\n\u2139 tests 66\n\u2139 suites 0\n\u2139 pass 66\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 6960.052834\n"
+    }
+  ]
+}

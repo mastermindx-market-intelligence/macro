@@ -943,3 +943,89 @@ No protected merge, production deployment, real-user acceptance,
 production-ready visual claim, SHIPPED claim or background follow-up is
 asserted. Passing automated tests and preserved fixture designs do not
 complete the user's requested Paper redesign and live replacement.
+
+## Paper refinement and browser-verified build — 2026-11-03
+
+This continuation remains on the original News operation and managed M2
+workspace. It supersedes the earlier entries saying Paper edits and browser
+acceptance were unrun. The user explicitly authorized the loca.lt fixture
+preview after the earlier automatic-review rejection; the approved route
+was reused without changing its data exposure or substituting another carrier.
+
+### Applied design and implementation
+
+The direct Mastermind Paper app is now qualified for the observed 16e catalog
+under protected Mastermind ea4f893103a1c0354f28843241848cae91336bd7.
+Thirty-eight guarded edits returned APPLIED_RESPONSE_OBSERVED on the four
+existing News boards: desktop dark/light 6FXR-0/6GMY-0 and mobile
+dark/light 6GUZ-0/6H8F-0 in file 01M2WGNCX9475G79JRKJTCM08P,
+page p-3-1. The Company News board 6ITC-0 and other pages were preserved.
+The operation did not switch or edit the user's active Sector Intelligence file.
+The final boards, compact operation receipts and reader/mobile JSX references
+are retained in this evidence directory.
+
+The source now has a persistent Cancel/Apply footer in the mobile filter
+dialog; staged changes preserve the applied scope until submission. Story
+headlines use the full mobile width, with source/time metadata and separate
+44px Compare controls. Publication time and stream state remain distinct.
+The reader uses larger body type, a stable scrollbar gutter and a
+nonshrinking header so Brief/Sources/Timeline changes do not reflow its title.
+The narrow header wraps without colliding with Workspace, and the mobile desk
+keeps its feed scroller and final controls inside the visible layout.
+The existing semantic buttons, keyboard handling, auth path, theme and
+translation system remain the live implementation.
+
+The canonical artifact composition replaces the exact News CSS and renders
+the filter dialog from the current Jinja template. Normal write_page and
+asset optimization reach a fixed point. The 372,371-byte artifact hashes to
+b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf.
+Reporting seed, calendar edition and event-impact blocks retain their
+previous recorded hashes byte-for-byte. This is not a fresh data build
+or a covering production render.
+
+### Validation and evidence
+
+The updated source/artifact passed 114 focused Python checks (render,
+artifact parity, JS contract wrapper and translation gate) and all 66 mounted
+aggregate/company tests, with zero failed/skipped mounted tests. Twelve
+Python warnings are retained in the log, including existing temporary
+directory cleanup warnings; no suppression or unrelated cleanup was added.
+The earlier 719-test exact-code result remains separately bound to 79b62ed,
+not relabelled as validation of this later working source.
+
+Actual Chrome preview checks covered 320 × 740, 390 × 844 and 1440 × 1000;
+light/dark themes; English/Chinese switching; staged time/region filters;
+Cancel restoration and focus return; Apply/Reset; saving a story; comparison;
+an investigation with two references; and retained history. At 320px,
+document scrollWidth equalled clientWidth 309px and the feed reached its end
+while page scrollY stayed 0. Filter footer buttons measured 44px high.
+The expired fixture export correctly refused historical bodies. A normal
+fixture export tick preserving all 15 publication clocks let the same
+history query return 1/1 retained report. No production freshness guard
+was relaxed. Final observed console warning/error lists were empty.
+
+Nine unmodified JPEG captures and their hashes are retained with
+browser-acceptance-20261103.json, paper-applied-20261103.json,
+source-composition-20261103.json and validation-visual-20261103.json.
+All depicted stories are explicitly illustrative. The preview does not
+connect to the production news database. Browser theme/viewport restoration
+was attempted but its MCP response timed out; cleanup readback remains
+a separate follow-up and is not claimed here.
+
+### Remaining release gates
+
+Hosted CI on ae7e4cd passed its News contract delta but failed on GMI
+envelope handling, one GMI dependency-registration omission and the daily
+workflow size guard. Accepted Macro main 91b2942304f8d32e1da22d5ea98d8474f8956c50
+contains corrections for all three; integration and affected validation
+are the next source step. No ceiling, gate, test or source-rights hold is
+weakened to clear these failures.
+
+Original independent review news-9612-f07ba3-source-review-20261022
+was reread through its existing Fabric owner: TERMINAL rc1,
+EXECUTION_NOT_ELIGIBLE, UNVERIFIED, execution_absence_proven=false,
+retry_allowed=false. No new run, alternate actor or formal approval is
+inferred. Current independent acceptance and required hosted checks still
+precede normal merge, covering render/deploy and signed-in production proof.
+The Paper design and tested implementation are now concrete; this entry
+does not claim a live replacement or production-ready acceptance.

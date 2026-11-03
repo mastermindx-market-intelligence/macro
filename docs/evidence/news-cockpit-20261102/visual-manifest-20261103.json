@@ -1,0 +1,56 @@
+[
+  {
+    "file": "paper-desktop-dark-20261103.jpg",
+    "evidence_key": "newsNov3PaperFinal_desktopDark",
+    "bytes": 188728,
+    "sha256": "66f3aba109a72d152381574742aac3d6e423fbcb6542e8a7cc4f07b60bd1dddf"
+  },
+  {
+    "file": "paper-desktop-light-20261103.jpg",
+    "evidence_key": "newsNov3PaperFinal_desktopLight",
+    "bytes": 200373,
+    "sha256": "3fb852db18bbfb97e08c05bb726a2dc91f326292a0fb48ca013b33296a64d2bf"
+  },
+  {
+    "file": "paper-mobile-dark-20261103.jpg",
+    "evidence_key": "newsNov3PaperFinal_mobileDark",
+    "bytes": 60727,
+    "sha256": "87993a28ddcc2b0c7ede7ace921cc8dc8456144a14ca8ad3ef0546b8f00773fc"
+  },
+  {
+    "file": "paper-mobile-light-20261103.jpg",
+    "evidence_key": "newsNov3PaperMobileLightFinalCandidate",
+    "bytes": 63795,
+    "sha256": "6a86286748d8f396142924938503074a07507a38b49c7e5dfe68eb64cbcf9c37"
+  },
+  {
+    "file": "runtime-desktop-dark-20261103.jpg",
+    "evidence_key": "newsNov3DesktopDetailInspection",
+    "bytes": 122669,
+    "sha256": "2e857f5dba0764ab31c3ca92f805ac1d455a8ec028b5aa819fefc47558f03cb6"
+  },
+  {
+    "file": "runtime-desktop-light-20261103.jpg",
+    "evidence_key": "newsNov3DesktopLightEnglish1440Final",
+    "bytes": 141785,
+    "sha256": "26fe51126ae4523dbd09288dfe608ca418aa022aadbaea87194700a6f36d3eba"
+  },
+  {
+    "file": "runtime-mobile-dark-20261103.jpg",
+    "evidence_key": "newsNov3MobileDarkEnglish390Final",
+    "bytes": 37295,
+    "sha256": "dcd5be1f6afd9897bb7f6f29e7ef419055bbd87d09826a3a4b185880a4eb2738"
+  },
+  {
+    "file": "runtime-mobile-light-zh-20261103.jpg",
+    "evidence_key": "newsNov3MobileLightChinese390Final",
+    "bytes": 41719,
+    "sha256": "22a156745b2225777b8dd2c4876f86049d65d58756987b0b2c3e42ffaf67aa32"
+  },
+  {
+    "file": "runtime-filters-320-20261103.jpg",
+    "evidence_key": "newsNov3Filters320",
+    "bytes": 20140,
+    "sha256": "9da69b2c0d095436ea2ba21abc1e8ad57b25bf79070daffe0908407e6991a039"
+  }
+]

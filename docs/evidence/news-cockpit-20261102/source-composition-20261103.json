@@ -1,0 +1,25 @@
+{
+  "operation": "news-cockpit-rebuild-20261018-astra-01",
+  "baseline_head": "ae7e4cd13daa9c48aea8e505daa753460b8f196a",
+  "kind": "canonical_source_artifact_composition",
+  "not_a_fresh_data_build": true,
+  "not_deployed": true,
+  "before_sha256": "14601f425cac15399fb65746eadc0877b4759a6303f9ff389f01bf310e52d746",
+  "after_sha256": "b4c7f6277697f95e9cf7a4e17aa60f7c85b33c2ae47770c95c21303e02ec22cf",
+  "bytes": 372371,
+  "canonical_finalizer_fixed_point": true,
+  "preserved_context_sha256": {
+    "ndSeed": "af3749d343622526c2abfa6e70bc54ccabbc85948e2cf8a6e86e1fe4226b1071",
+    "ndCalendar": "983358700d4c93787bca6f39f52325913f5cc7be333a44b81e1be91827e74023",
+    "ndImpact": "96e26bd9ca51f9ee90a3673320034486aeddc64d1e69485ceebc179a581b917a"
+  },
+  "static_blocks_rendered_from_current_template": [
+    "ndFilters"
+  ],
+  "canonical_css_replaced": true,
+  "sources": {
+    "news.html.j2": "c54dd492e4156acc4277b39caf96b1e66d8b39788dbe06b440cc59b3a9afa91f",
+    "news_desk.css": "4a12a0e0569a38ff3b038b6b7a963baf047c713722b957d28684addbf5fb920f",
+    "news_desk.js": "b14afaff50c4c47e5ccfb4b9446d5b0eacb17d3d012b604eb002b5c98319d8d4"
+  }
+}
