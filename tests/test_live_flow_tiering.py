@@ -628,3 +628,25 @@ class TestProductionLiveFlowConfig:
         cfg = yaml.safe_load((repo_root / "config.yml").read_text())["live_flow"]
         assert cfg["top_names"] == 128
         assert cfg["max_concurrent"] == 2
+
+    def test_priority_names_survive_missing_baskets(self, monkeypatch):
+        from engine import options_universe
+
+        poller = _import_poller()
+        config = yaml.safe_load((Path(__file__).resolve().parents[1] / "config.yml").read_text())
+        monkeypatch.setattr(options_universe, "baskets_universe", lambda: [])
+        roots = poller._resolve_universe(config["live_flow"])
+        required = {"GOOG", "GOOGL", "AMZN", "JPM", "XOM", "WMT", "UBER"}
+        assert required <= set(roots)
+        assert len(set(roots) & set(config["live_flow"]["priority_names"])) >= 40
+        assert not required.intersection(poller._etf_anchor_roots(config["live_flow"]))
+
+    def test_priority_and_basket_roots_share_one_budget(self, monkeypatch):
+        from engine import options_universe
+
+        poller = _import_poller()
+        monkeypatch.setattr(options_universe, "gex_symbols", lambda: ["SPY", "GOOG", "AMD", "MU"])
+        cfg = {"etf_anchors": ["spy", "SPY"], "priority_names": ["googl", "GOOG", "GOOG"], "top_names": 3}
+        assert poller._resolve_universe(cfg) == ["SPY", "GOOGL", "GOOG", "AMD"]
+        assert poller._resolve_universe({**cfg, "top_names": 0}) == ["SPY"]
+        assert poller._resolve_universe({"etf_anchors": ["SPY"], "top_names": 2}) == ["SPY", "GOOG", "AMD"]

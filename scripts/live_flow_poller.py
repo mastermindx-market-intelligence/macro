@@ -132,13 +132,15 @@ RSS_WARN_BYTES = 2 * 1024 * 1024 * 1024  # 2 GB
 TWO_TIER_ENV         = "LIVE_FLOW_TWO_TIER"
 MAX_CONCURRENT_ENV   = "LIVE_FLOW_MAX_CONCURRENT"
 
-# FC-R6: Tier-1 roots — ETF anchors + Mag7 + memory-storage names.
-# These are always polled every cycle when two-tier mode is ON.
-TIER1_ROOTS = [
-    # ETF anchors (22)
+DEFAULT_ETF_ANCHORS = [
     "SPY", "QQQ", "IWM", "GLD", "SLV", "TLT", "HYG", "XLF", "XLE",
     "XLU", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE",
     "KRE", "SMH", "XBI", "ARKK", "DIA",
+]
+
+# FC-R6: Core roots are polled every cycle when two-tier mode is on.
+TIER1_ROOTS = [
+    *DEFAULT_ETF_ANCHORS,
     # Mag7
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     # Memory storage (flow continuity names)
@@ -1119,32 +1121,31 @@ def _stage_raw_events(
 
 # ── universe resolver ─────────────────────────────────────────────────────────
 
+def _etf_anchor_roots(cfg: dict) -> list[str]:
+    return list(dict.fromkeys(root.upper() for root in (cfg.get("etf_anchors") or DEFAULT_ETF_ANCHORS)))
+
+
 def _resolve_universe(cfg: dict) -> list[str]:
-    """ETF anchors + top_names from gex_symbols(), deduped."""
+    """Fill one bounded universe: ETF anchors, priority equities, then GEX/basket roots."""
     from engine.options_universe import gex_symbols
 
-    default_anchors = [
-        "SPY", "QQQ", "IWM", "GLD", "SLV", "TLT", "HYG", "XLF", "XLE",
-        "XLU", "XLK", "XLV", "XLI", "XLB", "XLY", "XLP", "XLRE",
-        "KRE", "SMH", "XBI", "ARKK", "DIA",
-    ]
-    anchors = [a.upper() for a in (cfg.get("etf_anchors") or default_anchors)]
-    top_n   = int(cfg.get("top_names", 128))
+    anchors = _etf_anchor_roots(cfg)
+    top_n = max(0, int(cfg.get("top_names", 128)))
+    priority = cfg.get("priority_names", [])
+    if not isinstance(priority, list) or any(
+        not isinstance(root, str) or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,9}", root.strip().upper())
+        for root in priority
+    ):
+        raise ValueError("live_flow.priority_names must be a list of options root symbols")
 
-    seen: dict[str, None] = {}
-    for t in anchors:
-        seen.setdefault(t, None)
-
+    seen = dict.fromkeys(anchors)
+    seen.update(dict.fromkeys(root.strip().upper() for root in priority))
     try:
-        gex = gex_symbols()
-        for t in gex:
-            seen.setdefault(t.upper(), None)
+        seen.update(dict.fromkeys(root.upper() for root in gex_symbols()))
     except Exception as e:  # noqa: BLE001
         log.warning("poller: gex_symbols failed: %s", e)
 
-    all_syms = list(seen)
-    # Cap at anchors + top_n names after anchors
-    return all_syms[: max(len(anchors), len(anchors) + top_n)]
+    return list(seen)[:len(anchors) + top_n]
 
 
 # ── delta_mode probe ─────────────────────────────────────────────────────────
@@ -2790,12 +2791,7 @@ def run_cycle(
         if type(value) is not int or value < 0:
             raise ValueError(f"{label} must be an exact non-negative integer")
 
-    etf_anchors = [a.upper() for a in (cfg.get("etf_anchors") or [])]
-    if not etf_anchors:
-        from scripts.live_flow_poller import _resolve_universe
-        etf_anchors_set = set(_resolve_universe(cfg)[:23])  # rough default
-    else:
-        etf_anchors_set = set(etf_anchors)
+    etf_anchors_set = set(_etf_anchor_roots(cfg))
 
     cycle_t0 = time.perf_counter()
     cycle_started_at = _canonical_utc_timestamp(
