@@ -460,6 +460,16 @@ def test_committed_regime_prior_stamp_matches_shipped_file():
 # lane re-stamps committed pages with [skip ci]; #7959's heal of the ontology
 # guard) and is normalised on both sides; hand-pinned ``?v=4``-style queries
 # are not the sweep's stamp shape and stay in the comparison.
+#
+# Render-sync also runs scripts/externalize_css.py over the committed page, and
+# that step moves CONTENT, so it is replayed rather than normalised away: every
+# inline <style> of at least MIN_BYTES moves to site/assets/css/<sha256[:8]>.css
+# and becomes a <link>. #10533 (bea6544c) gave this page such a block (the
+# .cycle-lock style from _cycle_locked_slot.html.j2) and render-sync 3f106aa9
+# committed it externalized, which a raw bake never matches. The guard applies
+# the same lib.pages transform to the fresh bake with a write-free copy of the
+# script's make_href, then holds each committed asset file to the lifted bytes,
+# so a CSS edit, a missing asset and a stale asset all still fail.
 # ---------------------------------------------------------------------------
 
 # Builder inputs the bake reads from site/ (everything else it reads is data/).
@@ -478,6 +488,11 @@ _BRANCH_BY_MODS: dict[tuple[str, str], str | None] = {
 _STAMP = re.compile(rb"\?v=[0-9a-f]{8}")  # optimize_assets' own stamp shape (_OUR_STAMP_RE)
 _PRELOAD_LINE = re.compile(rb"^[ \t]*<link rel=\"preload\" as=\"style\"[^\n]*\n", re.M)
 _DEFER = re.compile(rb"(<script\b[^>]*?) defer\b")
+# scripts/externalize_css.py MIN_BYTES, copied rather than imported: the
+# markets-regime-strip ci-pack job is scope: exclusive and its path list is this
+# suite's import closure. If the script's gate ever moves past a block this page
+# renders, the guard goes red (it lifts what render-sync left inline, or the reverse).
+_CSS_LIFT_MIN_BYTES = 1024
 
 
 def _without_lane_owned_asset_markup(page: bytes) -> bytes:
@@ -487,6 +502,32 @@ def _without_lane_owned_asset_markup(page: bytes) -> bytes:
     page = _PRELOAD_LINE.sub(b"", page)
     page = _DEFER.sub(rb"\1", page)
     return page
+
+
+def _externalize_like_render_sync(page: bytes) -> tuple[bytes, dict[str, bytes]]:
+    """Apply render-sync's CSS externalization to a fresh bake, writing nothing.
+
+    Same transform as scripts/externalize_css.py (lib.pages.externalize_css_text)
+    and the same make_href for a site-root page (prefix ""): a block under
+    MIN_BYTES (1024) of UTF-8 stays inline; any other block links
+    ``assets/css/<h>.css?v=<h>`` with ``h = sha256(css)[:8]``. The script's file
+    write is replaced by recording ``{h: css bytes}`` for the caller to check.
+    The script's opt-in JS lift is not replayed: no template this page renders
+    emits a ``<script data-externalize>`` block.
+    """
+    from lib.pages import externalize_css_text  # noqa: PLC0415
+
+    lifted: dict[str, bytes] = {}
+
+    def make_href(css: str, _index: int, _media: str | None) -> str | None:
+        data = css.encode("utf-8")
+        if len(data) < _CSS_LIFT_MIN_BYTES:
+            return None
+        h = hashlib.sha256(data).hexdigest()[:8]
+        lifted[h] = data
+        return f"assets/css/{h}.css?v={h}"
+
+    return externalize_css_text(page.decode("utf-8"), make_href).encode("utf-8"), lifted
 
 
 def _stance_mod(node) -> str:
@@ -573,10 +614,16 @@ def test_fresh_render_byte_matches_committed_markets_html(tmp_path, monkeypatch,
     )
     fresh = _bake_with_pinned_strip(tmp_path / "site", monkeypatch, views)
     assert PAGE.read_bytes() == committed, "the bake must not touch the real site/ tree"
+    fresh, lifted = _externalize_like_render_sync(fresh)
     assert _without_lane_owned_asset_markup(fresh) == _without_lane_owned_asset_markup(committed), (
         "site/markets.html is stale against templates/markets.html.j2 (+ partials) or "
-        "scripts/build_markets.py — re-run `python -m scripts.build_markets` and commit the page"
+        "scripts/build_markets.py — re-run `python -m scripts.build_markets` and "
+        "`python -m scripts.externalize_css`, then commit the page and its assets"
     )
+    for h, css in sorted(lifted.items()):
+        asset = ROOT / "site" / "assets" / "css" / f"{h}.css"
+        assert asset.is_file(), f"site/markets.html links {asset.relative_to(ROOT)}, which is not committed"
+        assert asset.read_bytes() == css, f"{asset.relative_to(ROOT)} does not hold the CSS the page lifts"
 
 
 def test_zh_risk_off_pill_stays_danger_ink_not_the_price_pole():

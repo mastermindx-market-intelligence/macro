@@ -57,7 +57,7 @@ if distribution_version("jsonschema") != _JSONSCHEMA_RELEASE:
 
 
 DOCUMENT_TERM_SCHEMA = "capital_structure.document_term_observation.v1"
-PARSER_VERSION = "capital-structure-document-terms/1.2.0"
+PARSER_VERSION = "capital-structure-document-terms/1.3.0"
 
 
 @dataclass(frozen=True)
@@ -1822,6 +1822,424 @@ def _records_for_manifest_v1_2_0(
         ))
     return records
 
+
+# ---------------------------------------------------------------------------
+# capital-structure-document-terms/1.3.0
+#
+# A 99-accession EDGAR census under 1.2.0 read 45 filings and refused the
+# rest; three residual classes had one narrow cause each, and 1.3.0 closes
+# exactly those causes with private copies of the functions that change:
+#   B (1 filing): legacy primary-document tables headed "Securities to be
+#     Registered" / "Aggregate Offering Price" / "Registration Fee" -- the
+#     short header spellings 1.2.0 never mapped, so no table was detected.
+#   C (7): totals rows whose title column is spelled "Title of Class of
+#     Security ...", and totals rows whose aggregate and fee amounts sit one
+#     grid column left of their entirely blank declared spans.  The no-space
+#     "Security ClassTitle" literal is part of the released 1.3.0 spec but no
+#     committed fixture carries it (the census filing the spec assigned to it
+#     reads "Security Class Type (1)", which no rule matches); only a
+#     synthetic test exercises it.
+#   D (10): filings carrying the fee table in BOTH the legacy primary
+#     document and an EX-FILING FEES child -- when exactly one table comes
+#     from an EX-FILING FEES child, that child is the fee table; any other
+#     multiplicity keeps the 1.2.0 refusal.
+# Every rule is deliberately narrow: a filing that does not satisfy it keeps
+# its 1.2.0 refusal byte for byte.  1.2.0 above stays untouched so historical
+# rows remain reproducible.
+# ---------------------------------------------------------------------------
+
+
+def _security_header_v1_3_0(value: str) -> bool:
+    """1.3.0: adds the measured legacy/modern title-column spellings.
+
+    "Security Type" stays the category column and is never a title column.
+    """
+    normalized = _label(value)
+    return (
+        _security_header_v1_2_0(value)
+        or (
+            normalized.startswith("title of")
+            and "class" in normalized
+            and "securit" in normalized
+        )
+        or normalized == "security classtitle"
+        or normalized == "securities to be registered"
+    )
+
+
+def _term_for_header_v1_3_0(value: str) -> str | None:
+    """1.3.0 header terms: after every 1.2.0 rule, a bare aggregate spelling.
+
+    The new rule sits last on purpose, so a header that names a fee (for
+    example "Amount of Registration Fee (based on aggregate offering
+    price)") is never taken for the aggregate column, and an aggregate
+    spelling carrying a "per", "unit" or "share" word (for example
+    "Aggregate offering price/unit") never maps to the aggregate column.
+    """
+    name = _term_for_header_v1_2_0(value)
+    if name is not None:
+        return name
+    normalized = _label(value)
+    if "aggregate offering price" in normalized and not _PER_UNIT_WORD_V1_3_0.search(normalized):
+        return "proposed_maximum_aggregate_offering_price"
+    return None
+
+
+_PER_UNIT_WORD_V1_3_0 = re.compile(r"\b(?:per|unit|units|share|shares)\b")
+
+
+def _parse_fee_tables_v1_3_0(
+    document: SubmissionDocument, start_index: int,
+) -> list[FeeTableV1_2]:
+    """1.3.0: detect fee tables with the 1.2.0 spellings plus the 1.3.0 ones."""
+    candidates: list[FeeTableV1_2] = []
+    for local_index, match in enumerate(_TABLE_RE.finditer(document.text)):
+        absolute_start = document.text_start + match.start()
+        rows = _table_rows(match.group(0), absolute_start)
+        header_index = -1
+        columns: dict[str, int] = {}
+        column_spans: dict[str, int] = {}
+        security_column: int | None = None
+        duplicate_headers: set[str] = set()
+        for index, row in enumerate(rows):
+            found: dict[str, int] = {}
+            spans: dict[str, int] = {}
+            for cell in row.cells:
+                name = _term_for_header_v1_3_0(cell.text)
+                if name is not None:
+                    if name in found:
+                        duplicate_headers.add(name)
+                    else:
+                        found[name] = cell.column_start
+                        spans[name] = cell.column_span
+                if _security_header_v1_3_0(cell.text):
+                    if security_column is not None:
+                        duplicate_headers.add("security_title")
+                    else:
+                        security_column = cell.column_start
+            if len(found) >= 2:
+                header_index = index
+                columns = found
+                column_spans = spans
+                break
+        if header_index >= 0:
+            candidates.append(FeeTableV1_2(
+                raw=match.group(0), start=absolute_start,
+                end=document.text_start + match.end(), document=document,
+                table_index=start_index + local_index, rows=rows,
+                header_index=header_index, columns=columns,
+                security_column=security_column,
+                duplicate_headers=tuple(sorted(duplicate_headers)),
+                column_spans=column_spans,
+            ))
+    return candidates
+
+
+def _total_row_value_cell_v1_3_0(
+    table: FeeTableV1_2, row: TableRow, name: str,
+) -> TableCell | None:
+    """1.3.0: the 1.2.0 total-row cell, plus one measured left-shift fallback.
+
+    Some filers put the totals row one grid column left of its header
+    declaration: the whole amounts row is shifted, the declared aggregate and
+    fee spans stay entirely blank, and the cells immediately left of both
+    spans carry the amounts.  The fallback fires only when the 1.2.0 cell
+    does not parse observed and every condition holds: the term is the
+    aggregate, both declared spans are blank in this row, both left
+    neighbors parse observed, the two left neighbors are distinct grid
+    cells outside each other's declared spans, and neither left neighbor
+    sits in the title column or under any other declared header.  Otherwise
+    the 1.2.0 result (often a refusal) stands.
+    """
+    cell = _total_row_value_cell_v1_2_0(table, row, name)
+    if cell is not None and _parse_number(cell.text).disposition == "observed":
+        return cell
+    if name != "proposed_maximum_aggregate_offering_price":
+        return cell
+    column = table.columns.get(name)
+    if column is None:
+        return cell
+    span = table.column_spans.get(name) or 1
+    inside = [
+        inside_cell for inside_cell in row.cells
+        if column <= inside_cell.column_start < column + max(1, span)
+    ]
+    if not inside or any(_clean_text(inside_cell.text) for inside_cell in inside):
+        return cell
+    fee_column = table.columns.get("registration_fee")
+    if fee_column is None:
+        return cell
+    fee_span = table.column_spans.get("registration_fee") or 1
+    fee_inside = [
+        fee_cell for fee_cell in row.cells
+        if fee_column <= fee_cell.column_start < fee_column + max(1, fee_span)
+    ]
+    if not fee_inside or any(_clean_text(fee_cell.text) for fee_cell in fee_inside):
+        return cell
+    aggregate_left = next(
+        (left for left in row.cells if left.column_start == column - 1), None,
+    )
+    fee_left = next(
+        (left for left in row.cells if left.column_start == fee_column - 1), None,
+    )
+    if aggregate_left is None or fee_left is None:
+        return cell
+    if _parse_number(aggregate_left.text).disposition != "observed":
+        return cell
+    if _parse_number(fee_left.text).disposition != "observed":
+        return cell
+    if aggregate_left.column_start == fee_left.column_start:
+        return cell
+    if fee_column <= aggregate_left.column_start < fee_column + max(1, fee_span):
+        return cell
+    if column <= fee_left.column_start < column + max(1, span):
+        return cell
+    if _declared_column_v1_3_0(table, aggregate_left.column_start):
+        return cell
+    if _declared_column_v1_3_0(table, fee_left.column_start):
+        return cell
+    return aggregate_left
+
+
+def _declared_column_v1_3_0(table: FeeTableV1_2, column_start: int) -> bool:
+    """True when ``column_start`` lies in the title column or in any column
+    the header row declares for a term.
+
+    A left neighbor that sits under its own declared header (a per-unit
+    price, a fee rate, an amount registered) is that column's value, never a
+    shifted amount, so the left-shift fallback must not read it.
+    """
+    if table.security_column is not None and column_start == table.security_column:
+        return True
+    for term, start in table.columns.items():
+        width = max(1, table.column_spans.get(term) or 1)
+        if start <= column_start < start + width:
+            return True
+    return False
+
+
+def _total_row_record_v1_3_0(
+    manifest: Mapping[str, Any],
+    table: FeeTableV1_2,
+    row: TableRow,
+    row_index: int,
+    table_span: Mapping[str, Any],
+    source_available_at: str,
+    parser_version: str,
+) -> dict[str, Any]:
+    """The exactly-one per-table "Total Offering Amounts" observation."""
+    manifest_id = str(manifest["manifest_id"])
+    security, title_cell, label_cell = _total_security_v1_2_0(
+        manifest_id, table, row, row_index,
+    )
+    name = "proposed_maximum_aggregate_offering_price"
+    row_span = _row_span(manifest_id, table, row, row_index)
+    spans: list[Mapping[str, Any]] = [table_span, row_span]
+    title_evidence = title_cell if title_cell is not None else label_cell
+    if title_evidence is not None:
+        spans.append(_cell_span(
+            manifest_id, table, row, row_index, title_evidence, "security_title",
+        ))
+    cell = _total_row_value_cell_v1_3_0(table, row, name)
+    term_spans = list(spans)
+    if cell is not None:
+        term_spans.append(_cell_span(manifest_id, table, row, row_index, cell, name))
+    parsed = _parse_number(cell.text if cell is not None else "")
+    term_type, unit, currency = _term_semantics(name, str(security["classification"]))
+    disposition = parsed.disposition
+    reason = parsed.reason
+    if disposition == "observed" and (not security.get("title_raw") or unit is None):
+        disposition = "ambiguous"
+        reason = "unit_semantics_ambiguous"
+    reported = (
+        _direct_value(
+            cell.text, str(parsed.value), str(unit), currency, str(parsed.scale),
+        )
+        if disposition == "observed" and cell is not None and parsed.value is not None
+        and parsed.scale is not None and unit is not None
+        else _empty_value()
+    )
+    return _base_record_v1_2_0(
+        manifest, name, disposition=disposition, reason=reason,
+        reported=reported, term_type=term_type,
+        evidence=_document_evidence(manifest, term_spans),
+        source_available_at=source_available_at, security=security,
+        child_document=table.document, parser_version=parser_version,
+        scope=_TOTAL_SCOPE_V1_2_0,
+    )
+
+
+def _records_for_manifest_v1_3_0(
+    manifest: Mapping[str, Any], raw: bytes | None, parser_version: str,
+) -> list[dict[str, Any]]:
+    """Build row and total-scoped direct observations for one complete submission."""
+    source_available_at = _iso((manifest.get("retrieval") or {}).get("first_seen_at"), "retrieval.first_seen_at")
+    root = _root_span(manifest)
+    parser = manifest.get("parser") or {}
+    if str(parser.get("corruption_state") or "") != "clean":
+        reason = "manifest_corruption_not_clean"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    if str(parser.get("eligibility") or "") != "eligible":
+        reason = "manifest_parser_not_eligible"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    assert raw is not None
+    documents = _eligible_documents(raw, str((manifest.get("filing") or {}).get("form") or ""))
+    if not documents:
+        reason = "eligible_document_not_found"
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    tables: list[FeeTableV1_2] = []
+    table_cursor = 0
+    for child in documents:
+        tables.extend(_parse_fee_tables_v1_3_0(child, table_cursor))
+        table_cursor += len(_TABLE_RE.findall(child.text))
+    if not tables:
+        reason = "fee_table_not_detected"
+        child = documents[0] if len(documents) == 1 else None
+        return [
+            _base_record_v1_2_0(manifest, name, disposition="unavailable", reason=reason,
+                                reported=_empty_value(), term_type=_document_term_type(name),
+                                evidence=_document_evidence(manifest, [root]), source_available_at=source_available_at,
+                                child_document=child, parser_version=parser_version)
+            for name in TERM_NAMES
+        ]
+    spans = [_table_span(str(manifest["manifest_id"]), table) for table in tables]
+    if len(tables) != 1:
+        # 1.3.0: legacy filings carry the fee table in both the primary
+        # document and an EX-FILING FEES child.  Exactly one table from an
+        # EX-FILING FEES child IS the fee table; every other multiplicity
+        # (two EX-FILING FEES children, tables only in the primary document)
+        # keeps the 1.2.0 refusal, byte for byte.
+        ex_filing_fee_tables = [
+            table for table in tables
+            if table.document.document_type == "EX-FILING FEES"
+        ]
+        if not (len(tables) > 1 and len(ex_filing_fee_tables) == 1):
+            return [
+                _base_record_v1_2_0(manifest, name, disposition="ambiguous", reason="multiple_fee_tables_detected",
+                                    reported=_empty_value(), term_type=_document_term_type(name),
+                                    evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                                    parser_version=parser_version)
+                for name in TERM_NAMES
+            ]
+        tables = ex_filing_fee_tables
+        spans = [_table_span(str(manifest["manifest_id"]), table) for table in tables]
+
+    table = tables[0]
+    if table.duplicate_headers:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="ambiguous", reason="duplicate_header_mapping",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+    if table.security_column is None:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="ambiguous", reason="unit_semantics_ambiguous",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+    manifest_id = str(manifest["manifest_id"])
+    table_span = spans[0]
+    security_rows: list[tuple[int, TableRow]] = []
+    total_rows: list[tuple[int, TableRow]] = []
+    for row_index, row in [
+        (index, row)
+        for index, row in enumerate(table.rows[table.header_index + 1:], start=table.header_index + 1)
+    ]:
+        label = _summary_row_label_v1_2_0(row)
+        if label is not None:
+            if label == _TOTAL_OFFERING_ROW_LABEL:
+                total_rows.append((row_index, row))
+            continue
+        if any(
+            (cell := row.cell_at(column)) is not None and bool(_clean_text(cell.text))
+            for column in table.columns.values()
+        ):
+            security_rows.append((row_index, row))
+    if not security_rows and not total_rows:
+        return [
+            _base_record_v1_2_0(
+                manifest, name, disposition="unavailable", reason="header_without_direct_value",
+                reported=_empty_value(), term_type=_document_term_type(name),
+                evidence=_document_evidence(manifest, spans), source_available_at=source_available_at,
+                child_document=table.document, parser_version=parser_version,
+            )
+            for name in TERM_NAMES
+        ]
+
+    records: list[dict[str, Any]] = []
+    for row_index, row in security_rows:
+        security, title_cell = _security_for_row(manifest_id, table, row, row_index)
+        row_span = _row_span(manifest_id, table, row, row_index)
+        base_spans: list[Mapping[str, Any]] = [table_span, row_span]
+        if title_cell is not None:
+            base_spans.append(_cell_span(manifest_id, table, row, row_index, title_cell, "security_title"))
+        title_present = bool(security.get("title_raw"))
+        classification = str(security["classification"])
+        for name in TERM_NAMES:
+            column = table.columns.get(name)
+            cell = row.cell_at(column) if column is not None else None
+            term_spans = list(base_spans)
+            if cell is not None:
+                term_spans.append(_cell_span(manifest_id, table, row, row_index, cell, name))
+            parsed = _parse_number(
+                cell.text if cell is not None else "",
+                allow_denominated_rate=name == "filing_fee_rate",
+            )
+            term_type, unit, currency = _term_semantics(
+                name, classification, rate_scale=parsed.scale,
+            )
+            disposition = parsed.disposition
+            reason = parsed.reason
+            if disposition == "observed" and (not title_present or unit is None):
+                disposition = "ambiguous"
+                reason = "unit_semantics_ambiguous"
+            reported = (
+                _direct_value(cell.text, str(parsed.value), str(unit), currency, str(parsed.scale))
+                if disposition == "observed" and cell is not None and parsed.value is not None
+                and parsed.scale is not None and unit is not None
+                else _empty_value()
+            )
+            records.append(_base_record_v1_2_0(
+                manifest, name, disposition=disposition, reason=reason,
+                reported=reported, term_type=term_type,
+                evidence=_document_evidence(manifest, term_spans),
+                source_available_at=source_available_at, security=security,
+                child_document=table.document, parser_version=parser_version,
+                scope=_ROW_SCOPE_V1_2_0,
+            ))
+    for row_index, row in total_rows:
+        records.append(_total_row_record_v1_3_0(
+            manifest, table, row, row_index, table_span,
+            source_available_at, parser_version,
+        ))
+    return records
+
 def _clone_json_value(value: Any) -> Any:
     """Copy only the immutable JSON value model admitted by observation contracts."""
     if isinstance(value, Mapping):
@@ -2856,6 +3274,18 @@ _PARSER_V1_2_0_IMPLEMENTATION_SHA256 = (
     "939fb266ac7b94483ba08b54153fbd5f45c49e261cffaaaf6bd2a80eb0fade7a"
 )
 
+# 1.3.0 goldens, reviewed in the same clean ``-B`` subprocess method as 1.2.0
+# (see tests/test_capital_structure_document_terms_v1_3_0.py).  The released
+# runtime allowlist and dispatch roots are shared with 1.1.0/1.2.0 on purpose:
+# the runtime validator depends only on ``semantic_bundle.dispatch_roots``.
+_PARSER_V1_3_0_DEPENDENCY_COUNT = 315
+_PARSER_V1_3_0_DEPENDENCY_MANIFEST_SHA256 = (
+    "3d6438f0e354cc4001e17611ee88932acd6c65bfde14af3ce75fff81a0b07d4e"
+)
+_PARSER_V1_3_0_IMPLEMENTATION_SHA256 = (
+    "ea1a9f820d918ebe47633ad52a88b240c6cda2882087bc784a942783b0e50823"
+)
+
 # Reviewed in clean ``-B`` subprocesses.  These literal entries are the runtime
 # trust root: the current process may be compared with them, but it can never
 # mint or promote an observed fingerprint/digest into release authority. The
@@ -3081,10 +3511,12 @@ _RELEASED_PARSER_IMPLEMENTATION_DIGESTS = MappingProxyType({
         "d47515272069bfc3f3f768b84b94a218f7f66e7c746e36a8702efd97c26af645"
     ),
     "capital-structure-document-terms/1.2.0": _PARSER_V1_2_0_IMPLEMENTATION_SHA256,
+    "capital-structure-document-terms/1.3.0": _PARSER_V1_3_0_IMPLEMENTATION_SHA256,
 })
 _RELEASED_PARSER_VERSIONS = (
     "capital-structure-document-terms/1.1.0",
     "capital-structure-document-terms/1.2.0",
+    "capital-structure-document-terms/1.3.0",
 )
 
 _RELEASED_PARSER_REGISTRY = MappingProxyType({
@@ -3112,6 +3544,19 @@ _RELEASED_PARSER_REGISTRY = MappingProxyType({
             dispatch_roots=_PARSER_V1_1_0_DISPATCH_ROOTS,
             dependency_count=_PARSER_V1_2_0_DEPENDENCY_COUNT,
             dependency_manifest_sha256=_PARSER_V1_2_0_DEPENDENCY_MANIFEST_SHA256,
+        ),
+    ),
+    "capital-structure-document-terms/1.3.0": ParserRegistration(
+        version="capital-structure-document-terms/1.3.0",
+        implementation_sha256=_RELEASED_PARSER_IMPLEMENTATION_DIGESTS[
+            "capital-structure-document-terms/1.3.0"
+        ],
+        extractor=_records_for_manifest_v1_3_0,
+        semantic_bundle=ParserSemanticBundle(
+            entrypoints=_parser_semantic_entrypoints(_records_for_manifest_v1_3_0),
+            dispatch_roots=_PARSER_V1_1_0_DISPATCH_ROOTS,
+            dependency_count=_PARSER_V1_3_0_DEPENDENCY_COUNT,
+            dependency_manifest_sha256=_PARSER_V1_3_0_DEPENDENCY_MANIFEST_SHA256,
         ),
     ),
 })

@@ -10,10 +10,13 @@ standard us-gaap element and RPO timing exists only as non-numeric iXBRL
 duration facts the raw ledger excludes by design, so both are declared
 unmapped typed absences, never narrative extractions (R-K4').
 
-One declaration carries a pack-side finalize rule: ``rpo_total`` also admits
-a filing that tags the total only on the standard expected-timing start-date
-axis as a single aggregate (``Pk04Producer.finalize_result``, the registry
-hook PK11 introduced), under the guard documented at that mapping.
+Two declarations carry pack-side finalize rules (``Pk04Producer.finalize_result``,
+the registry hook PK11 introduced): ``rpo_total`` also admits a filing that
+tags the total only on the standard expected-timing start-date axis as a
+single aggregate, under the guard documented at that mapping; and
+``rpo_percentage_next_12m`` bounds the selected typed start date to the same
+period-adjacent window, because the shared selector alone admits a bucket at
+any distance on or after the period of report.
 """
 from __future__ import annotations
 
@@ -39,6 +42,7 @@ from .base import (
     SumIdentity,
     TextSpanMapping,
     TypedDimensionedFactMapping,
+    _absence_row,
     _dimensions_admitted,
     _identity_tolerance,
     _mapping_digest,
@@ -70,6 +74,9 @@ RPO_TIMING_PERIOD1_CONCEPT = (
     "SatisfactionPeriod1"
 )
 RPO_TOTAL_CONCEPT = "us-gaap:RevenueRemainingPerformanceObligation"
+RPO_PERCENTAGE_CONCEPT = (
+    "us-gaap:RevenueRemainingPerformanceObligationPercentage"
+)
 RPO_SCOPE_RULE_ID = "pk04.rpo_vs_deferred_scope/v1"
 
 _FIELD_MAPPINGS = {
@@ -118,8 +125,14 @@ _FIELD_MAPPINGS = {
     "rpo_total": FactMapping(
         ("us-gaap:RevenueRemainingPerformanceObligation",)
     ),
+    # RPO share expected within 12 months. The shared selector admits a
+    # typed start date at ANY distance on or after the period of report; the
+    # finalize hook bounds the selected member to the same period-adjacent
+    # window as ``rpo_total`` (see ``_rpo_percentage_member_beyond_window``):
+    # both pinned real shapes put the within-12-months bucket at por + 1 day,
+    # so a lone later bucket never stands in for the 12-months share.
     "rpo_percentage_next_12m": TypedDimensionedFactMapping(
-        concept="us-gaap:RevenueRemainingPerformanceObligationPercentage",
+        concept=RPO_PERCENTAGE_CONCEPT,
         typed_axis=RPO_TIMING_AXIS,
         select="earliest_on_or_after_period_of_report",
     ),
@@ -339,6 +352,77 @@ def _mint_rpo_total_row(row: dict[str, Any], aggregate: Any) -> None:
     row["value"] = decimal_text(Decimal(str(aggregate.parsed_value)))
 
 
+def _rpo_percentage_member_beyond_window(
+    row: Mapping[str, Any], ledger: Any
+) -> bool:
+    """Whether the valued percentage row's selected typed bucket sits outside
+    the period-adjacent window.
+
+    The shared typed-dimensioned selector (base.py
+    ``earliest_on_or_after_period_of_report``) admits a typed start date at
+    ANY distance on or after the period of report, but this field's catalogue
+    name promises the share expected within 12 months. The guard re-reads the
+    representative source occurrence (the resolver's own choice, lowest
+    occurrence id) and parses its typed member with the same
+    ``_typed_member_iso_date`` helper the ``rpo_total`` guard uses. ACCEPTED:
+    ``por < member_date <= por + 92 days`` — both pinned real shapes put the
+    within-12-months bucket at ``por + 1 day``. BEYOND the window (the caller
+    rewrites the row as the resolver's own typed absence): a member at or
+    before the period end, one past the window, or carrying no parseable
+    date. A row whose selected source cannot be re-read from the re-parsed
+    ledger keeps the framework's word unchanged.
+    """
+    por = date.fromisoformat(str(row["period"]["end"])[:10])
+    source_ids = row.get("source_occurrence_ids") or ()
+    if not source_ids:
+        return False
+    by_id = {item.occurrence_id: item for item in ledger.events}
+    representative = by_id.get(min(source_ids))
+    if representative is None:
+        return False
+    member = next(
+        (
+            member
+            for axis, member in representative.context.typed_dimensions
+            if axis == RPO_TIMING_AXIS
+        ),
+        None,
+    )
+    if member is None:
+        return False
+    member_date = _typed_member_iso_date(str(member))
+    return member_date is None or not (
+        por < member_date <= por + timedelta(days=92)
+    )
+
+
+def _rewrite_rpo_percentage_absence(
+    row: dict[str, Any],
+    catalogue_field: Mapping[str, Any],
+    catalogue: Mapping[str, Any],
+    por: date,
+) -> dict[str, Any]:
+    """Rewrite the beyond-window valued row as the typed resolver's absence.
+
+    Byte-identical to the row the shared resolver itself produces when no
+    typed bucket competes: the same ``missing`` quality state, the same
+    ``missing_standard_fact`` reason, empty sources and dimensions. The
+    mapping is unchanged, so the rule id and digest already on the valued
+    row carry over untouched.
+    """
+    absence = _absence_row(
+        catalogue_field,
+        por,
+        "missing",
+        f"missing_standard_fact:{RPO_PERCENTAGE_CONCEPT}",
+        concept=RPO_PERCENTAGE_CONCEPT,
+        catalogue=catalogue,
+    )
+    absence.row["mapping_rule_id"] = row.get("mapping_rule_id")
+    absence.row["mapping_rule_digest"] = row.get("mapping_rule_digest")
+    return absence.row
+
+
 def _recompute_coverage(envelope: dict[str, Any]) -> None:
     counts = {
         "valued_fields": 0,
@@ -465,7 +549,7 @@ def _refresh_rpo_scope_check(
 
 @dataclass(frozen=True)
 class Pk04Producer(PackProducer):
-    """PK04 declaration plus the typed-axis RPO-total finalize hook."""
+    """PK04 declaration plus the typed-axis RPO finalize hooks."""
 
     def finalize_result(
         self, result: dict[str, Any], pack_input: PackInput
@@ -474,7 +558,14 @@ class Pk04Producer(PackProducer):
             return result  # the not-applicable path is already exact (B.5)
         rows = {row["field_id"]: row for row in result["fields"]}
         rpo_row = rows.get("rpo_total")
-        if rpo_row is None or rpo_row.get("quality_state") != "missing":
+        pct_row = rows.get("rpo_percentage_next_12m")
+        total_absent = (
+            rpo_row is not None and rpo_row.get("quality_state") == "missing"
+        )
+        pct_valued = (
+            pct_row is not None and pct_row.get("quality_state") == "valued"
+        )
+        if not (total_absent or pct_valued):
             return result  # valued/conflict rows: the framework's own word
         from ..ixbrl_raw_ledger import parse_and_convert_golden_packages
 
@@ -483,21 +574,42 @@ class Pk04Producer(PackProducer):
         ledger, _filing_metadata, _report = parse_and_convert_golden_packages(
             pack_input.packages
         )
-        catalogue_field = next(
-            item
-            for item in contract.load_pack_schema("PK04")["fields"]
-            if item["field_id"] == "rpo_total"
-        )
-        por = date.fromisoformat(str(rpo_row["period"]["end"])[:10])
-        aggregate = _rpo_single_typed_axis_aggregate(
-            ledger,
-            por,
-            _unit_equivalents(catalogue_field.get("unit")),
-        )
-        if aggregate is None:
+        schema = contract.load_pack_schema("PK04")
+        changed = False
+        if total_absent:
+            catalogue_field = next(
+                item
+                for item in schema["fields"]
+                if item["field_id"] == "rpo_total"
+            )
+            por = date.fromisoformat(str(rpo_row["period"]["end"])[:10])
+            aggregate = _rpo_single_typed_axis_aggregate(
+                ledger,
+                por,
+                _unit_equivalents(catalogue_field.get("unit")),
+            )
+            if aggregate is not None:
+                _mint_rpo_total_row(rpo_row, aggregate)
+                _refresh_rpo_scope_check(result, rows, ledger)
+                changed = True
+        if pct_valued and _rpo_percentage_member_beyond_window(pct_row, ledger):
+            catalogue_field = next(
+                item
+                for item in schema["fields"]
+                if item["field_id"] == "rpo_percentage_next_12m"
+            )
+            por = date.fromisoformat(str(pct_row["period"]["end"])[:10])
+            pct_index = next(
+                index
+                for index, row in enumerate(result["fields"])
+                if row is pct_row
+            )
+            result["fields"][pct_index] = _rewrite_rpo_percentage_absence(
+                pct_row, catalogue_field, schema, por
+            )
+            changed = True
+        if not changed:
             return result
-        _mint_rpo_total_row(rpo_row, aggregate)
-        _refresh_rpo_scope_check(result, rows, ledger)
         _recompute_coverage(result)
         result["pack_content_sha256"] = contract.pack_content_digest(result)
         errors = contract.validate_pack_result(result)

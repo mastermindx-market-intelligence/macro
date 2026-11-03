@@ -65,6 +65,49 @@ def built(tmp_path_factory) -> tuple[str, Path]:
     return hub[0].read_text(encoding="utf-8"), out
 
 
+def _pin_policy_current(data_root: Path) -> None:
+    """Contract-legal monetary_policy freshness pin + remanifest.
+
+    The M6 structural-stance tests assert what a NOT_APPLICABLE section with
+    comparable rows renders. A live snapshot turns STALE_SOURCE whenever a
+    required input lags (2026-11-02: market_implied_path_12m and
+    fed_balance_sheet_impulse), which correctly routes the section to E2 and
+    takes the assertion off the branch under test. Pin freshness so the test
+    owns its premise instead of inheriting tonight's data.
+    """
+    victim = data_root / "workspaces" / "monetary_policy" / "US" / "latest.json"
+    snap = json.loads(victim.read_text(encoding="utf-8"))
+    availability = snap["availability"]
+    for component in availability.get("required") or []:
+        component["freshness"] = "CURRENT"
+    availability["state"] = "CURRENT"
+    availability["worst_freshness"] = "CURRENT"
+    availability["degraded"] = []
+    availability["reasons"] = []
+    sealed = workspace_contract.finalize(snap)
+    raw = json.dumps(sealed, ensure_ascii=False).encode("utf-8")
+    victim.write_bytes(raw)
+    manifest_path = data_root / "workspaces" / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    entry = manifest["workspaces"]["monetary_policy/US"]
+    entry["content_sha256"] = sealed["generation"]["content_sha256"]
+    entry["bytes"] = len(raw)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+
+@pytest.fixture(scope="module")
+def built_policy_current(tmp_path_factory) -> tuple[str, Path]:
+    base = tmp_path_factory.mktemp("macro_command_panels_policy_current")
+    data_root = base / "macrodata"
+    shutil.copytree(DATA_ROOT, data_root)
+    _pin_policy_current(data_root)
+    out = base / "site"
+    pages = builder.render(ROOT, data_root=data_root, out_dir=out, page_built_at=BUILT_AT)
+    hub = [p for p in pages if p.name == builder.HUB_PAGE.output]
+    assert hub, "the builder did not write macro_monetary.html"
+    return hub[0].read_text(encoding="utf-8"), out
+
+
 def _panel(html: str, section_id: str) -> str:
     match = re.search(
         r'<section class="mc-panel" id="' + section_id + r'".*?(?=<section class="mc-panel"|</main>)',
@@ -362,8 +405,9 @@ def test_unmapped_metric_on_a_p3_section_raises() -> None:
 
 
 @pytest.mark.needs_full_checkout("site")
-def test_not_applicable_is_unstated_not_e1(built: tuple[str, Path]) -> None:
-    html, _ = built
+def test_not_applicable_is_unstated_not_e1(
+        built_policy_current: tuple[str, Path]) -> None:
+    html, _ = built_policy_current
     rates = _panel(html, "rates")
     assert 'data-mc-empty="e1"' not in rates
     policy = _panel(html, "policy")
@@ -424,10 +468,10 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
 
 @pytest.mark.needs_full_checkout("site")
 def test_populated_unstated_section_uses_see_curve_chip(
-        built: tuple[str, Path]) -> None:
+        built_policy_current: tuple[str, Path]) -> None:
     """M6 branch 2: #policy has rows + no headline — structural stance,
     strip chip reads 'See the curve below' and is dated."""
-    html, _ = built
+    html, _ = built_policy_current
     policy = _panel(html, "policy")
     assert 'data-mc-empty="e2"' not in policy
     assert "No single reading is published here" in policy
