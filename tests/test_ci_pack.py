@@ -4501,6 +4501,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -4586,6 +4591,10 @@ CURATED_EXCLUSIVE = {
     # the transport suites import app.main, whose closure smears whole-tree
     # scan roots onto all three packing probes (+1 job each) when inferred.
     "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4990,6 +4999,12 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
     # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
     # the frozen stage-1 runner, whose lazy risk_radar closure made inference
     # select the job on the plan_book (130 > 129) and build_free_content
@@ -5155,6 +5170,12 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
+    # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
+    # inference smeared this job's scan roots onto templates/index.html (138
+    # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
+    # exact 55-file non-wildcard closure; nothing under templates/; no ceiling moved.
+    "global-liquidity-transmission",
     # 2026-10-13 Communications Build 1: Alphabet GOOGL/GOOG enrollment.
     # issuer_profiles' import closure reaches lib/pages.py and
     # engine/press/earnings_adapter.py, whose subprocess/filesystem edges

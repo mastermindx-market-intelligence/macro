@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-03T05:48:12.025622+00:00",
+  "generated_utc": "2026-11-03T09:31:54.515528+00:00",
   "as_of": "2026-11-03",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -31621,7 +31621,7 @@
         "ticker": "PRU",
         "next_date": "2026-11-03",
         "days_to": 0,
-        "eps_forecast": 3.32,
+        "eps_forecast": 3.31,
         "last_surprise_pct": 17.6
       },
       {
@@ -31761,7 +31761,7 @@
         "ticker": "CDE",
         "next_date": "2026-11-04",
         "days_to": 1,
-        "eps_forecast": 0.12,
+        "eps_forecast": 0.1,
         "last_surprise_pct": -45.5
       },
       {
@@ -32108,6 +32108,13 @@
         "last_surprise_pct": 48.0
       },
       {
+        "ticker": "TR",
+        "next_date": "2026-11-04",
+        "days_to": 1,
+        "eps_forecast": null,
+        "last_surprise_pct": null
+      },
+      {
         "ticker": "AEE",
         "next_date": "2026-11-05",
         "days_to": 2,
@@ -32153,7 +32160,7 @@
         "ticker": "COP",
         "next_date": "2026-11-05",
         "days_to": 2,
-        "eps_forecast": 2.97,
+        "eps_forecast": 2.95,
         "last_surprise_pct": 9.5
       },
       {
@@ -32195,7 +32202,7 @@
         "ticker": "HASI",
         "next_date": "2026-11-05",
         "days_to": 2,
-        "eps_forecast": 0.69,
+        "eps_forecast": 0.7,
         "last_surprise_pct": 6.0
       },
       {
@@ -32209,7 +32216,7 @@
         "ticker": "KMB",
         "next_date": "2026-11-05",
         "days_to": 2,
-        "eps_forecast": 1.69,
+        "eps_forecast": 1.66,
         "last_surprise_pct": -10.0
       },
       {
@@ -32258,7 +32265,7 @@
         "ticker": "PRMB",
         "next_date": "2026-11-05",
         "days_to": 2,
-        "eps_forecast": 0.4,
+        "eps_forecast": 0.39,
         "last_surprise_pct": 6.2
       },
       {
@@ -32500,13 +32507,6 @@
         "last_surprise_pct": 13.2
       },
       {
-        "ticker": "NBIS",
-        "next_date": "2026-11-10",
-        "days_to": 7,
-        "eps_forecast": null,
-        "last_surprise_pct": 82.1
-      },
-      {
         "ticker": "CSCO",
         "next_date": "2026-11-11",
         "days_to": 8,
@@ -32519,13 +32519,6 @@
         "days_to": 8,
         "eps_forecast": 0.09,
         "last_surprise_pct": 2.7
-      },
-      {
-        "ticker": "INFQ",
-        "next_date": "2026-11-11",
-        "days_to": 8,
-        "eps_forecast": null,
-        "last_surprise_pct": 14.3
       },
       {
         "ticker": "AMAT",
@@ -32552,7 +32545,7 @@
         "ticker": "NU",
         "next_date": "2026-11-12",
         "days_to": 9,
-        "eps_forecast": 0.23,
+        "eps_forecast": 0.22,
         "last_surprise_pct": 10.0
       },
       {
@@ -32568,6 +32561,13 @@
         "days_to": 9,
         "eps_forecast": null,
         "last_surprise_pct": -128.6
+      },
+      {
+        "ticker": "NBIS",
+        "next_date": "2026-11-12",
+        "days_to": 9,
+        "eps_forecast": null,
+        "last_surprise_pct": 82.1
       },
       {
         "ticker": "BTBT",
@@ -32589,6 +32589,13 @@
         "days_to": 13,
         "eps_forecast": 0.57,
         "last_surprise_pct": -35.3
+      },
+      {
+        "ticker": "INFQ",
+        "next_date": "2026-11-16",
+        "days_to": 13,
+        "eps_forecast": null,
+        "last_surprise_pct": 14.3
       },
       {
         "ticker": "DIS",
