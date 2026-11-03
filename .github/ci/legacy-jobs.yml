@@ -13612,6 +13612,7 @@ jobs:
           tests/test_fundamental_forensics_header_period_composition.py
           tests/test_fundamental_forensics_displayed_title_fold.py
           tests/test_fundamental_forensics_bare_year_columns.py
+          tests/test_fundamental_forensics_title_block_carry.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
           -q

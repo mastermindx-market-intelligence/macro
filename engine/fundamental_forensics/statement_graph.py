@@ -1264,6 +1264,13 @@ def _title_fold_suffix_arms(folded_title: str, suffix: str) -> bool:
     return _TITLE_FOLD_QUALIFIER_RE.match(suffix) is not None
 
 
+# Title-block carry (``carry=True``): the most rows a factless heading table
+# may print and still hand its title to the table after it, and the page
+# reference ("45", "F-12") whose presence marks a contents table instead.
+_TITLE_BLOCK_MAX_ROWS = 6
+_TITLE_BLOCK_PAGE_REF_RE = re.compile(r"^(?:[A-Z]{1,2}-)?[0-9]{1,3}$")
+
+
 class _StatementTableParser(HTMLParser):
     """Visible HTML table for one captured primary statement title.
 
@@ -1278,7 +1285,10 @@ class _StatementTableParser(HTMLParser):
     signatures, a capture is kept only if a strict majority of its value
     facts sit in undimensioned contexts or it is an entity-grouped face
     (``_capture_is_consolidated``), and a continuation marker seen before
-    the capture holds any fact drops that capture.
+    the capture holds any fact drops that capture.  With ``carry=True`` a
+    factless title-block table hands its title to the next table instead of
+    being discarded (``_carries_title_block``); ``parse_displayed_primary_table``
+    runs that pass only after the exact and fold passes find no table.
     """
 
     def __init__(
@@ -1287,9 +1297,20 @@ class _StatementTableParser(HTMLParser):
         *,
         fold: bool = False,
         context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+        carry: bool = False,
     ) -> None:
         super().__init__(convert_charrefs=True)
         self._fold = fold
+        self._carry = carry
+        self._carried = False
+        self.carried_capture = False
+        self.carry_end_pos: tuple[int, int] | None = None
+        self._tb_rows = 0
+        self._tb_facts = 0
+        self._tb_title_only = False
+        self._tb_companion = False
+        self._tb_title_named = False
+        self._tb_page_ref = False
         self._context_dimensions = (
             None if context_dimensions is None else dict(context_dimensions)
         )
@@ -1361,6 +1382,83 @@ class _StatementTableParser(HTMLParser):
             elif folded_candidate in normalized:
                 return candidate
         return None
+
+    def _title_only(self, text: str) -> bool:
+        """Whether ``text`` is a declared title itself: equal to it after
+        whitespace normalisation (a list candidate after ``_search_normalize``),
+        or on the fold pass the folded title with only the qualifiers
+        ``_title_fold_suffix_arms`` allows."""
+        if self._folded_titles is None:
+            if self._fold:
+                folded_text = _title_fold(text)
+                for candidate in self._titles:
+                    folded_candidate = _title_fold(candidate)
+                    if (
+                        folded_candidate
+                        and folded_text.startswith(folded_candidate)
+                        and _title_fold_suffix_arms(
+                            folded_candidate, folded_text[len(folded_candidate):]
+                        )
+                    ):
+                        return True
+                return False
+            stripped = re.sub(r"\s+", " ", text).strip()
+            return any(
+                candidate.strip() and stripped == candidate.strip() for candidate in self._titles
+            )
+        normalized = _search_normalize(text)
+        return any(folded and normalized == folded for folded in self._folded_titles)
+
+    def _title_named(self, text: str) -> bool:
+        """Whether ``text`` names a declared title anywhere in it, after
+        ``_title_fold`` (a list candidate after ``_search_normalize``).
+        Containment, not equality: the carry pass uses it only to decline."""
+        if self._folded_titles is None:
+            folded_text = _title_fold(text)
+            return any(
+                folded and folded in folded_text
+                for folded in (_title_fold(candidate) for candidate in self._titles)
+            )
+        normalized = _search_normalize(text)
+        return any(folded and folded in normalized for folded in self._folded_titles)
+
+    def _note_title_block_row(self, cells: list[dict[str, Any]], hit: str | None) -> None:
+        # Carry pass only: what the current outermost table has printed so far,
+        # for ``_carries_title_block`` and ``_close_capture`` at its end.
+        prior_facts = self._tb_facts
+        self._tb_rows += 1
+        self._tb_facts += sum(len(cell.get("facts") or []) for cell in cells)
+        nonblank = [cell["text"].strip() for cell in cells if cell["text"].strip()]
+        if any(_TITLE_BLOCK_PAGE_REF_RE.match(item) for item in nonblank):
+            self._tb_page_ref = True
+        if hit is not None and len(nonblank) == 1 and self._title_only(nonblank[0]):
+            self._tb_title_only = True
+        named = bool(nonblank) and self._title_named(" ".join(nonblank))
+        if nonblank and not named:
+            self._tb_companion = True
+        if named and not prior_facts:
+            self._tb_title_named = True
+
+    def _carries_title_block(self) -> bool:
+        # A filing may print the statement title in a small heading table of
+        # its own and the statement body, untitled, in the next table.  On the
+        # carry pass such a heading table is not discarded like a contents
+        # table: it holds no numeric fact, at most _TITLE_BLOCK_MAX_ROWS rows
+        # and no page reference, one of its rows is the declared title alone in
+        # its only nonblank cell, and another row prints a line that does not
+        # name the title (an entity name, a units caption, "(Unaudited)", a
+        # back-link).  A table printing the title and nothing else stays a
+        # discarded factless capture (P5B R3): it reads like a contents entry
+        # or a bare heading.  Its title then arms the next table.
+        return (
+            self._carry
+            and self._table_depth == 0
+            and self._tb_title_only
+            and self._tb_companion
+            and not self._tb_page_ref
+            and self._tb_facts == 0
+            and 0 < self._tb_rows <= _TITLE_BLOCK_MAX_ROWS
+        )
 
     def _row_title_hit(self, cells: list[dict[str, Any]]) -> str | None:
         """Title hit for a finished row: the joined row text, or after a
@@ -1486,7 +1584,23 @@ class _StatementTableParser(HTMLParser):
     def _close_capture(self) -> None:
         if self._capture_has_facts() and self._capture_is_consolidated():
             self._ended = True
-            self._finalize_grid()
+            if self._carried and not self._tb_title_named:
+                # A carried table that names the title itself before its
+                # first numeric fact is left to the exact and fold passes
+                # and their re-arm rules; the carry never overrides them.
+                self.carried_capture = True
+                self.carry_end_pos = self.getpos()
+            if not self._carry:
+                # The carry pass builds a grid only for the carried table
+                # it keeps (``_carried_title_block_parse``), so a declined
+                # carry raises nothing and the earlier refusal stands.
+                self._finalize_grid()
+        elif self._carries_title_block():
+            self.rows = []
+            self.chrome_row_indices = set()
+            self._capturing = False
+            self._seen_title = True
+            self._carried = True
         else:
             self._discard_factless_capture()
 
@@ -1501,6 +1615,7 @@ class _StatementTableParser(HTMLParser):
         self._capturing = False
         self._seen_title = False
         self._discarded = True
+        self._carried = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if self._ended:
@@ -1517,6 +1632,12 @@ class _StatementTableParser(HTMLParser):
                 # dropping it keeps handle_data from reading its facts.
                 self._in_row = False
                 self._row_cells = []
+                self._tb_rows = 0
+                self._tb_facts = 0
+                self._tb_title_only = False
+                self._tb_companion = False
+                self._tb_title_named = False
+                self._tb_page_ref = False
             self._table_depth += 1
             return
         if tag == "tr":
@@ -1587,6 +1708,8 @@ class _StatementTableParser(HTMLParser):
                     [cell["text"] for cell in self._row_cells]
                 ):
                     hit = None
+                if self._carry and self._table_depth:
+                    self._note_title_block_row(self._row_cells, hit)
                 if hit is not None:
                     self._seen_title = True
                     self._capturing = True
@@ -1651,6 +1774,113 @@ class _StatementTableParser(HTMLParser):
             self._discard_factless_capture()
 
 
+class _TitleBlockFollower(HTMLParser):
+    """What follows a carried capture, up to the end of the next outermost
+    table holding a numeric fact: a cell or text node that is the declared
+    title itself, or a continuation marker, marks the statement as split
+    across tables (``split``)."""
+
+    def __init__(self, probe: _StatementTableParser) -> None:
+        super().__init__(convert_charrefs=True)
+        self._probe = probe
+        self._hidden = 0
+        self._table_depth = 0
+        self._table_facts = 0
+        self._cell_text: list[str] | None = None
+        self._done = False
+        self.split = False
+
+    def _check(self, text: str) -> None:
+        if text.strip() and (self._probe._title_only(text) or self._probe._continued(text)):
+            self.split = True
+            self._done = True
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if self._done:
+            return
+        if tag.endswith(":hidden") or tag == "ix:hidden":
+            self._hidden += 1
+            return
+        if self._hidden:
+            return
+        if tag == "table":
+            if not self._table_depth:
+                self._table_facts = 0
+            self._table_depth += 1
+        elif tag in {"td", "th"} and self._table_depth:
+            self._cell_text = []
+        elif self._table_depth and _is_ix_numeric(tag):
+            self._table_facts += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if self._done:
+            return
+        if tag.endswith(":hidden") or tag == "ix:hidden":
+            if self._hidden:
+                self._hidden -= 1
+            return
+        if self._hidden:
+            return
+        if tag in {"td", "th"} and self._cell_text is not None:
+            self._check("".join(self._cell_text))
+            self._cell_text = None
+        elif tag == "table" and self._table_depth:
+            self._table_depth -= 1
+            if not self._table_depth:
+                self._cell_text = None
+                if self._table_facts:
+                    self._done = True
+
+    def handle_data(self, data: str) -> None:
+        if self._done or self._hidden:
+            return
+        if self._cell_text is not None:
+            self._cell_text.append(data)
+        else:
+            self._check(data)
+
+
+def _title_block_split(html: str, parser: _StatementTableParser) -> bool:
+    if parser.carry_end_pos is None:
+        return True
+    line, column = parser.carry_end_pos
+    offset = 0
+    for _ in range(line - 1):
+        offset = html.index("\n", offset) + 1
+    follower = _TitleBlockFollower(parser)
+    follower.feed(html[offset + column:])
+    follower.close()
+    return follower.split
+
+
+def _carried_title_block_parse(
+    html: str,
+    title: str | list[str],
+    context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None,
+) -> _StatementTableParser | None:
+    """The carry pass: the exact (then, for a single string, the fold) search
+    again, letting a factless title-block table hand its title to the next
+    table (``_carries_title_block``).  A capture is kept only when it is that
+    carried table, it does not name the title before its first fact, and
+    nothing between it and the end of the next table holding a fact prints
+    the title again or a continuation marker; a table printing its own
+    heading, or a statement split across tables, keeps its refusal.  The
+    grid is built only for a kept capture, so a declined carry raises
+    nothing and the exact and fold passes' refusal stands."""
+    attempts: list[dict[str, Any]] = [{"carry": True}]
+    if isinstance(title, str):
+        attempts.append({"fold": True, "context_dimensions": context_dimensions, "carry": True})
+    for kwargs in attempts:
+        parser = _StatementTableParser(title, **kwargs)
+        parser.feed(html)
+        parser.close()
+        if parser.carried_capture and not _title_block_split(html, parser):
+            parser._finalize_grid()
+            if parser.rows:
+                return parser
+    return None
+
+
 def parse_displayed_primary_table(
     html: str,
     *,
@@ -1700,6 +1930,11 @@ def parse_displayed_primary_table(
         parser.feed(html)
         parser.close()
         parser._finalize_grid()
+    carried = None
+    if not parser.rows:
+        carried = _carried_title_block_parse(html, title, context_dimensions)
+        if carried is not None:
+            parser = carried
     if not parser.rows:
         raise StatementGraphError(
             f"displayed statement table is absent: {title_label}",
@@ -1816,6 +2051,8 @@ def parse_displayed_primary_table(
     if grouped is not None:
         output["columns_source"] = "composed_grouped_duration_year_row"
         output["columns_periods"] = grouped[0]
+    if carried is not None:
+        output["table_source"] = "carried_title_block"
     return output
 
 
