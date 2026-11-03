@@ -24895,6 +24895,8 @@ jobs:
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
         run: python -m pytest tests/test_billing_webhook.py -v
+      - name: support entitlement read truth and routing
+        run: python -m pytest tests/test_support_api.py tests/test_support_tier_routing.py -v
 
   billing-offers:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

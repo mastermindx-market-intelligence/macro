@@ -160,7 +160,7 @@ def test_receipt_carries_the_promise_when_the_plan_read_fails(wired, monkeypatch
     from app import billing
 
     monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
-    monkeypatch.setattr(billing, "read_entitlement", lambda uid: (_ for _ in ()).throw(RuntimeError("down")))
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid, **kwargs: (_ for _ in ()).throw(RuntimeError("down")))
     out = _post(wired, [])
     assert out["routing"]["plan"] == "free"
     assert out["routing"]["note_en"]
@@ -177,7 +177,7 @@ def test_signed_in_ticket_is_never_told_it_was_not_signed_in_when_plan_is_unread
     from app import billing
 
     monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
-    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {})  # no "tier" key at all
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid, **kwargs: {})  # no "tier" key at all
     out = _post(wired, [])
     assert out["routing"]["plan"] == "free"
     assert out["routing"]["note_en"] != "You were not signed in, so this went to the general queue."
@@ -214,7 +214,7 @@ def test_honeypot_receipt_is_neutral_even_when_a_bearer_is_present(wired, monkey
     from app import billing
 
     monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
-    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {"tier": "pro"})
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid, **kwargs: {"tier": "pro"})
     bt = BackgroundTasks()
     out = support.create_ticket(_body(website="http://spam.example"), _FakeRequest(), bt,
                                 authorization="Bearer signed-in-token")
@@ -263,7 +263,7 @@ def test_priority_ticket_labels_the_operator_mail(wired, monkeypatch) -> None:
     monkeypatch.setattr(mailer, "render_email", lambda *a, **kw: ("<html/>", "text"))
     monkeypatch.setattr(mailer, "send", lambda **kw: (sent.append(kw), "sent")[1])
     monkeypatch.setattr(support, "_resolve_user", lambda auth: {"id": UID, "email": "ada@example.com"})
-    monkeypatch.setattr(billing, "read_entitlement", lambda uid: {"tier": "pro"})
+    monkeypatch.setattr(billing, "read_entitlement", lambda uid, **kwargs: {"tier": "pro"})
     _post(wired, sent)
     operator_sends = [c for c in sent if c["template"] == "ticket_operator_notify"]
     assert operator_sends and operator_sends[0]["subject"].startswith("[support/priority/")
