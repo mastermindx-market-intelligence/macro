@@ -1,0 +1,6 @@
+check_title_i18n: FAIL — 2 violation(s): translated text in a title= attribute, or dual-span markup in <title> RCDATA. Translated text NEVER goes in attributes, and t()/td() markup NEVER goes in a <title> element — the dual-span l-en/l-zh mechanism cannot operate in either place:
+
+  /Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/morning-edition-title-20261103/before.html:11 ['<span' in <title> RCDATA] '<span class="l-en">Morning Edition</span><span class="l-zh">早间版</span> — 2026-11-03T04:38:'
+  templates/am_edition.html.j2:29 [t()/td() in <title> RCDATA] "<title>{{ t('Morning Edition', '早间版') }} — {{ as_of }}</title>"
+
+Fix attributes by moving the text out: use data-tip-en=/data-tip-zh= (theme.js renders the language-aware popover), or keep a static ENGLISH-ONLY title, or drop a title that repeats the visible dual-span chip. Fix <title> elements by passing plain strings (English + optional literal CJK — never t()/td()); the H1 carries the dual-span bilingual heading.

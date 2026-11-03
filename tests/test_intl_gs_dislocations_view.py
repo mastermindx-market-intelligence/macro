@@ -954,3 +954,72 @@ def _w3u_region(css: str) -> str:
 
 def _strip_tags(text: str) -> str:
     return re.sub(r"<[^>]+>", " ", text)
+
+
+# P12.T2.S4 — locale/disabled regression in the existing IM15 code job.
+class TestIntlTooltipLocale:
+    @pytest.fixture(scope="class", autouse=True)
+    @classmethod
+    def _tooltip_no_network(cls):
+        import socket
+        patch = pytest.MonkeyPatch()
+        def deny(*args, **kwargs):
+            raise AssertionError("Network forbidden in International tooltip fixture")
+        for obj, name in ((socket.socket, "connect"), (socket.socket, "connect_ex"),
+                          (socket, "create_connection"), (socket, "getaddrinfo")):
+            patch.setattr(obj, name, deny)
+        yield
+        patch.undo()
+    @pytest.fixture(scope="class")
+    @classmethod
+    def pages(cls):
+        module = _load(FIXTURE_PATH, "intl_gs_dislocations_fixture_tooltip")
+        return {"dislocations": module.render_page()}
+
+    @pytest.mark.parametrize("name,selector", [
+        ("dislocations", '.intl-dislocations__notplotted [data-tip-en]'),
+    ])
+    def test_native_renderers_emit_localized_keyboard_reachable_tooltips_and_consumer(self, pages, name, selector):
+        from tests.intl_gs_fixture_site import tooltip_document
+        CJK = re.compile(r"[一-鿿㐀-䶿]")
+        soup = tooltip_document(pages[name])
+        assert soup.select_one('script[src="theme.js"]') is not None
+        nodes = soup.select(selector)
+        assert nodes, (name, selector)
+        for node in nodes:
+            assert "title" not in node.attrs and node.get("tabindex") == "0"
+            assert node["data-tip-en"] and node["data-tip-zh"]
+        assert not [(n.name, n["title"]) for n in soup.select("[title]") if CJK.search(n["title"])]
+    @pytest.mark.parametrize("quoted_reason", [False, True])
+    def test_dislocation_unavailable_actions_are_really_disabled_with_separate_copy(self, quoted_reason):
+        from tests.intl_gs_fixture_site import tooltip_document
+        from jinja2 import Environment, FileSystemLoader
+        from engine import i18n
+        ROOT = Path(__file__).resolve().parents[1]
+        from lib.intl_gs_dislocations_view import COPY
+        env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+        env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
+        source = (ROOT / "templates/intl_workspace/dislocations.html.j2").read_text()
+        start = source.index('<div class="intl-dislocations__btnrow"')
+        end = source.index('</div>', start) + len('</div>')
+        fragment = env.from_string("{% import 'intl_workspace/_gs_macros.html.j2' as gs with context %}" + source[start:end])
+        context = {key: {"en": pair[0], "zh": pair[1]} for key, pair in COPY.items()}
+        reason = ('Missing "target" <view> & receipt', '缺少“目标”<视图> & 回执') if quoted_reason else COPY["btn_disabled_title"]
+        context["btn_disabled_title"] = {"en": reason[0], "zh": reason[1]}
+        html = fragment.render(c=context)
+        soup = tooltip_document(html)
+        wrapper = soup.select_one('.intl-dislocations__btnrow')
+        assert wrapper['tabindex'] == '0'
+        assert (wrapper['data-tip-en'], wrapper['data-tip-zh']) == reason
+        buttons = soup.select('button')
+        assert len(buttons) == 2 and soup.select_one('view') is None
+        for button in buttons:
+            assert button.has_attr('disabled') and not button.has_attr('disabledtitle')
+            assert not button.has_attr('title')
+            assert (button['data-tip-en'], button['data-tip-zh']) == reason
+    def test_existing_intl_renderer_owns_tooltip_style_and_asset(self):
+        ROOT = Path(__file__).resolve().parents[1]
+        css = (ROOT / "templates/intl_workspace_surveillance.css").read_text()
+        assert '[tabindex]' in css and ':focus-visible{outline:2px solid var(--link)' in css
+        assert '<script src="theme.js"></script>' in (ROOT / "templates/intl.html.j2").read_text()
+        assert '"theme.js"' in (ROOT / "scripts/build_intl.py").read_text()

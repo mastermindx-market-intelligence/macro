@@ -786,3 +786,38 @@ def test_abstained_event_pane():
     assert ">Common global shock<" in pane
     ceiling_en = abstain[0]["ceiling"]["en"]
     assert ceiling_en in _lang_text(pane, "en")
+
+
+# P12.T2.S4 — locale regression in the existing IM17 code job.
+class TestIntlTooltipLocale:
+    @pytest.fixture(scope="class", autouse=True)
+    @classmethod
+    def _tooltip_no_network(cls):
+        import socket
+        patch = pytest.MonkeyPatch()
+        def deny(*args, **kwargs):
+            raise AssertionError("Network forbidden in International tooltip fixture")
+        for obj, name in ((socket.socket, "connect"), (socket.socket, "connect_ex"),
+                          (socket, "create_connection"), (socket, "getaddrinfo")):
+            patch.setattr(obj, name, deny)
+        yield
+        patch.undo()
+    @pytest.fixture(scope="class")
+    @classmethod
+    def pages(cls):
+        return {"transmission": fixture.render_transmission_page()}
+
+    @pytest.mark.parametrize("name,selector", [
+        ("transmission", '.intl-transmission__mech [data-tip-en]'),
+    ])
+    def test_native_renderers_emit_localized_keyboard_reachable_tooltips_and_consumer(self, pages, name, selector):
+        from tests.intl_gs_fixture_site import tooltip_document
+        CJK = re.compile(r"[一-鿿㐀-䶿]")
+        soup = tooltip_document(pages[name])
+        assert soup.select_one('script[src="theme.js"]') is not None
+        nodes = soup.select(selector)
+        assert nodes, (name, selector)
+        for node in nodes:
+            assert "title" not in node.attrs and node.get("tabindex") == "0"
+            assert node["data-tip-en"] and node["data-tip-zh"]
+        assert not [(n.name, n["title"]) for n in soup.select("[title]") if CJK.search(n["title"])]

@@ -1,0 +1,17 @@
+{
+  "templates/intl_workspace/_gs_scanner_macros.html.j2": {
+    "original_after_inverse_projection_sha256": "096659f403948a022d07ec2c71c282f83247bdb0d246b8943503001e92310379",
+    "all_other_template_bytes_unchanged": true,
+    "current_sha256": "62e0909883c72ed61ac30a1e1720e971614b0c951d28d06d14507a059ec7d8d9"
+  },
+  "templates/intl_workspace/dislocations.html.j2": {
+    "original_after_inverse_projection_sha256": "c0f54e308e2e0491d75dc4d02f3f499f29fcb16349e2e25da9424db2ae261c54",
+    "all_other_template_bytes_unchanged": true,
+    "current_sha256": "61cfeaa85a1cfc767863ef8cbb7c9637c12b22f44eb2a8d614ad33f33b2228ae"
+  },
+  "templates/intl_workspace/transmission.html.j2": {
+    "original_after_inverse_projection_sha256": "4b41599763aa003aff8d4798850562e92f292d28ca766284112e9456294c9ba9",
+    "all_other_template_bytes_unchanged": true,
+    "current_sha256": "2504a1aa8cce6fa2c62993b2ee2f65402e7a8a054136b2bd0471b82793aa1549"
+  }
+}

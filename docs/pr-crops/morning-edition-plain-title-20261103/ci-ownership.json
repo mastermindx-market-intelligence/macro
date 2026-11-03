@@ -1,0 +1,26 @@
+{
+  "reviewedSource": "04db2eaad6babd5aa7d8f6ad485e21d21e62fd4f",
+  "job": "am-edition-producer",
+  "manifestBlob": "230d4211b56519ef06831f863e58ac8e616ad2f7",
+  "manifestSha256": "52cf2f2b383905018b15053a19ec50f676e339e37ba89ffb76d3fc4e93134eb5",
+  "semanticJobDigest": "65ca71d425a7f77c7997624d69a57b3c2e6ced7afc93a225516f8b5630fe07b8",
+  "selectionByCurrentPlanner": {
+    "tests/test_am_edition_tab_title.py": {
+      "amJobSelected": false,
+      "reason": "scoped to 1 changed file(s): 109/311 jobs (109 unscoped always-on, 0 scoped matches); 1 unowned path(s) did not widen (tests/test_am_edition_tab_title.py)"
+    },
+    "tests/test_am_edition_producer.py": {
+      "amJobSelected": true,
+      "reason": "scoped to 1 changed file(s): 110/311 jobs (109 unscoped always-on, 1 scoped matches)"
+    },
+    "tests/fixtures/am_edition_title_snapshot_2e17ae66.json": {
+      "amJobSelected": false,
+      "reason": "scoped to 1 changed file(s): 109/311 jobs (109 unscoped always-on, 0 scoped matches); 1 unowned path(s) did not widen (tests/fixtures/am_edition_title_snapshot_2e17ae66.json)"
+    }
+  },
+  "currentJobSelection": "scoped to 2 changed file(s): 113/311 jobs (109 unscoped always-on, 4 scoped matches)",
+  "jobBudgetWorkflowChanges": false,
+  "templateAndFixtureIdenticalToReviewed": true,
+  "runnerPath": "scripts.run_ci_pack.load_legacy_jobs/select_jobs; metadata only, no execute/CI dispatch",
+  "fixtureNote": "Preserved immutable fixture; existing AM job executes the owning producer suite, which loads this input. No claim that a future fixture-only change independently selects the job; job manifest/budget unchanged under commission."
+}

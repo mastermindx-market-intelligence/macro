@@ -890,3 +890,96 @@ def test_census_no_invented_numbers_in_payload(tmp_path):
         walk(panel["payload"], panel["view"])
         seen.add(panel["view"])
     assert {"scanner", "coverage"} <= seen, seen
+
+
+# P12.T2.S4 — locale regression, owned by the existing IM13 code job.
+class TestIntlTooltipLocale:
+    @pytest.fixture(scope="class", autouse=True)
+    @classmethod
+    def _tooltip_no_network(cls):
+        import socket
+        patch = pytest.MonkeyPatch()
+        def deny(*args, **kwargs):
+            raise AssertionError("Network forbidden in International tooltip fixture")
+        for obj, name in ((socket.socket, "connect"), (socket.socket, "connect_ex"),
+                          (socket, "create_connection"), (socket, "getaddrinfo")):
+            patch.setattr(obj, name, deny)
+        yield
+        patch.undo()
+    @staticmethod
+    def _macros():
+        # Production Intl uses autoescape=False, so the new attribute boundary must escape.
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        from engine import i18n
+        ROOT = Path(__file__).resolve().parents[1]
+        env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                          autoescape=False, undefined=StrictUndefined)
+        env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
+        return env.get_template("intl_workspace/_gs_scanner_macros.html.j2").module
+    @staticmethod
+    def _tip(html, selector):
+        from tests.intl_gs_fixture_site import tooltip_document
+        node = tooltip_document(str(html)).select_one(selector)
+        assert node is not None and "title" not in node.attrs
+        assert node.get("tabindex") == "0"
+        return node
+    def test_abstain_and_tier_keep_exact_separate_copy_and_escape_attributes(self):
+        _macros, _tip = self._macros, self._tip
+        sm = _macros()
+        pair = ('Missing "quoted" <source> & input', '缺少“来源” <数据> & 输入')
+        abstain = _tip(sm.sm_abstain_chip_only({"token": "value_unavailable", "reason": pair}), "[data-abstain]")
+        assert (abstain["data-tip-en"], abstain["data-tip-zh"]) == pair
+        assert abstain["data-abstain"] == "value_unavailable"
+        assert abstain.select_one("source") is None
+        tier = {"tier_abstain": True, "label": pair, "delay": None,
+                "capability_display": None, "capability_reason": None}
+        node = _tip(sm.sm_tier(tier), "[data-abstain]")
+        assert (node["data-tip-en"], node["data-tip-zh"]) == pair
+        assert node["data-abstain"] == "evidence_tier_undefined"
+    def test_coverage_title_reason_and_empty_branches_keep_their_own_language(self):
+        from tests.intl_gs_fixture_site import tooltip_document
+        _macros, _tip = self._macros, self._tip
+        sm = _macros()
+        columns = [{"id": "title", "label": ("Title", "标题")},
+                   {"id": "reason", "label": ("Rates", "利率")},
+                   {"id": "empty", "label": ("Empty", "空白")}]
+        cells = {key: {"state": None, "title": None, "reason_copy": None,
+                       "excluded": True, "clock": None} for key in ("title", "reason", "empty")}
+        cells["title"]["title"] = ('Held "source"', '保留“来源”')
+        cells["reason"]["reason_copy"] = ('No <receipt>', '没有<回执>')
+        row = {"kind": "market", "id": "JP", "linkable": False, "name_en": "Japan",
+               "name_zh": "日本", "session": "—", "cells": cells, "use": [],
+               "use_copy": ("None", "无")}
+        html = sm.cov_row(row, {"session_title": ("Session unavailable", "交易时段未知"),
+                               "matrix": {"columns": columns}})
+        soup = tooltip_document(str(html))
+        title = _tip(html, '[data-col="title"]')
+        assert (title["data-tip-en"], title["data-tip-zh"]) == cells["title"]["title"]
+        reason = _tip(html, '[data-col="reason"]')
+        assert reason["data-tip-en"] == "Rates · No <receipt>"
+        assert reason["data-tip-zh"] == "利率 · 没有<回执>"
+        session = _tip(html, '.intl-gs__covcell--session')
+        assert session["data-tip-zh"] == "交易时段未知"
+        empty = soup.select_one('[data-col="empty"]')
+        assert not any(key in empty.attrs for key in ("title", "data-tip-en", "tabindex"))
+        assert not soup.select("receipt, 回执")
+    @pytest.fixture(scope="class")
+    @classmethod
+    def pages(cls):
+        return {"scanner-coverage": FX.render_abstain_page()}
+
+    @pytest.mark.parametrize("name,selector", [
+        ("scanner-coverage", '.intl-gs__view--scanner [data-abstain][data-tip-en]'),
+        ("scanner-coverage", '.intl-gs__view--coverage [data-col][data-tip-en]'),
+    ])
+    def test_native_renderers_emit_localized_keyboard_reachable_tooltips_and_consumer(self, pages, name, selector):
+        from tests.intl_gs_fixture_site import tooltip_document
+        CJK = re.compile(r"[一-鿿㐀-䶿]")
+        soup = tooltip_document(pages[name])
+        assert soup.select_one('script[src="theme.js"]') is not None
+        nodes = soup.select(selector)
+        assert nodes, (name, selector)
+        for node in nodes:
+            assert "title" not in node.attrs and node.get("tabindex") == "0"
+            assert node["data-tip-en"] and node["data-tip-zh"]
+        assert not [(n.name, n["title"]) for n in soup.select("[title]") if CJK.search(n["title"])]
