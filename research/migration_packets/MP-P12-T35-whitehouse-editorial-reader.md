@@ -8,7 +8,7 @@ Status: FROZEN IMPLEMENTATION PACKET, 2026-11-03. Designer/implementer: Family S
 
 **Primary question:** What does this dated policy report argue, what is AI interpretation, and where can I verify its source?
 
-**Archetype F, editorial:** title/date/model block, measure-limited reading column, existing model-assessment receipt, report outline as a desktop rail/mobile disclosure. This is a multi-report retained reader, not a new single-article route or a new intelligence dashboard. Keep every existing report, paragraph, sector/ticker row and exact report anchor.
+**Archetype F, editorial:** title/date/model block, measure-limited reading column, existing model-assessment receipt, report outline as a desktop rail/mobile disclosure. This is a multi-report retained reader, not a new single-article route or a new intelligence dashboard. Keep every existing report, paragraph, sector/ticker row and exact report anchor. Incumbent breadth is77 total cards:63 `wh-*` plus14 `tw-*`; namespace count is not the whole population.
 
 ## Reference and authority
 
@@ -32,7 +32,7 @@ Reuse existing shared report header/nav/footer without editing global geometry. 
 
 Each report retains title, translated summary if present, source/read dates, fallback model and banner expiry. The supporting outline lists only sections actually present. Desktop: bounded text/evidence column plus one supporting rail. Phone: outline is a native collapsed disclosure before the reading column; no content is deleted, body sections remain expanded, tables scroll within their existing container. One outline per report. Both columns stay in normal document flow: NO sticky/fixed TOC that assumes ownership of iframe/outer scrolling. Structural JS may initialize disclosure state at the responsive breakpoint and preserve user interaction; no material styling or new router.
 
-Existing report IDs remain canonical. Add section IDs only as suffixes of that exact report ID. Headings are native anchor targets with programmatic focus. TOC links use actual fragments; Back/reload preserves source context. Standalone control proves only source-local behavior. Retained in-Shell embedding keeps the existing bridge, document version, exact63 original anchors, source URLs, nav family, parent/history/return guards unchanged; no header, parallel router, forced URL or bridge claim is added. Hash targets must focus and expose a selected target in native content; embedded outer-scroll/history remains an explicit later actual-Shell obligation. Source action href/target/rel and T34 agency copy are unchanged. No new source URL, guessed route or return target.
+Existing report IDs remain canonical. Add section IDs only as suffixes of that exact report ID. Headings are native anchor targets with programmatic focus. TOC links use actual fragments; Back/reload preserves source context. Standalone control proves only source-local behavior. Retained in-Shell embedding keeps the existing bridge, document version, exact63 WhiteHouse anchors plus14 Treasury anchors (77 total original report anchors), source URLs, nav family, parent/history/return guards unchanged; no header, parallel router, forced URL or bridge claim is added. Hash targets must focus and expose a selected target in native content; embedded outer-scroll/history remains an explicit later actual-Shell obligation. Source action href/target/rel and T34 agency copy are unchanged. No new source URL, guessed route or return target.
 
 ## Language/content law
 
