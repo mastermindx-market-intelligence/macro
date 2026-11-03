@@ -1191,3 +1191,40 @@ def test_post_reservation_read_failure_retains_original_custody(tmp_path,monkeyp
     assert backend['register']=='a2 p=7 g=aaaaaaaaaaaa s=prepared'
     assert all(method=='GET' for method,_,_ in backend['calls'][len(before):])
     assert not (later.directory/'prepared').exists()
+
+
+def test_hosted_bridge_source_gate_proves_cutover_candidate_before_trigger_removal(controller,monkeypatch):
+    import yaml
+    ci=yaml.safe_load((mog._ROOT/'.github/workflows/ci.yml').read_text())
+    executor=yaml.safe_load((mog._ROOT/'.github/workflows/trusted-ci-executor.yml').read_text())
+    # Run the real source predicate against exact protected shape; this fixture
+    # repo alias is rebound only at the fixed zero-input caller URL.
+    ci['jobs']['trusted-ci']['uses']='acme/widgets/.github/workflows/trusted-ci-executor.yml@main'
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',
+        lambda repo,sha:mog.admitted_dispatch_source_ready(repo,ci,executor))
+    assert 'pull_request' in ci.get('on',ci.get(True))
+    assert controller.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':True,'count':1}
+    assert controller.load('census')['demands'][0]['purpose']=='authored'
+
+
+def test_hosted_bridge_still_defers_native_candidate_first_proof(controller,monkeypatch):
+    import yaml
+    ci=yaml.safe_load((mog._ROOT/'.github/workflows/ci.yml').read_text())
+    executor=yaml.safe_load((mog._ROOT/'.github/workflows/trusted-ci-executor.yml').read_text())
+    ci['jobs']['trusted-ci']['uses']='acme/widgets/.github/workflows/trusted-ci-executor.yml@main'
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',
+        lambda repo,sha:mog.admitted_dispatch_source_ready(repo,ci,executor))
+    monkeypatch.setattr(controller,'candidate_native_entrypoint',lambda p:True)
+    assert controller.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':False,'count':0}
+    assert not (controller.directory/'demands-digest.json').exists()
+
+
+@pytest.mark.parametrize('candidate_native',[True,False])
+def test_hosted_bridge_preserves_refresh_purpose_across_native_transition(controller,monkeypatch,candidate_native):
+    pr=pull();pr['draft']=False;pr['labels']=[{'name':mog.MERGE_ON_GREEN_LABEL}]
+    monkeypatch.setattr(mog,'open_pulls',lambda *a:[pr])
+    monkeypatch.setattr(mog,'head_check_runs',lambda *a:[{'id':91,'name':'ci-gate','status':'completed','conclusion':'success','app':{'slug':'github-actions'}}])
+    monkeypatch.setattr(controller,'candidate_native_entrypoint',lambda p:candidate_native)
+    result=controller.prepare(native_pr_enabled=True,freshness=SimpleNamespace(stale_for=lambda *a:(True,'exact input change')))
+    assert result=={'ready':True,'changed':True,'count':1}
+    assert controller.load('census')['demands'][0]['purpose']=='refresh'

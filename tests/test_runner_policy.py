@@ -1363,14 +1363,12 @@ def _admission_policy_module():
     return check_runner_policy
 
 
-@pytest.mark.parametrize('stage', ['foundation', 'bridge', 'cutover'])
+@pytest.mark.parametrize('stage', ['hosted-bridge', 'cutover'])
 def test_admission_policy_accepts_only_governed_staged_source(tmp_path, stage):
     policy = _admission_policy_module()
     root, registry, workflows = fixture_tree(tmp_path)
     path = workflows / 'ci.yml'
     document = yaml.safe_load(path.read_text())
-    if stage != 'foundation':
-        document['jobs']['trusted-ci']['with'] = dict(policy.ADMITTED_CALL_BINDINGS)
     if stage == 'cutover':
         document.get('on', document.get(True)).pop('pull_request')
     path.write_text(yaml.safe_dump(document, sort_keys=False))
@@ -1431,7 +1429,7 @@ def test_shared_controller_wake_cannot_execute_candidate_or_skip_reservation(mut
     elif mutation=='untrusted-command': steps[8]['run']='python3 scripts/${{ github.event.pull_request.title }}'
     elif mutation=='reordered-upload': steps[6],steps[8]=steps[8],steps[6]
     elif mutation=='extra-upload': steps.append({'uses':'actions/upload-artifact@v4'})
-    elif mutation=='wrong-trigger': doc.get('on',doc.get(True))['pull_request_target']['branches']=['*']
+    elif mutation=='wrong-trigger': doc.get('on',doc.get(True))['pull_request_target']={'branches':['main']}
     elif mutation=='job-container': job['container']='untrusted/image:latest'
     elif mutation=='job-service': job['services']={'untrusted':{'image':'untrusted/image:latest'}}
     else: steps[6]['with']['overwrite']=True
@@ -1445,45 +1443,31 @@ def test_shared_controller_wake_cannot_execute_candidate_or_skip_reservation(mut
     {'type':'string','required':False,'default':'forged'},
     {'type':'string','required':False},
 ])
-def test_admitted_executor_inputs_are_only_optional_empty_strings(tmp_path,declaration):
+def test_admitted_executor_inputs_are_always_forbidden(tmp_path,declaration):
     policy=_admission_policy_module()
     root,registry,workflows=fixture_tree(tmp_path)
     path=workflows/'trusted-ci-executor.yml';doc=yaml.safe_load(path.read_text())
     doc.get('on',doc.get(True))['workflow_call']['inputs']['admitted_head']=declaration
     path.write_text(yaml.safe_dump(doc,sort_keys=False))
     findings=policy.evaluate(root,registry,workflows)
-    assert any(f.rule=='R13' and 'optional verified-output' in f.message for f in findings)
+    assert any(f.rule=='R13' for f in findings)
 
 
-@pytest.mark.parametrize('mutation', ['caller-definition','fork-read','ordered-parents','attempt',
-    'input-substitution','ref-substitution','candidate-control','capsule-digest','late-capsule'])
-def test_admitted_executor_preserves_fresh_source_and_capsule_binding(mutation):
-    policy=_admission_policy_module()
-    doc=yaml.safe_load((WORKFLOWS/'trusted-ci-executor.yml').read_text())
-    jobs=doc['jobs']; gate=policy._step_with_id(jobs['trust-gate'],'admit')
-    plan=jobs['plan']; reread=policy._step_with_id(plan,'admitted-ref')
-    if mutation=='caller-definition':gate['run']=gate['run'].replace('test "$CALLER_WORKFLOW_SHA" = "$CALLER_SHA"','true')
-    elif mutation=='fork-read':reread['run']=reread['run'].replace('value["repo"]["id"] == repository_id','True')
-    elif mutation=='ordered-parents':reread['run']=reread['run'].replace('== [base, head]','== [head, base]')
-    elif mutation=='attempt':reread['run']=reread['run'].replace('"GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",','"GITHUB_RUN_ID",')
-    elif mutation=='input-substitution':reread['env']['CALLER_SHA']='${{ inputs.admitted_head }}'
-    elif mutation=='ref-substitution':policy._step_with_id(plan,'ref')['env']['ADMITTED_HEAD']='${{ inputs.admitted_head }}'
-    elif mutation=='candidate-control':plan['steps'][0]['with']['ref']='${{ inputs.admitted_head }}'
-    else:
-        steps=jobs['trusted-pack']['steps']
-        verify=next(s for s in steps if s.get('name')=='verify control bundle before any candidate execution')
-        if mutation=='capsule-digest':verify['env']['EXPECTED_CONTROL_DIGEST']='${{ inputs.digest }}'
-        else:steps.remove(verify);steps.append(verify)
-    assert not policy._admitted_executor_graph_exact(doc)
+@pytest.mark.parametrize('mode', ['admitted-pr', 'workflow_dispatch-pr'])
+def test_admitted_executor_mode_is_not_a_supported_pc_entry(mode):
+    policy = _admission_policy_module()
+    doc = yaml.safe_load((WORKFLOWS/'ci.yml').read_text())
+    doc['jobs']['trusted-ci']['with'] = {'mode': mode}
+    assert not policy._trusted_call_is_exact(doc['jobs']['trusted-ci'])
 
 
 @pytest.mark.parametrize("workflow,job_id,step_id", [
     ("ci.yml", "ci-admission", "resolve"),
     ("ci.yml", "ci-plan", "identity"),
     ("trusted-ci-executor.yml", "trust-gate", "admit"),
-    ("trusted-ci-executor.yml", "plan", "admitted-ref"),
-    ("trusted-ci-executor.yml", "trusted-pack", "verify control bundle before any candidate execution"),
-    ("trusted-ci-executor.yml", "legacy-hosted-pack", "verify control bundle before any candidate execution"),
+    ("trusted-ci-executor.yml", "plan", "ref"),
+    ("trusted-ci-executor.yml", "trusted-pack", "execute the frozen logical pack and retain its actual result"),
+    ("trusted-ci-executor.yml", "legacy-hosted-pack", "execute the frozen logical pack and retain its semantic result"),
 ])
 @pytest.mark.parametrize("mutation", ["container", "job-ignore-failure", "step-ignore-failure",
     "job-defaults", "step-shell", "step-directory"])

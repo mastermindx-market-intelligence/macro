@@ -3532,11 +3532,11 @@ class AdmissionDispatchResult:
 
 
 def admitted_dispatch_source_ready(repo, ci_document, executor_document):
-    """The installed caller/callee bridge exists, independently of route settings.
+    """Recognize the installed protected hosted admission capability.
 
-    This checks executable wiring, not a feature flag or candidate assertion.
-    Artifact/run authentication and review of protected executable code remain
-    separate duties. Foundation callers intentionally lack this bridge.
+    Candidate-native detection preserves first-proof ownership during coexistence.
+    The installed hosted bridge can prove the later trigger-removal candidate;
+    no identity input is accepted by the protected zero-input PC fallback. Source readiness alone is not runtime activation or release proof.
     """
     def expression(value):
         return " ".join(value.split()) if isinstance(value, str) else None
@@ -3565,25 +3565,40 @@ def admitted_dispatch_source_ready(repo, ci_document, executor_document):
             return False
         jobs = ci_document["jobs"]
         resolver, plan, caller = (jobs[key] for key in ("ci-admission", "ci-plan", "trusted-ci"))
-        expected_call = {
-            "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
-            "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
-            "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
-            "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
-            "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
-            "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
+        # No PR-authored identity crosses the protected zero-input PC executor.
+        # Installed hosted capability must prove the later trigger-removal PR.
+        # Candidate-native detection still owns first proof during coexistence.
+        if "pull_request" in ci_events:
+            native = ci_events["pull_request"]
+            if (not isinstance(native, dict) or native.get("types") != ["opened", "synchronize", "reopened"]
+                    or native.get("branches") != ["main"] or not isinstance(native.get("paths"), list)
+                    or not native["paths"] or any(not isinstance(v, str) for v in native["paths"])):
+                return False
+        trusted_call = {
+            "name": "trusted-ci",
+            "needs": "ci-plan",
+            "if": ("!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && "
+                   "github.event.pull_request.head.repo.full_name == github.repository && "
+                   "vars.CI_EXECUTION_ROUTE == 'pc'"),
+            "uses": f"{repo}/.github/workflows/trusted-ci-executor.yml@main",
+            "permissions": {"contents": "read", "pull-requests": "read"},
         }
-        supplied = caller.get("with")
-        if (caller.get("uses") != f"{repo}/.github/workflows/trusted-ci-executor.yml@main"
-                or not needs(caller, "ci-plan") or not bindings(supplied, expected_call)
-                or set(supplied) != set(expected_call)
-                or expression(caller.get("if")) != "!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'"):
+        if caller != trusted_call or callee_events["workflow_call"].get("inputs") != {}:
             return False
-        declared = callee_events["workflow_call"]["inputs"]
-        if set(declared) != set(expected_call) or any(not isinstance(declared.get(key), dict)
-               or declared[key].get("type") != "string"
-               or declared[key].get("required") is not False
-               or declared[key].get("default") != "" for key in expected_call):
+        pack = jobs["ci-pack"]
+        contract = jobs["contract-delta"]
+        gate = jobs["ci-gate"]
+        if (pack.get("needs") != ["ci-plan", "trusted-ci"]
+                or expression(pack.get("if")) != (
+                    "!cancelled() && needs.ci-plan.result == 'success' && "
+                    "needs.ci-plan.outputs.has_work == 'true' && "
+                    "(github.event.pull_request.head.repo.full_name != github.repository || "
+                    "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')")
+                or contract.get("needs") != ["ci-plan"]
+                or expression(contract.get("if")) != (
+                    "!cancelled() && needs.ci-plan.result == 'success' && "
+                    "needs.ci-plan.outputs.semantic_role == 'pr_head'")
+                or gate.get("needs") != ["ci-plan", "ci-pack", "contract-delta"]):
             return False
         if (not needs(plan, "ci-admission")
                 or expression(plan.get("if")) != "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"

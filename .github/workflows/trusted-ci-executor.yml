@@ -2,37 +2,7 @@ name: trusted-ci-executor
 
 on:
   workflow_call:
-    inputs:
-      admitted_merge:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
-      admitted_head:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
-      admitted_base:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
-      admitted_pr:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
-      admitted_repository_id:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
-      admission_generation:
-        description: "Protected ci@main resolver output; never an author-provided identity."
-        required: false
-        default: ""
-        type: string
+    inputs: {}
     outputs:
       matrix:
         description: "The immutable main-planned pack matrix."
@@ -93,14 +63,6 @@ jobs:
           EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
           DISPATCH_PR_NUMBER: ${{ inputs.pr_number }}
           REQUESTED_ROUTE: ${{ vars.CI_EXECUTION_ROUTE }}
-          CALLER_WORKFLOW_SHA: ${{ github.workflow_sha }}
-          CALLER_SHA: ${{ github.sha }}
-          ADMITTED_MERGE: ${{ inputs.admitted_merge || '' }}
-          ADMITTED_HEAD: ${{ inputs.admitted_head || '' }}
-          ADMITTED_BASE: ${{ inputs.admitted_base || '' }}
-          ADMITTED_PR: ${{ inputs.admitted_pr || '' }}
-          ADMITTED_REPOSITORY_ID: ${{ inputs.admitted_repository_id || '' }}
-          ADMISSION_GENERATION: ${{ inputs.admission_generation || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -128,32 +90,16 @@ jobs:
                 echo "::error title=trusted-executor-ref::dispatch must use the main workflow definition"
                 exit 1
               }
-              if [ "$CALLER_WORKFLOW_REF" = "$direct_workflow_ref" ]; then
-                test -z "$ADMITTED_MERGE$ADMITTED_HEAD$ADMITTED_BASE$ADMITTED_PR$ADMITTED_REPOSITORY_ID$ADMISSION_GENERATION" || exit 1
-                pr_number="$DISPATCH_PR_NUMBER"
-                mode=dispatch
-                semantic_workflow=trusted-ci-executor
-                execution_route=pc
-              elif [ "$CALLER_WORKFLOW_REF" = "$REPOSITORY/.github/workflows/ci.yml@refs/heads/main" ]; then
-                test -z "$DISPATCH_PR_NUMBER" || exit 1
-                [[ "$CALLER_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]] && test "$CALLER_WORKFLOW_SHA" = "$CALLER_SHA" || exit 1
-                for sha in "$ADMITTED_MERGE" "$ADMITTED_HEAD" "$ADMITTED_BASE"; do [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1; done
-                [[ "$ADMISSION_GENERATION" =~ ^[0-9a-f]{12}$ ]] || exit 1
-                [[ "$ADMITTED_PR" =~ ^[1-9][0-9]*$ && "$ADMITTED_REPOSITORY_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
-                # Only this protected caller definition hardwires the same-run
-                # authenticated resolver outputs. Legacy candidate callers cannot
-                # enter this branch. Re-read source/fork boundaries before PC work.
-                pr_number=""
-                mode=admitted
-                semantic_workflow=ci
-                if [ "$REQUESTED_ROUTE" = pc ]; then execution_route=pc; else execution_route=hosted; fi
-              else
-                echo "::error title=trusted-executor-caller::unsupported dispatch caller"
+              test "$CALLER_WORKFLOW_REF" = "$direct_workflow_ref" || {
+                echo "::error title=trusted-executor-caller::dispatch must invoke the main-owned executor directly"
                 exit 1
-              fi
+              }
+              pr_number="$DISPATCH_PR_NUMBER"
+              mode=dispatch
+              semantic_workflow=trusted-ci-executor
+              execution_route=pc
               ;;
             pull_request)
-              test -z "$ADMITTED_MERGE$ADMITTED_HEAD$ADMITTED_BASE$ADMITTED_PR$ADMITTED_REPOSITORY_ID$ADMISSION_GENERATION" || exit 1
               test "$CALLED_WORKFLOW_REF" = "$called_workflow_ref" || {
                 echo "::error title=trusted-executor-definition::called workflow must use the main branch definition"
                 exit 1
@@ -200,14 +146,12 @@ jobs:
               ;;
           esac
 
-          if [ "$mode" != admitted ]; then
-            case "$pr_number" in
-              ''|*[!0-9]*|0)
-                echo "::error title=trusted-executor-pr::PR identity must be a positive integer"
-                exit 1
-                ;;
-            esac
-          fi
+          case "$pr_number" in
+            ''|*[!0-9]*|0)
+              echo "::error title=trusted-executor-pr::PR identity must be a positive integer"
+              exit 1
+              ;;
+          esac
           printf 'control_sha=%s\n' "$CALLED_WORKFLOW_SHA" >> "$GITHUB_OUTPUT"
           printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
           printf 'mode=%s\n' "$mode" >> "$GITHUB_OUTPUT"
@@ -226,9 +170,7 @@ jobs:
       base_sha: ${{ steps.ref.outputs.base_sha }}
       head_sha: ${{ steps.ref.outputs.head_sha }}
       head_ref: ${{ steps.ref.outputs.head_ref }}
-      admission_generation: ${{ steps.ref.outputs.admission_generation }}
       control_sha: ${{ steps.control.outputs.sha }}
-      control_bundle_sha256: ${{ steps.bundle.outputs.sha256 }}
       execution_route: ${{ needs.trust-gate.outputs.execution_route }}
     steps:
       - name: checkout main-owned executor control code
@@ -286,44 +228,6 @@ jobs:
              scripts/monitor_ci_host_resources.py \
              scripts/capture_ci_canary_receipt.py \
              "$RUNNER_TEMP/trusted-ci-control/scripts/"
-      - id: bundle
-        name: seal control bundle before candidate code is present
-        shell: bash
-        run: |
-          python3 -I - <<'PYVERIFY'
-          import hashlib, json, os, re
-          from pathlib import Path
-          root = Path(os.environ["RUNNER_TEMP"]) / "trusted-ci-control"
-          if root.is_symlink() or not root.is_dir():
-              raise SystemExit("control bundle root is invalid")
-          entries = sorted(root.rglob("*"))
-          if len(entries) > 128:
-              raise SystemExit("control bundle entry bound exceeded")
-          rows, total = [], 0
-          for path in entries:
-              relative = path.relative_to(root).as_posix()
-              if path.is_symlink():
-                  raise SystemExit("control bundle symlink refused")
-              if path.is_dir():
-                  rows.append([relative, "directory"])
-              elif path.is_file():
-                  with path.open("rb") as source:
-                      data = source.read(16 * 1024 * 1024 + 1)
-                  total += len(data)
-                  if total > 16 * 1024 * 1024:
-                      raise SystemExit("control bundle size bound exceeded")
-                  rows.append([relative, "file", hashlib.sha256(data).hexdigest()])
-              else:
-                  raise SystemExit("control bundle non-regular member refused")
-          digest = hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
-          expected = os.environ.get("EXPECTED_CONTROL_DIGEST")
-          if expected is not None:
-              if not re.fullmatch(r"[0-9a-f]{64}", expected) or digest != expected:
-                  raise SystemExit("control bundle differs from protected planner output")
-          else:
-              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-                  output.write("sha256=" + digest + "\n")
-          PYVERIFY
       - name: publish the frozen main-owned control bundle
         uses: actions/upload-artifact@v4
         with:
@@ -331,146 +235,16 @@ jobs:
           path: ${{ runner.temp }}/trusted-ci-control
           if-no-files-found: error
           retention-days: 14
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12.13"
-      - name: install isolated planner
-        run: |
-          python -m venv "$RUNNER_TEMP/trusted-ci-plan-runner"
-          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/pip" install pyyaml
-      - id: legacy-ref
-        if: needs.trust-gate.outputs.mode != 'admitted'
+      - id: ref
         name: resolve the immutable same-repository PR candidate
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" -I "$RUNNER_TEMP/trusted-ci-control/scripts/resolve_ci_canary_ref.py" \
+          python3 "$RUNNER_TEMP/trusted-ci-control/scripts/resolve_ci_canary_ref.py" \
             --repository "${{ github.repository }}" \
             --github-sha "${{ needs.trust-gate.outputs.control_sha }}" \
             --pr-number "${{ needs.trust-gate.outputs.pr_number }}" \
             --github-output "$GITHUB_OUTPUT"
-      - id: admitted-ref
-        name: re-read protected caller proof subject before persistent execution
-        if: needs.trust-gate.outputs.mode == 'admitted'
-        timeout-minutes: 3
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          EVENT_NAME: ${{ github.event_name }}
-          REPOSITORY: ${{ github.repository }}
-          TRUSTED_REF: ${{ github.ref }}
-          CALLER_REF: ${{ github.workflow_ref }}
-          CALLER_WORKFLOW_SHA: ${{ github.workflow_sha }}
-          CALLER_SHA: ${{ github.sha }}
-          ADMITTED_MERGE: ${{ inputs.admitted_merge }}
-          ADMITTED_HEAD: ${{ inputs.admitted_head }}
-          ADMITTED_BASE: ${{ inputs.admitted_base }}
-          ADMITTED_PR: ${{ inputs.admitted_pr }}
-          ADMITTED_REPOSITORY_ID: ${{ inputs.admitted_repository_id }}
-          ADMISSION_GENERATION: ${{ inputs.admission_generation }}
-        shell: bash
-        run: |
-          python3 -I - <<'PYREAD'
-          import json, os, re, time, urllib.request
-          from pathlib import Path
-
-          def require(condition):
-              if not condition:
-                  raise SystemExit("incomplete trusted caller/source binding")
-
-          repo = "mastermindx-market-intelligence/macro"
-          require(os.environ["REPOSITORY"] == repo)
-          require(os.environ["EVENT_NAME"] == "workflow_dispatch")
-          require(os.environ["CALLER_REF"] == repo + "/.github/workflows/ci.yml@refs/heads/main")
-          require(os.environ["CALLER_WORKFLOW_SHA"] == os.environ["CALLER_SHA"])
-          require(re.fullmatch(r"[0-9a-f]{40}", os.environ["CALLER_WORKFLOW_SHA"]))
-          require(os.environ["TRUSTED_REF"] == "refs/heads/main")
-          for key in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "ADMITTED_PR", "ADMITTED_REPOSITORY_ID"):
-              require(re.fullmatch(r"[1-9][0-9]*", os.environ[key]))
-          for key in ("ADMITTED_MERGE", "ADMITTED_HEAD", "ADMITTED_BASE"):
-              require(re.fullmatch(r"[0-9a-f]{40}", os.environ[key]))
-          require(re.fullmatch(r"[0-9a-f]{12}", os.environ["ADMISSION_GENERATION"]))
-          require(bool(os.environ.get("GITHUB_TOKEN")))
-          number = int(os.environ["ADMITTED_PR"])
-          repository_id = int(os.environ["ADMITTED_REPOSITORY_ID"])
-          merge, head, base = (os.environ[key] for key in ("ADMITTED_MERGE", "ADMITTED_HEAD", "ADMITTED_BASE"))
-
-          class NoRedirect(urllib.request.HTTPRedirectHandler):
-              def redirect_request(self, *args, **kwargs):
-                  raise SystemExit("trusted source read redirect refused")
-
-          opener = urllib.request.build_opener(NoRedirect())
-          deadline = time.monotonic() + 90
-
-          def read(suffix):
-              remaining = deadline - time.monotonic()
-              require(remaining > 0)
-              request = urllib.request.Request("https://api.github.com/repos/" + repo + suffix,
-                  headers={"Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
-                           "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"})
-              try:
-                  with opener.open(request, timeout=min(20, remaining)) as response:
-                      data = response.read(2 * 1024 * 1024 + 1)
-                  require(len(data) <= 2 * 1024 * 1024 and time.monotonic() < deadline)
-                  result = json.loads(data)
-                  require(isinstance(result, dict))
-                  return result
-              except Exception:
-                  raise SystemExit("trusted source read unavailable") from None
-
-          repository = read("")
-          require(type(repository.get("id")) is int and repository["id"] == repository_id)
-          require(repository.get("full_name") == repo)
-          pr = read("/pulls/" + str(number))
-          require(type(pr.get("number")) is int and pr["number"] == number and pr.get("state") == "open")
-          for side in ("head", "base"):
-              value = pr.get(side)
-              require(isinstance(value, dict) and isinstance(value.get("repo"), dict))
-              require(type(value["repo"].get("id")) is int and value["repo"]["id"] == repository_id)
-              require(value["repo"].get("full_name") == repo)
-          require(pr["head"].get("sha") == head and pr["base"].get("ref") == "main")
-          # Current main may have moved. Prove the exact admitted merge and saved base,
-          # never substitute the mutable PR merge_commit_sha/current base.
-          commit = read("/git/commits/" + merge)
-          require(commit.get("sha") == merge)
-          require(commit.get("parents") is not None and isinstance(commit["parents"], list))
-          require([item.get("sha") if isinstance(item, dict) else None for item in commit["parents"]] == [base, head])
-          values = {"tested_commit": merge, "subject_head": head, "base": base,
-                    "same_repository": "true", "admission_generation": os.environ["ADMISSION_GENERATION"]}
-          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-              output.write("".join(key + "=" + value + "\n" for key, value in values.items()))
-          PYREAD
-      - id: ref
-        name: freeze independently verified candidate outputs
-        env:
-          MODE: ${{ needs.trust-gate.outputs.mode }}
-          LEGACY_TESTED: ${{ steps.legacy-ref.outputs.tested_sha }}
-          LEGACY_BASE: ${{ steps.legacy-ref.outputs.base_sha }}
-          LEGACY_HEAD: ${{ steps.legacy-ref.outputs.head_sha }}
-          LEGACY_HEAD_REF: ${{ steps.legacy-ref.outputs.head_ref }}
-          ADMITTED_TESTED: ${{ steps.admitted-ref.outputs.tested_commit }}
-          ADMITTED_BASE: ${{ steps.admitted-ref.outputs.base }}
-          ADMITTED_HEAD: ${{ steps.admitted-ref.outputs.subject_head }}
-          ADMITTED_SAME_REPOSITORY: ${{ steps.admitted-ref.outputs.same_repository }}
-          ADMISSION_GENERATION: ${{ steps.admitted-ref.outputs.admission_generation }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ "$MODE" = admitted ]; then
-            test "$ADMITTED_SAME_REPOSITORY" = true || {
-              echo "::error title=trusted-executor-fork::admitted forks may not enter the persistent executor"
-              exit 1
-            }
-            [[ "$ADMISSION_GENERATION" =~ ^[0-9a-f]{12}$ ]] || exit 1
-            tested="$ADMITTED_TESTED"; base="$ADMITTED_BASE"; head="$ADMITTED_HEAD"
-            head_ref="$head"
-          else
-            test -z "$ADMISSION_GENERATION" || exit 1
-            tested="$LEGACY_TESTED"; base="$LEGACY_BASE"; head="$LEGACY_HEAD"
-            head_ref="$LEGACY_HEAD_REF"
-          fi
-          for sha in "$tested" "$base" "$head"; do [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1; done
-          printf 'tested_sha=%s\nbase_sha=%s\nhead_sha=%s\nhead_ref=%s\nadmission_generation=%s\n' \
-            "$tested" "$base" "$head" "$head_ref" "$ADMISSION_GENERATION" >> "$GITHUB_OUTPUT"
       - name: checkout the immutable PR candidate
         uses: actions/checkout@v4
         with:
@@ -490,11 +264,18 @@ jobs:
           sparse-checkout-cone-mode: false
       - name: prove the planner is on the frozen candidate
         run: test "$(git rev-parse HEAD)" = "${{ steps.ref.outputs.tested_sha }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.13"
+      - name: install isolated planner
+        run: |
+          python -m venv "$RUNNER_TEMP/trusted-ci-plan-runner"
+          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/pip" install pyyaml
       - name: bind exact tested-tree path inventory
         env:
           MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
         run: >-
-          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" -I
+          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/python"
           "$RUNNER_TEMP/trusted-ci-control/scripts/ci_scope_dependencies.py"
           --write-tracked-paths "$RUNNER_TEMP/trusted-ci-tracked-paths/tracked-paths.v1"
           --tested-tree-sha "${{ steps.ref.outputs.tested_sha }}"
@@ -502,14 +283,10 @@ jobs:
         name: freeze one authoritative logical plan
         env:
           MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
-          ADMISSION_GENERATION: ${{ steps.ref.outputs.admission_generation }}
         shell: bash
         run: |
           set -euo pipefail
-          admission_args=()
-          if [ -n "$ADMISSION_GENERATION" ]; then admission_args=(--admission-generation "$ADMISSION_GENERATION"); fi
-          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" -I "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
-            "${admission_args[@]}" \
+          "$RUNNER_TEMP/trusted-ci-plan-runner/bin/python" "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
             --workflow .github/ci/legacy-jobs.yml \
             --gate code \
             --pack-count 12 \
@@ -542,7 +319,7 @@ jobs:
               --count 1 \
               --github-output "$GITHUB_OUTPUT"
           else
-            test "$EXECUTION_MODE" = production || test "$EXECUTION_MODE" = admitted
+            test "$EXECUTION_MODE" = production
             test -n "$FULL_MATRIX"
             echo "matrix=$FULL_MATRIX" >> "$GITHUB_OUTPUT"
           fi
@@ -573,45 +350,6 @@ jobs:
         with:
           name: trusted-ci-control
           path: ${{ runner.temp }}/trusted-ci-control
-      - name: verify control bundle before any candidate execution
-        env:
-          EXPECTED_CONTROL_DIGEST: ${{ needs.plan.outputs.control_bundle_sha256 }}
-        shell: bash
-        run: |
-          python3 -I - <<'PYVERIFY'
-          import hashlib, json, os, re
-          from pathlib import Path
-          root = Path(os.environ["RUNNER_TEMP"]) / "trusted-ci-control"
-          if root.is_symlink() or not root.is_dir():
-              raise SystemExit("control bundle root is invalid")
-          entries = sorted(root.rglob("*"))
-          if len(entries) > 128:
-              raise SystemExit("control bundle entry bound exceeded")
-          rows, total = [], 0
-          for path in entries:
-              relative = path.relative_to(root).as_posix()
-              if path.is_symlink():
-                  raise SystemExit("control bundle symlink refused")
-              if path.is_dir():
-                  rows.append([relative, "directory"])
-              elif path.is_file():
-                  with path.open("rb") as source:
-                      data = source.read(16 * 1024 * 1024 + 1)
-                  total += len(data)
-                  if total > 16 * 1024 * 1024:
-                      raise SystemExit("control bundle size bound exceeded")
-                  rows.append([relative, "file", hashlib.sha256(data).hexdigest()])
-              else:
-                  raise SystemExit("control bundle non-regular member refused")
-          digest = hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
-          expected = os.environ.get("EXPECTED_CONTROL_DIGEST")
-          if expected is not None:
-              if not re.fullmatch(r"[0-9a-f]{64}", expected) or digest != expected:
-                  raise SystemExit("control bundle differs from protected planner output")
-          else:
-              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-                  output.write("sha256=" + digest + "\n")
-          PYVERIFY
       - name: checkout the immutable PR candidate
         uses: actions/checkout@v4
         with:
@@ -641,16 +379,12 @@ jobs:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
           CI_HEAD_REF: ${{ needs.plan.outputs.head_ref }}
           MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
-          ADMISSION_GENERATION: ${{ needs.plan.outputs.admission_generation }}
         shell: bash
         run: |
           set -uo pipefail
-          admission_args=()
-          if [ -n "$ADMISSION_GENERATION" ]; then admission_args=(--expect-admission-generation "$ADMISSION_GENERATION"); fi
           mkdir -p "$RUNNER_TEMP/ci-semantic-fragments"
           set +e
-          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" -I "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
-            "${admission_args[@]}" \
+          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
             --workflow .github/ci/legacy-jobs.yml \
             --gate code \
             --plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json" \
@@ -700,45 +434,6 @@ jobs:
         with:
           name: trusted-ci-control
           path: ${{ runner.temp }}/trusted-ci-control
-      - name: verify control bundle before any candidate execution
-        env:
-          EXPECTED_CONTROL_DIGEST: ${{ needs.plan.outputs.control_bundle_sha256 }}
-        shell: bash
-        run: |
-          python3 -I - <<'PYVERIFY'
-          import hashlib, json, os, re
-          from pathlib import Path
-          root = Path(os.environ["RUNNER_TEMP"]) / "trusted-ci-control"
-          if root.is_symlink() or not root.is_dir():
-              raise SystemExit("control bundle root is invalid")
-          entries = sorted(root.rglob("*"))
-          if len(entries) > 128:
-              raise SystemExit("control bundle entry bound exceeded")
-          rows, total = [], 0
-          for path in entries:
-              relative = path.relative_to(root).as_posix()
-              if path.is_symlink():
-                  raise SystemExit("control bundle symlink refused")
-              if path.is_dir():
-                  rows.append([relative, "directory"])
-              elif path.is_file():
-                  with path.open("rb") as source:
-                      data = source.read(16 * 1024 * 1024 + 1)
-                  total += len(data)
-                  if total > 16 * 1024 * 1024:
-                      raise SystemExit("control bundle size bound exceeded")
-                  rows.append([relative, "file", hashlib.sha256(data).hexdigest()])
-              else:
-                  raise SystemExit("control bundle non-regular member refused")
-          digest = hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
-          expected = os.environ.get("EXPECTED_CONTROL_DIGEST")
-          if expected is not None:
-              if not re.fullmatch(r"[0-9a-f]{64}", expected) or digest != expected:
-                  raise SystemExit("control bundle differs from protected planner output")
-          else:
-              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
-                  output.write("sha256=" + digest + "\n")
-          PYVERIFY
       - name: mark cache and checkout start
         run: |
           du -sb /var/cache/mastermind-ci/macro.git | awk '{print $1}' > "$RUNNER_TEMP/cache-before"
@@ -803,12 +498,9 @@ jobs:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
           CI_HEAD_REF: ${{ needs.plan.outputs.head_ref }}
           MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
-          ADMISSION_GENERATION: ${{ needs.plan.outputs.admission_generation }}
         shell: bash
         run: |
           set -uo pipefail
-          admission_args=()
-          if [ -n "$ADMISSION_GENERATION" ]; then admission_args=(--expect-admission-generation "$ADMISSION_GENERATION"); fi
           dependency_end=$(date +%s.%N)
           awk -v start="$(cat "$RUNNER_TEMP/dependency-start")" -v end="$dependency_end" 'BEGIN {print end-start}' > "$RUNNER_TEMP/dependency-seconds"
           python3 -c 'import time; print("executor_setup_end", time.monotonic_ns())' >> "$RUNNER_TEMP/ci-phase-monotonic.txt" || true
@@ -819,8 +511,7 @@ jobs:
             --output "$RUNNER_TEMP/resources.jsonl" --path "$GITHUB_WORKSPACE" &
           monitor_pid=$!
           set +e
-          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" -I "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
-            "${admission_args[@]}" \
+          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
             --workflow .github/ci/legacy-jobs.yml \
             --gate code \
             --plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json" \

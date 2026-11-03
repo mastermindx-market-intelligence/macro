@@ -104,10 +104,10 @@ OPTIONS_INTEL_BROAD_LABELS = (
     "render-heavy",
 )
 SAME_REPO_PR = (
-    "needs.ci-plan.outputs.same_repository == 'true'"
+    "github.event.pull_request.head.repo.full_name == github.repository"
 )
 FORK_PR = (
-    "needs.ci-plan.outputs.same_repository != 'true'"
+    "github.event.pull_request.head.repo.full_name != github.repository"
 )
 PC_ROUTE = "vars.CI_EXECUTION_ROUTE == 'pc'"
 HOSTED_ROUTE = "vars.CI_EXECUTION_ROUTE != 'pc'"
@@ -252,23 +252,9 @@ def reaches_trust_gate(jobs: dict, job_id: str, seen: set[str] | None = None) ->
     return any(reaches_trust_gate(jobs, name, seen) for name in needs_names(job))
 
 
-# Six verified outputs are accepted only from the exact protected caller graph.
-# Empty inputs preserve native/legacy calls; arbitrary candidate identity is not
-# a second supported interface. Runtime receipt authentication remains mandatory.
-ADMITTED_CALL_BINDINGS = {
-    "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
-    "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
-    "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
-    "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
-    "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
-    "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
-}
-
-
+# Admitted proofs execute on hosted runners; no identity inputs cross the PC call.
 def _trusted_call_is_exact(job: dict) -> bool:
-    return job == TRUSTED_CALL_JOB or job == {
-        **TRUSTED_CALL_JOB, "with": ADMITTED_CALL_BINDINGS,
-    }
+    return job == TRUSTED_CALL_JOB
 
 
 def _step_with_id(job: dict, identifier: str) -> dict:
@@ -366,13 +352,12 @@ def _admitted_caller_graph_exact(document: dict) -> bool:
 
 
 def _shared_admission_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
-    """Narrow trusted-base wake exception: no PR code, raw input or new executor."""
+    """Exact protected sweep composition; no pull_request_target exception."""
     bad = [Finding("R2", f"{relative}: shared admission controller boundary drifted")]
     raw = document.get("on", document.get(True, {}))
     jobs = document.get("jobs") or {}
     if (not isinstance(raw, dict) or set(jobs) != {"sweep"}
-            or set(raw) != {"pull_request_target", "workflow_run", "schedule", "workflow_dispatch"}
-            or raw["pull_request_target"] != {"types": ["opened", "synchronize", "reopened"], "branches": ["main"]}
+            or set(raw) != {"workflow_run", "schedule", "workflow_dispatch"}
             or raw["workflow_run"] != {"workflows": ["ci", "fences", "integration-baseline"], "types": ["completed"]}
             or raw["schedule"] != [{"cron": "*/10 * * * *"}] or raw["workflow_dispatch"] is not None
             or any(k in document for k in ("env", "defaults"))
@@ -463,92 +448,6 @@ def _shared_admission_controller_r2_findings(relative: str, document: dict) -> l
     return []
 
 
-def _admitted_executor_graph_exact(document: dict) -> bool:
-    """Typed handoff is authority only behind the framework caller/source checks."""
-    if not _admitted_execution_context_exact(document,
-            ("trust-gate", "plan", "trusted-pack", "legacy-hosted-pack")):
-        return False
-    jobs=document.get("jobs") or {}
-    gate=_step_with_id(jobs.get("trust-gate") or {},"admit")
-    plan=jobs.get("plan") or {}
-    reread=_step_with_id(plan,"admitted-ref")
-    ref=_step_with_id(plan,"ref")
-    lines={line.strip() for line in str(gate.get("run","")).splitlines()}
-    fresh_lines={line.strip() for line in str(reread.get("run","")).splitlines()}
-    required = {
-        'test -z "$ADMITTED_MERGE$ADMITTED_HEAD$ADMITTED_BASE$ADMITTED_PR$ADMITTED_REPOSITORY_ID$ADMISSION_GENERATION" || exit 1',
-        'elif [ "$CALLER_WORKFLOW_REF" = "$REPOSITORY/.github/workflows/ci.yml@refs/heads/main" ]; then',
-        '[[ "$CALLER_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]] && test "$CALLER_WORKFLOW_SHA" = "$CALLER_SHA" || exit 1',
-        'for sha in "$ADMITTED_MERGE" "$ADMITTED_HEAD" "$ADMITTED_BASE"; do [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1; done',
-        '[[ "$ADMISSION_GENERATION" =~ ^[0-9a-f]{12}$ ]] || exit 1',
-        '[[ "$ADMITTED_PR" =~ ^[1-9][0-9]*$ && "$ADMITTED_REPOSITORY_ID" =~ ^[1-9][0-9]*$ ]] || exit 1',
-    }
-    fresh_required = {
-        'require(os.environ["EVENT_NAME"] == "workflow_dispatch")',
-        'require(os.environ["CALLER_REF"] == repo + "/.github/workflows/ci.yml@refs/heads/main")',
-        'require(os.environ["CALLER_WORKFLOW_SHA"] == os.environ["CALLER_SHA"])',
-        'require(os.environ["TRUSTED_REF"] == "refs/heads/main")',
-        'for key in ("GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "ADMITTED_PR", "ADMITTED_REPOSITORY_ID"):',
-        'require(re.fullmatch(r"[1-9][0-9]*", os.environ[key]))',
-        'require(re.fullmatch(r"[0-9a-f]{12}", os.environ["ADMISSION_GENERATION"]))',
-        'require(type(value["repo"].get("id")) is int and value["repo"]["id"] == repository_id)',
-        'require(value["repo"].get("full_name") == repo)',
-        'require(pr["head"].get("sha") == head and pr["base"].get("ref") == "main")',
-        'require([item.get("sha") if isinstance(item, dict) else None for item in commit["parents"]] == [base, head])',
-    }
-    expected_read_env = {
-        "GITHUB_TOKEN": "${{ github.token }}", "EVENT_NAME": "${{ github.event_name }}",
-        "REPOSITORY": "${{ github.repository }}", "TRUSTED_REF": "${{ github.ref }}",
-        "CALLER_REF": "${{ github.workflow_ref }}", "CALLER_WORKFLOW_SHA": "${{ github.workflow_sha }}",
-        "CALLER_SHA": "${{ github.sha }}",
-        **{k.upper(): "${{ inputs."+k+" }}" for k in ADMITTED_CALL_BINDINGS},
-    }
-    expected_ref_env = {
-        "MODE": "${{ needs.trust-gate.outputs.mode }}",
-        "LEGACY_TESTED": "${{ steps.legacy-ref.outputs.tested_sha }}",
-        "LEGACY_BASE": "${{ steps.legacy-ref.outputs.base_sha }}",
-        "LEGACY_HEAD": "${{ steps.legacy-ref.outputs.head_sha }}",
-        "LEGACY_HEAD_REF": "${{ steps.legacy-ref.outputs.head_ref }}",
-        "ADMITTED_TESTED": "${{ steps.admitted-ref.outputs.tested_commit }}",
-        "ADMITTED_BASE": "${{ steps.admitted-ref.outputs.base }}",
-        "ADMITTED_HEAD": "${{ steps.admitted-ref.outputs.subject_head }}",
-        "ADMITTED_SAME_REPOSITORY": "${{ steps.admitted-ref.outputs.same_repository }}",
-        "ADMISSION_GENERATION": "${{ steps.admitted-ref.outputs.admission_generation }}",
-    }
-    plan_steps=plan.get("steps",[])
-    checkouts=[s for s in plan_steps if str(s.get("uses","")).startswith("actions/checkout@")]
-    if (len(checkouts)!=2 or checkouts[0].get("with",{}).get("ref") != "${{ needs.trust-gate.outputs.control_sha }}"
-            or checkouts[1].get("with",{}).get("ref") != "${{ steps.ref.outputs.tested_sha }}"
-            or any(c.get("with",{}).get("persist-credentials") is not False for c in checkouts)):
-        return False
-    plan_step=_step_with_id(plan,"plan")
-    plan_run=str(plan_step.get("run", ""))
-    if (not required <= lines or not fresh_required <= fresh_lines
-            or reread.get("if") != "needs.trust-gate.outputs.mode == 'admitted'"
-            or reread.get("env") != expected_read_env or ref.get("env") != expected_ref_env
-            or 'test "$ADMITTED_SAME_REPOSITORY" = true || {' not in str(ref.get("run",""))
-            or plan.get("outputs",{}).get("admission_generation") != "${{ steps.ref.outputs.admission_generation }}"
-            or plan.get("outputs",{}).get("control_bundle_sha256") != "${{ steps.bundle.outputs.sha256 }}"
-            or plan_step.get("env",{}).get("ADMISSION_GENERATION") != "${{ steps.ref.outputs.admission_generation }}"
-            or '--admission-generation "$ADMISSION_GENERATION"' not in plan_run
-            or '--event "${{ github.event_name }}"' not in plan_run):
-        return False
-    # A caller-controlled artifact name cannot substitute the protected capsule.
-    # Keep the digest readback ahead of candidate materialization in both routes.
-    for job_id in ("trusted-pack","legacy-hosted-pack"):
-        steps=(jobs.get(job_id) or {}).get("steps",[])
-        checks=[(i,s) for i,s in enumerate(steps) if s.get("name")=="verify control bundle before any candidate execution"]
-        materialize=[i for i,s in enumerate(steps) if s.get("name") in {"materialize exact candidate with negotiated incremental fetch", "checkout the immutable PR candidate"}]
-        if len(checks)!=1 or len(materialize)!=1:
-            return False
-        i,verify=checks[0]
-        if (verify.get("env") != {"EXPECTED_CONTROL_DIGEST":"${{ needs.plan.outputs.control_bundle_sha256 }}"}
-                or 'digest != expected' not in str(verify.get("run",""))
-                or any(i >= j for j in materialize)):
-            return False
-    return True
-
-
 def _authority_controller_r2_findings(relative: str, document: dict) -> list[Finding]:
     """R2 admits only the two governed trusted-base control jobs.
 
@@ -557,7 +456,7 @@ def _authority_controller_r2_findings(relative: str, document: dict) -> list[Fin
     neither exception permits a cloned filename or candidate-code checkout.
     """
     if relative == ".github/workflows/merge-on-green.yml":
-        return _shared_admission_controller_r2_findings(relative, document)
+        return [Finding("R2", f"{relative}: pull_request_target is forbidden")]
     if relative != TRUSTED_PULL_REQUEST_TARGET:
         return [Finding("R2", f"{relative}: pull_request_target is forbidden")]
 
@@ -1096,6 +995,14 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                         )
                     )
 
+    findings.extend(_shared_admission_controller_r2_findings(
+        ".github/workflows/merge-on-green.yml", documents.get(".github/workflows/merge-on-green.yml") or {}))
+    if not _admitted_caller_graph_exact(documents.get(".github/workflows/ci.yml") or {}):
+        findings.append(Finding("R13", "protected hosted admission resolver or plan boundary drifted"))
+    if not _admitted_execution_context_exact(documents.get(".github/workflows/trusted-ci-executor.yml") or {},
+            ("trust-gate", "plan", "trusted-pack", "legacy-hosted-pack")):
+        findings.append(Finding("R13", "zero-input executor execution context drifted"))
+
     findings.extend(_label_registry_findings(registry, documents))
 
     for route in registry.get("protected_hosted_routes") or []:
@@ -1205,13 +1112,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trigger_inputs_are_exact = (
             isinstance(trigger_config, dict)
             and isinstance(trigger_config.get("workflow_call"), dict)
-            and set(trigger_config["workflow_call"].get("inputs") or {}) == set(ADMITTED_CALL_BINDINGS)
-            and all({k: value for k,value in declaration.items() if k != "description"}
-                    == {"type": "string", "required": False, "default": ""}
-                    and declaration.get("required") is False
-                    for declaration in trigger_config["workflow_call"]["inputs"].values()
-                    if isinstance(declaration, dict))
-            and all(isinstance(v, dict) for v in trigger_config["workflow_call"]["inputs"].values())
+            and (trigger_config["workflow_call"].get("inputs") or {}) == {}
             and set(trigger_config["workflow_call"].get("outputs") or {}) == call_outputs
             and isinstance(trigger_config.get("workflow_dispatch"), dict)
             and set((trigger_config["workflow_dispatch"].get("inputs") or {}))
@@ -1243,9 +1144,6 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
             "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
-            "CALLER_WORKFLOW_SHA": "${{ github.workflow_sha }}",
-            "CALLER_SHA": "${{ github.sha }}",
-            **{k.upper(): "${{ inputs." + k + " || '' }}" for k in ADMITTED_CALL_BINDINGS},
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -1292,7 +1190,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         if triggers(trusted_document) != {"workflow_call", "workflow_dispatch"}:
             findings.append(Finding("R13", "P3B-B executor triggers must stay call-capable and dispatch-provable"))
         if not trigger_inputs_are_exact:
-            findings.append(Finding("R13", "P3B-B reusable inputs must be exactly six optional verified-output fields"))
+            findings.append(Finding("R13", "P3B-B reusable call must accept no caller-supplied identity"))
         if (
             trust_gate.get("runs-on") != HOSTED
             or gate_step.get("id") != "admit"
@@ -1302,7 +1200,6 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or plan_job.get("runs-on") != HOSTED
             or plan_job.get("needs") != "trust-gate"
             or not plan_is_main_controlled
-            or not _admitted_executor_graph_exact(trusted_document)
         ):
             findings.append(Finding("R13", "P3B-B hosted trust and main-owned planner boundary drifted"))
         if (
@@ -1482,8 +1379,8 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"
             and (ci_pack.get("strategy") or {}).get("fail-fast") is False
         )
-        if not (_trusted_call_is_exact(trusted_call) and _admitted_caller_graph_exact(ci_document)):
-            findings.append(Finding("R13", "P3B-B ci.yml lost its governed protected-main executor call"))
+        if trusted_call != TRUSTED_CALL_JOB:
+            findings.append(Finding("R13", "P3B-B ci.yml lost its exact protected-main no-input executor call"))
         if not (
             ci_pack_contract_is_exact
             and heavyweight_hosted_default

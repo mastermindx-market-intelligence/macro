@@ -130,19 +130,19 @@ def test_admitted_bundle_binds_control_root_before_candidate_checkout(tmp_path):
         assert (expected / 'scripts' / 'control.py').read_text() == '# protected bytes'
 
 
-def test_foundation_keeps_legacy_protected_call_until_callee_contract_installed():
+def test_foundation_preserves_zero_input_executor_and_no_pr_target():
     doc = workflow()
     assert 'pull_request' in doc.get('on', doc.get(True))
     caller = doc['jobs']['trusted-ci']
     assert caller['uses'] == 'mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main'
     assert not caller.get('with')  # Installed legacy callee declares no inputs.
-    assert "vars.CI_EXECUTION_ROUTE == 'pc'" in caller['if']
+    assert caller['if'] == ("!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && "
+                            "github.event.pull_request.head.repo.full_name == github.repository && "
+                            "vars.CI_EXECUTION_ROUTE == 'pc'")
     callee = yaml.safe_load((ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
-    inputs = callee.get('on', callee.get(True))['workflow_call']['inputs']
-    assert set(inputs) == {'admitted_merge', 'admitted_head', 'admitted_base',
-                           'admitted_pr', 'admitted_repository_id', 'admission_generation'}
-    assert all(v['type'] == 'string' and v['required'] is False and v['default'] == ''
-               for v in inputs.values())
+    assert callee.get('on', callee.get(True))['workflow_call'].get('inputs', {}) == {}
+    sweep = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
+    assert 'pull_request_target' not in sweep.get('on', sweep.get(True))
     controller = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
     steps = controller['jobs']['sweep']['steps']
     reserve = next(s for s in steps if s.get('id') == 'admission_reserve')
@@ -180,12 +180,14 @@ def test_proof_consumers_have_explicit_status_and_successful_plan(job):
     ('contract-delta', {'needs.ci-plan.result': 'failure'}, False),
     ('contract-delta', {'needs.ci-plan.result': 'skipped'}, False),
     ('contract-delta', {'needs.ci-plan.outputs.semantic_role': 'main'}, False),
+    # Main-owned PC fallback remains zero-input; admitted dispatches are hosted.
     ('trusted-ci', {}, True),
     ('trusted-ci', {'cancelled()': True}, False),
     ('trusted-ci', {'needs.ci-plan.result': 'failure'}, False),
     ('trusted-ci', {'needs.ci-plan.result': 'skipped'}, False),
+    ('trusted-ci', {'github.event.pull_request.head.repo.full_name': ''}, False),
+    ('trusted-ci', {'github.event.pull_request.head.repo.full_name': 'other/repo'}, False),
     ('trusted-ci', {'vars.CI_EXECUTION_ROUTE': 'hosted'}, False),
-    ('trusted-ci', {'needs.ci-plan.outputs.same_repository': 'false'}, False),
     ('trusted-ci', {'needs.ci-plan.outputs.has_work': 'false'}, False),
 ])
 def test_explicit_consumer_predicate_source_cases(job, changes, expected):
@@ -194,9 +196,46 @@ def test_explicit_consumer_predicate_source_cases(job, changes, expected):
     values = {'cancelled()': False, 'needs.ci-admission.result': 'skipped',
               'needs.ci-plan.result': 'success',
               'needs.ci-plan.outputs.semantic_role': 'pr_head',
-              'needs.ci-plan.outputs.same_repository': 'true',
+              'github.event.pull_request.head.repo.full_name': 'macro/repo',
+               'github.repository': 'macro/repo',
               'needs.ci-plan.outputs.has_work': 'true',
               'vars.CI_EXECUTION_ROUTE': 'pc'}
     values.update(changes)
     condition = workflow()['jobs'][job]['if']
     assert _source_only_job_predicate(condition, values) is expected
+
+
+@pytest.mark.parametrize('event,name,branch,conclusion,job_ready,stage_ready', [
+    ('workflow_run','fences','cutover-candidate','success',True,True),
+    ('workflow_run','fences','cutover-candidate','failure',True,False),
+    ('workflow_run','fences','main','success',False,False),
+    ('workflow_run','ci','cutover-candidate','failure',True,True),
+    ('schedule','','','',True,True),
+])
+def test_hosted_cutover_natural_fences_wake_source_contract(event,name,branch,conclusion,job_ready,stage_ready):
+    import re
+    fences=yaml.safe_load((ROOT/'.github/workflows/fences.yml').read_text())
+    assert fences['name']=='fences'
+    # Default PR activities are opened/synchronize/reopened; no paths or draft
+    # filter suppresses this source trigger. This is not a hosted-run assertion.
+    assert fences.get('on',fences.get(True))['pull_request']=={'branches':['main']}
+    sweep=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    events=sweep.get('on',sweep.get(True))
+    assert 'pull_request_target' not in events
+    assert events['workflow_run']=={'workflows':['ci','fences','integration-baseline'],'types':['completed']}
+    job=sweep['jobs']['sweep']
+    values={'github.event_name':event,'github.event.workflow_run.name':name,
+            'github.event.workflow_run.head_branch':branch,
+            'github.event.workflow_run.conclusion':conclusion,'cancelled()':False}
+    def source_bool(expression):
+        for key in sorted(values,key=len,reverse=True):expression=expression.replace(key,repr(values[key]))
+        expression=re.sub(r'!(?!=)',' not ',expression).replace('&&',' and ').replace('||',' or ').strip()
+        tree=ast.parse(expression,mode='eval')
+        assert all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Or,ast.UnaryOp,ast.Not,ast.Compare,ast.Eq,ast.NotEq,ast.Constant)) for n in ast.walk(tree))
+        return bool(eval(compile(tree,'<source-only-wake>','eval'),{'__builtins__':{}},{}))
+    assert source_bool(job['if']) is job_ready
+    for step in job['steps']:
+        if step.get('id')=='admission_prepare' or step.get('name')=='reconcile original admitted completion':
+            assert (job_ready and source_bool(step['if'])) is stage_ready
+    assert job['concurrency']['cancel-in-progress'] is False
+    assert job['steps'][0]['with']['ref']=='${{ github.workflow_sha }}'

@@ -96,3 +96,11 @@ source checks, not production token or installed admission qualification. A
 hypothetical 875 armed existing-proof population still exhausts the incumbent
 REST budget and refuses. Uncovered expired age artifacts also still refuse;
 periodic renewal of unchanged artifacts is not implemented.
+
+## Hosted-only admission transition
+
+The incoming zero-input protected PC executor stays separate. Admitted workflow-dispatch proofs execute on the protected hosted path; they do not pass PR-supplied identities to the PC reusable workflow. The native PC caller requires an explicit cancellation/successful-plan predicate so a skipped admission ancestor cannot silently skip eligible native PC execution.
+
+A protected hosted-capability bridge must be ready while the installed main workflow still retains its native PR trigger. Candidate-native detection prevents a duplicate authored proof for an exact candidate that still owns that trigger. A candidate removing the native trigger can therefore obtain its first original admitted proof before that candidate is installed. Refresh purpose and original request age survive this transition; neither a missing check nor a failed original proof grants replay.
+
+The existing fences workflow provides the ordinary authored wake: it is named `fences`, receives unfiltered main-targeting pull_request activities, and its successful non-main-branch completion reaches the same serialized merge-on-green controller. Failed fences and head branches named main rely on another ordinary complete sweep or schedule. Source predicates and synthetic cases do not prove an actual installed wake, token enrollment or downstream publication; those remain prospective acceptance obligations.

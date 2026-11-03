@@ -104,6 +104,11 @@ jobs:
             /data/metabolism/journal/
             /data/ai_costs/usage.jsonl
             /config.yml
+            # Materialize exact HOLD policy inputs within the checkout.
+            # Avoid test-time lazy blob fetches against the promisor remote.
+            /CLAUDE.md
+            /AGENTS.md
+            /.cursor/rules/ship-loop-terminal-states.mdc
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:

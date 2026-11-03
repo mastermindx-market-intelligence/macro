@@ -372,7 +372,7 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
     assert condition == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(needs.ci-plan.outputs.same_repository != 'true' || "
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
@@ -485,7 +485,7 @@ def test_ci_pack_pins_the_plan_hash_and_unpins_itself_when_there_is_none() -> No
     """
     step = _pack_step()
     hosted_guard = (
-        "(needs.ci-plan.outputs.same_repository != 'true' || "
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     )
     assert step["if"] == f"{hosted_guard} && needs.ci-plan.outputs.plan_sha != ''"
@@ -764,7 +764,7 @@ def test_ci_pack_downloads_the_list_and_exports_only_its_path() -> None:
     )
     assert download["with"]["path"] == "${{ runner.temp }}/ci-changed-files"
     assert download["if"] == (
-        "(needs.ci-plan.outputs.same_repository != 'true' || "
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc')"
     ), (
         "hosted execution downloads this artifact for forks and the ordinary "
@@ -860,12 +860,12 @@ def test_actual_identity_shell_distinguishes_main_verified_admission_and_native_
         assert values['admission_generation'] == ('a' * 12 if admitted else '')
 
 
-def test_pc_fork_routing_rejects_raw_event_identity_at_every_consumer(monkeypatch):
+def test_pc_fork_routing_rejects_resolver_only_identity_at_every_consumer(monkeypatch):
     import copy
     import pytest
     original = _workflow()
-    old = "needs.ci-plan.outputs.same_repository != 'true'"
-    raw = 'github.event.pull_request.head.repo.full_name != github.repository'
+    old = "github.event.pull_request.head.repo.full_name != github.repository"
+    resolver_only = "needs.ci-plan.outputs.same_repository != 'true'"
     for place in ('job', 'execution', 'fallback', 'artifact'):
         changed = copy.deepcopy(original)
         job = changed['jobs']['ci-pack']
@@ -874,7 +874,7 @@ def test_pc_fork_routing_rejects_raw_event_identity_at_every_consumer(monkeypatc
         elif place == 'fallback': target = next(s for s in job['steps'] if s.get('name') == 'fail-safe full suite when no authoritative plan was produced')
         else: target = next(s for s in job['steps'] if 'download-artifact@' in s.get('uses', '') and s.get('with', {}).get('name') == 'ci-changed-files')
         assert old in target['if']
-        target['if'] = target['if'].replace(old, raw)
+        target['if'] = target['if'].replace(old, resolver_only)
         monkeypatch.setattr(sys.modules[__name__], '_workflow', lambda: changed)
         with pytest.raises(AssertionError):
             test_ci_pack_is_gated_on_an_affirmative_has_work()
