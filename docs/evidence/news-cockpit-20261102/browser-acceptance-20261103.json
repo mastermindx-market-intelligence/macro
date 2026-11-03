@@ -106,5 +106,9 @@
     "No production deployment or signed-in production acceptance is asserted.",
     "Company API fixture does not represent every history/detail endpoint; mounted aggregate/company tests supply separate interaction coverage."
   ],
-  "browser_cleanup": "Final theme/viewport restoration call timed out at the Browser MCP boundary; cleanup state not yet confirmed."
+  "browser_cleanup": "Confirmed: dark/English and native1585x1088 viewport restored; QA tab closed (subsequent tab list empty); owned previewPID10225 and public tunnelPID65825 absent after termination.",
+  "temporary_preview_processes": {
+    "10225": "absent",
+    "65825": "absent"
+  }
 }

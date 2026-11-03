@@ -20,11 +20,13 @@ from __future__ import annotations
 import datetime
 import hashlib
 import json
+import re
 from collections import Counter, OrderedDict
 from pathlib import Path
 
 import yaml
 
+from engine.theme_graph.identity import symbol_variants
 from engine.theme_graph.identity_resolution import (
     UnknownGraphNodeError,
     resolve_graph_node_identity,
@@ -65,6 +67,17 @@ CLOCK_NAMES = ("publication", "knowledge", "observation", "effective",
 #: one trailing corporate suffix stripped from a directory security_name
 NAME_SUFFIXES = (", Inc.", " Inc.", ", Inc", " Corporation", " Corp.", " Ltd.",
                  " Limited", " plc", " N.V.", " S.A.", " SE")
+#: the listing-instrument words a directory security_name carries after the
+#: company. Nasdaq rows separate them with " - " (cut first); NYSE-family rows
+#: do not ("Abbott Laboratories Common Stock"), so they are stripped here,
+#: anchored at the end, before the corporate suffix.
+INSTRUMENT_TAIL = re.compile(
+    r"(?:\s+\(NEW\))?(?:^|\s+)(?:"
+    r"(?:Sponsored\s+)?American\s+Depositary\s+Shares\b.*"
+    r"|ADS"
+    r"|(?:New\s+|Class\s+[A-Z]\s+|Series\s+[A-Z]\s+|[A-Z]\s+)?"
+    r"(?:[Cc]ommon|[Oo]rdinary)\s+[Ss](?:tock|hares)(?:\s+\(Canada\))?"
+    r")$")
 
 
 def load_reason_words(repo_root: Path) -> dict:
@@ -99,29 +112,88 @@ def _newest_snapshot(repo_root: Path, asof: str | None) -> Path | None:
     return snaps[0] if snaps else None
 
 
+def _plain_company_name(security_name: str) -> str:
+    """A directory ``security_name`` -> the plain company name (may be empty).
+
+    Cut at the first " - " (the Nasdaq instrument tail), strip the end-anchored
+    NYSE-family instrument words (:data:`INSTRUMENT_TAIL`), then ONE trailing
+    corporate suffix. "Boeing Company (The)" reads "The Boeing Company"; a
+    leading "D/B/A " is dropped. Pure string work, no store.
+    """
+    name = str(security_name).split(" - ")[0].strip()
+    name = INSTRUMENT_TAIL.sub("", name, count=1).strip()
+    if name.startswith("D/B/A "):
+        name = name[len("D/B/A "):].strip()
+    if name.endswith(" (The)"):
+        name = "The " + name[: -len(" (The)")].strip()
+    for suffix in NAME_SUFFIXES:
+        if name.endswith(suffix):
+            name = name[: -len(suffix)].strip()
+            break
+    return name.rstrip(" ,")
+
+
 def _display_name(repo_root: Path, ticker: str, asof: str | None) -> tuple[str, str]:
     """Directory security_name -> a plain company name, or the ticker itself.
 
-    The identity resolver carries no name field today, so the fallback name
-    source is the dated symbol directory column ``security_name``: cut at the
-    first " - " (the instrument tail), then strip ONE trailing corporate
-    suffix. No new identity store, no cache file.
+    GMI display-name contract (DEC:GMI-ISSUER-DISPLAY-NAME-SOURCE): neither the
+    identity resolver nor the security master carries a name field, and the
+    seat chose not to add one, so the name source is the dated symbol directory
+    column ``security_name`` (newest snapshot <= asof), cleaned by
+    :func:`_plain_company_name`. The row is found under any dot/dash spelling of
+    the listing (:func:`engine.theme_graph.identity.symbol_variants`, most
+    canonical first): graph ids write ``BRK-B``, the directory writes ``BRK.B``,
+    and they are one listing. No hit -> ``(ticker, "ticker")``. No new identity
+    store, no cache file.
     """
     import pandas as pd
 
     snapshot = _newest_snapshot(repo_root, asof)
     if snapshot is not None:
         frame = pd.read_parquet(snapshot, columns=["symbol", "security_name"])
-        hit = frame[frame["symbol"] == ticker]
-        if not hit.empty:
-            name = str(hit["security_name"].iloc[0]).split(" - ")[0].strip()
-            for suffix in NAME_SUFFIXES:
-                if name.endswith(suffix):
-                    name = name[: -len(suffix)].strip()
-                    break
-            if name:
-                return name, "symbol_directory.security_name"
+        try:
+            spellings = symbol_variants(ticker)
+        except ValueError:  # outside the node-id grammar (e.g. an epoch "#2" tail)
+            spellings = (ticker,)
+        for spelling in spellings:
+            hit = frame[frame["symbol"] == spelling]
+            if not hit.empty:
+                name = _plain_company_name(hit["security_name"].iloc[0])
+                if name:
+                    return name, "symbol_directory.security_name"
+                break
     return ticker, "ticker"
+
+
+EDGES_SCHEMA = "company_intelligence.relationship_edges/v1"
+
+
+def read_edges(edges_path: Path) -> tuple[list, str, dict | None]:
+    """(edges, edges_state, edge_package) from the relationships store, read IF PRESENT.
+
+    The store ships the ``company_intelligence.relationship_edges/v1``
+    envelope: a dict carrying ``schema``, ``package_id``, ``as_of``,
+    ``adoption_state``, ``authority``, ``counts`` and ``edges``. The dataset
+    registry holds it as proposed and "never serving by itself", so the S3
+    page prints the envelope beside the edges at display tier
+    (DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT). ``edge_package`` is the
+    envelope minus its ``edges`` list — the page-level receipt and the
+    species strip read it; nothing here ranks, sizes or gates.
+
+    A bare list of edges (the shape the pages were first built for) still
+    reads as present with no package. An absent file or any other shape reads
+    as no edges — the "empty" state — and never raises.
+    """
+    if not edges_path.exists():
+        return [], "empty", None
+    payload = json.loads(edges_path.read_text(encoding="utf-8"))
+    if isinstance(payload, list):
+        return payload, "present", None
+    if (isinstance(payload, dict) and payload.get("schema") == EDGES_SCHEMA
+            and isinstance(payload.get("edges"), list)):
+        package = {k: v for k, v in payload.items() if k != "edges"}
+        return payload["edges"], "present", package
+    return [], "empty", None
 
 
 def edge_party_names(repo_root: Path, edges: list, asof: str | None) -> dict:
@@ -187,9 +259,19 @@ def _source_label(source_key: str | None) -> tuple[str, str]:
 
 
 def _ticker_of(node_or_issuer_id: str) -> str:
-    """co:us:MU -> MU; ISS:US-XNAS-NVDA -> NVDA (last segment after ':','-')."""
-    tail = str(node_or_issuer_id).rsplit(":", 1)[-1]
-    return tail.rsplit("-", 1)[-1]
+    """co:us:MU -> MU; co:us:BRK-B -> BRK-B; ISS:US-XNYS-BRK.B -> BRK.B.
+
+    A graph node id ends in the listing symbol itself, class-share dash kept.
+    An issuer id ends in a ListingKey ``<country>-<mic>-<code>`` whose code is
+    the THIRD field (an inception code). Splitting on the LAST dash turned
+    ``co:us:BRK-B`` into ``B``, which the symbol directory names Barrick Mining.
+    """
+    text = str(node_or_issuer_id)
+    tail = text.rsplit(":", 1)[-1]
+    if text.startswith("ISS:"):
+        parts = tail.split("-", 2)
+        return parts[2] if len(parts) == 3 else parts[-1]
+    return tail
 
 
 def _clock_states(clocks: dict) -> dict:
@@ -477,9 +559,8 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
     extended_on = extended_dates[-1] if extended_dates else None
 
     # -- edges / deck: other programs own these; read IF PRESENT -------------
-    edges_path = repo_root / EDGES_PATH
     deck_path = repo_root / DECK_PATH
-    edges = json.loads(edges_path.read_text(encoding="utf-8")) if edges_path.exists() else []
+    edges, edges_state, edge_package = read_edges(repo_root / EDGES_PATH)
     deck = json.loads(deck_path.read_text(encoding="utf-8")) if deck_path.exists() else None
 
     # -- card payloads -------------------------------------------------------
@@ -557,12 +638,13 @@ def build_model(report: dict, manifest: dict | None, *, repo_root: Path,
         "states": [{"key": key, "en": en, "zh": zh} for key, en, zh in STATE_KEYS],
         "issuers": issuers,
         "edges": edges,
-        "edges_state": "present" if edges_path.exists() else "empty",
+        "edges_state": edges_state,
         "party_names": edge_party_names(repo_root, edges, asof),
         "deck": deck,
-        # relationships package manifest (counts by species); none until the
-        # relationships store lands — only the S3 "edges present" branch reads it
-        "edge_package": None,
+        # the relationships envelope minus its edges (package id, as_of,
+        # adoption state, authority, counts by species); None for a bare list
+        # or no store — only the S3 "edges present" branch reads it
+        "edge_package": edge_package,
         "card_payloads": card_payloads,
         "provenance": provenance,
         "theme_parents": theme_parents,

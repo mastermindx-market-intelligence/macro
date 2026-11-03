@@ -1008,9 +1008,9 @@ Nine unmodified JPEG captures and their hashes are retained with
 browser-acceptance-20261103.json, paper-applied-20261103.json,
 source-composition-20261103.json and validation-visual-20261103.json.
 All depicted stories are explicitly illustrative. The preview does not
-connect to the production news database. Browser theme/viewport restoration
-was attempted but its MCP response timed out; cleanup readback remains
-a separate follow-up and is not claimed here.
+connect to the production news database. Browser theme/viewport restoration initially timed out. Read-only
+reconciliation then confirmed the unchanged state; the documented controls
+restored dark/English and the native 1585 × 1088 viewport successfully.
 
 ### Remaining release gates
 
@@ -1029,3 +1029,31 @@ inferred. Current independent acceptance and required hosted checks still
 precede normal merge, covering render/deploy and signed-in production proof.
 The Paper design and tested implementation are now concrete; this entry
 does not claim a live replacement or production-ready acceptance.
+
+### Accepted-main integration and local preflight
+
+The visual source was sealed as fbdbfcbfbb61ae7f05933060e7724e4cbc9bd134.
+The prepared merge adds protected main 4725eadec5222e42bd10c253091e995e2071f9f1
+(the accepted descendant of 91b2942). Only site/news.html conflicted. The
+verified News artifact and its context blocks were retained, then passed
+the current canonical finalizer unchanged. Shared theme, navigation, page
+base and finalizer source have no delta between these parents.
+
+The 378-job registry preserves all main jobs and commands and the existing
+News dependency/interaction additions. Executable CI-test AST matches main.
+Local integration validation passes 744 News Python tests, 66 mounted tests,
+10 GMI envelope boundary tests and the three workflow-size checks. The
+complete GMI page suite is limited by this checkout's omitted canonical
+datasets/assets; its failed/skip result is retained, not marked passing.
+
+The raw-worktree closure preflight names site/stockdata/AAPL.json, which
+is present locally but ignored and untracked. No dependency declaration
+was changed based on that unqualified observation. Raw-worktree packing
+reports free-content 5881 against 5877. The canonical planner requires an
+immutable exact HEAD; the integration will be sealed locally so that its
+tracked-path inventory can adjudicate these findings before publication.
+No gate, ceiling or fixture is deleted or relaxed.
+
+The browser's original dark/English appearance and native 1585 × 1088
+viewport are restored, its QA tab is closed, and both owned temporary
+preview processes are confirmed absent.
