@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: t35-whitehouse-editorial-reader
 scope: full
-status: in_review
+status: revise
 surface:
   route: /whitehouse.html
   registry_row: macro:whitehouse

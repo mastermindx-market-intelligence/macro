@@ -1,0 +1,5 @@
+reference-integrity --evaluate t35-whitehouse-editorial-reader (status=revise, scope=full): 3 finding(s)
+::error title=reference-integrity::missing-artifact-file: t35-whitehouse-editorial-reader/approval.yml — required by the approval-shape rule set (--evaluate) (RIG §3)
+::error title=reference-integrity::approved-without-receipt: t35-whitehouse-editorial-reader/approval.yml — approval requires an approval receipt — a migration may treat a reference as canonical only if it carries one (RIG §7)
+::error title=reference-integrity::approved-with-wrong-verdict: t35-whitehouse-editorial-reader/verdict.yml — verdict 'REVISE' is not in ['APPROVE_REFERENCE', 'APPROVE_WITH_CONDITIONS']
+reference-integrity: t35-whitehouse-editorial-reader is BLOCKED — not approvable-shape

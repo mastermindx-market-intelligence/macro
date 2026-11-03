@@ -1,0 +1,115 @@
+```yaml
+role: product_regression
+pass: second
+reviewer_identity: "01a1a388-0126-7981-8657-90d6e7242919"
+model: "gpt-6.1-sol"
+artifact_sha: "5e2070d8c7a3e2db7fb31a2362623b3028c4e301"
+artifact_runtime_source: "349e12c9b7f64c7e5452215db15a9d1ffb292b22"
+rationale_received_after_first_pass: true
+amended_at: "2026-11-03T22:33:47Z"
+first_pass_freeze:
+  path: "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-first-pass.raw.md"
+  sha256: "e098bfa192e427b239a08960cdcc82d59e8d433bac62ed43225afa61d2a8db69"
+  frozen_at: "2026-11-03T22:33:10.186095+00:00"
+second_pass_inputs_read:
+  - "research/reference_integrity/t35-whitehouse-editorial-reader/designer-rationale-second-pass.md"
+  - "research/reference_integrity/t35-whitehouse-editorial-reader/designer-packet-second-pass.md"
+  - "research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-first-pass.raw.md"
+amendments:
+  - finding_id: PRC-001
+    disposition: upheld
+    severity: major
+    reason: >-
+      The packet deliberately organizes the retained title, summary, dates,
+      fallback and banner state as one title block, then labels the lower
+      analysis as original AI text. That explains the composition but does not
+      resolve authorship at the dominant title and summary. Its stated primary
+      question expressly includes identifying AI interpretation. The language
+      constraint prevents rewriting stored narratives; it does not prevent a
+      localized presentation label identifying the title and summary as AI
+      interpretation. The packet's end-of-page model disclaimer and method
+      disclosure do not establish that boundary at the point of reading.
+    qualification: >-
+      I am not claiming changed report assertions, altered source facts, or
+      demonstrated user deception. This is a material ambiguity in the newly
+      differentiated hierarchy, supported by the inspected images and markup.
+    residual_condition: >-
+      Identify the retained generated title and summary as AI report
+      interpretation in EN/ZH without rewriting their stored content.
+  - finding_id: PRC-002
+    disposition: upheld
+    severity: major
+    reason: >-
+      The original packet explicitly prescribes the same broad missing-analysis
+      sentence and separately requires retaining metadata and real evidence
+      rows. This confirms that the contradiction is present in the design
+      specification, rather than an implementation deviation. With a surviving
+      AI summary and relevance score, "An AI read is not available" overstates
+      the missing content. With a missing source URL, the immediate instruction
+      to check the original source is unavailable within this report. The
+      rationale supplies no narrower meaning visible to the reader.
+    qualification: >-
+      Preserving surviving fields and refusing to invent a source URL are
+      correct. Those behaviors should remain; the absence description and
+      next-step guidance need to match them.
+    residual_condition: >-
+      Name the absent full-analysis field precisely, identify surviving AI
+      material, and condition source guidance on the presence of a source link.
+  - finding_id: PRC-003
+    disposition: upheld
+    severity: minor
+    reason: >-
+      The packet justifies bounded prose, a normal-flow supporting rail and
+      at least 40x40px source/ticker link targets. I accept those choices and
+      do not require restoring the incumbent full-width report. They do not
+      require separating a ticker from its direction marker. The observed
+      desktop IONQ wrap remains a small evidence-scanning regression that can
+      be addressed while preserving the specified target size and composition.
+    qualification: >-
+      This is not an objection to deliberate prose reflow or proof that every
+      table is impaired. My visual table coverage remains limited to the
+      inspected crops. This minor finding alone would not block acceptance.
+    residual_condition: >-
+      Keep ticker and direction visually grouped while preserving usable
+      targets; establish representative table scanability before claiming parity.
+final_verdict: BLOCK
+final_reason: >-
+  The rationale supports the overall editorial approach and its intentional
+  tradeoffs, but it does not resolve the two major issues affecting the stated
+  source-fact/AI distinction. PRC-002 requires a packet amendment as well as
+  corresponding presentation repair. The frozen artifact has not changed,
+  so there is no basis to treat either major finding as resolved.
+retained_positive_judgment:
+  - "Bounded prose and separate light/dark material treatments are justified."
+  - "A normal-flow desktop outline avoids inventing ownership of embedded scrolling."
+  - "Mobile disclosure preserves expanded report content."
+  - "Explicit source/read/banner clocks and fallback labels help the dated-report job."
+  - "AI relevance labeled as non-probability avoids calibration claims."
+  - "Original-language framing avoids inventing body-language provenance."
+  - "Empty-state wording avoids claiming there were no events or that monitoring is healthy."
+  - "T34 agency correction remains a separate achievement."
+residual_gaps:
+  - >-
+    No new source inspection, tests, captures, browser actions, workers, network
+    actions, or runtime verification were performed during this amendment.
+  - >-
+    First-pass limits remain: only two before report profiles, representative
+    after-image inspection, and no complete 77-report visual comparison.
+  - >-
+    Retained 77-record anchor/order/source-URL assertions do not prove all report
+    content, all table layouts, or complete visual parity.
+  - >-
+    Current serving, authenticated access, actual external-source opening,
+    keyboard behavior, native Back/reload execution and legitimate embedded-shell
+    scrolling/history behavior remain unverified by this review.
+  - >-
+    These evidence gaps are not the reason for BLOCK; the two unresolved
+    presentation-meaning findings are.
+review_boundary:
+  same_critic_amendment: true
+  other_critic_return_read: false
+  design_verdict_read: false
+  shared_tree_edited: false
+  approval_for_ci_convenience: false
+```
+

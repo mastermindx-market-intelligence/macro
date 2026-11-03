@@ -1,0 +1,184 @@
+schema: mastermind.rig_review.v1
+reference_id: t35-whitehouse-editorial-reader
+role: product_regression
+artifact_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+reviewer:
+  identity: 01a1a388-0126-7981-8657-90d6e7242919
+  model: gpt-6.1-sol
+  execution_surface: native local-image Sol specialist; originalroot-scoped capability
+    exception
+  independent_of_author: true
+quarantine:
+  first_pass_inputs:
+  - user/business job
+  - immutable production-before source/crops
+  - immutable proposed-after source/crops
+  - neutral capability/task facts and explicit gaps
+  rationale_received_after_first_pass: true
+  freeze_record: first-pass-freeze.json
+  first_pass_raw_sha256: e098bfa192e427b239a08960cdcc82d59e8d433bac62ed43225afa61d2a8db69
+  rationale_sources:
+  - designer-rationale-second-pass.md
+  - designer-packet-second-pass.md
+first_pass:
+  frozen_at: '2026-11-03T22:33:10.186095+00:00'
+  actual_return_at: '2026-11-03T22:31:50.017Z'
+  verdict: BLOCK
+  findings:
+  - id: PRC-001
+    severity: major
+    capability:
+    - reports.original-body
+    - reports.bilingual-summary
+    - page.explanation
+    - task.read-argument
+    finding: 'The newly explicit AI boundary starts below the generated title and
+      summary. That makes the most prominent interpretive claims easier to mistake
+      for a source-authored headline and factual abstract. The body heading says "AI
+      analysis", but the summary above it already interprets the MOU as a durable
+      policy push and the title calls it a sector re-rating catalyst. This is a regression
+      risk introduced by selective labeling: the lower material now has a clear authorship
+      category that the upper material lacks.'
+    evidence:
+    - after/whitehouse.html.j2:201-210 places Published metadata, h2, and wh-summary
+      before the AI-original region.
+    - after/whitehouse.html.j2:232-237 starts "AI analysis · original text" only inside
+      wh-reading, below the summary.
+    - after/reader-1440-dark-en.png and after/reader-390-light-zh.png visibly place
+      the interpretive headline and summary above that AI label.
+    - after/whitehouse.html.j2:299-304 acknowledges that titles and analysis are generated,
+      but does so in the page disclaimer after the report list.
+    acceptance_condition: Identify the title and summary as the retained AI report
+      interpretation at the point readers encounter them, in EN and ZH, while preserving
+      their stored text. Do not rely on the end-of-page disclaimer to establish authorship
+      for the dominant report content.
+  - id: PRC-002
+    severity: major
+    capability:
+    - reports.original-body
+    - reports.model-assessment
+    - reports.primary-source
+    - task.read-argument
+    - task.verify-source
+    finding: The new missing-body state overstates what is absent. It says "An AI
+      read is not available for this report" while an AI-derived summary and 72/100
+      AI relevance remain visible. The source guard can then say the original link
+      is unavailable immediately after instructing the reader to check it. A reader
+      cannot tell whether the retained summary and assessment are valid surviving
+      report fields, failed analysis, or an unsupported residual score. Missing data
+      itself is not the defect; contradictory scope and guidance are.
+    evidence:
+    - after/state-missing-390-dark-en.png shows the retained summary tail, AI relevance
+      72/100, "An AI read is not available", and "Primary-source link unavailable"
+      together.
+    - after/whitehouse.html.j2:210 renders summary independently of paragraphs; lines223-227
+      render importance independently of paragraphs.
+    - after/whitehouse.html.j2:235-238 uses absence of paragraphs to declare the whole
+      AI read unavailable, including when sector or ticker fields may still be present.
+    - after/whitehouse.html.j2:291 separately permits a missing source URL.
+    acceptance_condition: Describe the absent field precisely, such as the retained
+      full analysis being unavailable, and identify any surviving summary/assessment
+      as AI material. Make the next-step copy depend on whether a source link exists.
+      This does not require deleting surviving data or inventing evidence.
+  - id: PRC-003
+    severity: minor
+    capability:
+    - reports.ticker-evidence
+    - task.compare-evidence
+    finding: The reading rail reduces the desktop evidence width, and the enlarged
+      ticker link target can separate the direction marker from its ticker even at
+      desktop width. The before source crop shows a compact ticker/direction pair;
+      the after source crop shows IONQ with its direction triangle on the next line.
+      Along with more rationale wrapping, this makes comparative ticker scanning slower.
+      I do not have enough table coverage to classify this as a major regression.
+    evidence:
+    - before/source-1440-dark-en.png presents the eight visible benefit rows compactly
+      with direction markers beside ticker names.
+    - after/source-1440-dark-en.png shows IONQ and its green direction marker on separate
+      lines at the table tail.
+    - after/whitehouse.html.j2 CSS reserves a 220px rail plus a 32px gap; a.wh-sym
+      has min-width40px and min-height40px.
+    - after/whitehouse.html.j2:263-265 places the direction span after the ticker
+      link inside the same table cell, without grouping their layout.
+    acceptance_condition: Preserve ticker/direction grouping while retaining a usable
+      link target. Recheck representative evidence rows before treating desktop table
+      scanability as preserved.
+  strengths:
+  - Publication date, AI-read date, expiry, confidence, and named fallback are visibly
+    distinguished. Same-day generation dates are no longer silently omitted. This
+    directly helps readers assess a dated report.
+  - '"AI relevance · not a probability" is clearer than "Market significance" and
+    the quieter meter reduces the appearance of a calibrated prediction.'
+  - The report-local outline creates direct routes to analysis, sector evidence, ticker
+    groups, and source/context. It uses native fragments and retains the original
+    card id in the template, with no source-code interception of ordinary anchor navigation
+    observed.
+  - The primary-source link remains a separate-tab link with noopener/noreferrer.
+    Its larger target and explicit source/context heading improve discoverability.
+    Successful opening and return behavior remain untested here.
+  - EN/ZH readers are explicitly told that the AI body remains in its original language.
+    Known UI labels and confidence values are localized without pretending the retained
+    English body has been translated.
+  - The narrower prose column and stronger section headings improve sustained reading
+    in the inspected desktop light and dark examples. The mobile view uses a single
+    column and a collapsed outline.
+  - Neutral surfaces remove the incumbent colored container treatment without removing
+    useful text labels, report dates, or the numerical assessment.
+  - The empty state honestly describes unavailable retained reports; it does not infer
+    that no policy event occurred or that a monitoring pipeline is healthy. The archived
+    example retains its dated argument without a LIVE badge.
+second_pass:
+  amended_at: '2026-11-03T22:33:47Z'
+  actual_return_at: '2026-11-03T22:34:16.281Z'
+  amendments:
+  - finding: PRC-001
+    action: upheld
+    note: The packet deliberately organizes the retained title, summary, dates, fallback
+      and banner state as one title block, then labels the lower analysis as original
+      AI text. That explains the composition but does not resolve authorship at the
+      dominant title and summary. Its stated primary question expressly includes identifying
+      AI interpretation. The language constraint prevents rewriting stored narratives;
+      it does not prevent a localized presentation label identifying the title and
+      summary as AI interpretation. The packet's end-of-page model disclaimer and
+      method disclosure do not establish that boundary at the point of reading.
+    severity: major
+  - finding: PRC-002
+    action: upheld
+    note: The original packet explicitly prescribes the same broad missing-analysis
+      sentence and separately requires retaining metadata and real evidence rows.
+      This confirms that the contradiction is present in the design specification,
+      rather than an implementation deviation. With a surviving AI summary and relevance
+      score, "An AI read is not available" overstates the missing content. With a
+      missing source URL, the immediate instruction to check the original source is
+      unavailable within this report. The rationale supplies no narrower meaning visible
+      to the reader.
+    severity: major
+  - finding: PRC-003
+    action: upheld
+    note: The packet justifies bounded prose, a normal-flow supporting rail and at
+      least 40x40px source/ticker link targets. I accept those choices and do not
+      require restoring the incumbent full-width report. They do not require separating
+      a ticker from its direction marker. The observed desktop IONQ wrap remains a
+      small evidence-scanning regression that can be addressed while preserving the
+      specified target size and composition.
+    severity: minor
+  verdict: BLOCK
+raw_receipts:
+  first: research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-first-pass.raw.md
+  second: research/reference_integrity/t35-whitehouse-editorial-reader/reviews/product_regression-second-pass.raw.md
+  second_sha256: b6d4f5fb1ee87d45d482df0b3a77645e7688c3a299b527d268973b7cc7cce6a6
+limits:
+- No browser, network, runtime, production, authentication, embedded-shell, external-source
+  opening, keyboard execution, or Back/reload test was performed. Native fragments,
+  target=_blank, focus treatment, and outline behavior were inspected in source and
+  retained images only.
+- Before report images cover 1440 dark EN and 390 light ZH. Other before theme/locale/viewport
+  comparisons are unavailable.
+- The selected controlled after rendering is not a full 77-report visual comparison.
+  The retained facts report equality of original anchor order and source URLs for
+  all 77 records; that is narrower than full content or visual parity.
+- Source crops show table tails rather than every sector/ticker row. I cannot certify
+  all long rationale, symbol, or table-width cases.
+- I inspected representative after images, not every after image in the matrix.
+- Treasury agency correction belongs to the separately identified T34 change. I do
+  not credit T35 with discovering or delivering that correction.

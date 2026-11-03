@@ -148,45 +148,55 @@ user_tasks:
 - id: task.read-argument
   critical: true
   task: Read a retained argument and distinguish source from AI interpretation
-  production: See preserved capability ledger and original report source/crops.
-  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
-  verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  production: Generated title/summary/body lack a precise point-of-use AI boundary;
+    original report body remains available.
+  proposal: New explicit lower-body AI label leaves generated headline/summary visually
+    outside it; missing-body sentence contradicts surviving summary/assessment.
+  verdict: WORSE
+  notes: PRC-001/002 and VTC-001 upheld after rationale; new differentiated hierarchy
+    introduces a material authorship ambiguity. Authority upholds revision, not approval.
 - id: task.verify-source
   critical: true
   task: Reach the exact original source and identify its agency
-  production: See preserved capability ledger and original report source/crops.
-  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
-  verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  production: Original source action when present; inheritedT34 agency-copy correction
+    is separate.
+  proposal: Larger source target retained, but missing-analysis guidance directs users
+    to a missing source in the supplied degraded cell.
+  verdict: WORSE
+  notes: Normal action improves discoverability; degraded task is contradictory. PRC-002
+    upheld; no invented URL or deletion proposed.
 - id: task.compare-evidence
   critical: true
   task: Scan sector/ticker evidence and available quote fields
   production: See preserved capability ledger and original report source/crops.
   proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
   verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  notes: Rows retained by source. Only table tails captured; PRC-003 notes ticker/direction
+    wrap. No complete table-density PASS.
 - id: task.find-report
   critical: true
   task: Find/return to the same retained report by its original fragment
   production: See preserved capability ledger and original report source/crops.
   proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
-  verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  verdict: EQUIVALENT
+  notes: Original IDs and ordered full77 input iteration retained; new section outline
+    is additive. Actual embedded Back/scroll remains unproved.
 - id: task.inspect-treasury
   critical: false
   task: Read Treasury values, units, dates and context
   production: See preserved capability ledger and original report source/crops.
   proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
-  verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  verdict: EQUIVALENT
+  notes: Retained actual values/units/dates/chart context unchanged; captured representative
+    Treasury panels, no scientific validation.
 - id: task.change-language
   critical: true
   task: Read known UI labels in EN/ZH without inventing body translations
   production: See preserved capability ledger and original report source/crops.
   proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
-  verdict: UNKNOWN
-  notes: Final task judgment follows actual independent review; no stopwatch claim.
+  verdict: EQUIVALENT
+  notes: Known UI labels localized and original body not rewritten. New headline/summary
+    authorship remains revision condition; no blanket bilingual parity claim.
 - id: task.inspect-method
   critical: false
   task: Find model/fallback/method and limitations

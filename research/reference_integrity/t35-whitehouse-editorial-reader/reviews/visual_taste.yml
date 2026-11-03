@@ -1,0 +1,211 @@
+schema: mastermind.rig_review.v1
+reference_id: t35-whitehouse-editorial-reader
+role: visual_taste
+artifact_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+reviewer:
+  identity: 01a1a388-3fbd-7580-9dbf-80f27a997a0f
+  model: gpt-6.1-sol
+  execution_surface: native local-image Sol specialist; originalroot-scoped capability
+    exception
+  independent_of_author: true
+quarantine:
+  first_pass_inputs:
+  - user/business job
+  - immutable production-before source/crops
+  - immutable proposed-after source/crops
+  - neutral capability/task facts and explicit gaps
+  rationale_received_after_first_pass: true
+  freeze_record: first-pass-freeze.json
+  first_pass_raw_sha256: 92f359d1260f4cb265a9adfd36f8cf54faedd084fb69e0af22cf4cc12390a953
+  rationale_sources:
+  - designer-rationale-second-pass.md
+  - designer-packet-second-pass.md
+first_pass:
+  frozen_at: '2026-11-03T22:33:10.227925+00:00'
+  actual_return_at: '2026-11-03T22:32:05.687Z'
+  verdict: PASS_WITH_CONDITIONS
+  findings:
+  - id: VTC-001
+    severity: major
+    finding: The visual boundary between AI interpretation and source material starts
+      too late. The headline and summary occupy the most authoritative editorial position,
+      but the explicit "AI analysis · original text" marker appears below them. A
+      reader scanning only the title and summary can treat their policy-to-market
+      conclusions as a source-authored synopsis. The small "AI confidence" field identifies
+      a model assessment, but does not clearly attribute the title and summary themselves.
+    evidence:
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-en.png
+      location: Headline and summary at y154-335; explicit AI marker begins around
+        y367.
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-en.png
+      location: Summary at y358-568; explicit AI marker begins around y753.
+    - source: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2
+      lines: 208-210, 235-239
+      observation: Title and summary precede the AI-original reading region and its
+        attribution.
+    acceptance_condition: Attribute the headline/summary group as AI interpretation
+      in visible EN/ZH copy at that group. Preserve a distinct, direct route to the
+      original agency source. The label need not become a large warning panel.
+  - id: VTC-002
+    severity: minor
+    finding: The mobile hierarchy is too ceremonious before the argument begins. Several
+      wrapped metadata rows, the full summary, a large collapsed report index, the
+      relevance meter, a two-line language notice and a repeated AI heading accumulate
+      vertically. In the EN crop the first argument starts only near the bottom of
+      the 900px frame. These elements are individually legible, but their combined
+      prominence weakens the reading-first intent and gives the model score more space
+      than its importance warrants.
+    evidence:
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-en.png
+      location: Report starts around y85; first argument starts around y853.
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-zh.png
+      location: Collapsed index y467-525, meter y546-594, language notice y626-656,
+        AI heading y694.
+    - source: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2
+      lines: 90, 212-239
+      observation: The complete rail, including the meter, moves ahead of the reading
+        region below 820px.
+    recommendation: Compress secondary clocks/model details and the relevance treatment
+      on mobile while retaining their availability. Keep the report index easy to
+      reach. Combine redundant AI-origin headings where their meaning survives.
+  - id: VTC-003
+    severity: minor
+    finding: The Chinese Finland headline leaves the final character "剂" alone on
+      its last line. The visible result feels accidental and undermines the otherwise
+      deliberate editorial typography. It occurs on desktop as well as mobile, so
+      this is not solely an unavoidable narrow-screen compromise.
+    evidence:
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-zh.png
+      location: Headline second line contains only 剂.
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-zh.png
+      location: Headline third line contains only 剂.
+    - source: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2
+      lines: 45, 91
+      observation: The headline uses a shared 48ch maximum and narrow-screen overflow-wrap:anywhere.
+    recommendation: Improve Chinese headline wrapping or available measure without
+      altering the retained argument. Check the actual resulting line breaks in both
+      themes.
+  - id: VTC-004
+    severity: minor
+    finding: The floating assistant overlaps reading text or report controls in the
+      mobile artifacts, and its luminous treatment is the strongest visual accent
+      on an otherwise restrained reader. This is inherited in the supplied before
+      evidence, so I do not attribute its introduction to T35. It remains a real reading
+      distraction and limits an unqualified claim of unobstructed mobile presentation.
+    evidence:
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-zh.png
+      location: Assistant circle overlays the lower-right portion of the English argument.
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-en.png
+      location: Assistant circle overlaps the right end of the collapsed report index.
+    - image: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-390-light-zh.png
+      location: The same floating assistant overlaps the original argument.
+    recommendation: Track this with the shared assistant surface rather than inventing
+      page-specific chrome. Do not call it a new T35 regression.
+  strengths:
+  - finding: Desktop has a convincing editorial hierarchy. The narrower argument measure,
+      paragraph rhythm and separate report rail are easier to follow than the incumbent
+      full-width prose and tables. The layout feels like a research reader rather
+      than a stack of alerts.
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-1440-dark-en.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-en.png
+  - finding: Light presentation has clear white material, cool surrounding canvas,
+      hairline boundaries and restrained shadow. Dark presentation has quieter panel
+      separation and no card shadow. Body text is visibly readable in both; this is
+      a successful visual result beyond merely finding theme tokens.
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-en.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-en.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2:24
+  - finding: Removing the loud red live container treatment and neutralizing the score
+      bar produces a calmer, more credible policy-reading surface. The relevance label
+      explicitly says it is not a probability. Directional color remains attached
+      to labeled market meaning rather than decorating panel edges.
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/before/report-390-light-zh.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-zh.png
+  - finding: 'The original-language notice is useful and honest in ZH: translated
+      title and summary lead into clearly identified retained English AI text. I do
+      not treat the English body as a missing translation defect.'
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-zh.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-zh.png
+  - finding: Source and context is a named destination, not an anonymous tiny footer
+      link. The agency is named on the link, the control has useful height, and the
+      retained target/focus outlines remain visible in both themes. The code opens
+      the original source in a new tab, which supports preserving report context,
+      although no live interaction was tested here.
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-zh.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-dark-en.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2:291
+  - finding: Treasury data uses a coherent desktop row and mobile two-column arrangement
+      with visible units, date and labeled states. The retained-context label explains
+      the English prose in the ZH view. Empty and missing states remain calm and readable
+      rather than presenting a false completed analysis.
+    evidence:
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-1440-dark-en.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-390-light-zh.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-empty-390-light-zh.png
+    - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-missing-390-dark-en.png
+second_pass:
+  amended_at: '2026-11-03T22:33:47Z'
+  actual_return_at: '2026-11-03T22:34:24.322Z'
+  amendments:
+  - finding: VTC-001
+    action: upheld
+    note: The packet confirms that the primary question includes identifying what
+      is AI interpretation, and that titles, significance and analysis are generated
+      material. Retaining exact bilingual fields does not prevent adding a visible
+      attribution label around them. The revealed rationale explains why the original-language
+      marker sits above the retained body, but it does not resolve the unqualified
+      visual authority of the headline and summary above that marker. The issue is
+      especially visible on mobile, where the summary and explicit AI attribution
+      are separated by the index and score.
+    severity: major
+  - finding: VTC-002
+    action: upheld
+    note: A native collapsed outline before the mobile reading region is a sound choice,
+      and normal document flow is appropriate for an embedded reader. Neither choice
+      requires the whole metadata/index/meter/language sequence to consume so much
+      vertical space. The issue is the combined hierarchy, not the existence of the
+      outline or preservation of metadata. The packet explains the intent but leaves
+      the visible density concern intact.
+    severity: minor
+  - finding: VTC-003
+    action: upheld
+    note: No rationale explains or makes intentional the single-character Chinese
+      headline ending. Exact retained wording can be preserved while improving line
+      wrapping or measure. This remains a visible typographic defect in both inspected
+      desktop and mobile ZH compositions.
+    severity: minor
+  - finding: VTC-004
+    action: upheld
+    note: 'The packet correctly preserves shared navigation and presentation ownership.
+      That reinforces the original scope distinction: the assistant overlap is real,
+      but its introduction is not a T35 regression and its repair belongs to the shared
+      assistant surface. The rationale does not remove the obstruction visible in
+      the mobile images.'
+    severity: minor
+  verdict: PASS_WITH_CONDITIONS
+raw_receipts:
+  first: research/reference_integrity/t35-whitehouse-editorial-reader/reviews/visual_taste-first-pass.raw.md
+  second: research/reference_integrity/t35-whitehouse-editorial-reader/reviews/visual_taste-second-pass.raw.md
+  second_sha256: 0b589828360ceb15d7dd1f8bb5c5ff8e0dff2d0223420f0868920a59dc3bb27b
+limits:
+- Before comparison exists only for 1440 dark EN and 390 light ZH. I make no before/after
+  improvement claim for the missing baseline axes.
+- After evidence represents controlled report subsets and selected states. It does
+  not establish full 77-report visual parity or scanning performance through the complete
+  retained population.
+- After source crops expose only the tail of a ticker table. They do not show a complete
+  after sector table or complete after ticker table, particularly on mobile. Source
+  inspection establishes structure, not satisfactory rendered table density or column
+  behavior.
+- No browser, network, served runtime, entitlement, embedded-shell handshake, keyboard
+  sequence, fragment reload or Back interaction was exercised. The visible focus/target
+  treatment and source code support limited presentation observations only.
+- No contrast ratios were measured. Contrast observations are visual judgments from
+  the supplied images, not accessibility certification.
+- The Treasury agency-attribution correction belongs to T34. I do not credit that
+  independent correction as a T35 design improvement.

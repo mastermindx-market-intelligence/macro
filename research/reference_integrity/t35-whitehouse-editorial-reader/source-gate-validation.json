@@ -1,0 +1,35 @@
+{
+  "record_schema_exit": 0,
+  "record_schema_meaning": "Valid fullREVISE record; not approval. Sparse compileddata registry skipped explicitly.",
+  "approval_shape_exit": 3,
+  "approval_shape_meaning": "Unchanged proposed reference remains BLOCKED. No approval receipt; REVISE verdict.",
+  "original_packet_sha256": "12cb1b6528153783be638b98e41a231465baae4f7fe8b931b42939371dee4505",
+  "L8_same_incumbent_function_temporary_fixture": {
+    "original_packet": [
+      {
+        "code": "packet-without-rig-receipt",
+        "subject": "research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md",
+        "message": "a migration packet must cite a 'RIG-RECEIPT: <reference-id>' line naming an APPROVED reference (RIG \u00a78 L8)"
+      }
+    ],
+    "receipt_to_revise_is_still_blocked": [
+      {
+        "code": "packet-cites-unapproved-reference",
+        "subject": "research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md:t35-whitehouse-editorial-reader",
+        "message": "RIG-RECEIPT names reference 't35-whitehouse-editorial-reader' with status 'revise' \u2014 only an approved reference is canonical (RIG \u00a77/\u00a78)"
+      }
+    ]
+  },
+  "checker_sha256": "6698604b24fe108d897ba714d419b017b2a2839e607a68ab0dd32ade15ae8f40",
+  "scope": "No packet alteration/import to liveFamilywriter. Temporary fixture uses exact original packet, and a negative unapproved reference line; no release receipt was written.",
+  "logs": {
+    "record_schema": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader/record_schema.log",
+      "sha256": "94733444991db25c344996bf6724898d26768bbf0300578ad96a461838ca9a3f"
+    },
+    "approval_shape": {
+      "path": "research/reference_integrity/t35-whitehouse-editorial-reader/approval_shape.log",
+      "sha256": "cee5c94d815be7c9307b35384d6231bb5d40fb68c7aa04e9206bdc34d68a26bf"
+    }
+  }
+}

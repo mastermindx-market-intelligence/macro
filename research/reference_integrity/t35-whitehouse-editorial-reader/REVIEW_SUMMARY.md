@@ -1,0 +1,11 @@
+# T35 Full Reference Integrity — REVISE
+
+This is a new prospective FullRIG decision on the frozen349e12c9 editorial proposal, not a retroactive approval or promotion of PaperStarterF. Artifact5e2070d8 contains the exact source/images and neutral first-pass inputs. Two fresh nativeSol local-image critics (actualgpt-6.1-sol, distinct native identities) judged the result independently before the designer rationale. Exact first-pass returns were frozen and hashed before same-critic second passes; both raw returns and native parent/model bindings are retained.
+
+Product: BLOCK. Taste: PASS_WITH_CONDITIONS. Both upheld the headline/summary attribution gap; Product also upheld contradictory missing-full-analysis/source guidance. Delegated design authority therefore rules REVISE; no approval.yml or RIG-RECEIPT is issued. This is a real dependentT35 source release block. It must not be cleared by moving the packet, relabeling the Paperstarter, or asserting prior bounded sourcePASS equals reference approval.
+
+The eight comparative answers, explicit capability dispositions, user-task/authority audit and precise revision conditions are in YAML. Minor ticker grouping/mobile density/Chinese wrapping findings remain honest; inherited shared-assistant overlap is not a new T35 defect and does not authorize page-local chrome.
+
+Baseline before has only1440darkEN/390lightZH report images plus source crops. After source349e12c9 has8 represented profiles/5states and retained full77 anchor/order/source/input facts, not77 visual comparisons. No new browser, runtime, serving, authentication or scientific proof was created. Current capture refusal remains. Case assembly/review occurred now; historical capture dates/source are not rewritten.
+
+A transcript retention script initially expected the older channel field and found no final message. The earlier e4c097 commit only saved ledgers/rationale and its message overstates freeze completion; d5bd46 is the actual complete first-pass retention. No rationale was revealed to critics before that actual freeze; both final first-pass messages had already returned. Native phase=final_answer records were retained verbatim, not reconstructed reviews.

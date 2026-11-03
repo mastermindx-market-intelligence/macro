@@ -1,0 +1,110 @@
+schema: mastermind.rig_verdict.v1
+reference_id: t35-whitehouse-editorial-reader
+authority:
+  identity: Product Sol01a15e6d-f686-7362-8120-632a33dbdee0
+  role: design_authority
+  commission: Root01a15e6c-42f8-7941-ac2b-296021932fbb delegatedT35 FullRIG decision,2026-11-03
+artifact_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+decided_at: '2026-11-03T22:35:56.361654+00:00'
+packet:
+  materially_improved: Bounded desktop prose, native per-report outline, calm neutral
+    surfaces, deliberate white-paper/light vs graphite/dark materials, larger source
+    targets and distinct publication/read/banner/model clocks. AI relevance explicitly
+    is not a probability. Source/crops support those strengths within represented
+    cells.
+  materially_worsened: Selective lower-body AI attribution leaves the generated headline/summary
+    in a more authoritative unlabeled position. The missing-body sentence says an
+    AI read is absent while summary/assessment survive, then asks for an unavailable
+    source. Narrower evidence tables show a minor ticker/direction wrap; mobile supporting
+    blocks delay argument.
+  disappeared: No report, original paragraph, source URL, evidence row or canonical
+    report ID is intentionally removed. Full77 anchor/order/source facts are retained
+    but do not certify full77 visual/content parity. Always-visible full method prose
+    is relocated to one native disclosure; that extra action is explicit.
+  behavior_harder: Source-vs-AI distinction is harder at the dominant title/summary;
+    unavailable-analysis/source guidance cannot be followed in supplied missing state.
+    Full method explanation takes an extra disclosure. Table tails indicate some slower
+    ticker scanning; full table comparison is UNKNOWN.
+  stronger_claims: No new market or trading authority is authorized. The hierarchy
+    nevertheless gives unlabeled generated headline/summary more apparent editorial
+    authority relative to explicitly labeled lower body. This is a perceived-authority
+    risk requiring attribution, not scientific evidence that stored claims changed.
+  intent_vs_convenience: Reading measure, normal-flow outline, thematic material and
+    restrained frames follow the dated editorial user job. Preserving source/body
+    fields and avoiding guessed language/URLs follows actual contracts. Broad unavailable-copy
+    is a design-specification error, not a necessary data constraint; keeping it for
+    implementation convenience is rejected.
+  production_preferable_for: The original compact table view is preferable for some
+    ticker comparison, based on the represented tails. Original title/body lacks a
+    newly selective AI boundary, although baseline attribution was also inadequate.
+    The new reader is stronger for sustained argument reading. Neither baseline nor
+    proposal proves current served/embedded behavior.
+  strongest_argument_against: The user job is specifically to distinguish interpretation
+    from original evidence. Two independent critics found point-of-use authorship
+    ambiguity; the product critic additionally found contradictory missing-state guidance
+    and maintained BLOCK after seeing the exact rationale. Approving unchanged bytes
+    to clearL8 would turn known meaning defects into design law.
+blocking_findings:
+- finding: PRC-001
+  resolution: upheld_revise
+  note: Unresolved major finding; exact artifact unchanged. Revision required, no
+    override.
+- finding: PRC-002
+  resolution: upheld_revise
+  note: Unresolved major finding; exact artifact unchanged. Revision required, no
+    override.
+- finding: VTC-001
+  resolution: upheld_revise
+  note: Unresolved major finding; exact artifact unchanged. Revision required, no
+    override.
+- finding: task.read-argument
+  resolution: upheld_revise
+  note: Critical task deterioration is explicitly adjudicated as requiring revision.
+- finding: task.verify-source
+  resolution: upheld_revise
+  note: Critical task deterioration is explicitly adjudicated as requiring revision.
+overrides: []
+verdict: REVISE
+conditions:
+- id: C1-ai-title-summary-attribution
+  findings:
+  - PRC-001
+  - VTC-001
+  requirement: Add concise visible EN/ZH attribution covering the retained generated
+    headline and summary at their point of use; preserve exact stored title/summary/body
+    and separate original-source route. Amend originalpacket accordingly.
+- id: C2-precise-missing-analysis-guidance
+  findings:
+  - PRC-002
+  requirement: Name missing full-analysis content precisely while identifying surviving
+    AI summary/assessment; condition source guidance on actual source-link presence.
+    Preserve surviving fields and no invented source. Amend packet, implementation
+    and controlled missing combinations.
+- id: C3-mobile-reading-and-table-check
+  findings:
+  - PRC-003
+  - VTC-002
+  - VTC-003
+  requirement: Preserve ticker/direction grouping and usable hit target; address Chinese
+    orphan headline and excessive mobile supporting prominence where possible. Retain
+    exact wording/data. These are minor polish findings, not new mandatory architecture;
+    do not claim resolved without actual affected visual evidence.
+- id: C4-source-and-evidence-boundary
+  findings:
+  - VTC-004
+  requirement: Carry baseline missing axes, controlled subset vs77 assertions, shared
+    assistant overlap and serving/auth/inShell gaps forward. Shared assistant belongs
+    incumbent chrome owner; no page-specific workaround. Rebind only genuinely changed
+    source/capture dependencies after a qualified capture route exists.
+preserved_strengths:
+- Retained source/paragraph/evidence/clock/identity contracts, with honest scope limits
+- Coherent bounded editorial prose and natural desktop/mobile outline
+- Dark/light each has deliberate material treatment
+- Neutral assessment clearly identified as non-probability
+- Known UI language localization without fabricated body translation
+- Source-link missing state does not invent an href; surviving data must remain
+inherited_nonblocking_limitations:
+- VTC-004 shared assistant overlap predatesT35; no local chrome fix commissioned
+approval_issued: false
+packet_release: T35 may not cite an approvedRIG reference from this case; exact dependentT35
+  release remains blocked. Other independently qualified families can continue.
