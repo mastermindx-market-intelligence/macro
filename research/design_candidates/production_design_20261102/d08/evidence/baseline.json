@@ -1,0 +1,1275 @@
+{
+  "assignment": "D08",
+  "frozenDesignInterface": "D08-OPTIONS/1.0.0",
+  "packageSHA": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "protectedProcedure": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "protectedBranch": "master",
+    "sha": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+    "index": "docs/sol_skills/INDEX.md",
+    "schema": "mastermind.sol_skillpack.v1",
+    "skillpackVersion": "1.0.1",
+    "minimumBootstrapMajor": 1
+  },
+  "sourcePins": {
+    "terminal": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "macro": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+    "f02Candidate": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+    "legacyOptionsCandidate": "ba7947223ae58f436d4cfadbedc28454b10483fc",
+    "f01Candidate": "34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985"
+  },
+  "browserObservation": "2026-11-03T06:19:21Z",
+  "paperObservationWindowUTC": "2026-11-03 06:15–06:24",
+  "manifestPreparedUTC": "2026-11-03 06:28:13 UTC",
+  "paperAdapter": {
+    "server": "paper-desktop",
+    "version": "0.5.18",
+    "catalogSHA256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+    "acceptedForWriteByCatalog": true,
+    "compatibleToolCount": 16,
+    "targetWriteAttempted": false,
+    "changedBoardIds": [],
+    "targetGrant": "not established",
+    "newCanvasRevision": null
+  },
+  "paperCoverage": "Exact get_basic_info response for each listed page. Trees inspected for the listed six anchors. Four representative live screenshots are frozen below. No assertion of visual approval for the other boards.",
+  "pageReads": [
+    {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "pageId": "p-1-0",
+      "url": "https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-1-0",
+      "pageName": "W1 · Sector origin → Exposure → Change · 2026-10-21",
+      "fileName": "Terminal · Options R1 · Design Upgrade · 2026-10-21",
+      "artboards": [
+        {
+          "id": "1-0",
+          "name": "U01 · Exposure origin strip · States atlas · Desktop dark",
+          "width": 1440,
+          "height": 951
+        },
+        {
+          "id": "2-0",
+          "name": "U02 · Rotation with eligibility states · Desktop dark",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "3-0",
+          "name": "U03 · What changed in reported Gamma · Inspector · Desktop dark",
+          "width": 1440,
+          "height": 1075
+        },
+        {
+          "id": "4-0",
+          "name": "U04 · Origin strip + Inspector · Mobile dark 390",
+          "width": 390,
+          "height": 898
+        }
+      ]
+    },
+    {
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-2-0",
+      "pageName": "W3 · Flow → Volatility → Watch & review · 2026-10-21",
+      "fileName": "Terminal · Options R1 · Design Upgrade · 2026-10-21",
+      "artboards": [
+        {
+          "id": "ET-0",
+          "name": "U05 · Flow print inspector · Side estimate, lineage, possible legs · Desktop dark",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "KT-0",
+          "name": "U06 · Volatility comparison · Constant tenor, labelled interpolation, event window · Desktop dark",
+          "width": 1440,
+          "height": 1480
+        },
+        {
+          "id": "TP-0",
+          "name": "U07 · Watch and review · One-shot price touch, firing receipt, assessment revision · Desktop dark",
+          "width": 1440,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "pageId": "p-1-0",
+      "url": "https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0",
+      "pageName": "Page 1",
+      "fileName": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21",
+      "artboards": [
+        {
+          "id": "1-0",
+          "name": "U08 · Watch and review · 390 mobile stack · answer, receipt, assessment, named landings",
+          "width": 390,
+          "height": 1461
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-V-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-V-0",
+      "pageName": "Options · Exposure Intelligence · R2 · 2026-10-20",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "1GO5-0",
+          "name": "01 · R2 · Exposure Map · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1H4T-0",
+          "name": "02 · R2 · Price context · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1HWG-0",
+          "name": "03 · R2 · Replay · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1I64-0",
+          "name": "04 · R2 · Compare · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1IAD-0",
+          "name": "05 · R2 · Discover · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1IEM-0",
+          "name": "06 · R2 · 3D lab · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1IIV-0",
+          "name": "07 · R2 · Scenarios · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1IN4-0",
+          "name": "08 · R2 · Session review · Desktop 1440",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1HL2-0",
+          "name": "09 · R2 · Exposure Map · Mobile 390",
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-U-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-U-0",
+      "pageName": "Options · Rotation & Positioning · R1 · 2026-10-20",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "1DAR-0",
+          "name": "RP01 · Rotation & Positioning · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1E0M-0",
+          "name": "RP02 · AAPL · Instrument investigation · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1EWE-0",
+          "name": "RP03 · What changed in reported Gamma? · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1FCZ-0",
+          "name": "RP04 · AAPL · Flow investigation · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1FKT-0",
+          "name": "RP05 · AAPL · Volatility context · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1FTV-0",
+          "name": "RP06 · Save the investigation. Define the next question. · Desktop · Illustrative",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "1G0B-0",
+          "name": "RP07 · Rotation to holding · Mobile · Illustrative",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "1G4F-0",
+          "name": "RP08 · Instrument continuation · Mobile · Illustrative",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "1GEB-0",
+          "name": "RP09 · Evidence correction & recovery · Tablet light · Illustrative",
+          "width": 768,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-H-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-H-0",
+      "pageName": "13 · Options · 3D Research Lab",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "18G0-0",
+          "name": "3D01 · Chain Observatory · Desktop · Synthetic design",
+          "width": 1440,
+          "height": 1100
+        },
+        {
+          "id": "18OH-0",
+          "name": "3D02 · Volatility Terrain · Synthetic study",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "id": "18TJ-0",
+          "name": "3D03 · Replay and Change · Synthetic study",
+          "width": 1440,
+          "height": 1100
+        },
+        {
+          "id": "18XX-0",
+          "name": "3D04 · Flow and Package Investigation · Synthetic study",
+          "width": 1440,
+          "height": 1060
+        },
+        {
+          "id": "192N-0",
+          "name": "3D05 · Scenario Lab · Entry-cost robustness · Synthetic study",
+          "width": 1440,
+          "height": 1060
+        },
+        {
+          "id": "196F-0",
+          "name": "3D06 · Mobile · Exact slice and contract sheet · Synthetic study",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "199N-0",
+          "name": "3D07 · Sources, Models and Unavailable States · Tablet light",
+          "width": 820,
+          "height": 1180
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-D-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-D-0",
+      "pageName": "09 · Options · Volatility Lab",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "UM6-0",
+          "name": "V01 · Volatility · Expiry-led investigation · R1",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "URH-0",
+          "name": "V02 · Volatility · Mobile selected expiry · R1",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "UT6-0",
+          "name": "V03 · Volatility · Source, missing and refresh states · R1",
+          "width": 1240,
+          "height": 840
+        },
+        {
+          "id": "XFO-0",
+          "name": "V05 · Expiry picker · Mobile EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "XHI-0",
+          "name": "V05 · Expiry picker · Mobile ZH",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "XJA-0",
+          "name": "V06 · Selected-expiry source · Mobile EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "XKM-0",
+          "name": "V06 · Selected-expiry source · Mobile ZH",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "XLX-0",
+          "name": "V07 · Missing selected expiry · Mobile EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "XMP-0",
+          "name": "V07 · Missing selected expiry · Mobile ZH",
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0",
+      "pageName": "Terminal · Options Structure Intelligence · R1 · 2026-09-27",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "KQ3-1",
+          "name": "00 · OPTIONS DIRECTORY · Journeys + Build References",
+          "width": 1440,
+          "height": 800
+        },
+        {
+          "id": "BPN-0",
+          "name": "01 · R3 · Exposure map · Desktop · EN",
+          "width": 1440,
+          "height": 1024
+        },
+        {
+          "id": "C60-0",
+          "name": "02 · R2 · Chart + map companion · EN · Axis QA owed",
+          "width": 1440,
+          "height": 1024
+        },
+        {
+          "id": "CIL-0",
+          "name": "B01 · Release A · Chart + selection · 1440×900",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "F21-0",
+          "name": "11 · R5 · Exposure map · Tablet EN",
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "id": "F9T-0",
+          "name": "N01 · Discover · Evidence-first candidates · R1",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "FG2-0",
+          "name": "N02 · Investigate · One chart, linked evidence · R1",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "FKP-0",
+          "name": "N03 · Off-exchange evidence · Current and source-gated states",
+          "width": 1440,
+          "height": 1100
+        },
+        {
+          "id": "F8Y-0",
+          "name": "B05 · Release A · Source-state components",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "EK1-0",
+          "name": "05 · R3 · Node inspector · Expiry + change",
+          "width": 520,
+          "height": 1240
+        },
+        {
+          "id": "EO5-0",
+          "name": "06 · R3 · Scope & display · Desktop dialog",
+          "width": 520,
+          "height": 1000
+        },
+        {
+          "id": "ERU-0",
+          "name": "B02 · Release A · Node + expiry evidence",
+          "width": 520,
+          "height": 1240
+        },
+        {
+          "id": "EVY-0",
+          "name": "B03 · Release A · Staged scope + Cancel",
+          "width": 520,
+          "height": 1040
+        },
+        {
+          "id": "EZP-0",
+          "name": "07 · R3 · Observe price level · Draft dialog",
+          "width": 520,
+          "height": 1080
+        },
+        {
+          "id": "F81-0",
+          "name": "B04 · Release A · Stored history · Receipt gap",
+          "width": 640,
+          "height": 900
+        },
+        {
+          "id": "CYI-0",
+          "name": "03 · R4 · Exposure map · Phone · 390×844 · EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "DLC-0",
+          "name": "08 · R4 · Scope / Contracts · Phone sheet · EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "DSQ-0",
+          "name": "09 · R4 · Scope / Display · Phone sheet · EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "D86-0",
+          "name": "10 · R4 · Observe / Price draft · Phone sheet · EN",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "D3C-0",
+          "name": "12 · R5 · Exposure map · Phone ZH",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "EAC-0",
+          "name": "13 · R5 · Scope / Contracts · Phone ZH",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "E1J-0",
+          "name": "14 · R5 · Scope / Display · Phone ZH",
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "DER-0",
+          "name": "15 · R5 · Observe / Price draft · Phone ZH",
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-3-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-3-1",
+      "pageName": "01 · Options · Plan",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "FS4-0",
+          "name": "N04 · Plan · Chain to defined-risk scenario · R1",
+          "width": 1440,
+          "height": 940
+        },
+        {
+          "id": "I1U-0",
+          "name": "N04 · Plan · 1440 · light · EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "ID0-0",
+          "name": "N04 · Plan · 1440 · dark · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "I7F-0",
+          "name": "N04 · Plan · 1440 · light · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "JD2-0",
+          "name": "N04 · Plan · 768 · dark · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "JO4-0",
+          "name": "N04 · Plan · 768 · light · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "JTN-0",
+          "name": "N04 · Plan · 768 · dark · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "JIL-0",
+          "name": "N04 · Plan · 768 · light · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "HEB-0",
+          "name": "N04 · Plan · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "J20-0",
+          "name": "N04 · Plan · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "IWH-0",
+          "name": "N04 · Plan · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "J7J-0",
+          "name": "N04 · Plan · 390 · light · ZH",
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-4-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-4-1",
+      "pageName": "02 · Options · Save + Watch",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "FYJ-0",
+          "name": "N05 · Plan · Save and watch confirmation · R1",
+          "width": 1440,
+          "height": 940
+        },
+        {
+          "id": "K14-0",
+          "name": "N05 · Save watch · 1440 · light · EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "JZ6-0",
+          "name": "N05 · Save watch · 1440 · dark · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "K32-0",
+          "name": "N05 · Save watch · 1440 · light · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "IIL-0",
+          "name": "N05 · Save watch · 768 · dark · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "IMD-0",
+          "name": "N05 · Save watch · 768 · light · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "IO9-0",
+          "name": "N05 · Save watch · 768 · dark · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "IKH-0",
+          "name": "N05 · Save watch · 768 · light · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "HM0-0",
+          "name": "N05 · Save watch · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HO6-0",
+          "name": "N05 · Save watch · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HQC-0",
+          "name": "N05 · Save watch · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HJU-0",
+          "name": "N05 · Save watch · 390 · light · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "KWI-1",
+          "name": "N12 · Save whole case · Desktop dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "L6U-1",
+          "name": "N13 · Save verification · Three response states",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "LCO-1",
+          "name": "N12 · Save whole case · Phone light EN",
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-5-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-5-1",
+      "pageName": "03 · Options · Review",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "G2J-0",
+          "name": "N06 · Review · Next-session evidence and plan comparison · R1",
+          "width": 1440,
+          "height": 940
+        },
+        {
+          "id": "IS9-0",
+          "name": "N06 · Review · 1440 · light · EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "IUD-0",
+          "name": "N06 · Review · 1440 · dark · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "IQ5-0",
+          "name": "N06 · Review · 1440 · light · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "K50-0",
+          "name": "N06 · Review · 768 · dark · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "K94-0",
+          "name": "N06 · Review · 768 · light · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "KB6-0",
+          "name": "N06 · Review · 768 · dark · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "K72-0",
+          "name": "N06 · Review · 768 · light · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "HSI-0",
+          "name": "N06 · Review · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HX6-0",
+          "name": "N06 · Review · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HZI-0",
+          "name": "N06 · Review · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HUU-0",
+          "name": "N06 · Review · 390 · light · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "L94-1",
+          "name": "N14 · Reopen saved case · Desktop dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "LFF-1",
+          "name": "N14 · Reopen saved case · Phone light ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "LLG-1",
+          "name": "N15 · Evidence to decision · Desktop dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "MU2-1",
+          "name": "N15 · Evidence to decision · Phone light EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "NUB-1",
+          "name": "N16 · Included prints · Desktop dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "NZE-1",
+          "name": "N17 · Linked package · Desktop dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "O8M-1",
+          "name": "N16A · Selected print · Phone light EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "ODN-1",
+          "name": "N17A · Linked package · Phone light EN",
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-6-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-6-1",
+      "pageName": "04 · Options · Scenarios + Assumptions",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "G9Q-0",
+          "name": "N07 · Scenario · 1440 · Dark · EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "GR3-0",
+          "name": "N07 · Scenario · 1440 · light · EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "GU0-0",
+          "name": "N07 · Scenario · 1440 · dark · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "GWX-0",
+          "name": "N07 · Scenario · 1440 · light · ZH",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "GKF-0",
+          "name": "N07 · Scenario · 768 · dark · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "GPF-0",
+          "name": "N07 · Scenario · 768 · light · EN",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "GNR-0",
+          "name": "N07 · Scenario · 768 · dark · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "GM3-0",
+          "name": "N07 · Scenario · 768 · light · ZH",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "GEL-0",
+          "name": "N07 · Scenario · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "GIH-0",
+          "name": "N07 · Scenario · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "GGJ-0",
+          "name": "N07 · Scenario · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "GCN-0",
+          "name": "N07 · Scenario · 390 · Light · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "GZU-0",
+          "name": "N08 · Assumptions · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "H1R-0",
+          "name": "N08 · Assumptions · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "H3O-0",
+          "name": "N08 · Assumptions · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "H5L-0",
+          "name": "N08 · Assumptions · 390 · light · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HBR-0",
+          "name": "N09 · Model requirements · 390 · dark · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "H7I-0",
+          "name": "N09 · Model requirements · 390 · light · EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "HAC-0",
+          "name": "N09 · Model requirements · 390 · dark · ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "H8X-0",
+          "name": "N09 · Model requirements · 390 · light · ZH",
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-7-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-7-1",
+      "pageName": "05 · Options · Compare",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "KD8-0",
+          "name": "N10 · Compare scenarios · Desktop dark EN · R1",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "KG5-0",
+          "name": "N10 · Compare scenarios · Tablet light EN · R1",
+          "width": 768,
+          "height": null
+        },
+        {
+          "id": "KJ2-0",
+          "name": "N10 · Compare scenarios · Phone dark EN · R1",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "KLZ-0",
+          "name": "N10 · Compare scenarios · Phone light ZH · R1",
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-P-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-P-1",
+      "pageName": "Options · Build Contracts + Source Proof · Reference",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "CVN-0",
+          "name": "00 · R6 · Read first · Tested + integration gates",
+          "width": 1440,
+          "height": 1400
+        },
+        {
+          "id": "FN2-0",
+          "name": "N90 · BUILD ATLAS · Journey, contracts and implementation map",
+          "width": 1440,
+          "height": 2420
+        },
+        {
+          "id": "FPC-0",
+          "name": "N91 · SCIENCE + SOURCES · Signals, formulas and release gates",
+          "width": 1440,
+          "height": 2540
+        },
+        {
+          "id": "G6A-0",
+          "name": "N92 · Builder atlas · Plan Watch Review contracts and state receipts · R1",
+          "width": 1440,
+          "height": 3400
+        },
+        {
+          "id": "EJ5-0",
+          "name": "90 · HOLD · Expiry comparison · Unfinished shell",
+          "width": 1440,
+          "height": 1024
+        },
+        {
+          "id": "KOW-0",
+          "name": "HOLD · N11 comparison guard · Empty shell · NOT FOR BUILD",
+          "width": 560,
+          "height": 1000
+        },
+        {
+          "id": "KOX-0",
+          "name": "N94 · Compare contracts · PARTIAL source card / integration proof owed",
+          "width": 1440,
+          "height": 1600
+        },
+        {
+          "id": "LIJ-1",
+          "name": "N95 · Capture Verify Reopen · Builder map",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "M89-1",
+          "name": "N96 · Evidence qualification · Build + research",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "OND-1",
+          "name": "N97 · Inspector states + source contract · Builder atlas",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "HD6-0",
+          "name": "N93 · Scenario build contract · 2026-09-28",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "V0K-0",
+          "name": "V04 · Volatility · Source-linked build contract · R1",
+          "width": 1440,
+          "height": null
+        }
+      ]
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-T-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-T-0",
+      "pageName": "Options · Exposure Intelligence · TerraShade study · 2026-10-20",
+      "fileName": "Terminal",
+      "artboards": [
+        {
+          "id": "1D9L-0",
+          "name": "01 · Exposure Map · Complete book concept",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1DOH-0",
+          "name": "02 · Price context & historical replay",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1DPS-0",
+          "name": "03 · Cross-market comparison",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1EOZ-0",
+          "name": "04 · Discover · Concentration and candidate screening",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1EQD-0",
+          "name": "05 · 3D Research Lab · Exposure lens",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1FBJ-0",
+          "name": "06 · Scenario Lab · Conditional hedge response",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1FC9-0",
+          "name": "07 · Session review · Evidence and watch rules",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1FMW-0",
+          "name": "08 · Data quality · Capability and source states",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1FUR-0",
+          "name": "09 · Mobile · Exposure investigation",
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    {
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-25-0",
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0",
+      "pageName": "Options · Research Desk · R1 · 2026-11-02",
+      "fileName": "MASTERMIND PAGES",
+      "artboards": [
+        {
+          "id": "6Y1Q-0",
+          "name": "Options / Brief / Desktop 1440 / Light",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6Y8P-0",
+          "name": "Options / Brief / Mobile 390 / Dark",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "6YFM-0",
+          "name": "Options / Flow / Desktop 1440 / Dark",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6YP3-1",
+          "name": "Options / Scanner / Desktop 1440 / Light",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6Z06-1",
+          "name": "Options / Components / Desktop 1440 / Light",
+          "width": 1440,
+          "height": null
+        }
+      ]
+    }
+  ],
+  "treeReads": [
+    {
+      "kind": "flow",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "ET-0",
+      "depth": 3
+    },
+    {
+      "kind": "vol",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "KT-0",
+      "depth": 3
+    },
+    {
+      "kind": "3d",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "18G0-0",
+      "depth": 3
+    },
+    {
+      "kind": "plan",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "FS4-0",
+      "depth": 3
+    },
+    {
+      "kind": "review",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "G2J-0",
+      "depth": 3
+    },
+    {
+      "kind": "compare",
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "KD8-0",
+      "depth": 3
+    }
+  ],
+  "captures": [
+    {
+      "path": "beta-brief.jpg",
+      "sha256": "935539219a5df8e3d99bf4489d3d97539804cbebb6446e233d5766a5be24d14d",
+      "bytes": 115232,
+      "pixelDimensions": [
+        1363,
+        936
+      ],
+      "source": "served beta",
+      "target": "https://beta.mastermind-x.com/options.html",
+      "evidenceClass": "served before"
+    },
+    {
+      "path": "beta-replay-gate.jpg",
+      "sha256": "3d682103e49603658d5a9020c003360e08a568e5728d6787fab203fae5295fd1",
+      "bytes": 48670,
+      "pixelDimensions": [
+        1363,
+        936
+      ],
+      "source": "served beta",
+      "target": "https://beta.mastermind-x.com/options/equity-replay?symbol=SPY",
+      "evidenceClass": "served before"
+    },
+    {
+      "path": "paper-brief.jpg",
+      "sha256": "39b435ec1409c57739b5ca268996130426a06bc9abd0843a04855c253c59d025",
+      "bytes": 181306,
+      "pixelDimensions": [
+        1440,
+        1179
+      ],
+      "source": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0",
+      "target": "6Y1Q-0",
+      "evidenceClass": "pre-existing candidate reference"
+    },
+    {
+      "path": "paper-exposure-phone.jpg",
+      "sha256": "c638fd8ea5974df06058909b46c589f7e8a1b42550a15ebb63b9152777c608db",
+      "bytes": 62688,
+      "pixelDimensions": [
+        390,
+        844
+      ],
+      "source": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-V-0",
+      "target": "1HL2-0",
+      "evidenceClass": "pre-existing candidate reference"
+    },
+    {
+      "path": "paper-w1-phone.jpg",
+      "sha256": "1cce3790d9e5631767f2b3102ac1ea98d9ac849974c5bb5b8fc9a8c74e843745",
+      "bytes": 62509,
+      "pixelDimensions": [
+        390,
+        898
+      ],
+      "source": "https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-1-0",
+      "target": "4-0",
+      "evidenceClass": "pre-existing candidate reference"
+    },
+    {
+      "path": "paper-w3-phone.jpg",
+      "sha256": "45a61b3035583c6f5077d0454640377f6782407ffa748c86d6025b953a5302f5",
+      "bytes": 114677,
+      "pixelDimensions": [
+        390,
+        1461
+      ],
+      "source": "https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0",
+      "target": "1-0",
+      "evidenceClass": "pre-existing candidate reference"
+    }
+  ],
+  "independentD08Review": null,
+  "sliceReturnsConsumed": [],
+  "normalPaidBrowserEvidence": null,
+  "shellSystemRelease": null,
+  "parentPublicationCheck": {
+    "assignmentRemains": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "parentObserved": "b913f808d56703c5bf45ec682361bd9f8027c69e",
+    "delta": "D03_US_PROPHET_PHASE_2A.md only. No D08 overlap. Assignment and audit crosswalk consumed only at the supplied pin."
+  }
+}

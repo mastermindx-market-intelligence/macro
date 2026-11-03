@@ -1,0 +1,266 @@
+{
+  "document": "D08 common Options design interface",
+  "version": "D08-OPTIONS/1.0.0",
+  "status": "owner_frozen_for_phase_2a_specification",
+  "wire_status": "Design obligations on existing owners. Logical field names below describe semantics across boundaries. They are not a released runtime payload or new store.",
+  "source_map": "SOURCE_MAP.md",
+  "owners": {
+    "navigation": "D08",
+    "shell": "F01",
+    "primitives": "F02",
+    "registry": "F03 and existing publisher",
+    "origin": "D05 or D06 or D08A",
+    "observation": "D08A and incumbent source",
+    "measurement": "D08B and incumbent source",
+    "draft": "D08C via incumbent Plan",
+    "durable_research": "native Investigation / D23",
+    "condition_and_receipt": "D23 and incumbent alerts owner",
+    "replay": "D08D and incumbent archive/distribution owner",
+    "position": "D22",
+    "research_issue": "incumbent Macro Issue Desk / qualified operator"
+  },
+  "value_rules": {
+    "required": "The receiver must validate the field before declaring the named capability usable.",
+    "nullable": "An explicit unknown at source stays unknown. A nullable property cannot confer eligibility, evidence or authority.",
+    "local_return": "Resolved from the existing validated codec or the originating history entry. Do not append extra fields to closed routes.",
+    "refusal": "Preserve the caller's object and provide the reason. A fallback label must identify any change of destination, cohort, source, vintage or selection.",
+    "precision": "Numeric money fields carry currency, scale, sign basis and unit. Preserve exchange dates as local session dates, clock instants with absolute offsets, and source nanoseconds as decimal strings."
+  },
+  "objects": {
+    "listing": {
+      "required": [
+        "sourceNamespace",
+        "exactRoot"
+      ],
+      "nullable": [
+        "securityId",
+        "listingVenue",
+        "issuerId",
+        "region",
+        "currency",
+        "quoteSymbol"
+      ],
+      "guard": "Never join two listings by display ticker alone."
+    },
+    "observation": {
+      "required": [
+        "family",
+        "sourceKey",
+        "grain",
+        "listing",
+        "measurement",
+        "coverageState"
+      ],
+      "nullable": [
+        "ownerRecordId",
+        "sourceSchema",
+        "sourceDigest",
+        "sourceSession",
+        "eventAt",
+        "spotAt",
+        "oiPositionSession",
+        "oiReportDate",
+        "availableAt",
+        "builtAt",
+        "retrievedAt",
+        "correctionRef",
+        "expectedPopulation"
+      ],
+      "guard": "A source row without a unique key can be inspected but not promoted to a unique contract or guaranteed replay target. Do not synthesize an observed timestamp from build time."
+    },
+    "cohort": {
+      "required": [
+        "securityId",
+        "root",
+        "scopeKey",
+        "definitionKey",
+        "sourceSession",
+        "sourceKey",
+        "availableAt",
+        "oiReportDate",
+        "members"
+      ],
+      "nullable": [
+        "oiPositionSession",
+        "correctionRef"
+      ],
+      "members": "existing ReportedGammaMember[] = {expiry, strike, right, valueUsd|null}",
+      "guard": "Compare two individually validated ReportedGammaSnapshot values bound to the same identity/definition and allowed at the decision cutoff."
+    },
+    "node": {
+      "required": [
+        "listing",
+        "snapshotRef",
+        "coordinate",
+        "metric",
+        "unit",
+        "lens",
+        "qualification"
+      ],
+      "nullable": [
+        "expiry",
+        "strike",
+        "right",
+        "spot",
+        "spotAt",
+        "sourceFingerprint"
+      ],
+      "guard": "The coordinate must identify whether the cell is aggregated. Only separately qualified source rows can become pins."
+    },
+    "pin": {
+      "required": [
+        "contractIdentity",
+        "sourceFamily",
+        "sourceList",
+        "sourceSession",
+        "copiedSourceRow"
+      ],
+      "nullable": [
+        "multiplier",
+        "deliverable",
+        "settlement",
+        "exerciseStyle",
+        "sourceSchema",
+        "rawAsOf"
+      ],
+      "guard": "Use optionsContractShortlist.ts for exact accepted shapes, stale policy and duplicate/term checks."
+    },
+    "draft": {
+      "required": [
+        "validatedPins",
+        "owningSessionScope",
+        "userAssumptions",
+        "research"
+      ],
+      "nullable": [
+        "valuationResult",
+        "valuationSource",
+        "calculatedAt"
+      ],
+      "guard": "The owner validates options_plan_draft.v1. The user's intended legs/prices are distinct from dated observations and any independently calculated result."
+    },
+    "saveIntent": {
+      "required": [
+        "authenticatedOwner",
+        "selectedEvidence",
+        "actionKind",
+        "reconciliationIdentity"
+      ],
+      "nullable": [
+        "priorRevision",
+        "expectedRevision",
+        "ownerReceipt",
+        "returnedObjectId",
+        "returnedRevision"
+      ],
+      "guard": "Requires the existing owner's admitted protocol. Reconciliation identity is its operation/idempotency identity. If the API cannot guarantee this, do not expose durable save for this handoff."
+    },
+    "replay": {
+      "required": [
+        "datasetKind",
+        "instrument",
+        "sessionZone",
+        "requestedSelection",
+        "accessResult",
+        "returnContext"
+      ],
+      "nullable": [
+        "contract",
+        "dataSession",
+        "availableWindow",
+        "loadedWindow",
+        "requestedCutoff",
+        "cursor",
+        "marketTime",
+        "availableTime",
+        "sourceSequence",
+        "sourceDigest",
+        "sampleBounds",
+        "gapReason"
+      ],
+      "guard": "No shared cursor conversion across datasets. Each replay reader owns validation, permission, distribution and evidence at cursor."
+    },
+    "returnContext": {
+      "required": [
+        "validatedOrigin",
+        "destinationFallback"
+      ],
+      "nullable": [
+        "routeBytes",
+        "view",
+        "selectedRow",
+        "focusTarget",
+        "scrollAnchor",
+        "filterState",
+        "sourceSession",
+        "cohortFingerprint"
+      ],
+      "guard": "Return metadata is transient, sanitized and same-origin. It does not include credentials, protected data or write intent."
+    }
+  },
+  "exchanges": [
+    {
+      "id": "A→B",
+      "owner": "A emits, B resolves",
+      "from": [
+        "observation",
+        "returnContext"
+      ],
+      "to": [
+        "node",
+        "cohort"
+      ],
+      "accept": "Resolve exact root or listing and qualifying dated book. If only root transfers, label the receiving scope explicitly and keep the print as origin.",
+      "decline": "identity_ambiguous | missing_book | denied | source_unavailable",
+      "restore": "original scan/filter/row/focus"
+    },
+    {
+      "id": "B→C",
+      "owner": "B supplies evidence, C validates pins",
+      "from": [
+        "node",
+        "cohort",
+        "returnContext"
+      ],
+      "to": [
+        "pin",
+        "draft"
+      ],
+      "accept": "Select unambiguous actual contracts before admitting legs; distinct contracts share the supported root. Carry immutable/source-limited evidence and preserve user-entered assumptions.",
+      "decline": "aggregate_only | ambiguous_terms | unsupported_payoff | missing_evidence",
+      "restore": "original node/lens/vintage"
+    },
+    {
+      "id": "A/B/D06→D",
+      "owner": "source owns return, D owns data/cursor",
+      "from": [
+        "listing",
+        "returnContext"
+      ],
+      "to": [
+        "replay"
+      ],
+      "accept": "Apply futuresRequest or single-symbol equity grammar; separately verify account, publisher display permission and available window. Exposure replay stays B's presentation over the appropriate archive.",
+      "decline": "invalid_request | access_unverified | plan_required | distribution_withheld | missing_window | gap",
+      "restore": "exact originating view/chart where qualified, otherwise named fallback"
+    },
+    {
+      "id": "C→D23→C",
+      "owner": "C previews, incumbent Investigation/alerts owner decides/writes/reads",
+      "from": [
+        "draft",
+        "saveIntent",
+        "returnContext"
+      ],
+      "to": [
+        "owner object ID and revision after readback",
+        "optional independent watch ID",
+        "optional immutable firing/delivery receipt"
+      ],
+      "accept": "Explicit save; arm separately; on reopen compare original evidence with newly acquired observation; assessment creates a new revision.",
+      "decline": "draft_only | no_admission | definite_rejection | outcome_unknown | original_evidence_unavailable",
+      "restore": "same-owner intent or exact saved revision; no automatic resubmission"
+    }
+  ],
+  "acceptance": "VERIFICATION.md"
+}
