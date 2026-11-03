@@ -257,6 +257,22 @@ html[data-theme="light"] .rv-more{ color:var(--rv); }
 .rv-more .rv-more-rem{ font-family:var(--num); font-weight:600; color:var(--muted); font-size:12px; }
 .rv-searching{ font-size:12px; color:var(--muted); font-family:var(--num); }
 
+/* ── SIC-I05R · research entry island — composed from the page's own neutral
+   idiom (hairline --line borders, --panel2 fill, no accent edge anywhere).
+   Readback rides the facet-grp rows; the composer mirrors .rv-search input. */
+#si-research-entry{ margin-top:18px; }
+#si-research-readback .facet-grp{ align-items:baseline; }
+.si-rb-val{ font-size:13px; color:var(--text); max-width:56ch; overflow-wrap:anywhere; }
+#si-research-entry textarea{
+  display:block; width:100%; box-sizing:border-box; margin-top:12px; padding:10px 14px;
+  border-radius:var(--r-ctl,8px); border:1px solid var(--line); background:var(--panel2); color:var(--text);
+  font:inherit; font-size:14px; line-height:1.5; outline:none; resize:vertical; transition:border-color .18s, box-shadow .25s ease;
+}
+#si-research-entry textarea::placeholder{ color:var(--muted); }
+#si-research-entry textarea:hover{ border-color:var(--mx5-hover-border); }
+#si-research-entry textarea:focus{ border-color:var(--rv); box-shadow:0 0 0 3px var(--rv-dim); }
+.si-note{ font-size:12px; color:var(--muted); margin:10px 0 0; }
+
 .rv-browse-btn{ display:none; }
 .rv-scrim{ display:none; }
 
