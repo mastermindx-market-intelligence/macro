@@ -12927,6 +12927,7 @@ jobs:
           tests/test_fundamental_forensics_q1_held_out_evaluate.py
           tests/test_fundamental_forensics_q1_held_out_g2_reports.py
           tests/test_fundamental_forensics_q1_held_out_g3_reports.py
+          tests/test_fundamental_forensics_q1_held_out_g4_reports.py
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
@@ -23029,6 +23030,7 @@ jobs:
       - "research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md"
       - "research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md"
       - "research/theme_graph/micro_owner_dispositions.yml"
+      - "research/theme_graph/micro_owner_review_2026-11-02.md"
       - "scripts/__init__.py"
       - "scripts/build_company_theme_exposure.py"
       - "scripts/build_dt_contra_state.py"

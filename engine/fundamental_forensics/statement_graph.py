@@ -167,6 +167,7 @@ STATEMENT_REFUSAL_CODES = (
     "displayed_table_absent",
     "displayed_columns_absent",
     "statement_role_not_consolidated",
+    "displayed_cell_period_mismatch",
 )
 
 
@@ -1562,7 +1563,8 @@ def _cell_period_disagreement(
 ) -> StatementGraphError:
     return StatementGraphError(
         f"{_R7_DISAGREEMENT} {index}: row {label!r} fact {fact.get('fact_id')} "
-        f"context {_period_label(period)} vs column {_column_label(column)}: {detail}"
+        f"context {_period_label(period)} vs column {_column_label(column)}: {detail}",
+        refusal_code="displayed_cell_period_mismatch",
     )
 
 
