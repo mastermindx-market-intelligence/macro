@@ -204,6 +204,13 @@ Each row has three parts:
 | E7 answerability | Answerability measured; "rating OWED" (line 292). | OWED | NOT MET |
 | E8 example coverage | Both domains have: outgoing_query, incoming_query, quantitative_fact, unknown_magnitude, anonymous_counterparty, correction, valid_multi_hop, invalid_multi_hop. ABSENT: **contradiction** (D1 and D2, 0 candidates), **stale_evidence** (D1 and D2), and D2 next_publication_reassertion (D1 has it). | measured | NOT MET. §8.2 explicitly names contradiction and stale evidence. |
 
+**E5 addendum (2026-11-03, PR #10636).** The E5 row above records the state observed at bca436e5 and is left as observed. Since then:
+- O1 is discharged. A blind, fresh-context, non-authoring Opus reviewer labelled the 125-item sample (100 items plus 25 decoys) from each excerpt alone. `scripts/relationship_m2_precision.py score` scored it into `research/theme_graph/gmi_relationships_20261021/m2_precision_owner/precision_report.json`. The verdict file is not committed; its sha256 is `7e3ab29c272e575b97d7262b12e3edfc555ea53c6c3ae9be1273a4477e51212c`.
+- The reviewer was an Opus reviewer subagent of seat 6f14c2da. It shares that seat's session lineage. It is not a separate seat or account.
+- With `--precision-dir`, `envelope.e5_precision()` now prints E5 as SCORED: accepted 67/100, precision 0.67, Wilson 95% [0.5731, 0.7544]. The stratum-weighted figure is 0.6621 [0.5596, 0.7646] (normal approximation). Decoys: 0/25 accepted, Wilson 95% [0.0, 0.1332]. reviewer_reliable=True. The regenerated `m2_integration/envelope_print.txt` differs from the committed one only in the E5 block.
+- Contract reading: measured, and below the 0.80 target, which binds promotion only. Release-bar reading: MEASURED, below target. E5 is display-only and gates nothing.
+- The glm-5.3 figure (49/100, weighted 0.498 [0.390, 0.607]) is superseded.
+
 ### Boundary 2: hard errors, admission LCB, freshness and task success
 - **Hard errors, automatic admission (one-sided 95% LCB ≥ 95%), freshness (48h routing) and corrections:** the proof marks these measured `null` with verdict `NOT_IN_THIS_LANE` (verbatim above).
   - OBSERVED: no committed artifact on bca436e5 measures them. INFERRED: they are UNMEASURED, so they cannot be MET.

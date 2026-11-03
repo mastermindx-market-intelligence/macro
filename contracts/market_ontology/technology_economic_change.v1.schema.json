@@ -361,14 +361,14 @@
     "coverage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["population_mode", "known_population_total", "counts", "assertion_counts_available", "family_labels", "completeness"],
+      "required": ["population_mode", "known_population_total", "counts", "assertion_counts_available", "limitations", "family_labels", "completeness"],
       "properties": {
         "population_mode": {"enum": ["known_population", "unknown_scope"]},
         "known_population_total": {"type": ["integer", "null"], "minimum": 0},
         "counts": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["included", "missing", "stale", "rights_blocked", "unresolved", "unsupported_assertions", "invalid_assertions", "after_cutoff", "source_unavailable"],
+          "required": ["included", "missing", "stale", "rights_blocked", "unresolved", "unsupported_assertions", "invalid_assertions", "after_cutoff", "undatable_withheld", "source_unavailable"],
           "properties": {
             "included": {"type": ["integer", "null"], "minimum": 0},
             "missing": {"type": ["integer", "null"], "minimum": 0},
@@ -378,10 +378,17 @@
             "unsupported_assertions": {"type": ["integer", "null"], "minimum": 0},
             "invalid_assertions": {"type": ["integer", "null"], "minimum": 0},
             "after_cutoff": {"type": ["integer", "null"], "minimum": 0},
+            "undatable_withheld": {"type": ["integer", "null"], "minimum": 0},
             "source_unavailable": {"type": ["integer", "null"], "minimum": 0}
           }
         },
         "assertion_counts_available": {"type": "boolean"},
+        "limitations": {
+          "description": "Assertions excluded by their review disposition: held_present and rejected_present, the robotics and nuclear sibling codes. Only accepted dispositions render. Null when assertion_counts_available is false.",
+          "type": ["array", "null"],
+          "items": {"enum": ["held_present", "rejected_present"]},
+          "uniqueItems": true
+        },
         "family_labels": {
           "type": "object",
           "additionalProperties": false,

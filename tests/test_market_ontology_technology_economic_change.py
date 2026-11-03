@@ -4,15 +4,17 @@ Every provider here is EXPLICITLY SYNTHETIC: no real issuer, product, filing or
 vendor text appears anywhere; source ids, dates and digests are fabricated. The
 management_outlook_comparison.v1 unit is built concurrently, so only its SEALED
 OUTPUT SHAPE is fixture-built here — its internals are never mocked. The shared
-``theme_graph.curation_assertion.v1`` contract is exercised by the conformant
-fixture. ``SYNTHETIC_CURATION_CONTRACT`` is a test-only stand-in that lets the
-composer's downstream logic run for the other synthetic assertions. The
-roundtrip test and ``test_conformant_fixture_renders_one_product_workload_role_row``
-call the real validator.
+``theme_graph.curation_assertion.v1`` contract (macro#7870) is present;
+``SYNTHETIC_CURATION_CONTRACT`` is a test-only stand-in that lets the
+composer's downstream logic run over Technology-shaped payloads, while
+``test_shared_assertion_roundtrip_through_pinned_contract`` exercises the REAL
+contract on a conformant fixture. Tests of the absent-contract refusal block
+the module in ``sys.modules``.
 """
 from __future__ import annotations
 
 import ast
+import copy
 import hashlib
 import importlib
 import json
@@ -54,7 +56,12 @@ def _sha(seed: str) -> str:
 
 
 def _src(object_id: str, *, owner: str = "synthetic-owner-a", generation: str = "g1",
-         selector: str | None = None) -> dict:
+         selector: str | None = None, published_at: str = "2026-05-15",
+         observed_at: str = "2026-05-16T08:00:00Z",
+         retained_at: str = "2026-05-16T08:05:00Z") -> dict:
+    # The six closed reference fields plus the source clocks the cutoff gate
+    # reads (published_at, observed_at, retained_at). A source with no
+    # publication clock is withheld as undatable.
     return {
         "owner": owner,
         "object_id": object_id,
@@ -62,6 +69,9 @@ def _src(object_id: str, *, owner: str = "synthetic-owner-a", generation: str = 
         "generation": generation,
         "sha256": _sha(object_id),
         "selector": selector or f"synthetic/{object_id}#p1",
+        "published_at": published_at,
+        "observed_at": observed_at,
+        "retained_at": retained_at,
     }
 
 
@@ -108,7 +118,10 @@ def _assertion(
     payload = {
         "schema": "theme_graph.curation_assertion.v1",
         "curation_revision": "gmirca_" + _sha(seed)[:32],
-        "review": {"reviewed_by": "synthetic-reviewer", "reviewed_on": "2026-06-01"},
+        "review": {
+            "reviewed_by": "synthetic-reviewer", "reviewed_on": "2026-06-01",
+            "disposition": "accepted",
+        },
         "source": source or _src("synthetic-doc-role-1"),
         "subject": {"entity_id": subject[0], "display_name": subject[1]},
         "object": {"entity_id": object_[0], "display_name": object_[1], "paid_unit": object_[2]},
@@ -345,6 +358,10 @@ SYNTHETIC_CURATION_CONTRACT = types.SimpleNamespace(
     decode_assertion=lambda value: dict(value) if isinstance(value, dict) else None,
     source_ref_for=lambda payload: f"{payload['source']['owner']}/{payload['source']['object_id']}",
 )
+# The synthetic stand-in is not the real contract: _assertion() builds a
+# Technology-shaped payload that the real validate_assertion refuses. The
+# real-contract roundtrip uses tests/fixtures/technology_economic_change/
+# conformant_assertion.json (test_shared_assertion_roundtrip_through_pinned_contract).
 
 
 def test_synthetic_stand_in_speaks_the_real_five_flag_can_star_vocabulary():
@@ -424,18 +441,15 @@ def test_lazy_import_literal_equals_shared_contract_module():
     The loader keeps a string literal so CI scope can resolve the target. Nothing
     else may carry a divergent copy of that path: if the constant moves and the
     literal does not, the loader keeps importing the old name and stays
-    ``shared_contract_unavailable``. The roundtrip helper hardcodes the same literal,
-    so it is included here and would not catch that drift on its own.
+    ``shared_contract_unavailable``. ``_real_curation_module`` hardcodes the same
+    literal, so it is included here and would not catch that drift on its own.
     """
     module_tree = ast.parse(MODULE_PATH.read_text(encoding="utf-8"))
     assigned = _assigned_string_constant(module_tree, "SHARED_CONTRACT_MODULE")
     assert assigned == tech.SHARED_CONTRACT_MODULE
-    module_literals = _import_module_string_literals(module_tree)
-    shell_canonical = "engine.market_ontology.theme_research_binding"
-    assert module_literals.count(assigned) == 1
-    assert module_literals.count(shell_canonical) == 1
-    assert set(module_literals) == {assigned, shell_canonical}
-    assert "theme_research_registry" not in module_literals
+    helpers = _assigned_string_constant(module_tree, "SHARED_TIME_HELPERS_MODULE")
+    assert helpers == tech.SHARED_TIME_HELPERS_MODULE
+    assert sorted(_import_module_string_literals(module_tree)) == sorted([assigned, helpers])
     assert set(_shared_contract_module_path_literals(module_tree)) == {assigned}
     test_tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
     test_literals = _import_module_string_literals(test_tree)
@@ -448,34 +462,35 @@ def test_lazy_import_literal_equals_shared_contract_module():
     assert set(_shared_contract_module_path_literals(test_tree)) == {assigned}
 
 
-def test_canonical_json_is_the_shell_function():
-    binding = importlib.import_module("engine.market_ontology.theme_research_binding")
-    assert tech._canonical_json is binding.canonical_text
+def _block_shared_contract(monkeypatch) -> None:
+    """The pre-#7870 carrier state: the shared module does not import."""
+    monkeypatch.setitem(sys.modules, tech.SHARED_CONTRACT_MODULE, None)
 
 
-def test_canonical_json_refuses_nan():
-    with pytest.raises(ValueError):
-        tech._canonical_json({"n": float("nan")})
+def _real_curation_module():
+    return importlib.import_module("engine.theme_graph.curation_assertion")
 
 
-def test_finite_digest_unchanged():
-    payload = {"b": 1, "a": "synthetic-finite"}
-    binding = importlib.import_module("engine.market_ontology.theme_research_binding")
-    digest = tech._digest_hex(payload, 64)
-    expected = hashlib.sha256(
-        binding.canonical_text(payload).encode("utf-8")
-    ).hexdigest()[:64]
-    assert digest == expected
-
-
-def test_shared_contract_unavailable_on_carrier_base():
-    if importlib.util.find_spec(tech.SHARED_CONTRACT_MODULE) is not None:
-        pytest.skip("shared curation contract imports on this tree")
+def test_shared_contract_unavailable_on_carrier_base(monkeypatch):
+    # #7870 is on this tree: the loader returns the real module.
+    assert tech._load_shared_curation_contract() is _real_curation_module()
+    # Without it (the pre-#7870 carrier base) the loader is typed unavailable.
+    _block_shared_contract(monkeypatch)
     assert tech._load_shared_curation_contract() is None
 
 
-def test_business_refused_when_shared_contract_unavailable():
-    dossier = _compose()  # real seam: refusal only while the module is absent
+def test_business_refused_when_shared_contract_unavailable(monkeypatch):
+    # Present contract: the synthetic stand-in assertions are not valid
+    # #7870 assertions, so all three are counted invalid and none renders.
+    present = _compose()
+    assert "rows" in present["business"]
+    assert present["business"]["rows"] == []
+    assert present["counter_observations"] == []
+    assert present["coverage"]["assertion_counts_available"] is True
+    assert present["coverage"]["counts"]["invalid_assertions"] == 3
+    # Absent contract: the typed refusal, with every assertion count unknown.
+    _block_shared_contract(monkeypatch)
+    dossier = _compose()
     business = dossier["business"]
     if tech._load_shared_curation_contract() is None:
         assert business["refused"] is True
@@ -541,6 +556,321 @@ def test_invalid_assertion_is_counted_never_rendered(monkeypatch):
     assert [row["predicate"] for row in dossier["business"]["rows"]] == ["product_workload_role"]
 
 
+# --- real #7870 contract: admission, rendering and the cutoff clocks -----------------
+
+_DROP = object()
+_WITHHOLDING_COUNTS = (
+    "invalid_assertions",
+    "unsupported_assertions",
+    "after_cutoff",
+    "undatable_withheld",
+    "source_unavailable",
+)
+
+
+def _conformant(source: dict | None = None, temporal: dict | None = None, *,
+                scope: dict | None = None, top: dict | None = None) -> dict:
+    """The conformant fixture with fields replaced (``_DROP`` removes a source
+    field), restamped so the real contract still validates it."""
+    payload = json.loads(CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
+    for key, value in (source or {}).items():
+        if value is _DROP:
+            payload["source"].pop(key, None)
+        else:
+            payload["source"][key] = value
+    for section, changes in (("temporal", temporal), ("scope", scope)):
+        payload[section].update(changes or {})
+    payload.update(top or {})
+    module = _real_curation_module()
+    payload["curation_revision"] = module.curation_revision(payload)
+    module.validate_assertion(payload)  # each control is a #7870-valid assertion
+    return payload
+
+
+def _real_compose(*payloads) -> dict:
+    return _compose(business_assertions=list(payloads))
+
+
+def _withheld(dossier: dict) -> dict:
+    counts = dossier["coverage"]["counts"]
+    return {key: counts[key] for key in _WITHHOLDING_COUNTS if counts[key]}
+
+
+def _assert_rendered(dossier: dict, payload: dict) -> dict:
+    """Exactly one rendered row, for this payload, and nothing withheld."""
+    rows = dossier["business"]["rows"]
+    assert [row["curation_revision"] for row in rows] == [payload["curation_revision"]]
+    assert _withheld(dossier) == {}
+    return rows[0]
+
+
+def _assert_withheld(dossier: dict, count_key: str) -> None:
+    assert dossier["business"]["rows"] == []
+    assert dossier["counter_observations"] == []
+    assert _withheld(dossier) == {count_key: 1}
+
+
+def test_conformant_assertion_is_admitted_and_rendered():
+    # G1: a #7870-valid assertion renders as a Technology row. Without the
+    # shared-contract source projection it is counted source_unavailable.
+    payload = _conformant()
+    dossier = _real_compose(payload)
+    row = _assert_rendered(dossier, payload)
+    source = payload["source"]
+    assert row["predicate"] == "product_workload_role"
+    assert row["statement_mode"] == "attributed"
+    assert row["subject"] == {"entity_id": COMPANY, "display_name": "Synthetic Alpha Inc (SYNTHETIC)"}
+    assert row["object"]["display_name"] == "AI training accelerator (SYNTHETIC)"
+    assert row["statement"] == payload["limitations"]["establishes"][0]
+    assert row["source_ref"] == {
+        "owner": "synthetic-owner-a",
+        "object_id": "synthetic-doc-role-conformant",
+        "schema": "theme_graph.curation_assertion.v1",
+        "generation": "2026-05-16",
+        "sha256": source["native_digest"],
+        "selector": "synthetic/conformant-role#p1",
+    }
+    assert row["observed_on"] == "2026-05-16"
+    assert dossier["source_version_vector"]["curation_revisions"] == [payload["curation_revision"]]
+
+
+def test_shared_contract_source_without_a_reference_is_source_unavailable():
+    # #7870 allows a null retention_ref or native_digest and a free-form
+    # publisher; none of those yields the closed six-field reference.
+    for change in (
+        {"retention_ref": None},
+        {"native_digest": None},
+        {"native_digest": "not-a-sha256"},
+        {"publisher": "Synthetic Owner A"},
+    ):
+        _assert_withheld(_real_compose(_conformant(change)), "source_unavailable")
+
+
+def test_c1_c2_published_after_cutoff_withheld_whatever_the_business_window():
+    late = {
+        "published_at": "2026-08-01",
+        "observed_at": "2026-08-02T08:00:00Z",
+        "retained_at": "2026-08-02T08:05:00Z",
+    }
+    # C1: business_valid_from before the cutoff does not make it knowable.
+    _assert_withheld(_real_compose(_conformant(late, {"business_valid_from": "2026-05-01"})), "after_cutoff")
+    # C2: nor does an open business window.
+    _assert_withheld(_real_compose(_conformant(late, {"business_valid_from": None})), "after_cutoff")
+
+
+def test_c3_retained_after_cutoff_withheld():
+    _assert_withheld(_real_compose(_conformant({"retained_at": "2026-07-01T08:05:00Z"})), "after_cutoff")
+
+
+def test_c4_every_clock_on_the_cutoff_day_is_rendered():
+    payload = _conformant({
+        "available_at": CUTOFF + "T23:59:59Z",
+        "published_at": CUTOFF,
+        "observed_at": CUTOFF + "T00:00:00Z",
+        "retained_at": CUTOFF + "T10:00:00+08:00",
+    })
+    row = _assert_rendered(_real_compose(payload), payload)
+    assert row["observed_on"] == CUTOFF
+
+
+def test_c5_either_day_reading_after_the_cutoff_withholds():
+    # UTC day D+1, own-offset day D.
+    _assert_withheld(_real_compose(_conformant({"retained_at": CUTOFF + "T23:00:00-05:00"})), "after_cutoff")
+    # Own-offset day D+1, UTC day D.
+    _assert_withheld(_real_compose(_conformant({"retained_at": "2026-07-01T01:00:00+08:00"})), "after_cutoff")
+
+
+def test_c6_unreadable_clock_is_undatable():
+    _assert_withheld(_real_compose(_conformant({"published_at": "2026-02-30"})), "undatable_withheld")
+    _assert_withheld(_real_compose(_conformant({"observed_at": "2026-13-45T00:00:00Z"})), "undatable_withheld")
+
+
+def test_c7_unknown_availability_is_undatable():
+    _assert_withheld(_real_compose(_conformant({"available_at": "unknown"})), "undatable_withheld")
+
+
+def test_c8_available_after_cutoff_withheld_though_published_before():
+    _assert_withheld(_real_compose(_conformant({"available_at": "2026-07-02T00:00:00Z"})), "after_cutoff")
+
+
+def test_c9_unknown_publication_without_availability_is_undatable():
+    payload = _conformant({"published_at": None, "published_at_grain": "unknown"})
+    _assert_withheld(_real_compose(payload), "undatable_withheld")
+    # The same assertion with an availability clock before the cutoff renders.
+    dated = _conformant({
+        "published_at": None,
+        "published_at_grain": "unknown",
+        "available_at": "2026-05-15T12:00:00Z",
+    })
+    _assert_rendered(_real_compose(dated), dated)
+
+
+def test_c10_published_before_cutoff_without_availability_is_rendered():
+    payload = _conformant()
+    assert "available_at" not in payload["source"]
+    _assert_rendered(_real_compose(payload), payload)
+
+
+def test_c11_business_window_after_cutoff_is_not_a_knowability_clock():
+    payload = _conformant(temporal={"business_valid_from": "2026-08-01"})
+    _assert_rendered(_real_compose(payload), payload)
+
+
+def test_c12_available_before_cutoff_does_not_excuse_late_publication():
+    payload = _conformant({"available_at": "2026-06-01T00:00:00Z", "published_at": "2026-07-01"})
+    _assert_withheld(_real_compose(payload), "after_cutoff")
+
+
+def test_c13_observed_after_cutoff_alone_withholds():
+    payload = _conformant({"observed_at": "2026-07-01T00:00:00Z"})
+    _assert_withheld(_real_compose(payload), "after_cutoff")
+
+
+def test_cutoff_moves_admission_without_changing_the_rendered_row():
+    payload = _conformant({"retained_at": "2026-07-01T08:05:00Z"})
+    _assert_withheld(_real_compose(payload), "after_cutoff")
+    later = _compose(business_assertions=[payload], native_context=_native(cutoff="2026-07-01"))
+    row = _assert_rendered(later, payload)
+    assert row["source_ref"]["generation"] == "2026-07-01"
+    # observed_on is the observation day, not the retention day.
+    assert row["observed_on"] == "2026-05-16"
+
+
+def test_shared_contract_assertion_outside_the_technology_form_is_unsupported():
+    for change in (
+        {"scope": {"technology_facet": "workload_usage_direction"}},
+        {"scope": {"technology_facet": None}},
+        {"scope": {"canonical_theme_id": "theme:semiconductors"}},
+        {"top": {"statement_mode": "CATALOG_DESCRIPTION"}},
+        {"top": {"predicate": "DEPLOYMENT_TARGET"}},
+    ):
+        _assert_withheld(_real_compose(_conformant(**change)), "unsupported_assertions")
+    # The bare vertical id is the same technology theme.
+    payload = _conformant(scope={"canonical_theme_id": "technology_ex_semis"})
+    _assert_rendered(_real_compose(payload), payload)
+
+
+# --- review disposition (#9111 F2: only accepted dispositions render or publish) ---
+
+
+def _with_disposition(disposition: str, **change) -> dict:
+    review = json.loads(CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))["review"]
+    return _conformant(top={"review": {**review, "disposition": disposition}}, **change)
+
+
+def _assert_excluded_by_disposition(dossier: dict, limitation: str) -> None:
+    assert dossier["business"]["rows"] == []
+    assert dossier["counter_observations"] == []
+    assert _withheld(dossier) == {}
+    assert dossier["coverage"]["counts"]["invalid_assertions"] == 0
+    assert dossier["coverage"]["limitations"] == [limitation]
+    tech.validate_dossier(dossier)
+
+
+def test_f2_held_disposition_is_excluded_with_held_present():
+    _assert_excluded_by_disposition(_real_compose(_with_disposition("held")), "held_present")
+
+
+def test_f2_rejected_disposition_is_excluded_with_rejected_present():
+    _assert_excluded_by_disposition(
+        _real_compose(_with_disposition("rejected")), "rejected_present"
+    )
+
+
+def test_f2_accepted_control_renders_with_no_limitation():
+    payload = _with_disposition("accepted")
+    dossier = _real_compose(payload)
+    _assert_rendered(dossier, payload)
+    assert dossier["coverage"]["limitations"] == []
+    tech.validate_dossier(dossier)
+
+
+def test_f2_only_the_accepted_row_of_a_mixed_bundle_renders():
+    accepted = _with_disposition("accepted")
+    held = _with_disposition("held")
+    rejected = _with_disposition("rejected")
+    dossier = _real_compose(rejected, accepted, held)
+    _assert_rendered(dossier, accepted)
+    assert dossier["coverage"]["limitations"] == ["held_present", "rejected_present"]
+    entity_ids = {entity["entity_id"] for entity in dossier["identity"]["entities"]}
+    assert dossier["identity"]["entities"] == _real_compose(accepted)["identity"]["entities"]
+    assert COMPANY in entity_ids
+
+
+def test_f2_excluded_revisions_do_not_enter_the_dossier_identity():
+    accepted = _with_disposition("accepted")
+    alone = _real_compose(accepted)
+    mixed = _real_compose(accepted, _with_disposition("held"), _with_disposition("rejected"))
+    assert mixed["dossier_id"] == alone["dossier_id"]
+
+
+def test_f2_held_counter_observation_is_not_rendered(monkeypatch):
+    held = copy.deepcopy(COUNTER)
+    held["review"] = {**held["review"], "disposition": "held"}
+    dossier = _compose_happy(monkeypatch, business_assertions=[held])
+    assert dossier["counter_observations"] == []
+    assert dossier["coverage"]["limitations"] == ["held_present"]
+    accepted = _compose_happy(monkeypatch, business_assertions=[COUNTER])
+    assert len(accepted["counter_observations"]) == 1
+    assert accepted["coverage"]["limitations"] == []
+
+
+def test_f2_missing_or_unknown_disposition_is_invalid_not_rendered(monkeypatch):
+    # The real contract refuses both at validation; the composer still fails
+    # closed if a contract hands one through.
+    rows = []
+    for review in (
+        {"reviewed_by": "synthetic-reviewer"},
+        {"reviewed_by": "synthetic-reviewer", "disposition": "pending"},
+        {"reviewed_by": "synthetic-reviewer", "disposition": ["accepted"]},
+        "accepted",
+    ):
+        payload = _assertion(predicate="product_workload_role", seed=f"disp:{review!r}")
+        payload["review"] = review
+        rows.append(payload)
+    dossier = _compose_happy(monkeypatch, business_assertions=rows)
+    assert dossier["business"]["rows"] == []
+    assert dossier["coverage"]["counts"]["invalid_assertions"] == 4
+    assert dossier["coverage"]["limitations"] == []
+
+
+def test_f2_coverage_limitations_is_a_closed_required_contract_field():
+    dossier = _real_compose(_with_disposition("held"))
+    for bad in (_DROP, ["accepted_present"], ["held_present", "held_present"], "held_present"):
+        broken = copy.deepcopy(dossier)
+        if bad is _DROP:
+            del broken["coverage"]["limitations"]
+        else:
+            broken["coverage"]["limitations"] = bad
+        with pytest.raises(EconomicChangeDossierError, match=r"^dossier_schema_violation: coverage"):
+            tech.validate_dossier(broken)
+
+
+def test_shared_time_helpers_unavailable_refuses_business(monkeypatch):
+    # G5: the clock helpers are imported inside the contract loader's try; a
+    # missing binding module is the typed shared_contract_unavailable refusal.
+    monkeypatch.setitem(sys.modules, tech.SHARED_TIME_HELPERS_MODULE, None)
+    assert tech._load_shared_time_helpers() is None
+    assert tech._load_shared_curation_contract() is None
+    dossier = _real_compose(_conformant())
+    assert dossier["business"]["refused"] is True
+    assert dossier["business"]["reason_code"] == "shared_contract_unavailable"
+    assert dossier["coverage"]["counts"]["undatable_withheld"] is None
+    assert dossier["coverage"]["limitations"] is None
+
+
+def test_shared_time_helpers_incomplete_refuses_business(monkeypatch):
+    assert tech._load_shared_time_helpers() is not None
+    binding = sys.modules[tech.SHARED_TIME_HELPERS_MODULE]
+    for name in tech._SHARED_TIME_HELPER_NAMES:
+        with monkeypatch.context() as patch:
+            patch.delattr(binding, name)
+            assert tech._load_shared_time_helpers() is None, name
+            dossier = _real_compose(_conformant())
+            assert dossier["business"]["reason_code"] == "shared_contract_unavailable", name
+    assert tech._load_shared_time_helpers() is not None
+
+
 # --- minimum content ------------------------------------------------------------------
 
 
@@ -578,7 +908,8 @@ def test_minimum_content_happy_path(monkeypatch):
     tech.validate_dossier(dossier)  # already ran inside compose; holds standalone too
 
 
-def test_minimum_content_refusal_state_names_typed_refusals():
+def test_minimum_content_refusal_state_names_typed_refusals(monkeypatch):
+    _block_shared_contract(monkeypatch)
     dossier = _compose()
     assert dossier["comparison"]["admission"] == "admitted"
     assert dossier["comparison"]["primary_limitation"]["text"]
@@ -869,10 +1200,17 @@ def test_counter_observation_requires_available_source(monkeypatch):
         statement_mode="contrary_observation",
         text="Synthetic counter-observation without a usable source reference.",
         seed="counter-srcless",
-        source={"note": "synthetic: source fields absent"},
+        # Datable (the cutoff gate admits it) but no reference fields.
+        source={
+            "note": "synthetic: source fields absent",
+            "published_at": "2026-05-15",
+            "observed_at": "2026-05-16T08:00:00Z",
+            "retained_at": "2026-05-16T08:05:00Z",
+        },
     )
     dossier = _compose_happy(monkeypatch, business_assertions=[COUNTER, sourceless])
     assert dossier["coverage"]["counts"]["source_unavailable"] == 1
+    assert dossier["coverage"]["counts"]["undatable_withheld"] == 0
     counters = dossier["counter_observations"]
     assert len(counters) == 1
     assert counters[0]["source_ref"]["object_id"] == "synthetic-doc-counter-1"
@@ -885,7 +1223,12 @@ def test_later_filing_excluded_from_earlier_cutoff(monkeypatch):
         text="Synthetic supplementary filing: dated after the selected cutoff.",
         observed_on="2026-08-01",
         seed="counter-later",
-        source=_src("synthetic-doc-supplementary-1"),
+        source=_src(
+            "synthetic-doc-supplementary-1",
+            published_at="2026-08-01",
+            observed_at="2026-08-01T09:00:00Z",
+            retained_at="2026-08-01T09:05:00Z",
+        ),
     )
     earlier = _compose_happy(monkeypatch, business_assertions=[later])
     assert earlier["counter_observations"] == []

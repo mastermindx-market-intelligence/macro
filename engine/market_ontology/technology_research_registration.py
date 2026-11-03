@@ -275,18 +275,23 @@ def _resolve_company_ref(company_ref: str, identity_results: list[Any]) -> Mappi
     be carried VERBATIM by an identity result — its ``entity_id`` or
     ``node_id`` for a ``co:`` request, its ``cik`` field for a ``cik:`` request
     (field names pinned to the §8 bundle contract). Ticker strings are never
-    consulted and no name-similarity join is ever attempted."""
+    consulted and no name-similarity join is ever attempted. More than one
+    matching identity row, duplicates included, is ``company_ref_ambiguous``:
+    the adapter never picks one."""
     if company_ref.startswith("cik:"):
-        for entry in identity_results:
-            if isinstance(entry, Mapping) and entry.get("cik") == company_ref:
-                return entry
-        return None
-    for entry in identity_results:
-        if not isinstance(entry, Mapping):
-            continue
-        if entry.get("entity_id") == company_ref or entry.get("node_id") == company_ref:
-            return entry
-    return None
+        matches = [
+            entry for entry in identity_results
+            if isinstance(entry, Mapping) and entry.get("cik") == company_ref
+        ]
+    else:
+        matches = [
+            entry for entry in identity_results
+            if isinstance(entry, Mapping)
+            and (entry.get("entity_id") == company_ref or entry.get("node_id") == company_ref)
+        ]
+    if len(matches) > 1:
+        _refuse("company_ref_ambiguous")
+    return matches[0] if matches else None
 
 
 def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
@@ -300,17 +305,6 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
     if getattr(query, "view", None) not in VIEWS:
         _refuse("view_not_registered")
     identity_results = _identity_results(bundle)
-    if getattr(query, "time_mode", None) == "system_replay":
-        # PLACEHOLDER pinned to the reader owner's future contract: an identity
-        # result is "as known at replay time" iff it carries a truthy
-        # ``as_known`` mapping. Absent means absent — never guessed past.
-        if not any(
-            isinstance(entry, Mapping)
-            and isinstance(entry.get("as_known"), Mapping)
-            and bool(entry["as_known"])
-            for entry in identity_results
-        ):
-            _refuse("replay_identity_unavailable")
     if getattr(query, "offset", 0) not in (0, None):
         _refuse("pagination_unsupported")
     if getattr(query, "cursor", None) is not None:
@@ -330,6 +324,14 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
     matched = _resolve_company_ref(company_ref, identity_results)
     if matched is None:
         _refuse("company_ref_unresolved")
+    if getattr(query, "time_mode", None) == "system_replay":
+        # PLACEHOLDER pinned to the reader owner's future contract: the RESOLVED
+        # identity result is "as known at replay time" iff it carries a truthy
+        # ``as_known`` mapping. Another row's mapping says nothing about this
+        # company. Absent means absent — never guessed past.
+        as_known = matched.get("as_known")
+        if not (isinstance(as_known, Mapping) and as_known):
+            _refuse("replay_identity_unavailable")
     if _SEALED_COMPANY_REF_RE.match(company_ref):
         return company_ref
     # cik: / revision-pinned requests: the sealed scope carries the RESOLVED

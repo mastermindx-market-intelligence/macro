@@ -247,9 +247,17 @@ def test_compose_matches_the_base_providers_dossier(monkeypatch):
     assert via_adapter["source_version_vector"] == via_base["source_version_vector"]
 
 
+def _block_shared_shell(monkeypatch) -> None:
+    """The pre-#7870 carrier state: neither shell module imports."""
+    monkeypatch.setitem(sys.modules, reg._SHELL_REGISTRY_MODULE, None)
+    monkeypatch.setitem(sys.modules, reg._SHELL_SIBLING_MODULE, None)
+
+
 def test_compose_without_the_shared_contract_still_identifies(monkeypatch):
-    # Identity checks hold either way. The business refusal is the carrier
-    # state only while engine.theme_graph.curation_assertion does not import.
+    # Blocked seam: with engine.theme_graph.curation_assertion not importable,
+    # the business section is the typed refusal — and the shell identity
+    # checks still hold on the payload.
+    base._block_shared_contract(monkeypatch)
     payload = reg.compose(QUERY, _bundle())
     assert payload["schema"] == reg.PROFILE_ID
     assert payload["definition_version"] == reg.DEFINITION_VERSION
@@ -316,6 +324,53 @@ def test_system_replay_composes_with_as_known_identity(monkeypatch):
         bundle,
     )
     assert payload["definition_version"] == reg.DEFINITION_VERSION
+
+
+def test_system_replay_reads_as_known_from_the_matched_row_only(monkeypatch):
+    # Another company's replay identity does not make this one replayable.
+    other = _identity_result("co:us:synth-omega", as_known={"cutoff": base.CUTOFF})
+    bundle = _bundle(identity_results=(other, RECEIPT_RESULT))
+    query = dataclasses.replace(QUERY, time_mode="system_replay")
+    _refusal(monkeypatch, query, bundle, "replay_identity_unavailable")
+    # The matched row carrying it composes, whatever the other rows hold.
+    matched = _identity_result(as_known={"cutoff": base.CUTOFF})
+    payload = _compose(monkeypatch, query, _bundle(identity_results=(_identity_result("co:us:synth-omega"), matched)))
+    assert payload["scope"]["company_ref"] == COMPANY
+
+
+def test_system_replay_resolves_the_company_before_the_replay_check(monkeypatch):
+    query = SyntheticQuery(
+        profile_id=reg.PROFILE_ID, company_ref="co:us:synth-omega", view="business",
+        time_mode="system_replay",
+    )
+    _refusal(monkeypatch, query, _bundle(), "company_ref_unresolved")
+
+
+def test_company_ref_matching_two_identity_rows_is_ambiguous(monkeypatch):
+    by_node = _identity_result("co:us:synth-alpha-holdings", node_id=COMPANY)
+    _refusal(monkeypatch, QUERY, _bundle(identity_results=(RECEIPT_RESULT, by_node)), "company_ref_ambiguous")
+    cik = "cik:0000320193"
+    first = _identity_result(cik=cik)
+    second = _identity_result("co:us:synth-alpha-holdings", cik=cik)
+    _refusal(
+        monkeypatch,
+        SyntheticQuery(profile_id=reg.PROFILE_ID, company_ref=cik, view="business"),
+        _bundle(identity_results=(first, second)),
+        "company_ref_ambiguous",
+    )
+
+
+def test_duplicate_identity_rows_are_ambiguous(monkeypatch):
+    _refusal(
+        monkeypatch, QUERY, _bundle(identity_results=(RECEIPT_RESULT, dict(RECEIPT_RESULT))),
+        "company_ref_ambiguous",
+    )
+    # One matching row among non-matching ones still resolves.
+    payload = _compose(
+        monkeypatch, QUERY,
+        _bundle(identity_results=(_identity_result("co:us:synth-omega"), RECEIPT_RESULT)),
+    )
+    assert payload["scope"]["company_ref"] == COMPANY
 
 
 def test_pagination_unsupported_refused(monkeypatch):
@@ -963,24 +1018,37 @@ def test_shared_shell_unavailable_on_carrier_base(monkeypatch):
     ``_load_shared_shell`` still reads OwnerBundle/ResearchQuery from the
     semiconductor module. Registration does not use that resolver.
     """
-    loaded = reg._load_shared_shell()
-    assert loaded is not None
-    assert all(symbol is not None for symbol in loaded)
+    # #7870 is on this tree: the three shell symbols resolve.
+    present = reg._load_shared_shell()
+    assert present is not None
+    assert [symbol.__name__ for symbol in present] == [
+        "VerticalRegistration", "OwnerBundle", "ResearchQuery",
+    ]
     assert "vertical query owner" in (reg._load_shared_shell.__doc__ or "")
-    monkeypatch.setitem(
-        sys.modules,
-        "engine.market_ontology.semiconductor_theme_research",
-        None,
-    )
+    with monkeypatch.context() as blocked:
+        blocked.setitem(
+            sys.modules,
+            "engine.market_ontology.semiconductor_theme_research",
+            None,
+        )
+        assert reg._load_shared_shell() is None
+    # Without either shell module (the pre-#7870 carrier base) it is None.
+    _block_shared_shell(monkeypatch)
     assert reg._load_shared_shell() is None
 
 
-def test_registration_attempt_is_typed_unavailable_on_carrier_base():
+def test_registration_attempt_is_typed_unavailable_on_carrier_base(monkeypatch):
     """Both shell modules import here, so company_profile is held."""
+    # Present shell: the company_profile hold, before construction.
+    with pytest.raises(TechnologyRegistrationRefusal) as held:
+        reg.registration_entry_or_refusal()
+    assert held.value.code == "vertical_registration_held:company_profile"
+    assert str(held.value) == "vertical_registration_held:company_profile"
+    # Absent shell: typed unavailable.
+    _block_shared_shell(monkeypatch)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.registration_entry_or_refusal()
-    assert excinfo.value.code == "vertical_registration_held:company_profile"
-    assert str(excinfo.value) == "vertical_registration_held:company_profile"
+    assert excinfo.value.code == "shared_shell_unavailable"
 
 
 def test_broken_present_shell_import_propagates(monkeypatch):
@@ -1169,9 +1237,9 @@ class _Post7870VerticalRegistration:
 def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
     """Publish the #7870 ``VerticalRegistration`` signature as the shell registry.
 
-    The registry module is absent on this carrier base; the signature double
-    above stands in for it (removed with the monkeypatch), so the hold stays
-    pinned without importing #7870 source.
+    The signature double above stands in for the real registry (removed with
+    the monkeypatch), so the hold stays pinned to the #7870 signature even if
+    the real class later changes.
     """
     monkeypatch.setitem(
         sys.modules,
@@ -1184,10 +1252,18 @@ def _install_post_7870_registry(monkeypatch: pytest.MonkeyPatch) -> type:
 def test_shared_shell_registration_roundtrip_pinned_to_7870(monkeypatch):
     """TypeError arm of the #7870 registration pin.
 
-    The adapter's 11-field kwargs still omit ``view_keys``, ``load_bundle``
-    and ``build_query``. The hold arm against the real class is
-    ``test_company_profile_hold_imports_the_real_vertical_registration``.
+    Absent shell (the registry module blocked in ``sys.modules``):
+    ``shared_shell_unavailable``, unchanged. Injected #7870 registry: the
+    company_profile facts are held before construction, so the call raises
+    ``vertical_registration_held:company_profile`` rather than the
+    constructor ``TypeError`` the 11-field kwargs still provoke on that class.
     """
+    monkeypatch.setitem(sys.modules, reg._SHELL_REGISTRY_MODULE, None)
+    with pytest.raises(TechnologyRegistrationRefusal) as absent:
+        reg.registration_entry_or_refusal()
+    assert absent.value.code == "shared_shell_unavailable"
+    assert str(absent.value) == "shared_shell_unavailable"
+
     vertical_registration = _install_post_7870_registry(monkeypatch)
     try:
         vertical_registration(
