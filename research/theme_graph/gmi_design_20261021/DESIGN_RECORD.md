@@ -416,8 +416,8 @@ Current Chairman assignment: substantially upgrade the UI/UX and GMI theme syste
 |---|---|---|---|
 | GMI-D1 | Inspect original boards and current product semantics | None | Complete: original 16 boards are predominantly raster references; current source census obtained |
 | GMI-D2 | Editable atlas and shared semantic/type/spacing system | D1 | 46 tokens created; atlas `9A-0` visually inspected; independent static review passed after two wording corrections |
-| GMI-D3 | Coherent theme-detail/value-chain, index, issuer, relationship and coverage views | D2 | In progress |
-| GMI-D4 | Dark/light, EN/ZH and 390px mobile designs plus meaningful failure/loading/empty/permission/success states | D3 | Pending |
+| GMI-D3 | Coherent theme-detail/value-chain, index, issuer, relationship and coverage views | D2 | Complete: six desktop journeys in Night and Day; 12 editable boards |
+| GMI-D4 | Dark/light, EN/ZH and 390px mobile designs plus meaningful failure/loading/empty/permission/success states | D3 | In progress: 390px atlas complete; five deep mobile journeys, CJK and system states in progress |
 | GMI-D5 | Actual screenshots reviewed; defects repaired; exact board map, JSX and design handoff saved | D3,D4 | Pending |
 
 ### Design decisions and preserved semantics
