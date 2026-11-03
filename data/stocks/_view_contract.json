@@ -8,10 +8,10 @@
     "vintage": "unattested"
   },
   "coverage": {
-    "listings_resolved": 251,
+    "listings_resolved": 252,
     "listings_unresolved": 2,
     "store": "data/stocks",
-    "symbols": 253
+    "symbols": 254
   },
   "evidence_mode": {
     "clock": "ingested_at",
@@ -618,6 +618,11 @@
       "listing_key": "US-XNYS-IBM",
       "mic": "XNYS",
       "security_id": "SEC:US-XNYS-IBM"
+    },
+    "ICE": {
+      "listing_key": "US-XNYS-ICE",
+      "mic": "XNYS",
+      "security_id": "SEC:US-XNYS-ICE"
     },
     "IFF": {
       "listing_key": "US-XNYS-IFF",
