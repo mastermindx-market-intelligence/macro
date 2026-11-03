@@ -69,7 +69,7 @@
   .toolbar { display:flex; align-items:center; gap:10px; margin:10px 0 4px; }
   .toolbar .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
   .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:13px; }
-  .card { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,#888); border-radius:10px; padding:12px 13px; cursor:pointer; transition:border-color .15s; }
+  .card { background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 13px; cursor:pointer; transition:border-color .15s; }
   .card:hover { border-color:var(--muted); }
   .card .nm { font-weight:650; font-size:14px; }
   .card .meta { color:var(--muted); font-size:11.5px; margin:3px 0 6px; }
@@ -101,7 +101,7 @@
   .mctx b { font-weight:650; }
   .mctx .mc-k { color:var(--muted); }
   .desk { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:13px; }
-  .tcard { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--tc,#888);
+  .tcard { background:var(--panel); border:1px solid var(--line);
     border-radius:11px; padding:12px 13px 11px; scroll-margin-top:14px; transition:border-color .15s; }
   .tcard:hover { border-color:var(--muted); }
   .tcard .top { display:flex; align-items:center; gap:8px; }
@@ -263,7 +263,7 @@
   .pulse-bar a { color:var(--ink-link, var(--link)); text-decoration:none; }
   .pulse-bar a:hover { text-decoration:underline; }
   .pulse-grp { white-space:normal; }
-  .pulse-size { border:1px solid color-mix(in srgb, var(--warn) 45%, var(--line)); border-left:3px solid var(--warn);
+  .pulse-size { border:1px solid var(--line);
     border-radius:7px; padding:2px 8px; background:color-mix(in srgb, var(--warn) 8%, transparent); }
   /* ---- Leadership Health (contested label / flip-distance / term-structure) — parity with _baskets_desk.html.j2 ---- */
   .flipcap { font-size:10.5px; color:var(--ink-warn, var(--warn)); margin:3px 0 0; font-variant-numeric:tabular-nums; }
