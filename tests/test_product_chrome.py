@@ -339,7 +339,7 @@ def test_subsector_detail_uses_unified_intelligence_shell_and_responsive_member_
 
 def test_subsector_detail_preserves_payload_truth_and_existing_chart_consumer():
     template = (TEMPLATES / "subsector_detail.html.j2").read_text()
-    for token in ("g.as_of", "g.n_priced", "g.n_members", "g.reliability", "g.members", "r.action", "e.reason"):
+    for token in ("g.as_of", "g.n_priced", "g.n_members", "g.reliability", "g.members", "r.label", "e.reason"):
         assert token in template
     assert "window.StockChart.mount" in template
     assert "CHART_KEY" in template
@@ -405,7 +405,7 @@ def test_subsector_detail_render_preserves_localized_truth_all_stats_and_mobile_
     }
     rendered = _execute_subsector_detail_render(detail)
 
-    assert '<span class="l-en">English action</span><span class="l-zh">中文行动</span>' in rendered
+    assert 'English action' not in rendered and '中文行动' not in rendered
     assert '<span class="l-en">English label</span><span class="l-zh">中文标签</span>' in rendered
     assert '<span class="l-en">Medium</span><span class="l-zh">中</span>' in rendered
 

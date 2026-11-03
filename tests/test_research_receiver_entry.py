@@ -248,12 +248,18 @@ def test_single_new_global_snapshot():
 
 
 def test_langchange_refreshes_the_clipped_mark_language():
-    """RI05b MINOR: a clipped field's '(shortened)' mark follows the page
-    language after a switch; the six verbatim values are never rewritten."""
+    """RI05b MINOR + L7 D9: a clipped field's '(shortened)' mark and the typed
+    unavailable state follow the page language after a switch; the six
+    verbatim values are never rewritten (paint only sets textContent, and the
+    composer is never assigned)."""
     script = _island_script(_html())
     assert "function currentShortenedMark()" in script
     region = _langchange_region(script)
     assert "shortenedMark = currentShortenedMark();" in region
-    assert "paint('si-rb-q', fields.q + (qCarried.shortened ? shortenedMark : ''))" in region
-    assert "paint('si-rb-snap', fields.snap + (snapCarried.shortened ? shortenedMark : ''))" in region
-    assert "si-rb-subject" not in region and "si-rb-obs" not in region and "si-rb-ev" not in region
+    assert "paintReadback();" in region
+    assert ".value =" not in region
+    body = script[script.index("function paintReadback()"):script.index("paintReadback();")]
+    assert "paint('si-rb-q', fields.q ? fields.q + (qCarried.shortened ? shortenedMark : '') : '')" in body
+    assert "paint('si-rb-snap', fields.snap ? fields.snap + (snapCarried.shortened ? shortenedMark : '') : '')" in body
+    for sink in READBACK_IDS:
+        assert f"paint('{sink}'" in body
