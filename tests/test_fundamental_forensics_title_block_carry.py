@@ -308,6 +308,135 @@ def test_tbc1_layout_wrapper_around_the_title_carries_like_its_rows() -> None:
     assert parsed["table_source"] == "carried_title_block"
 
 
+def test_tbc1_contents_table_without_page_references_does_not_carry() -> None:
+    # A heading table naming another statement is a contents table even when
+    # it prints no page numbers; its title row never carries.
+    contents = _title_block(
+        _COMPANY, "Consolidated Balance Sheets", _TITLE, "Consolidated Statements of Cash Flows"
+    )
+    _absent(contents + _fact_table())
+    _absent(_title_block(_TITLE, "Notes to Consolidated Financial Statements") + _fact_table())
+
+
+@pytest.mark.parametrize(
+    "entity", ["Parent Company Only", "GUARANTOR SUBSIDIARIES", "(Registrant)", "Parent<br>Company"]
+)
+def test_tbc1_title_block_naming_another_entity_does_not_carry(entity: str) -> None:
+    _absent(_title_block(entity, _TITLE) + _fact_table())
+
+
+def test_tbc1_title_line_broken_across_a_br_is_no_other_statement() -> None:
+    # A line naming the declared title, however its words are broken, is not
+    # another statement's heading.
+    html = _title_block(_COMPANY, _TITLE, "Consolidated Statements of<br>Operations data")
+    parsed = parse_displayed_primary_table(html + _fact_table(), title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+def test_tbc1_other_statement_match_ignores_whitespace() -> None:
+    names_other = statement_graph._StatementTableParser._names_other_table
+    assert names_other("CONSOLIDATED STATEMENTS OFCOMPREHENSIVE INCOME", False)
+    assert names_other("Consolidated BalanceSheets", False)
+    assert names_other("ParentCompany Only", True)
+    assert not names_other(_TITLE, True)
+    assert not names_other(_COMPANY, False)
+    assert not names_other("Table of Contents", False)
+
+
+@pytest.mark.parametrize(
+    "between",
+    [
+        "<p>Consolidated Statements of Comprehensive Income</p>\n",
+        "<p>(In millions)</p>\n",
+        "<div><span>Years ended September</span></div>\n",
+    ],
+)
+def test_tbc1_text_between_the_title_block_and_the_table_declines_the_carry(
+    between: str,
+) -> None:
+    # Text printed after the block belongs to the table after it, which is
+    # then no longer the block's untitled body.
+    _absent(_title_block(_COMPANY, _TITLE) + between + _fact_table())
+
+
+@pytest.mark.parametrize("between", ["<p>&nbsp;</p>\n", "<div>​</div>\n", "<p> </p>\n"])
+def test_tbc1_blank_text_between_the_title_block_and_the_table_still_carries(
+    between: str,
+) -> None:
+    parsed = parse_displayed_primary_table(
+        _title_block(_COMPANY, _TITLE) + between + _fact_table(), title=_TITLE
+    )
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+_ENTITY_CONTEXTS = {
+    "d2025": frozenset({("dei:LegalEntityAxis", "x:ParentCompanyMember")}),
+    "d2024": frozenset({("dei:LegalEntityAxis", "x:ParentCompanyMember")}),
+}
+
+
+@pytest.mark.parametrize("title", [_TITLE, [_TITLE, "Statements of Income"]])
+def test_tbc1_carried_table_in_entity_contexts_does_not_carry(title: str | list[str]) -> None:
+    # With contexts supplied, a carried table whose facts sit on an entity
+    # axis is another entity's statement, on the exact attempt (the only one
+    # a list title runs) as on the fold attempt.
+    html = _title_block(_COMPANY, _TITLE) + _fact_table()
+    with pytest.raises(StatementGraphError) as caught:
+        parse_displayed_primary_table(html, title=title, context_dimensions=_ENTITY_CONTEXTS)
+    assert caught.value.refusal_code == "displayed_table_absent"
+    plain = {"d2025": frozenset(), "d2024": frozenset()}
+    parsed = parse_displayed_primary_table(html, title=title, context_dimensions=plain)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+
+
+@pytest.mark.parametrize(
+    "repeat",
+    [
+        f"{_TITLE} (Unaudited)",
+        f"{_TITLE} (In millions)",
+        _TITLE.upper(),
+        f"{_COMPANY} {_TITLE}",
+        "Consolidated Statements of<br>Operations",
+    ],
+)
+def test_tbc1_qualified_repeat_of_the_title_after_the_capture_is_a_split(repeat: str) -> None:
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(_COMPANY, repeat)
+        + _fact_table(ids=("p2-0", "p2-1"))
+    )
+    _absent(html)
+
+
+def test_tbc1_title_heading_a_longer_ampersand_title_is_not_a_split() -> None:
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(f"{_TITLE} &amp; Comprehensive Income")
+        + _fact_table(ids=("ci-0", "ci-1"))
+    )
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+
+
+def test_tbc1_rest_of_a_table_closed_mid_table_is_skipped() -> None:
+    # "See accompanying notes" closes the carried capture inside its table;
+    # the follower skips the rest of that table before looking for a split.
+    footer = (
+        "<tr><td>See accompanying notes.</td></tr>\n"
+        f"<tr><td>{_COMPANY} {_TITLE}</td></tr>\n    </table>"
+    )
+    html = _title_block(_COMPANY, _TITLE) + _fact_table().replace("</table>", footer)
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
+    _absent(html + _title_block(_COMPANY, _TITLE) + _fact_table(ids=("p2-0", "p2-1")))
+
+
 # --- a title block prints a companion line --------------------------------
 
 
@@ -369,6 +498,32 @@ def test_tbc1_carried_table_naming_the_title_before_its_facts_does_not_carry(
 
 def test_tbc1_title_named_after_the_first_fact_still_carries() -> None:
     footer = f"<tr><td>Totals agree to the {_TITLE}</td><td></td><td></td></tr>\n    </table>"
+    html = _title_block(_COMPANY, _TITLE) + _fact_table().replace("</table>", footer)
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert parsed["rows"][0]["label"] == "Net income"
+    assert parsed["table_source"] == "carried_title_block"
+
+
+@pytest.mark.parametrize(
+    "lead",
+    [
+        "<td>CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME</td>",
+        "<td>CONSOLIDATED STATEMENTS OF<br>COMPREHENSIVE INCOME</td>",
+        "<td>Statements of<br>Cash Flows</td>",
+        "<td>Consolidated Balance Sheets</td>",
+        "<td>Parent Company Only</td>",
+    ],
+)
+def test_tbc1_carried_table_naming_another_heading_before_its_facts_does_not_carry(
+    lead: str,
+) -> None:
+    # A table printing another statement's or entity's heading before its
+    # first fact has a heading of its own; the block's title is not its title.
+    _absent(_title_block(_COMPANY, _TITLE) + _fact_table(lead_row=f"<tr>{lead}</tr>"))
+
+
+def test_tbc1_other_statement_named_after_the_first_fact_still_carries() -> None:
+    footer = "<tr><td>Reconciled to the Consolidated Balance Sheets</td><td></td><td></td></tr>\n    </table>"
     html = _title_block(_COMPANY, _TITLE) + _fact_table().replace("</table>", footer)
     parsed = parse_displayed_primary_table(html, title=_TITLE)
     assert parsed["rows"][0]["label"] == "Net income"
@@ -438,3 +593,38 @@ def test_tbc1_no_title_anywhere_keeps_the_refusal() -> None:
 
 def test_tbc1_title_block_without_a_following_fact_table_keeps_the_refusal() -> None:
     _absent(_title_block(_COMPANY, _TITLE) + "<p>No statement follows.</p>")
+
+
+# --- guards the mutation pass found unexercised ------------------------------
+
+
+def test_tbc1_comma_variant_title_after_a_discard_arms_no_carry() -> None:
+    # After a discarded bare heading (P5B R3) a row hits on its text with a
+    # trailing comma dropped, but only the title alone arms the carry:
+    # "Title," is a title plus a suffix the fold does not accept.
+    _absent(
+        _title_block(_TITLE) + _title_block(_COMPANY, f"{_TITLE},") + _fact_table()
+    )
+
+
+def test_tbc1_title_repeated_after_a_longer_title_in_one_cell_is_a_split() -> None:
+    # The first occurrence heads a longer title; the second, in the same text,
+    # repeats the title itself, so the block after the capture is a split.
+    html = (
+        _title_block(_COMPANY, _TITLE)
+        + _fact_table()
+        + _title_block(f"{_TITLE} and Comprehensive Income; {_TITLE} (Unaudited)")
+        + _fact_table(ids=("p2-0", "p2-1"))
+    )
+    _absent(html)
+
+
+def test_tbc1_caption_inside_the_carried_table_still_carries() -> None:
+    # Text inside the carried table itself is that table's own content, not a
+    # heading printed between the block and the table.
+    html = _title_block(_COMPANY, _TITLE) + _fact_table(
+        lead_row="<caption>(In millions)</caption>"
+    )
+    parsed = parse_displayed_primary_table(html, title=_TITLE)
+    assert _rows(parsed) == _SERVED
+    assert parsed["table_source"] == "carried_title_block"
