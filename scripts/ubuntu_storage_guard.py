@@ -18,6 +18,13 @@ import sys
 import time
 
 GIB = 1024 ** 3
+# Exact enrolled Linux host -> pytest fixture owner. No implicit other-host grants.
+PYTEST_TEMP_OWNER = {
+    "ubuntu0-MS-A2": "ubuntu0",
+    "mastermind-pc": "longr",
+    "ubuntu2": "ubuntu2",
+    "ubuntu3-MS-7E61": "ubuntu3",
+}
 DEFAULT_RECEIPT = "/var/lib/mastermind-storage-guard/latest.json"
 SCHEMA = "mastermind.ubuntu_storage_guard.v1"
 
@@ -214,6 +221,36 @@ def run(args: argparse.Namespace) -> dict:
         health["disk"] = disk_status()
     else:
         health["journal_maintenance"] = {"attempted": False}
+    # OFF by default and intentionally absent from the installed systemd unit.
+    # This is not a new scheduler: future admission may add this exact flag
+    # to the existing sentinel after source review and host canary.
+    health["pytest_reclaim"] = {"attempted": False}
+    if getattr(args, "reclaim_pytest_garbage", False):
+        owner = PYTEST_TEMP_OWNER.get(socket.gethostname())
+        if not owner:
+            health["pytest_reclaim"] = {
+                "attempted": False, "status": "REFUSED_UNENROLLED_HOST",
+            }
+        elif health["disk"]["level"] not in {"CRITICAL", "EMERGENCY"}:
+            health["pytest_reclaim"] = {
+                "attempted": False, "status": "HEALTHY_OR_WARNING",
+            }
+        else:
+            health["gc_mode"] = "pytest_garbage_only"
+            try:
+                from ubuntu_pytest_temp_reclaim import reclaim
+                result = reclaim(owner, apply=True, min_age_hours=24, max_dirs=6)
+                health["pytest_reclaim"] = {"attempted": True, **result}
+            except Exception as exc:
+                # A failed subordinate delete may already have moved a source
+                # leaf. Its own append-only ledger is the reconciliation owner.
+                # Never convert this into a repeat or cross-host fallback.
+                health["pytest_reclaim"] = {
+                    "attempted": True,
+                    "status": "RECONCILE_ORIGINAL_RECLAIM_LEDGER",
+                    "reason": type(exc).__name__,
+                }
+            health["disk"] = disk_status()
     save_receipt(path, health)
     return health
 
@@ -223,6 +260,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--receipt", default=DEFAULT_RECEIPT)
     parser.add_argument("--vacuum", action="store_true",
                         help="cap archived journald logs only under disk pressure")
+    parser.add_argument("--reclaim-pytest-garbage", action="store_true",
+                        help="opt-in guarded pytest garbage cleanup (never Git worktrees)")
     args = parser.parse_args(argv)
     report = run(args)
     print(json.dumps({
@@ -233,6 +272,7 @@ def main(argv: list[str] | None = None) -> int:
         "runner_status": report["runners"],
         "journal_maintenance": report["journal_maintenance"],
         "source_deletes": False,
+        "pytest_reclaim": report["pytest_reclaim"],
     }, sort_keys=True))
     return 0
 
