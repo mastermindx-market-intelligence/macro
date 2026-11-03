@@ -1,0 +1,11 @@
+{
+  "schema": "news.clean-ci-checkout-cleanup.v1",
+  "head": "707c0ec06948d6df6e1f64525d8e9e32d046749a",
+  "completed_at": "2026-11-03T03:46:44.335525+00:00",
+  "exit_code": 0,
+  "removed": true,
+  "stdout": "",
+  "stderr": "",
+  "source_workspace_preserved": true,
+  "original_ignored_aapl_sha256": "bc155d9112cc1504230efb103d8fe08a4f0601130eb7d023f6851c9cf94caf00"
+}

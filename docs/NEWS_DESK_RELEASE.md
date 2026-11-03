@@ -1072,3 +1072,20 @@ Evidence: `canonical-integration-20261103.json`, `clean-checkout-20261103.json`,
 The current integrated `read_edges` boundary passes **10 tests**. The broader local relationship-envelope run records **21 passed, 8 failed, 3 errors, 32 deselected** because this sparse checkout lacks required M1/M2 relationship fixtures; the earlier full GMI page run also lacked symbol-directory data and `site/gmi.css`. These red results are not accepted as full GMI proof. Their complete logs are preserved losslessly as gzip, with raw and stored hashes. Required full-tree hosted CI remains the integration proof.
 
 Paper and current-source fixture browser acceptance are complete as recorded above. The original independent review remains terminal without a verdict and `retry_allowed=false`; no formal non-author approval, protected merge, covering render, deployment or real-URL acceptance is claimed. Keep PR #9612 Draft and merge-blocked on the original carrier.
+
+
+## 2026-11-03 final exact-source verification and publication candidate
+
+Final executable-source commit: **`707c0ec06948d6df6e1f64525d8e9e32d046749a`**, managed action `0fcbfe22113eb1ea13905d06ff24505a4c72718ebee8cc5de894297cca3fe6e8`. On a clean detached checkout of that exact commit, both affected CI contract tests pass: **2 passed**, with 12 retained pre-existing pytest temporary-directory cleanup warnings. The separate full exclusive closure and all three canonical packing measurements also pass with no findings/breaches. Their inventory contains **142185 tracked paths**, payload SHA-256 **`e552849b4df5ebd6e24e61359e3b1b533d023e576fe59ac13a9d467c700af124`**.
+
+| Probe | Selected jobs | Planning weight | Weight ceiling | Packs |
+| --- | ---: | ---: | ---: | ---: |
+| `templates/index.html` | 136 | 5852 | 5886 | 10 |
+| `scripts/build_free_content.py` | 137 | 5881 | 5881 | 10 |
+| `engine/prophet/plan_book.py` | 129 | 5604 | 5636 | 10 |
+
+The exact checks and source hashes are in `final-canonical-source-20261103.json` and its complete log. The final evidence process took 321.914 seconds; the two pytest contracts took 209.51 seconds. These are actual validation durations, separate from planner weights. Original-workspace source hashes match the tested checkout. The temporary read-only comparison worktree was removed normally after success; the original ignored AAPL sample is byte-for-byte preserved (`clean-checkout-cleanup-20261103.json`). The earlier browser QA tab, fixture server and tunnel were already stopped as recorded in browser acceptance.
+
+The following publication receipt changes only this release record and evidence files; it does not change executable source or the tested News artifact. Publish through the original exact-HEAD managed publisher, then consume hosted CI at the resulting head. Do not convert these local passes into full hosted or production acceptance.
+
+Fresh gate readback at 2026-11-03 03:39:56 UTC remains explicit in `review-gate-20261103.json`: original review `news-9612-f07ba3-source-review-20261022` is verified terminal, rc1, unverified/execution-ineligible, with retry, dispatch and result-consumption authorization all false; GitHub formal reviews are empty. The source-changing commit and receipt do not reset that effect. Paper and fixture-browser work is complete. Independent final-source acceptance, non-author formal approval, normal protected merge, covering production render/deploy and authenticated real-path proof remain required. PR #9612 stays Draft and merge-blocked; no self-approval, alternate review or publisher is used.
