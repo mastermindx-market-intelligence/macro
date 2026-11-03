@@ -5434,9 +5434,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_671),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5444,6 +5444,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    P17.T34 support receipt regression ownership (2026-11-03, #10643):
+    hosted contract-delta41599767622 on merge aa25ee66/base00438de7 measured
+    index5,915/free-content5,930/plan-book5,671 versus base5,909/5,924/5,665,
+    with no newly selected jobs. Three added suite paths cost two estimator
+    units each. The successor moves the DOM suite from data-base-shim into
+    billing-emails beside the API/tier suites, with Jinja2 for its renderer:
+    billing-emails25->31 and data-base-shim23->23; net still exactly+6.
+    Fund only these six measured units. Keep job-count/pack ceilings, all
+    existing suites, source selection and execution timeouts unchanged.
+    The sparse local packing pass did not qualify the full hosted closure.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``

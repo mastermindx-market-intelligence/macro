@@ -20538,7 +20538,7 @@ jobs:
       # This job exists for the suite that lane CANNOT host: it RUNS each builder,
       # so it needs the data stack below.
       - name: every page builder emits the shim (runs each against a fixture root)
-        run: python -m pytest tests/test_builder_shim_writes.py tests/test_support_page_js.py -q
+        run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
       - name: Forex context bus (synthetic inputs, temporary output)
@@ -24878,7 +24878,7 @@ jobs:
       # install turns three green tests red against code the droplet never runs. CI must
       # test the SDK production actually has.
       - name: install deps
-        run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13" rjsmin==1.2.5
+        run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13" rjsmin==1.2.5 jinja2
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
@@ -24894,7 +24894,7 @@ jobs:
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
-        run: python -m pytest tests/test_billing_webhook.py tests/test_support_api.py tests/test_support_tier_routing.py -v
+        run: python -m pytest tests/test_billing_webhook.py tests/test_support_api.py tests/test_support_tier_routing.py tests/test_support_page_js.py -v
 
   billing-offers:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
