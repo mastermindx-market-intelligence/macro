@@ -1,6 +1,6 @@
 # F03 — Paper organization, coverage and design integration
 
-**PARTIAL / BLOCKED_RETURN — source directory and specification delivered; Paper organization NOT_APPLIED.** F03 has not renamed, moved, archived, created or deleted any Paper resource. It has not implemented, merged or deployed product code.
+**PARTIAL / BLOCKED_RETURN — source directory delivered; first native Paper directory and two page-label corrections applied.** Cross-file moves, folder creation, archives, complete preservation verification and formal design approval remain open. No product code has been implemented, merged or deployed. See [native progress](paper/native-progress.json) and the [interim evidence manifest](artifact-manifest.json).
 
 ## Start here
 
