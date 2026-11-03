@@ -296,6 +296,7 @@ def test_the_sweeper_sparse_checks_out_only_what_it_reads():
         "scripts/ci_authority_paths.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        ".github/ci/legacy-jobs.yml",
         ".github/workflows",
     }
     assert options["sparse-checkout-cone-mode"] is False
