@@ -245,7 +245,7 @@ function themeCard(t, chinaExplore=false){
     glyphRow=`<div class="tglyph"><span class="tflag ${rr.band==='high'?'dn':'wn'}" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}">${chinaExplore?L('Reversal risk','回落风险'):'⚠'}</span></div>`;
   } else if(ss&&ss.grade==='backtested'){
     const tipEn=`${ss.en||''} (HAC t ${ss.t_hac}, n ${ss.n})`;
-    glyphRow=`<div class="tglyph"><span class="tflag dn" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(ss.zh||ss.en||'')}">${chinaExplore?L('Risk flag','风险提示'):'🔬'}</span></div>`;
+    glyphRow=`<div class="tglyph"><span class="tflag dn" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(ss.zh||ss.en||'')}">${chinaExplore?L('Risk flag','风险提示'):'\u{1F52C}'}</span></div>`;
   } else if(earlyCracks(t)){
     const tipEn=`Early cracks: ${(rr.reasons||[]).join(' · ')} — descriptive, a shape/fragility read`;
     const tipZh=`初现裂痕：${(rr.reasons||[]).join(' · ')} — 描述性，形态读数`;
@@ -406,12 +406,12 @@ function renderGroupPulse(){
 function renderThemeDesk(){
   const sec=document.getElementById('theme-desk-section');
   const status=document.getElementById('theme-desk-status');
+  grResetShowMore();
   if(!THEME||!(THEME.themes||[]).length){
     if(status){ status.hidden=false; status.innerHTML=L('No themes ranked for this update.','本次暂无主题排名。'); }
     else if(sec) sec.style.display='none';
     return;
   }
-  grResetShowMore();
   const desk=document.getElementById('theme-desk');
   const chinaExplore=desk.dataset.layout==='china-explore';
   desk.innerHTML=grDeskThemes().map(t=>themeCard(t,chinaExplore)).join('');
