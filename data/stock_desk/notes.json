@@ -1,27 +1,27 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-10-30",
-  "generated_at": "2026-11-03T10:38:53.860745+00:00",
+  "generated_at": "2026-11-03T10:40:33.706891+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-10-30-GM-20261103103853-1",
+      "id": "2026-10-30-GM-20261103104033-1",
       "ticker": "GM",
       "name": "General Motors Co",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bottoming turn, positive momentum and unblocked entry support a tentative relative-strength lean, while the validated risk controls keep conviction low because the weekly trend remains mixed and macro risk is elevated. The board rank itself is not evidence of forward outperformance.",
+      "thesis": "The base-building verdict and unblocked entry support a tentative relative-strength lean, with price above both major averages and the daily turn intact. Conviction stays low because the weekly trend is mixed, macro risk is elevated, and prior constructive calls have weak directional accuracy.",
       "evidence": [
         "Verdict: Constructive \u2014 building a base",
-        "Turn signaled; back above a rising 10-day average",
-        "Above both 50-day and 200-day averages",
-        "Weekly picture mixed; prior cycle left-translated",
-        "Macro-risk elevated for a macro-sensitive name"
+        "Entry unblocked; daily turn signaled",
+        "Above 50-day and 200-day averages",
+        "Prior cycle was left-translated",
+        "Constructive track-record directional accuracy: 30.3%"
       ],
-      "dissent": "The late investor phase, early-topping prior cycle and sharp net-income decline could turn the apparent base into another failed advance.",
+      "dissent": "The late investor phase, left-translated prior cycle, thin net margin and falling net income could turn the apparent base into a failed breakout near the high.",
       "falsifier": {
-        "text": "Price loses the 50-day average while the weekly timeframe remains unconfirmed.",
+        "text": "GM loses its 50-day average while underperforming the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "GM",
@@ -35,23 +35,23 @@
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-10-30-FLS-20261103103853-2",
+      "id": "2026-10-30-FLS-20261103104033-2",
       "ticker": "FLS",
       "name": "Flowserve",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The unblocked bottoming setup is offset by a mixed weekly trend, weak selection context and below-average quality factors. With no validated directional edge, the risk-controlled conclusion is to wait for clearer confirmation.",
+      "thesis": "The unblocked bottoming setup is offset by a mixed weekly picture and weak selection, revision and quality readings. With no validated rank edge and a deterministic no-clear-edge verdict, there is insufficient basis for a directional call.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Turn signaled but weekly timeframe has not turned",
-        "Entry axis unblocked at 55th percentile",
-        "Selection axis at 46th percentile",
-        "Quality axis at 47th percentile"
+        "Daily turn signaled but weekly timeframe not turned",
+        "Selection axis: 46th percentile",
+        "Revisions z-score: -1.00",
+        "Entry axis unblocked: 55th percentile"
       ],
-      "dissent": "A right-translated cycle, positive MACD and improving net income could sustain relative outperformance before weekly confirmation arrives.",
+      "dissent": "Price above both major averages, positive MACD and a right-translated cycle could develop into sustained relative leadership.",
       "falsifier": {
-        "text": "The weekly timeframe turns bullish while price remains above both the 50-day and 200-day averages.",
+        "text": "FLS establishes a weekly uptrend and outperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -61,53 +61,49 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-30-XNCR-20261103103853-3",
+      "id": "2026-10-30-XNCR-20261103104033-3",
       "ticker": "XNCR",
       "name": "Xencor Inc",
-      "lean": "cautious",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "This is more than an extension warning: the deterministic entry brake and cycle block coincide with earnings proximity, weak accounting quality and deteriorating cash-flow fundamentals. The bullish trend argues against high conviction, but the validated risk controls support a cautious relative lean rather than chasing.",
+      "horizon_d": 10,
+      "thesis": "The extension brake, cycle block and imminent earnings argue against chasing, but the bullish weekly trend and intact momentum argue equally against a directional short. The accountable stance is to watch the event and pullback rather than infer return direction from the board rank.",
       "evidence": [
         "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked; entry axis at 19th percentile",
-        "Cycle blocked",
-        "Earnings in 2 days",
-        "Trades 75.9% above the 200-day average"
+        "Entry blocked: 19th percentile",
+        "Trades 75.9% above the 200-day average",
+        "Bullish with-trend ladder; fresh buy state",
+        "Earnings in 2 days"
       ],
-      "dissent": "The fresh bullish cycle, positive momentum and agreement between daily and weekly trends could overpower the risk brakes and extend the leadership run.",
+      "dissent": "A favorable earnings reaction could sustain momentum despite extreme extension, leaving any caution badly timed.",
       "falsifier": {
-        "text": "After earnings, price holds above the 10-day average and the daily and weekly bullish trends remain aligned.",
+        "text": "XNCR clears the earnings event, holds above its 50-day average and outperforms the S&P 500 over the next 10 trading days.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "XNCR",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 15
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-20",
+      "check_by": "2026-11-13",
       "engine_verdict": "Extended \u2014 wait for a pullback"
     },
     {
-      "id": "2026-10-30-CVCO-20261103103853-4",
+      "id": "2026-10-30-CVCO-20261103104033-4",
       "ticker": "CVCO",
       "name": "Cavco Industries, Inc.",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bullish cycle and unblocked entry are constructive, but the deterministic verdict finds no clear edge and the selection axis is below median. With constructive calls historically poorly calibrated, the accountable stance is neutral pending sustained confirmation.",
+      "thesis": "The bullish ladder and unblocked entry are constructive context, but the deterministic verdict finds no clear edge and selection is below median. The lottery-spike risk control and elevated macro sensitivity keep this from becoming a chase.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Fresh buy with bullish daily and weekly alignment",
-        "Entry unblocked at 55th percentile",
-        "Selection axis at 46th percentile",
-        "Macro risk elevated for a macro-sensitive name"
+        "Fresh-buy ladder with bullish weekly agreement",
+        "Entry unblocked: 55th percentile",
+        "Selection axis: 46th percentile",
+        "Lottery-spike flag present"
       ],
-      "dissent": "Positive MACD, clean accounting and solid profitability could let the fresh buy setup outperform despite the inconclusive selection context.",
+      "dissent": "Positive earnings growth, clean accounting and alignment above both major averages could support continued relative outperformance.",
       "falsifier": {
-        "text": "Price sustains the fresh-buy trend above the 50-day average while relative strength improves.",
+        "text": "CVCO sustains a new weekly high and outperforms the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -117,23 +113,23 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-30-CVNA-20261103103853-5",
+      "id": "2026-10-30-CVNA-20261103104033-5",
       "ticker": "CVNA",
       "name": "Carvana Co",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 10,
-      "thesis": "The short-term turn is real but the larger trend is mixed, the daily cycle is stretched and earnings can override the setup. The event and accounting risk controls outweigh any temptation to infer direction from its board placement.",
+      "thesis": "The daily turn is unblocked, but the weekly trend remains mixed and the setup carries an earnings-event tax, accounting watch and lottery-spike risk. Those validated risk controls warrant waiting without making a bearish relative bet.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Turn signaled but weekly timeframe has not turned",
-        "Daily phase stretched",
+        "Weekly picture mixed despite daily turn",
         "Earnings in 2 days",
-        "Accounting quality watch"
+        "Accounting watch",
+        "Lottery-spike flag present"
       ],
-      "dissent": "Strong recent earnings growth, positive MACD and a recovery above both major moving averages could produce renewed relative leadership.",
+      "dissent": "Strong reported income growth and price above both major averages could turn the rebound into renewed leadership after earnings.",
       "falsifier": {
-        "text": "The post-earnings move holds above the 50-day average and the weekly timeframe turns bullish.",
+        "text": "CVNA exits the earnings event with a sustained break above its pre-event range and outperforms the S&P 500 over the next 10 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
@@ -143,23 +139,23 @@
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-10-30-TKO-20261103103853-6",
+      "id": "2026-10-30-TKO-20261103104033-6",
       "ticker": "TKO",
       "name": "Tko Group Holdings Inc",
       "lean": "cautious",
       "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "The deterministic lagging verdict is supported by genuine relative weakness rather than extension alone: price remains below the 200-day average, its sector basket is below trend and selection context is weak. The bottoming turn and favorable entry prevent an avoid call.",
+      "thesis": "This is genuine relative weakness rather than extension alone: TKO remains below its 200-day average, its sector basket is below trend, and revisions are weak despite a short-term bounce. The earnings-event and accounting risk controls reinforce a cautious relative lean.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Below the 200-day average by 3.6%",
+        "Price 3.6% below the 200-day average",
         "Communication Services equal-weight basket below long-term trend",
-        "Selection axis at 42nd percentile",
-        "Revisions z-score -1.0"
+        "Revisions z-score: -1.00",
+        "Earnings in 2 days"
       ],
-      "dissent": "The swing-low recovery, positive MACD, favorable entry axis and strong cash generation could turn the laggard into a durable rebound.",
+      "dissent": "The daily bottoming turn, positive MACD and strong cash generation could precede a durable recovery through the long-term trend.",
       "falsifier": {
-        "text": "Price reclaims and holds above the 200-day average as the sector basket returns above its long-term trend.",
+        "text": "TKO reclaims and holds above its 200-day average while outperforming the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "TKO",
