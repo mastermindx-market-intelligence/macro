@@ -1,0 +1,246 @@
+schema: mastermind.rig_proposal.v1
+reference_id: t35-whitehouse-editorial-reader
+proposed_artifact:
+  frozen_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+  paths:
+  - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2
+  - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/build_whitehouse.py
+  - mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse-controlled.html
+  screenshots:
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-1440-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-en.png
+    viewport: mobile
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-dark-zh.png
+    viewport: mobile
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-en.png
+    viewport: mobile
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/reader-390-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-dark-zh.png
+    viewport: desktop
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-1440-light-zh.png
+    viewport: desktop
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-dark-en.png
+    viewport: mobile
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-dark-zh.png
+    viewport: mobile
+    theme: dark
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-en.png
+    viewport: mobile
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/source-390-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-archived-1440-light-en.png
+    viewport: desktop
+    theme: light
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-empty-390-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-missing-390-dark-en.png
+    viewport: mobile
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-1440-dark-en.png
+    viewport: desktop
+    theme: dark
+    locale: en
+  - path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/state-treasury-390-light-zh.png
+    viewport: mobile
+    theme: light
+    locale: zh
+  runtime_source: 349e12c9b7f64c7e5452215db15a9d1ffb292b22
+dispositions:
+- id: reports.retained-population
+  disposition: RETAIN
+  target: Original wh-/tw- report sections and ordered data iteration
+- id: reports.metadata-clocks
+  disposition: RETAIN
+  target: Report title row with publication/read/expiry/fallback/confidence labels
+- id: reports.original-body
+  disposition: IMPROVE
+  target: .wh-reading .wh-analysis; actual stored paragraphs remain expanded
+  rationale: Limit prose measure and add labeled section access without changing original
+    body, evidence, source or report identity.
+- id: reports.bilingual-summary
+  disposition: RETAIN
+  target: Original bilingual title and summary fields
+- id: reports.sector-evidence
+  disposition: RETAIN
+  target: .wh-reading sector-impact table, same rows and rationale
+- id: reports.ticker-evidence
+  disposition: RETAIN
+  target: .wh-reading named-instrument tables with original quote/rationale fields
+- id: reports.primary-source
+  disposition: RETAIN
+  target: Original source href/target/rel with existing independentT34 agency correction
+- id: reports.model-assessment
+  disposition: RELOCATE
+  destination: .wh-rail model assessment below outline; same integer out of100
+  reachability: Visible labeled outline/method summary; native disclosure keyboard/touch
+    support; source code and retained representative captures. Embedded outer-scroll/history
+    remains unproved.
+- id: treasury.snapshot
+  disposition: RETAIN
+  target: Incumbent Treasury snapshot values/units/date/chart/context
+- id: page.global-navigation
+  disposition: RETAIN
+  target: Inherited site nav/footer and existing theme/locale controls
+- id: page.explanation
+  disposition: RELOCATE
+  destination: Native .wh-method disclosure in existing header plus page disclaimer
+  reachability: Visible labeled outline/method summary; native disclosure keyboard/touch
+    support; source code and retained representative captures. Embedded outer-scroll/history
+    remains unproved.
+- id: reports.fragment-return
+  disposition: IMPROVE
+  target: Original report fragment IDs plus additive section suffix anchors and focused
+    targets
+  rationale: Limit prose measure and add labeled section access without changing original
+    body, evidence, source or report identity.
+additions:
+- Per-report native section outline and additive exact section fragments
+- Explicit known UI language vs original AI text boundary
+- Truthful missing-source/analysis/retained-report sentences
+user_tasks:
+- id: task.read-argument
+  critical: true
+  task: Read a retained argument and distinguish source from AI interpretation
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.verify-source
+  critical: true
+  task: Reach the exact original source and identify its agency
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.compare-evidence
+  critical: true
+  task: Scan sector/ticker evidence and available quote fields
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.find-report
+  critical: true
+  task: Find/return to the same retained report by its original fragment
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.inspect-treasury
+  critical: false
+  task: Read Treasury values, units, dates and context
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.change-language
+  critical: true
+  task: Read known UI labels in EN/ZH without inventing body translations
+  production: See preserved capability ledger and original report source/crops.
+  proposal: See corresponding reading/outline/evidence/source region in frozen artifact.
+  verdict: UNKNOWN
+  notes: Final task judgment follows actual independent review; no stopwatch claim.
+- id: task.inspect-method
+  critical: false
+  task: Find model/fallback/method and limitations
+  production: Page-level model/fallback/method explanation is visible as header prose.
+  proposal: Full method text is behind one labeled native disclosure; model/fallback
+    row and page disclaimer remain visible.
+  verdict: WORSE
+  notes: One extra disclosure action for full method text. Supporting task, critical:false.
+    Explicit product tradeoff, not a silent deletion.
+authority_delta:
+- id: auth.retained-vs-complete
+  production_claim: Automatically monitors every market-moving White House report/current
+    watch.
+  proposal_claim: Dated retained reports and their verification sources.
+  direction: weaker
+  warranted: true
+  evidence: Header before/after source; no claim of full current coverage.
+- id: auth.model-relevance
+  production_claim: Market significanceN/100, confidence and stored model argument.
+  proposal_claim: AI relevanceN/100, explicitly not a probability; original argument
+    remains.
+  direction: weaker
+  warranted: true
+  evidence: Same supplied integer; no new calibration or investment authority.
+- id: auth.body-language
+  production_claim: Localized summary followed by original stored text without explicit
+    boundary.
+  proposal_claim: Original-language AI analysis shown without claiming verifiedEnglish
+    provenance.
+  direction: equal
+  warranted: true
+  evidence: No body-language metadata exists; no body translation or source-title
+    rewrite.
+- id: auth.direction-and-links
+  production_claim: Stored model tone/sector/ticker rationale and available quotes;
+    informational not recommendations.
+  proposal_claim: Same stored values, rationale, quote units/source/clock semantics
+    and disclaimer.
+  direction: equal
+  warranted: true
+  evidence: Builder/source/input facts and frozen table/source code.
+information_economics:
+  words_per_card:
+    production: Stored body/table/rationale length depends on actual report; no single
+      invented average.
+    proposal: Same stored body/table/rationale, plus repeated section/outline labels.
+      Reading measure is narrower, so page is taller.
+  findings:
+  - Shorter prose lines trade vertical length for reading measure. Tables retain columns/rows
+    and may need horizontal scrolling on phone.
+  - Repeated AI analysis/original-language UI and outline labels are real extra words;
+    critics judge whether they earn space.
+  - Method text moves behind one disclosure. Model relevance moves to rail on desktop
+    and precedes reading on phone.
+  preserved:
+  - Full paragraph arguments and evidence rows remain; no chart-to-prose substitution.
+  - Existing Treasury chart/numeric units and dated context remain.

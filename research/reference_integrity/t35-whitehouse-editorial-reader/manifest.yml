@@ -1,0 +1,33 @@
+schema: mastermind.rig_manifest.v1
+reference_id: t35-whitehouse-editorial-reader
+scope: full
+status: in_review
+surface:
+  route: /whitehouse.html
+  registry_row: macro:whitehouse
+  archetype: editorial
+author:
+  identity: Family Sol 01a15e87-3f2b-7411-8ad9-39933bb6bb32; implementation349e12c9
+  role: designer
+case_authority:
+  identity: Product Sol 01a15e6d-f686-7362-8120-632a33dbdee0
+  delegation: Root01a15e6c scoped T35 design-authority commission,2026-11-03
+  scope: Only retained political-report editorial reference; not all archetypeF pages
+    or Paper adoption
+reference_files:
+- path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse.html.j2
+  frozen_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+- path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/build_whitehouse.py
+  frozen_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+- path: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/after/whitehouse-controlled.html
+  frozen_sha: 5e2070d8c7a3e2db7fb31a2362623b3028c4e301
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml
+artifact_bindings: mockups/refs/reference_integrity/t35-whitehouse-editorial-reader/artifact-bindings.json
+reference_origin: New Full RIG case on already-built unapproved proposal; no retroactive
+  review. Paper1X4 is Starter only.

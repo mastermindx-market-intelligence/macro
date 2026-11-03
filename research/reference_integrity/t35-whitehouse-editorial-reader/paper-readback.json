@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-03T22:31:23.030385+00:00",
+  "tools": [
+    "get_basic_info",
+    "get_node_info",
+    "get_screenshot"
+  ],
+  "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+  "pageId": "p-5-0",
+  "nodeId": "1X4-0",
+  "actualName": "F \u00b7 Editorial \u00b7 Starter",
+  "contentHash.tokens": "cfd3d65c",
+  "meaning": "Token-state digest, not board/document revision",
+  "screenshotActuallyViewed": true,
+  "status": "STARTER_ONLY",
+  "approvalInferred": false,
+  "paperMutation": false
+}
