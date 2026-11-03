@@ -339,8 +339,13 @@ def test_three_presenters_render_the_same_plan_relation_body():
         items=[row], sg_any=False, bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
         plan_rel=relation, plan_rel_by_ticker={"LFUS": relation["plans"]})
     table = str(module.table_action(row, None, plan_rel=relation))
-    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation") for fragment in
-                (expected, pool, board, table)]
+    roots = [BeautifulSoup(fragment, "html.parser") for fragment in (expected, pool, board, table)]
+    # The table row carries its body only inside <template class="pvs-body-source">;
+    # resolve the template first so the read works on soupsieve 2.9.x and >= 4.0.
+    roots[3] = roots[3].select_one("template.pvs-body-source")
+    assert roots[3] is not None
+    rendered = [root.select_one(".pvs-plan-relation") for root in roots]
+    assert all(node is not None for node in rendered)
     normalized = [" ".join(str(node).split()) for node in rendered]
     assert normalized[0] == normalized[1] == normalized[2] == normalized[3]
 

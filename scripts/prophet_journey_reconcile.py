@@ -794,20 +794,33 @@ def _first_html_difference(left: str, right: str) -> dict[str, Any]:
 
 def _setup_source_bodies(soup: BeautifulSoup,
                           ticker: str) -> tuple[list[Tag], list[Tag]]:
-    """Return every displayed selected body and every template copy."""
+    """Return every displayed selected body and every template copy.
+
+    Template copies are resolved through their ``<template>`` element first
+    and selected inside it: soupsieve >= 4.0 never enters template content
+    from a document-level ``select`` (2.9.x did), while a select scoped to
+    the template element reads its content under both versions.
+    """
     displayed: list[Tag] = []
     templates: list[Tag] = []
     requested = ticker.upper()
-    for body in soup.select(".pv-setup-body"):
+
+    def _selected(body: Tag) -> bool:
         prefixed_wrapper = body.find_parent(
             attrs={"data-setup-ticker": lambda value: str(value).upper().startswith(requested + "-")})
         exact_wrapper = body.find_parent(attrs={"data-setup-ticker": ticker})
-        if exact_wrapper is None and prefixed_wrapper is None:
-            continue
-        if body.find_parent("template") is not None:
-            templates.append(body)
-        else:
+        return exact_wrapper is not None or prefixed_wrapper is not None
+
+    for body in soup.select(".pv-setup-body"):
+        if body.find_parent("template") is None and _selected(body):
             displayed.append(body)
+    seen: set[int] = set()
+    for template in soup.find_all("template"):
+        for body in template.select(".pv-setup-body"):
+            if id(body) in seen or not _selected(body):
+                continue
+            seen.add(id(body))
+            templates.append(body)
     return displayed, templates
 
 

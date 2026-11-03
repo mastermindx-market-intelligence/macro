@@ -97,6 +97,22 @@ def _field_text(path: str, html: str) -> str:
     return field.get_text(" ", strip=True)
 
 
+def _displayed_and_template_copies(soup, selector: str, *, wrapper: str = ""):
+    """Return ``(displayed, template_copies)`` matches for ``selector``.
+
+    soupsieve >= 4.0 never matches <template> content from a document-level
+    select, so each ``template.pvs-body-source`` is resolved first and
+    ``selector`` runs inside it; the same calls return the same nodes on
+    soupsieve 2.9.x. ``wrapper`` scopes both halves to one setup wrapper."""
+    prefix = f"{wrapper} " if wrapper else ""
+    displayed = [node for node in soup.select(prefix + selector)
+                 if node.find_parent("template") is None]
+    copies = []
+    for template in soup.select(prefix + "template.pvs-body-source"):
+        copies.extend(template.select(selector))
+    return displayed, copies
+
+
 # =========================================================================== #
 # Fixture builders — synthetic HTML + synthetic payloads, in memory.
 # =========================================================================== #
@@ -837,7 +853,9 @@ def _with_summary_clock(text: str):
     RE-PARSED so the template's strings are filed exactly as a saved page's
     would be (bs4 >= 4.13: TemplateString)."""
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    for body in soup.select(".pv-setup-body"):
+    displayed, copies = _displayed_and_template_copies(soup, ".pv-setup-body")
+    assert len(displayed) == 1 and len(copies) == 1
+    for body in displayed + copies:
         clock = soup.new_tag("p", attrs={"class": "pvs-summary-clock"})
         clock.string = text
         body.insert(0, clock)
@@ -850,7 +868,9 @@ def test_j6_pass_summary_clock_text_is_read_inside_the_template_copy():
     used to bind as '' and never equal its displayed twin (CI-only red on
     the R25 AMD fixture, 2026-09-29)."""
     soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
-    template_clock = soup.select_one("template.pvs-body-source .pvs-summary-clock")
+    template = soup.select_one("template.pvs-body-source")
+    assert template is not None
+    template_clock = template.select_one(".pvs-summary-clock")
     assert template_clock is not None
     if hasattr(_pjr, "TemplateString") and _pjr.TemplateString is not _pjr.NavigableString:
         # The control exercises the real path: the string IS a TemplateString.
@@ -864,8 +884,11 @@ def test_j6_pass_summary_clock_text_is_read_inside_the_template_copy():
 
 def test_j6_fail_template_summary_clock_text_differs_from_displayed():
     soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
-    soup.select_one("template.pvs-body-source .pvs-summary-clock").string = (
-        "Source as-of 2026-09-25 · Quote time 2026-09-25T13:30:00Z")
+    template = soup.select_one("template.pvs-body-source")
+    assert template is not None
+    template_clock = template.select_one(".pvs-summary-clock")
+    assert template_clock is not None
+    template_clock.string = "Source as-of 2026-09-25 · Quote time 2026-09-25T13:30:00Z"
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
 
@@ -1028,7 +1051,10 @@ def test_j8_fail_duplicate_target_ids():
 
 def _unknown_relation_soup() -> BeautifulSoup:
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    for body in soup.select('[data-setup-ticker="TEST1"] .pv-setup-body'):
+    displayed, copies = _displayed_and_template_copies(
+        soup, ".pv-setup-body", wrapper='[data-setup-ticker="TEST1"]')
+    assert displayed and copies
+    for body in displayed + copies:
         body["data-plan-relation"] = "unknown"
         section = body.select_one(".pvs-plan-relation")
         section["data-plan-relation"] = "unknown"
@@ -2060,9 +2086,10 @@ def test_input_integrity_j6_rejects_matching_invented_template_and_display(path,
     for piece in pieces[:-1]:
         target = target[piece]
     target[pieces[-1]] = None
-    fields = soup.select('[data-source-field="' + path + '"] dd')
-    assert len(fields) >= 2, "test needs both displayed and template copies"
-    for field in fields:
+    displayed, copies = _displayed_and_template_copies(
+        soup, '[data-source-field="' + path + '"] dd')
+    assert displayed and copies, "test needs both displayed and template copies"
+    for field in displayed + copies:
         field.clear()
         field.append(shown)
     result = _pjr._check_j6(soup, standouts, "TEST1")
