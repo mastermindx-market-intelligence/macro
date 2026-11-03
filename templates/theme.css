@@ -1457,9 +1457,11 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
    paint on long pages (initSettings gear swap, initNavSearch ticker swap,
    initAdaptiveNav row measurement, initMobileNav hamburger), so readers saw a
    wide 480px search input on its own row slam ~1100px sideways while the page
-   jumped half a nav-height (0.69 CLS desktop / 0.37 mobile, 2026-11-02 audit).
-   The shipped CSS must therefore already occupy the geometry those passes
-   converge to, so enhancement relayouts nothing.
+   jumped during enhancement (the native 2026-11-03 baseline measured
+   maximum session CLS 0.70067 desktop / 0.22890 mobile). The static boxes
+   now approximate the enhanced geometry. The adaptive one-row decision can
+   still move the desktop bar; measure the actual native load before claiming
+   a layout-stability result.
 
    ≤900px mirrors the injected `.has-nav-toggle` composition exactly: controls
    own row 1 flush right, the full-width 40px search owns row 2, links sit in
@@ -1491,14 +1493,13 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
    [data-nav-layout] runs the pills NO-WRAP with the compact pill chrome, so a
    pre-enhance wrapped 2-line menu (legacy pill padding) would still reflow
    every pill — up to ~136px of horizontal pill travel on a 1000px viewport —
-   when initAdaptiveNav writes the attribute. These are the exact declarations
-   navigation-refresh.css applies to `[data-nav-layout] a.nav-link`, which is
-   also what the post-JS stacked bar ships at these widths, so the nowrap fit
-   carries no new overflow risk. */
+   when initAdaptiveNav writes the attribute. These dimensions mirror
+   navigation-refresh.css's enhanced link sizing. Corners use the existing
+   button-radius token; final single/stacked placement remains measured by JS. */
 @media (min-width: 901px) {
   nav.site-nav .nav-links { flex-wrap: nowrap; gap: 2px; }
   nav.site-nav a.nav-link { min-height: 40px; display: inline-flex; align-items: center;
-    padding: 0 9px; border-radius: 9px; }
+    padding: 0 9px; border-radius: var(--r-btn,10px); }
 }
 /* 901–1100px converges to the ICON-ONLY stacked bar for every full market
    inventory (single cannot fit there), and navigation-refresh.css's stacked
