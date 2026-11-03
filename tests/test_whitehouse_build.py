@@ -156,7 +156,7 @@ def test_render_empty_page_ok() -> None:
     assert inj._MARKER in html
 
 
-def test_render_page_emits_current_asset_stamps() -> None:
+def test_render_page_emits_current_asset_stamps(tmp_path) -> None:
     # The hourly sentinel (whitehouse-sentinel.yml) commits this page straight to
     # main with NO post-render optimize_assets pass, so the render itself must
     # carry the ?v= stamps: before 2026-07-29 every alert update regressed the
@@ -165,7 +165,20 @@ def test_render_page_emits_current_asset_stamps() -> None:
     # checkout. Asserted against the real site/ tree, same as the render tests
     # above use the real templates/ dir.
     import re
-    html = bw._render_page(config.ROOT, [_rec("wh-stamp", 0, 5, 80)])
+    import os
+    import subprocess
+    # Keep the same actual committed asset assertion in a sparse checkout:
+    # use an isolated site fixture, not a partial site/ in the session tree.
+    root = config.ROOT
+    if not all((root / "site" / a).is_file() for a in ("theme.css", "theme.js", "wh_banner.js")):
+        root = tmp_path
+        (root / "templates").symlink_to(config.ROOT / "templates", target_is_directory=True)
+        (root / "site").mkdir()
+        for asset in ("theme.css", "theme.js", "wh_banner.js"):
+            data = subprocess.check_output(["git", "show", "HEAD:site/" + asset],
+                                           cwd=config.ROOT, env={**os.environ, "GIT_NO_LAZY_FETCH": "1"})
+            (root / "site" / asset).write_bytes(data)
+    html = bw._render_page(root, [_rec("wh-stamp", 0, 5, 80)])
     for asset in ("theme.css", "theme.js", "wh_banner.js"):
         assert re.search(re.escape(asset) + r"\?v=[0-9a-f]{8}", html), (
             f"{asset} rendered without a ?v= stamp — the sentinel would commit it bare")
@@ -282,7 +295,9 @@ def test_live_card_says_until_when_and_late_read_is_dated() -> None:
     assert bw._date_display(exp.isoformat()) in cards["wh-late"]
     assert "read written" in cards["wh-late"]
     assert bw._date_display(late["generated_at"]) in cards["wh-late"]
-    assert "read written" not in cards["wh-same"]
+    # T35 deliberately retains the separate read clock even on the same day.
+    assert "read written" in cards["wh-same"]
+    assert bw._date_display(same["generated_at"]) in cards["wh-same"]
     assert "live until" not in cards["wh-old"]
 
 
@@ -579,3 +594,237 @@ def test_source_capture_refuses_publicly_readable_existing_document(tmp_path):
     with pytest.raises(ValueError, match='existing source document'):
         wf.retain_source_document(tmp_path, _source_item())
     assert path.stat().st_mode & 0o777 == 0o644
+
+
+@pytest.mark.parametrize('section', ['news', 'treasury'])
+def test_report_source_action_and_incumbent_disclaimer_name_actual_agency(section):
+    """Display ownership only; retained analysis, source href and row stay exact."""
+    from copy import deepcopy
+    row = _rec('wh-source-agency', 4, 5, 72)
+    row.update(section=section, disclaimer=bw.wb.DISCLAIMER,
+               source_url=('https://fiscaldata.treasury.gov/datasets/daily-treasury-statement/operating-cash-balance'
+                           if section == 'treasury' else 'https://www.whitehouse.gov/releases/2026/10/fixture/'))
+    row['generated_at'] = datetime.now(timezone.utc).isoformat()
+    before = deepcopy(row)
+    html = bw._render_page(config.ROOT, [row])
+    assert 'href="' + row['source_url'] + '" target="_blank" rel="noopener noreferrer"' in html
+    assert row['analysis'].split('\n')[0] in html
+    assert row == before
+    if section == 'treasury':
+        assert 'Read the primary Treasury source' in html
+        assert '阅读财政部一手来源' in html
+        assert 'primary-source U.S. Treasury event' in html
+        assert 'primary-source White House announcement' not in html
+    else:
+        assert 'Read the primary White House source' in html
+        assert '阅读白宫一手来源' in html
+        assert bw.wb.DISCLAIMER in html
+    assert 'read written' in html
+
+
+@pytest.mark.parametrize('custom', [None, 'Custom retained context disclaimer.'])
+def test_treasury_display_disclaimer_preserves_custom_and_honest_missing_default(custom):
+    from copy import deepcopy
+    row = _rec('tw-disclaimer-agency', 2, 3, 70)
+    row.update(section='treasury', disclaimer=custom)
+    before = deepcopy(row)
+    html = bw._render_page(config.ROOT, [row])
+    assert row == before
+    assert (custom or 'primary-source U.S. Treasury event') in html
+
+
+def test_editorial_reader_outline_preserves_report_targets_and_original_content():
+    from html.parser import HTMLParser
+    class Elements(HTMLParser):
+        def __init__(self):
+            super().__init__(); self.ids=[];self.hrefs=[]
+        def handle_starttag(self, tag, attrs):
+            a=dict(attrs)
+            if 'id' in a:self.ids.append(a['id'])
+            if tag=='a' and a.get('href','').startswith('#wh-editorial-'):self.hrefs.append(a['href'][1:])
+    row=_rec('wh-editorial-proof',4,5,72)
+    row['analysis']='Exact retained first paragraph.\nExact retained second paragraph.'
+    html=bw._render_page(config.ROOT,[row])
+    parsed=Elements();parsed.feed(html)
+    assert 'wh-editorial-proof' in parsed.ids
+    assert len(parsed.ids)==len(set(parsed.ids))
+    assert len(parsed.hrefs)>=3
+    assert set(parsed.hrefs)<=set(parsed.ids)
+    assert 'Exact retained first paragraph.' in html
+    assert 'Exact retained second paragraph.' in html
+    assert '<details' in html and 'On this report' in html and '本篇目录' in html
+    assert 'AI analysis · original text' in html and 'AI解读 · 原文展示' in html
+    assert 'data-ai-original' in html
+    assert 'stock.html#NVDA' in html and 'stock.html#INTC' in html
+    assert row['source_url'] in html
+
+
+def test_editorial_reader_missing_fields_do_not_become_source_or_freshness_claims():
+    row=_rec('wh-editorial-missing',0,0,0)
+    row.update(analysis=None,sectors=[],tickers=[],source_url=None,published=None,generated_at=None)
+    html=bw._render_page(config.ROOT,[row])
+    assert 'Primary-source link unavailable.' in html
+    assert '暂无一手来源链接。' in html
+    assert 'The full AI analysis is unavailable for this report.' in html
+    assert 'Source date unavailable' in html and 'AI read date unavailable' in html
+    assert 'href="None"' not in html
+    assert 'This AI read is shown in its original language.' not in html
+    assert 'data-ai-original' not in html
+    assert 'banner live until' not in html
+
+
+def test_editorial_reader_presentation_has_no_decorative_edges_or_local_palette():
+    import re
+    source=(config.ROOT/'templates'/'whitehouse.html.j2').read_text()
+    css=source.split('{% block base_css %}',1)[1].split('{% endblock %}',1)[0]
+    assert not re.search(r'#[0-9a-fA-F]{3,8}\b',css)
+    assert 'linear-gradient' not in css
+    assert 'border-left:' not in css
+    assert '.wh-hero::before' not in css and '.wh-tre::before' not in css
+    assert 'var(--panel)' in css and 'var(--fs-body)' in css
+    assert 'prefers-reduced-motion' in css or 'transition:' not in css
+
+
+@pytest.mark.parametrize('section,section_zh',[('news','白宫公告'),('treasury','财政部')])
+@pytest.mark.parametrize('confidence,confidence_zh',[('low','低'),('medium','中'),('high','高')])
+def test_editorial_reader_localizes_declared_ui_enums_only(section,section_zh,confidence,confidence_zh):
+    row=_rec('wh-enum-localized',4,5,72)
+    row.update(section=section,confidence=confidence,analysis='Original retained English analysis.')
+    html=bw._render_page(config.ROOT,[row])
+    assert section_zh in html and confidence_zh in html
+    assert 'AI confidence' in html and 'AI置信度' in html
+    assert 'aria-label="Report sections:' not in html
+    assert 'Original retained English analysis.' in html
+    assert row['section']==section and row['confidence']==confidence
+
+
+def test_treasury_context_uses_existing_bilingual_state_labels_without_rewriting_input():
+    from copy import deepcopy
+    fixture={"tga":{"level_bn":10,"asof":"2026-10-30","chg_1d_bn":None,"chg_20d_bn":None,"quarter_end":None,"chg_5d_bn":None},
+             "plumbing":{"headline_state":"neutral_hollow","rrp_buffer_state":"exhausted","reserve_scarcity_state":"tightening","headline_summary_en":"Retained context prose.","headline_summary_zh":None},
+             "market_context":{"quad_name":"Reflation","liquidity_overlay":"neutral"}}
+    before=deepcopy(fixture)
+    html=bw._render_page(config.ROOT,[],fixture)
+    for label in ('Neutral — Hollow','中性 — 缓冲耗尽','耗尽','趋紧','Retained context · original text','已保留背景 · 原文展示'):
+        assert label in html
+    assert 'Retained context prose.' in html
+    assert 'neutral_hollow' not in html
+    assert fixture==before
+
+
+def test_treasury_unknown_presentation_label_remains_escaped():
+    fixture={"tga":{"level_bn":10,"asof":"2026-10-30","chg_1d_bn":None,"chg_20d_bn":None,"quarter_end":None,"chg_5d_bn":None},
+             "plumbing":{"headline_state":"<script>unknown</script>","rrp_buffer_state":"<img src=x>","reserve_scarcity_state":"unrecognized"}}
+    html=bw._render_page(config.ROOT,[],fixture)
+    assert '<script>unknown</script>' not in html and '&lt;script&gt;unknown&lt;/script&gt;' in html
+    assert '<img src=x>' not in html and '&lt;img src=x&gt;' in html
+    assert 'unrecognized' in html
+
+
+# P12.T35.S2: distinguish generated interpretation from literal source fields.
+def _editorial_dom(row):
+    from bs4 import BeautifulSoup
+    return BeautifulSoup(bw._render_page(config.ROOT, [row]), "html.parser").find("section", id=row["id"])
+
+
+def test_editorial_generated_headline_and_summary_attributed_at_point_of_use():
+    from copy import deepcopy
+    row = _rec("wh-ai-origin", 4, 5, 72)
+    row.update(banner_title="Retained AI headline", banner_title_zh="保留AI标题",
+               summary="Retained AI summary.", summary_zh="保留AI摘要。")
+    before = deepcopy(row)
+    card = _editorial_dom(row)
+    title_label = card.select_one(".wh-title-attribution")
+    summary_label = card.select_one(".wh-summary-attribution")
+    assert title_label and "AI interpretation" in title_label.get_text()
+    assert "AI解读" in title_label.get_text()
+    assert summary_label and "AI summary" in summary_label.get_text()
+    assert "AI摘要" in summary_label.get_text()
+    h2 = card.find("h2")
+    assert h2.find_previous_sibling("p") is title_label
+    summary = card.select_one(".wh-summary")
+    assert summary.find_previous_sibling("p") is summary_label
+    for text in (row["banner_title"], row["banner_title_zh"], row["summary"], row["summary_zh"]):
+        assert text in card.get_text()
+    assert "p1" in card.get_text() and "p2" in card.get_text()
+    assert card.select_one(".wh-src a")["href"] == row["source_url"]
+    assert "72/100" in card.get_text()
+    assert row == before
+
+
+@pytest.mark.parametrize("banner_title", [None, "Exact original agency title"])
+def test_editorial_verbatim_source_headline_is_not_relabelled_ai(banner_title):
+    row = _rec("wh-source-title", 4, 5, 72)
+    row.update(source_title="Exact original agency title", banner_title=banner_title,
+               banner_title_zh=None, summary="Retained generated summary.")
+    card = _editorial_dom(row)
+    label = card.select_one(".wh-title-attribution")
+    assert label and "Original source headline" in label.get_text()
+    assert "一手来源标题" in label.get_text()
+    assert "AI interpretation" not in label.get_text()
+    assert card.find("h2").get_text(strip=True) == row["source_title"]
+    assert "AI summary" in card.select_one(".wh-summary-attribution").get_text()
+
+
+def test_editorial_generated_chinese_title_does_not_relabel_source_english_title():
+    row = _rec("wh-translated-title", 4, 5, 72)
+    row.update(source_title="Exact source title", banner_title="Exact source title",
+               banner_title_zh="模型生成的中文标题")
+    card = _editorial_dom(row)
+    label = card.select_one(".wh-title-attribution")
+    assert label.select_one(".l-en").get_text(strip=True) == "Original source headline"
+    assert label.select_one(".l-zh").get_text(strip=True) == "AI解读"
+    assert card.find("h2").select_one(".l-en").get_text(strip=True) == "Exact source title"
+    assert card.find("h2").select_one(".l-zh").get_text(strip=True) == row["banner_title_zh"]
+
+
+@pytest.mark.parametrize("source_url", ["https://www.whitehouse.gov/retained-report/", None, ""])
+@pytest.mark.parametrize("has_summary,importance", [(True, 72), (True, None), (False, 0), (False, None)])
+def test_editorial_missing_full_analysis_matches_surviving_fields_and_source(source_url, has_summary, importance):
+    from copy import deepcopy
+    row = _rec("wh-partial-ai", 4, 5, 72)
+    row.update(analysis=None, source_url=source_url, importance=importance,
+               summary="Retained AI summary." if has_summary else None,
+               summary_zh="保留AI摘要。" if has_summary else None)
+    before = deepcopy(row)
+    card = _editorial_dom(row)
+    missing = card.select_one(".wh-missing-analysis")
+    assert missing and "The full AI analysis is unavailable for this report." in missing.get_text()
+    assert "此报告暂无完整AI解读。" in missing.get_text()
+    assert "An AI read is not available" not in card.get_text()
+    guidance = card.select_one(".wh-source-guidance")
+    assert bool(guidance) == bool(card.select_one(".wh-src a")) == bool(source_url)
+    if source_url:
+        assert card.select_one(".wh-src a")["href"] == source_url
+        assert "Check the original source linked below." in guidance.get_text()
+        assert "请核对下方链接的一手来源。" in guidance.get_text()
+    else:
+        assert "Check the original source" not in card.get_text()
+        assert "Primary-source link unavailable." in card.get_text()
+    retained = card.select_one(".wh-retained-ai")
+    if has_summary or importance is not None:
+        assert retained
+        assert ("summary" in retained.get_text()) == has_summary
+        assert ("assessment" in retained.get_text()) == (importance is not None)
+    else:
+        assert retained is None
+    if has_summary:
+        assert row["summary"] in card.get_text() and row["summary_zh"] in card.get_text()
+        assert card.select_one(".wh-summary-attribution")
+    if importance is not None:
+        assert str(importance) + "/100" in card.get_text()
+    assert "Tech" in card.get_text() and "NVDA" in card.get_text() and "INTC" in card.get_text()
+    assert row == before
+
+
+def test_editorial_missing_every_ai_field_has_no_false_retained_or_source_guidance():
+    row = _rec("wh-no-ai-fields", 0, 0, 0)
+    row.update(banner_title=None, banner_title_zh=None, summary=None, summary_zh=None,
+               analysis=None, importance=None, sectors=[], tickers=[], source_url=None)
+    card = _editorial_dom(row)
+    assert "The full AI analysis is unavailable" in card.get_text()
+    assert card.select_one(".wh-retained-ai") is None
+    assert card.select_one(".wh-summary-attribution") is None
+    assert card.select_one(".wh-source-guidance") is None
+    assert card.find("h2").get_text(strip=True) == row["source_title"]
+    assert "Original source headline" in card.select_one(".wh-title-attribution").get_text()

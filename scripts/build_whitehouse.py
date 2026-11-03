@@ -286,8 +286,24 @@ _SERVED_BY = {"anthropic": "Claude (API)", "codex": "Codex", "deepseek": "DeepSe
 def _alert_view(r: dict) -> dict:
     """Enrich a ledger row for the report template."""
     v = dict(r)
+    # banner_title/summary are model fields, but the producer may fall back to
+    # the verbatim source_title. Attribute the displayed text without rewriting
+    # the append-only record or calling a literal source headline AI output.
+    v["display_title"] = r.get("banner_title") or r.get("source_title") or ""
+    v["headline_is_source"] = bool(
+        r.get("source_title") and v["display_title"] == r["source_title"])
+    v["headline_zh_is_source"] = bool(
+        r.get("source_title") and r.get("banner_title_zh") == r["source_title"])
     v["date_display"] = _date_display(r.get("published"))
     v["generated_display"] = _date_display(r.get("generated_at"))
+    # Treasury shares this report renderer, but its primary source is not a
+    # White House announcement. Correct only the incumbent standard display
+    # preamble; preserve custom disclaimers and the append-only source row.
+    v["display_disclaimer"] = r.get("disclaimer") or wb.DISCLAIMER
+    if r.get("section") == "treasury" and v["display_disclaimer"] == wb.DISCLAIMER:
+        v["display_disclaimer"] = wb.DISCLAIMER.replace(
+            "primary-source White House announcement", "primary-source U.S. Treasury event", 1)
+
     reason = str(r.get("degraded_reason") or "")
     v["served_by"] = (_SERVED_BY.get(reason.split(":", 1)[1], "")
                       if reason.startswith("served_by:") else "")

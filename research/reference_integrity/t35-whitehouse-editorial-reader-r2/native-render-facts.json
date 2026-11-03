@@ -1,0 +1,26 @@
+{
+  "method": "actual native _load_ledger/_render_page, no browser or provider; original immutable ledger349e12c9",
+  "original_ledger_blob_sha256": "3f8b471a86aaf137020ae01fc3896b572f9f31ef13c31220d72af2c42e91c9de",
+  "record_count": 77,
+  "original_report_id_order_equal": true,
+  "all_original_source_urls_present": true,
+  "input_rows_unchanged": true,
+  "selected_ids": [
+    "wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
+    "tw-2026-10-27-tga-release"
+  ],
+  "source_sha256": {
+    "scripts/build_whitehouse.py": "38630b1dc2cfac9739611dc1fd3f85ea6c766c9df31d4169daefbd765c0f5e89",
+    "templates/whitehouse.html.j2": "4b6aa060139d2fadbcc2d3d5a5a46c9b2f2b428317a1bc99f3a3e75acf3c754f",
+    "tests/test_whitehouse_build.py": "9b4a2ebbdc79fe4f579562f5dae9365b4131cadf846c6a6889dc9eca33d0f8aa"
+  },
+  "native_render_only": true,
+  "visual_acceptance": false,
+  "fixture_html": "mockups/refs/reference_integrity/t35-whitehouse-editorial-reader-r2/native-rendered-retained-fixture.html",
+  "fixture_html_sha256": "ffd0779260bbbdfb0fc542f9161df2dacdb6db500d8b8ea40ba07531f0bd1b5d",
+  "source_field_contract": {
+    "model_fields": "engine/whitehouse_brain.py:92-120,556-559 banner_title/summary and EN/ZH twins",
+    "verbatim_title_fallback": "engine/whitehouse_brain.py:556 model title empty falls back to source item.title; row.source_title at490",
+    "display_annotation": "View-only equality to originalsource_title identifies literal text; no ledger/schema/model/provider/clock mutation. ZH title attribution uses its own displayed field."
+  }
+}
