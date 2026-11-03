@@ -1604,6 +1604,7 @@ def test_fund_dossier_source_reported_holding_link_and_unavailable_states():
     context['fi']['book'].append({'ticker': None, 'issuer': 'Unresolved issuer'})
     html = _env().get_template('fund_dossier.html.j2').render(**context)
     assert 'Reported period-end holdings' in html and '已披露的期末持仓' in html
+    assert 'SEC 原始披露' in html and '申报' not in html
     assert 'not current positions' in html and '后续修订' in html
     assert '0001193125-26-352200-index.html' in html
     assert 'href="stock.html#SNDK"' in html
@@ -1613,4 +1614,4 @@ def test_fund_dossier_source_reported_holding_link_and_unavailable_states():
     context['fi']['book_meta'].pop('filing')
     legacy = _env().get_template('fund_dossier.html.j2').render(**context)
     assert 'Original filing source unavailable' in legacy
-    assert 'SEC 原始申报' not in legacy
+    assert 'SEC 原始披露' not in legacy

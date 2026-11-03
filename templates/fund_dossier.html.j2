@@ -291,12 +291,12 @@ table.sm-t th.sorted { color:var(--text); }
 </div>
 
 <div class="banner fd-filing">
-  <p><strong>{{ t('Reported period-end holdings','已披露的期末持仓') }}</strong> — {{ t('not current positions. This view uses original filings; later amendments may change reported holdings and are retained separately.','并非当前仓位。本视图使用原始申报；后续修订可能更改披露持仓，修订申报另行保留。') }}</p>
+  <p><strong>{{ t('Reported period-end holdings','已披露的期末持仓') }}</strong> — {{ t('not current positions. This view uses original filings; later amendments may change reported holdings and are retained separately.','并非当前仓位。本视图使用原始披露；后续修订可能更改披露持仓，修订披露另行保留。') }}</p>
   {% if FILING.get('status') == 'available' %}
-  <p>{{ t('Reporting manager','申报管理人') }}: {{ FILING.get('manager') or FNAME or '—' }} · CIK <span class="num">{{ FILING.get('cik') }}</span> · {{ FILING.get('form') }}</p>
-  <p><a href="{{ FILING.get('index_url') }}">{{ t('Original SEC filing','SEC 原始申报') }}</a> · <span class="num">{{ FILING.get('accession') }}</span></p>
+  <p>{{ t('Reporting manager','披露管理人') }}: {{ FILING.get('manager') or FNAME or '—' }} · CIK <span class="num">{{ FILING.get('cik') }}</span> · {{ FILING.get('form') }}</p>
+  <p><a href="{{ FILING.get('index_url') }}">{{ t('Original SEC filing','SEC 原始披露') }}</a> · <span class="num">{{ FILING.get('accession') }}</span></p>
   {% else %}
-  <p>{{ t('Original filing source unavailable for this retained snapshot. Return to the fund directory to inspect another manager.','此留存快照的原始申报来源暂不可用。可返回基金目录查看其他管理人。') }}</p>
+  <p>{{ t('Original filing source unavailable for this retained snapshot. Return to the fund directory to inspect another manager.','此留存快照的原始披露来源暂不可用。可返回基金目录查看其他管理人。') }}</p>
   {% endif %}
 </div>
 
