@@ -2,6 +2,38 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-03",
+      "tickers": [
+        "AA",
+        "AEP",
+        "AGNT",
+        "ALHC",
+        "COHR",
+        "DAN",
+        "DG",
+        "ELAN",
+        "GLPI",
+        "HMN",
+        "JBLU",
+        "LECO",
+        "LSTR",
+        "MRP",
+        "MTZ",
+        "N",
+        "NBIX",
+        "NOV",
+        "NVST",
+        "OCFC",
+        "REZI",
+        "SNDK",
+        "TSLA",
+        "TTWO",
+        "UGI",
+        "VRT",
+        "WPC"
+      ]
+    },
+    {
       "as_of": "2026-11-01",
       "tickers": [
         "ABT",
@@ -198,40 +230,6 @@
         "ULS",
         "VSAT",
         "VYX"
-      ]
-    },
-    {
-      "as_of": "2026-10-22",
-      "tickers": [
-        "AA",
-        "AGYS",
-        "BILL",
-        "DDOG",
-        "EL",
-        "EPAM",
-        "EWT",
-        "FBK",
-        "GH",
-        "GOLF",
-        "IRT",
-        "JOE",
-        "KRC",
-        "KRG",
-        "MTUS",
-        "NFG",
-        "NI",
-        "NOKBF",
-        "NWSA",
-        "PBH",
-        "PPL",
-        "RAPP",
-        "SCHL",
-        "SGI",
-        "TREX",
-        "WLY",
-        "XLK",
-        "YELP",
-        "YOU"
       ]
     }
   ]
