@@ -1,0 +1,47 @@
+commit 3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9; v24.22.1; 4 immutable file blob IDs verified
+PASS 01 | empty route
+PASS 02 | explicit company
+PASS 03 | listing + page
+PASS 04 | legacy pane
+PASS 05 | page wins over pane
+PASS 06 | empty page present masks pane
+PASS 07 | first of repeated symbols
+PASS 08 | first of repeated pages
+PASS 09 | pass unsupported page name to workspace
+PASS 10 | foreign field ignored
+PASS 11 | malformed listing forwarded to workspace guard
+PASS 12 | blank view
+PASS 13 | whitespace view
+PASS 14 | identical repeated view
+PASS 15 | conflicting view
+PASS 16 | unknown view
+PASS 17 | thesis outside view
+PASS 18 | thesis on company
+PASS 19 | plain theses
+PASS 20 | encoded index symbol
+PASS 21 | thesis UUID lowercased
+PASS 22 | empty thesis
+PASS 23 | bad thesis
+PASS 24 | nonadmitted UUID version
+PASS 25 | bad RFC variant
+PASS 26 | duplicate same thesis
+PASS 27 | investigations library
+PASS 28 | investigation ID head
+PASS 29 | earliest revision
+PASS 30 | upper bound revision
+PASS 31 | orphan revision
+PASS 32 | investigation outside view
+PASS 33 | revision outside view
+PASS 34 | thesis on investigations
+PASS 35 | duplicate same investigation
+PASS 36 | malformed investigation
+PASS 37 | duplicate revision
+PASS 38 | invalid revision "0"
+PASS 39 | invalid revision "-1"
+PASS 40 | invalid revision "01"
+PASS 41 | invalid revision "1.5"
+PASS 42 | invalid revision "2147483648"
+PASS 43 | invalid revision "00000000001"
+PASS 44 | invalid revision "1e2"
+PASS 45 | invalid revision ""
+PASS 45/45 query cases; 180 query assertions; 4 source integrity checks.

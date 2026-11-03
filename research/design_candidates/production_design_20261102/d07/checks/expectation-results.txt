@@ -1,0 +1,7 @@
+PASS | New render time, same observation blob and latest collection
+PASS | Both summary generations and ticker explicitly forbid financial influence and K3E
+PASS | Same period-end, different horizons and contributor counts
+PASS | Undated identity and missing median remain distinct
+PASS | Prior valid ticker point differs from prior global session
+PASS | Defect reproduced: compared null period to dated period and produced a finite zero
+Known defect reproduced. Required reader outcome is no comparable prior. This is an offline source check.
