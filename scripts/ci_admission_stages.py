@@ -581,9 +581,16 @@ class Stages:
         return AnchorIndexer(mog,self.repo,self.read,self.context,deadline=time.time()+240)
 
     def age_witnesses(self, inventory, facts):
+        retention={}
         snapshot,coverage=mog.read_age_frontier(self.repo,self.read,
             repository_id=self.context['repository_id'],protected_controller_sha=self.context['protected_controller_sha'],
-            inventory=inventory,comments_by_pr={n:f['comments'] for n,f in facts.items()})
+            inventory=inventory,comments_by_pr={n:f['comments'] for n,f in facts.items()},retention=retention)
+        expiry=retention['earliest_expiry']
+        # Renew in the last day of actual server retention, while every
+        # uncovered predecessor is still authenticated. This is an upload
+        # scheduling margin, never a TTL waiver or a new demand-age clock.
+        self._age_renewal_due=(expiry is not None and
+            datetime.fromisoformat(expiry).timestamp()-datetime.now(timezone.utc).timestamp()<=86400)
         self._age_snapshot=snapshot
         self._age_coverage=coverage
         return list(snapshot.demands)
@@ -703,7 +710,8 @@ class Stages:
         # Selection cannot happen from a truncated or partially indexed census.
         contract.ordered_demands(demands)
         self.save('census', dict(context=self.context, pulls=pulls, demands=[asdict(d) for d in demands]))
-        if changed:
+        publish_demands=bool(changed)
+        if changed or self._age_renewal_due:
             # Keep other still-open unserved ages even if temporarily ineligible.
             witnesses={d.pr_number:d for d in demands}
             for pull in pulls:
@@ -713,8 +721,10 @@ class Stages:
                 if pending is not None:witnesses[pull['number']]=pending
             carried=contract.ordered_demands(witnesses.values())
             conserve_age_witnesses(ages,carried,pulls,workload.admissions)
-            self.receipt('demands', [asdict(d) for d in carried], 'demands',covered_comments=self._age_coverage)
-        return dict(ready=True, changed=bool(changed), count=len(demands))
+            if carried:
+                self.receipt('demands', [asdict(d) for d in carried], 'demands',covered_comments=self._age_coverage)
+                publish_demands=True
+        return dict(ready=True, changed=publish_demands, count=len(demands))
 
     def index(self, number, prefix, reference):
         if prefix not in {mog.DEMAND_COMMENT_PREFIX, mog.ADMISSION_COMMENT_PREFIX,

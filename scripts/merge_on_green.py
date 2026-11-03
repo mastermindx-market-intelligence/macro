@@ -4087,8 +4087,13 @@ def admission_index_writer(comment):
 
 
 def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
-                      inventory=None, comments_by_pr=None):
-    """Existing PR indexes supply historical age only; closed anchors persist."""
+                      inventory=None, comments_by_pr=None, retention=None):
+    """Existing PR indexes supply historical age only; closed anchors persist.
+
+    Optional retention observation comes from metadata already read for exact
+    authenticated uncovered originals. It grants no coverage or admission and
+    adds no requests. Publish it only after the complete frontier validates.
+    """
     inventory=inventory or shared_admission_inventory(repo,token)
     if not inventory.complete or inventory.indexing is not None:
         raise ValueError('age inventory incomplete or original index unsettled')
@@ -4108,7 +4113,7 @@ def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
             if len(body)>4096:raise ValueError('age index oversized')
             reference=json.loads(body[len(DEMAND_COMMENT_PREFIX):],object_pairs_hook=proof_admission._unique_object)
             entries.append((number,c.get('id'),reference))
-    cache={};controls={protected_controller_sha}
+    cache={};controls={protected_controller_sha};expiries=[]
     def load(reference):
         if not isinstance(reference,dict):raise ValueError('age reference malformed')
         control=reference.get('controller_sha')
@@ -4122,12 +4127,30 @@ def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
             controls.add(control)
         key=json.dumps(reference,sort_keys=True)
         if key not in cache:
-            cache[key]=proof_admission.authenticate_age_snapshot(**_receipt_context_from_ref(repo,token,reference,
-                repository_id=repository_id,protected_controller_sha=control))
+            context=_receipt_context_from_ref(repo,token,reference,
+                repository_id=repository_id,protected_controller_sha=control)
+            cache[key]=proof_admission.authenticate_age_snapshot(**context)
+            if retention is not None:
+                expiry=context["artifact"].get("expires_at")
+                try:
+                    if not isinstance(expiry,str):raise ValueError("missing expiry")
+                    expiry=dt.datetime.fromisoformat(expiry.replace("Z","+00:00"))
+                    if expiry.tzinfo is None or expiry.utcoffset() is None:
+                        raise ValueError("unqualified expiry timezone")
+                    if expiry<=dt.datetime.now(dt.timezone.utc):
+                        raise ValueError("uncovered original already expired")
+                except (ValueError,TypeError,OverflowError) as exc:
+                    raise ValueError("age artifact retention expiry unavailable or expired") from exc
+                expiries.append(expiry)
+
         return cache[key]
     snapshot=proof_admission.fold_age_snapshots(entries,load)
     observed={n:c for n,c in snapshot.covered_comments if n in comments}
     for number,comment_id,_ in entries:observed[number]=max(observed.get(number,0),comment_id)
+    if retention is not None:
+        retention.clear()
+        retention.update(earliest_expiry=min(expiries).isoformat() if expiries else None,
+                         authenticated_artifacts=len(expiries))
     return snapshot,observed
 
 

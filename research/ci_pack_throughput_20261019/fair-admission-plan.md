@@ -88,14 +88,19 @@ satisfy the natural refresh and downstream publication acceptance above.
 
 The prospective implementation now uses the bounded reader and authenticated v2
 age frontier described above. Real stage-wiring fixtures cover 900 authored PRs
-and the observed 871/110 population shape with native proof records. The final
-composed stage module has 104 passing cases, including failures after original
+and the observed 871/110 population shape with native proof records. The earlier
+composed stage module had 104 passing cases, including failures after original
 reservation that retain custody and hold the next sweep. The five other affected
 controller/helper modules retain their passing composed results. These are local
 source checks, not production token or installed admission qualification. A
 hypothetical 875 armed existing-proof population still exhausts the incumbent
-REST budget and refuses. Uncovered expired age artifacts also still refuse;
-periodic renewal of unchanged artifacts is not implemented.
+REST budget and refuses. Uncovered expired age artifacts also still refuse. Unchanged pending ages now
+renew within the final24hours of the original authenticated server artifact expiry,
+using the existing conserved snapshot, upload, original indexing intent and positive
+readback. No API call or capacity slot is added. Missing or invalid expiry metadata
+refuses, and a missed renewal horizon is not an expiry waiver. The composed stage
+and admission-reader modules pass198checks; this source result does not prove an
+installed recurring sweep or indefinite retention.
 
 ## Hosted-only admission transition
 

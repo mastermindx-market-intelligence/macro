@@ -185,7 +185,7 @@ class OriginalServer:
         with zipfile.ZipFile(out,'w') as z:z.writestr('ci-proof-admission.json',payload)
         ident=80+len(self.artifacts)
         self.archives[ident]=out.getvalue()
-        self.artifacts[ident]=dict(id=ident,name=name,expired=False,
+        self.artifacts[ident]=dict(id=ident,name=name,expired=False,expires_at='2099-01-01T00:00:00Z',
             digest='sha256:'+hashlib.sha256(out.getvalue()).hexdigest(),
             workflow_run={'id':70,'repository_id':17,'head_sha':'4'*40})
         return ident
@@ -732,6 +732,7 @@ class BulkProvider:
         self.control=dict(id=70,run_attempt=1,status='in_progress',head_sha='4'*40,
             repository={'id':17,'full_name':'acme/widgets'},head_branch='main',event='schedule',
             path='.github/workflows/merge-on-green.yml')
+        self.controllers={70:self.control}
     def sleep(self,seconds):self.now+=seconds
     def connection(self,rows):return dict(totalCount=len(rows),nodes=rows,pageInfo={'hasNextPage':False,'endCursor':None})
     def upload(self,s):
@@ -739,9 +740,9 @@ class BulkProvider:
         payload=(s.directory/'demands/ci-proof-admission.json').read_bytes();out=io.BytesIO()
         with zipfile.ZipFile(out,'w') as z:z.writestr('ci-proof-admission.json',payload)
         aid=80+len(self.artifacts);archive=out.getvalue();self.archives[aid]=archive
-        self.artifacts[aid]=dict(id=aid,name='ci-proof-demands-70-1',expired=False,
+        self.artifacts[aid]=dict(id=aid,name=f"ci-proof-demands-{s.context['current_run_id']}-{s.context['current_run_attempt']}",expired=False,expires_at='2099-01-01T00:00:00Z',
             digest='sha256:'+hashlib.sha256(archive).hexdigest(),
-            workflow_run={'id':70,'repository_id':17,'head_sha':'4'*40})
+            workflow_run={'id':int(s.context['current_run_id']),'repository_id':17,'head_sha':'4'*40})
         return aid
     def gql_comment(self,c,n):
         return dict(id='C'+str(c['id']),fullDatabaseId=str(c['id']),body=c['body'],createdAt=c['created_at'],
@@ -766,7 +767,8 @@ class BulkProvider:
         if path=='/graphql':return 200,self.gql(payload['query'])
         self.core-=1
         assert self.core>=0,'real REST allowance exhausted'
-        if path.startswith('/actions/runs/70'):return 200,self.control
+        if path.startswith('/actions/runs/'):
+            return 200,self.controllers[int(path.split('/')[3])]
         if path.startswith('/actions/artifacts/'):return 200,self.artifacts[int(path.split('/')[3])]
         if path.startswith('/labels/'):
             if method=='PATCH':self.description=payload['description']
@@ -1228,3 +1230,132 @@ def test_hosted_bridge_preserves_refresh_purpose_across_native_transition(contro
     result=controller.prepare(native_pr_enabled=True,freshness=SimpleNamespace(stale_for=lambda *a:(True,'exact input change')))
     assert result=={'ready':True,'changed':True,'count':1}
     assert controller.load('census')['demands'][0]['purpose']=='refresh'
+
+
+def later_original_controller(s,p,run_id):
+    # A renewal belongs to a new original controller attempt, never another
+    # upload of the same artifact name in one old run.
+    p.controllers[run_id]={**p.control,'id':run_id}
+    s.context={**s.context,'current_run_id':str(run_id)}
+
+
+def indexed_ages_near_expiry(monkeypatch,tmp_path,*,count=3):
+    from datetime import datetime,timezone,timedelta
+    s,p,indexer=bulk_stage(monkeypatch,tmp_path,count)
+    s.prepare(native_pr_enabled=False,freshness=None)
+    aid=p.upload(s);i=indexer();i.start(aid,1);assert i.advance()['disposition']=='indexed'
+    ages=s.load('census')['demands']
+    p.artifacts[aid]['expires_at']=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat()
+    s.directory=tmp_path/'renewal'
+    later_original_controller(s,p,71)
+    return s,p,indexer,aid,ages
+
+
+def test_unchanged_pending_age_renews_before_actual_expiry(monkeypatch,tmp_path):
+    s,p,indexer,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    result=s.prepare(native_pr_enabled=False,freshness=None)
+    assert result=={'ready':True,'changed':True,'count':3}
+    payload=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
+    assert sorted(payload['demands'],key=lambda d:d['pr_number'])==ages
+    assert payload['covered_comments']==[{'pr_number':1,'through_comment_id':10000}]
+    renewed=p.upload(s);i=indexer();i.start(renewed,1);assert i.advance()['disposition']=='indexed'
+    p.artifacts[aid]['expired']=True
+    s.directory=tmp_path/'after-renewal'
+    later_original_controller(s,p,72)
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':3}
+    assert s.load('census')['demands']==ages
+    assert not (s.directory/'demands-digest.json').exists()
+
+
+@pytest.mark.parametrize('expiry',[None,'not-a-time','2026-01-01T00:00:00','2000-01-01T00:00:00Z'])
+def test_age_retention_metadata_missing_malformed_or_expired_refuses(monkeypatch,tmp_path,expiry):
+    s,p,_,aid,_=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    if expiry is None:p.artifacts[aid].pop('expires_at')
+    else:p.artifacts[aid]['expires_at']=expiry
+    with pytest.raises(ValueError,match='retention|expiry'):
+        s.prepare(native_pr_enabled=False,freshness=None)
+    assert not (s.directory/'census.json').exists()
+    assert p.description=='a2 idle'
+
+
+@pytest.mark.parametrize('delivered',[True,False])
+def test_age_renewal_lost_original_index_response_never_reposts(monkeypatch,tmp_path,delivered):
+    s,p,indexer,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    assert s.prepare(native_pr_enabled=False,freshness=None)['changed'] is True
+    renewed=p.upload(s);i=indexer();i.start(renewed,1)
+    p.lose_post=True;p.deliver_lost=delivered
+    assert i.advance()['disposition']=='unknown'
+    posts=sum(method=='POST' and path.endswith('/comments') for method,path,_,_ in p.calls)
+    assert p.description.endswith('s=indexing')
+    p.lose_post=False
+    # A new original observes the retained original effect; it cannot POST again.
+    later_original_controller(s,p,72);j=indexer()
+    result=j.advance()
+    assert result['disposition']==('indexed' if delivered else 'unknown')
+    assert sum(method=='POST' and path.endswith('/comments') for method,path,_,_ in p.calls)==posts
+    if not delivered:
+        assert p.description.endswith('s=indexing')
+        s.directory=tmp_path/'blocked-next'
+        assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':0}
+        assert not (s.directory/'census.json').exists()
+
+
+def test_age_renewal_unpublished_archive_does_not_cover_expired_original(monkeypatch,tmp_path):
+    s,p,_,aid,_=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    assert s.prepare(native_pr_enabled=False,freshness=None)['changed'] is True
+    p.upload(s)  # Crash before original index intent/publication.
+    p.artifacts[aid]['expired']=True;s.directory=tmp_path/'after-crash'
+    later_original_controller(s,p,72)
+    with pytest.raises(ValueError):s.prepare(native_pr_enabled=False,freshness=None)
+    assert not (s.directory/'census.json').exists()
+
+
+def test_age_renewal_still_conserves_temporarily_ineligible_pending_demands(monkeypatch,tmp_path):
+    s,p,_,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    # These subjects temporarily own native proof, so no new admission is due;
+    # their already-authenticated original pending ages must nevertheless survive.
+    monkeypatch.setattr(stages.BulkReader,'native',staticmethod(lambda *a:True))
+    assert s.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':True,'count':0}
+    payload=json.loads((s.directory/'demands/ci-proof-admission.json').read_text())
+    assert sorted(payload['demands'],key=lambda d:d['pr_number'])==ages
+    assert s.load('census')['demands']==[]
+
+
+def test_age_renewal_rejects_compactor_omission_before_upload(monkeypatch,tmp_path):
+    s,p,_,_,_=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    original=pa.ordered_demands
+    def omit(rows):
+        values=list(rows)
+        # Only replacement carry-forward receives dict_values; census validation
+        # and the authenticated reader retain their original complete lists.
+        if type(rows).__name__=='dict_values':values=values[:-1]
+        return original(values)
+    monkeypatch.setattr(pa,'ordered_demands',omit)
+    with pytest.raises(ValueError,match='lost or rewrote'):
+        s.prepare(native_pr_enabled=False,freshness=None)
+    assert not (s.directory/'demands-digest.json').exists()
+
+
+def test_age_renewal_stage_upload_reserve_path_indexes_without_launch(monkeypatch,tmp_path):
+    s,p,_,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path,count=1)
+    monkeypatch.setattr(stages.BulkReader,'native',staticmethod(lambda *a:True))
+    assert s.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':True,'count':0}
+    renewed=p.upload(s)
+    assert s.reserve(renewed)=={'prepared':False}
+    assert len(p.comments[1])==2 and p.description=='a2 idle'
+    assert not any(path.endswith('/dispatches') for _,path,_,_ in p.calls)
+    assert not any(method=='PATCH' and 's=prepared' in str(payload) for method,_,payload,_ in p.calls)
+    p.artifacts[aid]['expired']=True;s.directory=tmp_path/'later'
+    later_original_controller(s,p,72)
+    assert s.prepare(native_pr_enabled=True,freshness=None)=={'ready':True,'changed':False,'count':0}
+    assert [asdict(d) for d in s._age_snapshot.demands]==ages
+
+
+def test_age_renewal_uses_server_artifact_expiry_not_pr_or_comment_clock(monkeypatch,tmp_path):
+    s,p,_,aid,ages=indexed_ages_near_expiry(monkeypatch,tmp_path)
+    p.artifacts[aid]['expires_at']='2099-01-01T00:00:00Z'
+    p.comments[1][0]['created_at']='2000-01-01T00:00:00Z'
+    for pr in p.pulls.values():pr['updated_at']='2000-01-01T00:00:00Z'
+    assert s.prepare(native_pr_enabled=False,freshness=None)=={'ready':True,'changed':False,'count':3}
+    assert s.load('census')['demands']==ages
+    assert not (s.directory/'demands-digest.json').exists()
