@@ -176,6 +176,42 @@ def test_gated_unrun_suites_is_the_shared_implementation() -> None:
     assert CCD.gated_unrun_suites is AUDIT_SUITES_FN
 
 
+def test_curated_closure_infers_only_declared_exclusive_jobs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The differential guard must not analyze non-curated jobs it discards."""
+    manifest = tmp_path / "legacy-jobs.yml"
+    manifest.write_text("jobs: {}\n", encoding="utf-8")
+    ordinary = PACK.LegacyJob(
+        job_id="ordinary", definition={"steps": []}, ordinal=0, weight=1
+    )
+    curated = PACK.LegacyJob(
+        job_id="curated",
+        definition={"steps": []},
+        ordinal=1,
+        weight=1,
+        paths=("engine/curated.py",),
+        exclusive=True,
+    )
+    observed: list[str] = []
+
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda _path: [ordinary, curated])
+
+    def infer_only(received):
+        jobs = list(received)
+        observed.extend(job.job_id for job in jobs)
+        return [
+            PACK.replace(job, paths=("engine/uncovered.py",)) for job in jobs
+        ], "fixture"
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", infer_only)
+
+    assert PACK.curated_exclusive_closure_findings(manifest) == {
+        "curated": ("engine/uncovered.py",)
+    }
+    assert observed == ["curated"]
+
+
 def test_head_findings_binds_exact_tree_inventory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1319,3 +1355,67 @@ def test_head_control_plane_findings_bind_the_tree_inventory_and_the_head_spec(
     assert payload["skip_only"] == [{"test": "tests/test_x.py", "needs": ["numpy"]}]
     assert payload["trigger_gaps"] == []
     assert set(payload["timings"]) == set(CCD.CONTROL_PLANE_CLASSES)
+
+
+def test_curated_closure_empty_selection_avoids_inference(monkeypatch):
+    ordinary = PACK.LegacyJob(
+        job_id="ordinary", definition={"steps": []}, ordinal=0, weight=1
+    )
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda _path: [ordinary])
+
+    def forbidden(_jobs):
+        raise AssertionError("non-curated work must not be inferred by this guard")
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", forbidden)
+    assert PACK.curated_exclusive_closure_findings(Path("unused")) == {}
+
+
+def test_curated_closure_validates_even_noncurated_manifest(tmp_path):
+    manifest = tmp_path / "invalid-noncurated.yml"
+    manifest.write_text(
+        "jobs:\n  invalid:\n    runs-on: ubuntu-latest\n    gate: code\n"
+        "    forbidden-key: true\n    steps:\n      - run: echo harmless\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError):
+        PACK.curated_exclusive_closure_findings(manifest)
+
+
+@pytest.mark.parametrize("paths", [(), ("engine/**",)])
+def test_curated_closure_still_refuses_no_concrete_closure(monkeypatch, paths):
+    curated = PACK.LegacyJob(
+        job_id="curated", definition={"steps": []}, ordinal=0, weight=1,
+        paths=("engine/covered.py",), exclusive=True,
+    )
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda _path: [curated])
+    monkeypatch.setattr(
+        PACK, "infer_job_scopes",
+        lambda jobs: ([PACK.replace(job, paths=paths) for job in jobs], "fixture"),
+    )
+    with pytest.raises(ValueError, match="derives no closure"):
+        PACK.curated_exclusive_closure_findings(Path("unused"))
+
+
+def test_curated_closure_preserves_finding_order_and_matching(monkeypatch):
+    jobs = [
+        PACK.LegacyJob(job_id="z", definition={"steps": []}, ordinal=0,
+                       weight=1, paths=("engine/covered*",), exclusive=True),
+        PACK.LegacyJob(job_id="ordinary", definition={"steps": []}, ordinal=1,
+                       weight=1),
+        PACK.LegacyJob(job_id="a", definition={"steps": []}, ordinal=2,
+                       weight=1, paths=("engine/covered*",), exclusive=True),
+    ]
+    observed = []
+
+    def infer(selected):
+        selected = list(selected)
+        observed.extend((job.job_id, job.exclusive) for job in selected)
+        return [PACK.replace(job, paths=("engine/covered.py", "engine/missing.py"))
+                for job in selected], "fixture"
+
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda _path: jobs)
+    monkeypatch.setattr(PACK, "infer_job_scopes", infer)
+    result = PACK.curated_exclusive_closure_findings(Path("unused"))
+    assert observed == [("z", False), ("a", False)]
+    assert list(result) == ["a", "z"]
+    assert result == {"a": ("engine/missing.py",), "z": ("engine/missing.py",)}
