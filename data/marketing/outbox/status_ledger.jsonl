@@ -12755,3 +12755,10 @@
 {"id":"ob-2026-11-03-bc3eb6b840","from":"approved","to":"posting","at":"2026-11-03T18:21:47Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-03-bc3eb6b840","from":"posting","to":"posted","at":"2026-11-03T18:21:48Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aea263c02521ecbfd8f790b","external_url":null,"at":"2026-11-03T18:21:39Z","booked_at":"2026-11-03T18:59:39Z"}}
 {"id":"ob-2026-11-03-f0441602f4","from":"approved","to":"quarantined","at":"2026-11-03T18:21:49Z","actor":"publisher","note":"near-duplicate of a post already cleared this run: repeated sentence: this account already posted \"dan has closed red 9 sessions in a row\". Say it a different way or drop the post","receipt":null}
+{"id":"ob-2026-11-03-2afac1a492","from":"queued","to":"approved","at":"2026-11-03T20:15:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-03-806317d488","from":"queued","to":"approved","at":"2026-11-03T20:15:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-03-86f127cd22","from":"queued","to":"approved","at":"2026-11-03T20:15:46Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-03-2afac1a492","from":"approved","to":"quarantined","at":"2026-11-03T20:15:48Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-11-03-806317d488","from":"approved","to":"posting","at":"2026-11-03T20:15:50Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-11-03-806317d488","from":"posting","to":"posted","at":"2026-11-03T20:15:51Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aea40f75a7c19a37cd223c0","external_url":null,"at":"2026-11-03T20:15:45Z","booked_at":"2026-11-03T20:15:45Z"}}
+{"id":"ob-2026-11-03-86f127cd22","from":"approved","to":"quarantined","at":"2026-11-03T20:15:51Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
