@@ -94,11 +94,21 @@
     ],
     "wall_reduction_fraction": 0.37394836151941013
   },
+  "ci_enrollment": {
+    "gate": "code",
+    "logical_job": "fif-kernel-guards",
+    "new_tests_moved_from_data_only_suite": true,
+    "source_path_pattern": "engine/fundamental_forensics/**",
+    "suite": "tests/test_fundamental_forensics_specialist_pack_contract.py",
+    "test_path_pattern": "tests/test_fundamental_forensics_*",
+    "workflow_or_manifest_changed": false
+  },
   "control_definition": "Same candidate with evaluation scope disabled by nullcontext; not a pristine checkout of the old commit. The canonical parser and all conversion/identity checks execute in both arms.",
   "current_main_compatibility": {
     "affected_runtime_or_law_paths_changed": false,
     "sha": "21444bcfd9001654935eb4b43b0005eb5a7eb47b"
   },
+  "distinct_cases_qualified": 1279,
   "fixture_materialization": {
     "data/reference/issuer_master.parquet": {
       "bytes": 65894,
@@ -121,12 +131,14 @@
   "source_sha256": {
     "engine/fundamental_forensics/ixbrl_raw_ledger.py": "99d023d16d53de72d16be02e09d1c40d1e95de365b2a1f798f4266164fd68035",
     "engine/fundamental_forensics/specialist_packs/registry.py": "fb899a9e67215b81cc4fd4550595c2b487631b7b50b739ef4f11058e62b81af4",
-    "tests/test_fundamental_forensics_ixbrl_raw_ledger.py": "ff6eb119cbed8d7968e97559f58c595b90830e0c65628874f625b7e62d4172f0"
+    "tests/test_fundamental_forensics_specialist_pack_contract.py": "d6b1d44c3379458a313035e99c1a6f20ceb9bc4d9c4999867bfc1a578280a170"
   },
   "test_failures": 0,
   "test_skips": 0,
   "tests": {
+    "code_owner_after_relocation": 262,
     "qualified-regression": 516,
     "specialists": 763
-  }
+  },
+  "verification_note": "All 1279 distinct cases passed before test relocation. After moving the unchanged new checks into the existing code-gated contract suite, all262 cases there passed again. Runtime/parser/registry bytes and the763 specialist tests remain unchanged; their accepted proof is reused, not counted twice."
 }
