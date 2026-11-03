@@ -1,7 +1,7 @@
 {
-  "phase": "final",
+  "phase": "target-final",
   "source": "isolated candidate working source",
-  "template_sha256": "5040060f619226e1d3328b8b33a0e6c82ef87a6123b68d7fcf2d946df145e379",
+  "template_sha256": "36436021eb5e630e791e1b5edde37d23c3a3144410ba61caba4f9875375d06e7",
   "snapshot_sha256": "61976a0ec1c3acc39d226f89b9ec74e1a36cb0bd136bff5686eca0b0455d8176",
   "included_shared_styles": {
     "_interfonts.html.j2": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
