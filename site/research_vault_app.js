@@ -335,6 +335,21 @@
     return 'https://app.mastermind-x.com/terminal?sym=' + encodeURIComponent(tk);
   }
 
+  /* The baked line describes the copy written into this page. A settled catalog can be a
+     different copy, whose clock the status line already prints. So the line keeps only the
+     newest report of the copy on screen, and goes away unless that copy is saved and old. */
+  function paintSavedClock() {
+    var p = $('rv-saved-clock');
+    if (!p) return;
+    var latest = '';
+    ITEMS.forEach(function (x) { if (x.date && x.date > latest) latest = x.date; });
+    if (CATALOG_SOURCE === 'unavailable' || CATALOG_FRESH || !latest) { p.hidden = true; return; }
+    p.hidden = false;
+    var en = p.querySelector('.l-en'), zh = p.querySelector('.l-zh');
+    if (en) en.textContent = 'Newest report in this copy: ' + latest + '.';
+    if (zh) zh.textContent = '该副本中最新研报：' + latest + '。';
+  }
+
   /* ═══════════ hero counts (client-side, descriptive only) ═══════════ */
   function updateHero() {
     // An unavailable catalog knows NOTHING about the vault, so every figure stays
@@ -694,7 +709,7 @@
       // the vault, and we have no basis for it when we could not read a verified
       // catalog at all. Saying so plainly is the whole point of this state.
       feed.innerHTML = emptyState(
-        T('Live research is temporarily unavailable', '实时研报暂时不可用'),
+        T('Research is temporarily unavailable', '研报暂时不可用'),
         T('We could not reach a verified copy of the research catalog. This is a loading problem, not an empty vault — please try again shortly.',
           '暂时无法获取经校验的研报目录。这是加载问题，并非研报库为空 —— 请稍后重试。'));
     } else if (!ITEMS.length) {
@@ -1409,18 +1424,19 @@
     // the data is saved and shows the clock it was actually generated on, so a
     // reader can judge the lag themselves instead of trusting an adjective.
     if (source === 'unavailable') {
-      if (en) en.textContent = 'Live research unavailable · try again shortly';
-      if (cn) cn.textContent = '实时研报暂不可用 · 请稍后重试';
+      if (en) en.textContent = 'Research unavailable · try again shortly';
+      if (cn) cn.textContent = '研报暂不可用 · 请稍后重试';
     } else if (CATALOG_FRESH) {
       if (en) en.textContent = 'Catalog recently updated';
       if (cn) cn.textContent = '目录近期已更新';
     } else {
       var iso = CATALOG_GENERATED;
-      if (en) en.textContent = 'Saved snapshot · live update delayed'
+      if (en) en.textContent = 'Saved snapshot · refresh delayed'
         + (iso ? ' · updated ' + fmtStamp(iso, false) : '');
-      if (cn) cn.textContent = '已保存快照 · 实时更新延迟'
+      if (cn) cn.textContent = '已保存快照 · 更新延迟'
         + (iso ? ' · 更新于 ' + fmtStamp(iso, true) : '');
     }
+    paintSavedClock();
   }
   function ingest(catalog, source) {
     // A selected catalog is a new search context, even when the query is unchanged.

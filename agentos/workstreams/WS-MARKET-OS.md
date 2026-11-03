@@ -216,18 +216,19 @@ waves:
     status: in_progress
     depends_on: []
     next_action: >
-      Slice 1 is DELIVERED as Terminal PR 1189 (non-author ACCEPT confirmed at head
-      f2e30fd7; READY + merge-on-green ARMED 2026-10-31, CI pending): proxy POST
+      Slice 1 is MERGED as Terminal master db6168c2 (PR 1189; non-author ACCEPT confirmed
+      at f2e30fd7, all trusted checks green on the merge ref): proxy POST
       /api/portfolio-changes, Today section posting the client-held previous state_digest
       and rendering the desk's change lines with honest first-visit, no-change, overflow
       (expand in place), free-tier teaser, unavailable and signed-out states, each ticker
-      linking to /analysis. The first non-author review (at 206bc02b) returned REVISE;
-      repairs for all eight findings landed at ac319630 and the re-review at 0939414e
-      returned ACCEPT and was confirmed at f2e30fd7. Next: the sweeper merges on green
-      (repair a trusted red on the same branch; never self-merge), beta deploy observation, signed-in browser proof
-      recorded separately from acceptance. Contract dependency (not a wave): Macro PRs
-      10199/10200/10203 edit the producers this slice consumes; re-run the slice tests
-      against the merged producer before PRODUCTION_PROOF.
+      linking to /analysis. The beta release owner was idle, so the receiver seat ran the
+      owner's beta entrance for db6168c2 on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2, anonymous proxy POST 401). Signed-in beta proof passed on 2026-11-01: the proxy returned 200, the first visit was followed by the no-change state, and an account-scoped digest slot was stored. Production
+      does not carry the slice and strips the shared shell. No PRODUCTION_PROOF is
+      possible until a separate shared-shell production release decision is made; acceptance is
+      also separate. Next: slice 2 as a bounded design commission from the census r4 accepted
+      artifacts, extending the existing Macro command read strip. Producer freshness
+      observation: the desk read is dated 2026-10-17, which is for the Macro owner. Contract dependency (not a wave): Macro PRs 10199 and 10200 closed
+      unmerged and 10203 is open; if 10203 merges, re-run the slice tests against it.
   - id: joined-journey
     title: MarketOntology J1 — qualified joined Macro-to-Terminal journey
     status: todo
@@ -363,11 +364,12 @@ artifacts:
   - "research/market_intelligence_productization/MARKETONTOLOGY_MARKET_OS_ADOPTION_QUALIFICATION_2026-10-24.json"
 next_action: >
   RECEIVER 2026-10-31: the Fable flagship seat (PR 10230, handoff
-  WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion. Consume
-  Terminal PR 1189 through merge (wave flagship-today-since-last-visit; non-author
-  ACCEPT confirmed at head f2e30fd7, armed merge-on-green), repair on that branch, ready + merge-on-green after a non-author
-  ACCEPT and green CI, then beta deploy observation and signed-in browser proof recorded
-  separately from acceptance. Maintenance #6510 may proceed independently as a bounded
+  WS-MARKET-OS-2026-10-31-fable-flagship-receiver) owns Market OS completion. Slice 1
+  (wave flagship-today-since-last-visit) is merged as Terminal master db6168c2 and the
+  seat ran the beta release on 2026-11-01 (owner DONE 04:53Z; beta serves db6168c2); signed-in beta proof
+  passed 2026-11-01 (beta only; production strips the shared shell, so no PRODUCTION_PROOF
+  yet and no acceptance). Next: slice 2
+  as a bounded design commission. Maintenance #6510 may proceed independently as a bounded
   Portfolio mode-tab count synchronization repair if a fresh collision census remains
   clean. The MarketOntology A/B carriers continue independently under their own
   authority, claim and proof gates; this workstream neither lands nor dispatches them.

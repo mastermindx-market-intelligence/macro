@@ -1,0 +1,73 @@
+{
+  "schema": "company_intelligence.source_purpose_ruling/v1",
+  "ruling_id": "GMI-C01-GRAPH-MEMBERSHIP-USE-20261102",
+  "case_id": "C01-micron-planned-product-integration",
+  "revises_ruling_path": "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json",
+  "revises_ruling_sha256": "5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117",
+  "decision": "covered",
+  "decision_owner": "Chairman Chris",
+  "evidence_kind": "chairman_delegated_decision",
+  "delegation": {
+    "granted_by": "Chairman Chris",
+    "granted_on": "2026-11-02",
+    "quote": "For Curator ABC and Graph membership use, you should make the decision for me",
+    "deciding_seat": "6f14c2da-02a9-467e-9f37-7c2ebaccfe09",
+    "decision_record": "DEC:GMI-CURATOR-ABC-GRAPH-MEMBERSHIP-USE-DELEGATED",
+    "rationale": "Internal, no-display, no-redistribution graph-membership use of this one fact is strictly narrower than the fact-only paid_product_display the Chairman already ruled covered on 2026-10-11 for the same source bytes; it adds no audience, no quotation, no magnitude and no redistribution."
+  },
+  "question": "May the C01 Micron ruling be revised to add graph_membership_use (internal graph use only, no display, no redistribution, same source hash)?",
+  "answer": "YES - decided by the assigned seat under the Chairman's explicit 2026-11-02 delegation of this question.",
+  "recorded_at": "2026-11-02T23:49:45Z",
+  "source": {
+    "url": "https://investors.micron.com/news/press-release/2024/Micron-Commences-Volume-Production-of-Industry-Leading-HBM3E-Solution-to-Accelerate-the-Growth-of-AI-02-26-2024/default.aspx",
+    "source_key": "manual:micron-ir:hbm3e-h200:2024-02-26",
+    "sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "byte_length": 504119,
+    "published_date": "2024-02-26",
+    "published_at": null,
+    "publication_precision": "date"
+  },
+  "permitted_use": {
+    "purpose": "private_company_intelligence_context",
+    "audience": "company_intelligence_entitled",
+    "paid_product_display": true,
+    "fact_retention": true,
+    "kind": "product_integration",
+    "lifecycle": "planned",
+    "subject": "Micron",
+    "object": "NVIDIA",
+    "product": "24GB 8H HBM3E",
+    "platform": "NVIDIA H200",
+    "amount": null,
+    "economic_share": null,
+    "source_quotation": false,
+    "reviewer_text": false
+  },
+  "graph_membership_use_grant": {
+    "purpose": "graph_membership_use",
+    "graph_membership_use": "GRANTED",
+    "internal": true,
+    "display": false,
+    "redistribution": false,
+    "subject_node_id": "co:us:MU",
+    "target_node_id": "theme:hbm_packaging",
+    "species": "planned_product_integration",
+    "membership_scope": {
+      "counterparty_issuer_id": "ISS:US-XNAS-NVDA",
+      "platform": "NVIDIA H200",
+      "product": "24GB 8H HBM3E"
+    },
+    "proposal_ids": [
+      "actprop:287edbf7e04b8aba873b7493"
+    ]
+  },
+  "license_document_independently_inspected": false,
+  "license_identifier": null,
+  "scope_limits": [
+    "Grants only internal graph-membership use of the one ratified activity proposal named in proposal_ids, over the exact source bytes bound in source.",
+    "display=false and redistribution=false: no new audience, quotation, magnitude, ranking, sizing or trade authority is granted by this revision.",
+    "The 2026-10-11 ruling's permitted_use is copied verbatim and is neither widened nor narrowed here.",
+    "Does not assert a license document was independently inspected; other editions, facts, vendors and sources are outside this record.",
+    "Ordinary authenticity, identity, curation, release and production acceptance remain required."
+  ]
+}

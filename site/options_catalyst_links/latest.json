@@ -1,30 +1,30 @@
 {
   "schema": "mastermind.options_catalyst_links/v1",
   "spec_version": "v1",
-  "session_date": "2026-10-20",
-  "asof": "2026-10-21",
-  "generated_utc": "2026-10-21T08:09:06Z",
+  "session_date": "2026-10-30",
+  "asof": "2026-11-02",
+  "generated_utc": "2026-11-02T10:33:53Z",
   "horizon_days": 63,
   "source": {
-    "events": "r2:live_flow/events/2026-10-20.jsonl",
+    "events": "r2:live_flow/events/2026-10-30.jsonl",
     "earnings": "engine.earnings_blackout",
     "macro": "engine.event_calendar",
     "identity": "stock_identity.plane:stocks"
   },
   "counts": {
-    "events": 1722,
+    "events": 2711,
     "dropped_malformed": 0,
     "known_symbols": 253,
     "candidates_earnings": 6,
-    "candidates_macro": 2,
+    "candidates_macro": 1,
     "by_state": {
-      "BOUND": 357,
-      "UNBOUND_NO_CATALYST": 731,
-      "AMBIGUOUS_MULTIPLE": 224,
-      "STALE_CATALYST": 0,
-      "IDENTITY_UNRESOLVED": 410,
+      "BOUND": 346,
+      "UNBOUND_NO_CATALYST": 402,
+      "AMBIGUOUS_MULTIPLE": 0,
+      "STALE_CATALYST": 459,
+      "IDENTITY_UNRESOLVED": 912,
       "EXPIRY_MISMATCH": 0,
-      "EXPIRY_BEFORE_ASOF": 0,
+      "EXPIRY_BEFORE_ASOF": 592,
       "SAME_DAY_UNORDERED": 0
     }
   },
@@ -39,16 +39,12 @@
   "states": [
     "ok"
   ],
-  "links_path": "2026-10-20.jsonl",
+  "links_path": "2026-10-30.jsonl",
   "macro_calendar": {
-    "asof": "2026-10-21",
-    "horizon_end": "2026-12-23",
+    "asof": "2026-11-02",
+    "horizon_end": "2027-01-04",
     "source": "engine.event_calendar",
     "fomc": [
-      {
-        "date": "2026-10-28",
-        "label": "Fed rate decision"
-      },
       {
         "date": "2026-12-09",
         "label": "Fed rate decision"

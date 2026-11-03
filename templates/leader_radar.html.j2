@@ -849,6 +849,22 @@ html[data-lang="zh"] .leg-chip.green{background:rgba(239,68,68,0.12);color:#f871
         {% set _mon_zh = _pt_parts[1] | int if _pt_parts|length >= 2 else 0 %}
         {% set _day_zh = _pt_parts[2] | int if _pt_parts|length >= 3 else 0 %}
       <span>{{ t('Data through ' + _mon_en + ' ' + (_day_en | string) + ' close · updates nightly', '数据截至' + (_mon_zh | string) + '月' + (_day_zh | string) + '日收盘 · 每晚更新') }}</span>
+      {% set _lag_clocks = [
+        ('rs_series_through', 'Relative strength through ', '相对强度截至'),
+        ('regime_as_of', 'Regime through ', '格局截至'),
+        ('revisions_asof', 'Revisions through ', '修订截至'),
+        ('state_history_through', 'State history through ', '状态历史截至')
+      ] %}
+      {% for _ck, _cen, _czh in _lag_clocks %}
+      {% set _cv = _freshness[_ck] if _ck in _freshness else '' %}
+      {% if _cv and _cv != _pt %}
+      {% set _cp = _cv.split('-') %}
+      {% set _ce = _cen ~ _mon_map_en[_cp[1]] ~ ' ' ~ (_cp[2]|int)|string %}
+      {% set _cz = _czh ~ (_cp[1]|int)|string ~ '月' ~ (_cp[2]|int)|string ~ '日' %}
+      <span class="dot"></span>
+      <span>{{ t(_ce, _cz) }}</span>
+      {% endif %}
+      {% endfor %}
       {% endif %}
       {# Tracking honesty line — only when history_since is set #}
       {% if lr.history_since is defined and lr.history_since is not none %}

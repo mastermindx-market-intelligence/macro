@@ -2,6 +2,38 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-01",
+      "tickers": [
+        "ABT",
+        "ADUS",
+        "ATEC",
+        "BILL",
+        "BRK.B",
+        "CACI",
+        "CAVA",
+        "CCK",
+        "CMG",
+        "CMI",
+        "CRBG",
+        "DG",
+        "ESE",
+        "FG",
+        "LSTR",
+        "LYCA",
+        "MRP",
+        "NBIX",
+        "NOV",
+        "NUE",
+        "PRG",
+        "PRI",
+        "PTEN",
+        "RAPP",
+        "UGI",
+        "VMI",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-10-31",
       "tickers": [
         "ABT",
@@ -200,18 +232,6 @@
         "XLK",
         "YELP",
         "YOU"
-      ]
-    },
-    {
-      "as_of": "2026-10-20",
-      "tickers": [
-        "ELF",
-        "EPAM",
-        "ICHR",
-        "OKLO",
-        "RL",
-        "ULS",
-        "URI"
       ]
     }
   ]

@@ -16380,6 +16380,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
      `_regime_read_panel.html.j2` hides itself unless latest.base_effect carries both axes. #}
   {% include "_regime_read_panel.html.j2" %}
+  {% if mode == "stocks" %}{% include "_sector_prophet_context.html.j2" %}{% endif %}
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
@@ -20590,6 +20591,8 @@ function initStockTableView(){
     linkPattern: 'stock.html#{ticker}',
     columns: cols,
     optionLabels: { lane: LANE_LABELS, sector: SECTOR_LABELS },
+    sectorOptions: Object.keys(SECZH),
+    emptyMessage: ['No matching stocks in the loaded table. Clear filters to widen the view.', '当前已加载的股票中没有匹配结果。清除筛选条件以查看更多股票。'],
     searchPlaceholder: ['Search ticker or name…','搜索代码或名称…'],
     /* P-MP1-SHELL §6/§9/§8 (commissioning follow-up, gap 2) — retires the
        Stage/阶段 filter dropdown AND its count chips (templates/stocktable.js
@@ -20609,15 +20612,41 @@ function initStockTableView(){
      re-runs StockTable.init so the table view picks up the full board. No-op
      on a bad/empty payload — the caller (the hydrate script below) already
      verified the fetch succeeded before calling this. */
+  var tableController = null;
   function mergeRows(newRows){
     if (!Array.isArray(newRows) || !newRows.length) return;
+    var sector = tableController && tableController.getSectorFilter ? tableController.getSectorFilter() : 'all';
     try {
       var raw = JSON.parse(dataEl.textContent || dataEl.innerText || '{}');
       raw.rows = (raw.rows || []).concat(newRows);
       dataEl.textContent = JSON.stringify(raw);
     } catch (e) { return; }
-    StockTable.init(STINIT);
+    tableController = StockTable.init(STINIT);
+    if (tableController && tableController.setSectorFilter) tableController.setSectorFilter(sector);
     applyView(currentView);
+    exposeSectorAction();
+  }
+
+  // Sector Central supplies a canonical identity. The native table remains
+  // the filter owner, and the existing source/view owners control navigation.
+  function selectSector(sector) {
+    if (typeof sector !== 'string' || !Object.prototype.hasOwnProperty.call(SECZH, sector) ||
+        !tableController || typeof tableController.setSectorFilter !== 'function' ||
+        !window.USProphetSource || typeof window.USProphetSource.set !== 'function') return false;
+    if (!tableController.setSectorFilter(sector)) return false;
+    window.USProphetSource.set('candidates');
+    applyView('table');
+    var toggle = document.getElementById('us-st-btn-table');
+    var tableHost = document.getElementById('us-stocktable-wrap');
+    if (toggle) toggle.focus({preventScroll:true});
+    if (tableHost) tableHost.scrollIntoView({block:'start'});
+    return true;
+  }
+
+  function exposeSectorAction() {
+    window.USStockTable._selectSector = tableController &&
+      typeof tableController.setSectorFilter === 'function' ? selectSector : null;
+    if (typeof window.dispatchEvent === 'function') window.dispatchEvent(new Event('us-screener:availability')); /* feature-detected: the Prophet node harnesses run this script under a window without dispatchEvent */
   }
 
   /* _getView is the read half of the existing view owner: the candidate→Plan return
@@ -20625,10 +20654,11 @@ function initStockTableView(){
      applyView), so no second table owner, store or localStorage key is introduced. */
   window.USStockTable = { _setView: applyView, _getView: function(){ return currentView; }, _mergeRows: mergeRows };
 
-  StockTable.init(STINIT);
+  tableController = StockTable.init(STINIT);
 
   /* restore persisted view */
   applyView(currentView);
+  exposeSectorAction();
 }
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initStockTableView, { once: true });
@@ -20688,6 +20718,7 @@ if (document.readyState === 'loading') {
        single explicit action renders. It is not a fourth source option: it restores the
        exact originating row, so no generic navigation is duplicated. */
     returnHost: function(){ return tog.parentNode; } };
+  if (typeof window.dispatchEvent === 'function') window.dispatchEvent(new Event('us-screener:availability')); /* feature-detected: the Prophet node harnesses run this script under a window without dispatchEvent */
 
   document.addEventListener('click', function(event){
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
@@ -21390,6 +21421,27 @@ if (document.readyState === 'loading') {
     });
   }
 
+  function replacePreviewCards(grid, html){
+    if (!grid || !html) return;
+    var box = document.createElement('div');
+    box.innerHTML = html;
+    var incoming = box.querySelectorAll('[data-ticker]');
+    var byTicker = {}, i, el, tk, cards;
+    for (i = 0; i < incoming.length; i++){
+      el = incoming[i];
+      tk = el.getAttribute('data-ticker');
+      if (tk) byTicker[tk] = el;
+    }
+    cards = grid.querySelectorAll('[data-ticker]');
+    for (i = 0; i < cards.length; i++){
+      el = cards[i];
+      tk = el.getAttribute('data-ticker');
+      if (tk && byTicker[tk] && el.parentNode){
+        el.parentNode.replaceChild(byTicker[tk], el);
+      }
+    }
+  }
+
   function hydrate(payload){
     if (!payload || payload.schema !== 'tier_payload.v1' || payload.page !== 'us_stocks'){
       throw new Error('invalid payload');
@@ -21449,6 +21501,7 @@ if (document.readyState === 'loading') {
       freshCand.setAttribute('data-showmore-rows', candGrid.getAttribute('data-showmore-rows') || '3');
       freshCand.innerHTML = candGrid.innerHTML;
       mergeBoardCards(freshCand, payload.cards_html);
+      replacePreviewCards(freshCand, payload.preview_cards_html);
       candGrid.parentNode.insertBefore(freshCand, candGrid);
       candGrid.parentNode.removeChild(candGrid);
       if (candOldBar && candOldBar.parentNode) candOldBar.parentNode.removeChild(candOldBar);

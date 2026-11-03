@@ -202,3 +202,81 @@ unresolved additions:
     owner: the C3/F05 (Chronicle) owner; this seat records the gap, mints nothing.
   - what: W3 Section C rows C2/C4/C5 deliberately not launched (other owners' artifacts/holds).
     owner: their incumbent owners; W3 Section F reviews and W4 E4 brief follow on this seat.
+
+## Sixth write 2026-10-31 22:1xZ — W3 Section F1 matrix and W4 E4 binding census
+
+- **F1 claim/evidence denominator matrix** — Fabric lane `news-w3-f1-matrix-r3` (ubuntu0, glm-5.3) PASS at d4e7c6dd; independent review lane `news-w3-f1-review-r1` (ubuntu0) PASS_WITH_NOTES (R1–R8 PASS; counts recomputed 18 segments: SOURCE 14, MERGE 7, INSTALLATION 5, AUTHENTICATED PATH 1, ACCEPTANCE 1 historical narrow slice; §12 criteria 10: MET 0, PARTIAL 6, NOT_MET 4). Seat applied the reviewer's three line-cite notes (one commit, 3 lines) → head fdf9eb54 → **macro #10348 MERGED → main ed8cd5199948891cd815d11dbe556323fc7a958e at 21:51Z (ci-gate/ci-plan/fence-pack SUCCESS; reviewDecision null; only the standing merge-queue-pilot red)**. Honest negatives preserved: QUANT DEFENSIBLE_NEGATIVE, none of the seven §9.1 verticals has a committed proof, real sign-in is a human gate, no percentage-complete figure.
+- **E4 Brief binding census** — Fabric lane `news-w4-e4-bindings-r1` (ubuntu0) PASS at f14735ee (27 mechanism rows; B1–B4 PARTIAL, B5 NONE, B6 legacy `news_llm` default off). Fabric review refused on ubuntu0 (temperature) and ubuntu2 (disk → WAITING_CAPACITY, nothing reclaimed under the Chairman 10-31 disk law); **native Opus read-only audit FAIL**: ten false citations, press rows 4–8 and marketing row 11 marked admitted while gated behind unset repository variables (`press-publish.yml:126`, `marketing-publish.yml:11-15`), press-publish concurrency group omitted, MASTERPLAN :577 misattributed. Repair lane `news-w4-e4-bindings-r4` (ubuntu1) PASS at d39a3772 (174/174 citations verified; eight rows → DARK BY DEFAULT with gate lines, one → NOT SHOWN, six given real activation cites; B1–B4 PARTIAL unchanged); re-review Fabric lane `news-w4-e4-review-r3` (ubuntu1, non-author) PASS_WITH_NOTES at d39a3772; seat applied its three NOTE gaps (4 lines) → head a3b84009; **macro #10351 OPEN at a3b84009ed4b01f10c96a5380ac607838396ec84, CI pending, merge pinned `--match-head-commit a3b84009` after ci-gate/ci-plan/fence-pack SUCCESS and a reviewDecision read — not merged, not accepted**.
+- Spent lane ids (never relaunch): news-w3-f1-matrix-r1/r2, news-w3-f1-probe-ubuntu0..4-r1, news-w4-e4-review-r1/r2, news-w4-e4-bindings-r2 (economic policy: escalation reason required), r3 (ubuntu0 temperature).
+- Still open for the seat: F2 adversarial review of the matrix, F3/F4 installed-vertical observation (human sign-in gate), F5 final acceptance, §9.1 seven vertical proofs (none committed), E4 implementation only after B1–B4 are qualified. F05 GAP-RECEIPT remains the Chronicle owner's. C2/C4/C5 not launched (other owners).
+
+Next action: merge #10351 at a3b84009 → W3 F2 (adversarial review of the F1 matrix), §9.1 vertical proofs where no human gate blocks, E4 stays design-blocked until B1–B4 are qualified; F3/F4 real-sign-in observation is a human gate named once; F05 GAP-RECEIPT stays with the Chronicle owner.
+
+## Seventh write 2026-11-01 04:5xZ — E4 census and records r5 merged; W3 F2 negative controls commissioned
+
+- **Correction to the sixth write:** macro #10351 (E4 Brief binding census) is MERGED → f3b17d9e
+  (2026-11-01T04:34:13Z), not "open pinned". Records r5 #10352 MERGED → 6ff08d8e (04:34:34Z).
+- **F2 commissioned (MASTERPLAN §7.F row F2, line 387).** Three path-disjoint Fabric lanes on
+  ubuntu1 (glm-5.3, class review, C2_COMPLEX_BOUNDED, base 6ff08d8e, parent
+  w3-seat-direct-20261031), launched 04:50Z:
+  - `news-w3-f2-time-corrections-r1` — clocks, revisions, corrections, withdrawal, source health (T01–T14).
+  - `news-w3-f2-rights-identity-r1` — rights receipts, read leakage, dated ticker identity, mirror/transport independence, over-merge (R01–R15).
+  - `news-w3-f2-model-context-r1` — injection, uncited claims, numbers/units/periods, sentiment and confidence authority, legacy path default (M01–M15).
+  Each lane writes one evidence doc and one offline synthetic control script under
+  `research/news_intelligence_estate_20261021/` (`F2_*_NEGATIVE_CONTROLS.md`, `f2_controls/nc_*.py`).
+  Lanes author none of the attacked modules and edit no source. The seat accepts a lane only after
+  re-running its script on M2 and reproducing every verdict. A BROKEN control is recorded as
+  evidence; its repair is a separately commissioned build lane, never part of the F2 lane.
+- Spent lane ids (never relaunch): the three ids above.
+
+## Eighth write 2026-11-02 01:28Z — W3 F2 adjudicated; seven repair PRs; nine controls closed on main; §9.1 readiness mapped
+
+- **Leadership continuity (Chairman 2026-10-24 ruling).** Seat 602cd180's session ended after merging #10411 at 2026-11-01 13:13Z with this eighth write drafted but never committed (draft recovered from its scratchpad, verified against main: every PR and merge commit below re-read from GitHub/main by this seat). Seat e3d62d36 (Fable 5.1, the original 2026-10-22 commission seat, resumed 2026-11-02 01:2xZ) is the current receiver: takeover recorded here and in the workstream landmine, no owner wait, no work redone.
+
+- **F2 evidence MERGED.** macro #10366 → c31b2526 (06:16:15Z). The seat re-ran all three lane
+  scripts on M2 and reproduced every verdict before accepting. 52 controls executed:
+  | Family | Executed | HELD | BROKEN | NO_MECHANISM |
+  |---|---|---|---|---|
+  | Time and corrections (T01–T15) | 15 | 13 | 1 (T04) | 1 (T15) |
+  | Rights and identity (R01–R15) | 17 | 16 | 1 (R15) | 0 |
+  | Model context (M01–M15) | 20 | 11 | 5 (M01c, M05, M06a, M06b, M11) | 4 (M04, M07b, M08, M13) |
+- **§9.1 readiness map MERGED.** macro #10369 → a10ceb05 (06:48:41Z), evidence only. No vertical
+  reaches ANON_DEPLOYED without a human. Best rung without a human: V1 and V4 COMMITTED_ARTIFACT;
+  V2, V3, V5 and V7 OFFLINE_FIXTURE; V6 SIGNED_IN_HUMAN_GATE for the read step and NONE for save,
+  follow and propose.
+- **Repairs, each a separately commissioned build with an independent non-author review.** Every
+  review was a native Opus read-only auditor because Fabric admission returned rc=75 on every
+  host; that fallback is the standing rule, not a waiver.
+  | Finding | PR | Review | Merged | Proof on main |
+  |---|---|---|---|---|
+  | M01c, M06a, M06b, M11 | #10372 | FAIL at 34671a0f (M-1 text_safe arrays skipped S14; m-1 slot test; m-2 rate units took currency), repaired, re-review PASS_WITH_NOTES | 6a894b6f (08:39:34Z) | nc_model_context at 1d3f3ae1: all four HELD |
+  | T04 possession bound (B3) | #10378 | FAIL at 8efb17bb (V3 OverflowError not fail-closed), repaired, re-review PASS_WITH_NOTES | 0b167979 (09:15:18Z) | nc_time_corrections at 1d3f3ae1: T04 HELD, r24h=0 daily28d=0 |
+  | T15 provider stamps after receipt | #10386 | PASS_WITH_NOTES at 2fabfa3d | 1d3f3ae1 (09:59:31Z) | T15 HELD, three anomalies flagged; summary held=15 of 15 |
+  | R15 syndicated-copy source count (B4) | #10393 | PASS_WITH_NOTES at 2da2f882 | 5e08c8db (10:07:51Z) | nc_rights_identity on 5e08c8db: R15 HELD (syndicated wire collapsed, source_count=1); held=17 of 17 |
+  | M05b producer fingerprint by fact-key period | #10398 | FAIL at f2458a28 (R3 absence period hashed whole; R3 nit raw period dict; R7 two doc overstatements; R2 unit spellings), repaired at cf0ce682, re-review PASS_WITH_NOTES at cf0ce682 | b114f35c (10:37:13Z) | nc_model_context on b114f35c: M05b HELD (percent, pp and "percentage points" collapse to one fact_revision chain); held=16, broken=1 (M05a), no_mechanism=4, total=21 |
+  | Validator: fold-split role markers and control-split URI schemes (NOTE-A) | #10405 | FAIL at a67a92ff (deleting tab/LF/CR across the whole value refused ordinary prose), r2 FAIL on wording, r3 code PASS with body FAIL fixed in r3b, re-review PASS_WITH_NOTES | f59b3547 (12:38:37Z) | validator rule; tests only, no control maps to it |
+  | M04 fabricated number: quantity grounded against the verified span | #10411 | FAIL at 1d6df1ae (US and European readings both grounded, so a 1000x-off value passed; Decimal overflow raised), repaired at f7970bfb (one reading per numeral; numerals over 64 characters fail closed), re-review PASS_WITH_NOTES at f7970bfb | b15b9405 (2026-11-01 13:13:16Z) | nc_model_context: M04 HELD (stated USD 50m -> emitted capital_allocation_event.v1; fabricated 777 from the same span -> rejected quantity_value_ungrounded); summary held=17, broken=1 (M05a), no_mechanism=3 (M07b, M08, M13), total=21 — re-run by seat e3d62d36 at main f50fc7b7 (descends from b15b9405) |
+  #10386 CI: ci-pack-2 failed on its first attempt; the failed job was rerun once as a principal
+  act and passed. Its cause was not diagnosed. Never rerun it again.
+- **M05a stays BROKEN by contract, not by defect.** The grader's unit map binds `"pp": "percent"`
+  in the frozen endpoints.v1 contract, so a percentage-point answer graded against percent still
+  scores correct. Changing that needs a versioned contract, not an edit under `contracts/`.
+- **NO_MECHANISM triage.** M04 is closed by #10411. M07b (52/53-week and claim-versus-evidence
+  period) remains: the claim-versus-evidence part is an engine candidate that builds on #10398; the
+  52/53-week part changes the fiscal-period token and is a named contract gap. M08
+  (adjusted versus reported basis) and M13 (coalescing, timeout and spend budget before a model
+  call, the E4 B2/B4 bindings) are recorded gaps owned by their contracts, not repaired here.
+- **Review follow-ups queued, none blocking:** from #10411, the grouping sentence is less precise
+  than the code, the newly fail-closed lakh `1,23,456` and `1,234,56` forms are not named, the
+  overflow test case does not pin the overflow, and a two-period numeral is not width-checked
+  (`5.1.3` reads 513; pre-existing); from #10405, the fold-skip and S8 cost note and the vbscript
+  double report; M04 refusal rate on real labels is unmeasured (no producer bundles local); nc_m11 should assert
+  the refusal reason (n-5); a malformed `published_at` raises instead of refusing; "25 index points
+  USD" wording (NOTE-D); the B4 UI verifier checks only the Chinese note (N2).
+- Spent lane ids (never relaunch): news-w3-f2-time-corrections-r1, news-w3-f2-rights-identity-r1,
+  news-w3-f2-model-context-r1, news-w3-f2-review-r1, news-w4-v91-readiness-r1/r2,
+  news-w4-v91-review-r1/r2, news-w4-f2fix-b1-amounts-r1, news-w4-f2fix-b1-review-r1, news-w4-f2fix-notea-r1.
+
+Next action: build the M07b claim-versus-evidence period check as a fresh lane (seat-direct on rc=75)
+after reading each event type's slot-period semantics; then the §9.1 vertical proofs to their best rung without a human. F3/F4 signed-in observation is a
+human gate, named once: a person must sign in to the deployed product for the SIGNED_IN rungs.

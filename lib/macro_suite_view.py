@@ -125,6 +125,7 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
             "required": bool(item.get("required")),
             "freshness": L.label("freshness", item.get("freshness")),
             "freshness_tone": L.tone("freshness", item.get("freshness")),
+            "freshness_state": item.get("freshness"),
             "presence": L.label("presence", item.get("status")),
             "presence_tone": L.tone("presence", item.get("status")),
             "source_asof": asof,
@@ -726,6 +727,30 @@ def _translation_basis_pair(basis: Any, metric: Mapping[str, Any]) -> dict[str, 
     return L.label("basis", basis)
 
 
+def _catch_rate_sample_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """Sample size for the leave-one-out catch rate, or nothing."""
+    if metric.get("metric_id") != "recession_signal_oos_catch_rate":
+        return None
+    transformation = metric.get("transformation")
+    if not isinstance(transformation, str):
+        return None
+    if "~3" not in transformation or "tiny sample" not in transformation:
+        return None
+    return L.CATCH_RATE_SAMPLE_NOTE
+
+
+def _tga_reserves_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """How a Treasury cash move hits bank reserves, or nothing."""
+    if metric.get("metric_id") != "tga_level":
+        return None
+    transformation = metric.get("transformation")
+    if not isinstance(transformation, str):
+        return None
+    if "DRAINS" not in transformation or "INJECTS" not in transformation:
+        return None
+    return L.TGA_RESERVES_NOTE
+
+
 def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> list[dict[str, Any]]:
     rows = []
     for metric in (snapshot.get("metrics") or {}).get("items") or []:
@@ -757,6 +782,11 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "owner_name": D.owner_display_pair(metric.get("owner_ref")),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
+            "sample_note": (
+                _catch_rate_sample_note(metric)
+                or _tga_reserves_note(metric)
+                or _prior_claims_note(snapshot, metric)
+            ),
             "coverage": L.fmt_ratio_pct(metric.get("coverage")),
             "authority_ceiling": D.authority_ceiling_pair(
                 metric.get("authority_ceiling")),
@@ -769,6 +799,50 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "fx_translation": fx_translation,
         })
     return rows
+
+
+def _prior_claims_note(snapshot: Mapping[str, Any],
+                       metric: Mapping[str, Any]) -> dict[str, str] | None:
+    """The value on the page's previous version, when it differs from this one.
+
+    The prior is a build, not a claims print, and most builds carry the same print.
+    Two equal numbers would read as two readings that came out level.
+    """
+    metric_id = metric.get("metric_id")
+    if metric_id not in ("initial_claims_4wk", "continued_claims"):
+        return None
+    prior = snapshot.get("prior_publication")
+    if not isinstance(prior, Mapping):
+        return None
+    block = prior.get("metrics")
+    if not isinstance(block, Mapping):
+        return None
+    items = block.get("items")
+    if not isinstance(items, list):
+        return None
+    item = next((
+        row for row in items
+        if isinstance(row, Mapping) and row.get("metric_id") == metric_id
+    ), None)
+    if item is None:
+        return None
+    value = item.get("value")
+    if not _finite(value):
+        return None
+    day = _plain_day_pair(item.get("observed_at"))
+    if day is None:
+        return None
+    prior_day = _as_date(item.get("observed_at"))
+    current_day = _as_date(metric.get("observed_at"))
+    if prior_day is None or current_day is None or prior_day >= current_day:
+        return None
+    number = L.value_pair(value)
+    if number is None:
+        return None
+    current = metric.get("value")
+    if not _finite(current) or L.value_pair(current) == number:
+        return None
+    return L.prior_claims_note(day, number)
 
 
 def _plain_day_pair(value: Any) -> dict[str, str] | None:
@@ -843,10 +917,12 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
 def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     block = snapshot.get("drivers") or {}
     axis_by_index = list(axes)
+    trade_page = (snapshot.get("workspace") or {}).get("id") == "trade_flows"
     groups = []
-    for key, fallback_en, fallback_zh, axis_index in (
-        ("rate_side", "Rate-side drivers", "利率侧驱动", 0),
-        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动", 1),
+    for key, fallback_en, fallback_zh, trade_en, trade_zh, axis_index in (
+        ("rate_side", "Rate-side drivers", "利率侧驱动", "Trade prices", "贸易价格", 0),
+        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动",
+         "Dollar flows", "美元流量", 1),
     ):
         rows = []
         for driver in block.get(key) or []:
@@ -880,9 +956,15 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
                 "coverage_tone": L.tone("presence", driver.get("coverage_state")),
             })
         axis = axis_by_index[axis_index] if axis_index < len(axis_by_index) else None
+        if trade_page:
+            title = _pair(trade_en, trade_zh)
+        elif axis and axis.get("label"):
+            title = axis["label"]
+        else:
+            title = _pair(fallback_en, fallback_zh)
         groups.append({
             "group_id": key,
-            "title": (axis["label"] if axis and axis.get("label") else _pair(fallback_en, fallback_zh)),
+            "title": title,
             "fallback_title": _pair(fallback_en, fallback_zh),
             "rows": rows,
             "absent": not rows,
@@ -906,16 +988,31 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "body": context["contradiction"]["text"],
         })
 
-    stale = [c for c in context.get("required") or []
-             if c["freshness_tone"] in ("warn", "bad")]
-    if stale:
-        names_en = ", ".join(c["label"]["en"] for c in stale)
-        names_zh = "、".join(c["label"]["zh"] for c in stale)
+    required_rows = context.get("required") or []
+    # LATE_WITHIN_TOLERANCE shares the warn tone with a source that broke.
+    # A missing token stays on the degraded path, which is what tone alone did.
+    late = [c for c in required_rows
+            if c.get("freshness_state") == "LATE_WITHIN_TOLERANCE"]
+    degraded = [c for c in required_rows
+                if c.get("freshness_state") != "LATE_WITHIN_TOLERANCE"
+                and c["freshness_tone"] in ("warn", "bad")]
+    if degraded:
+        names_en = ", ".join(c["label"]["en"] for c in degraded)
+        names_zh = "、".join(c["label"]["zh"] for c in degraded)
         out.append({
             "tone": "warn",
             "title": _pair("Required source not current", "必需数据源并非最新"),
             "body": _pair(f"Degraded required components: {names_en}.",
                           f"降级的必需分项：{names_zh}。"),
+        })
+    if late:
+        names_en = ", ".join(c["label"]["en"] for c in late)
+        names_zh = "、".join(c["label"]["zh"] for c in late)
+        out.append({
+            "tone": "warn",
+            "title": _pair("Required source late, within tolerance", "必需数据源延迟，仍在容差内"),
+            "body": _pair(f"Late within tolerance: {names_en}.",
+                          f"延迟但仍在容差内：{names_zh}。"),
         })
 
     for component in context.get("required") or []:
@@ -996,6 +1093,26 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
 
 # --- evidence drawer ----------------------------------------------------------
 
+def _lineage_note_for_printed_dates(note: Any, effective_date: Any,
+                                    prior_effective_date: Any) -> Any:
+    """Use the later-period producer note when a no-change note's dates differ."""
+    eff = str(effective_date).strip() if effective_date else ""
+    prior = str(prior_effective_date).strip() if prior_effective_date else ""
+    if not eff or not prior or eff == prior:
+        return note
+    try:
+        kind = D.classify_lineage_kind(note)
+    except KeyError:
+        return note
+    if kind != "no_change_republication":
+        return note
+    return (
+        "Reference period differs from the predecessor print "
+        "(a new observation, not a revision of the same period); "
+        "no correction asserted."
+    )
+
+
 def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
               page_built_at: str, artifact: Mapping[str, Any]) -> dict[str, Any]:
     sources = []
@@ -1062,7 +1179,14 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "changed_sources": D.changed_sources_pair(
                 corrections.get("changed_fingerprints")),
             "note": D.lineage_note_pair(
-                corrections.get("note"),
+                _lineage_note_for_printed_dates(
+                    corrections.get("note"),
+                    (snapshot.get("headline") or {}).get("effective_date"),
+                    (
+                        ((snapshot.get("headline") or {}).get("prior_state") or {})
+                        .get("effective_date")
+                    ),
+                ),
                 effective_date=(snapshot.get("headline") or {}).get("effective_date"),
                 prior_effective_date=(
                     ((snapshot.get("headline") or {}).get("prior_state") or {})

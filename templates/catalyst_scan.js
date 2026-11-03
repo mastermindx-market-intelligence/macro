@@ -129,6 +129,7 @@
     SUPPORTED: "SOURCE-SUPPORTED",
     RIGHTS_BLOCKED: "RIGHTS-BLOCKED",
     NOT_COVERED: "NOT COVERED",
+    NO_QUALIFIED_EVENT: "NO QUALIFYING EVENT",
     TEMPORARILY_UNAVAILABLE: "TEMPORARILY UNAVAILABLE"
   })[state] || "COVERAGE UNKNOWN";
 
@@ -152,6 +153,12 @@
     if (item.status === "SUPPORTED") {
       meta.appendChild(text("span", "RELATION: " + (item.relationship === "DIRECT" ? "DIRECT" : "EVIDENCED INDIRECT")));
       meta.appendChild(text("span", "AS OF: " + utc(item.as_of_utc)));
+      // The SEC acceptance clock is shown only under its own name, never as a source stamp.
+      if (item.event_time_basis === "SEC_ACCEPTANCE" && utc(item.event_time_utc) !== "Unverified") {
+        const accepted = text("time", "SEC ACCEPTANCE: " + utc(item.event_time_utc), "cs-acceptance");
+        accepted.dateTime = item.event_time_utc;
+        meta.appendChild(accepted);
+      }
       meta.appendChild(text("span", "REVISION: " + (item.correction_state === "CORRECTED" ? "CORRECTED" : "CURRENT")));
     } else {
       meta.appendChild(text("span", "NOT AN INVESTMENT CONCLUSION"));
@@ -322,7 +329,7 @@
     try { tickers = parseTickers(input.value); }
     catch (e) { showError(e.message); input.focus(); return; }
     showError("");
-    scanRunning = true; scanSubmit.disabled = true;
+    scanRunning = true; scanSubmit.setAttribute("aria-disabled", "true");
     show(busy, true); show(results, false); resetSubscriberState();
     cards.replaceChildren();
     try {
@@ -339,7 +346,7 @@
       const message = e && typeof e.message === "string" ? e.message : "Evidence is unavailable.";
       showError(message);
     } finally {
-      show(busy, false); scanRunning = false; scanSubmit.disabled = false;
+      show(busy, false); scanRunning = false; scanSubmit.setAttribute("aria-disabled", "false");
     }
   });
 

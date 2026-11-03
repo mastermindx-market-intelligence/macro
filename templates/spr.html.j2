@@ -142,7 +142,7 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
   <!-- ===================== US SPR HERO + CONTEXT ===================== -->
   <div class="grid cols-2">
     <div class="card">
-      <h2>🇺🇸 {{ t('United States SPR · live (EIA, weekly)', '美国战略石油储备 · 实时（EIA，每周）') }}</h2>
+      <h2>🇺🇸 {{ t('United States SPR · EIA weekly, as of', '美国战略石油储备 · EIA 每周，截至') }} {{ as_of }}</h2>
       <div class="hero-num">{{ mb(us.level_mb) }}<small>{{ t('MMbbl', '百万桶') }}</small></div>
       <div class="hero-sub">{{ t('Government-owned strategic crude · authorized capacity', '政府持有战略原油 · 授权容量') }} {{ mb(us.capacity_mb) }} {{ t('MMbbl','百万桶') }}</div>
       {% if us.fill_pct is not none %}
@@ -161,7 +161,7 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
       <div class="sigline"><span class="l">{{ t('Below peak','低于峰值') }}</span><span class="r"><b class="down">−{{ mb(us.below_peak_mb) }} M</b></span></div>
       <div class="sigline"><span class="l">{{ t('Record low','历史低点') }}</span><span class="r"><b>{{ mb(us.low_mb) }} M</b> <span class="faint">{{ us.low_date }}</span></span></div>
       <div class="sigline"><span class="l">{{ t('Above low','高于低点') }}</span><span class="r"><b class="up">+{{ mb(us.above_low_mb) }} M</b></span></div>
-      {% if us.import_cover_days is not none %}<div class="sigline"><span class="l">{{ t('Days of net-import cover','净进口可供天数') }}</span><span class="r"><b>{{ us.import_cover_days|round|int }}</b> <span class="faint">{{ t('SPR ÷ net crude imports (EIA, live)','战略储备 ÷ 原油净进口（EIA，实时）') }}</span></span></div>{% endif %}
+      {% if us.import_cover_days is not none %}<div class="sigline"><span class="l">{{ t('Days of net-import cover','净进口可供天数') }}</span><span class="r"><b>{{ us.import_cover_days|round|int }}</b> <span class="faint">{{ t('SPR ÷ 52-week mean of net crude imports (EIA weekly)','战略储备 ÷ 原油净进口52周均值（EIA 每周）') }}</span></span></div>{% endif %}
       {% if us.imports_mbd is not none %}<div class="sigline"><span class="l">{{ t('US crude trade','美国原油贸易') }}</span><span class="r"><b>{{ us.imports_mbd }}</b> {{ t('imp','进') }} / <b>{{ us.exports_mbd }}</b> {{ t('exp','出') }}{% if us.net_imports_mbd is not none %} · <b>{{ us.net_imports_mbd }}</b> {{ t('net','净') }}{% endif %} <span class="faint">{{ t('Mb/d · 1y avg','百万桶/日 · 1年均') }}</span></span></div>{% endif %}
       <div class="sigline"><span class="l">{{ t('Days of US refinery runs','美国炼厂可供天数') }}</span><span class="r"><b>{{ us.days_cover if us.days_cover is not none else '—' }}</b> <span class="faint">{{ t('SPR alone','仅战略储备') }}</span></span></div>
       <div class="caveat" style="margin-top:14px">
@@ -212,7 +212,7 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
       <tr>
         <td class="a">{{ c.flag }} {{ t(c.name, c.name_zh) }}</td>
         <td class="r">
-          {% if c.strategic_mb is not none %}<span class="num">{{ mb(c.strategic_mb) }}</span> <span class="sm">M</span>{% if c.live %} <span class="qbadge q1">{{ t('live','实时') }}</span>{% endif %}<br>{{ tbadge(c.strategic_type) }}
+          {% if c.strategic_mb is not none %}<span class="num">{{ mb(c.strategic_mb) }}</span> <span class="sm">M</span>{% if c.live %} <span class="qbadge q1">{{ t('weekly','每周') }}</span>{% endif %}<br>{{ tbadge(c.strategic_type) }}
           {% if c.capacity_mb %}<div class="sm">{{ t('cap','容量') }} {{ mb(c.capacity_mb) }}M · {{ c.fill_pct }}%</div>{% endif %}
           {% if c.industry_mb %}<div class="sm">+{{ mb(c.industry_mb) }}M {{ t('industry','行业') }}</div>{% endif %}
           {% else %}—{% endif %}
@@ -313,7 +313,7 @@ html[data-lang="zh"] .trd-reducing{background:#E3F5E9;color:var(--ink-ok, var(--
 
   <div class="foot">
     {{ t('Strategic Reserves · built','战略储备 · 生成于') }} {{ built }} · {{ t('data as of','数据截至') }} {{ as_of }}.
-    {{ t('Sources: US SPR — EIA Weekly Petroleum Status Report (live). National crude stocks — JODI-Oil World Database (monthly, total stocks, reconciled to barrels). Strategic-reserve figures — EIA, IEA & national agencies (ISPRL, METI), each dated above. Official gold — World Bank (value & share of reserves, annual) + World Gold Council / IMF IFS (tonnes, curated).','数据来源：美国战略储备 — EIA 每周石油状况报告（实时）。各国原油库存 — JODI 石油世界数据库（月度，总库存，已换算为桶）。战略储备数据 — EIA、IEA 及各国机构（ISPRL、METI），均在上表注明日期。官方黄金 — 世界银行（价值与占储备比例，年度）+ 世界黄金协会／IMF IFS（吨位，人工整理）。') }}
+    {{ t('Sources: US SPR — EIA Weekly Petroleum Status Report. National crude stocks — JODI-Oil World Database (monthly, total stocks, reconciled to barrels). Strategic-reserve figures — EIA, IEA & national agencies (ISPRL, METI), each dated above. Official gold — World Bank (value & share of reserves, annual) + World Gold Council / IMF IFS (tonnes, curated).','数据来源：美国战略储备 — EIA 每周石油状况报告。各国原油库存 — JODI 石油世界数据库（月度，总库存，已换算为桶）。战略储备数据 — EIA、IEA 及各国机构（ISPRL、METI），均在上表注明日期。官方黄金 — 世界银行（价值与占储备比例，年度）+ 世界黄金协会／IMF IFS（吨位，人工整理）。') }}
     {{ t('Display-only and never scored — strategic reserves are a policy lever, not a forecasting signal. Not investment advice.','仅供展示，从不计入评分——战略储备是政策杠杆，而非预测信号。非投资建议。') }}
     {{ t('Limitations:','局限性：') }} {{ t('stated on the methodology page.','见方法论页面。') }}
   </div>

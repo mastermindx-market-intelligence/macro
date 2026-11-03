@@ -494,14 +494,14 @@
     ]
   },
   "flows": {
-    "etf": "Steady",
+    "etf": "Unavailable",
     "stablecoins": "Unavailable",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "pending",
+      "observation": "stale",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {

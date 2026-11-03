@@ -161,10 +161,15 @@
     ["rel_return", "level"].forEach(function (k) {
       var b = (tr.by_kind || {})[k];
       if (!b || !b.n) return;
+      var dir = "";
+      if (b.dir_accuracy != null) {
+        var dp = (b.dir_accuracy * 100).toFixed(0) + "%";
+        dir = " · " + bi("directional " + dp, "方向正确率 " + dp);
+      }
       h += '<div class="tr-cell"><div class="v">' +
         (b.hit_rate != null ? (b.hit_rate * 100).toFixed(0) + "%" : "—") +
         '</div><div class="l">' + bi(kindLabels[k][0], kindLabels[k][1]) +
-        " (" + b.hits + "/" + b.n + ")</div></div>";
+        " (" + b.hits + "/" + b.n + ")" + dir + "</div></div>";
     });
     if (tr.open != null) h += '<div class="tr-cell"><div class="v">' + esc(tr.open) +
       '</div><div class="l">' + bi("open", "进行中") + "</div></div>";
