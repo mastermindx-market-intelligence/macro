@@ -1,23 +1,25 @@
 {
   "artifact_kind": "original_static_design_sheets",
   "generator": "draw_sheets.py",
-  "input_pattern_lab_sha256": "e6466c85a9286f41ee56ded6c2f7a7cf177528ad8dcbda512a7386ea021b7e84",
+  "input_pattern_lab_sha256": "126fd3bce0677f73ca0f422c762f0ce47bc239d61f04d959688c1a93d2555360",
   "fonts": {
     "raster": "Noto Sans Regular / Bold",
     "svg_english": "Noto Sans, Arial, sans-serif",
     "svg_chinese": "Noto Sans SC, PingFang SC, sans-serif; CJK visual proof pending"
   },
+  "company_fixture_sha256": "75a50198c9adfe8f2592aba2d87addd01b17b9c812ef7a4e78d17da567ec7df6",
+  "candidate_revision": 2,
   "browser_renderer_used": false,
   "paper_mutations": 0,
   "frames": [
     {
       "id": "macro-dark-1440",
-      "title": "Macro comparison and evidence · F02 static specimen",
+      "title": "Macro comparison-first pattern · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "dark",
       "language": "en",
       "width": 1440,
-      "height": 1240,
+      "height": 1180,
       "intended_css_width": 1440,
       "svg": "macro-dark-1440.svg",
       "png": "macro-dark-1440.png",
@@ -25,20 +27,20 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Docked inspector is exactly 320px; primary data width is 824px.",
-        "This is the breadth pattern slice, not a replacement for the Macro workspace.",
-        "The viewport intentionally bounds table rows with a visible continuation count."
+        "Candidate 2 revision of VTC-001/005: first row text y=440; ten rows shown before the secondary chart.",
+        "320px inspector leaves an 824px primary region.",
+        "The headline/chart describe the universe sample; the inspector describes one explicitly selected sector."
       ],
       "off_canvas_text": []
     },
     {
       "id": "company-dark-1440",
-      "title": "Company statement pattern · F02 static specimen",
+      "title": "Company multi-series history and five-period statements · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "dark",
       "language": "en",
       "width": 1440,
-      "height": 1216,
+      "height": 1060,
       "intended_css_width": 1440,
       "svg": "company-dark-1440.svg",
       "png": "company-dark-1440.png",
@@ -46,19 +48,20 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Statement comparison includes zero dividend, unavailable EPS, percentage-point margin change and currency values.",
-        "Earlier-period and transcript capabilities remain with the existing Company composition; controls shown are static."
+        "Candidate 2 revision of VTC-003: five full 2010–2026 series and five FY22–26 raw periods.",
+        "Nine statement rows include explicit units, unavailable EPS and absolute-zero dividend change.",
+        "First statement data text y=578; chart stays directly above the table."
       ],
       "off_canvas_text": []
     },
     {
       "id": "options-dark-1440",
-      "title": "Options tape pattern · F02 static specimen",
+      "title": "Options tape-first pattern · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "dark",
       "language": "en",
       "width": 1440,
-      "height": 1250,
+      "height": 1140,
       "intended_css_width": 1440,
       "svg": "options-dark-1440.svg",
       "png": "options-dark-1440.png",
@@ -66,9 +69,9 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "The table uses all 12 fixture rows with 12 columns.",
-        "Production supports additional filters/workspaces and a different export window; this specimen does not remove or redefine them.",
-        "Chart totals reconcile to USD 4,544,000; buy-side estimate is 4/12; unknown moneyness is 1/12."
+        "Candidate 2 revision of VTC-001/004 and PRC-009: first row text y=394; the expiry summary follows all twelve rows.",
+        "Body text is 12–13px; header 11px. Neutral row rules and contract/execution grouping preserve row tracking.",
+        "Expiry groups are explicitly separate from the observed print window."
       ],
       "off_canvas_text": []
     },
@@ -95,12 +98,12 @@
     },
     {
       "id": "macro-light-1440",
-      "title": "Macro comparison and evidence · F02 static specimen",
+      "title": "Macro comparison-first pattern · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "light",
       "language": "en",
       "width": 1440,
-      "height": 1240,
+      "height": 1180,
       "intended_css_width": 1440,
       "svg": "macro-light-1440.svg",
       "png": "macro-light-1440.png",
@@ -108,20 +111,20 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Docked inspector is exactly 320px; primary data width is 824px.",
-        "This is the breadth pattern slice, not a replacement for the Macro workspace.",
-        "The viewport intentionally bounds table rows with a visible continuation count."
+        "Candidate 2 revision of VTC-001/005: first row text y=440; ten rows shown before the secondary chart.",
+        "320px inspector leaves an 824px primary region.",
+        "The headline/chart describe the universe sample; the inspector describes one explicitly selected sector."
       ],
       "off_canvas_text": []
     },
     {
       "id": "company-light-1440",
-      "title": "Company statement pattern · F02 static specimen",
+      "title": "Company multi-series history and five-period statements · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "light",
       "language": "en",
       "width": 1440,
-      "height": 1216,
+      "height": 1060,
       "intended_css_width": 1440,
       "svg": "company-light-1440.svg",
       "png": "company-light-1440.png",
@@ -129,19 +132,20 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Statement comparison includes zero dividend, unavailable EPS, percentage-point margin change and currency values.",
-        "Earlier-period and transcript capabilities remain with the existing Company composition; controls shown are static."
+        "Candidate 2 revision of VTC-003: five full 2010–2026 series and five FY22–26 raw periods.",
+        "Nine statement rows include explicit units, unavailable EPS and absolute-zero dividend change.",
+        "First statement data text y=578; chart stays directly above the table."
       ],
       "off_canvas_text": []
     },
     {
       "id": "options-light-1440",
-      "title": "Options tape pattern · F02 static specimen",
+      "title": "Options tape-first pattern · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "light",
       "language": "en",
       "width": 1440,
-      "height": 1250,
+      "height": 1140,
       "intended_css_width": 1440,
       "svg": "options-light-1440.svg",
       "png": "options-light-1440.png",
@@ -149,9 +153,9 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "The table uses all 12 fixture rows with 12 columns.",
-        "Production supports additional filters/workspaces and a different export window; this specimen does not remove or redefine them.",
-        "Chart totals reconcile to USD 4,544,000; buy-side estimate is 4/12; unknown moneyness is 1/12."
+        "Candidate 2 revision of VTC-001/004 and PRC-009: first row text y=394; the expiry summary follows all twelve rows.",
+        "Body text is 12–13px; header 11px. Neutral row rules and contract/execution grouping preserve row tracking.",
+        "Expiry groups are explicitly separate from the observed print window."
       ],
       "off_canvas_text": []
     },
@@ -178,7 +182,7 @@
     },
     {
       "id": "macro-dark-390",
-      "title": "390px Macro comparison · static composition",
+      "title": "390px comparison-first Macro · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "dark",
       "language": "en",
@@ -186,19 +190,18 @@
       "height": 1420,
       "intended_css_width": 390,
       "svg": "macro-dark-390.svg",
-      "png": null,
+      "png": "macro-dark-390.png",
       "raster_font": "Noto Sans / installed fallback for the specified Inter-first UI",
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "390px intended content width 358px; local table overflow; evidence action stays in the first column."
+        "Candidate 2:390px viewport,358px content,first sector text y=398; all ten rows precede the chart. Each source control is44×44px within a56px row."
       ],
-      "off_canvas_text": [],
-      "raster_in_plate": "mobile-comparison.png"
+      "off_canvas_text": []
     },
     {
       "id": "company-evidence-light-320",
-      "title": "320px evidence overlay · static composition",
+      "title": "320px exact Company row evidence · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "light",
       "language": "en",
@@ -211,7 +214,7 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "320px overlay width; body measure 280px; 44px close target and legitimate focus outline.",
+        "320px overlay width;280px body measure;44px close target;five fiscal periods plus change;legitimate focus outline.",
         "Exact fiscal observation basis replaces a misleading single market-clock label."
       ],
       "off_canvas_text": [],
@@ -232,14 +235,14 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg.",
+        "Original logical frames: macro-dark-390.svg and company-evidence-light-320.svg. The Macro frame also has its own PNG for native-scale inspection.",
         "PNG plate is a static composite from two independently drawn vector frames."
       ],
       "off_canvas_text": []
     },
     {
       "id": "macro-light-zh-390",
-      "title": "390px Macro comparison · static composition",
+      "title": "390px comparison-first Macro · F02 candidate 2",
       "kind": "static_vector_composition",
       "theme": "light",
       "language": "zh",
@@ -265,7 +268,7 @@
       "theme": "dark",
       "language": "en",
       "width": 1440,
-      "height": 1220,
+      "height": 1480,
       "intended_css_width": 1440,
       "svg": "states-and-semantics.svg",
       "png": "states-and-semantics.png",
@@ -273,7 +276,7 @@
       "browser_verified": false,
       "paper_applied": false,
       "notes": [
-        "Sixteen distinct state treatments; access/availability/coverage/freshness/mutation are orthogonal.",
+        "Sixteen distinct state treatments,plus two combined stale+partial+save scenarios. Session expiry after a pending save retains unknown outcome.",
         "Colors and neutral borders use the local pattern-lab token candidates.",
         "Corrected and success are diagrammed contract extensions; they are not new backend status enums."
       ],

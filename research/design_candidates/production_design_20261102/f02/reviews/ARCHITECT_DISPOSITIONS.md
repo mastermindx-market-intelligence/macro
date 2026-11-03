@@ -1,0 +1,7 @@
+# Author disposition of bounded architecture consultation
+
+`architect-repair-check.md` is the principal architect's author-informed source consultation at its stated HTML SHA. It is not an independent critic or approval. Its five concrete findings were corrected and rechecked before the candidate 2 review freeze: explicit editorial overview identity, observation admission for source controls, estimated-side rather than inferred near-ask labeling, correct restored-sort announcement, and English harness/skip language metadata.
+
+The architect also identified a remaining source risk: resolving a retained trigger after sorting does not by itself make that trigger visible when restoring an old scroll offset. The later root repair retains the stored component scroll context, focuses the current stable-key trigger without an automatic initial jump, and calls `scrollIntoView({block:'nearest', inline:'nearest'})` to expose that trigger using the nearest required movement. Table regions reserve 48px of block-start scroll padding for their sticky headers and 12px at the end.
+
+This narrows the source gap; it does not establish browser focus visibility or correct scrolling. The architect's exact retained-row, removed-row, dock/overlay and 400% acceptance cases remain mandatory. Source variants, browser engine behavior and sticky-region geometry require the permitted preview. PRC-007 and all actual integration gates remain open.

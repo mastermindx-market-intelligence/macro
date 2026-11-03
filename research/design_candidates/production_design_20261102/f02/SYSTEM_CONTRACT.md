@@ -1,6 +1,6 @@
 # F02 — Shared system candidate 1
 
-**Version:** `F02-SYSTEM/1.0.0-candidate.1` · **Delivery:** `PARTIAL` · **RIG:** `draft` · **Paper:** `NOT_APPLIED_TO_PAPER`.
+**Version:** `F02-SYSTEM/1.0.0-candidate.2` · **Delivery:** `PARTIAL` · **RIG:** `draft` · **Paper:** `NOT_APPLIED_TO_PAPER`.
 
 This is the proposed shared component contract for the existing whole-site design programme, not a product release. It is bounded by the [F02 assignment](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md). The source owners and exact implementation evidence are in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md). Editable Paper construction, the F01 joint freeze, interactive verification and admitted independent review remain required before consumption as a frozen foundation.
 
@@ -31,7 +31,7 @@ Measure these changes later through task completion, data-interpretation errors,
 
 Use one main analytical or reading object and normally no more than two supporting modules above the fold. This is a hierarchy rule, not permission to delete other tasks. The primary chart/table must remain immediately identifiable; routine source metadata should be legible but quieter than the question and values. Put critical limitations next to the affected answer, not exclusively behind an information icon.
 
-**Analytical workspace:** title/question and compact source receipt; unboxed metric strip; chart or matrix; local data controls and comparison table; evidence beside it when space supports it. Use neutral separators to group related data. Do not wrap every sentence, metric, filter or explanatory paragraph in a card.
+**Analytical workspace:** title/question and compact source receipt; unboxed compact metric strip; local data controls and primary comparison; supporting chart or matrix; evidence beside the comparison when space supports it. Macro sector scanning and Options tape scanning place the table before the secondary chart. Company historical comparison places its compact multi-series history immediately before the raw-period table. Use neutral separators to group related data. Do not wrap every sentence, metric, filter or explanatory paragraph in a card.
 
 **Instrument workspace:** retain instrument identity and current context; place the selected financial or market object first; keep related periods and evidence adjacent; use source-owned local tabs. Do not replace existing charts or historical data with summary prose.
 
@@ -136,11 +136,11 @@ The candidate uses a 320px docked inspector plus 24px gap only when the remainin
 
 These widths are calculated from the proposed specimen CSS and observed source dimensions. They are not measured browser reflow results. The live 1571px production read did measure a 224px rail and 1347px content host without whole-page horizontal overflow at that width. Browser execution of the new HTML, including actual 400% zoom and input behavior, remains open in [VERIFICATION.md](VERIFICATION.md).
 
-The phone decision order is title and observation date, primary value and explicit caveat, supporting metrics, chart/values action, comparison rows, evidence and secondary actions. Local table overflow must never create whole-page overflow. A docked inspector preserves the comparison context; an overlay has a visible close button, focus trap, Escape and reliable return target. Opening one inspector replaces the current inspector; it does not stack modals.
+The phone decision order for Macro and Options is title and observation date, compact primary value and explicit caveat, comparison controls and rows with direct evidence, then the supporting chart/values path and secondary actions. Company can prioritize its historical chart, with a clearly scoped horizontal region and an exact-value alternative; it must not reduce the existing multi-series history to one summary series. Local table overflow must never create whole-page overflow. A docked inspector preserves the comparison context; an overlay has a visible close button, focus trap, Escape and reliable return target. Opening one inspector replaces the current inspector; it does not stack modals.
 
 ## 7. Version, change requests and consumer release
 
-`F02-SYSTEM/1.0.0-candidate.1` is a **candidate**. Consumers may inspect and challenge it now; they may not mark their reference conformant or freeze final compositions against an unpublished F01 release. The source/data companion has its own `F02-SOURCE-DATA/1.0.0-candidate.2` revision after the architecture consultation. Neither is an installed source module.
+`F02-SYSTEM/1.0.0-candidate.2` is a **candidate**. Consumers may inspect and challenge it now; they may not mark their reference conformant or freeze final compositions against an unpublished F01 release. The source/data companion has its own `F02-SOURCE-DATA/1.0.0-candidate.2` revision after the architecture consultation. Neither is an installed source module.
 
 A consuming session records: exact F01 version and artifact commit; exact F02 version and artifact commit; used component roles; any retained domain-owned variant; affected Paper IDs; and qualified theme/locale/width/state evidence. A requested change includes the real task that fails, exact data/identity semantics, a concrete before/after example, impacted consumers and migration/rollback effect. F02 resolves shared presentation; F01 resolves shell/navigation; domain owners resolve meaning. Do not fork global styles in a consumer to evade the decision.
 
@@ -165,3 +165,11 @@ Paper writer qualification and editable artifact construction: **P00 / F02**. Jo
 - [WCAG 2.2 — Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html): 24×24 CSS pixels or the specified exceptions/spacing, distinct from the programme's 44px target.
 - [WCAG 2.2 — Reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html): 320 CSS pixels is equivalent to a 1280px starting viewport at 400%; necessary 2D regions have scoped exceptions, not permission for whole-page overflow.
 - [Web Vitals](https://web.dev/articles/vitals): future LCP/INP/CLS p75 targets.
+
+## Candidate 2 repair decisions
+
+The first immutable review set was blocked by both native advisory critics. Their original reports remain unchanged at the first freeze; later rationale and repair reviews are separate. Candidate 2 makes the comparison the primary object for Macro and Options, gives Company 17 fiscal periods and five simultaneous income series plus five recent raw periods, and retains the English article's calculation inline as well as inspectable. These fixture dimensions exercise the shared anatomy; they do not establish full domain-workspace preservation.
+
+Evidence identity includes consumer, entity/cohort, metric and observed period. Options expiry is a grouping dimension, distinct from the print observation window. The inspector retains a captured record while open and resolves its current visible trigger by stable key after a row rerender. Read availability, freshness, coverage, access and write outcome are independent source-model axes. A save does not dismiss source caveats or manufacture loaded observations.
+
+Responsive Macro/Options chart geometry uses the measured component width with 12px SVG labels and a reduced narrow tick set. Company preserves 17×5 marks inside a minimum 840px named chart region instead of shrinking its labels. Real pixels, focus, scroll, input and zoom remain unverified until a permitted browser preview is available.

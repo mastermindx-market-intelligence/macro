@@ -1,7 +1,7 @@
 {
   "schema": "f02.specimen_token_mapping.v1",
   "status": "proposed; not an implemented CSS namespace",
-  "system_version": "1.0.0-candidate.1",
+  "system_version": "1.0.0-candidate.2",
   "source_contract": "SOURCE_AND_DATA_CONTRACT.md",
   "paper_observed": {
     "observed_at": "2026-11-03T01:24:00Z",

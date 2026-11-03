@@ -1,6 +1,6 @@
 # F02 — Production design system candidate
 
-**System:** `F02-SYSTEM/1.0.0-candidate.1`  
+**System:** `F02-SYSTEM/1.0.0-candidate.2`  
 **Delivery:** `PARTIAL` — source/specification and supporting design artifact set prepared; editable Paper and qualification gates remain.  
 **RIG projection:** `draft`; no approval receipt.  
 **Paper:** `NOT_APPLIED_TO_PAPER`;0 mutations.  
@@ -20,11 +20,13 @@ This package executes the [F02 handoff](https://github.com/mastermindx-market-in
 ## Reviewable artifacts
 
 - [pattern-lab.html](pattern-lab.html): standalone source specimen for Macro, Company, Options and public editorial; dark/light, EN/ZH chrome, density, analytical state examples, table/chart values and evidence patterns. It has no external dependencies or live save integration. Browser execution is not qualified.
-- [sheets/README.md](sheets/README.md):13 editable SVG **source illustrations**,10 PNG plates and reproducible direct-drawing generator. These are supporting static compositions, not editable Paper or browser screenshots.
+- [sheets/README.md](sheets/README.md):13 editable SVG **source illustrations**,11 PNG plates and reproducible direct-drawing generator. These are supporting static compositions, not editable Paper or browser screenshots.
 - [sheets/macro-dark-1440.png](sheets/macro-dark-1440.png), [sheets/company-light-1440.png](sheets/company-light-1440.png), [sheets/options-light-1440.png](sheets/options-light-1440.png), [sheets/editorial-light-1440.png](sheets/editorial-light-1440.png), [sheets/mobile-comparison.png](sheets/mobile-comparison.png), [sheets/states-and-semantics.png](sheets/states-and-semantics.png).
 - [token-map.json](token-map.json):18 proposed semantic role mappings,20 live observed Paper color tokens, exact source collisions and scoped migration decisions.
 - `evidence/`: committed production/Paper before captures, live identity/tree observations, source lineage records and mechanical verification results.
-- [reviews/FIRST_PASS_PACKET.md](reviews/FIRST_PASS_PACKET.md): quarantined job/before/after/capability packet for independent critique. Author rationale must not be supplied before the first-pass findings freeze.
+- [reviews/REVIEW_SEQUENCE.md](reviews/REVIEW_SEQUENCE.md): unchanged first-pass reports, later rationale reveal and separate repair review. The first-pass artifact list identifies commit `6ee221069deba909b0f1eceee53869d4f4569ac9`; later versions do not replace those original bytes.
+- [reviews/REPAIR_REVIEW_PACKET.md](reviews/REPAIR_REVIEW_PACKET.md): unchanged critical-task criteria and exact repair-set review instructions.
+- [fixtures/company-history.json](fixtures/company-history.json): typed illustrative EXM history and statements, shared by source and drawings.
 
 ## Exact inputs and working source
 
@@ -46,8 +48,8 @@ Canonical Paper: [01M312VSDSZFVT45674GDVJVZN](https://app.paper.design/file/01M3
 | F02.2 Shared contract | Completed candidate system/source/data/state/format/versioning contracts and36-capability ledger |
 | F02.3 Design specimens | Completed source prototype and static four-consumer/theme/mobile/state compositions; editable Paper application remains blocked |
 | F02.4 Builder package | Completed exact source integration, migration/rollback, component minimums, acceptance cases and ready Paper annotations |
-| F02.5 Review | Principal architecture consultation completed; independent advisory packet prepared; formal RIG admission/approval remains open |
-| F02.6 Persistence and return | Source branch established and immutable artifact freeze in progress; final review/return record follows |
+| F02.5 Review | Principal architecture and independent two-pass advisory critiques completed for candidate1; repaired candidate2 receives a separate frozen delta review; formal RIG admission/approval remains open |
+| F02.6 Persistence and return | Draft PR #10630 persists the work; candidate1 and first-pass findings are immutable ancestors; candidate2 repair freeze and final review return follow |
 
 **Disposition totals:** capabilities16 RETAIN +20 IMPROVE; Paper25 RETAIN +42 IMPROVE.0 removals,0 relocations,0 invented blocked-data assertions. Existing domain semantics, source identities, exports, historical definitions, access controls and focused-chart behavior remain with their current owners.
 

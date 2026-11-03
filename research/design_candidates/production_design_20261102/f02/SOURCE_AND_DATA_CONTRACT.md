@@ -254,6 +254,40 @@ Each claimed variant needs a meaningful dense/reading use and failure case. Refe
 | Domain owner / D23 | Save-state wiring | Required presentation states and readback boundary specified | Actual write endpoint/callback/owner, idempotency or request identity where supported, auth expiry/retry policy and readback receipt. No common persistence API claimed. |
 | QA01 / actual RIG reviewers | Reference qualification | Source facts and proposed acceptance cases supplied | Independent product-regression and visual/taste first passes, rationale revealed only after findings freeze, amendments and actual RIG disposition on the committed artifact set. This consultation is not that blind review. |
 
+## 11. Candidate 2 supporting-reference boundary and integration acceptance
+
+This section records the repaired supporting HTML specimen. It changes no production source pin above. The specimen is `pattern-lab.html`; its Company input is embedded JSON whose bytes decode to the same object as `fixtures/company-history.json`. Both are illustrative local fixtures, not producer responses. The principal architecture repair check is recorded separately in `reviews/architect-repair-check.md`; it is an author-informed source review, not an independent critic pass or RIG approval.
+
+### 11.1 Exact Company fixture scope
+
+The Company specimen contains **17 fiscal years, FY 2010–FY 2026**, and **five income series**: revenue, gross profit, operating income, pretax income and net income. Each series has 17 values, giving 85 plotted values. Its exact-value table exposes all 17 annual groups; an evidence record for one year retains the EXM entity, that fiscal year, all five field names and the USD bn unit. The comparison table has **five displayed annual statement periods, FY 2022–FY 2026**, across nine metric rows. Those period values are illustrative tabulated inputs; they are not unrounded raw filing records. The five income series agree with the corresponding last-five-period statement values.
+
+The fixture keeps a missing FY 2026 diluted-EPS field, a reported zero dividend per share and the explicit absolute dividend change `0.00 USD/share`. Growth from a zero dividend base remains undefined. Displayed percentage growth and margin values are calculated consistently with the fixture. None of these repairs establishes quarterly statements, balance-sheet/cash-flow navigation, historical definition changes, transcripts, real entity switching or production data lineage. Those remain the consumer integration portion of PRC-007.
+
+### 11.2 Independent state and evidence admission
+
+The specimen now separates `availability`, `freshness`, `coverage`, `access` and `write`. Save start/completion/check transitions must preserve the first three read axes; access changes during pending save move the write outcome to uncertain. A “saved” simulation is a local demonstration and provides no real account/readback receipt.
+
+Analytical observations are inspectable only when availability is `loaded` or the explicit retained-data `error` case, and access is `member` or the fixture's public-reading `guest` case. Loading, empty, unsupported, first-use, denied and expired scenarios route the source action to a typed coverage/state receipt. The event boundary refuses noncoverage evidence in those states. The static editorial article is separately admitted because those analytical axes do not apply to its authored content. This is a local presentation policy; the actual consumer's entitlement and data-retention rules supersede it at integration.
+
+Overview evidence uses an explicit consumer mapping: Macro's last universe observation, Company's Revenue periods, Options' total cohort premium and the editorial calculation. Unsupported overview consumers are rejected. Identity remains consumer/entity/field/period scoped and language invariant. Options' expiry buckets remain contract dimensions, with a separate observation window and contributing print IDs. The Options summary describes the fixture's estimated Buy classification; it does not infer “near ask” without a quote-location field.
+
+### 11.3 Closed-form criteria for the open consumer integration gap
+
+PRC-007 may be closed only when **every applicable row below has a source-bound receipt and an exercised path at the exact candidate implementation revision**. A nonapplicable condition needs the domain owner's explicit disposition. Fixture richness, a feature-retention sentence, a passing pure model or an existing source filename alone does not satisfy these conditions. Reuse the incumbent domain engines/components; do not reconstruct them inside the shared specimen.
+
+| Owner / actual consumer | Required acceptance witness |
+| --- | --- |
+| D02/D03 Macro | One chosen real metric/table/chart maps its actual fields, units, universe/denominator, clocks, missing rules and access owner; the real composed path retains regime/risk/calendar and linked desks; the same-template US-stock sibling passes an affected-scope regression check. |
+| D07 Company | One supported real entity completes annual/quarterly and all three statement-family paths, earlier-period/definition navigation and evidence/transcript return; field/period/currency mappings include missing, zero and a non-comparable definition case; a second entity change proves no stale relabeling and preserves the authoritative parser/return context. |
+| D08 Options | One representative real print retains underlying/contract identity, side/exposure meaning and source/observation/expiry clocks; current view tabs and premium/DTE/moneyness/symbol filters remain reachable; existing saved-screen/share/export paths declare record scope/precision; an actual producer/served receipt qualifies coverage and stale behavior. Denied access and service unavailability stay distinct. |
+| Existing chart/DataInspector owner | The existing grid demonstrates time-key identity through sort/prepend/filter/replay, mounted active descendant and row count/index, its keyboard/selection map, accurate CSV/replay scope and row-limit refusal. No second virtualizer or indicator computation is required. |
+| Public editorial owner | One emitted page from the actual builder/template inputs preserves canonical URL, original heading anchors, authored English body, calendar dates, TOC, calculation/table/evidence links and continuation destinations; bilingual chrome and effective content language are checked at narrow and wide widths. |
+| Domain lifecycle/count owners | An actual source-bound example retains domain labels, disjoint/exhaustive partition meaning where applicable and a meaningful lifecycle transition/return condition. A generic “Accepted” chip does not satisfy this condition. |
+| D23 / existing mutation owner | The real callback/endpoint owner, immutable account subject, object/request identity, confirmed failure versus uncertain outcome, reconciliation/deduplication policy and readback are exercised. Valid sign-in/plan/session recovery retains context. Navigation/theme/language actions remain read-only. |
+
+Separately, source review cannot close focus/scroll/keyboard/touch/zoom proof. In particular, identity-based focus restoration must leave the matched trigger visible after sorting, filtering and a dock-to-overlay transition; restoring an old scroll offset and calling `focus({preventScroll:true})` alone does not establish that result. Responsive SVG width/text construction is not a measured font-size or CJK-rendering receipt. F01 joint freeze, editable Paper delivery, admitted independent reviews and served-production qualification remain separate gates.
+
 ## Source links
 
 [A1]: https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md

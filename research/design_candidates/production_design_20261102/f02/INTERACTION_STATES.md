@@ -1,6 +1,6 @@
 # Interaction, state and accessibility contract
 
-Companion to `F02-SYSTEM/1.0.0-candidate.1`. This is a proposed component contract, not a new domain API. See [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md) for actual owners and current behavior. The HTML specimen demonstrates local state transitions in source; browser execution is unverified. No production save, preference, export or entitlement was exercised or changed during this assignment.
+Companion to `F02-SYSTEM/1.0.0-candidate.2`. This is a proposed component contract, not a new domain API. See [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md) for actual owners and current behavior. The HTML specimen demonstrates local state transitions in source; browser execution is unverified. No production save, preference, export or entitlement was exercised or changed during this assignment.
 
 ## Independent state axes
 
@@ -20,7 +20,7 @@ Combination rule: keep usable values when their source identity still matches th
 
 ## Copy and recovery matrix
 
-Copy below is final proposed component copy with placeholders to be supplied by the actual owner. The specimen has illustrative examples of each analytical scenario. Public static articles do not manufacture account/save or live-transport states; they reuse relevant source/error patterns only where such behavior actually exists.
+Copy below is final proposed component copy with placeholders to be supplied by the actual owner. The specimen supplies illustrative availability, freshness, coverage, access and write axes. Its local simulations do not demonstrate every consumer recovery route or producer state. Public static articles do not manufacture account/save or live-transport states; they reuse relevant source/error patterns only where such behavior actually exists.
 
 | State | English | Simplified Chinese | Retained content / recovery |
 | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ Copy below is final proposed component copy with placeholders to be supplied by 
 
 The inspector replaces the previous inspector. It does not stack multiple modal contexts. A modal uses an accessible dialog name, initial focus on the close control or contextual heading, contained Tab/Shift+Tab cycling, Escape, background inertness and preserved background scroll. If the viewport crosses the dock/overlay threshold while open, retain the exact evidence identity and return target; do not silently close, change rows or reset the table.
 
-The docked inspector is a complementary region. It may receive focus after explicit opening but must not trap users. Closing it returns to the trigger without restoring a different row by positional index. If the original trigger no longer exists, focus the named table/section heading and announce why. The HTML currently implements the connected-trigger path and needs real browser/assistive-technology testing, including the removed-trigger fallback before release.
+The docked inspector is a complementary region. It may receive focus after explicit opening but must not trap users. Closing it returns to the trigger without restoring a different row by positional index. If the original trigger no longer exists, focus the named table/section heading and announce why. Candidate 2 captures the stable evidence key, source record and table scroll context. On close it resolves a still-visible current trigger by key after a sort or filter rerender, then uses the named fallback only when that row is no longer in view. This is source evidence; connected-node return, retained-row return, removal fallback and scrolling still need real browser/assistive-technology testing.
 
 At 400% zoom from 1280px, the target is a usable 320 CSS-pixel page. Body copy, headings, errors, actions and inspector controls must reflow. Necessary chart/table 2D interaction stays inside that component. A smaller screenshot is not proof of zoom, keyboard operation or target size.
 
@@ -79,8 +79,8 @@ Reduced-motion treatment is a meaningful static state. Do not animate numeric tr
 
 | Component family | Applicable scenarios | Supporting artifact | What is still unproved |
 | --- | --- | --- | --- |
-| Analytical data frame | Loaded, loading, empty, partial, stale, unsupported, read error, first use | `pattern-lab.html` Macro/Company/Options scenario selector; static state sheet | Actual rendering, focus, announcement and responsive behavior |
-| Access boundary | Guest, plan required, expired before send; actual expired-after-send contract above | Analytical scenario copy and source contracts | Real auth roles, server omission and return URLs; no auth changes were attempted |
+| Analytical data frame | Loaded, loading, empty, partial, stale, unsupported, read error, first use | `pattern-lab.html` independent availability/freshness/coverage controls; static state sheet | Actual rendering, focus, announcement and responsive behavior |
+| Access boundary | Guest, plan required, expired before send; actual expired-after-send contract above | Independent access axis, expired-after-pending transition and source contracts | Real auth roles, server omission and return URLs; no auth changes were attempted |
 | Save feedback | Pending, saved, failed, uncertain | Local simulation only; no external write | D23 integration, commit/readback/dedupe and multi-tab behavior |
 | Public article | Existing English article, bilingual chrome; static content/date/anchor/table patterns | Editorial specimen and sheets | Real article-template reflow, anchors and publication metadata migration |
 | Virtualized inspector | Existing domain keyboard/selection behavior; source-bound retention | Actual Terminal source and this contract | Executable specimen not implemented; existing real path must be regression tested during later build |
@@ -100,3 +100,15 @@ Reduced-motion treatment is a meaningful static state. Do not animate numeric tr
 10. Confirm Options side/exposure colors do not flip with language or directional color preference, while the explicit price-direction convention remains source-owned.
 
 All cases are acceptance requirements unless explicitly recorded as completed evidence in [VERIFICATION.md](VERIFICATION.md). They are not asserted as passing from code inspection alone.
+
+## Candidate 2 model and integration boundary
+
+The supporting reference has separate `availability`, `freshness`, `coverage`, `access` and `write` fields. `SAVE_START`, `SAVE_RESULT` and `SAVE_CHECK` only change the write axis. An access change after pending changes the write outcome to uncertain. A read retry changes availability only; it cannot assert a newer source clock or repaired coverage without a corresponding read result. The fixture's “Response complete” harness setting refers to delivery of its declared example records, not a guarantee that every optional field is known; individual missing/unsupported fields keep their labels.
+
+The combined case is available through `?consumer=macro&availability=loaded&freshness=stale&coverage=partial&access=member&write=pending`. Saving from a loaded, stale, partial state retains both read notices after the local success simulation. Loading, empty and unsupported availability also remain unchanged by save transitions. No account service is called.
+
+The source model was checked across 480 state combinations and 3,360 write/access transitions. These checks establish read-state invariance for the enumerated pure transitions; they do not establish DOM behavior, focus, real service authority, or end-to-end preservation.
+
+Access recovery remains a host integration requirement. The reference does not invent a sign-in or plan URL for its fictional EXM entity. F01/D25 and each route owner must bind actual return URLs and access destinations; D23 must bind real request identity, confirmation and reconciliation. The decorative shell context carries no fabricated entity-navigation link. Full Company statement/period/transcript controls, Options share/export/saved-screen flows, Macro regime/risk/calendar paths and the existing virtualized inspector remain open qualification cases, not passing paths inferred from painted controls.
+
+The public article's retained English content has `lang="en"`; shared bilingual chrome and component demonstrations retain their own language. A translated article route is not created.

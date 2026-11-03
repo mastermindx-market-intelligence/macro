@@ -23,9 +23,9 @@ Packet IDs below are **local work-item labels**, not Paper node identities. Succ
 | F02-P04 | Existing p-4-0 Components | Tabs/actions/evidence/disclosure; selected versus focused, keyboard/touch, overlay and docked inspector | 26C-0,28D-0,2BK-0,2GG-0,2LX-0; adjacent behavioral notes below. |
 | F02-P05 | Existing p-4-0 / p-5-0 | Loading/empty/partial/stale/error/access/save outcomes with useful retained data | 2A7-0,2M3-0,29H-0,2NG-0,2RE-0 and state matrix. Correct the visibly mislabeled loading example. |
 | F02-P06 | Existing p-5-0 Patterns | Dense table/chart grammar with source, exact-value path, missing middle observation, raw-value sort and scoped scroll | 2O6-0,2PH-0,35W-0,39G-0; maintain data density and source truth. |
-| F02-P07 | Existing p-5-0 Patterns / p-6-0 candidate references after F03 coordination | Macro breadth component slice in F01 shell: dark/light, primary table/chart and 320px evidence dock | 1440px baseline with 1168px content; 824px remaining when docked; meaningful 10-sector illustrative table, 8-session chart with gap. |
-| F02-P08 | Same candidate-reference area | Company statement slice: dark/light, period/currency labels, unknown EPS, actual zero dividend, historical-definition caveat | Preserve complete Analysis domain functions in annotation; annual/quarterly and prior definitions remain owned by D07. |
-| F02-P09 | Same candidate-reference area | Options tape slice: dark/light, 12-column table, side/coverage/transport/source distinction, full-row evidence | Explicit fixture window; not market total. Complete D08 workflow, saved screens, filters/export remain preserved. |
+| F02-P07 | Existing p-5-0 Patterns / p-6-0 candidate references after F03 coordination | Macro breadth component slice in F01 shell: dark/light, primary table/chart and 320px evidence dock | 1440px baseline with 1168px content; 824px remaining when docked; meaningful 10-sector illustrative table before the supporting 8-session chart with gap; selected evidence row uses quiet neutral fill plus weight. |
+| F02-P08 | Same candidate-reference area | Company statement slice: dark/light, 17 fiscal periods × five income series, five FY22–26 raw columns, period/currency labels, unknown EPS, actual zero dividend, historical-definition caveat | Preserve complete Analysis domain functions in annotation; annual/quarterly and prior definitions remain owned by D07. |
+| F02-P09 | Same candidate-reference area | Options tape slice: dark/light, 12-column table, side/coverage/transport/source distinction, full-row evidence | Tape precedes the secondary expiry chart. Separate observed print window from expiry dimension. Explicit fixture cohort; not market total. Complete D08 workflow, saved screens and filters/export remain required retention contracts, not proven integrations. |
 | F02-P10 | Same candidate-reference area, public composition slot | Public editorial slice: dark/light, English body, bilingual chrome, TOC, calculation table, assumptions and continuation | Existing `seo_article` / `seo_base` source contract; no automatic investor rail or invented translated URL. |
 | F02-P11 | Existing p-5-0 mobile patterns | 390px and 320px analytical sequence; 44px controls; table scroll + complete-row evidence; overlay with long EN/ZH labels | One clear vertical hierarchy, not a scaled desktop. Unknown/zero and caveat remain visible. |
 | F02-P12 | Existing p-7-0 Utilities | Builder annotation matrix, source-owner dependency map and exact verification coverage/status | Link full contracts, review findings and immutable artifact set; explicitly distinguish source evidence, authored sheets, Paper exports and browser proof. |
@@ -35,7 +35,7 @@ Every newly or materially changed composition must remain editable. Avoid raster
 ## Ready-to-place Read me copy
 
 > **Mastermind shared product patterns**  
-> **Candidate:** F02-SYSTEM/1.0.0-candidate.1  
+> **Candidate:** F02-SYSTEM/1.0.0-candidate.2  
 > **Owner:** F02 — shared tokens, components, chart/table/state patterns. F01 owns shell/navigation; domains own meaning; D23 owns saved-state mutations.  
 > **Job:** Compare observations, understand their units and limitations, inspect the evidence, and return to the same context.  
 > **Journey:** Read the question and period → compare the chart/table → distinguish zero, unknown and degraded coverage → inspect the exact row/source → return without losing focus or scroll → act through the existing domain owner and confirm the result.  
@@ -85,3 +85,9 @@ When placed, replace only the actual state and insert real source/PR and Paper l
 **F01:** versioned rail/header/local-nav/inspector slots; narrow desktop and compact-rail behavior; public/focused-chart/internal shell boundaries; region/theme/language preference semantics; route/history/overlay rules; exact source/Paper artifact identity. F02 supplies its component minimums and concrete four-consumer stress examples for the joint decision.
 
 These are specific dependencies. Source/design/specification work has proceeded; editable application and qualification have not been represented as complete.
+
+## Repair-set construction notes
+
+Use candidate 2's comparison-first Macro/Options hierarchy, 13px primary table text and named locally scrolling charts. The 17-year Company example is a stress specimen for the shared system, not a replacement for all statement modes or D07. Preserve the first review freeze and its critique links as historical evidence; do not relabel candidate 2 as approved because it addresses visible findings.
+
+The state board must include stale + partial + save pending together, followed by saved with the same read caveats. Expiry after a pending save shows uncertain outcome and a check-after-sign-in path; it cannot say no change was sent. Put production recovery destinations in the host integration annotation until their owners supply exact valid paths.
