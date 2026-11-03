@@ -12354,6 +12354,7 @@ jobs:
       - "scripts/fif_coverage_proof.py"
       - "scripts/fif_finding_judgments.py"
       - "scripts/fif_latency_benchmark.py"
+      - "scripts/ci/run_fif_kernel_suites.py"
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
       - "scripts/fif_specialist_packs.py"
@@ -13388,21 +13389,18 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pytest-xdist pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+        run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
       # Hosted dispatch 41580998932 (main 428b42ce): this one pytest step ran
       # 05:03:04Z–06:16:54Z (73m50s) and was the critical path of an 81-minute
       # full suite. ubuntu-latest has more than one core; the step used one.
-      # -n 2 is pinned so the semantic command does not follow runner size.
-      # --dist loadfile keeps each module's fixtures and intra-file order on
-      # one worker. --max-worker-restart=0 fails the step on a worker crash
-      # instead of retrying it. This is the government-revenue candidate
-      # contract's worker bound, with loadfile in place of load.
+      # Run 41601828795 then tried two shared pytest-xdist workers. The same
+      # suite finished in 22m52s with 4027 passes, and two files failed because
+      # they shared a process. Each file now gets its own interpreter. Two
+      # interpreters run at once. The count is pinned in the runner.
       - name: FIF kernel suites (class A, hermetic)
         run: >
-          python -m pytest
-          -n 2
-          --dist loadfile
-          --max-worker-restart=0
+          python scripts/ci/run_fif_kernel_suites.py
+          --workers 2
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
@@ -13520,7 +13518,6 @@ jobs:
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
-          -q
       # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
       # fixture-built tests run here on the code gate. The three that build or query the
       # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
