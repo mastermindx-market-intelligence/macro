@@ -5,7 +5,7 @@
   .rc-grid { display:flex; flex-wrap:wrap; gap:10px; }
   .rc-card { flex:1 1 300px; min-width:260px; border-radius:12px; border:1px solid var(--line);
     background:var(--panel); padding:12px 14px; }
-  .rc-card.rc-major { border-left:4px solid var(--warn); }
+  .rc-card.rc-major {  }
   .rc-hd { display:flex; align-items:baseline; gap:7px; margin-bottom:5px; flex-wrap:wrap; }
   .rc-title { font-weight:800; font-size:13.5px; }
   .rc-sev { font-size:9.5px; font-weight:700; text-transform:uppercase; padding:2px 7px; border-radius:6px;
@@ -32,10 +32,10 @@
   .rcf-lane { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
     padding:10px 13px; border-radius:11px; border:1px solid var(--line);
     background:var(--panel2); margin-bottom:8px; position:relative; }
-  .rcf-lane.rcf-handoff    { border-left:4px solid var(--link); }
-  .rcf-lane.rcf-into_strength { border-left:4px solid var(--up); }
-  .rcf-lane.rcf-contagion_break { border-left:4px solid var(--warn); }
-  .rcf-lane.rcf-faltering  { border-left:4px solid var(--muted); }
+  .rcf-lane.rcf-handoff    {  }
+  .rcf-lane.rcf-into_strength {  }
+  .rcf-lane.rcf-contagion_break {  }
+  .rcf-lane.rcf-faltering  {  }
   .rcf-pill { font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:8px;
     background:color-mix(in srgb,var(--text) 8%,var(--panel)); border:1px solid var(--line);
     white-space:nowrap; }
