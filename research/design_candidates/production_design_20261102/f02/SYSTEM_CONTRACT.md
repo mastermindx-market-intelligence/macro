@@ -126,9 +126,9 @@ Keyboard-only operation must reach local tabs, sort/filter controls, exact chart
 
 ## 6. F01 handshake and available width
 
-F01 owns final composition. The current source baseline is 224px expanded navigation above 1199px, 196px at 861–1199px, 72px compact where explicitly selected, and no rail at ≤860px; observed header heights are 64px desktop and 56px narrow. These are observations, not a frozen shell version.
+F01 owns final composition. The current source baseline is 224px expanded navigation above 1199px, 196px at 861–1199px, 72px compact where explicitly selected, and no rail at ≤860px; observed header heights are 64px desktop and 56px narrow. F01 has now proposed those same values in [Draft #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645). [F02's recorded candidate concurrence](F01_HANDSHAKE_CANDIDATE.md) gives exact source/version references, gutter cutoffs and remaining review conditions. This advances the interface agreement; it is not a frozen shell release or a joint approval.
 
-The candidate uses a 320px docked inspector plus 24px gap only when the remaining primary area is at least 640px. Otherwise evidence is an overlay. This is a proposed component minimum to negotiate with F01, not a unilateral global breakpoint. Compact navigation is an F01-controlled user state, not something F02 automatically forces to fit its table.
+The candidate uses a 320px docked inspector plus 24px gap only when the remaining primary area is at least 640px. Otherwise evidence is an overlay. F01's proposed interface concurs with these dimensions; the measured usable content must be at least 984px after actual shell, local reserved chrome and both gutters. Compact navigation is an F01-controlled user state, not something F02 automatically forces to fit its table. The proposed exhaustive gutter classes are 16px per side at ≤600px, 20px at >600px and <1200px, and 24px at ≥1200px. The handshake distinguishes these continuous candidate rules from the historical source's literal integer media-query gaps. F01 acceptance of the detailed cutoff and transition contract remains pending.
 
 | Viewport | Expanded rail baseline | Side padding | Primary content before inspector | Candidate evidence presentation | Remaining primary width |
 | ---: | ---: | ---: | ---: | --- | ---: |

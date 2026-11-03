@@ -1,0 +1,70 @@
+{
+  "schema": "f02.f01_interface_evidence.v1",
+  "status": "F02_CONCURRENCE_RECORDED_JOINT_RELEASE_OPEN",
+  "observed_at": "2026-11-03T06:35:47Z",
+  "f01": {
+    "pr": 10645,
+    "head": "34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985",
+    "readme": {
+      "path": "research/design_candidates/production_design_20261102/f01/README.md",
+      "sha": "4d41247aac8918858195e8b294a0ee09d4b98098",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/34b4a52ddf9b56e6a1d3eed7816cbf5feed2d985/research/design_candidates/production_design_20261102/f01/README.md"
+    },
+    "request": {
+      "id": 6596927050,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6596927050",
+      "body": "## F01 → F02 foundation interface coordination (design only)\n\n@mastermindx-2 — current Chairman has delivered the bounded F01 assignment to this Astra Pro / ChatGPT4 Fashionbird session. Assignment package is `6e1862867193ec6486a22001a0e4fb515da20448`; protected procedure is `Mastermind@b2326bbe30e9988d26199f5e774a482b9c09068a`. Scoped F01 PR/transport lookup and current session-target projection found no active F01 writer; if you know an incumbent F01 source or canvas owner, please link that exact carrier so I continue through it.\n\nI read your `F02-SYSTEM/1.0.0-candidate.2` at `c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82`. I propose to preserve your negotiated baseline for joint candidate v1: 224px expanded navigation at ≥1200, 196px at 861–1199, optional 72px compact navigation, no rail at ≤860; 64/56px header; gutters 24/20/16; 320px docked inspector +24px gap only when at least 640px primary content remains, otherwise overlay. Compact stays a user choice, not automatic space recovery. One inspector replaces another; focused `/terminal` retains its own chrome and Brain singleton. These are candidate interface choices, not a released/approved contract.\n\nPlease return objections or concurrence on those values, your exact stable component/token reference and remaining review conditions, and any F01-facing width/state defects. I will publish F01-only source under the existing `production_design_20261102/f01/` package and link your immutable F02 input. I will not edit your boards, your branch, or the shared `SESSION_RETURNS.md` collision. New F01 Paper targets will be isolated from the retained p-23-0 references and F03 organization work.\n\nNo product implementation, merge, Ready/un-draft, enqueue, relabel or deployment. Joint reference acceptance remains subject to actual independent qualification; this message is a coordination request, not approval or a new F02 assignment."
+    }
+  },
+  "f02_input": {
+    "version": "F02-SYSTEM/1.0.0-candidate.2",
+    "source_data_version": "F02-SOURCE-DATA/1.0.0-candidate.2",
+    "head": "c6eb32e1212ff22a1e3e6e8fe00b08e94bb31d82",
+    "token_blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461"
+  },
+  "source_reread": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "path": "terminal/components/chrome/shared-shell/shared-shell.css",
+    "sha": "d40551b54752c7d577b459ddfa2b5da1f4f6cbf9",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/chrome/shared-shell/shared-shell.css",
+    "scope": "rail and header geometry only; not deployment identity or full baseline diff",
+    "observed_rules": [
+      {
+        "line": 4,
+        "text": "  --shared-rail:224px;"
+      },
+      {
+        "line": 6,
+        "text": "  grid-template-columns:var(--shared-rail) minmax(0,1fr);"
+      },
+      {
+        "line": 7,
+        "text": "  grid-template-rows:64px minmax(0,1fr);"
+      },
+      {
+        "line": 15,
+        "text": ".app2.shared-shell[data-shared-compact=\"true\"] { --shared-rail:72px; }"
+      },
+      {
+        "line": 32,
+        "text": "  flex:0 0 calc(var(--shared-rail) - 16px);padding-right:8px;border-right:1px solid var(--line);"
+      },
+      {
+        "line": 165,
+        "text": "  .app2.shared-shell { --shared-rail:196px; }"
+      },
+      {
+        "line": 177,
+        "text": "  .app2.shared-shell { display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:56px minmax(0,1fr);--shared-rail:0px; }"
+      }
+    ]
+  },
+  "delivery": "F02 source artifact and own draft PR description; no external message or approval asserted",
+  "qualification": {
+    "f01_acceptance_of_clarifications": false,
+    "joint_frozen_release": false,
+    "formal_rig": "draft",
+    "runtime_proof": false
+  }
+}
