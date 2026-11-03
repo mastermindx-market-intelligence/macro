@@ -87,3 +87,21 @@ retryfalse; its original owner must diagnose actual eligibility, not reroute/rep
 Desktop shared-navigation displacement and production current-feed proof remain
 separate obligations. Latest-head hostedCI, complete visual acceptance and lawful
 served release are required. No Ready/un-draft/enqueue/merge/deploy occurred.
+
+## Fresh canonical verification — 2026-11-03 continuation
+
+The assigned successor recovered the original clean M2 workspace at published
+`dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c`, with no merge/index lock, unmerged
+paths or competing worktree process observed. Product blobs match material R3.
+The existing canonical driver then captured24/24 states; all24 SHA256 digests
+verified, with zero console errors/failed responses/horizontal overflow. Principal
+visually inspected all eight resting layouts and the two existing Paper R3 boards.
+See `mockups/refs/intraday-flow-upgrade/source-r3-canonical/verification.json`.
+No source-detail rebuild, main reintegration or denied-effect replay occurred.
+
+Resting lab CLS is desktop0.67893–0.88082 and phone0.00994–0.02440; no performance
+acceptance. Actual committed base snapshot is76f8f28816e347866a59b90e3d8c2ee1654786e9dbec13eddcdc750e0bf3fe18,
+brought by the already-existing main integration. Historical R2 snapshot references
+are superseded only for current R3 evidence. Existing329pytest/515browser/244recovery/
+201source-detail results remain explicitly historical executions; this continuation
+reuses product-identical evidence instead of claiming reruns.

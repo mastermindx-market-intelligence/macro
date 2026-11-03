@@ -1,4 +1,49 @@
-## R2 current recovery-state implementation
+# Intraday Flow — current R3 visual evidence
+
+Capture source: `dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c`, product-identical to
+material R3 `74afb2b538f4df4851214c242274a07c3b6f98f2`. HTML SHA256:
+`c47d76bb22886c74dbf65f9d0a885a1d88359ad5261f3a213a24a237d4b45b96`.
+
+[Fresh canonical matrix](source-r3-canonical/manifest.json): **24/24** captures,
+all image hashes verified, zero console errors, zero failed responses and no
+page-wide horizontal overflow. Captured 2026-11-03 at 07:41 UTC with the existing
+canonical driver, including real hover and keyboard focus.
+
+| Viewport | Theme | Locale | Actual screenshot |
+|---|---|---|---|
+| desktop | light | en | [Open](source-r3-canonical/6404f849ee9a3c33.png) |
+| desktop | dark | en | [Open](source-r3-canonical/605fb3b48b5f7686.png) |
+| desktop | light | zh | [Open](source-r3-canonical/ae7c3c9c310a1e42.png) |
+| desktop | dark | zh | [Open](source-r3-canonical/23e2700acd8786ab.png) |
+| mobile | light | en | [Open](source-r3-canonical/699973e8901ebc22.png) |
+| mobile | dark | en | [Open](source-r3-canonical/96985ddaec5f3110.png) |
+| mobile | light | zh | [Open](source-r3-canonical/1e098536344d9b71.png) |
+| mobile | dark | zh | [Open](source-r3-canonical/695fda1afadf83e4.png) |
+
+Principal inspection covers all eight resting layouts and the live Paper R3 boards
+`6ZVB-0` / `6ZYE-0` in exact file `01M2WGNCX9475G79JRKJTCM08P`.
+It is not independent qualified visual approval. Existing current-HTML source-detail
+fixtures and recovery proof remain in `source-details-r3/` and `recovery-r3-compat/`.
+
+The existing main integration brought the committed board snapshot with SHA256
+`76f8f28816e347866a59b90e3d8c2ee1654786e9dbec13eddcdc750e0bf3fe18`; it matches
+both R3 and this checkpoint. Older R2 references to `a8b0f3...` are historical.
+No feed/producer/model ran or changed for this capture.
+
+Resting lab CLS: desktop **0.67893–0.88082**, phone **0.00994–0.02440**.
+Shared-navigation stability remains open. The generic source/as-of detector did
+not recognize the visibly rendered labels; its raw false values remain in the
+manifest. These anonymous local renders do not prove authenticated data, field
+performance or served production behavior. Draft/HOLD remains.
+
+[Verification and source hashes](source-r3-canonical/verification.json) ·
+[Capture observations](source-r3-canonical/smells.json) · [Receipt](EVIDENCE.yml)
+
+---
+
+## Historical evidence retained below
+
+## R2 historical recovery-state implementation
 
 Material source: `55b651320d79f5a4ebf530eeb0175803b981baaa`.
 Canonical [24-state matrix](recovery-r2-canonical/manifest.json) captures this source
@@ -21,11 +66,11 @@ their original identities; none has been relabeled as current.
 
 ---
 
-# Intraday Flow — visual evidence
+## Earlier normalized visual evidence
 
-Current capture source: `d927f82d4efab6f19104f196dfab1cf4e05d34d5`.
+Historical capture source: `d927f82d4efab6f19104f196dfab1cf4e05d34d5`.
 Generated page SHA256: `3c54090283722829c42dd6068ce4e5362c6d58bc47ee098b97268acb4e1f3fdc`.
-Current matrix: `normalized-r5/manifest.json`.
+Historical matrix: `normalized-r5/manifest.json`.
 
 This capture follows the canonical publication correction: current asset hashes,
 normal script deferral and matching CSS preloads. The Intraday template and both
@@ -105,7 +150,7 @@ The canonical capture driver correctly retains authenticated and synthetic-data
 state gaps. Paper write qualification, qualified human/Opus visual acceptance,
 final-head CI, normal release and served desktop/phone proof remain open.
 
-See [current manifest](normalized-r5/manifest.json),
+See [historical manifest](normalized-r5/manifest.json),
 [capture observations](normalized-r5/smells.json), [receipt](EVIDENCE.yml),
 [main integration proof](../../../research/intraday_flow_design_upgrade/MAIN_INTEGRATION.md),
 and [verification record](../../../research/intraday_flow_design_upgrade/VERIFICATION.md).

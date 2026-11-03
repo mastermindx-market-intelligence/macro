@@ -1,0 +1,37 @@
+{
+  "evidence_kind": "canonical_actual_source_capture_verification",
+  "capture_source_commit": "dcda26d6d58bce0cbbe798d659eb7cdb8f755f9c",
+  "material_source_commit": "74afb2b538f4df4851214c242274a07c3b6f98f2",
+  "manifest_sha256": "3b23d98c663ba9fafe05ff135a3ccc585afee48d9b63dfbe4f8c99299186565b",
+  "assets_sha256": {
+    "templates/intraday_flow.html.j2": "40e0054fe768e26c5dab9c6c1ee649410027237990c8a3a85e1141f7117d255e",
+    "templates/intraday-flow.css": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+    "site/intraday_flow.html": "c47d76bb22886c74dbf65f9d0a885a1d88359ad5261f3a213a24a237d4b45b96",
+    "site/intraday-flow.css": "fec0337920fe79b84a316cf08584321289813cd79f1a7e7f2f21b4ac8e4d0039",
+    "site/flowtracker/base.json": "76f8f28816e347866a59b90e3d8c2ee1654786e9dbec13eddcdc750e0bf3fe18"
+  },
+  "states_captured": 24,
+  "image_hashes_verified": 24,
+  "console_errors": [],
+  "failed_responses": [],
+  "geometry": {
+    "desktop": {
+      "document_height_px": 1135,
+      "elements_wider_than_viewport": 0,
+      "horizontal_overflow": false
+    },
+    "mobile": {
+      "document_height_px": 2351,
+      "elements_wider_than_viewport": 0,
+      "horizontal_overflow": false
+    }
+  },
+  "principal_visual_inspection": "Eight resting screenshots plus live Paper R3 source-detail boards inspected; coherent hierarchy, explicit recorded/unavailable state and no observed page-local clipping. Independent visual approval is not claimed.",
+  "limitations": [
+    "Anonymous loopback render only; no authenticated or production proof.",
+    "Desktop startup displacement remains open; no refused startup diagnosis was replayed.",
+    "Generic asof_present/source_present probes are false although actual source labels/times are visibly rendered; raw observations retained.",
+    "Existing R3 disclosure/recovery fixtures are separate from canonical static output.",
+    "Source and qualified visual review remain held under their original effects."
+  ]
+}

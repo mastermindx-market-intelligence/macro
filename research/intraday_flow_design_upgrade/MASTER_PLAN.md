@@ -294,8 +294,29 @@ startup remain distinct dependencies; no merge, rebase, deployment or release-st
 - [x] Freeze R3 specification above; reuse native-popover and existing source state.
 - [x] Add failing source-details contracts, implement the scoped disclosure, regenerate
   with canonical writer/optimizer, then pass old/new scoped and browser tests.
-- [ ] Commit/publish exact source+visual proof and cumulative handoff on original PR.
+- [x] R3 source published at74afb2b; fresh canonical24-state proof captured at product-identical dcda26d6. See SOURCE_DETAILS_R3.md and source-r3-canonical/.
 - [ ] Resolve original independent-review/visual-placement gates without denied replay;
   latest-head CI, shared-nav stability and genuine production proof remain required.
 
 R3 implementation verification:329scoped pytest,515baselinebrowser,244recoverycompat,201source-disclosure browser assertions; see SOURCE_DETAILS_R3.md. Current-source canonical capture, publication and independent acceptance remain next.
+
+### P3.4 — Field-guide meaning parity (bounded continuation)
+
+Dependency: R3 canonical source verification. Editorial state: ready.
+Outcome: opening the existing field guide explains the same recorded assessment
+and source limits as the scan and source panel, in EN/ZH. Preserve all six labels,
+all four guide sections and the advanced evidence journey. Existing descriptions
+claim a live continuation setup, recommend present holding/stop actions, and
+conflate approximate call buying/selling with call-heavy/put-heavy positioning.
+Scope: bilingual template copy, canonical rendered page, targeted browser/visual
+evidence; no classifier, freshness, polling, shared-nav or data change.
+DARK TREATMENT: existing calm raised graphite guide with semantic ink. LIGHT
+TREATMENT: existing white research surface with neutral hairlines. No style or
+closed-scan geometry change is intended.
+DONE_WHEN: both languages accurately explain recorded conditions, distinguish
+call-only approximate direction from calls+puts net premium and unknown side,
+and identify dealer levels as context with an unavailable source clock. Native
+keyboard disclosures preserve filters/selection; 390/1440 layouts wrap without
+overflow. All model/fetch/polling regions remain byte-identical. Principal retains
+this coupled semantic design repair for PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD.
+Independent review remains separately held; this task does not replace it.
