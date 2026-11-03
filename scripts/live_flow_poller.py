@@ -141,8 +141,8 @@ DEFAULT_ETF_ANCHORS = [
 # FC-R6: Core roots are polled every cycle when two-tier mode is on.
 TIER1_ROOTS = [
     *DEFAULT_ETF_ANCHORS,
-    # Mag7
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
+    # Mag7: Alphabet Class A and Class C are distinct options roots.
+    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "GOOG", "META", "TSLA",
     # Memory storage (flow continuity names)
     "MU", "WDC", "STX", "SNDK",
 ]

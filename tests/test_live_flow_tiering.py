@@ -629,6 +629,32 @@ class TestProductionLiveFlowConfig:
         assert cfg["top_names"] == 128
         assert cfg["max_concurrent"] == 2
 
+    def test_alphabet_share_classes_both_get_tier1_cycle_frequency(self, monkeypatch):
+        """GOOG must not be a four-cycle tail while GOOGL gets every cycle.
+
+        Production enables the existing two-tier scheduler. Both Alphabet options
+        roots need the same freshness tier; other priority stocks still rotate.
+        """
+        from engine import options_universe
+
+        poller = _import_poller()
+        cfg = yaml.safe_load((Path(__file__).resolve().parents[1] / "config.yml").read_text())["live_flow"]
+        monkeypatch.setenv(poller.TWO_TIER_ENV, "1")
+        monkeypatch.delenv(poller.MAX_CONCURRENT_ENV, raising=False)
+        monkeypatch.setattr(options_universe, "gex_symbols", lambda **_: ["SPY", "GOOG", "GOOGL", "AMD"])
+        configured = poller._resolve_universe(cfg)
+        assert {"GOOG", "GOOGL", "XOM"} <= set(configured)
+        assert poller._max_concurrent(cfg) == 2
+
+        seen_tail = []
+        for n in range(1, 5):
+            cycle, _slot = poller._select_cycle_roots(configured, n, cfg)
+            assert "GOOG" in cycle, f"Class C missed tier-1 cycle {n}"
+            assert "GOOGL" in cycle, f"Class A missed tier-1 cycle {n}"
+            assert len(cycle) == len(set(cycle))
+            seen_tail.append("XOM" in cycle)
+        assert seen_tail.count(True) == 1  # Long-tail rotation remains in force.
+
     def test_priority_names_survive_missing_baskets(self, monkeypatch):
         from engine import options_universe
 
