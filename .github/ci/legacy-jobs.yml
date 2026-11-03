@@ -20539,6 +20539,8 @@ jobs:
       # so it needs the data stack below.
       - name: every page builder emits the shim (runs each against a fixture root)
         run: python -m pytest tests/test_builder_shim_writes.py -q
+      - name: support receipt routing explanation (synthetic DOM)
+        run: python -m pytest tests/test_support_page_js.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
       - name: Forex context bus (synthetic inputs, temporary output)

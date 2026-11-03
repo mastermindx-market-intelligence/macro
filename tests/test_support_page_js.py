@@ -420,3 +420,42 @@ def test_the_renamed_honeypot_still_files_under_the_website_key(page_js, hp_id, 
     )
     assert out["body"]["website"] == "http://spam.test"
     assert set(out["body"]) == {"email", "topic", "subject", "message", "lang", "website", "t0"}
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_success_displays_server_routing_explanation_as_text(page, page_js, hp_id, tmp_path, lang):
+    assert 'id="slip-routing"' in page
+    assert 'id="slip-routing-en" class="l-en"' in page
+    assert 'id="slip-routing-zh" class="l-zh"' in page
+    routing = {"promise_en": "General support.", "promise_zh": "普通支持。",
+               "note_en": "We could not read your plan <test>.", "note_zh": "暂时无法读取方案。"}
+    out = _run(page_js, FILLED + "DOM.nodes['#tk-form'].fire('submit');"
+        + "setTimeout(function(){ OUT({en: DOM.nodes['#slip-routing-en'].textContent,"
+        + "zh: DOM.nodes['#slip-routing-zh'].textContent,"
+        + "html: DOM.nodes['#slip-routing-en'].innerHTML,"
+        + "hidden: DOM.nodes['#slip-routing'].hasAttribute('hidden')}); }, 200);",
+        {"hp": hp_id, "lang": lang, "routing": routing}, tmp_path)
+    assert out == {"en": routing["promise_en"] + " " + routing["note_en"],
+                   "zh": routing["promise_zh"] + " " + routing["note_zh"],
+                   "html": "", "hidden": False}
+
+
+@needs_node
+@pytest.mark.parametrize("routing", [None, {}, {"promise_en": 42, "note_zh": {"bad": "shape"}}])
+def test_old_or_invalid_routing_is_not_a_plan_claim(page_js, hp_id, tmp_path, routing):
+    out = _run(page_js, FILLED + "DOM.nodes['#tk-form'].fire('submit');"
+        + "setTimeout(function(){ OUT({hidden: DOM.nodes['#slip-routing'].hasAttribute('hidden'),"
+        + "en: DOM.nodes['#slip-routing-en'].textContent,zh: DOM.nodes['#slip-routing-zh'].textContent}); }, 200);",
+        {"hp": hp_id, "routing": routing}, tmp_path)
+    assert out == {"hidden": True, "en": "", "zh": ""}
+
+
+@needs_node
+def test_new_request_clears_prior_routing_explanation(page_js, hp_id, tmp_path):
+    out = _run(page_js, FILLED + "DOM.nodes['#tk-form'].fire('submit');"
+        + "setTimeout(function(){ DOM.nodes['#s-again'].fire('click'); OUT({"
+        + "hidden: DOM.nodes['#slip-routing'].hasAttribute('hidden'),"
+        + "en: DOM.nodes['#slip-routing-en'].textContent,zh: DOM.nodes['#slip-routing-zh'].textContent}); }, 200);",
+        {"hp": hp_id, "routing": {"promise_en": "Priority support.", "promise_zh": "优先支持。"}}, tmp_path)
+    assert out == {"hidden": True, "en": "", "zh": ""}
