@@ -1351,6 +1351,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3516,6 +3518,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4605,6 +4609,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4739,6 +4745,8 @@ jobs:
       - "scripts/refresh_event_workspaces.py"
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17634,6 +17642,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -18594,6 +18604,8 @@ jobs:
       - "engine/company_intelligence/issuer_supplements.py"
       # main aee0f40a (#9499): issuer_supplements.py imports rms_segment_profile lazily
       - "engine/company_intelligence/rms_segment_profile.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19763,6 +19775,8 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26962,6 +26976,8 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -32895,6 +32911,8 @@ jobs:
       - "tests/test_government_program_ontology.py"
       - "tests/test_government_program_ontology_scripts.py"
       - "tests/test_government_revenue_award_events.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -39058,6 +39076,8 @@ jobs:
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
       - "scripts/build_security_master.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     # Was 5. It stopped at 43% of its tests and voided the four later jobs in
     # data-pack-2 the same way as capital-structure-intelligence above.
     timeout-minutes: 15
@@ -45444,6 +45464,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -50845,6 +50867,8 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # #9112: issuer_profiles.py lazily loads the Alphabet communications profiles (widen only).
+      - "engine/company_intelligence/communications_profiles.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50907,6 +50931,16 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "tests/test_communications_issuer_enrollment.py"
+      # Closure growth from main 19a896b9: event_workspace.py, lib/pages.py and the issuer_profiles.py fallback chains (widen only).
+      - "engine/company_intelligence/defense_cash_profiles.py"
+      - "engine/company_intelligence/defense_profiles.py"
+      - "engine/company_intelligence/defense_space_profiles.py"
+      - "engine/company_intelligence/gd_profile.py"
+      - "engine/company_intelligence/industrials_profiles.py"
+      - "engine/company_intelligence/issuer_supplements.py"
+      - "engine/company_intelligence/rms_segment_profile.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
