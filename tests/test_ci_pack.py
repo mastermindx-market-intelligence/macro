@@ -8348,7 +8348,12 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
     # ``fatal: not a git repository`` (rc=128). Blocked discovery makes
     # ``_find_repo_root`` fall back to ``workflow.parent`` == ``tmp_path``,
     # so the fixture census prints ``pairs=2`` under any ``--basetemp``.
-    # This synthetic temp workflow is not the protected checkout; keep the\n    # trusted-root binding in production and drop it ONLY in this child.\n    child_env = dict(os.environ)\n    child_env.pop("MASTERMIND_TRUSTED_CI_REPO_ROOT", None)\n    child_env["GIT_CEILING_DIRECTORIES"] = str(tmp_path.resolve().parent)\n    proc = subprocess.run(
+    # This synthetic temp workflow is not the protected checkout; keep the
+    # trusted-root binding in production and drop it ONLY in this child.
+    child_env = dict(os.environ)
+    child_env.pop("MASTERMIND_TRUSTED_CI_REPO_ROOT", None)
+    child_env["GIT_CEILING_DIRECTORIES"] = str(tmp_path.resolve().parent)
+    proc = subprocess.run(
         [
             sys.executable,
             str(script),
