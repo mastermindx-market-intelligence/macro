@@ -1,16 +1,8 @@
 {% extends "report_base.html.j2" %}
 {% macro t(en, zh='') -%}
-<span class="l-en" lang="en">{{ en|safe }}</span><span class="l-zh" lang="zh-Hans">{{ (zh if zh else en)|safe }}</span>
+<span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}
 
-{# Existing liquidity-plumbing UI labels: canonical template owner committee.html.j2.
-   Copy only labels, never its internal route, controls or model authority. #}
-{% macro state_label(value, pairs) -%}
-{% if value is string and value in pairs %}{{ t(pairs[value][0], pairs[value][1]) }}{% else %}{{ value }}{% endif %}
-{%- endmacro %}
-{% set PL_STATE = {'benign_liquidity_tailwind':['Benign Tailwind','良性顺风'],'mechanical_liquidity_tailwind':['Mechanical Tailwind','机械性顺风'],'stress_liquidity_expansion':['Stress Expansion','压力扩张'],'neutral_with_buffer':['Neutral — Buffer Intact','中性 — 缓冲充足'],'neutral_hollow':['Neutral — Hollow','中性 — 缓冲耗尽'],'orderly_drain':['Orderly Drain','有序收缩'],'data_degraded':['Data Degraded','数据降级']} %}
-{% set RRP_STATE = {'abundant':['Abundant','充裕'],'adequate':['Adequate','充分'],'exhausted':['Exhausted','耗尽'],'unknown':['Unknown','未知']} %}
-{% set RESERVE_STATE = {'comfortable':['Comfortable','宽松'],'normalizing':['Normalizing','正常化'],'tightening':['Tightening','趋紧'],'scarce':['Scarce','稀缺'],'unknown':['Unknown','未知']} %}
 {% block title %}White House Watch{% endblock %}
 
 {%- block head_extra %}
@@ -21,82 +13,124 @@
 {%- endblock %}
 
 {% block base_css %}
-  .wh-hero,.wh-tre,.wh-list,.wh-empty,.wh-pagedisc { max-width:1060px; margin:24px auto 0; }
-  .wh-hero,.wh-tre,.wh-card,.wh-empty,.wh-pagedisc { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-panel,14px); padding:24px; box-shadow:var(--card-shadow); }
-  html[data-theme="dark"] :is(.wh-hero,.wh-tre,.wh-card,.wh-empty,.wh-pagedisc) { box-shadow:none; border-color:var(--line-quiet); }
-  html[data-theme="light"] :is(.wh-hero,.wh-tre,.wh-card) { background:var(--panel); box-shadow:var(--card-shadow); }
-  .wh-kick,.wh-tre .tk { font-size:var(--fs-label); color:var(--muted); margin:0 0 8px; font-weight:600; letter-spacing:.06em; }
-  .wh-hero h1 { font-size:var(--fs-h1); line-height:1.2; margin:0 0 8px; font-weight:800; }
-  .wh-hero .sub,.wh-tre p.sub { font-size:var(--fs-md); color:var(--text); margin:0; max-width:68ch; }
-  .wh-method { margin-top:16px; color:var(--muted); max-width:72ch; }
-  .wh-method summary,.wh-outline summary { cursor:pointer; font-weight:600; min-height:40px; align-content:center; }
-  .wh-method p { font-size:var(--fs-sm); line-height:1.65; }
-  .wh-list { display:flex; flex-direction:column; gap:24px; }
-  .wh-card { scroll-margin-top:84px; min-width:0; }
-  .wh-card .row1 { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:12px; }
-  .wh-badge,.wh-chip { font-size:var(--fs-label); font-weight:600; padding:4px 8px; border-radius:var(--r-pill,999px); border:1px solid var(--line); white-space:nowrap; }
-  .wh-badge.live,.wh-badge.tre,.wh-chip.mut { color:var(--text); background:var(--panel2); }
-  .wh-badge.tone-tailwind,.wh-dir.benefit,.wh-chg.up,.wh-stat .up { color:var(--ink-up); }
-  .wh-badge.tone-headwind,.wh-dir.hurt,.wh-chg.dn,.wh-stat .dn { color:var(--ink-down); }
-  .wh-badge.tone-mixed,.wh-chip.amber { color:var(--ink-warn); }
-  .wh-badge.tone-neutral,.wh-dir.neutral,.wh-when { color:var(--muted); }
-  .wh-chip.green { color:var(--ink-ok); } .wh-chip.red { color:var(--ink-act); }
-  .wh-when { font-size:var(--fs-sm); }
-  .wh-card h2 { font-size:var(--fs-num-lg); line-height:1.3; margin:0 0 12px; max-width:48ch; font-weight:800; }
-  .wh-summary { font-size:var(--fs-md); line-height:1.65; max-width:68ch; margin:0 0 20px; }
-  .wh-reader-layout { display:grid; grid-template-columns:minmax(0,1fr) 220px; grid-template-areas:"reading rail"; gap:32px; align-items:start; }
-  .wh-reading { grid-area:reading; min-width:0; }
-  .wh-report-tools { grid-area:rail; min-width:0; }
-  .wh-outline { background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card,12px); padding:8px 12px; }
-  html[data-theme="light"] .wh-outline { background:var(--bg); }
-  .wh-outline nav { display:flex; flex-direction:column; gap:4px; padding:8px 0; }
-  .wh-outline a { display:block; padding:8px; min-height:40px; color:var(--ink-link); font-size:var(--fs-sm); text-decoration:none; border-radius:var(--r-ctl,8px); }
-  .wh-outline a[aria-current="location"] { color:var(--text); background:var(--panel); font-weight:700; }
-  .wh-outline a:focus-visible,.wh-method summary:focus-visible,.wh-outline summary:focus-visible,.wh-src a:focus-visible { outline:2px solid var(--ink-link); outline-offset:3px; }
-  .wh-reading [id] { scroll-margin-top:96px; }
-  .wh-reading [id]:target { outline:2px solid var(--ink-link); outline-offset:4px; }
-  .wh-language,.wh-disc,.wh-pagedisc,.wh-tre .foot { color:var(--muted); font-size:var(--fs-sm); line-height:1.65; }
-  .wh-language { margin:0 0 16px; }
-  .wh-body { max-width:68ch; font-size:var(--fs-body); line-height:1.75; }
-  .wh-body p { margin:0 0 16px; }
-  .wh-sub-h { font-size:var(--fs-h3); color:var(--text); margin:24px 0 12px; font-weight:700; }
-  table.wh-tbl { border-collapse:collapse; width:100%; font-size:var(--fs-sm); margin:4px 0 16px; }
-  table.wh-tbl th { text-align:left; padding:8px 12px; background:var(--panel2); color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); }
-  table.wh-tbl td { padding:8px 12px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.6; }
-  .wh-dir,.wh-chg,.wh-sym { font-weight:600; font-variant-numeric:tabular-nums; }
-  .wh-dir { font-size:var(--fs-label); white-space:nowrap; }
-  a.wh-sym { color: inherit; text-decoration: underline dotted; display:inline-flex; align-items:center; min-width:40px; min-height:40px; text-underline-offset:3px; padding-block:6px; }
-  .wh-chg { font-size:var(--fs-sm); }
-  .wh-src { font-size:var(--fs-sm); margin:24px 0 16px; }
-  .wh-src a { color:var(--ink-link); overflow-wrap:anywhere; display:inline-flex; align-items:center; min-width:40px; min-height:40px; }
-  .wh-disc { border-top:1px solid var(--line); padding-top:12px; max-width:72ch; }
-  .wh-meter { color:var(--muted); font-size:var(--fs-sm); margin-top:16px; }
-  .wh-meter .bar { display:block; width:100%; height:4px; margin:8px 0; border-radius:var(--r-ctl,8px); background:var(--line-quiet); overflow:hidden; }
-  .wh-meter .bar > i { display:block; height:100%; background:var(--muted); }
-  .wh-meter .wh-meter-label { display:block; line-height:1.6; }
-  .wh-empty { text-align:left; color:var(--muted); }
-  .wh-stats { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
-  .wh-stat { flex:1 1 150px; min-width:138px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card,12px); padding:12px; }
-  .wh-stat .lab { font-size:var(--fs-label); color:var(--muted); margin:0 0 4px; }
-  .wh-stat .val { font-size:var(--fs-num-lg); font-weight:700; font-variant-numeric:tabular-nums; line-height:1.2; }
-  .wh-stat .val .u,.wh-stat .delta { font-size:var(--fs-sm); }
-  .wh-tre h2 { font-size:var(--fs-h2); margin:0 0 8px; }
-  .wh-tre .impulse { font-size:var(--fs-body); line-height:1.65; margin:16px 0; padding:12px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card,12px); }
-  .wh-tre .sparkwrap { margin:16px 0 4px; }
-  .wh-tre .sparkcap { display:flex; justify-content:space-between; font-size:var(--fs-label); color:var(--muted); font-variant-numeric:tabular-nums; }
+  .wh-hero { max-width:1060px; margin:16px auto 0; background:var(--panel); border:1px solid var(--line);
+             border-radius:16px; padding:24px 28px; position:relative; overflow:hidden; box-shadow:var(--card-shadow); }
+  .wh-hero::before { content:""; position:absolute; inset:0 0 auto 0; height:4px;
+             background:linear-gradient(90deg,#1f4ea8,color-mix(in srgb,#1f4ea8 22%,transparent)); }
+  .wh-kick { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-link, var(--link)); margin:0 0 8px; font-weight:700; }
+  .wh-hero h1 { font-size:27px; line-height:1.18; margin:0 0 8px; letter-spacing:-.01em; }
+  .wh-hero p.sub { font-size:14.5px; color:var(--text); opacity:.82; margin:0; max-width:80ch; }
+  .wh-empty { max-width:1060px; margin:22px auto; padding:30px; text-align:center; color:var(--muted);
+              border:1px dashed var(--line); border-radius:14px; }
+
+  .wh-list { max-width:1060px; margin:22px auto 0; display:flex; flex-direction:column; gap:18px; }
+  .wh-card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px;
+             scroll-margin-top:84px; position:relative; box-shadow:var(--card-shadow); }
+  .wh-card.live { border-color:#b23b4e66; }
+  .wh-card .row1 { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:8px; }
+  .wh-badge { font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+              padding:4px 9px; border-radius:999px; border:1px solid var(--line); white-space:nowrap; }
+  .wh-badge.live { color:#fff; background:#b23b4e; border-color:#b23b4e; }
+  .wh-badge.tone-tailwind { color:#1f9a55; border-color:#1f9a5566; }
+  .wh-badge.tone-headwind { color:#d23f3f; border-color:#d23f3f66; }
+  html[data-lang="zh"] .wh-badge.tone-tailwind { color:#d23f3f; border-color:#d23f3f66; }
+  html[data-lang="zh"] .wh-badge.tone-headwind { color:#1f9a55; border-color:#1f9a5566; }
+  .wh-badge.tone-mixed    { color:#d9a441; border-color:#d9a44166; }
+  .wh-badge.tone-neutral  { color:var(--muted); }
+  .wh-when { font-size:12px; color:var(--muted); }
+  .wh-card h2 { font-size:20px; line-height:1.25; margin:2px 0 6px; }
+  .wh-summary { font-size:14.5px; opacity:.92; margin:0 0 6px; }
+
+  .wh-meter { display:flex; align-items:center; gap:9px; margin:10px 0 4px; font-size:11.5px; color:var(--muted); }
+  .wh-meter .bar { flex:0 0 130px; height:7px; border-radius:999px; background:var(--panel2); overflow:hidden; border:1px solid var(--line); }
+  .wh-meter .bar > i { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#1f4ea8,#b23b4e); }
+
+  .wh-body { font-size:14px; line-height:1.7; margin:10px 0; }
+  .wh-body p { margin:8px 0; opacity:.93; }
+
+  .wh-sub-h { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:16px 0 7px; font-weight:700; }
+  table.wh-tbl { border-collapse:collapse; width:100%; font-size:13px; margin:4px 0 2px; }
+  table.wh-tbl th { text-align:left; padding:7px 10px; background:var(--panel2); color:var(--muted); font-weight:600; border-bottom:2px solid var(--line); }
+  table.wh-tbl td { padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.wh-tbl tr:hover td { background:var(--panel2); }
+  .wh-dir { font-weight:700; font-size:11.5px; white-space:nowrap; }
+  .wh-dir.benefit { color:#1f9a55; }
+  .wh-dir.hurt { color:#d23f3f; }
+  .wh-dir.neutral { color:var(--muted); }
+  html[data-theme="dark"] .wh-dir.benefit { color:#3fc07e; }
+  html[data-theme="dark"] .wh-dir.hurt { color:#ef6a6a; }
+  html[data-lang="zh"] .wh-dir.benefit { color:#d23f3f; }
+  html[data-lang="zh"] .wh-dir.hurt { color:#1f9a55; }
+  html[data-lang="zh"][data-theme="dark"] .wh-dir.benefit { color:#ef6a6a; }
+  html[data-lang="zh"][data-theme="dark"] .wh-dir.hurt { color:#3fc07e; }
+  .wh-sym { font-weight:700; font-variant-numeric:tabular-nums; }
+  a.wh-sym { color: inherit; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; padding-block: 6px; }
+  a.wh-sym:hover, a.wh-sym:focus-visible { text-decoration-style: solid; }
+  .wh-chg { font-variant-numeric:tabular-nums; font-size:12px; }
+  .wh-chg.up { color:#1f9a55; } .wh-chg.dn { color:#d23f3f; }
+  html[data-theme="dark"] .wh-chg.up { color:#3fc07e; } html[data-theme="dark"] .wh-chg.dn { color:#ef6a6a; }
+  html[data-lang="zh"] .wh-chg.up { color:#d23f3f; } html[data-lang="zh"] .wh-chg.dn { color:#1f9a55; }
+  html[data-lang="zh"][data-theme="dark"] .wh-chg.up { color:#ef6a6a; } html[data-lang="zh"][data-theme="dark"] .wh-chg.dn { color:#3fc07e; }
+
+  .wh-src { font-size:12.5px; margin:14px 0 2px; }
+  .wh-src a { color:var(--ink-link, var(--link)); word-break:break-word; }
+  .wh-disc { font-size:11.5px; color:var(--muted); border-top:1px solid var(--line); margin-top:14px; padding-top:10px; }
+  .wh-pagedisc { max-width:1060px; margin:18px auto 0; font-size:12px; color:var(--muted);
+                 border:1px solid var(--line); border-radius:12px; padding:12px 16px; background:var(--panel2); }
+
+  /* Treasury Watch panel — the TGA liquidity read (money-green → gold accent) */
+  .wh-tre { max-width:1060px; margin:22px auto 0; background:var(--panel); border:1px solid var(--line);
+            border-radius:16px; padding:22px 24px; box-shadow:var(--card-shadow); position:relative; overflow:hidden; }
+  .wh-tre::before { content:""; position:absolute; inset:0 0 auto 0; height:4px;
+            background:linear-gradient(90deg,#1f7a4e,#2f8f6f 55%,#d9a441); }
+  .wh-tre .tk { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-link, var(--link)); margin:0 0 6px; font-weight:700; }
+  .wh-tre h2 { font-size:19px; line-height:1.2; margin:0 0 4px; letter-spacing:-.01em; }
+  .wh-tre p.sub { font-size:13px; color:var(--text); opacity:.78; margin:0 0 14px; max-width:78ch; }
+  .wh-stats { display:flex; flex-wrap:wrap; gap:10px 12px; margin:0 0 6px; }
+  .wh-stat { flex:1 1 150px; min-width:138px; background:var(--panel2); border:1px solid var(--line);
+             border-radius:12px; padding:10px 13px; }
+  .wh-stat .lab { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin:0 0 3px; }
+  .wh-stat .val { font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.15; }
+  .wh-stat .val .u { font-size:12px; font-weight:600; opacity:.6; }
+  .wh-stat .delta { font-size:12px; font-variant-numeric:tabular-nums; margin-top:2px; }
+  .wh-stat .delta.up { color:#1f9a55; } .wh-stat .delta.dn { color:#d23f3f; }
+  .wh-stat .val.up { color:#1f9a55; } .wh-stat .val.dn { color:#d23f3f; }
+  html[data-theme="dark"] .wh-stat .delta.up, html[data-theme="dark"] .wh-stat .val.up { color:#3fc07e; }
+  html[data-theme="dark"] .wh-stat .delta.dn, html[data-theme="dark"] .wh-stat .val.dn { color:#ef6a6a; }
+  html[data-lang="zh"] .wh-stat .delta.up, html[data-lang="zh"] .wh-stat .val.up { color:#d23f3f; }
+  html[data-lang="zh"] .wh-stat .delta.dn, html[data-lang="zh"] .wh-stat .val.dn { color:#1f9a55; }
+  html[data-lang="zh"][data-theme="dark"] .wh-stat .delta.up, html[data-lang="zh"][data-theme="dark"] .wh-stat .val.up { color:#ef6a6a; }
+  html[data-lang="zh"][data-theme="dark"] .wh-stat .delta.dn, html[data-lang="zh"][data-theme="dark"] .wh-stat .val.dn { color:#3fc07e; }
+  .wh-chip { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.03em;
+             padding:3px 9px; border-radius:999px; border:1px solid var(--line); }
+  .wh-chip.green { color:#1f9a55; border-color:#1f9a5566; }
+  .wh-chip.amber { color:#d9a441; border-color:#d9a44166; }
+  .wh-chip.red   { color:#d23f3f; border-color:#d23f3f66; }
+  .wh-chip.mut   { color:var(--muted); }
+  html[data-theme="dark"] .wh-chip.green { color:#3fc07e; }
+  .wh-tre .impulse { font-size:13.5px; line-height:1.55; margin:12px 0; padding:10px 13px;
+             background:var(--panel2); border-radius:10px; border-left:3px solid #2f8f6f; }
+  .wh-tre .sparkwrap { margin:12px 0 2px; }
+  .wh-tre .sparkcap { display:flex; justify-content:space-between; font-size:10.5px; color:var(--muted);
+             margin:0 0 4px; font-variant-numeric:tabular-nums; }
   .wh-spark { width:100%; height:64px; display:block; }
-  .wh-tre .foot { border-top:1px solid var(--line); padding-top:12px; margin:16px 0 0; }
-  html[data-lang="zh"] :is(.wh-kick,.wh-tre .tk) { letter-spacing:normal; }
-  @media(max-width:820px) { .wh-reader-layout { grid-template-columns:minmax(0,1fr); grid-template-areas:"rail" "reading"; gap:20px; } }
-  @media(max-width:480px) { .wh-hero,.wh-tre,.wh-card,.wh-empty,.wh-pagedisc { padding:16px; } .wh-list { gap:16px; } .wh-card h2 { overflow-wrap:anywhere; } }
+  .wh-tre .foot { font-size:11.5px; color:var(--muted); margin:12px 0 0; border-top:1px solid var(--line); padding-top:9px; }
+  .wh-badge.tre { color:#1f7a4e; border-color:#1f7a4e66; }
+  html[data-theme="dark"] .wh-badge.tre { color:#3fc07e; }
 {% endblock %}
 
 {% block content %}
 <header class="wh-hero">
-  <p class="wh-kick">{{ t('White House Watch', '白宫快讯') }}</p>
-  <h1>{{ t('Policy reports', '政策报告') }}</h1>
-  <p class="sub">{{ t('Dated sources, AI context, and the original evidence to check.', '查看来源日期、AI解读与可核对的原文。') }}</p>
-  <details class="mx-disc wh-method"><summary>{{ t('How to read this desk', '如何阅读本页') }}</summary><p>{{ t('Source publication and the date an AI read was written are separate. Original AI text is retained; translated titles and summaries appear where available. Named fallback models are shown when recorded. A live badge describes the banner period, not a new event or a verified conclusion.', '来源发布与AI解读撰写日期分别列示。AI正文保留原文；如有译文，将显示中文标题与摘要。流程记录了备用模型时会注明。生效标签指横幅展示期，不代表新事件或结论已获验证。') }}</p></details>
+  <p class="wh-kick">🏛️ {{ t('White House Watch', '白宫快讯') }}</p>
+  <h1>{{ t('Policy alerts, market-read', '政策快讯 · 市场解读') }}</h1>
+  <p class="sub">{{ t('Every White House announcement is monitored. When one is judged market-moving, an AI model writes the read below — implications, sector head/tailwinds, and the names most exposed. Banners surface the live ones across the site.',
+        '持续监控白宫的每一条公告。当某条被判定为可能影响市场时，AI 模型在下方给出解读——影响、行业的顺逆风，以及最受影响的标的。横幅会在全站推送仍然有效的快讯。') }}
+    {{ t('The configured model is asked first; when it is unavailable a fallback model writes the read, and the card names that model wherever the pipeline recorded the fallback.',
+         '首先调用配置的模型；当其不可用时由备用模型撰写解读，凡流程记录了备用情况的卡片都会注明该模型。') }}
+    {% if n_fallback %}{{ t(n_fallback ~ ' of the ' ~ alerts|length ~ ' reads below were written by a fallback model.',
+         '下方 ' ~ alerts|length ~ ' 条解读中有 ' ~ n_fallback ~ ' 条由备用模型撰写。') }}{% endif %}
+    {{ t('Major Treasury cash-flow moves — the TGA account at the Fed — are tracked the same way.',
+         '财政部的重大现金流动（联储的 TGA 账户）也以同样方式跟踪。') }}</p>
 </header>
 
 {% if treasury %}
@@ -108,7 +142,7 @@
 {% set hs = (pl.headline_state if pl else '') or '' %}
 {% set hcls = 'green' if hs.startswith('benign') else ('red' if (hs.startswith('orderly_drain') or hs.startswith('contract')) else ('amber' if hs.startswith('stress') else 'mut')) %}
 <section class="wh-tre" id="treasury-watch">
-  <p class="tk">{{ t('Treasury Watch', '财政部观察') }}</p>
+  <p class="tk">💵 {{ t('Treasury Watch', '财政部观察') }}</p>
   <h2>{{ t('Treasury liquidity — the TGA read', '财政部流动性 · TGA 解读') }}</h2>
   <p class="sub">{{ t('The Treasury General Account (TGA) is Treasury’s cash at the Fed. When it falls, that cash lands in bank reserves — a mechanical liquidity injection; when it rebuilds, reserves drain. Large quarter-end and debt-ceiling swings can backstop or tighten the tape.',
         '财政部一般账户（TGA）是财政部在美联储的现金余额。余额下降时，现金进入银行准备金——形成机械性的流动性注入；余额回补时，准备金被抽离。季末与债务上限相关的大幅波动可能托底或收紧市场。') }}</p>
@@ -146,22 +180,21 @@
     {% if pl and pl.rrp_buffer_state %}
     <div class="wh-stat">
       <div class="lab">{{ t('RRP buffer', '逆回购缓冲') }}{% if nl and nl.rrp_bn is number %} · ${{ '%.1f'|format(nl.rrp_bn) }}bn{% endif %}</div>
-      <div class="val" style="font-size:var(--fs-md)">{{ state_label(pl.rrp_buffer_state, RRP_STATE) }}</div>
-      {% if pl.reserve_scarcity_state %}<div class="delta">{{ t('reserves', '准备金') }}: {{ state_label(pl.reserve_scarcity_state, RESERVE_STATE) }}</div>{% endif %}
+      <div class="val" style="font-size:15px">{{ pl.rrp_buffer_state }}</div>
+      {% if pl.reserve_scarcity_state %}<div class="delta">{{ t('reserves', '准备金') }}: {{ pl.reserve_scarcity_state }}</div>{% endif %}
     </div>
     {% endif %}
 
     {% if hs %}
     <div class="wh-stat">
       <div class="lab">{{ t('Plumbing state', '流动性状态') }}</div>
-      <div class="val" style="font-size:var(--fs-sm);padding-top:4px"><span class="wh-chip {{ hcls }}">{{ state_label(hs, PL_STATE) }}</span></div>
+      <div class="val" style="font-size:13px;padding-top:3px"><span class="wh-chip {{ hcls }}">{{ hs }}</span></div>
     </div>
     {% endif %}
   </div>
   {% endif %}
 
   {% if pl and pl.headline_summary_en %}
-  {% if not pl.headline_summary_zh %}<p class="wh-language">{{ t('Retained context · original text', '已保留背景 · 原文展示') }}</p>{% endif %}
   <div class="impulse"><span class="l-en">{{ pl.headline_summary_en }}</span><span class="l-zh">{{ pl.headline_summary_zh or pl.headline_summary_en }}</span></div>
   {% endif %}
 
@@ -184,24 +217,25 @@
 {% endif %}
 
 {% if not alerts %}
-  <div class="wh-empty">{{ t('No retained reports are available.', '暂无可查看的已保留报告。') }}<p>{{ t('Source links appear with each report when available.', '如有原文链接，将随报告列出。') }}</p></div>
+  <div class="wh-empty">{{ t('No market-moving White House announcements on watch right now. This page updates automatically when one lands.',
+       '当前没有需要关注的、可能影响市场的白宫公告。一旦出现，本页将自动更新。') }}</div>
 {% else %}
   <div class="wh-list">
   {% for a in alerts %}
     <section class="wh-card{{ ' live' if a.live else '' }}" id="{{ a.id }}">
       <div class="row1">
         {% if a.live %}<span class="wh-badge live">● {{ t('LIVE', '生效中') }}</span>{% endif %}
-        {% if a.section == 'treasury' %}<span class="wh-badge tre">{{ t('Treasury', '财政部') }}</span>{% endif %}
+        {% if a.section == 'treasury' %}<span class="wh-badge tre">💵 {{ t('Treasury', '财政部') }}</span>{% endif %}
         <span class="wh-badge tone-{{ a.tone }}">
           {% if a.tone == 'tailwind' %}{{ t('Tailwind', '顺风') }}
           {% elif a.tone == 'headwind' %}{{ t('Headwind', '逆风') }}
           {% elif a.tone == 'mixed' %}{{ t('Mixed', '涨跌互现') }}
           {% else %}{{ t('Neutral', '中性') }}{% endif %}
         </span>
-        <span class="wh-when">{% if a.date_display %}{{ t('Published', '来源发布') }} {{ a.date_display }}{% else %}{{ t('Source date unavailable', '来源日期不可用') }}{% endif %}{% if a.section %} · {% if a.section == 'news' %}{{ t('news', '白宫公告') }}{% elif a.section == 'treasury' %}{{ t('treasury', '财政部') }}{% else %}{{ a.section }}{% endif %}{% endif %}</span>
+        <span class="wh-when">🗓 {{ a.date_display }}{% if a.section %} · {{ a.section }}{% endif %}</span>
         {% if a.live and a.expires_display %}<span class="wh-when">· {{ t('banner live until', '横幅有效至') }} {{ a.expires_display }}</span>{% endif %}
-        {% if a.generated_display %}<span class="wh-when">· {{ t('read written', '解读撰写于') }} {{ a.generated_display }}</span>{% else %}<span class="wh-when">{{ t('AI read date unavailable', 'AI解读日期不可用') }}</span>{% endif %}
-        {% if a.confidence %}<span class="wh-when">· {{ t('AI confidence', 'AI置信度') }}: {% if a.confidence == 'low' %}{{ t('low', '低') }}{% elif a.confidence == 'medium' %}{{ t('medium', '中') }}{% elif a.confidence == 'high' %}{{ t('high', '高') }}{% else %}{{ a.confidence }}{% endif %}</span>{% endif %}
+        {% if a.generated_display and a.generated_display != a.date_display %}<span class="wh-when">· {{ t('read written', '解读撰写于') }} {{ a.generated_display }}</span>{% endif %}
+        {% if a.confidence %}<span class="wh-when">· {{ t('confidence', '置信度') }}: {{ a.confidence }}</span>{% endif %}
         {% if a.served_by %}<span class="wh-when">· {{ t('read by fallback', '备用模型撰写') }}: {{ a.served_by }}</span>{% endif %}
       </div>
 
@@ -209,37 +243,21 @@
 
       {% if a.summary %}<p class="wh-summary">{% if a.summary_zh %}<span class="l-en">{{ a.summary }}</span><span class="l-zh">{{ a.summary_zh }}</span>{% else %}{{ a.summary }}{% endif %}</p>{% endif %}
 
-      <div class="wh-reader-layout">
-      <aside class="wh-report-tools">
-        <details class="mx-disc wh-outline" data-wh-outline><summary id="{{ a.id }}-outline-label">{{ t('On this report', '本篇目录') }}</summary>
-          <nav aria-labelledby="{{ a.id }}-outline-label">
-            {% if a.paragraphs %}<a href="#{{ a.id }}-analysis">{{ t('AI analysis', 'AI解读') }}</a>{% endif %}
-            {% if a.sectors %}<a href="#{{ a.id }}-sectors">{{ t('Sector impact', '行业影响') }}</a>{% endif %}
-            {% if a.benefit %}<a href="#{{ a.id }}-benefit">{{ t('Names that benefit', '受益标的') }}</a>{% endif %}
-            {% if a.hurt %}<a href="#{{ a.id }}-hurt">{{ t('Names under pressure', '承压标的') }}</a>{% endif %}
-            <a href="#{{ a.id }}-source">{{ t('Source and context', '来源与背景') }}</a>
-          </nav>
-        </details>
       {% if a.importance is not none %}
       <div class="wh-meter">
-        <span class="wh-meter-label">{{ t('AI relevance · not a probability', 'AI重要性 · 非概率') }}</span>
+        <span>{{ t('Market significance', '市场重要性') }}</span>
         <span class="bar"><i style="width:{{ a.importance }}%"></i></span>
         <span>{{ a.importance }}/100</span>
       </div>
       {% endif %}
 
-      </aside>
-      {% set has_original = a.paragraphs or a.sectors or a.benefit or a.hurt %}
-      <div class="wh-reading"{% if has_original %} data-ai-original{% endif %}>
-      {% if has_original %}<p class="wh-language">{{ t('AI analysis · original text', 'AI解读 · 原文展示') }}<br>{{ t('This AI read is shown in its original language.', 'AI解读按生成时的原文展示。') }}</p>{% endif %}
       {% if a.paragraphs %}
-      <h3 class="wh-sub-h" id="{{ a.id }}-analysis" tabindex="-1">{{ t('AI analysis', 'AI解读') }}</h3>
       <div class="wh-body">{% for p in a.paragraphs %}<p>{{ p }}</p>{% endfor %}</div>
-      {% else %}<p>{{ t('An AI read is not available for this report. Check the original source.', '此报告暂无AI解读，请核对原文。') }}</p>{% endif %}
+      {% endif %}
 
       {% if a.sectors %}
-      <h3 class="wh-sub-h" id="{{ a.id }}-sectors" tabindex="-1">{{ t('Sector impact', '行业影响') }}</h3>
-      <table class="mx-tbl wh-tbl">
+      <div class="wh-sub-h">{{ t('Sector impact', '行业影响') }}</div>
+      <table class="wh-tbl">
         <thead><tr><th>{{ t('Sector', '行业') }}</th><th>{{ t('Impact', '影响') }}</th><th>{{ t('Why', '原因') }}</th></tr></thead>
         <tbody>
         {% for s in a.sectors %}
@@ -254,8 +272,8 @@
       {% endif %}
 
       {% if a.benefit %}
-      <h3 class="wh-sub-h" id="{{ a.id }}-benefit" tabindex="-1">{{ t('Names that benefit', '受益标的') }}</h3>
-      <table class="mx-tbl wh-tbl">
+      <div class="wh-sub-h">{{ t('Names that benefit', '受益标的') }}</div>
+      <table class="wh-tbl">
         <thead><tr><th>{{ t('Ticker', '代码') }}</th><th>{{ t('Recent', '近期') }}</th><th>{{ t('Thesis', '逻辑') }}</th></tr></thead>
         <tbody>
         {% for tk in a.benefit %}
@@ -271,8 +289,8 @@
       {% endif %}
 
       {% if a.hurt %}
-      <h3 class="wh-sub-h" id="{{ a.id }}-hurt" tabindex="-1">{{ t('Names under pressure', '承压标的') }}</h3>
-      <table class="mx-tbl wh-tbl">
+      <div class="wh-sub-h">{{ t('Names under pressure', '承压标的') }}</div>
+      <table class="wh-tbl">
         <thead><tr><th>{{ t('Ticker', '代码') }}</th><th>{{ t('Recent', '近期') }}</th><th>{{ t('Thesis', '逻辑') }}</th></tr></thead>
         <tbody>
         {% for tk in a.hurt %}
@@ -287,10 +305,8 @@
       </table>
       {% endif %}
 
-      <h3 class="wh-sub-h" id="{{ a.id }}-source" tabindex="-1">{{ t('Source and context', '来源与背景') }}</h3>
-      {% if a.source_url %}<p class="wh-src"><a href="{{ a.source_url }}" target="_blank" rel="noopener noreferrer">{% if a.section == 'treasury' %}{{ t('Read the primary Treasury source', '阅读财政部一手来源') }}{% else %}{{ t('Read the primary White House source', '阅读白宫一手来源') }}{% endif %} →</a></p>{% else %}<p class="wh-src">{{ t('Primary-source link unavailable.', '暂无一手来源链接。') }}</p>{% endif %}
-      <div class="wh-disc">{{ a.display_disclaimer or a.disclaimer or disclaimer }}</div>
-      </div></div>
+      <p class="wh-src">🔗 <a href="{{ a.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the primary White House source', '阅读白宫一手来源') }} →</a></p>
+      <div class="wh-disc">{{ a.disclaimer or disclaimer }}</div>
     </section>
   {% endfor %}
   </div>
@@ -303,18 +319,4 @@
   {{ t('— context only, not investment advice. The tickers named are illustrative of plausible exposure, not recommendations, and feed no score or allocation.',
        '生成——仅供参考，不构成投资建议。所列标的仅为可能受影响的示例，并非推荐，且不参与任何评分或配置。') }}
 </div>
-{% endblock %}
-
-{% block body_scripts %}
-<script>
-(function(){
-  const small=window.matchMedia('(max-width:820px)');
-  const outlines=Array.from(document.querySelectorAll('[data-wh-outline]'));
-  function size(){outlines.forEach(o=>{if(!o.dataset.whOutlineTouched)o.open=!small.matches;});}
-  function target(){outlines.forEach(o=>o.querySelectorAll('a[href^="#"]').forEach(a=>{if(a.hash===location.hash)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');}));}
-  size();target();
-  outlines.forEach(o=>{const s=o.querySelector('summary');s.addEventListener('click',()=>{o.dataset.whOutlineTouched='1';});s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')o.dataset.whOutlineTouched='1';});});
-  small.addEventListener('change',size);window.addEventListener('hashchange',target);
-})();
-</script>
 {% endblock %}

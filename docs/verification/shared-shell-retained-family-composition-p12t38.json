@@ -1,9 +1,12 @@
 {
   "task": "P12.T38",
-  "kind": "local reviewed-source composition, not release admission/queue/slot or runtime acceptance",
+  "kind": "four-family shipping source composition; protected proof/landing/serving remain separate",
   "original_root": "01a15e6c-42f8-7941-ac2b-296021932fbb",
   "parent": "01a15e87-3f2b-7411-8ad9-39933bb6bb32",
-  "protected_base": "fbe228fb24810ad6fc5a3c6c1c4e814ad50c8e33",
+  "protected_base": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+  "evidence_policy": "Original snapshots/reviews retain exact historical head/input identities; no restamp. Reuse requires exact imported source blobs and qualified unchanged dependencies; current data/served/auth state not inferred.",
+  "original_five_input_frozen_head": "5b6767613a0ba6bb3c4dc3b79d62ff62d02cdd5d",
+  "original_five_input_manifest_sha256": "4ffcb8d843e95d376d9c5bc89e77458a810d1e0c2b3e08019c31c536f6427468",
   "inputs": [
     {
       "task": "P12.T15",
@@ -144,324 +147,6 @@
       ]
     },
     {
-      "task": "P12.T34+P12.T35",
-      "source_head": "e05aa9473a99842daae65eb3d76bc9b027ca152a",
-      "source_base": "65510fed029015098675047753c104cbfa7e4180",
-      "source_tree": "7e08ae332c807ab6df0159215f2fe7df8e5a0d70",
-      "writer": "/Volumes/Mastermind 2/agent-workspaces/claude/cd8f6fc4b43f4cb4/whitehouse-source-label-p12t34-f5f6d0725551ccde",
-      "custody": "exact clean retained source on read; original carrier remains",
-      "proof": {
-        "path": "/Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/qualification.json",
-        "sha256": "262eb63b2a942fb1aaa6464485f6298682d59e266bb477ce1216592cdabfc67d"
-      },
-      "files": [
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/EVIDENCE.yml",
-          "mode": "100644",
-          "blob": "d80464a770f60f40499aef612bf18def767aef7e",
-          "sha256": "e757d41b271c2fc596535f0b68ff832bb2bbe0eb7e62d400d7cb8366e2821ec7",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/SOURCE.md",
-          "mode": "100644",
-          "blob": "489fa53e0ea73db8377f973c99f454fd3bf3449b",
-          "sha256": "9e39ca8f6e21ea02646d9427d12db117a78ac7e920d875e88944f29a84115776",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/actual-controlled-fixture.py",
-          "mode": "100644",
-          "blob": "c7483ea3e2c4e0443fb982d9e2fe1f4a6eafe326",
-          "sha256": "1987095bf851f242ad3cef9b05ec8f0e11be7dd59e28bc846657159635ae51c5",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/00e2e251c30306e4--source-focus.png",
-          "mode": "100644",
-          "blob": "bfc897f3f3aae5524619fe5028f141312cde6faf",
-          "sha256": "00e2e251c30306e44cfd3e5f0a1287e8dd900761b32e0617a9e464a10f08f2e2",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/12f3719f1094e7f6.png",
-          "mode": "100644",
-          "blob": "76db199178f9d5e9e7b3271bdaa56f010777c950",
-          "sha256": "12f3719f1094e7f6f571c5576fd3c7bdbf90a6d70cd39553017c55ee77bcf1e6",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/1d0c5cbc1e2dab37--source-focus.png",
-          "mode": "100644",
-          "blob": "69181537e6d00cc43128118324f3ccd43d24e24b",
-          "sha256": "1d0c5cbc1e2dab37d6d88360523b5b60e289e8cb1e5fe3992b6cb3908b7472f5",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/3052d38f8830c4a5--source-focus.png",
-          "mode": "100644",
-          "blob": "342775b7b020e9c74d0dc77856840005c3770662",
-          "sha256": "3052d38f8830c4a572b4e2a742d80180a35cb3d56aefb83be3d66cf45ad44e68",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/33949ce63accc7a6.png",
-          "mode": "100644",
-          "blob": "01725153f5d6e423c0968e9b78a892e993e76e16",
-          "sha256": "33949ce63accc7a6a0852b243dcc12fc3ad987b6160dc3c17889d112c86cca9e",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/390b04ddf7875440--source-focus.png",
-          "mode": "100644",
-          "blob": "7b590b4f1b81cf399a3292cc501b906f151b24bd",
-          "sha256": "390b04ddf7875440aab87764c3e5ee0d9aeb7f1f000384e290e8d38c94cc2d33",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/548c62ec399ed800.png",
-          "mode": "100644",
-          "blob": "19c824873d3f3ff54220aa229643e14b516fa3bb",
-          "sha256": "548c62ec399ed800e988c6db4592237a124903e3461047bc3b5c8ae49aaf7ee5",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/8463163522aa7899.png",
-          "mode": "100644",
-          "blob": "02f6269aec8ec45bad8df0778a03ca6b25ddf454",
-          "sha256": "8463163522aa789957d48db9523fcee96aefb700eae450ab900b41d078bc25a8",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/94799e517f6a2226.png",
-          "mode": "100644",
-          "blob": "2d33206aaee1a2dbed0fde2af4e56541947ee406",
-          "sha256": "94799e517f6a2226df8111f9a6b0e3ee2a127aca496228219f3dd711062b720e",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/9f2c8caf49cd2ebc--source-focus.png",
-          "mode": "100644",
-          "blob": "cecfd692d8d14cf730e89c3ac346dcd590ba7418",
-          "sha256": "9f2c8caf49cd2ebc9a5b657b78a393efc60f1dbb1aa8cace0ad540871cf1baa0",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/bcaa8fcdb90b9663--source-focus.png",
-          "mode": "100644",
-          "blob": "b7ed8787cd7ba312208944e7027cf12a211f40e2",
-          "sha256": "bcaa8fcdb90b9663ab6a9067e6f0b7ee0ebe78be1590c254ef00cd6130ea61a0",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/d18448206e737f4c.png",
-          "mode": "100644",
-          "blob": "420c6c97fc03765e46c3712b458bdc3e4bec8809",
-          "sha256": "d18448206e737f4c83a0894d6b830eff49da5e5b80b879e2a8b581be0b2c108e",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/e1ee8ecb66331a57.png",
-          "mode": "100644",
-          "blob": "da96dcc04103e35f306433964dfd6d2a9f0c7881",
-          "sha256": "e1ee8ecb66331a57eca129f38f5a89719f0b58e8512357a661135e27c3642d4a",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/ee62fe068dcbc78a.png",
-          "mode": "100644",
-          "blob": "9347b09186a62e6e24ad014ad8ebdea054a3c104",
-          "sha256": "ee62fe068dcbc78a472d0319c3fc2bab2e3a17f2cecc4b907fe4a3dad586e536",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/f302ba38b0a97620--source-focus.png",
-          "mode": "100644",
-          "blob": "e2be64f81f71c5e2856c6863f607c0b18a323bc4",
-          "sha256": "f302ba38b0a97620efd5e31598932c3c6c4ab5cf2c34bde35b066830797fde9a",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/capture/fa094eb9bd41e63d--source-focus.png",
-          "mode": "100644",
-          "blob": "fc3d45500ae328f6424be21c665eccf2137cd949",
-          "sha256": "fa094eb9bd41e63db7117d119698f0f0791d22bbf0eaa1e013025700936d77ab",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/manifest.json",
-          "mode": "100644",
-          "blob": "b5a56d20e06b00d459db6aad3fe0ab4c3da8c979",
-          "sha256": "fb7d9522b8cc8047c39093dfaf5af589cb2eb381d0c07e512239d0ff805d0d39",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/root-review.json",
-          "mode": "100644",
-          "blob": "e32747a1c4b8971094b999c8ad63f0b275620f60",
-          "sha256": "c3a5ddc79d4880ccf030ce78f0daa5c1bbe9e8a87cb72347b3c469e9a701e415",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/smells.json",
-          "mode": "100644",
-          "blob": "8ffc3096fa1979aa70bbcae06e0f8576bea67a43",
-          "sha256": "e2c4da4288c1f77072f6e49cd48fc1abfec1c722c7aa28c2027acc2be5d85e36",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/source-bindings.json",
-          "mode": "100644",
-          "blob": "cac038552a4329ebc4516563d85d732575b50315",
-          "sha256": "50b83f531d74e88d375ba53b8c0ffa4bc74bc9ea8d8ef656bb2dd81e7d9e449d",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/reader-1440-dark-en.png",
-          "mode": "100644",
-          "blob": "e424e4ac08b972453f2e626669d70072ad988e4d",
-          "sha256": "f7894db2ebc4ae9eadb5f8f945055e1f4f9821d1f945a97c860a4a6beec476cd",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/reader-1440-light-zh.png",
-          "mode": "100644",
-          "blob": "3ace0aa8c36a2595080594c799c01ae9eb518cbf",
-          "sha256": "953cae7a4fe2fa570556b4c012430649f8fc06d425169ad4a1d23d61f5caf312",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/reader-390-dark-en.png",
-          "mode": "100644",
-          "blob": "d043b18c7914de8bb592befc9908638bfa250c62",
-          "sha256": "6cd30091c723f8a38bbe23dc43c603e89fed0791d5fcfcb48e71f3f70c2caefd",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/reader-390-light-zh.png",
-          "mode": "100644",
-          "blob": "fd20d3a82c7d365bbe61c64c59b848185942da61",
-          "sha256": "6c2b4f2fd08f0f06f67b7d2aa15d2b4d9d16fdc7e098ed57074478c60ebbf029",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/result.json",
-          "mode": "100644",
-          "blob": "ee6e0b38cc22ff189411ecf0d5f8223a7d8747ca",
-          "sha256": "61f4e78d044c0de549b0f2fcc95b658fcb934ad3d180b744eacdcb33c5aefd70",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/source-390-light-zh.png",
-          "mode": "100644",
-          "blob": "6b221487e6152a1d93a4d0058bc43660b8145d8b",
-          "sha256": "ecccd87ad9d329ec1422303882ff368ed0843b6fceffcb36a27763e4861aeceb",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/state-archived-1440-light-en.png",
-          "mode": "100644",
-          "blob": "856ef59487a0f064e2c95a9cade41b43d6098334",
-          "sha256": "5735d765ff04d3f10e280acb878b69fc6379f2cc20570efc5a1e6f73674cb9c0",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/state-empty-390-light-zh.png",
-          "mode": "100644",
-          "blob": "2cecdb7f8d79e7b79355869a9f65b484d094c8d1",
-          "sha256": "463aa29f89ff02749eba4e198e7b5827f737969862eac6db31752cfb63c76774",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/state-missing-390-dark-en.png",
-          "mode": "100644",
-          "blob": "b725e4ea41b94650c7fe0f93133df64dda00982d",
-          "sha256": "d662232ea2b6814a817c69027c789d02c09154e0c01cfa2ea650fd2f33156356",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/state-treasury-1440-dark-en.png",
-          "mode": "100644",
-          "blob": "8951736d5e0de6222bd0b30ee7bba295b1c2e497",
-          "sha256": "d246509bae1af76ca1bd6b93b2eea85c1d632b269b7f61b1ca56d4908feb0de9",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "mockups/evidence/shared-shell-whitehouse-p12t35/supplemental/state-treasury-390-light-zh.png",
-          "mode": "100644",
-          "blob": "8c23700da77359507170a60f361974be6495bd6f",
-          "sha256": "6e8a74a6bcc72677acdfe21536d4467f2335458a6b6e2c11be2c7d9f4b1d82c7",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "research/migration_packets/MP-P12-T35-whitehouse-editorial-reader.md",
-          "mode": "100644",
-          "blob": "8aa65f560606f63b0300c8838b283e0d60a0c327",
-          "sha256": "12cb1b6528153783be638b98e41a231465baae4f7fe8b931b42939371dee4505",
-          "base_blob": null,
-          "protected_blob": null
-        },
-        {
-          "path": "scripts/build_whitehouse.py",
-          "mode": "100644",
-          "blob": "75878f5959a9cb2212bdad0f589f51f25f63e39a",
-          "sha256": "7f879b50af331837aa5ec6fdfa1f80f01b2c0af7d97fca407b43a9f5eb6ccb0e",
-          "base_blob": "c90f612be8790f34508622fa7d92dd616f58df0c",
-          "protected_blob": "c90f612be8790f34508622fa7d92dd616f58df0c"
-        },
-        {
-          "path": "templates/whitehouse.html.j2",
-          "mode": "100644",
-          "blob": "36497fff30e46d72754560637a22f04cfc190627",
-          "sha256": "ce360740569540d61a9f4bad1d25f81863e11610c8dd119dfba7c0a3e59487db",
-          "base_blob": "48dd41d1023d6959a947ce1b9689d1449df4e1de",
-          "protected_blob": "48dd41d1023d6959a947ce1b9689d1449df4e1de"
-        },
-        {
-          "path": "tests/test_whitehouse_build.py",
-          "mode": "100644",
-          "blob": "753b15699c9d3a874d1f20bfff47db454d297137",
-          "sha256": "285c567c950c65c4d0b602f7ad2fa8d08ac5ad667174375bd650898e0936220c",
-          "base_blob": "43c036ecaced2190a5fdf1f6220ed59e10583dbf",
-          "protected_blob": "43c036ecaced2190a5fdf1f6220ed59e10583dbf"
-        }
-      ]
-    },
-    {
       "task": "P12.T36",
       "source_head": "7048645a97d65d88c48a4d4a2295d1c5c0cb666d",
       "source_base": "26a1478b9d369df28ae42e018aef1feb620270f6",
@@ -532,38 +217,6 @@
       ]
     }
   ],
-  "integration": {
-    "cross_input_path_collisions": [],
-    "authored_files_copied": 57,
-    "all_target_preimages_equal_source_base_or_already_accepted": true,
-    "old_generated_HTML_CSS_data_outputs_copied": false,
-    "reviewed_paired_hand_authored_JS_assets_preserved": true,
-    "history_imported": false,
-    "branches_or_original_carriers_modified": false,
-    "qualification": {
-      "exact_source_files": 57,
-      "python_ast": 12,
-      "node_syntax": 5,
-      "jinja_compile_no_render": 4,
-      "dependency_records": 57,
-      "paired_assets_equal": true,
-      "unexpected_delta": false,
-      "no_render_or_data_computation": true
-    },
-    "publication_seams": [
-      "Protected site/forex.html still references old6076e46f; no old Forex HTML copied. Existing normal builder/asset stamping must join paired accepted714f65a5 JS before served acceptance.",
-      "Learning generated HTML/content-hashed CSS must be emitted from current producer/content at normal publication, not copied from old accepted output snapshot.",
-      "Bio and WhiteHouse normal covering renderer/publication must bind emitted assets; source composition does not claim deployed executable tuple."
-    ]
-  },
-  "exclusions": [
-    "T15 old generated HTML/CSS output tree: render current source normally later",
-    "T31 old site/forex.html generated stamp: normal emitter must stamp accepted JS later",
-    "No Bonds US-clock repair, T32d194/base-replayUNKNOWN, exporter/T14/T19/admission/CI-control, other held inputs",
-    "No data/ or unrelated current generated output replacement"
-  ],
-  "evidence_policy": "Original snapshots/reviews retain exact historical head/input identities; no restamp. Reuse requires exact imported source blobs and qualified unchanged dependencies; current data/served/auth state not inferred.",
-  "source_effect_limit": "LOCAL ONLY. No PR/push/arm/CI/host/render/provider/browser/review publication or original carrier disarm. Future10607 use provisional until root actual admission/custody decision.",
   "dependency_bindings": {
     "P12.T15": [
       {
@@ -731,44 +384,6 @@
         "binding": "100644 blob 70fee6eabeb2cfe6d92590da42aa8c3e3733e837\ttemplates/_navlinks.html.j2"
       }
     ],
-    "P12.T34+P12.T35": [
-      {
-        "path": "templates/report_base.html.j2",
-        "binding": "100644 blob 17d3681f669655c4b7f5dfbd4d9935eb12b47cab\ttemplates/report_base.html.j2"
-      },
-      {
-        "path": "templates/theme.css",
-        "binding": "100644 blob 619436f58d37a222d1db7021ba9d52bb3a05a7fa\ttemplates/theme.css"
-      },
-      {
-        "path": "templates/theme.js",
-        "binding": "100644 blob 21a1fb1627ac34badc6078cff486f98486e9b773\ttemplates/theme.js"
-      },
-      {
-        "path": "templates/_site_nav.html.j2",
-        "binding": "100644 blob d5c449e9ec498c49007c2de0ced1757a7f36b12d\ttemplates/_site_nav.html.j2"
-      },
-      {
-        "path": "templates/_navlinks.html.j2",
-        "binding": "100644 blob 70fee6eabeb2cfe6d92590da42aa8c3e3733e837\ttemplates/_navlinks.html.j2"
-      },
-      {
-        "path": "lib/pages.py",
-        "binding": "100644 blob db175c463a31828263b57a3287afba661439a765\tlib/pages.py"
-      },
-      {
-        "path": "engine/whitehouse_feed.py",
-        "binding": "100644 blob de3786eed189f46af45568a8f5971aeab4ba746d\tengine/whitehouse_feed.py"
-      },
-      {
-        "path": "engine/whitehouse_brain.py",
-        "binding": "100644 blob d0ecd3b6b24534a399a4ff57f3732a3f80a102fa\tengine/whitehouse_brain.py"
-      },
-      {
-        "path": "templates/_seo_head.html.j2",
-        "binding": "100644 blob 1a0f1a7cd3a8499e9d873171171d374424f9ddd8\ttemplates/_seo_head.html.j2"
-      }
-    ],
     "P12.T36": [
       {
         "path": "templates/theme.js",
@@ -804,244 +419,79 @@
       }
     ]
   },
-  "release_integration": {
-    "task": "P12.T38",
-    "kind": "current-base source/emission qualification, not hosted/served/inShell acceptance",
-    "base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
-    "source_files_exact": 57,
-    "dependency_bindings_exact": 57,
-    "preserved_fc99_ancestry": true,
-    "old_output_tree_adopted": false,
-    "changed_paths": 93,
-    "emitted_outputs": [
-      {
-        "path": "site/about-research.html",
-        "sha256": "43e8f79ebe4e67f8a644123ef9764596b162ed27f5de14ce47b6b2d1ab8f9e68",
-        "bytes": 34041
-      },
-      {
-        "path": "site/assets/css/bdb8adf8.css",
-        "sha256": "bdb8adf84c905fbaf7734264cbef2920c06776a8584665d22f475d61f6f694f4",
-        "bytes": 29634
-      },
-      {
-        "path": "site/assets/css/ddb15451.css",
-        "sha256": "ddb15451b9fa2cce6cc22ea3dcf6a3b008944470207bcdb16a6e1081d2c1f7ca",
-        "bytes": 8941
-      },
-      {
-        "path": "site/assets/css/f1f15707.css",
-        "sha256": "f1f15707e40fb44365c98264128b13a565b2490865699fbe97680d3ccdd21ed8",
-        "bytes": 29820
-      },
-      {
-        "path": "site/biocatalyst.html",
-        "sha256": "fb73ce1338db0a3788e5bbdc4a17a52412d1cf0b1f3d658bfc41b412643c47f9",
-        "bytes": 75122
-      },
-      {
-        "path": "site/blog/compound-growth-for-traders.html",
-        "sha256": "8d0891b6767cd5617d268b766ad82d94a345bbd8110176bf32cc26e7cb51ffef",
-        "bytes": 39225
-      },
-      {
-        "path": "site/blog/conduent-settlement-has-gross-fund-open-net-cost.html",
-        "sha256": "e6fe740770a21e435b53697116e1785f8c0d6b15a4c98c8ec4c3b91fc5c15f14",
-        "bytes": 34150
-      },
-      {
-        "path": "site/blog/congress-trades-are-not-realtime-signals.html",
-        "sha256": "e984c4a20b1bcb14e1539e514fd656537547a1015924d6a90c11ca92570884f2",
-        "bytes": 38502
-      },
-      {
-        "path": "site/blog/how-to-keep-a-trading-journal.html",
-        "sha256": "771272bf6287f5220a869cce9b24cfd7b5e25e5708d8b60dc7d360d27c6e12ea",
-        "bytes": 38214
-      },
-      {
-        "path": "site/blog/the-math-of-losing-streaks.html",
-        "sha256": "77f139a441f4f384d37ad19a85bc583898d764c03727c60f2695ee6b792c4f9b",
-        "bytes": 38449
-      },
-      {
-        "path": "site/blog/usda-nass-harvest-data-show-uneven-october-pace.html",
-        "sha256": "f3b4ab87fbb08ef2a632583ed3173aaf1cd5bb7d012fcfef04e3772b54df7b45",
-        "bytes": 34187
-      },
-      {
-        "path": "site/blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
-        "sha256": "ffaedc9d2e87a6b0891119f5eb1f11280e5c8cb1b81520ead4e590aff958cdc4",
-        "bytes": 37776
-      },
-      {
-        "path": "site/blog/win-rate-is-overrated.html",
-        "sha256": "7038df86e47b2a5a90f75b5651a862fc5c50ace9f38c89d5ecf818a21f1e8a2c",
-        "bytes": 38367
-      },
-      {
-        "path": "site/disclaimer.html",
-        "sha256": "7b10f8142e9c4d6dca23171ea3a6e211fed1d394ebe6f42435304ffc188dd23b",
-        "bytes": 39251
-      },
-      {
-        "path": "site/forex.html",
-        "sha256": "a0196514b7ee2997338968d0d2a483a7dd58fac9ae6ed4758b16b9c4da14081e",
-        "bytes": 619819
-      },
-      {
-        "path": "site/learn/index.html",
-        "sha256": "79bdf2046d1fe7657fd830ad29203012af17de4486f06103cec8aa764db050b6",
-        "bytes": 37814
-      },
-      {
-        "path": "site/learn/options/charm-and-time-drift.html",
-        "sha256": "e57e4092053fba2dba9792114f5d59c27678b531666940a367af7655bb0f7d12",
-        "bytes": 39013
-      },
-      {
-        "path": "site/learn/options/dealer-hedging-mechanics.html",
-        "sha256": "36d65481d5d98129295d0703976c1e8dc4a8d19b23d9d86eb0e53c41fdf6cb52",
-        "bytes": 39055
-      },
-      {
-        "path": "site/learn/options/gamma-flip-levels.html",
-        "sha256": "90f6bc3e5879f5cb2c595fe3bd11825b351f10089301e67d6158530776cd8725",
-        "bytes": 40928
-      },
-      {
-        "path": "site/learn/options/gamma-regimes.html",
-        "sha256": "496ddce53fa294cc179a8bb29dce8cf00a6790ff2544941682d2ad9c746f645b",
-        "bytes": 39214
-      },
-      {
-        "path": "site/learn/options/market-makers-middleman.html",
-        "sha256": "fa41762ab3d7366d695d1b5d54f88a0e676368963b731a9011a90538ef830020",
-        "bytes": 38699
-      },
-      {
-        "path": "site/learn/options/open-interest-limits.html",
-        "sha256": "2891c5d1c67a230b8c7d9ce669b861b17a7007df02bf4c6b32e915680693f706",
-        "bytes": 39907
-      },
-      {
-        "path": "site/learn/options/zero-dte-regime.html",
-        "sha256": "a42334896488a94295c23d1621d137b16f2c1e4d0123881598867b9d1704ef24",
-        "bytes": 38786
-      },
-      {
-        "path": "site/learn/ownership/insider-filings-form-4.html",
-        "sha256": "b253618fc96ef5bb6741960ae13bba0324dc2f8116b84bd5c034f2272bb211ba",
-        "bytes": 41061
-      },
-      {
-        "path": "site/learn/risk/position-sizing.html",
-        "sha256": "f8f45bfd8b9a83a944de4e7aab13d028e32809da177209a04cf2bb8917729dd5",
-        "bytes": 38582
-      },
-      {
-        "path": "site/learn/risk/risk-reward-expectancy.html",
-        "sha256": "423270e091d7efa1b24c0fed7759fe110795dae91538b43522ff53e7dc2d7e44",
-        "bytes": 38224
-      },
-      {
-        "path": "site/learn/technical/52-week-highs.html",
-        "sha256": "9b11ce710e1ec6c4c068942e2e4d48a0bcb8cc10fc1683472b05445db3af8f9c",
-        "bytes": 38422
-      },
-      {
-        "path": "site/learn/technical/macd.html",
-        "sha256": "2938fe886737f4a89dc9932e1dfbe87e1b228bc603c27e070a570b949dc68072",
-        "bytes": 38665
-      },
-      {
-        "path": "site/learn/technical/market-breadth.html",
-        "sha256": "d9c8cba5188c2e6ea51137c041a6ca76cf979cd4f8f60bc23e50d08a0065f43e",
-        "bytes": 38984
-      },
-      {
-        "path": "site/learn/technical/rsi.html",
-        "sha256": "cb391b6273a0d21a0ee6027341584c83fce2038bfa1dd74bbe595c67b7ba0505",
-        "bytes": 37631
-      },
-      {
-        "path": "site/learn/technical/vwap-anchored-vwap.html",
-        "sha256": "f1af5c5b967cde6474f296ce7ea662b4e68d66abd3432a8bba7d20d18884c053",
-        "bytes": 38480
-      },
-      {
-        "path": "site/privacy.html",
-        "sha256": "5db32774d98349841497dd0ed953eed4793e3c1ad8f94d2b385f2796c6f3fc73",
-        "bytes": 53554
-      },
-      {
-        "path": "site/terms.html",
-        "sha256": "48af7335fd0c6e56985187620a038616ca6b4a49eb9f9eed0b7033fac61683ea",
-        "bytes": 54208
-      },
-      {
-        "path": "site/tools/spreadsheets/trading-journal.html",
-        "sha256": "a0997824fe0fb6db4be0465fb7f8b4f790795db89a3116cbb9d960e98336ec27",
-        "bytes": 36698
-      },
-      {
-        "path": "site/whitehouse.html",
-        "sha256": "94f97aaa731dbb6af7523aaedb0acc6923385275ef30c8f181ec4399dc8b45d9",
-        "bytes": 911478
-      }
-    ],
-    "data_changed": false,
-    "learning_lesson_track_targets": 15,
-    "network": "OS deny-network for all emission and affected tests",
-    "checks": {
-      "learning_builder_check": "71 byte-identical/no-orphans",
-      "affected_breadcrumb_whitehouse_render_tests": "13PASS/173deselected",
-      "old_five_full_reviews_matrices": "reused, exact source/dependency bindings"
+  "source_overlays": [
+    {
+      "path": "templates/seo_base.html.j2",
+      "original_reviewed_blob": "9a61ddc8cadb0f2404cfd4e04129d13fd22e66ae",
+      "original_reviewed_sha256": "b68cdfa9e13f72ab9e611479e75ca1553dd3ebe213b811739e5db26e62b72f51",
+      "current_blob": "a65fa473ec5408f9a7946bcd4b9f824e882557fc",
+      "current_sha256": "1102f8a0e0afda73b5fb12cc4bbc14f45b0104eb63a25e22e956fd52d7905336",
+      "reason": "P12.T38.S1 StrictUndefined optional-family backward compatibility; actualcaller causalRED\u2192GREEN; all71 free-estate output bytes unchanged; no capture/restamp/newvisualclaim"
     },
-    "limits": [
-      "No market/data/science/freshness/currentprincipal approval",
-      "Normal hosted current-head proof, protected landing, ordinary publication and served joins remain",
-      "Original runtime/Person1/Fabric/UNKNOWN holds unchanged"
-    ],
-    "emission_joins": {
-      "kind": "current-source incumbent emission joins, no acquisition/data recompute",
-      "base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
-      "forex": {
-        "asset_sha256": "714f65a55b7e9b10f31e410f2efbeedd5fa1c8f1fab341231e7271c55a6be9e6",
-        "old_stamp": "6076e46f",
-        "new_stamp": "714f65a5",
-        "only_changed_asset_reference": true
-      },
-      "bio": {
-        "data_free": true,
-        "paired_asset_sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0",
-        "raw_builder_body_sha256": "fb73ce1338db0a3788e5bbdc4a17a52412d1cf0b1f3d658bfc41b412643c47f9",
-        "normalized_body_sha256": "fb73ce1338db0a3788e5bbdc4a17a52412d1cf0b1f3d658bfc41b412643c47f9"
-      },
-      "whitehouse": {
-        "ledger_sha256": "3f8b471a86aaf137020ae01fc3896b572f9f31ef13c31220d72af2c42e91c9de",
-        "retained_rows": 77,
-        "unchanged_ledger_bytes": true,
-        "no_new_source_clock": true,
-        "raw_builder_body_sha256": "4db7bf3c88569325d05fefce555bb4fa598c54f1b1bb88aac660af4d89e5ac9e",
-        "normalized_body_sha256": "94f97aaa731dbb6af7523aaedb0acc6923385275ef30c8f181ec4399dc8b45d9",
-        "before_trailing_space_normalization_sha256": "000df7c8e811ea516c975665697adef1813d6888c778c1babceff7173be4506f",
-        "generated_only_trailing_space_normalization": true
-      },
-      "canonical_postrender": {
-        "helpers": [
-          "scripts.externalize_css.externalize",
-          "scripts.optimize_assets.make_optimizer"
-        ],
-        "pages": [
-          "biocatalyst.html",
-          "whitehouse.html"
-        ],
-        "new_assets": [
-          "site/assets/css/ddb15451.css"
-        ],
-        "all_other_current_pages_and_assets_not_swept": true
-      }
+    {
+      "path": "tests/test_free_content.py",
+      "original_reviewed_blob": "60064ba27f0f86a51cb95855738940d9627302dd",
+      "original_reviewed_sha256": "aebc0b361396a89fcc676a4267f8070beb1684bcbccc2875cc06454e9668c4e4",
+      "current_blob": "ae64aaa6fea4ae2071cc33e994b6761b35a10301",
+      "current_sha256": "40bb49a0d9a4fe5d23dd0e7e0e8734f8dc013f3b3f7c3ac7951a69e08ce7c925",
+      "reason": "P12.T38.S1 StrictUndefined optional-family backward compatibility; actualcaller causalRED\u2192GREEN; all71 free-estate output bytes unchanged; no capture/restamp/newvisualclaim"
     }
-  }
+  ],
+  "release_partition": {
+    "authority": "originalroot01a15e6c current source-release disposition2026-11-03",
+    "scope": [
+      "Learning",
+      "Forex",
+      "Gold",
+      "Bio"
+    ],
+    "excluded_entire_family": "WhiteHouse T34+T35 source, packet, evidence and generated output",
+    "held_source": "e05aa9473a99842daae65eb3d76bc9b027ca152a",
+    "held_frozen_runtime": "349e12c9b7f64c7e5452215db15a9d1ffb292b22",
+    "genuine_rig_verdict": "REVISE, case1d04617423229e37871b1615a7fb05433b35a3b3; no approval or receipt",
+    "revision_owner": "ProductIntegration separate actualSSDtree; originalprogramme obligation remains",
+    "programme": "https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6589273748",
+    "no_packet_only_hide_or_runtime_completion_claim": true
+  },
+  "current_base_integration": {
+    "base": "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a",
+    "parents_before_merge": [
+      "537a7d01669e2806e30918f2cd7901f548fac39e",
+      "4b24ad2d2f70367cab960a1dbf18ae4e05a6140a"
+    ],
+    "accepted_input_source_files": 19,
+    "exact_original_input_files": 17,
+    "explicit_source_overlays": 2,
+    "source_dependency_records_unchanged": 48,
+    "incoming_pipeline_paths_preserved": true,
+    "only_content_conflict": "site/whitehouse.html; currentmain output retained as wholeWhiteHousebundle is excluded",
+    "incoming_nonpipeline_changes": [
+      "scripts/agentos.py",
+      "tests/test_agentos_schema.py"
+    ],
+    "no_old_data_or_site_snapshot_transplant": true
+  },
+  "required_scope_repair": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "only_job": "commodities-research-workspace",
+    "only_three_paths": [
+      "scripts/audit_china_gold_premium.py",
+      "templates/_china_gold_premium.html.j2",
+      "tests/test_china_gold_premium.py"
+    ],
+    "root_custody_ruling": "https://github.com/mastermindx-market-intelligence/macro/pull/10607#issuecomment-6617221218",
+    "patch_sha256": "925701a3c59efb1d3cb0adc894e245f9b1ced6971e01b00817108cb626d8d7ce",
+    "preserved": "Every other row/field/step/budget; no admission/timeout/packing change",
+    "actual_incumbent_infer_and_select": "RED3missing\u2192GREEN3selected"
+  },
+  "qualification": {
+    "causal_optional_family": "oldminimalRED1/controlPASS1; actualexistingPrivatePublicationRED1; fixedbreadcrumb10PASS and private5module169PASS; overlapnotdoublesummed",
+    "output_parity": "Final four-family current-base build_free_content --check:71 byte-identical/no-orphans",
+    "original_ci": "41702898407 attempt1NOTPASS:342pass2failed3notrun; actualtested8f927treeDDC; notproof of source corrections",
+    "source_reviews": "Unchanged source/visual reviews retained at original identities; explicit byte-equivalent output correction overlay, no retrospective RIG claim",
+    "next": "Finalsource/output/scope/RIGguards\u2192one normalcorrective authoredproof\u2192qualifiedprotectedbotrelease\u2192ordinarypublication/servedqualification underholds",
+    "rig_gate": "Current four-family tree reference-integrity clean; T35 entire bundle excluded, REVISE preserved separately"
+  },
+  "effect_limits": "No originalCI replay/cancel/manualdispatch, selfmerge/approval, provider/acquisition/account/SQL/host/runtimeactivation, Person1/refused-browser bypass or UNKNOWN clearance.",
+  "original_composition_base": "fbe228fb24810ad6fc5a3c6c1c4e814ad50c8e33"
 }

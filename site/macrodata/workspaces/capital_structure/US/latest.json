@@ -159,19 +159,19 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "capital_structure-US-dee22638a26e797d"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "capital_structure-US-bca5ff51d1b5f229"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-11-02T07:18:10Z",
+    "built_at": "2026-11-03T17:25:24Z",
     "calculation_as_of": "2026-10-31T06:03:29.451521Z",
-    "code_version": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
-    "content_sha256": "bca5ff51d1b5f229b0cf3442b34e7bbff7787c88662c333eebebc76557ed0e36",
-    "generation_id": "capital_structure-US-bca5ff51d1b5f229",
+    "code_version": "aaaaf5efe76dd8b7e333d6dbcd05a6e99be284a2",
+    "content_sha256": "efaeeb75f7d7542f725a418d642afcf75d61814b8dd458890b55cf6cb6d9c918",
+    "generation_id": "capital_structure-US-efaeeb75f7d7542f",
     "producer": "engine.market_os.macro_workspaces.capital_structure",
     "rendered_at": null
   },

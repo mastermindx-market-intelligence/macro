@@ -1877,6 +1877,12 @@
       "at": "2026-11-03T15:07:48.694607+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=53962": {
+      "id": "wh-2026-11-03-president-trump-is-powering-an-american-manufacturing-renaissance",
+      "at": "2026-11-03T20:58:38.340331+00:00",
+      "activated": true,
+      "importance": 65
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

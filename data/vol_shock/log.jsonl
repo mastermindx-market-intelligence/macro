@@ -64,6 +64,7 @@
 {"date": "2026-10-14", "score": 44.9, "band": "elevated", "vix_ref": 16.9, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": -1.25, "vix_jump_mult": 1.32, "hit": false}
 {"date": "2026-10-15", "score": 47.4, "band": "elevated", "vix_ref": 16.5, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": -1.53, "vix_jump_mult": 1.35, "hit": false}
 {"date": "2026-10-16", "score": 43.0, "band": "elevated", "vix_ref": 20.0, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": -0.99, "vix_jump_mult": 1.2, "hit": false}
-{"date": "2026-10-19", "score": 50.2, "band": "elevated", "vix_ref": 18.4, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
+{"date": "2026-10-19", "score": 50.2, "band": "elevated", "vix_ref": 18.4, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": -1.88, "vix_jump_mult": 1.3, "hit": false}
 {"date": "2026-10-20", "score": 49.4, "band": "elevated", "vix_ref": 17.3, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
 {"date": "2026-10-30", "score": 35.3, "band": "low", "vix_ref": 19.4, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
+{"date": "2026-11-02", "score": 34.1, "band": "low", "vix_ref": 21.1, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
