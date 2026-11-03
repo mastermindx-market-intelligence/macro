@@ -92,3 +92,58 @@ def test_incumbent_controller_serializes_receipt_upload_before_each_effect():
     assert checkout['with']['ref']=='${{ github.workflow_sha }}'
     assert checkout['with']['persist-credentials'] is False
     assert '.github/ci/legacy-jobs.yml' in checkout['with']['sparse-checkout']
+
+
+def test_job_environment_uses_only_job_available_contexts():
+    # GitHub validates jobs.<id>.env before a runner exists, including skipped jobs.
+    # runner.* is legal in a step; it makes the whole workflow invalid here.
+    for name, job in workflow()['jobs'].items():
+        assert 'runner.' not in str(job.get('env', {})), name
+    for name in ('ci-plan', 'ci-pack', 'contract-delta'):
+        assert workflow()['jobs'][name]['env']['CONTROL_ROOT'] == '${{ github.workspace }}'
+
+
+def test_admitted_bundle_binds_control_root_before_candidate_checkout(tmp_path):
+    import os
+    import subprocess
+    for name in ('ci-plan', 'ci-pack', 'contract-delta'):
+        steps = workflow()['jobs'][name]['steps']
+        bundle_index = next(i for i, s in enumerate(steps)
+                            if s.get('name') == 'retain protected proof control bundle')
+        candidate_index = next(i for i, s in enumerate(steps)
+                               if s.get('name') == 'check out the exact candidate')
+        assert bundle_index < candidate_index
+        root = tmp_path / name
+        root.mkdir()
+        (root / 'scripts').mkdir()
+        (root / 'scripts' / 'control.py').write_text('# protected bytes')
+        temporary = root / 'runner temp'
+        temporary.mkdir()
+        env_file = root / 'step-env'
+        env_file.touch()
+        env = dict(os.environ, RUNNER_TEMP=str(temporary), GITHUB_ENV=str(env_file))
+        subprocess.run(['bash', '-c', steps[bundle_index]['run']], cwd=root, env=env, check=True)
+        expected = temporary / 'ci-proof-control'
+        assert env_file.read_text() == f'CONTROL_ROOT={expected}\n'
+        assert (expected / 'scripts' / 'control.py').read_text() == '# protected bytes'
+
+
+def test_foundation_keeps_legacy_protected_call_until_callee_contract_installed():
+    doc = workflow()
+    assert 'pull_request' in doc.get('on', doc.get(True))
+    caller = doc['jobs']['trusted-ci']
+    assert caller['uses'] == 'mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main'
+    assert not caller.get('with')  # Installed legacy callee declares no inputs.
+    assert "vars.CI_EXECUTION_ROUTE == 'pc'" in caller['if']
+    callee = yaml.safe_load((ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
+    inputs = callee.get('on', callee.get(True))['workflow_call']['inputs']
+    assert set(inputs) == {'admitted_merge', 'admitted_head', 'admitted_base',
+                           'admitted_pr', 'admitted_repository_id', 'admission_generation'}
+    assert all(v['type'] == 'string' and v['required'] is False and v['default'] == ''
+               for v in inputs.values())
+    controller = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
+    steps = controller['jobs']['sweep']['steps']
+    reserve = next(s for s in steps if s.get('id') == 'admission_reserve')
+    assert "steps.admission_prepare.outputs.ready == 'true'" in reserve['if']
+    complete = next(s for s in steps if s.get('name') == 'reconcile original admitted completion')
+    assert 'ready' not in complete.get('if', '')

@@ -151,6 +151,12 @@ class Stages:
 
     def prepare(self, *, native_pr_enabled, freshness):
         self.authority()
+        # Readiness is the actual protected caller/callee contract, not a flag
+        # or candidate claim. Foundation installation must not migrate the
+        # legacy register or create demand before the bridge is installed.
+        if not mog.installed_admitted_dispatch_ready(
+                self.repo, self.context['protected_controller_sha']):
+            return dict(ready=False, changed=False, count=0)
         self.initialize_empty_register()
         workload = mog.shared_proof_workload(self.repo, self.read,
             repository_id=self.context['repository_id'],
@@ -200,7 +206,7 @@ class Stages:
         self.save('census', dict(context=self.context, pulls=pulls, demands=[asdict(d) for d in demands]))
         if changed:
             self.receipt('demands', [asdict(d) for d in changed], 'demands')
-        return dict(changed=bool(changed), count=len(demands))
+        return dict(ready=True, changed=bool(changed), count=len(demands))
 
     def index(self, number, prefix, reference):
         body = prefix + json.dumps(reference, sort_keys=True, separators=(',', ':'))

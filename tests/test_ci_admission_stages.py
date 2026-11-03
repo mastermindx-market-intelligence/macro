@@ -26,6 +26,7 @@ def controller(monkeypatch, tmp_path):
     def refuse(*args,**kwargs): raise AssertionError('unexpected live API')
     monkeypatch.setattr(mog,'_request',refuse)
     monkeypatch.setattr(s,'authority',lambda:None)
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True)
     monkeypatch.setattr(s,'initialize_empty_register',lambda:None)
     monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),()))
     monkeypatch.setattr(mog,'open_pulls',lambda *a:[pull()])
@@ -44,9 +45,9 @@ def test_real_isolated_entry_uses_controller_canonical_contract():
     assert done.returncode==0,done.stderr
 
 
-def test_foundation_accepts_cutover_candidate_despite_main_native(controller):
+def test_installed_bridge_accepts_cutover_candidate_despite_main_native(controller):
     result=controller.prepare(native_pr_enabled=True,freshness=None)
-    assert result=={'changed':True,'count':1}
+    assert result=={'ready':True,'changed':True,'count':1}
     d=controller.load('census')['demands'][0]
     assert d['purpose']=='authored' and d['head_sha']=='1'*40
     pa.ordered_demands([pa.Demand(**d)])
@@ -230,6 +231,7 @@ class OriginalServer:
 
 
 def original_server(monkeypatch,tmp_path):
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True)
     server=OriginalServer()
     monkeypatch.setattr(mog,'_request',server.request)
     monkeypatch.setattr(mog,'_download_semantic_artifact',lambda url,token:server.archives[int(url.split('/')[-2])])
@@ -400,3 +402,34 @@ def test_stage_index_unknown_author_never_advances_to_association(controller,mon
     with pytest.raises(RuntimeError,match='UNKNOWN'):
         controller.index(7,mog.DEMAND_COMMENT_PREFIX,{})
     assert sum(method=='POST' for method,_ in calls)==1
+
+
+def test_foundation_has_no_register_migration_or_demand_effect(controller, monkeypatch):
+    seen = []
+    monkeypatch.setattr(mog, 'installed_admitted_dispatch_ready',
+                        lambda repo, sha: seen.append((repo, sha)) or False)
+    def forbidden(*a, **k):
+        pytest.fail('uninstalled bridge must not migrate, census, or create demand')
+    monkeypatch.setattr(controller, 'initialize_empty_register', forbidden)
+    monkeypatch.setattr(mog, 'shared_proof_workload', forbidden)
+    monkeypatch.setattr(mog, 'open_pulls', forbidden)
+    assert controller.prepare(native_pr_enabled=False, freshness=None) == {
+        'ready': False, 'changed': False, 'count': 0}
+    assert seen == [('acme/widgets', '4'*40)]
+    assert list(controller.directory.iterdir()) == []
+
+
+@pytest.mark.parametrize('original_result', ['published', 'unknown'])
+def test_readiness_loss_keeps_original_completion_and_unknown_custody(
+        controller, monkeypatch, original_result):
+    state, _ = completion_fixture(controller, monkeypatch, original_result)
+    def no_new_work(*a):
+        pytest.fail('existing completion must not consult the new-dispatch gate')
+    monkeypatch.setattr(mog, 'installed_admitted_dispatch_ready', no_new_work)
+    result = controller.complete()
+    if original_result == 'published':
+        assert result == {'disposition': 'reconciled', 'count': 1, 'held': 0}
+        assert state['description'] == 'a2 idle'
+    else:
+        assert result['disposition'] == 'unknown'
+        assert state['description'].endswith('s=completing')

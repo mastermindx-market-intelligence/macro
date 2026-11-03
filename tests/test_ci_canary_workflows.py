@@ -79,10 +79,13 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
     assert options["sparse-checkout-cone-mode"] is False
     assert set(str(options["sparse-checkout"]).split()) == {
         "scripts/merge_on_green.py",
+        "scripts/ci_proof_admission.py",
+        "scripts/ci_admission_stages.py",
         "scripts/ci_semantic_proof.py",
         "scripts/ci_authority_paths.py",
         "scripts/gh_path_filter.py",
         "scripts/run_ci_pack.py",
+        ".github/ci/legacy-jobs.yml",
         ".github/workflows",
     }
 

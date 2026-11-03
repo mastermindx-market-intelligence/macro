@@ -4742,7 +4742,7 @@ jobs:
       admitted_repository_id: ${{ needs.ci-admission.outputs.head_repository_id }}
       same_repository: ${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}
     env:
-      CONTROL_ROOT: ${{ needs.ci-admission.result == 'success' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      CONTROL_ROOT: ${{ github.workspace }}
       MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # NO sparse-clear step and NO setup-node here, unlike `ci-pack` below. Both of
@@ -4767,6 +4767,7 @@ jobs:
           test ! -e "$RUNNER_TEMP/ci-proof-control"
           mkdir "$RUNNER_TEMP/ci-proof-control"
           cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+          printf 'CONTROL_ROOT=%s\n' "$RUNNER_TEMP/ci-proof-control" >> "$GITHUB_ENV"
       - name: check out the exact candidate
         uses: actions/checkout@v4
         with:
@@ -4980,13 +4981,8 @@ jobs:
     needs: ci-plan
     if: needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
     uses: mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main
-    with:
-      admitted_merge: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}
-      admitted_head: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}
-      admitted_base: ${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}
-      admitted_pr: ${{ needs.ci-plan.outputs.admitted_pr }}
-      admitted_repository_id: ${{ needs.ci-plan.outputs.admitted_repository_id }}
-      admission_generation: ${{ needs.ci-plan.outputs.admission_generation }}
+    # Foundation: the protected @main callee must install its optional input
+    # contract before the separate bridge supplies admission bindings here.
     permissions:
       contents: read
       pull-requests: read
@@ -5107,7 +5103,7 @@ jobs:
       # only the non-empty pack indices; `shadow`/`off` still launch all twelve.
       matrix: ${{ fromJSON(needs.ci-plan.outputs.matrix) }}
     env:
-      CONTROL_ROOT: ${{ needs.ci-plan.outputs.admission_generation != '' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      CONTROL_ROOT: ${{ github.workspace }}
       MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # A self-hosted runner REUSES its workspace between jobs, and a sibling job that
@@ -5166,6 +5162,7 @@ jobs:
           test ! -e "$RUNNER_TEMP/ci-proof-control"
           mkdir "$RUNNER_TEMP/ci-proof-control"
           cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+          printf 'CONTROL_ROOT=%s\n' "$RUNNER_TEMP/ci-proof-control" >> "$GITHUB_ENV"
       - name: check out the exact candidate
         uses: actions/checkout@v4
         if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
@@ -5417,7 +5414,7 @@ jobs:
     # ci-pack matrix it runs alongside already takes ~30 min.
     timeout-minutes: 45
     env:
-      CONTROL_ROOT: ${{ needs.ci-plan.outputs.admission_generation != '' && format('{0}/ci-proof-control', runner.temp) || github.workspace }}
+      CONTROL_ROOT: ${{ github.workspace }}
       MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
       # Checkout recipe copied verbatim from integration-baseline.yml's
@@ -5446,6 +5443,7 @@ jobs:
           test ! -e "$RUNNER_TEMP/ci-proof-control"
           mkdir "$RUNNER_TEMP/ci-proof-control"
           cp -R scripts "$RUNNER_TEMP/ci-proof-control/scripts"
+          printf 'CONTROL_ROOT=%s\n' "$RUNNER_TEMP/ci-proof-control" >> "$GITHUB_ENV"
       - name: check out the exact candidate
         uses: actions/checkout@v4
         with:

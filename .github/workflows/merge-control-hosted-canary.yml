@@ -94,10 +94,13 @@ jobs:
           filter: blob:none
           sparse-checkout: |
             scripts/merge_on_green.py
+            scripts/ci_proof_admission.py
+            scripts/ci_admission_stages.py
             scripts/ci_semantic_proof.py
             scripts/ci_authority_paths.py
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
+            .github/ci/legacy-jobs.yml
             .github/workflows
           sparse-checkout-cone-mode: false
           persist-credentials: false
@@ -166,6 +169,8 @@ jobs:
           python3 -c "import yaml"
           python3 -m py_compile \
             scripts/merge_on_green.py \
+            scripts/ci_proof_admission.py \
+            scripts/ci_admission_stages.py \
             scripts/ci_semantic_proof.py \
             scripts/ci_authority_paths.py \
             scripts/gh_path_filter.py \

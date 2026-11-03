@@ -122,6 +122,8 @@ def dispatch_harness(monkeypatch, outcome=(200, {'workflow_run_id':99}), lose_st
     a=Admission('a'*12,7,'1'*40,'2'*40,'3'*40,'4'*40)
     state={'description':'a2 p=7 g=aaaaaaaaaaaa s=prepared','posts':[],'patches':0}
     monkeypatch.setattr(mog,'serialized_refresh_authority',lambda *a:True)
+    # These historical cases exercise original dispatch custody, not bootstrap.
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True, raising=False)
     monkeypatch.setattr(mog,'authenticated_admission_from_ref',lambda *a,**k:a_record)
     a_record=a
     monkeypatch.setattr(mog,"shared_proof_workload",lambda *a,**k:mog.SharedProofWorkload(True,(),(a_record,)))
@@ -236,6 +238,8 @@ def custody_harness(monkeypatch, *, fail_at=None):
     a=Admission('a'*12,7,'1'*40,'4'*40,'3'*40,'4'*40)
     state={'description':'a2 idle','writes':[], 'labels':[], 'comments':[], 'failed':False}
     monkeypatch.setattr(mog,'serialized_refresh_authority',lambda *a:True)
+    # Bootstrap is independently discriminated below; retain the custody cases.
+    monkeypatch.setattr(mog,'installed_admitted_dispatch_ready',lambda *a:True, raising=False)
     monkeypatch.setattr(mog,'shared_proof_workload',lambda *a,**k:mog.SharedProofWorkload(True,(),()))
     def request(method,url,token,payload=None):
         if method!='GET':
@@ -521,3 +525,134 @@ def test_original_index_acknowledgement_requires_server_bot_provenance(monkeypat
 def test_contradictory_immutable_bot_identity_is_unknown():
     with pytest.raises(ValueError):
         mog.admission_index_writer({'user':{'id':41898282,'login':'github-actions[bot]','type':'User'}})
+
+
+def bridge_documents():
+    """Actual staged source plus the exact caller wiring owed by the bridge."""
+    import yaml
+    ci = yaml.safe_load((mog._ROOT / '.github/workflows/ci.yml').read_text())
+    executor = yaml.safe_load((mog._ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
+    ci['jobs']['trusted-ci']['with'] = {
+        'admitted_merge': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
+        'admitted_head': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
+        'admitted_base': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
+        'admitted_pr': '${{ needs.ci-plan.outputs.admitted_pr }}',
+        'admitted_repository_id': '${{ needs.ci-plan.outputs.admitted_repository_id }}',
+        'admission_generation': '${{ needs.ci-plan.outputs.admission_generation }}',
+    }
+    return ci, executor
+
+
+def test_bootstrap_bridge_ready_but_foundation_and_old_callee_not_ready():
+    import copy
+    ci, executor = bridge_documents()
+    repo = 'mastermindx-market-intelligence/macro'
+    assert mog.admitted_dispatch_source_ready(repo, ci, executor)
+    foundation = copy.deepcopy(ci)
+    foundation['jobs']['trusted-ci'].pop('with')
+    assert not mog.admitted_dispatch_source_ready(repo, foundation, executor)
+    old_executor = copy.deepcopy(executor)
+    old_executor.get('on', old_executor.get(True))['workflow_call']['inputs'] = {}
+    assert not mog.admitted_dispatch_source_ready(repo, ci, old_executor)
+    ci.get('on', ci.get(True)).pop('pull_request')
+    assert mog.admitted_dispatch_source_ready(repo, ci, executor)  # cutover keeps capability
+
+
+@pytest.mark.parametrize('mutation', [
+    'raw-head', 'empty-generation', 'missing-field', 'extra-field', 'candidate-callee',
+    'wrong-plan-dependency', 'failed-resolver-allowed', 'raw-plan-output',
+    'raw-identity-input', 'raw-resolver-output', 'candidate-checkout', 'candidate-resolver',
+    'missing-dispatch-input', 'required-callee-input', 'nonempty-callee-default', 'wrong-callee-type',
+    'extra-required-callee-input', 'extra-required-dispatch-input',
+])
+def test_bootstrap_rejects_unbound_or_incompatible_source(mutation):
+    ci, executor = bridge_documents()
+    jobs = ci['jobs']
+    call = jobs['trusted-ci']
+    callee = executor.get('on', executor.get(True))['workflow_call']['inputs']
+    if mutation == 'raw-head': call['with']['admitted_head'] = '${{ inputs.subject_head_sha }}'
+    elif mutation == 'empty-generation': call['with']['admission_generation'] = ''
+    elif mutation == 'missing-field': call['with'].pop('admitted_base')
+    elif mutation == 'extra-field': call['with']['raw_authority'] = '${{ inputs }}'
+    elif mutation == 'candidate-callee': call['uses'] = './.github/workflows/trusted-ci-executor.yml'
+    elif mutation == 'wrong-plan-dependency': jobs['ci-plan']['needs'] = []
+    elif mutation == 'failed-resolver-allowed': jobs['ci-plan']['if'] = 'always()'
+    elif mutation == 'raw-plan-output': jobs['ci-plan']['outputs']['admitted_pr'] = '${{ inputs.pr_number }}'
+    elif mutation == 'raw-identity-input':
+        next(s for s in jobs['ci-plan']['steps'] if s.get('id') == 'identity')['env']['ADMITTED_HEAD'] = '${{ inputs.subject_head_sha }}'
+    elif mutation == 'raw-resolver-output': jobs['ci-admission']['outputs']['subject_head'] = '${{ inputs.subject_head_sha }}'
+    elif mutation == 'candidate-checkout': jobs['ci-admission']['steps'][0]['with']['ref'] = '${{ inputs.subject_head_sha }}'
+    elif mutation == 'candidate-resolver': jobs['ci-admission']['steps'][1]['run'] = 'python3 scripts/author.py'
+    elif mutation == 'missing-dispatch-input': ci.get('on', ci.get(True))['workflow_dispatch']['inputs'].pop('proof_role')
+    elif mutation == 'required-callee-input': callee['admitted_head']['required'] = True
+    elif mutation == 'nonempty-callee-default': callee['admitted_head']['default'] = 'author-supplied'
+    elif mutation == 'wrong-callee-type': callee['admitted_pr']['type'] = 'number'
+    elif mutation == 'extra-required-callee-input': callee['extra'] = dict(type='string', required=True)
+    elif mutation == 'extra-required-dispatch-input': ci.get('on', ci.get(True))['workflow_dispatch']['inputs']['extra'] = dict(type='string', required=True)
+    assert not mog.admitted_dispatch_source_ready('mastermindx-market-intelligence/macro', ci, executor)
+
+
+def test_bootstrap_refusal_has_no_reservation_or_dispatch_effect(monkeypatch):
+    state, _, demand, context = custody_harness(monkeypatch)
+    monkeypatch.setattr(mog, 'installed_admitted_dispatch_ready', lambda *a: False)
+    assert mog.reserve_shared_admission('acme/widgets', 'read', 'write', demand, **context).disposition == 'held'
+    assert state['writes'] == [] and state['description'] == 'a2 idle'
+    state, reference, context = dispatch_harness(monkeypatch)
+    monkeypatch.setattr(mog, 'installed_admitted_dispatch_ready', lambda *a: False)
+    assert mog.dispatch_admitted_pr_proof('acme/widgets', 'read', 'write', reference, **context).disposition == 'held'
+    assert state['patches'] == 0 and state['posts'] == []
+
+
+def git_source_stub(monkeypatch, *, head='4'*40, duplicate=False, oversized=False):
+    import subprocess
+    from types import SimpleNamespace
+    import yaml
+    ci, executor = bridge_documents()
+    blobs = {'.github/workflows/ci.yml': yaml.safe_dump(ci).encode(),
+             '.github/workflows/trusted-ci-executor.yml': yaml.safe_dump(executor).encode()}
+    if duplicate: blobs['.github/workflows/ci.yml'] += b'jobs: {}\n'
+    calls = []
+    def run(args, **kwargs):
+        calls.append(args)
+        assert kwargs['cwd'] == mog._ROOT
+        assert 0 < kwargs['timeout'] <= 10
+        assert kwargs['env']['GIT_NO_LAZY_FETCH'] == '1'
+        assert kwargs['env']['GIT_NO_REPLACE_OBJECTS'] == '1'
+        if 'rev-parse' in args: return SimpleNamespace(returncode=0, stdout=(head+'\n').encode())
+        assert args[-1].startswith('4'*40 + ':.github/workflows/')
+        raw = blobs[args[-1].split(':', 1)[1]]
+        if 'cat-file' in args: return SimpleNamespace(returncode=0, stdout=str(10**9 if oversized else len(raw)).encode())
+        assert 'show' in args
+        return SimpleNamespace(returncode=0, stdout=raw)
+    monkeypatch.setattr(subprocess, 'run', run)
+    return calls
+
+
+def test_bootstrap_reads_only_exact_checked_out_objects_without_lazy_fetch(monkeypatch):
+    calls = git_source_stub(monkeypatch)
+    assert mog.installed_admitted_dispatch_ready('mastermindx-market-intelligence/macro', '4'*40)
+    assert len(calls) == 5
+
+
+@pytest.mark.parametrize('case', ['wrong-head', 'duplicate-yaml', 'oversized', 'invalid-sha', 'timeout'])
+def test_bootstrap_unknown_source_fails_closed(monkeypatch, case):
+    import subprocess
+    calls = git_source_stub(monkeypatch, head='5'*40 if case == 'wrong-head' else '4'*40,
+                            duplicate=case == 'duplicate-yaml', oversized=case == 'oversized')
+    if case == 'timeout':
+        def timeout(*a, **kw): raise subprocess.TimeoutExpired(a[0], 5)
+        monkeypatch.setattr(subprocess, 'run', timeout)
+    assert not mog.installed_admitted_dispatch_ready('mastermindx-market-intelligence/macro',
+                                                     'main' if case == 'invalid-sha' else '4'*40)
+    if case == 'invalid-sha': assert calls == []
+    if case == 'wrong-head': assert len(calls) == 1
+
+
+def test_bootstrap_missing_yaml_dependency_is_not_readiness(monkeypatch):
+    import builtins
+    original = builtins.__import__
+    def without_yaml(name, *args, **kwargs):
+        if name == 'yaml': raise ImportError('unavailable local parser')
+        return original(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, '__import__', without_yaml)
+    assert not mog.installed_admitted_dispatch_ready('acme/widgets', '4'*40)

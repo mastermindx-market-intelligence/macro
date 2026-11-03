@@ -247,6 +247,7 @@ import math
 import os
 import re
 import secrets
+import subprocess
 import sys
 import time
 import urllib.error
@@ -3527,6 +3528,153 @@ class AdmissionDispatchResult:
     detail: str = ""
 
 
+def admitted_dispatch_source_ready(repo, ci_document, executor_document):
+    """The installed caller/callee bridge exists, independently of route settings.
+
+    This checks executable wiring, not a feature flag or candidate assertion.
+    Artifact/run authentication and review of protected executable code remain
+    separate duties. Foundation callers intentionally lack this bridge.
+    """
+    def expression(value):
+        return " ".join(value.split()) if isinstance(value, str) else None
+
+    def bindings(actual, expected):
+        return isinstance(actual, dict) and all(
+            expression(actual.get(key)) == expression(value) for key, value in expected.items())
+
+    def needs(job, name):
+        return job.get("needs") in (name, [name])
+
+    try:
+        if not isinstance(repo, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+            return False
+        ci_events = ci_document.get("on", ci_document.get(True))
+        callee_events = executor_document.get("on", executor_document.get(True))
+        dispatch_inputs = ci_events["workflow_dispatch"]["inputs"]
+        required_inputs = {"proof_role", "admission_generation", "admission_artifact_id",
+                           "admission_payload_sha256", "pr_number", "subject_head_sha",
+                           "tested_base_sha", "tested_merge_sha", "expected_workflow_definition_sha"}
+        if any(not isinstance(dispatch_inputs.get(key), dict)
+               or dispatch_inputs[key].get("type") != "string" for key in required_inputs):
+            return False
+        if any(not isinstance(value, dict) or (value.get("required") is True and key not in required_inputs)
+               for key, value in dispatch_inputs.items()):
+            return False
+        jobs = ci_document["jobs"]
+        resolver, plan, caller = (jobs[key] for key in ("ci-admission", "ci-plan", "trusted-ci"))
+        expected_call = {
+            "admitted_merge": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
+            "admitted_head": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
+            "admitted_base": "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
+            "admitted_pr": "${{ needs.ci-plan.outputs.admitted_pr }}",
+            "admitted_repository_id": "${{ needs.ci-plan.outputs.admitted_repository_id }}",
+            "admission_generation": "${{ needs.ci-plan.outputs.admission_generation }}",
+        }
+        supplied = caller.get("with")
+        if (caller.get("uses") != f"{repo}/.github/workflows/trusted-ci-executor.yml@main"
+                or not needs(caller, "ci-plan") or not bindings(supplied, expected_call)
+                or set(supplied) != set(expected_call)
+                or expression(caller.get("if")) != "needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'"):
+            return False
+        declared = callee_events["workflow_call"]["inputs"]
+        if set(declared) != set(expected_call) or any(not isinstance(declared.get(key), dict)
+               or declared[key].get("type") != "string"
+               or declared[key].get("required") is not False
+               or declared[key].get("default") != "" for key in expected_call):
+            return False
+        if (not needs(plan, "ci-admission")
+                or expression(plan.get("if")) != "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"
+                or expression(resolver.get("if")) != "github.event_name == 'workflow_dispatch' && inputs.proof_role != ''"
+                or resolver.get("permissions") != {"contents": "read", "actions": "read", "pull-requests": "read"}):
+            return False
+        resolve_outputs = {key: "${{ steps.resolve.outputs." + key + " }}" for key in (
+            "tested_commit", "subject_head", "base", "same_repository", "pr_number",
+            "head_repository_id", "admission_generation")}
+        if not bindings(resolver.get("outputs"), resolve_outputs):
+            return False
+        steps = resolver["steps"]
+        if (len(steps) != 2 or steps[0].get("uses") != "actions/checkout@v4"
+                or steps[0].get("with", {}).get("ref") != "${{ github.workflow_sha }}"
+                or steps[0].get("with", {}).get("persist-credentials") is not False
+                or steps[1].get("id") != "resolve"
+                or steps[1].get("run") != "python3 -I scripts/resolve_ci_pr_admission.py"
+                or not bindings(steps[1].get("env"), {
+                    "GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
+                    "GITHUB_WORKFLOW_SHA": "${{ github.workflow_sha }}",
+                    "CI_PR_ADMISSION_INPUTS": "${{ toJSON(inputs) }}"})):
+            return False
+        if not bindings(plan.get("outputs"), {
+                "tested_tree_sha": "${{ steps.identity.outputs.tested_tree_sha }}",
+                "subject_head_sha": "${{ steps.identity.outputs.subject_head_sha }}",
+                "tested_base_sha": "${{ steps.identity.outputs.tested_base_sha }}",
+                "admission_generation": "${{ steps.identity.outputs.admission_generation }}",
+                "admitted_pr": "${{ needs.ci-admission.outputs.pr_number }}",
+                "admitted_repository_id": "${{ needs.ci-admission.outputs.head_repository_id }}",
+                "same_repository": "${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}"}):
+            return False
+        identities = [step for step in plan["steps"] if step.get("id") == "identity"]
+        return len(identities) == 1 and bindings(identities[0].get("env"), {
+            "ADMISSION_GENERATION": "${{ needs.ci-admission.outputs.admission_generation }}",
+            "ADMITTED_MERGE": "${{ needs.ci-admission.outputs.tested_commit }}",
+            "ADMITTED_BASE": "${{ needs.ci-admission.outputs.base }}",
+            "ADMITTED_HEAD": "${{ needs.ci-admission.outputs.subject_head }}"})
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return False
+
+
+def installed_admitted_dispatch_ready(repo, protected_controller_sha):
+    """Read only bounded exact Git objects in the protected controller checkout.
+
+    No candidate working files, implicit fetch, replacement objects or API reads.
+    Missing objects and unsupported source are a bootstrap hold, never readiness.
+    """
+    if not isinstance(protected_controller_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", protected_controller_sha):
+        return False
+    try:
+        import yaml
+    except ImportError:
+        return False
+    try:
+        class UniqueLoader(yaml.SafeLoader):
+            pass
+
+        def unique_mapping(loader, node, deep=False):
+            result = {}
+            for key_node, value_node in node.value:
+                key = loader.construct_object(key_node, deep=deep)
+                if key in result:
+                    raise ValueError("duplicate workflow mapping key")
+                result[key] = loader.construct_object(value_node, deep=deep)
+            return result
+
+        UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.update(GIT_NO_LAZY_FETCH="1", GIT_NO_REPLACE_OBJECTS="1", GIT_TERMINAL_PROMPT="0")
+
+        def git(*args):
+            result = subprocess.run(["git", "--no-pager", *args], cwd=_ROOT, env=env,
+                                    capture_output=True, timeout=5, check=False)
+            if result.returncode != 0:
+                raise ValueError("protected Git object unavailable")
+            return result.stdout
+
+        if git("rev-parse", "--verify", "HEAD").decode().strip() != protected_controller_sha:
+            return False
+        documents = []
+        for name in ("ci", "trusted-ci-executor"):
+            identity = f"{protected_controller_sha}:.github/workflows/{name}.yml"
+            size = int(git("cat-file", "-s", identity).decode().strip())
+            if not 0 < size <= 1024 * 1024:
+                return False
+            raw = git("show", identity)
+            if len(raw) != size:
+                return False
+            documents.append(yaml.load(raw, Loader=UniqueLoader))
+        return admitted_dispatch_source_ready(repo, *documents)
+    except (OSError, subprocess.SubprocessError, UnicodeError, ValueError, TypeError, yaml.YAMLError):
+        return False
+
+
 def _shared_controller_authority(repo, token, *, repository_id, protected_controller_sha,
                                  current_run_id, current_run_attempt):
     """Verify this exact original controller attempt, not just its run number."""
@@ -3565,6 +3713,8 @@ def reserve_shared_admission(repo, read_token, write_token, demand, *, repositor
                    current_run_id=current_run_id, current_run_attempt=current_run_attempt)
     if not _shared_controller_authority(repo, read_token, **context):
         return AdmissionDispatchResult("held", detail="not the exact serialized controller attempt")
+    if not installed_admitted_dispatch_ready(repo, protected_controller_sha):
+        return AdmissionDispatchResult("held", detail="protected caller/callee admission bridge not installed")
     try:
         proof_admission.ordered_demands([demand])
         workload = shared_proof_workload(repo, read_token, repository_id=repository_id,
@@ -3775,6 +3925,8 @@ def dispatch_admitted_pr_proof(
             or reference.get("controller_run_id") != int(current_run_id)
             or reference.get("controller_attempt") != current_run_attempt):
         return AdmissionDispatchResult("held", detail="not the original serialized controller attempt")
+    if not installed_admitted_dispatch_ready(repo, protected_controller_sha):
+        return AdmissionDispatchResult("held", detail="protected caller/callee admission bridge not installed")
     try:
         admitted = authenticated_admission_from_ref(
             repo, read_token, reference, repository_id=repository_id,

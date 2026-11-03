@@ -262,6 +262,7 @@ jobs:
         id: admission_reserve
         if: >-
           !cancelled() && steps.admission_prepare.outcome == 'success'
+          && steps.admission_prepare.outputs.ready == 'true'
           && (steps.admission_prepare.outputs.changed != 'true' || steps.admission_demands.outcome == 'success')
         env:
           GH_REPO: ${{ github.repository }}
