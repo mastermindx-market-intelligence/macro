@@ -100,7 +100,7 @@ def _git_show(path):
         return None
 
 
-def _merge_base_css():
+def _merge_base_css(path="templates/intl_workspace_surveillance.css"):
     """CSS at merge-base(origin/main, HEAD), or None when this checkout cannot
     see history (a pack CI checkout is fetch-depth 1) — the append-only check
     then skips with a message, exactly as it skipped when the frozen lane base
@@ -121,7 +121,7 @@ def _merge_base_css():
     if merged.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", sha):
         return None
     out = subprocess.run(
-        ["git", "show", f"{sha}:templates/intl_workspace_surveillance.css"],
+        ["git", "show", f"{sha}:{path}"],
         cwd=ROOT, capture_output=True)
     return out.stdout if out.returncode == 0 else None
 
@@ -136,7 +136,11 @@ def test_view_not_built_without_builder():
     from tests.intl_gs_fixture_site import render_intl_page
     result = attach_surveillance(build_workspace_overviews(None))
     assert result["surveillance"]["views"]["transmission"]["status"] == "not_built"
-    assert result["surveillance_panels"] == []
+    assert not any(panel.get("view") == "transmission" for panel in result["surveillance_panels"])
+    for view, state in result["surveillance"]["views"].items():
+        assert (state["status"] == "available") == any(
+            p.get("view") == view for p in result["surveillance_panels"]
+        ), f"surveillance panel presence must mirror view availability for {view}"
     html = render_intl_page(include_surveillance=True, stub_coverage=False)
     button = re.search(r'<button[^>]*data-im-view="transmission"[^>]*>', html)
     assert button, "Transmission nav button missing"
@@ -596,10 +600,17 @@ def test_css_block_scoped_literal_free_and_stripe_free():
                   if name not in theme_names and name not in a1_names}
     assert not unresolved, unresolved
 
-    base_theme = _git_show("templates/theme.css")
+    # theme.css is anchored to merge-base(origin/main, HEAD) like the block
+    # above (not the frozen pre-W4B sha: main has moved theme.css since, e.g.
+    # #10077), and a pure end-of-file append is allowed so additive token
+    # extensions by other lanes (GMI explorer, #10099) do not fail this suite;
+    # any removed, rewritten or displaced byte still fails. Mirrors the
+    # append-only rule in tests/test_intl_gs_foundation.py.
+    base_theme = _merge_base_css("templates/theme.css")
     if base_theme is not None:
-        assert base_theme == (ROOT / "templates/theme.css").read_bytes(), \
-            "templates/theme.css must equal the merge base"
+        current = (ROOT / "templates/theme.css").read_bytes()
+        assert current.startswith(base_theme), \
+            "templates/theme.css must equal merge-base(origin/main, HEAD) or extend it by a pure end-of-file append"
 
 
 # --------------------------------------------------------------------------

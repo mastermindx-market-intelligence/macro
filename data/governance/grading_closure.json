@@ -1,9 +1,9 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-10-31T12:27:06.163090+00:00",
+  "generated_at": "2026-11-02T15:47:02.656095+00:00",
   "n_ledgers": 35,
-  "n_closed": 27,
-  "n_grader_starved": 8,
+  "n_closed": 26,
+  "n_grader_starved": 9,
   "n_log_only": 0,
   "ledgers": [
     {
@@ -16,7 +16,7 @@
       ],
       "n_logged": 118463,
       "n_graded": 218520,
-      "last_graded_at": "2026-10-31T12:22:31.240551+00:00",
+      "last_graded_at": "2026-11-02T15:42:39.921000+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 218520,
       "n_graded": 218520,
-      "last_graded_at": "2026-10-31T12:22:31.240551+00:00",
+      "last_graded_at": "2026-11-02T15:42:39.921000+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -42,7 +42,7 @@
       "graders": [
         "engine/board_ledger.py"
       ],
-      "n_logged": 1326,
+      "n_logged": 1327,
       "n_graded": 879,
       "last_graded_at": null,
       "tune_step": "N",
@@ -84,8 +84,8 @@
       "graders": [
         "engine/track_record.py"
       ],
-      "n_logged": 61498,
-      "n_graded": 61196,
+      "n_logged": 61591,
+      "n_graded": 61261,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -112,7 +112,7 @@
       "graders": [
         "scripts/grade_promises.py"
       ],
-      "n_logged": 4306,
+      "n_logged": 4366,
       "n_graded": 1937,
       "last_graded_at": "2026-07-02T18:59:30.481487+00:00",
       "tune_step": "N",
@@ -141,7 +141,7 @@
       "graders": [
         "scripts/grade_promises.py"
       ],
-      "n_logged": 2387,
+      "n_logged": 2418,
       "n_graded": 5769,
       "last_graded_at": "2026-07-02T18:59:31.570004+00:00",
       "tune_step": "N",
@@ -155,11 +155,11 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 671,
-      "n_graded": 354,
+      "n_logged": 672,
+      "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
-      "verdict": "CLOSED"
+      "verdict": "GRADER-STARVED"
     },
     {
       "key": "risk_radar_forward_log",
@@ -169,8 +169,8 @@
       "graders": [
         "engine/risk_radar_audit.py"
       ],
-      "n_logged": 71,
-      "n_graded": 52,
+      "n_logged": 72,
+      "n_graded": 59,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -329,7 +329,7 @@
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "GRADER-STARVED",
-      "n_owed_ungraded": 10
+      "n_owed_ungraded": 20
     },
     {
       "key": "market_state_forward_log",
@@ -339,8 +339,8 @@
       "graders": [
         "engine/market_state_audit.py"
       ],
-      "n_logged": 70,
-      "n_graded": 50,
+      "n_logged": 71,
+      "n_graded": 57,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"
@@ -409,9 +409,9 @@
       "graders": [
         "engine/foresight_grader.py"
       ],
-      "n_logged": 330,
-      "n_graded": 84,
-      "last_graded_at": "2026-10-20",
+      "n_logged": 348,
+      "n_graded": 116,
+      "last_graded_at": "2026-11-02",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -423,7 +423,7 @@
       "graders": [
         "scripts/grade_policy_calendar.py"
       ],
-      "n_logged": 1286,
+      "n_logged": 1302,
       "n_graded": 1171,
       "last_graded_at": "2026-10-30",
       "tune_step": "N",
@@ -437,8 +437,8 @@
       "graders": [
         "engine/froth_fragility.py"
       ],
-      "n_logged": 68,
-      "n_graded": 32,
+      "n_logged": 69,
+      "n_graded": 39,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -465,7 +465,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 5717,
+      "n_logged": 5860,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
@@ -479,7 +479,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 5717,
+      "n_logged": 5860,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",

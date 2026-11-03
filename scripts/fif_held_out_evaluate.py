@@ -29,7 +29,12 @@ manifest and members are never patched to make an accession admit.
 Issuer SIC binds from the held-out contract first and the staged
 sec_submissions witness second (seat ruling
 DEC:FIF-Q1-EVALUATOR-BINDS-SIC-FROM-HELD-OUT-CONTRACT-20261031); the
-per-report trials file records the binding order and contract id. A duplicate
+per-report trials file records the binding order and contract id. The
+envelope's ``sic_source`` follows the production resolver vocabulary
+instead of the binding route (seat ruling
+DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-PRODUCTION-RESOLVER-
+20261031): the route itself stays in the per-accession note as
+``sic_binding``. A duplicate
 label target_id inside one accession refuses that accession's rows
 (``duplicate_label_target``), and a duplicate target_id among the adapter's
 records excludes just that target visibly
@@ -255,6 +260,28 @@ def _bind_issuer_sic(
     return issuer_sic, sic_source
 
 
+def _envelope_sic_source(binding: str, sic: str | None) -> str:
+    """Map a binding route onto the envelope's frozen ``sic_source`` enum.
+
+    Seat ruling ``DEC:FIF-Q1-EVALUATOR-ENVELOPE-SIC-SOURCE-FOLLOWS-
+    PRODUCTION-RESOLVER-20261031``: the pack-envelope contract
+    (``contracts/specialist_pack_result.v1.schema.json``) admits only
+    sec_submissions/dei/unbound/null and is not widened.
+    ``coverage_manifest._SIC_SOURCE_RESOLVED`` is the precedent: a SIC the
+    contract resolver returns is labelled ``sec_submissions`` because the
+    shipped contracts record each issuer's SIC with its capture provenance
+    (the issuer's SEC submissions document, ``sic_source.capture_path``),
+    and the held-out contract rows carry the same capture-path provenance.
+    The binding ROUTE (``held_out_contract`` vs ``sec_submissions`` vs
+    ``unbound``) stays in the report note's ``sic_binding``.
+    """
+    if sic is None:
+        return "unbound"
+    if binding in ("held_out_contract", "sec_submissions"):
+        return "sec_submissions"
+    return "unbound"
+
+
 # ---------------------------------------------------------------------------
 # packet inputs
 
@@ -355,6 +382,7 @@ def evaluate_pack_held_out(
             "applicability_state": None,
             "applicability_reason": None,
             "issuer_sic": None,
+            "sic_binding": "unbound",
             "sic_source": "unbound",
             "labels": len(rows),
             "duplicate_prediction_targets": 0,
@@ -386,9 +414,11 @@ def evaluate_pack_held_out(
                 encoding="utf-8"
             )
         )
-        issuer_sic, sic_source = _bind_issuer_sic(contract_rows, cik10, witness)
+        issuer_sic, binding = _bind_issuer_sic(contract_rows, cik10, witness)
+        envelope_sic_source = _envelope_sic_source(binding, issuer_sic)
         note["issuer_sic"] = issuer_sic
-        note["sic_source"] = sic_source
+        note["sic_binding"] = binding
+        note["sic_source"] = envelope_sic_source
         try:
             result = produce_pack(
                 pack_id,
@@ -397,7 +427,7 @@ def evaluate_pack_held_out(
                     entity=_entity_for(manifest, contract_rows, contract_id),
                     query=_query_for(manifest, catalogue),
                     issuer_sic=issuer_sic,
-                    sic_source=sic_source,
+                    sic_source=envelope_sic_source,
                 ),
             )
         except (SpecialistPackError, StatementGraphError, ValueError, KeyError) as exc:

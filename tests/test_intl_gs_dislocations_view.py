@@ -549,6 +549,23 @@ def test_v13b_region_law_modes():
         _v13_region_law(_flip_one_byte(css, start // 2), pre_base)
 
 
+def test_w2a_css_region_bytes_pinned():
+    # W2A r4b R-10: the W2A CSS region bytes are frozen, same shape as the
+    # W2B lane's test_b9_css_region_bytes_pinned. Any change — even one
+    # byte — fails here and must be a deliberate act: after a lawful W2A
+    # CSS edit, re-run this test and refresh the pin to the sha it prints.
+    import hashlib
+    css = CSS_PATH.read_text(encoding="utf-8")
+    match = re.search(re.escape(W2A_REGION) + r"(.*?)"
+                      r"/\* ==== end W2A region ==== \*/", css, re.S)
+    assert match, "W2A region present"
+    sha = hashlib.sha256(match.group(1).encode("utf-8")).hexdigest()
+    pinned = "9d18fbfa47326f51a892763c2588d1d4182aaa929cd00b9a7fa6c0abd782a99d"
+    assert sha == pinned, (
+        "W2A CSS region bytes changed (r4b R-10 byte pin). If the edit is "
+        f"lawful, refresh the pinned sha to: {sha}")
+
+
 # ---------------------------------------------------------------- V14 hygiene
 
 def test_v14_template_hygiene():

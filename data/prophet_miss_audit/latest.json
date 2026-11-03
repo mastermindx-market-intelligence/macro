@@ -165,7 +165,7 @@
    "OPCH",
    "MANH"
   ],
-  "plan_universe_n": 719
+  "plan_universe_n": 721
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
@@ -1512,12 +1512,12 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 184354,
-  "n_frozen_echoes_excluded": 235,
-  "n_stamp_dates": 75,
+  "n_calls": 186036,
+  "n_frozen_echoes_excluded": 236,
+  "n_stamp_dates": 76,
   "stamp_dates": {
    "first": "2026-06-29",
-   "last": "2026-10-19"
+   "last": "2026-10-30"
   },
   "forward_store": {
    "group": "stocks",
@@ -1679,18 +1679,18 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-10-29",
+  "asof": "2026-10-30",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 21263,
-  "scan_n": 1606,
+  "store_n": 21268,
+  "scan_n": 1601,
   "runners_n": 150,
-  "runners_eligible_today_n": 8,
-  "runners_never_eligible_n": 52,
+  "runners_eligible_today_n": 4,
+  "runners_never_eligible_n": 51,
   "excluder_family_hist": {
-   "not_topped_veto": 135,
-   "ELIGIBLE": 8,
-   "freshness_expired": 6,
+   "not_topped_veto": 141,
+   "ELIGIBLE": 4,
+   "freshness_expired": 4,
    "no_cross": 1
   }
  },

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SR-BULL-20261013",
-  "asof": "2026-10-31",
+  "asof": "2026-11-02",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 79.9,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 2.336,
     "dist_to_t1_r": 0.164,
     "dist_to_t2_r": 1.664,
-    "horizon_pct_used": 37.8,
+    "horizon_pct_used": 42.2,
     "p1": 0.8903,
     "p2": 0.4452,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 17,
-  "tau": 0.3778
+  "days_elapsed": 19,
+  "tau": 0.4222
 }
