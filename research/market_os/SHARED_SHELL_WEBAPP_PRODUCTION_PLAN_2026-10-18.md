@@ -386,3 +386,24 @@ result into Terminal PR1244, qualify and independently review the exact final so
 then carry it through the existing beta-only release owner. The temporary full-census
 projection used during local browser development is not the release candidate and
 must not be published as final admission.
+
+## November 3 recovery - exact original PRs, registry CI repair
+
+The current attended receiver retained Macro PR10639 and Terminal PR1244 and
+reused their original managed operation workspaces. No duplicate source carrier
+was created. Registry CI identified two source-discovered Terminal rows without
+design archetypes: dev/options-plan and options/equity-replay. Their explicit
+chart-workspace classification now follows their actual source modules, without
+changing developer-only lifecycle, paid access or navigation admission. The
+normal scoped builder regenerated the registry against Terminal7063a8e1; every
+non-Terminal row and source pin still equals the protected aba2ddcf baseline.
+The builder, exporter and design-system suites passed 163 tests locally.
+
+The requested independent Fabric review of the prior Macro head ab88dac5 was
+refused before reviewer launch (run beta-intelligence-registry-review-20261103-r1,
+controller exit75). No review result or formal approval exists; the owning reader
+also returned backend_unavailable. No replay or alternate reviewer route is
+authorized by those observations. Independent review, current-head CI, protected
+landing, final route export, beta deployment and real user acceptance remain
+separate outstanding gates. The existing Terminal task tree records browser
+qualification and the correction of an asynchronous-navigation test race.

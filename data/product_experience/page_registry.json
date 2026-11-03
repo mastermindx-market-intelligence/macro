@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-03T03:25:43Z",
+  "generated_at": "2026-11-03T04:25:04Z",
   "sources": {
     "macro": {
       "available": true,
@@ -51,9 +51,9 @@
     },
     "terminal": {
       "root": "/Volumes/Mastermind/agent-workspaces/terminal/web/beta-intelligence-integration-20261103-sol",
-      "ref": "844e5a68a871b84ddfea7fb9c278981b565abe10",
+      "ref": "7063a8e1324c75f69361688161f1e2a90bf87951",
       "available": true,
-      "sha": "844e5a68a871b84ddfea7fb9c278981b565abe10",
+      "sha": "7063a8e1324c75f69361688161f1e2a90bf87951",
       "page_modules": 32,
       "registry_base_commit": "aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551",
       "registry_base_sha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
@@ -14019,7 +14019,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14555,7 +14555,7 @@
       "access_shell": "paid",
       "payload_tier": "premium",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },

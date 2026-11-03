@@ -1389,3 +1389,17 @@ pages:
       - "terminal/app/(shell)/sectors/page.tsx"
       - "terminal/components/sector-intelligence/SectorIntelligenceWorkspace.tsx"
     note: "Member entrance to the incumbent native workspace, enabled only by Shared Shell beta."
+
+  # Existing source-discovered Terminal surfaces also require explicit design
+  # classification. This does not change their lifecycle, access or nav policy.
+  terminal:dev_options_plan:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/dev/options-plan/page.tsx"
+    why: "Synthetic OptionsPlanPayoffPanel harness; the production-disabled developer lifecycle remains unchanged."
+
+  terminal:options_equity_replay:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/(shell)/options/equity-replay/page.tsx"
+    why: "Existing paid equity-depth replay chart workspace using IexDepthReplayMount and the incumbent live-options gate. No navigation or access expansion."
