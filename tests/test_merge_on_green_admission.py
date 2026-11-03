@@ -527,55 +527,47 @@ def test_contradictory_immutable_bot_identity_is_unknown():
         mog.admission_index_writer({'user':{'id':41898282,'login':'github-actions[bot]','type':'User'}})
 
 
-def bridge_documents():
-    """Actual staged source plus the exact caller wiring owed by the bridge."""
+def bridge_documents(*, cutover=False):
+    """Current foundation, optionally simulate reviewed hosted cutover."""
     import yaml
     ci = yaml.safe_load((mog._ROOT / '.github/workflows/ci.yml').read_text())
     executor = yaml.safe_load((mog._ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
-    ci['jobs']['trusted-ci']['with'] = {
-        'admitted_merge': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_tree_sha || '' }}",
-        'admitted_head': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.subject_head_sha || '' }}",
-        'admitted_base': "${{ needs.ci-plan.outputs.admission_generation != '' && needs.ci-plan.outputs.tested_base_sha || '' }}",
-        'admitted_pr': '${{ needs.ci-plan.outputs.admitted_pr }}',
-        'admitted_repository_id': '${{ needs.ci-plan.outputs.admitted_repository_id }}',
-        'admission_generation': '${{ needs.ci-plan.outputs.admission_generation }}',
-    }
+    if cutover:
+        ci.get('on', ci.get(True)).pop('pull_request')
     return ci, executor
 
 
-def test_bootstrap_bridge_ready_but_foundation_and_old_callee_not_ready():
+def test_bootstrap_source_ready_only_for_later_protected_hosted_cutover():
     import copy
-    ci, executor = bridge_documents()
     repo = 'mastermindx-market-intelligence/macro'
-    assert mog.admitted_dispatch_source_ready(repo, ci, executor)
-    foundation = copy.deepcopy(ci)
-    foundation['jobs']['trusted-ci'].pop('with')
+    foundation, executor = bridge_documents()
     assert not mog.admitted_dispatch_source_ready(repo, foundation, executor)
-    old_executor = copy.deepcopy(executor)
-    old_executor.get('on', old_executor.get(True))['workflow_call']['inputs'] = {}
-    assert not mog.admitted_dispatch_source_ready(repo, ci, old_executor)
-    ci.get('on', ci.get(True)).pop('pull_request')
-    assert mog.admitted_dispatch_source_ready(repo, ci, executor)  # cutover keeps capability
+    cutover, executor = bridge_documents(cutover=True)
+    assert mog.admitted_dispatch_source_ready(repo, cutover, executor)
+    injected = copy.deepcopy(cutover)
+    injected['jobs']['trusted-ci']['with'] = {'admitted_head': '${{ inputs.subject_head_sha }}'}
+    assert not mog.admitted_dispatch_source_ready(repo, injected, executor)
+    callee = copy.deepcopy(executor)
+    callee.get('on', callee.get(True))['workflow_call']['inputs'] = {
+        'admitted_head': dict(type='string', required=False, default='')}
+    assert not mog.admitted_dispatch_source_ready(repo, cutover, callee)
 
 
 @pytest.mark.parametrize('mutation', [
-    'raw-head', 'empty-generation', 'missing-field', 'extra-field', 'candidate-callee',
-    'wrong-plan-dependency', 'failed-resolver-allowed', 'raw-plan-output',
-    'raw-identity-input', 'raw-resolver-output', 'candidate-checkout', 'candidate-resolver',
-    'missing-dispatch-input', 'required-callee-input', 'nonempty-callee-default', 'wrong-callee-type',
-    'extra-required-callee-input', 'extra-required-dispatch-input',
-    'implicit-caller-success',
+    'caller-input', 'candidate-callee', 'wrong-plan-dependency',
+    'failed-resolver-allowed', 'raw-plan-output', 'raw-identity-input',
+    'raw-resolver-output', 'candidate-checkout', 'candidate-resolver',
+    'missing-dispatch-input', 'callee-input', 'extra-required-dispatch-input',
+    'implicit-caller-success', 'native-pr-still-on', 'resolver-only-pack',
+    'missing-contract-gate',
 ])
 def test_bootstrap_rejects_unbound_or_incompatible_source(mutation):
-    ci, executor = bridge_documents()
+    ci, executor = bridge_documents(cutover=True)
     jobs = ci['jobs']
     call = jobs['trusted-ci']
     callee = executor.get('on', executor.get(True))['workflow_call']['inputs']
-    if mutation == 'raw-head': call['with']['admitted_head'] = '${{ inputs.subject_head_sha }}'
-    elif mutation == 'implicit-caller-success': call['if'] = call['if'].removeprefix("!cancelled() && needs.ci-plan.result == 'success' && ")
-    elif mutation == 'empty-generation': call['with']['admission_generation'] = ''
-    elif mutation == 'missing-field': call['with'].pop('admitted_base')
-    elif mutation == 'extra-field': call['with']['raw_authority'] = '${{ inputs }}'
+    if mutation == 'caller-input': call['with'] = {'admitted_merge': '${{ inputs.tested_merge_sha }}'}
+    elif mutation == 'implicit-caller-success': call['if'] = "needs.ci-plan.outputs.has_work == 'true'"
     elif mutation == 'candidate-callee': call['uses'] = './.github/workflows/trusted-ci-executor.yml'
     elif mutation == 'wrong-plan-dependency': jobs['ci-plan']['needs'] = []
     elif mutation == 'failed-resolver-allowed': jobs['ci-plan']['if'] = 'always()'
@@ -586,11 +578,14 @@ def test_bootstrap_rejects_unbound_or_incompatible_source(mutation):
     elif mutation == 'candidate-checkout': jobs['ci-admission']['steps'][0]['with']['ref'] = '${{ inputs.subject_head_sha }}'
     elif mutation == 'candidate-resolver': jobs['ci-admission']['steps'][1]['run'] = 'python3 scripts/author.py'
     elif mutation == 'missing-dispatch-input': ci.get('on', ci.get(True))['workflow_dispatch']['inputs'].pop('proof_role')
-    elif mutation == 'required-callee-input': callee['admitted_head']['required'] = True
-    elif mutation == 'nonempty-callee-default': callee['admitted_head']['default'] = 'author-supplied'
-    elif mutation == 'wrong-callee-type': callee['admitted_pr']['type'] = 'number'
-    elif mutation == 'extra-required-callee-input': callee['extra'] = dict(type='string', required=True)
+    elif mutation == 'callee-input': callee['admitted_head'] = dict(type='string', required=False, default='')
     elif mutation == 'extra-required-dispatch-input': ci.get('on', ci.get(True))['workflow_dispatch']['inputs']['extra'] = dict(type='string', required=True)
+    elif mutation == 'native-pr-still-on': ci.get('on', ci.get(True))['pull_request'] = {'types': ['opened']}
+    elif mutation == 'resolver-only-pack':
+        jobs['ci-pack']['if'] = jobs['ci-pack']['if'].replace(
+            "github.event.pull_request.head.repo.full_name != github.repository",
+            "needs.ci-plan.outputs.same_repository != 'true'")
+    elif mutation == 'missing-contract-gate': jobs['ci-gate']['needs'] = ['ci-plan', 'ci-pack']
     assert not mog.admitted_dispatch_source_ready('mastermindx-market-intelligence/macro', ci, executor)
 
 
@@ -609,7 +604,7 @@ def git_source_stub(monkeypatch, *, head='4'*40, duplicate=False, oversized=Fals
     import subprocess
     from types import SimpleNamespace
     import yaml
-    ci, executor = bridge_documents()
+    ci, executor = bridge_documents(cutover=True)
     blobs = {'.github/workflows/ci.yml': yaml.safe_dump(ci).encode(),
              '.github/workflows/trusted-ci-executor.yml': yaml.safe_dump(executor).encode()}
     if duplicate: blobs['.github/workflows/ci.yml'] += b'jobs: {}\n'

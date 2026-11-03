@@ -4979,11 +4979,8 @@ jobs:
   trusted-ci:
     name: trusted-ci
     needs: ci-plan
-    if: >-
-      !cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
+    if: needs.ci-plan.outputs.has_work == 'true' && github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
     uses: mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main
-    # Foundation: the protected @main callee must install its optional input
-    # contract before the separate bridge supplies admission bindings here.
     permissions:
       contents: read
       pull-requests: read
@@ -5005,7 +5002,7 @@ jobs:
     if: >-
       !cancelled() && needs.ci-plan.result == 'success' &&
       needs.ci-plan.outputs.has_work == 'true' &&
-      (needs.ci-plan.outputs.same_repository != 'true' ||
+      (github.event.pull_request.head.repo.full_name != github.repository ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||
       needs.trusted-ci.result == 'success')
     # The logical jobs in .github/ci/legacy-jobs.yml remain the reviewable
@@ -5148,7 +5145,7 @@ jobs:
             fi
           fi
       - name: check out protected proof control
-        if: needs.ci-plan.outputs.admission_generation != '' && (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: needs.ci-plan.outputs.admission_generation != '' && (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         uses: actions/checkout@v4
         with:
           ref: ${{ github.workflow_sha }}
@@ -5156,7 +5153,7 @@ jobs:
           sparse-checkout: scripts
           persist-credentials: false
       - name: retain protected proof control bundle
-        if: needs.ci-plan.outputs.admission_generation != '' && (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: needs.ci-plan.outputs.admission_generation != '' && (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         shell: bash
         run: |
           set -euo pipefail
@@ -5166,7 +5163,7 @@ jobs:
           printf 'CONTROL_ROOT=%s\n' "$RUNNER_TEMP/ci-proof-control" >> "$GITHUB_ENV"
       - name: check out the exact candidate
         uses: actions/checkout@v4
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         with:
           ref: ${{ needs.ci-plan.outputs.tested_tree_sha }}
           # Packs consume ci-plan's changed-file list and only need the current
@@ -5202,7 +5199,7 @@ jobs:
           # `fetch --depth=1` brings the base's differing blobs itself.
           fetch-depth: 1
       - uses: actions/setup-python@v5
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         with:
           # PINNED to an exact patch release, not the floating "3.12".
           #
@@ -5234,16 +5231,16 @@ jobs:
           # SHA-256), THEN bump here. tests/test_ci_pack.py enforces that order.
           python-version: "3.12.13"
       - uses: actions/setup-node@v4
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         with:
           node-version: "20"
       - name: install isolated pack runner
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         run: |
           python -m venv "$RUNNER_TEMP/ci-pack-runner"
           "$RUNNER_TEMP/ci-pack-runner/bin/pip" install pyyaml
       - name: download the authoritative semantic plan
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: ${{ needs.ci-plan.outputs.plan_artifact_name }}
@@ -5264,19 +5261,19 @@ jobs:
       # inside the hashed plan payload, so it would recompute a different plan
       # sha and `--expect-plan-sha` refuses below.
       - name: download the planner's changed-file list
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         uses: actions/download-artifact@v4
         with:
           name: ci-changed-files
           path: ${{ runner.temp }}/ci-changed-files
       - name: publish the changed-file handle
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc')
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
         run: echo "CI_CHANGED_FILES_FILE=$RUNNER_TEMP/ci-changed-files/changed-files.json" >> "$GITHUB_ENV"
       # Pack index is transport only. Each runner consumes the one hashed plan,
       # verifies the exact tree/head/base identities, and emits raw semantic facts.
       # Causality is computed later by ci-gate; a pack never labels itself inherited.
       - name: validate and run legacy CI pack
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha != ''
         id: execute_semantic_pack
         env:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
@@ -5313,7 +5310,7 @@ jobs:
       # semantic authority because no exact plan exists, so ci-gate will block
       # even if these compatibility packs happen to pass.
       - name: fail-safe full suite when no authoritative plan was produced
-        if: (needs.ci-plan.outputs.same_repository != 'true' || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha == ''
+        if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc') && needs.ci-plan.outputs.plan_sha == ''
         env:
           CI_BASE_REF: ${{ github.base_ref || 'main' }}
           CI_HEAD_REF: ${{ github.head_ref || github.ref_name }}
@@ -5329,13 +5326,13 @@ jobs:
       # ci-pack-N check and artifact contract while refusing any mismatch between
       # the hosted authoritative plan and the independently main-derived plan.
       - name: relay the trusted pack fragment under the existing check contract
-        if: needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
+        if: github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: trusted-ci-fragment-${{ matrix.pack }}
           path: ${{ runner.temp }}/trusted-ci-fragment
       - name: bind trusted execution to the hosted authoritative plan
-        if: needs.ci-plan.outputs.same_repository == 'true' && vars.CI_EXECUTION_ROUTE == 'pc'
+        if: github.event.pull_request.head.repo.full_name == github.repository && vars.CI_EXECUTION_ROUTE == 'pc'
         env:
           HOSTED_PLAN_SHA: ${{ needs.ci-plan.outputs.plan_sha }}
           TRUSTED_PLAN_SHA: ${{ needs.trusted-ci.outputs.plan_sha }}

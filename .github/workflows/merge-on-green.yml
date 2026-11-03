@@ -27,9 +27,6 @@ name: merge-on-green
 # 100 sweep runs was a `schedule` event across a 117-minute window (~0.5/hr
 # against a nominal 6/hr). Nothing in this lane may lean on the cron alone.
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
-    branches: [main]
   workflow_run:
     workflows: [ci, fences, integration-baseline]
     types: [completed]
