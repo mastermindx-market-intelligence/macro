@@ -532,6 +532,61 @@ def test_gate_pause_below_075_and_absence_split_floor():
     assert by_field["exact_agreement"]["value"] == 0.7
 
 
+def test_gate_unmeasured_template_is_not_usable():
+    # L6 (DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS): n_compared == 0 fails closed.
+    firsts, seconds, src = gate_fixture(20, 18, 2, 0, 0)
+    summary = ag.compute_agreement(firsts, seconds, src)
+    gate = ag.evaluate_minimum_agreement(summary)
+    measured = gate["templates"][T1]
+    assert measured["not_evaluable_fields"] == []
+    assert all(f["criterion"] != "not_evaluable" for f in measured["failures"])
+    for template in ag.TEMPLATES:
+        if template == T1:
+            continue
+        t_gate = gate["templates"][template]
+        names = sorted(summary["templates"][template]["fields"])
+        assert all(summary["templates"][template]["fields"][n]["n_compared"] == 0 for n in names)
+        assert t_gate["usable"] is False
+        assert t_gate["pause_labeling"] is False
+        assert t_gate["not_evaluable_fields"] == names
+        assert t_gate["failures"] == [
+            {
+                "field": name,
+                "criterion": "not_evaluable",
+                "value": None,
+                "threshold": ag.EXACT_AGREEMENT_FLOOR,
+                "n": 0,
+                "example_case_ids": [],
+            }
+            for name in names
+        ]
+
+
+def test_gate_null_kappa_at_n20_is_kappa_undefined_single_category():
+    # 20 both-present pairs, every one "subject": exact agreement 1.0 but only
+    # one category observed, so kappa is null and the gate fails closed.
+    firsts, seconds, src = gate_fixture(20, 20, 0, 0, 0)
+    summary = ag.compute_agreement(firsts, seconds, src)
+    row = summary["templates"][T1]["fields"]["issuer_role"]
+    assert row["n_both_present"] == 20 and row["exact_agreement"] == 1.0
+    assert row["kappa"] is None
+    gate = ag.evaluate_minimum_agreement(summary)
+    t_gate = gate["templates"][T1]
+    assert t_gate["usable"] is False and t_gate["pause_labeling"] is False
+    by_criterion = {f["criterion"]: f for f in t_gate["failures"] if f["field"] == "issuer_role"}
+    assert set(by_criterion) == {"kappa_undefined_single_category"}
+    failure = by_criterion["kappa_undefined_single_category"]
+    assert failure["value"] is None
+    assert failure["threshold"] == ag.KAPPA_FLOOR
+    assert failure["n"] == 20
+
+    # A numeric kappa below the floor keeps the plain "kappa" criterion.
+    firsts, seconds, src = gate_fixture(20, 16, 2, 1, 1)
+    gate = ag.evaluate_minimum_agreement(ag.compute_agreement(firsts, seconds, src))
+    criteria = {f["criterion"] for f in gate["templates"][T1]["failures"] if f["field"] == "issuer_role"}
+    assert criteria == {"kappa"}
+
+
 def test_replay_failure_excluded_whole_and_counted():
     firsts, seconds, ids = [], [], []
     for i in range(4):

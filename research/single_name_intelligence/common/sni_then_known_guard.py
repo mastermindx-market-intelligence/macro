@@ -127,6 +127,26 @@ def _blank(value: object) -> bool:
     return False
 
 
+def _text_present(value: object) -> bool:
+    """FAMILY TEXT RULE v2 (seat ruling): an opaque-text id / ref /
+    label is PRESENT iff it is a non-empty ``str`` that does not begin
+    or end with whitespace. None, ``""``, ``"  "``, ``"ID "``,
+    ``" ID"``, ``"\tID"``, ``"ID　"``, ``1``, ``True``, ``1.0``,
+    ``b"id"``, ``["id"]`` and any other object are ABSENT and never
+    match each other.
+
+    The helper calls NO normalisation method (no ``.strip`` /
+    ``.lower`` / ``.upper`` / ``.casefold`` / ``.replace``), which
+    keeps the family's no-normalisation static scans green.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
     found = set(items)
     return tuple(code for code in REASONS if code in found)
@@ -210,6 +230,30 @@ def _has_supersedes_cycle(edges: Mapping[str, str]) -> bool:
     return False
 
 
+def _fact_id_absent(value: object) -> bool:
+    """True for ABSENT fact_id per FAMILY TEXT RULE v2 (seat ruling):
+    None, a non-``str`` (int, float, bool, bytes, list, dict, set, or
+    any other object), an empty ``str``, a whitespace-only ``str``, or
+    a ``str`` that begins or ends with whitespace.
+
+    Whitespace-only is detected via ``str.isspace()`` so the rejection
+    covers every Unicode whitespace character -- including ``"　"``
+    ideographic space, ``" "`` no-break space, ``" "`` em
+    space, ``"\x1c"`` file separator, ``"\u0085"`` NEL, and ``" "``
+    line separator -- not just the ASCII subset.
+
+    Padded ``str`` values (e.g. ``"SYN-FACT-1 "``, ``" SYN-FACT-1"``)
+    are CLOSED here under FAMILY TEXT RULE v2: a padded fact_id is
+    ABSENT, never a different valid id. X8B-02's padded half is CLOSED.
+
+    The implementation never calls ``.strip`` / ``.lower`` / ``.upper`` /
+    ``.casefold`` / ``.replace`` on the value: those attribute names are
+    forbidden by ``test_a07g_static_scan_no_normalisation_ast``. Calling
+    ``.isspace()`` on a single character is allowed by the same scan.
+    """
+    return not _text_present(value)
+
+
 def then_known_view(
     items: Iterable[Mapping[str, object]],
     *,
@@ -239,10 +283,21 @@ def then_known_view(
     reasons: list[str] = []
 
     # Pass 1: fact ids (exact strings; a variant spelling is a different id).
+    # _fact_id_absent catches the unpinned cases (None, non-str, empty,
+    # whitespace-only -- via str.isspace so Unicode whitespace counts)
+    # and leaves padded strings as PRESENT (X8B-02 padded half stays
+    # open per the pinning test_a07g_duplicate_exact_only_no_folding).
     known_ids: set[str] = set()
     for item in item_list:
         fact_id = item.get("fact_id")
-        if _blank(fact_id):
+        if _fact_id_absent(fact_id):
+            reasons.append("FACT_ID_MISSING")
+            continue
+        # _fact_id_absent returned False: the value is a non-empty,
+        # non-whitespace-only str (possibly padded). The padded form is
+        # a distinct, PRESENT id; the unpadded form is also PRESENT.
+        # Both flow into the duplicate check below as opaque strings.
+        if not isinstance(fact_id, str):  # defensive; the helper already gated
             reasons.append("FACT_ID_MISSING")
             continue
         if fact_id in known_ids:
@@ -274,11 +329,22 @@ def then_known_view(
             if retrieved < published:
                 reasons.append("RETRIEVED_BEFORE_PUBLISHED")
         supersedes = item.get("supersedes")
-        if not _blank(supersedes):
-            if supersedes not in known_ids:
-                reasons.append("SUPERSEDES_UNKNOWN")
-            elif not _blank(fact_id):
-                edges[fact_id] = supersedes
+        # FAMILY TEXT RULE v2: None and "" are the "no link" short-circuit
+        # (pinned by test_a07g_blank_supersedes_treated_as_absent). Any
+        # OTHER value that is not text-present (whitespace-only, padded,
+        # non-str, unhashable) is ABSENT and emits SUPERSEDES_UNKNOWN. A
+        # text-present value that is not in known_ids also emits
+        # SUPERSEDES_UNKNOWN. ``superseded.add(...)`` and edge creation
+        # happen only for text-present values, so nothing here ever
+        # raises on junk input.
+        if supersedes is None or supersedes == "":
+            pass
+        elif not _text_present(supersedes):
+            reasons.append("SUPERSEDES_UNKNOWN")
+        elif supersedes not in known_ids:
+            reasons.append("SUPERSEDES_UNKNOWN")
+        elif _text_present(fact_id):
+            edges[fact_id] = supersedes
         rows.append(
             (fact_id, published, owner_known, retrieved, supersedes, item.get("vintaged"))
         )
@@ -309,7 +375,12 @@ def then_known_view(
 
     superseded: set[str] = set()
     for fact_id, supersedes in passing:
-        if not _blank(supersedes):
+        # FAMILY TEXT RULE v2: only text-present supersedes reach
+        # superseded; the rest were already emitted as SUPERSEDES_UNKNOWN
+        # in Pass 2 and the view would have failed closed before this
+        # loop ran. This guard keeps that invariant explicit and ensures
+        # no junk input can raise from ``set.add``.
+        if _text_present(supersedes):
             superseded.add(supersedes)
 
     included: list[str] = []

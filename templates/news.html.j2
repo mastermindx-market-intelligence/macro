@@ -2103,7 +2103,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
           // ?signin=1 entry point is the house fallback (the same place the
           // Caddy regwall redirects a signed-out HTML request to).
           if(window.MDXAuth && window.MDXAuth.open) window.MDXAuth.open('signin');
-          else window.location.href = 'index.html?signin=1';
+          else if (window.MMXSharedShell) { window.MMXSharedShell.openAuth('signin'); } else window.location.href = 'index.html?signin=1';
         });
         stateEl.appendChild(b);
       }

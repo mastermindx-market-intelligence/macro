@@ -1,8 +1,9 @@
 """Pure case-row falsifier for the Finance Intelligence page.
 
 No I/O, network, clock, or store. Does not read research/finance.
-``compose_finance_projection`` keeps emitting empty falsifier lists; a later
-owner places these objects with :func:`attach_falsifiers`.
+``compose_finance_projection`` keeps emitting empty falsifier lists; the only
+public placement path is :func:`finance_page_signal.apply_page_signal`, which
+routes admitted rows through the module-private :func:`_attach_falsifiers`.
 
 A row is admitted only when ``formal_causal_outcome`` is ``UNMEASURED`` and
 ``slice_id`` is a member of ``finance_projection._FINANCE_SLICE_IDS``. Every
@@ -22,6 +23,9 @@ _ADMITTED_OUTCOME = "UNMEASURED"
 _FALSIFIER_STATE = "NOT_YET_EVALUABLE"
 _SLICE_IDS = frozenset(_FINANCE_SLICE_IDS)
 _FALSIFIER_KEYS = ("falsifier_id", "statement", "window", "state")
+# Private sentinel: the caller did not pre-read ``rerating``, so read
+# the slice's own ``get("rerating")`` at write time.
+_RERATING_READ_FROM_SLICE = object()
 
 
 class FinanceCaseSignalRefusal(ValueError):
@@ -63,14 +67,21 @@ def project_falsifier(row: Mapping[str, Any]) -> dict[str, str]:
     }
 
 
-def attach_falsifiers(
+def _attach_falsifiers(
     slice_doc: MutableMapping[str, Any],
     falsifiers: Sequence[Mapping[str, Any]],
+    *,
+    rerating: Any = _RERATING_READ_FROM_SLICE,
 ) -> None:
     """Place already-projected falsifiers onto one slice.
 
     Does not call ``compose_finance_projection``. A state other than
     ``NOT_YET_EVALUABLE`` is refused, so ``WATCHING`` is not attached.
+    The ``rerating`` keyword defaults to a private sentinel meaning
+    "read it yourself": with no value passed, the slice's own
+    ``get("rerating")`` is consulted after the falsifier write, exactly
+    as before. A caller that already read the value passes it here so
+    this helper never looks at the slice again.
     """
     placed: list[dict[str, str]] = []
     for item in falsifiers:
@@ -81,6 +92,7 @@ def attach_falsifiers(
         except KeyError as exc:
             raise FinanceCaseSignalRefusal("invalid_falsifier") from exc
     slice_doc["falsifiers"] = placed
-    rerating = slice_doc.get("rerating")
+    if rerating is _RERATING_READ_FROM_SLICE:
+        rerating = slice_doc.get("rerating")
     if isinstance(rerating, MutableMapping):
         rerating["falsifier_ids"] = [item["falsifier_id"] for item in placed]

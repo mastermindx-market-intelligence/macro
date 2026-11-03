@@ -479,6 +479,35 @@ def test_audit_q6_three_slots_on_cap_24() -> None:
     assert sel.n_audit_target == 3
 
 
+@pytest.mark.parametrize(
+    ("rate", "cap", "expected"),
+    [
+        (0.12, 24, 3),
+        (0.12, 25, 3),
+        (0.12, 10, 2),
+        (0.12, 10000, 1200),
+        (0.14, 50, 7),
+        (0.10, 1, 1),
+    ],
+)
+def test_audit_target_is_exact_ceil(rate: float, cap: int, expected: int) -> None:
+    # DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS: ceil(rate * cap) in exact arithmetic.
+    residuals = [(f"r{i:05d}", "extracted_not_escalated") for i in range(cap)]
+    sel = C.select_audit_reserve(
+        residuals, n_escalate=0, stronger_slot_cap=cap, seed=20261012, rate=rate
+    )
+    assert sel.n_audit_target == expected
+
+
+def test_audit_target_clamped_to_leftover_slots() -> None:
+    residuals = [(f"r{i:02d}", "extracted_not_escalated") for i in range(40)]
+    sel = C.select_audit_reserve(
+        residuals, n_escalate=22, stronger_slot_cap=24, seed=20261012, rate=0.12
+    )
+    assert sel.n_audit_target == 2
+    assert sel.n_audit_starved == 0
+
+
 def test_rank_key_deterministic() -> None:
     a = C.rank_key(20261012, "stop_duplicate", "abc")
     b = C.rank_key(20261012, "stop_duplicate", "abc")

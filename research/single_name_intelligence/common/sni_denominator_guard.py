@@ -114,7 +114,30 @@ class DenominatorVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """A field documented as an id, ref, code, label, owner reference or
+    other opaque text counts as present ONLY when ``_text_present`` is True.
+
+    The seat's FAMILY TEXT RULE — rejects ``None``, empty string, whitespace-only,
+    leading/trailing whitespace, and non-str (int, float, bool, bytes, list,
+    dict, set, etc.). Equality between two caller-supplied ids is evaluated
+    only after both sides pass ``_text_present``; a non-text side is ABSENT
+    (its *_MISSING-style reason) and never equals anything.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
+    """Legacy blank-check used for the numeric ``ads_ratio`` slot only.
+
+    Fields documented as ids / refs / codes / labels route through
+    ``_text_present`` instead, per the seat's FAMILY TEXT RULE.
+    """
     if value is None:
         return True
     if value == "":
@@ -123,7 +146,7 @@ def _blank(value: object) -> bool:
 
 
 def _present(fact: Mapping[str, object], key: str) -> bool:
-    return not _blank(fact.get(key))
+    return _text_present(fact.get(key))
 
 
 def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
@@ -229,19 +252,19 @@ def _add_counter_and_ads(reasons: list[str], request: Mapping) -> None:
     counter_kind = request.get("counter_kind")
     ads_ratio = request.get("ads_ratio")
     ads_ratio_source = request.get("ads_ratio_source")
-    if counter_kind not in _COUNTER_KIND_SET:
+    if not isinstance(counter_kind, str) or counter_kind not in _COUNTER_KIND_SET:
         reasons.append("COUNTER_KIND_UNKNOWN")
         return
     if counter_kind == "ads":
         if _blank(ads_ratio):
             reasons.append("ADS_RATIO_MISSING")
-        if _blank(ads_ratio_source):
+        if not _text_present(ads_ratio_source):
             reasons.append("ADS_RATIO_UNSOURCED")
         if (not _blank(ads_ratio)) and (not _finite_positive(ads_ratio)):
             reasons.append("ADS_RATIO_NONPOSITIVE")
         return
     if ads_ratio is not None:
-        if _blank(ads_ratio_source):
+        if not _text_present(ads_ratio_source):
             reasons.append("ADS_RATIO_UNSOURCED")
         elif not _finite_positive(ads_ratio):
             reasons.append("ADS_RATIO_NONPOSITIVE")
@@ -289,7 +312,7 @@ def check_denominator(
         reasons.append("SHARE_COUNT_MISSING")
 
     if observation is None:
-        if _blank(request.get("issuer_id")):
+        if not _text_present(request.get("issuer_id")):
             reasons.append("ISSUER_MISMATCH")
         _add_counter_and_ads(reasons, request)
         return _verdict(reasons, None, None)
@@ -299,7 +322,11 @@ def check_denominator(
 
     obs_id = observation.get("observation_id")
     share_count_ref = request.get("share_count_ref")
-    if _blank(obs_id) or obs_id != share_count_ref:
+    if (
+        not _text_present(obs_id)
+        or not _text_present(share_count_ref)
+        or obs_id != share_count_ref
+    ):
         reasons.append("OWNER_REF_MISSING")
 
     cv = _correction_version_value(_nested(observation, "version", "correction_version"))
@@ -323,13 +350,17 @@ def check_denominator(
 
     issuer_id = request.get("issuer_id")
     obs_issuer = observation.get("issuer_id")
-    if _blank(issuer_id) or issuer_id != obs_issuer:
+    if (
+        not _text_present(issuer_id)
+        or not _text_present(obs_issuer)
+        or issuer_id != obs_issuer
+    ):
         reasons.append("ISSUER_MISMATCH")
 
     _add_counter_and_ads(reasons, request)
 
     owner_id: str | None
-    if isinstance(obs_id, str) and not _blank(obs_id):
+    if _text_present(obs_id):
         owner_id = obs_id
     else:
         owner_id = None

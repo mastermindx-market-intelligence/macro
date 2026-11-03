@@ -36,11 +36,21 @@ or because the text names the same stamp twice (recorded in the lane return):
   weekend, holiday) the anchor is the upcoming session.  For an in-session T0
   this equals ``next_rth_open`` — the two arms are genuinely distinct only for
   an out-of-session T0; that degeneracy is what the design text says.
-- matched window: the worked cases 5.5/5.6/5.7 all use the outcome window
-  shifted back exactly 3 days (``matched_window_end <= information_cutoff``),
-  so 3 days is the default offset (injectable; a violation raises
-  ``MATCHED_WINDOW_AFTER_CUTOFF``).  Case 5.7's matched window lands on a
-  Saturday, so the fixtures enforce duration equality, not session alignment.
+- matched window: counted in trading sessions of the injected calendar
+  (DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS, amendment X4), never in calendar
+  days.  The anchor is the session containing the information cutoff
+  (inclusive) or the next session when the cutoff is outside regular hours;
+  both outcome endpoints shift back by the same whole number of sessions so
+  the matched end lands in the k-th session strictly before the anchor
+  (``matched_window_sessions_back``, default 1, an int in ``[1, 10]``).
+  Each endpoint keeps its ET wall-clock time on the shifted session date
+  (a DST change is absorbed); a candidate counts only when both endpoints
+  fall inside their shifted sessions and its UTC duration equals the
+  outcome's — otherwise the search steps one session further back (early
+  closes, holidays, DST spans), raising ``MATCHED_WINDOW_NO_SESSION`` after
+  10 candidates.  ``matched_window_end <= information_cutoff`` holds by
+  construction; ``MATCHED_WINDOW_AFTER_CUTOFF`` stays as a defensive
+  invariant.
 - coincident classification follows the ``W_obs_coincident_ambiguous`` fixture
   rule (lane law), which is the acceptance fixture: an event sharing the
   target (or a documented-exposure peer) with ``observed_at`` inside
@@ -81,7 +91,7 @@ __all__ = [
     "RESIDUAL_FACTOR_SET",
     "UNUSED_COLLINEAR_FACTORS",
     "FORBIDDEN_KEYS",
-    "MATCHED_WINDOW_OFFSET_DEFAULT",
+    "MATCHED_WINDOW_SESSIONS_BACK_DEFAULT",
     "CODES",
     "ObservationError",
     "Bar",
@@ -150,8 +160,9 @@ FORBIDDEN_KEYS: frozenset[str] = frozenset(
     }
 )
 
-#: The worked cases' matched-window offset (3 days back, see module docstring).
-MATCHED_WINDOW_OFFSET_DEFAULT = timedelta(days=3)
+#: Matched-window sessions back: the matched end lands in the k-th session
+#: strictly before the anchor (the cutoff's session); see module docstring.
+MATCHED_WINDOW_SESSIONS_BACK_DEFAULT = 1
 
 _NY = ZoneInfo("America/New_York")
 _UTC = timezone.utc
@@ -172,6 +183,8 @@ DECISION_BEFORE_CUTOFF = "DECISION_BEFORE_CUTOFF"
 WINDOW_USES_FULL_SESSION = "WINDOW_USES_FULL_SESSION"
 REFERENCE_BAR_MISSING = "REFERENCE_BAR_MISSING"
 MATCHED_WINDOW_AFTER_CUTOFF = "MATCHED_WINDOW_AFTER_CUTOFF"
+BAD_MATCHED_WINDOW_SESSIONS = "BAD_MATCHED_WINDOW_SESSIONS"
+MATCHED_WINDOW_NO_SESSION = "MATCHED_WINDOW_NO_SESSION"
 CUTOFF_VIOLATION = "CUTOFF_VIOLATION"
 RESPONSE_WINDOW_MISMATCH = "RESPONSE_WINDOW_MISMATCH"
 BAD_RESIDUAL_FIT = "BAD_RESIDUAL_FIT"
@@ -195,6 +208,8 @@ CODES: frozenset[str] = frozenset(
         WINDOW_USES_FULL_SESSION,
         REFERENCE_BAR_MISSING,
         MATCHED_WINDOW_AFTER_CUTOFF,
+        BAD_MATCHED_WINDOW_SESSIONS,
+        MATCHED_WINDOW_NO_SESSION,
         CUTOFF_VIOLATION,
         RESPONSE_WINDOW_MISMATCH,
         BAD_RESIDUAL_FIT,
@@ -505,13 +520,69 @@ class WindowGeometry:
         }
 
 
+def _matched_window(
+    cal: TradingCalendar,
+    cutoff: datetime,
+    outcome_start: datetime,
+    outcome_end: datetime,
+    k: int,
+) -> tuple[datetime, datetime]:
+    """The matched control window, counted in trading sessions (amendment X4).
+
+    The anchor is the session containing the cutoff (inclusive), or the next
+    session when the cutoff is outside regular hours.  Both outcome endpoints
+    shift back by the same whole number of sessions so the matched end lands
+    in the k-th session strictly before the anchor, each endpoint keeping its
+    ET wall-clock time on the shifted session date.  A candidate counts only
+    when both endpoints fall inside their shifted sessions and its UTC
+    duration equals the outcome's; the search steps one session further back
+    (early closes, holidays, DST spans) and raises after 10 candidates.  Pure:
+    no clock reads.
+    """
+    anchor = cal.session_containing(cutoff)
+    if anchor is None:
+        anchor = cal.upcoming_session(cutoff)
+    anchor_idx = cal.sessions.index(anchor)
+
+    def _session_index(ts: datetime) -> int:
+        session = cal.session_containing(ts)
+        if session is None:
+            session = cal.upcoming_session(ts)
+        return cal.sessions.index(session)
+
+    i = _session_index(outcome_start)
+    j = _session_index(outcome_end)
+    n0 = j - (anchor_idx - k)  # >= 1: the matched END sits k sessions before the anchor
+    for c in range(10):
+        n = n0 + c
+        if i - n < 0:
+            raise ObservationError(
+                MATCHED_WINDOW_NO_SESSION,
+                f"no session {n} before the outcome-start session for k={k}",
+            )
+        s_start = cal.sessions[i - n]
+        s_end = cal.sessions[j - n]
+        m_start = datetime.combine(s_start.date, outcome_start.astimezone(_NY).time(), tzinfo=_NY).astimezone(_UTC)
+        m_end = datetime.combine(s_end.date, outcome_end.astimezone(_NY).time(), tzinfo=_NY).astimezone(_UTC)
+        if (
+            s_start.open_utc <= m_start <= s_start.close_utc
+            and s_end.open_utc <= m_end <= s_end.close_utc
+            and (m_end - m_start) == (outcome_end - outcome_start)
+        ):
+            return m_start, m_end
+    raise ObservationError(
+        MATCHED_WINDOW_NO_SESSION,
+        f"no admissible matched window within 10 sessions before the anchor for k={k}",
+    )
+
+
 def compute_window_geometry(
     t0: str | datetime,
     policy: str,
     calendar: Mapping[str, Any] | TradingCalendar,
     bars: Iterable[Mapping[str, Any] | Bar] | None = None,
     decision_timestamp: str | datetime | None = None,
-    matched_window_offset: timedelta = MATCHED_WINDOW_OFFSET_DEFAULT,
+    matched_window_sessions_back: int = MATCHED_WINDOW_SESSIONS_BACK_DEFAULT,
 ) -> WindowGeometry:
     """Compute the window geometry for one delayed-entry policy (pure).
 
@@ -519,6 +590,15 @@ def compute_window_geometry(
     at-origin decision stamp (defaults to the entry stamp, as in case 5.5) and
     is ignored for landmark policies, whose decision IS the landmark entry.
     """
+    if (
+        isinstance(matched_window_sessions_back, bool)
+        or not isinstance(matched_window_sessions_back, int)
+        or not 1 <= matched_window_sessions_back <= 10
+    ):
+        raise ObservationError(
+            BAD_MATCHED_WINDOW_SESSIONS,
+            f"matched_window_sessions_back must be an int in [1, 10], not {matched_window_sessions_back!r}",
+        )
     if policy not in TEST_PURPOSE_FOR_POLICY:
         raise ObservationError(UNKNOWN_POLICY, f"policy not in {list(DELAYED_ENTRY_POLICIES)}: {policy!r}")
     t0_dt = parse_utc(t0)
@@ -605,12 +685,23 @@ def compute_window_geometry(
                 if session is not None:
                     outcome_end = session.close_utc
                 else:
-                    outcome_end = cal.upcoming_session(outcome_start).close_utc
+                    # X4: when the cutoff sits outside regular hours (e.g. 16:00 ET
+                    # on an early-close day) the outcome ends at the close of the
+                    # session CONTAINING outcome_start, not the session after it.
+                    containing = cal.session_containing(outcome_start)
+                    if containing is not None:
+                        outcome_end = containing.close_utc
+                    else:
+                        outcome_end = cal.upcoming_session(outcome_start).close_utc
             else:
                 nxt = cal.upcoming_session(cutoff)
                 outcome_start = nxt.open_utc
                 outcome_end = nxt.close_utc
         session_date = session.date.isoformat() if session is not None else None
+
+    matched_start, matched_end = _matched_window(
+        cal, cutoff, outcome_start, outcome_end, matched_window_sessions_back
+    )
 
     return WindowGeometry(
         policy=policy,
@@ -623,8 +714,8 @@ def compute_window_geometry(
         decision_timestamp=decision,
         outcome_start=outcome_start,
         outcome_end=outcome_end,
-        matched_window_start=outcome_start - matched_window_offset,
-        matched_window_end=outcome_end - matched_window_offset,
+        matched_window_start=matched_start,
+        matched_window_end=matched_end,
         next_rth_open_utc=next_rth_open,
         session_date=session_date,
         at_origin_reference_bar=reference_bar,
@@ -879,7 +970,7 @@ def build_observation_window(
     coincident_events: Iterable[Mapping[str, Any]] = (),
     source_available_at: str | datetime | None = None,
     display_summary: str | None = None,
-    matched_window_offset: timedelta = MATCHED_WINDOW_OFFSET_DEFAULT,
+    matched_window_sessions_back: int = MATCHED_WINDOW_SESSIONS_BACK_DEFAULT,
 ) -> WindowBuild:
     """Compute the geometry and assemble one ``observation_window.v1`` record.
 
@@ -895,7 +986,7 @@ def build_observation_window(
         calendar,
         bars=bars,
         decision_timestamp=decision_timestamp,
-        matched_window_offset=matched_window_offset,
+        matched_window_sessions_back=matched_window_sessions_back,
     )
     stripped: list[str] = []
 

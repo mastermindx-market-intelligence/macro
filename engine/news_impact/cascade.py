@@ -21,8 +21,10 @@ KILL-THESIS-LOBE, KILL-STALENESS-ALPHA, HOLD-STRUCTURE-LEARNERS.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
+from fractions import Fraction
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
@@ -867,8 +869,9 @@ def select_audit_reserve(
     """Draw audit items by SHA256 rank. ``residuals`` is ``(item_id, stratum)``."""
     review_capacity = stronger_slot_cap
     starved = 0
-    # Q6: 12% of 24 = 3, so round rather than floor (A5 §4.5 says floor; §7 Q6 binds).
-    target = int(round(rate * review_capacity))
+    # DEC:NEWS-IMPACT-W1C-DESIGN-RULINGS: ceil, computed exactly. Reproduces Q6
+    # (12% of 24 = 3) and never under-audits; float ceil would make 0.14 * 50 = 8.
+    target = math.ceil(Fraction(str(rate)) * review_capacity)
     if n_escalate >= review_capacity:
         target = 0
         starved = 1

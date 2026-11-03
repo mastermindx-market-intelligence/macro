@@ -244,6 +244,10 @@ def assert_public_emission_allowed(family: str, *,
     The gate every GMI surface calls before putting source-derived structure in front of
     a user. ``unresolved`` and ``internal_only`` both refuse; the difference between them
     is what a program report says next, not what the caller may do.
+
+    Third-party content inside a filing (gap G5: an EX-16 or EX-23 letter, or any other
+    third-party document attached to it) is never covered by a family-level emission
+    permission, and each public surface must exclude it.
     """
     cls = rights_class(family, path=path)
     if cls not in EMISSION_OK:

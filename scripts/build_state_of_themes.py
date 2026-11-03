@@ -1359,6 +1359,13 @@ def compose(root: Path) -> dict[str, Any]:
     # ── Collision footnote ──
     collision_note_en, collision_note_zh = _build_collision_note(pathways_data)
 
+    # One basket that IS the theme. Nulls stay "" so the name stays plain text.
+    # Same dicts the lane board renders, so every lane's card carries basket_id.
+    _primary_baskets = load_primary_basket_ids(root)
+    for _th in themes:
+        _bid = _primary_baskets.get(str(_th.get("theme_id") or ""))
+        _th["basket_id"] = _bid if isinstance(_bid, str) else ""
+
     # ── Group themes into the stance-lane board (references the same theme
     #    dicts; the flat `themes` list is unchanged for downstream/test use) ──
     lanes = []

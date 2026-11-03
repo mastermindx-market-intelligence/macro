@@ -460,3 +460,31 @@ def test_processed_index_is_separate_from_intake(tmp_path, monkeypatch):
     assert summary["timing_s"]["intake_s"] == pytest.approx(0.0)
     assert summary["fulltext_pre_pass_elapsed_s"] == pytest.approx(555.0)
     assert summary["fulltext_budget_s"] == pytest.approx(45.0)
+
+
+@_NEEDS_INGEST
+def test_publication_subphase_timings_identify_cost_without_reordering(tmp_path, monkeypatch):
+    monkeypatch.setattr(ingest_mod, "extract_pdf_text", lambda _pdf: _EXISTING._text("body"))
+    monkeypatch.setattr(ingest_mod, "_pdftotext_available", lambda: True)
+    clock, order = _StepClock(), []
+    monkeypatch.setattr(time, "monotonic", clock)
+    def delay(owner, name, seconds):
+        original = getattr(owner, name)
+        def measured(*args, **kwargs):
+            order.append(name)
+            clock.advance(seconds)
+            return original(*args, **kwargs)
+        monkeypatch.setattr(owner, name, measured)
+    delay(ingest_mod, "publish_corpus", 11)
+    delay(ingest_mod.catalog_mod, "publish", 23)
+    delay(ingest_mod, "_flush_receipts", 31)
+    store = _EXISTING.LocalStore(tmp_path / "store")
+    _EXISTING._seed_inbox(store)
+    result = ingest_mod.run(store, tmp_path / "corpus.sqlite")
+    assert order == ["publish_corpus", "publish", "_flush_receipts"]
+    assert result["timing_s"]["corpus_publish_s"] == 11
+    assert result["timing_s"]["catalog_publish_s"] == 23
+    assert result["timing_s"]["receipt_flush_s"] == 31
+    assert result["timing_s"]["publication_s"] == 65
+    assert result["fulltext_pre_pass_elapsed_s"] == 65
+    assert result["catalog_published"] is True and result["corpus_published"] is True

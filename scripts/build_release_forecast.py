@@ -147,6 +147,24 @@ _NFP_V3_WARNING = (
     "(MRI-R21 shadow, champion keeps the card)"
 )
 
+# RIC-M0 (frozen E0 protocol H1, single run 2026-10-14): a shadow model scored
+# FALSIFIED_UNDER_COHERENT_TARGET has its display claim withdrawn from every
+# consumer. release_forecast.json then carries only this withdrawal block for it,
+# with no point and no interval. The nightly shadow ledger keeps scoring the
+# model forward; that is evaluation, not a claim.
+_WITHDRAWN_SHADOW_CLAIMS: dict[tuple[str, str], dict] = {
+    ("nfp", "v3_factor"): {
+        "verdict": "FALSIFIED_UNDER_COHERENT_TARGET",
+        "task": "RIC-M0",
+        "target": "same-release-vintage first print (coherent target)",
+        "mae_ratio_vs_declared_baseline": 1.373,
+        "trial_family": "ric_mri_coherent_requal_v1",
+        "receipt": "research/rates_inflation_command/seat_20261014/m0_results/m0_requal_2026-10-14.json",
+        "receipt_sha256": "80cf894c1b748280dd3120f28b4f6d8499e34b4ce3c6d82ae0b2cf368387c720",
+        "protocol_sha256": "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e2309df",
+    },
+}
+
 # Releases tracked by MRI v1+v2 (Round 2a: PCE/PPI/retail added MRI-R23)
 _TRACKED_RELEASES = [
     ("cpi_headline",    "cpi",    "inflation"),
@@ -1201,7 +1219,9 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
     Only cpi_headline, cpi_core, nfp receive v3_factor; only cpi_headline receives
     cpi_bridge and mf_energy; CPI headline/core receive coherent_ridge_v1.
     pce/ppi/claims/retail do not receive shadows.
-    Each shadow entry is display_only=True.
+    Each shadow entry is display_only=True. A (release, model) pair listed in
+    _WITHDRAWN_SHADOW_CLAIMS (nfp v3_factor, RIC-M0) carries only its
+    claim_withdrawn block — no point, no interval.
     Legacy shadows fail open. coherent_ridge_v1 fails closed and is omitted unless
     its engine and governed artifact receipts pass the full boundary contract.
     """
@@ -1229,7 +1249,16 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
         shadows: dict = {}
 
         # v3_factor shadow
-        if rt in _SHADOW_V3_TARGETS:
+        _v3_withdrawn = _WITHDRAWN_SHADOW_CLAIMS.get((rt, "v3_factor"))
+        if rt in _SHADOW_V3_TARGETS and _v3_withdrawn is not None:
+            shadows["v3_factor"] = {
+                "display_only": True,
+                "model_epoch": _MODEL_EPOCHS["v3_factor"],
+                "target_epoch": _target_epoch(rt),
+                "code_receipt": code_receipt,
+                "claim_withdrawn": dict(_v3_withdrawn),
+            }
+        elif rt in _SHADOW_V3_TARGETS:
             try:
                 v3_result = _run_shadow_v3(rt, today, root, period_str, release_date_obj)
             except Exception as _e:
@@ -1251,8 +1280,6 @@ def _attach_shadows_to_items(upcoming_block: list[dict], root: Path, today: date
                     "confidence": v3_result.get("confidence"),
                     "input_completeness": v3_result.get("input_completeness"),
                 }
-                if rt == "nfp":
-                    entry["warning"] = _NFP_V3_WARNING
                 shadows["v3_factor"] = entry
 
         # cpi_bridge shadow (cpi_headline only)
