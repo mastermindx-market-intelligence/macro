@@ -94,7 +94,7 @@ def _check_procs(paths: list[Path], proc_root: str = "/proc") -> None:
     roots = tuple(str(p) for p in paths)
     if not roots:
         return
-    for ent in os.scandir(proc_root):
+    for ent in list(os.scandir(proc_root)):
         if not ent.name.isdigit():
             continue
         proc = ent.path
@@ -165,8 +165,9 @@ def _check_registrations(paths: list[Path], username: str) -> None:
 
 def _hold_unreconciled(base: Path, receipt: Path) -> None:
     """Never silently start another sweep after a crashed or partial deletion."""
-    if any(e.name.startswith(".reclaim-") for e in os.scandir(base)):
-        raise Refusal("quarantined_previous_effect_requires_reconciliation")
+    with os.scandir(base) as entries:
+        if any(e.name.startswith(".reclaim-") for e in entries):
+            raise Refusal("quarantined_previous_effect_requires_reconciliation")
     try:
         with open(receipt, "rb") as stream:
             stream.seek(0, os.SEEK_END)
