@@ -2,12 +2,12 @@
 
 # Agent OS state
 
-Generated: 2026-11-03T07:59:55Z  |  110 workstreams (87 active · 5 blocked · 14 done · 4 parked)
+Generated: 2026-11-03T09:39:06Z  |  110 workstreams (87 active · 5 blocked · 14 done · 4 parked)
 
 | Input | Value |
 |---|---|
 | active_builds | data/governance/active_builds.json@2026-11-03T07:59:55.452351+00:00 |
-| active_builds age | 0.0h |
+| active_builds age | 1.7h |
 | worktrees | 1 |
 | records | 110 WS · 551 DEC · 575 DSC · 801 handoffs |
 
@@ -16,7 +16,6 @@ Generated: 2026-11-03T07:59:55Z  |  110 workstreams (87 active · 5 blocked · 1
 - active_builds.v1 open_prs is TRUNCATED at the gh --limit cap — some open PRs are missing from the join, so a wave may read 'unknown' while its PR is open
 - active_builds.v1 merged window is TRUNCATED — a merged PR may read 'unknown'
 - Mastermind checkout not found — p0 ids unvalidated, p0_active unknown
-- uncommitted-work scan failed for 'main' (TimeoutExpired) — source status unknown
 
 ## Workstreams
 

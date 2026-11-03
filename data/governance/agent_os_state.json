@@ -2,21 +2,20 @@
   "schema": "agent_os_state.v1",
   "generator": "scripts/agentos.py status",
   "source_records_digest": "sha256:d24508383c4c45fcf03d3b2e31ccfab37e54ac6ae1bd9c40f5df3d2b91a3a2dc",
-  "generated_at": "2026-11-03T07:59:55Z",
+  "generated_at": "2026-11-03T09:39:06Z",
   "inputs": {
     "workstreams": 110,
     "decisions": 551,
     "discoveries": 575,
     "handoffs": 801,
     "active_builds": "data/governance/active_builds.json@2026-11-03T07:59:55.452351+00:00",
-    "active_builds_age_hours": 0.0,
+    "active_builds_age_hours": 1.7,
     "worktrees": 1,
     "uncommitted_worktrees": [],
     "degraded": [
       "active_builds.v1 open_prs is TRUNCATED at the gh --limit cap — some open PRs are missing from the join, so a wave may read 'unknown' while its PR is open",
       "active_builds.v1 merged window is TRUNCATED — a merged PR may read 'unknown'",
-      "Mastermind checkout not found — p0 ids unvalidated, p0_active unknown",
-      "uncommitted-work scan failed for 'main' (TimeoutExpired) — source status unknown"
+      "Mastermind checkout not found — p0 ids unvalidated, p0_active unknown"
     ]
   },
   "program_registry": {
