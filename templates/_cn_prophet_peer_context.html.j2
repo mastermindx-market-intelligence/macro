@@ -24,7 +24,7 @@
 {% set featured = setups.get('buy') or [] %}
 {% set ordering = (setups.get('ranking') or {}).get('ordering') or {} %}
 {% set coverage = ((setups.get('ranking') or {}).get('input_coverage') or {}).get('intel_interest') or {} %}
-<details id="cn-peer-context" class="cn-peer-context" style="margin:8px 0 12px;padding:8px 12px;border:1px solid var(--line);border-radius:8px">
+<details id="cn-peer-context" class="cn-peer-context" style="margin:8px 0 12px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-card, 12px)">
   <summary>{{ t('What supports these stock setups?', '哪些证据支持这些个股形态？') }}</summary>
   {% if ordering.get('order_mode') == 'v3_coverage_fallback' %}
   <p>{{ t('This board uses setup priority. Intelligence coverage', '本期采用形态优先级排序。情报覆盖') }}
