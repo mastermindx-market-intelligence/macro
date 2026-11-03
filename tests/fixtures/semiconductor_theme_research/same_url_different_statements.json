@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "case_key": "same_url_different_statements",
+  "task_refs": [
+    "T02"
+  ],
+  "status": "ready",
+  "expected_regression": "Two locators plus one correction yield 3 retained native revisions",
+  "native_rows": [
+    {
+      "evidence_id": "ev:0000000000000501",
+      "kind": "operator_curation",
+      "published_at": "2026-03-14",
+      "effective_at": null,
+      "source_ref": "gmi-curation://theme:semiconductors/gmirca_63cb96d43e8d7a6c1e75fcbc43b4897c",
+      "licensing_internal_ok": true,
+      "licensing_display_ok": true,
+      "licensing_redistribution_ok": true,
+      "retention": null,
+      "computed_at": "2026-04-02T12:00:00Z",
+      "provider": null,
+      "claim_type": null,
+      "curation_assertion": "{\"authority\":{\"can_gate\":false,\"can_open_entry\":false,\"can_originate\":false,\"can_rank\":false,\"can_size\":false},\"correction\":{\"predecessor_revision\":null,\"reason\":null},\"curation_revision\":\"gmirca_63cb96d43e8d7a6c1e75fcbc43b4897c\",\"industrial_context\":{\"interpretation\":null,\"lineage_refs\":[],\"local_objects\":[{\"configuration\":null,\"kind\":\"product\",\"manufacturer\":\"Meridian Wafer Systems\",\"model\":\"MB-300\",\"selector\":\"asm:line-a\",\"source_label\":\"Meridian integrated assembly line\"},{\"configuration\":\"submodule-A\",\"kind\":\"configuration\",\"manufacturer\":null,\"model\":null,\"selector\":\"cfg:submodule\",\"source_label\":\"contained submodule configuration\"}],\"measure_scope\":null,\"relation\":null,\"stage\":null,\"stage_source_language\":null},\"limitations\":{\"coverage\":\"single vendor press description\",\"does_not_establish\":[\"shipping volume\",\"revenue impact\"],\"establishes\":[\"the business publicly described the line\"],\"expiry_trigger\":\"the vendor withdraws the product page\",\"source_dependence\":\"vendor-authored claim\"},\"object\":{\"configuration\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"observation\":{\"estimate_status\":\"reported\",\"gross_net_basis\":null,\"precision\":\"integer\",\"quantity_basis\":\"per_installation\",\"stock_flow\":\"flow\",\"unit\":\"tool\",\"value\":12,\"value_high\":null},\"predicate\":\"DOCUMENTED_PRODUCT_INCLUSION\",\"review\":{\"disposition\":\"accepted\",\"review_due_at\":\"2026-05-02T09:00:00Z\",\"reviewed_at\":\"2026-04-02T09:00:00Z\",\"reviewer\":\"fixture-reviewer\"},\"schema\":\"theme_graph.curation_assertion.v1\",\"scope\":{\"application\":\"advanced packaging\",\"canonical_theme_id\":\"theme:semiconductors\",\"denominator\":null,\"period\":\"2026Q1\",\"region\":\"TW\",\"technology_facet\":\"wafer-level packaging\"},\"source\":{\"locator\":\"para-3\",\"native_digest\":\"sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\",\"observed_at\":\"2026-03-15T08:00:00Z\",\"published_at\":\"2026-03-14\",\"published_at_grain\":\"date\",\"publisher\":\"Example Trade Wire\",\"retained_at\":\"2026-03-15T08:05:00Z\",\"retention_ref\":\"retention:example-invalid-2026\",\"source_uri\":\"https://example.invalid/press/meridian-line-update\"},\"statement_mode\":\"REPORTED_FACT\",\"subject\":{\"company_node_id\":null,\"configuration\":null,\"source_business_label\":\"Meridian Wafer Systems\",\"source_platform_label\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"temporal\":{\"business_valid_from\":\"2026-03-01\",\"business_valid_to\":null}}"
+    },
+    {
+      "evidence_id": "ev:0000000000000502",
+      "kind": "operator_curation",
+      "published_at": "2026-03-14",
+      "effective_at": null,
+      "source_ref": "gmi-curation://theme:semiconductors/gmirca_b4da0681ee1300b3e81d43942a320a0c",
+      "licensing_internal_ok": true,
+      "licensing_display_ok": true,
+      "licensing_redistribution_ok": true,
+      "retention": null,
+      "computed_at": "2026-04-02T12:00:00Z",
+      "provider": null,
+      "claim_type": null,
+      "curation_assertion": "{\"authority\":{\"can_gate\":false,\"can_open_entry\":false,\"can_originate\":false,\"can_rank\":false,\"can_size\":false},\"correction\":{\"predecessor_revision\":null,\"reason\":null},\"curation_revision\":\"gmirca_b4da0681ee1300b3e81d43942a320a0c\",\"industrial_context\":{\"interpretation\":null,\"lineage_refs\":[],\"local_objects\":[{\"configuration\":null,\"kind\":\"product\",\"manufacturer\":\"Meridian Wafer Systems\",\"model\":\"MB-300\",\"selector\":\"asm:line-a\",\"source_label\":\"Meridian integrated assembly line\"},{\"configuration\":\"submodule-A\",\"kind\":\"configuration\",\"manufacturer\":null,\"model\":null,\"selector\":\"cfg:submodule\",\"source_label\":\"contained submodule configuration\"}],\"measure_scope\":null,\"relation\":null,\"stage\":null,\"stage_source_language\":null},\"limitations\":{\"coverage\":\"single vendor press description\",\"does_not_establish\":[\"shipping volume\",\"revenue impact\"],\"establishes\":[\"the business publicly described the line\"],\"expiry_trigger\":\"the vendor withdraws the product page\",\"source_dependence\":\"vendor-authored claim\"},\"object\":{\"configuration\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"observation\":{\"estimate_status\":\"reported\",\"gross_net_basis\":null,\"precision\":\"integer\",\"quantity_basis\":\"per_installation\",\"stock_flow\":\"flow\",\"unit\":\"tool\",\"value\":18,\"value_high\":null},\"predicate\":\"DOCUMENTED_PRODUCT_INCLUSION\",\"review\":{\"disposition\":\"accepted\",\"review_due_at\":\"2026-05-02T09:00:00Z\",\"reviewed_at\":\"2026-04-02T09:00:00Z\",\"reviewer\":\"fixture-reviewer\"},\"schema\":\"theme_graph.curation_assertion.v1\",\"scope\":{\"application\":\"advanced packaging\",\"canonical_theme_id\":\"theme:semiconductors\",\"denominator\":null,\"period\":\"2026Q1\",\"region\":\"TW\",\"technology_facet\":\"wafer-level packaging\"},\"source\":{\"locator\":\"para-9\",\"native_digest\":\"sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"observed_at\":\"2026-03-15T08:00:00Z\",\"published_at\":\"2026-03-14\",\"published_at_grain\":\"date\",\"publisher\":\"Example Trade Wire\",\"retained_at\":\"2026-03-15T08:05:00Z\",\"retention_ref\":\"retention:example-invalid-2026\",\"source_uri\":\"https://example.invalid/press/meridian-line-update\"},\"statement_mode\":\"REPORTED_FACT\",\"subject\":{\"company_node_id\":null,\"configuration\":null,\"source_business_label\":\"Meridian Wafer Systems\",\"source_platform_label\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"temporal\":{\"business_valid_from\":\"2026-03-01\",\"business_valid_to\":null}}"
+    },
+    {
+      "evidence_id": "ev:0000000000000503",
+      "kind": "operator_curation",
+      "published_at": "2026-03-20",
+      "effective_at": null,
+      "source_ref": "gmi-curation://theme:semiconductors/gmirca_759c0d872c0e5937b63ce9dcfa9676f5",
+      "licensing_internal_ok": true,
+      "licensing_display_ok": true,
+      "licensing_redistribution_ok": true,
+      "retention": null,
+      "computed_at": "2026-04-02T12:00:00Z",
+      "provider": null,
+      "claim_type": null,
+      "curation_assertion": "{\"authority\":{\"can_gate\":false,\"can_open_entry\":false,\"can_originate\":false,\"can_rank\":false,\"can_size\":false},\"correction\":{\"predecessor_revision\":\"gmirca_b4da0681ee1300b3e81d43942a320a0c\",\"reason\":\"unit basis restated from per-installation to per-period\"},\"curation_revision\":\"gmirca_759c0d872c0e5937b63ce9dcfa9676f5\",\"industrial_context\":{\"interpretation\":null,\"lineage_refs\":[],\"local_objects\":[{\"configuration\":null,\"kind\":\"product\",\"manufacturer\":\"Meridian Wafer Systems\",\"model\":\"MB-300\",\"selector\":\"asm:line-a\",\"source_label\":\"Meridian integrated assembly line\"},{\"configuration\":\"submodule-A\",\"kind\":\"configuration\",\"manufacturer\":null,\"model\":null,\"selector\":\"cfg:submodule\",\"source_label\":\"contained submodule configuration\"}],\"measure_scope\":null,\"relation\":null,\"stage\":null,\"stage_source_language\":null},\"limitations\":{\"coverage\":\"single vendor press description\",\"does_not_establish\":[\"shipping volume\",\"revenue impact\"],\"establishes\":[\"the business publicly described the line\"],\"expiry_trigger\":\"the vendor withdraws the product page\",\"source_dependence\":\"vendor-authored claim\"},\"object\":{\"configuration\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"observation\":{\"estimate_status\":\"reported\",\"gross_net_basis\":null,\"precision\":\"integer\",\"quantity_basis\":\"per_period\",\"stock_flow\":\"flow\",\"unit\":\"tool\",\"value\":18,\"value_high\":null},\"predicate\":\"DOCUMENTED_PRODUCT_INCLUSION\",\"review\":{\"disposition\":\"accepted\",\"review_due_at\":\"2026-05-02T09:00:00Z\",\"reviewed_at\":\"2026-04-02T09:00:00Z\",\"reviewer\":\"fixture-reviewer\"},\"schema\":\"theme_graph.curation_assertion.v1\",\"scope\":{\"application\":\"advanced packaging\",\"canonical_theme_id\":\"theme:semiconductors\",\"denominator\":null,\"period\":\"2026Q1\",\"region\":\"TW\",\"technology_facet\":\"wafer-level packaging\"},\"source\":{\"locator\":\"notice-1\",\"native_digest\":\"sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"observed_at\":\"2026-03-15T08:00:00Z\",\"published_at\":\"2026-03-20\",\"published_at_grain\":\"date\",\"publisher\":\"Example Trade Wire\",\"retained_at\":\"2026-03-15T08:05:00Z\",\"retention_ref\":\"retention:example-invalid-2026\",\"source_uri\":\"https://example.invalid/press/meridian-line-update\"},\"statement_mode\":\"REPORTED_FACT\",\"subject\":{\"company_node_id\":null,\"configuration\":null,\"source_business_label\":\"Meridian Wafer Systems\",\"source_platform_label\":null,\"source_product_label\":\"Meridian integrated assembly line\"},\"temporal\":{\"business_valid_from\":\"2026-03-01\",\"business_valid_to\":null}}"
+    }
+  ]
+}

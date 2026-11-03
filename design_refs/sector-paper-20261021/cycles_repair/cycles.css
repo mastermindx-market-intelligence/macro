@@ -1,0 +1,171 @@
+/* Cycles corrections specimen — consumes templates/theme.css tokens + components/components.css.
+   Law: no colored edge/accent stripe on any edge of any container (docs/DESIGN_DOCTRINE.md).
+   Hierarchy comes from surface (--panel/--panel2), even 1px --line borders, type and labeled ink. */
+.cyc{max-width:1240px;margin:0 auto;padding:18px 24px 56px;font-family:var(--font-ui);color:var(--text)}
+.cyc *:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+.cyc .mono{font-family:var(--font-mono,var(--font-ui));font-variant-numeric:tabular-nums}
+.cyc code{font:500 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));padding:1px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--text);overflow-wrap:anywhere}
+.cyc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.cyc-eyebrow{font-size:var(--fs-label);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0}
+html[data-lang="zh"] .cyc-eyebrow{letter-spacing:.02em;text-transform:none}
+.cyc-foot{font-size:var(--fs-micro);color:var(--muted);margin:8px 0 0;line-height:1.45}
+.cyc h1,.cyc h2,.cyc h3{margin:0;font-weight:720;line-height:1.2}
+.cyc h2{font-size:var(--fs-h2)} .cyc h3{font-size:var(--fs-h3)}
+.cyc-asof{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:var(--fs-sm);color:var(--muted);margin:10px 0 0}
+.cyc-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.cyc a{color:var(--link);text-decoration:none;font-weight:600}
+.cyc a:hover{text-decoration:underline}
+
+/* R1 header: title, tagline, as-of + source, basis */
+.cyc-head{margin-top:14px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.cyc-head h1{font-size:30px;letter-spacing:-.01em;margin:6px 0 6px}
+.cyc-tagline{margin:0;font-size:var(--fs-body);color:var(--text);line-height:1.5;max-width:60ch}
+.cyc-intro{margin:10px 0 0;font-size:var(--fs-sm);color:var(--muted);line-height:1.5;max-width:72ch}
+.cyc-basis{display:flex;flex-direction:column;gap:10px}
+.cyc-basis .cyc-chips{margin-top:8px}
+
+/* sector focus cards (the three hazard shapes) */
+.cyc-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px;align-items:start} /* SIC-V6-C06 (VTC-044): each card ends where its drawn sections end */
+.cyc-card{display:flex;flex-direction:column;gap:12px;padding:16px}
+.cyc-card-head{display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.cyc-id{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.cyc-id h2{font-size:var(--fs-h3)}
+.cyc-tk{font:700 var(--fs-label)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-grp{font-size:var(--fs-micro);color:var(--muted);flex-basis:100%}
+.cyc-pos{font:700 var(--fs-sm)/1.3 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--text);margin-left:auto;text-align:right}
+.cyc-pos b{font-size:var(--fs-md)} .cyc-pos .b{display:block;font:500 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted)}
+/* C01: one stance vocabulary — the six doctrine stances, inked by doctrine group (docs/DESIGN_DOCTRINE.md:44); never --up/--down */
+.cyc-stance{--c:var(--muted);font-weight:700}
+.cyc-stance[data-stance="act"],.cyc-stance[data-stance="get_ready"]{--c:var(--ink-ok,var(--ok))}
+.cyc-stance[data-stance="watch"],.cyc-stance[data-stance="protect"]{--c:var(--ink-warn,var(--warn))}
+.cyc-stance[data-stance="aside"],.cyc-stance[data-stance="ignore"]{--c:var(--muted)}
+.cyc-stance-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.cyc-stance-ttl{font-size:var(--fs-label);color:var(--muted);font-weight:600}
+/* wave 5 (SIC-V5-C07): the clock-state chips and the Live-parity / Overdue chips take a neutral, even all-round outline — no fill tint,
+   no edge accent (Chairman 2026-10-18); the doctrine chip is the only warn chip on a card */
+.cyc-outline{--c:var(--muted);background:transparent;border:1px solid color-mix(in srgb,var(--muted) 55%,var(--line));color:var(--muted)}
+.cyc-clocks{font-weight:600}
+.cyc-age{margin:0;font-size:var(--fs-sm);color:var(--text);display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.cyc-age .spc-icon{color:var(--muted);margin-top:2px}
+.cyc-sec{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.cyc-sec-ttl{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.cyc-sec-ttl h3{font-size:var(--fs-md)}
+.cyc-card .spc-hazard-ladder{grid-template-columns:minmax(44px,auto) repeat(3,minmax(0,1fr))}
+.cyc-hz-cap{font:700 var(--fs-micro)/1.2 var(--font-ui);letter-spacing:.06em;color:var(--muted)}
+.cyc-card .spc-hz-cell[data-source="none"] .spc-hz-val{color:var(--muted);font-weight:500}
+.cyc-hz-muted .spc-hz-cell[data-source="model"]{background:var(--panel)}
+.cyc-hz-muted .spc-hz-cell[data-source="model"] .spc-hz-val{color:var(--muted)}
+.cyc-hz-muted .spc-model-prior-badge[data-source="model"]{color:var(--muted);border-style:dashed}
+.cyc-rhythm-row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.cyc-overdue{--c:var(--ink-warn,var(--warn))}
+.cyc-win{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.cyc-win div{padding:8px 6px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);text-align:center;min-width:0}
+.cyc-win .k{display:block;font:700 var(--fs-micro)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-win .v{display:block;font:700 var(--fs-md)/1.25 var(--font-ui);font-variant-numeric:tabular-nums;margin-top:2px}
+.cyc-win div[data-central="true"]{background:color-mix(in srgb,var(--text) 8%,var(--panel))}
+.cyc-read-body{margin:0;font-size:var(--fs-sm);line-height:1.55;color:var(--text)}
+
+/* R6 timing methods: hazard, rhythm, sizing, lead-lag */
+.cyc-methods{margin-top:16px}
+.cyc-method-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.cyc-method{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);min-width:0}
+.cyc-method .spc-chip{align-self:flex-start} /* SIC-V6-C07 (VTC-045): the parity chip hugs its content inside the flex column */
+.cyc-method .k{font:700 var(--fs-micro)/1.3 var(--font-mono,var(--font-ui));color:var(--muted);letter-spacing:.04em}
+.cyc-method p{margin:0;font-size:var(--fs-sm);line-height:1.5}
+.cyc-method .cyc-chips{margin-top:auto}
+
+/* R8 grader + R7 events */
+.cyc-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:16px}
+.cyc-grader-body{margin:10px 0 0;font-size:var(--fs-sm);line-height:1.55;color:var(--text)}
+.cyc-ev-chips{margin-top:12px}
+.cyc-ev-fresh,.cyc-ev-incompat{margin-top:12px}
+.cyc-ev-fresh{display:flex;flex-direction:column;gap:4px;font-size:var(--fs-sm)}
+.cyc-ev-fresh .t{font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.cyc-ev-fresh .t .spc-asof-state{text-transform:none}
+.cyc-ev-fresh .b{color:var(--muted);line-height:1.5}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-fresh{display:none}
+html:not([data-state="incompatible_generation"]) .cyc .cyc-ev-incompat{display:none}
+.cyc-fixture{margin:10px 0 0;font:600 var(--fs-micro)/1.45 var(--font-mono,var(--font-ui));color:var(--muted);overflow-wrap:anywhere}
+
+/* R9 metadata: producer field paths and values, mono */
+.cyc-meta{margin-top:16px}
+.cyc-meta dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin:10px 0 0}
+.cyc-meta dl > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);align-items:baseline;min-width:0}
+.cyc-meta dt{font:500 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));color:var(--muted);overflow-wrap:anywhere}
+.cyc-meta dd{margin:0;font:600 var(--fs-micro)/1.4 var(--font-mono,var(--font-ui));color:var(--text);text-align:right;overflow-wrap:anywhere;max-width:100%}
+
+/* language switching: theme.css owns .l-en/.l-zh; this file hides the unset locale copy defensively */
+html:not([data-lang="zh"]) .cyc .l-zh{display:none}
+html[data-lang="zh"] .cyc .l-en{display:none}
+
+/* responsive: 2-up at tablet, single column at 390 (decision, then hazard/rhythm, then read, then methods) */
+@media (max-width:1100px){.cyc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.cyc-method-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .cyc{padding:12px 16px 40px}
+  .cyc-head,.cyc-cards,.cyc-method-grid,.cyc-two,.cyc-meta dl{grid-template-columns:minmax(0,1fr)}
+  .cyc-head h1{font-size:24px}
+  .cyc-card{padding:14px}
+  .cyc-pos{margin-left:0;text-align:left}
+  .cyc-meta dl > div{grid-template-columns:minmax(0,1fr)}
+  .cyc-meta dd{text-align:left}
+}
+.cyc-warn{--c:var(--ink-warn,var(--warn))}
+.cyc-hz-gap{display:block;width:16px;height:0;margin:9px auto;border-top:1px dashed var(--muted)}
+
+/* wave 2 — C04 provenance drawers: producer identifiers live here, closed by default */
+/* wave 3: the provenance-drawer rules (.cyc-prov*) moved to ../components/si_shell.css — shared by the Brief and Cycles specimens */
+.cyc-prov-meta .cyc-prov-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}
+.cyc-sec-h2{font-size:var(--fs-h3);margin:0 0 8px}
+/* C04: hazard ladder muted while the producer records model_cell_current_claim (parity unproven) */
+.spc-hazard-ladder.cyc-hz-muted .spc-hz-val{color:var(--muted)}
+/* C06: incompatible_generation — banner wraps, clock chips mute, dated qualifier shows */
+.cyc .spc-state-banner{flex-wrap:wrap;align-items:flex-start}
+.cyc .spc-sb-msg{min-width:0;flex:1 1 200px;overflow-wrap:anywhere;line-height:1.45}
+.cyc-ev-st{font-weight:600}
+.cyc-ev-qual{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-chip{opacity:.55}
+html[data-state="incompatible_generation"] .cyc .cyc-ev-qual{display:inline-flex}
+.cyc-fixture{margin:8px 0 0}
+.cyc-fixture-chip{--c:var(--muted)}
+@media (max-width:720px){.cyc-prov-meta .cyc-prov-body{grid-template-columns:minmax(0,1fr)}}
+/* wave 2 (SIC-V2-C06): the dated qualifier is a wrapping note, not a nowrap pill (390px EN overflow) */
+.cyc-ev-qual{white-space:normal;line-height:1.35;border-radius:10px;text-align:left;max-width:100%;padding:5px 10px}
+/* wave 3 (SIC-V3-C01..C03, C08, C09, C17): producer doctrine chip inked by doctrine_ink; source eyebrow; stance-unavailable line;
+   hero context card; Clocks-disagree read state; definition label; the labeled FIXTURE PRIOR card; the composite desk (board 40) */
+.cyc-stance[data-ink="ok"]{--c:var(--ink-ok,var(--ok))}
+.cyc-stance[data-ink="warn"]{--c:var(--ink-warn,var(--warn))}
+.cyc-stance[data-ink="muted"]{--c:var(--muted)}
+.cyc-stance-src{font:500 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted);letter-spacing:.02em}
+.cyc-stance-na{font:500 var(--fs-sm)/1.3 var(--font-ui);color:var(--muted)}
+.cyc-ctx{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0 0 10px;font:400 var(--fs-sm)/1.4 var(--font-ui)}
+.cyc-ctx > div{display:contents}
+.cyc-ctx dt{color:var(--muted);font-weight:500;white-space:nowrap}
+.cyc-ctx dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.cyc-gen-incompat{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-gen-fresh{display:none}
+html[data-state="incompatible_generation"] .cyc .cyc-gen-incompat{display:inline}
+.cyc-clocks-state{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 6px}
+.cyc-clocks-sec .cyc-clocks-state{margin:0}
+.cyc-clocks-both{font:500 var(--fs-sm)/1.4 var(--font-ui)}
+.cyc-read-withheld{color:var(--muted)}
+.cyc-def-lbl{font:600 var(--fs-micro)/1.3 var(--font-ui);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.cyc-fixture-card{margin-top:16px;border-style:dashed}
+.cyc-fx-id{display:flex;align-items:baseline;gap:10px;margin:6px 0}
+.cyc-fx-name{font-weight:600}
+.cyc-fx-body{margin:0 0 10px;color:var(--muted)}
+.cyc-desk{margin-top:16px}
+.cyc-desk[hidden]{display:none}
+html[data-desk="composite"] .cyc > .cyc-cards{display:none}
+.cyc-desk-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.cyc-capture{margin:0}
+.cyc-capture img{display:block;max-width:100%;height:auto;margin-top:8px;border:1px solid var(--line);border-radius:8px}
+.cyc-capture figcaption{margin-top:8px;font:400 var(--fs-sm)/1.45 var(--font-ui);color:var(--muted)}
+.cyc-desk-cards > .cyc-chips{margin-bottom:8px}
+.cyc-ctx dd code{white-space:nowrap;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+/* wave 4 (SIC-V4-C02/C03, C07/C08, C10): labeled hazard/rhythm mismatch states reuse .cyc-clocks-state; the fixture strip holds
+   two labeled FIXTURE cards; the desk caption carries the clock statement.
+   wave 5 (SIC-V5-C07/C08): the mismatch states moved into one .cyc-clocks-sec block per card (one .cyc-clocks-state line per
+   disagreeing clock); a section whose clock disagrees is not drawn */
+.cyc-fixtures{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-top:16px}
+.cyc-fixtures .cyc-fixture-card{margin-top:0}
+.cyc-desk-clock{display:block;margin-top:6px;color:var(--muted)}
