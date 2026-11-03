@@ -1,7 +1,7 @@
 # F01 — Evidence, effect state and review record
 
-**Candidate:** F01/1.0.0-candidate.2 / F01-F02-SHELL/1.0.0-candidate.2.  
-**Current acceptance:** PARTIAL, RIG draft. F02 candidate interface concurrence is source-bound; independent design qualification, implementation, deployment and served-production proof remain unestablished.
+**Candidate:** F01/1.0.0-candidate.3 / F01-F02-SHELL/1.0.0-candidate.3.  
+**Current acceptance:** PARTIAL, RIG draft. F02 candidate.2 geometry concurrence is source-bound; candidate.3 additions await F02/D06 review. Independent design qualification, implementation, deployment and served-production proof remain unestablished.
 
 ## 1. Immutable authority and source inputs
 
@@ -63,7 +63,7 @@ Screenshots and JSX are supporting read exports from actual native nodes, not HT
 
 ### Candidate.2 source / native divergence
 
-Source candidate.2 records the F02 agreement. The frozen native Read me still says Candidate 1 / F02 concurrence required; the frozen D inspector is still 400px rather than the now-agreed 440px. A metadata-only request `F01-20261103-c4-readme-concurrence-v2` returned `DOCUMENT_CHANGED`, `retry_allowed:false`, with no applied response. It was not retried or re-keyed. The planned D width change was never dispatched. The subsequent exact-file read returned the intended p-27-0 boards and its guard, but that does not authorize replay or resolve the earlier state-8 effect. Further native content writes are paused under the Paper workflow's uncertain-effect rule. Candidate.2 source is authoritative for the proposed geometry; these two native discrepancies are explicit carried findings, not repaired evidence or an accepted final freeze.
+Source candidate.2 records the F02 agreement. The frozen native Read me and I still carry Candidate 1 metadata; Read me says F02 concurrence required; the frozen D inspector is still 400px rather than the now-agreed 440px. A metadata-only request `F01-20261103-c4-readme-concurrence-v2` returned `DOCUMENT_CHANGED`, `retry_allowed:false`, with no applied response. It was not retried or re-keyed. The planned D width change was never dispatched. The subsequent exact-file read returned the intended p-27-0 boards and its guard, but that does not authorize replay or resolve the earlier state-8 effect. Further native content writes are paused under the Paper workflow's uncertain-effect rule. Candidate.2 source is authoritative for the proposed geometry; these two native discrepancies are explicit carried findings, not repaired evidence or an accepted final freeze.
 
 The latest successful screenshot readbacks show H's compact rail without the prior vertical-label overflow, explicit visible search icons on A/H, and C's complete five-row annual table. Those are the actual pixels frozen here. They do not close the remaining native divergence or interaction-proof gaps.
 
@@ -81,7 +81,7 @@ The native shell_architecture_adviser performed a read-only source/geometry advi
 
 The exposed Fabric capabilities reported adapter_available=true but worker_admission and worker_start UNPROBED. No new Fabric request/Attempt was created without authenticated lineage/admission. This is not evidence of a started independent reviewer, and no alternate carrier is being used to replay a refused or uncertain review.
 
-Independent closed-packet advisory critique, if obtained, is recorded in review/ with its actual inputs and findings. It does not upgrade formal RIG. F02's existing BLOCK findings and ongoing repairs remain with its author until independently resolved. Only real qualification evidence can change acceptance.
+Two independent native advisory agents inspected the closed candidate.2 packet at245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7 and verified all39 manifest members. Both requested changes and favored A as a direction. Their unchanged reports and author adjudication are in evidence/review/. Candidate.3 repairs source-only gaps; native findings remain open. This does not upgrade formal RIG. F02's existing BLOCK findings and ongoing repairs remain with its author until independently resolved. Only real qualification evidence can change acceptance.
 
 ## 7. Acceptance matrix and next actions
 
@@ -93,8 +93,14 @@ Independent closed-packet advisory critique, if obtained, is recorded in review/
 | Native comparable directions and three domain stress compositions | Authored; visual QA and captures | Frozen hashes + independent review; not runtime proof |
 | Complete native exceptional-state atlas | PARTIAL, original effect unknown | Reconcile state-8; continue unattempted rows lawfully |
 | F01/F02 joint release | Reciprocal candidate interface concurrence; not released | Both final native identities, effect reconciliation, consumer and review evidence |
-| Independent product/taste and QA01 qualification | Not established | Qualified reviewers assess exact closed packet |
+| Independent product/taste and QA01 qualification | Two native advisory critiques obtained; formal qualification not established | Bind repaired native set and actual admitted reviewer/QA01 evidence |
 | Complete live return/mobile/keyboard/locale proof | Not established | Future authorized implementation/re-audit path |
 | Production code, merge, Ready, queue, relabel, deployment | Not performed | Outside this assignment |
 
 Primary continuation is qualification of this exact existing F01 candidate, starting with the original Paper effect and final artifact qualification under the recorded F02 interface agreement. Source/retention research in other assigned domain sessions can continue independently; final composition/release remains governed by the programme's foundation hold.
+
+## 8. Review-driven continuation evidence
+
+Candidate.2 freeze:245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7. Its original manifest remains at evidence/CAPTURE_MANIFEST.json and must be evaluated against that immutable commit, not later changed source paths. Candidate.3 source repairs and the separate follow-up manifest preserve the initial critique unchanged. Five additional p-23-0 state screenshot/JSX pairs are read-only retained evidence:6OK9-0 expired/uncertain-save,6OKV-0 plan denied,6OLH-0 account unavailable,6OQP-0 unknown route phone and6OS6-0 guest presentation. They are not newly repaired F01 boards or proof of pending/confirmed/failed save transitions.
+
+The material-closeout protected-source recheck pinned Mastermind e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c, schema mastermind.sol_skillpack.v1, version1.0.1, minimum bootstrap1. Thirteen relevant procedures/companions were fetched at that same commit and found byte-identical by Git blob to the original b2326bbe mission pin. Receipts are in evidence/source/PROCEDURE_RECHECK.json. This records a current bounded comparison; it does not rewrite which procedure was used for earlier actions.

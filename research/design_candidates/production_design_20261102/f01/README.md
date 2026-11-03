@@ -1,7 +1,7 @@
 # F01 — Shared shell and navigation candidate
 
-**Version:** F01/1.0.0-candidate.2. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.2.  
-**Acceptance:** PARTIAL / RIG draft. Candidate interface concurrence is recorded with F02; native-effect reconciliation and independent qualification remain open. This is design/research work, not implementation or a released foundation.
+**Version:** F01/1.0.0-candidate.3. **Joint interface:** F01-F02-SHELL/1.0.0-candidate.3.  
+**Acceptance:** PARTIAL / RIG draft. The candidate.2 geometry agreement is recorded with F02. Candidate.3 source repairs add interaction details pending F02/D06 review; native-effect reconciliation and independent qualification remain open. This is design/research work, not implementation or a released foundation.
 
 ## Start here
 
@@ -12,7 +12,8 @@
 - [Acceptance cases](ACCEPTANCE_TESTS.md): falsifiable route/history/search/Options/identity/geometry/focus cases; test specifications, not passing runtime results.
 - [Evidence and review record](EVIDENCE_AND_REVIEW.md): actual live/Paper observations, ownership checks, effect uncertainty and review status.
 - [Directory retention audit](directory-retention-audit.json): all290 directory identities retained from the inspected source; an audit projection, never a second runtime registry.
-- [Frozen review packet](evidence/REVIEW_PACKET.md), [capture manifest](evidence/CAPTURE_MANIFEST.json) and [static artifact checks](evidence/STATIC_CHECKS.json): actual source/pixel/JSX input identities and the limits of those checks.
+- [Initial frozen review packet](https://github.com/mastermindx-market-intelligence/macro/blob/245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7/research/design_candidates/production_design_20261102/f01/evidence/REVIEW_PACKET.md): candidate.2 input identity; its manifest is historical and must be checked at that commit.
+- [Review adjudication](evidence/review/ADJUDICATION.md) and [source-repair follow-up packet](evidence/REPAIR_REVIEW_PACKET.md): unchanged initial reports, precise source repairs, retained-state evidence and remaining native conditions.
 
 ## Source and owners
 
@@ -50,10 +51,10 @@ Native/source divergence is carried explicitly: D still draws the prior 400px ov
 | Step | Result at this checkpoint |
 | --- | --- |
 | F01.1 baseline/ownership/source | Completed bounded inspection; limitations explicit |
-| F01.2 source/retention/joint interface | Candidate.2 authored; reciprocal interface concurrence recorded |
+| F01.2 source/retention/joint interface | Candidate.3 source repairs authored; candidate.2 geometry concurrence retained; new clauses pending |
 | F01.3 direction comparison and width rules | A/B and exact geometry authored; not independently accepted |
-| F01.4 native compositions/state evidence |10 screenshot/JSX pairs frozen; one state append EFFECT_UNKNOWN; source/native divergence carried |
-| F01.5 qualification/return | RIG draft; no formal qualification or release |
+| F01.4 native compositions/state evidence |10 new-board pairs and8 retained predecessor images inspected; one state append EFFECT_UNKNOWN; native findings open |
+| F01.5 qualification/return | Two initial advisory REQUEST_CHANGES results; RIG draft; no formal qualification or release |
 
 **Preserve original uncertain effect:** F01-20261103-c4-state-8-v1, direct Paper write_html targeting711X-0, intended Host/content changed row in710Z-0. Readback showed no row; terminal dispatch/effect disposition is unknown. No retry or alternate carrier is permitted merely from that absence. Later rows9–11 were not dispatched. Full state behavior is specified in source and retained references, but native completion is partial.
 

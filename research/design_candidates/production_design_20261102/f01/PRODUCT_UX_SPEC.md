@@ -1,6 +1,6 @@
 # F01 — Shared shell product and UX specification
 
-**Version: F01/1.0.0-candidate.2. Status: PARTIAL; RIG draft; not accepted for implementation.**
+**Version: F01/1.0.0-candidate.3. Status: PARTIAL; RIG draft; not accepted for implementation.**
 
 Source carrier: [Macro #10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645). Sole source/canvas owner for this slice: the current F01 receiver, GitHub principal mastermidx4. F02 remains with mastermindx-2 on [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630). The [joint candidate](JOINT_SHELL_SYSTEM_CONTRACT.md), [source contracts](SOURCE_AND_DATA_CONTRACT.md), [retention ledger](FEATURE_RETENTION_LEDGER.md), [acceptance cases](ACCEPTANCE_TESTS.md) and [evidence record](EVIDENCE_AND_REVIEW.md) are one bounded package under the supplied programme, not a new programme or runtime owner.
 
@@ -27,6 +27,12 @@ These are acceptance journeys, not measured usability results. The current live/
 **Alternative B: a horizontal six-workspace masthead.** The editable B board contains the same Macro content as A, making the hierarchy comparison concrete. It frees the left edge but puts navigation, company search, utilities and localization into the same horizontal band. The expected competition at narrower widths and with longer labels is a design inference; no comparative user study has been conducted. B is a retained comparison, not an accepted replacement.
 
 **H: compact navigation is a user choice.** It retains named accessible controls and tooltips, including market shortcuts and account entry. It must never be forced merely because an inspector opened. Its discoverability cost makes it unsuitable as the default. Tooltip labels must work on keyboard focus as well as hover; the mobile drawer remains fully labeled.
+
+### Explicit compact-mode control
+
+Retain the existing AppShell brand-area navigation toggle; do not invent a Settings preference or new persistence key. At widths above 860px it is a separate 44px control beside the brand, present in both expanded and compact states. Its proposed names are **Compact navigation / 收起导航** when expanded and **Expand navigation / 展开导航** when compact. Keep `aria-pressed` true for compact and `aria-controls` bound to the existing primary-navigation region. Enter or Space changes mode, focus remains on the same control, and a short status announcement identifies the resulting mode. Clicking the brand remains a separate navigation action.
+
+The inspected owner is AppShell's `compactNavigation` React state, initialized false. The candidate retains that mounted-instance scope: it may survive transitions that preserve this instance, but it does not promise account synchronization or persistence after remount/reload. At <=860 the desktop toggle is replaced by the existing drawer entry and its stored in-instance compact choice is not changed. Returning above 860 restores that choice. If a focused desktop toggle becomes hidden at the boundary, focus moves to the corresponding visible drawer entry; unrelated focused page content is not moved. Opening evidence never toggles navigation. Re-measure available content after an explicit change and apply the dock/modal focus rule below. The A/H native captures currently omit this control and its tooltip states; this source completion is not a native repair.
 
 Recommendation is not acceptance. Independent product/regression and visual/taste qualification and QA01 integration review remain separate gates.
 
@@ -76,11 +82,41 @@ When docking fails the width rule, use a 440px modal sidepane constrained to ava
 
 Global navigation, All tools, company search, account dialogs and a modal inspector coordinate so only one top-level modal owns focus and scroll lock. Moving from drawer to directory replaces the drawer, not stacks it. Closing a transient view retains domain selection; it never declares an in-flight write cancelled. Actual D23 save/readback semantics govern pending and uncertain mutations.
 
+### Layer transitions, including the existing Brain
+
+The following are proposed F01 interaction clauses for candidate.3. They need D06/F02 integration qualification; no exposed runtime coordinator or close acknowledgement is invented. Keep transient evidence identity in the existing domain view's in-memory selection, not in a new saved-object or return-state store.
+
+| Current surface and requested action | Required transition | Preserved context and focus |
+| --- | --- | --- |
+| No modal; open evidence | Use the measured-width dock rule; otherwise open one modal inspector | Bind the exact domain entity/field/period or observation key before opening; retain filters, sort and scroll |
+| Evidence dock; open company search, directory, navigation or account modal | Keep the nonmodal evidence selection behind the single new modal; make the background, including the dock, inert | Cancelling returns to the invoker if still valid; destination selection follows the new route and domain owner; no false Saved state |
+| Evidence modal; explicitly request another shell modal | Close the read-only evidence presentation and replace it with the requested modal in one transition, without an intermediate focus escape | Retain evidence identity in the current view. On cancel, focus its stable originating control; do not automatically reopen another modal. A committed navigation uses the destination heading |
+| An account/settings modal with an owner-controlled pending or unsaved operation | Let that owner complete its close/confirmation flow; ignore competing shell shortcuts while it owns the modal | F01 does not discard settings, cancel requests or infer write outcome; no second overlay |
+| Evidence dock or modal; invoke Ask Mastermind | Suspend the evidence presentation, release its width/focus trap, and open the existing Brain singleton | Preserve the view and evidence identity for an explicit return. Generic Ask uses existing ambient context. An exact-source action may use only an already-qualified domain source attachment; do not attach a screenshot or infer a source reference |
+| Brain open; request evidence or another shell modal | Require the existing Brain to close through its own visible control and confirmed owner lifecycle before opening the requested surface | Preserve Brain conversation/request state. Do not unmount it, append a second host, invent `MMBrain.close` typing or treat hiding as request cancellation. The user then opens the desired surface from its existing trigger |
+| Brain closes after evidence was suspended | Return focus to the invoking Ask/source control or stable page heading; offer the still-selected evidence trigger | Do not automatically remount a competing inspector or silently shrink the main object. Reopening evidence re-measures available width and restores the same valid identity |
+| Evidence changes from dock to modal during resize | Move the one inspector into modal presentation, establish one inert/focus owner, and place focus inside if focus would otherwise be obscured | Preserve object, filters and scroll; never change the compact-nav choice |
+| Evidence changes from modal to dock | Release background inertness and scroll lock, retain the one inspector and current focus if it remains visible | Tab resumes normal page order; no duplicate hidden dialog or focused detached element |
+
+The candidate avoids two simultaneously docked side surfaces: an open Brain suspends contextual evidence, even if a wide screen appears to have room for both. This keeps C's 664px primary area protected and avoids a second unqualified width contract. `/terminal` remains under its existing focused-shell/Brain owner and is not rewritten by this shared-shell policy.
+
+**Actual integration gap:** `AnalysisBrainHost` retains the existing singleton and source context; the inspected `MastermindBrainHost` type exposes `open`, `mounted` and `setPrincipal`, but no typed close/open-state acknowledgement. `BrainWidget` references the external `mm_brain.js` singleton and comments on additional methods; comments are not a verified lifecycle contract. D06 must bind a real observed open/close/focus signal before this arbitration can be implemented or accepted. Without that binding, the component is unqualified for the cross-layer cases; F01 must not invent an event name, poll private state, or claim the proposed transitions already work.
+
 ## 7. Deep links, history and return context
 
 All links retain existing admitted identities and the real parser. Ordinary query order, repeated keys, empty values, meaningful encodings and hash survive the existing transport boundary; only the two bridge transport keys are removed. Browser URL resolution can normalize relative syntax, so the promise concerns the resolved canonical contract, not every lexical spelling of an input href.
 
 Current-chart entry captures the actual current URL. A URL-selected valid Analysis symbol takes precedence over a stale shared cursor. An explicit invalid identity cannot silently open the previous company. Generic “Open Terminal” is a separate affordance and must not pretend to be current-company entry unless it uses the same owner-qualified context.
+
+| Entry context | Visible action and exact meaning |
+| --- | --- |
+| Valid URL-selected Company | **Open NVDA chart** (substitute the exact displayed qualified symbol); use the existing chart-entry owner and captured current URL, including the selected local view |
+| Another view with an explicitly displayed, qualified active symbol | Name that symbol in **Open [symbol] chart**; do not silently present a cursor-derived action as generic |
+| Macro or another view without an intended company context | **Open Terminal**; use the existing generic focused-workspace entry and captured return target, without inferring a company from market/language or silently appending a stale cursor |
+| Explicit invalid Company identity | Show the actual identity/recovery state; suppress or disable the contextual chart action. A separately named generic Open Terminal entry may remain available |
+| Symbol or chart service unavailable | Keep the current research context and a truthful unavailable/retry affordance supplied by its owner; do not substitute another company |
+
+A/H/D's captured “Open chart” labels are unresolved native ambiguities. The amended source meaning does not make their destinations executed or prove mobile/directory/toolbar parity. Qualify each actual entry path against the same identity and return expectations.
 
 Named return and browser Back are different actions. The existing named return may hard-navigate to the captured URL. Exact URL return, bounded legacy history restoration and complete native selection/scroll/focus restoration are three separate promises. The last is not yet proven by the inspected source or browser session. Preserve existing owners and implement/qualify any gap there; do not create another general return-state database.
 
@@ -88,7 +124,7 @@ Copy/share respects the same route and access boundaries. It never includes auth
 
 ## 8. Responsive, locale and presentation behavior
 
-The joint candidate supplies exact dimensions and content widths. There is one main page scroll owner; a table or chart that genuinely needs two dimensions owns a contained scroll region. Navigation and inspectors must not create accidental document-wide horizontal scrolling. A 12-column tape remains a complete table with local overflow and a complete-row evidence path; it must not collapse into prose that loses columns.
+The joint candidate supplies exact dimensions and content widths. There is one main page scroll owner; a table or chart that genuinely needs two dimensions owns a contained scroll region. Navigation and inspectors must not create accidental document-wide horizontal scrolling. The inspected Options Tape has **11 source-owned data columns**, enumerated in SOURCE_AND_DATA_CONTRACT §3.2. Retain them through the domain's actual table and deliberate local overflow; an evidence action is additional interaction anatomy, not a substitute for a data column. Its CSV has a separate 30-column export contract. D's native “12 fields” and “complete row” claims are unsupported by the frozen composition and remain a required native correction. A summary inspector must name its scope and expose truthful absence; it cannot manufacture missing quotes, venue or source fields.
 
 EN/ZH changes chrome and supported labels through the existing locale owner. It does not change region, listing, price sign convention, currency, units, source time or authored research. Public long-form articles retain their actual English-body/bilingual-chrome contract; no /zh/ URL family is introduced. Chinese labels wrap naturally using an available CJK fallback, without letter-spacing tricks or unreadable truncation.
 

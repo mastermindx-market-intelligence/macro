@@ -1,0 +1,83 @@
+{
+  "kind": "Static source inspection only; no product/runtime test executed",
+  "sourcePin": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "sourceCopyChecks": [
+    {
+      "path": "terminal/components/OptionsHubView.tsx",
+      "expectedGitBlob": "0d932ec2561314d44c6d0a0c7bfb00cf237f60cb",
+      "localGitBlob": "0d932ec2561314d44c6d0a0c7bfb00cf237f60cb",
+      "byteMatch": true,
+      "sha256": "0edbb1f902005dad5813beb7e406c04a3c0509aae4487f087fb101dd0ceb4c25",
+      "bytes": 272150
+    },
+    {
+      "path": "terminal/components/chrome/AnalysisBrainHost.tsx",
+      "expectedGitBlob": "56ac30f1cb3a66024bd84a866d7d09f977ddc2e2",
+      "localGitBlob": "56ac30f1cb3a66024bd84a866d7d09f977ddc2e2",
+      "byteMatch": true,
+      "sha256": "dbddf637effe1c029ec359ea93a7b58f4ee540997fca8470b6a2808139c4d87d",
+      "bytes": 6743
+    },
+    {
+      "path": "terminal/lib/flowStream.ts",
+      "expectedGitBlob": "63244fdda98b7307c81d5335f5960c2ccb0a2e20",
+      "localGitBlob": "63244fdda98b7307c81d5335f5960c2ccb0a2e20",
+      "byteMatch": true,
+      "sha256": "cae4dcdac2bb863b3fb1394e0d8de91b23b05deb64425ccd33b75bda205d4314",
+      "bytes": 10266
+    },
+    {
+      "path": "terminal/lib/optionsCsv.ts",
+      "expectedGitBlob": "de778fb67e6b9e7627ad3a90d3b012c10db7b2e6",
+      "localGitBlob": "de778fb67e6b9e7627ad3a90d3b012c10db7b2e6",
+      "byteMatch": true,
+      "sha256": "72e9e88aec24349a5b19120aea99442686d9abc0d4d0103594c60422e06969be",
+      "bytes": 9845
+    },
+    {
+      "path": "terminal/lib/optionsTapeView.ts",
+      "expectedGitBlob": "b9aabe50e27538d88b7415366d3ca4d46cdb6d2f",
+      "localGitBlob": "b9aabe50e27538d88b7415366d3ca4d46cdb6d2f",
+      "byteMatch": true,
+      "sha256": "f3ffea34cf02822c563333df4fc8070ef6193858b05c9e8659843c2d1d75c4fd",
+      "bytes": 8761
+    },
+    {
+      "path": "terminal/app/api/flow/stream/route.ts",
+      "expectedGitBlob": "f862e4d1a3700179acecffb4330c8693efcb550d",
+      "localGitBlob": "f862e4d1a3700179acecffb4330c8693efcb550d",
+      "byteMatch": true,
+      "sha256": "b2afe80e679d418e757e33e882d01abf8d6375ea1ae1e3e976c619e750654b20",
+      "bytes": 10080
+    },
+    {
+      "path": "terminal/app/api/flow/route.ts",
+      "expectedGitBlob": "607c4100fbdb72611f2dda816fe7fa69deab3ed9",
+      "localGitBlob": "607c4100fbdb72611f2dda816fe7fa69deab3ed9",
+      "byteMatch": true,
+      "sha256": "dc1cd775d5f353820368b5ed214fb02ade931f0f0e5f8a768ce00898e10784b6",
+      "bytes": 9299
+    },
+    {
+      "path": "terminal/lib/mastermindBrain.ts",
+      "expectedGitBlob": "8bad1568a715d3603331db492eced30fe33f98de",
+      "localGitBlob": "8bad1568a715d3603331db492eced30fe33f98de",
+      "byteMatch": true,
+      "sha256": "0b649c2017f1d4d79598aed8e2e48e2c3a52691e851d9964ccebd67413e21ab6",
+      "bytes": 3614
+    },
+    {
+      "path": "terminal/components/BrainWidget.tsx",
+      "expectedGitBlob": "5bf6fb83c02222e0c1682890c982beb91c515536",
+      "localGitBlob": "5bf6fb83c02222e0c1682890c982beb91c515536",
+      "byteMatch": true,
+      "sha256": "6eb6d407b3fd58d3ad285c08260b459ba099c4ea8eb2611816e09c103b5f9866",
+      "bytes": 13575
+    }
+  ],
+  "tapeHeaderColumnCount": 11,
+  "csvColumnCount": 30,
+  "acceptanceCaseCount": 79,
+  "acceptanceCaseIdsUnique": true,
+  "nativeRepairsApplied": false
+}

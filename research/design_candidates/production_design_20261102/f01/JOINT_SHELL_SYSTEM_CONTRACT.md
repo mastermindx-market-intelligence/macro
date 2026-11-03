@@ -1,7 +1,7 @@
 # F01/F02 — Shell-system interface candidate
 
-**Contract: F01-F02-SHELL/1.0.0-candidate.2**  
-**Acceptance: PARTIAL / RIG draft; candidate interface concurrence recorded.** F01 accepts the F02 author's source-bound geometry, cutoff and transition clarifications below. This is a joint interface candidate, not a released foundation, independent design acceptance or permission to implement.
+**Contract: F01-F02-SHELL/1.0.0-candidate.3**  
+**Acceptance: PARTIAL / RIG draft.** The bilateral candidate.2 geometry/ownership concurrence remains recorded. Candidate.3 adds F01's review-driven interaction clarifications; F02/D06 review of those additions is pending. This is a versioned joint-interface proposal, not a released foundation, independent design acceptance or permission to implement.
 
 | Binding | Exact reference |
 | --- | --- |
@@ -20,6 +20,8 @@
 ## 1. Ownership and change rule
 
 Candidate.2 changes from the F01 candidate.1 checkpoint at b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5: accepts the F02 content-gutter boundary at 600px rather than 768px; accepts a 440px tablet evidence overlay rather than 400px; makes the 600/860/1200 inequalities continuous for fractional CSS widths; and records reciprocal interface concurrence. It preserves the measured-content dock rule, 1256/1096 calculated thresholds, owners and release hold. F02's concurrence originally referenced the initial F01 carrier and actual Terminal CSS; this F01 response binds the resulting clauses to candidate.2, rather than claiming F02 reviewed all later F01 pixels or source changes.
+
+Candidate.2 was frozen at [245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7](https://github.com/mastermindx-market-intelligence/macro/tree/245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7/research/design_candidates/production_design_20261102/f01). Two independent native advisory agents requested changes on that exact set. **Candidate.3** preserves all agreed dimensions and token roles, then: specifies the existing compact-control/state scope; distinguishes generic Terminal from named-company entry; replaces the unsupported twelve-field Tape claim with its actual 11-column/30-column-export contracts; corrects the zero-or-one primary-current test; adds Company-history and field-selection cases; and proposes explicit Brain/evidence layer transitions. These are source repairs with native findings still open. The F02 handshake is evidence for the unchanged candidate.2 clauses, not blanket concurrence with candidate.3 or a reviewer-class receipt.
 
 F01 owns global composition, navigation hierarchy, search/directory entry, market destination treatment and shell return affordances. F02 owns tokens, shared component anatomy, data formatting, density and accessibility/motion primitives. Domain owners preserve their views, data semantics, producer identities and histories. F03 tracks organization, lineage and exact route/export admission; this candidate does not replace its registry or census. D07's analysisRoute remains authoritative and D23 owns saved objects/alerts. D06 retains focused Terminal and the single Brain owner.
 
@@ -78,6 +80,7 @@ The component names are specification vocabulary, not invented TypeScript export
 5. /terminal keeps its focused chrome and Brain singleton. Public acquisition/reading and internal OS/admin keep distinct audience and authorization boundaries.
 6. No colored container borders/accent stripes; neutral grouping, quiet fills and text hierarchy. Accessible focus outlines and data marks remain allowed.
 7. Feature/history retention is evaluated against real source and predecessors, not only the amount visible in a specimen.
+8. Candidate.3 proposes suspending contextual evidence while the existing Brain is open, avoiding two simultaneous side docks. Its actual open/close/focus lifecycle must be bound by D06; the inspected typed bridge does not supply that acknowledgement. No new assistant, event, store or grant is introduced by the proposed transition table in PRODUCT_UX_SPEC §6.
 
 ## 5. Concrete compositions and review entry
 
@@ -87,7 +90,7 @@ The source/pixel/JSX manifests record actual artifacts, hashes and any unresolve
 
 ## 6. Concurrence, review truth and release gate
 
-The two authors' candidate interface agreement is now source-bound: F02's f7c25c4 handshake plus F01's candidate.2 acceptance of its specific clarifications. It does not establish reciprocal review of the complete visual sets, a final native freeze, consumer qualification or a released foundation. Opening, closing and switching evidence remain read-only; overlay/dock changes preserve identity and reconcile focus/inertness without mounting two inspectors. No token alias, endpoint, storage key or save authority is created by this agreement.
+The two authors' candidate.2 interface agreement is source-bound: F02's f7c25c4 handshake plus F01's acceptance at245a7d2. The candidate.3 additions are explicitly pending F02/D06 review. Neither record establishes reciprocal review of the complete visual sets, a final native freeze, consumer qualification or a released foundation. Opening, closing and switching evidence remain read-only; overlay/dock changes preserve identity and reconcile focus/inertness without mounting two inspectors. No token alias, endpoint, storage key or save authority is created by this agreement.
 
 The candidate remains unreleased until both owners' Paper effects are reconciled and final captures are frozen; independent product/regression and visual/taste reviewers assess a closed packet; material findings are resolved on the reviewed artifacts; and QA01 qualifies representative cross-product journeys and retained coverage. Actual reviewer identity, input hashes, findings and disposition must be recorded. Self-review or a coordination comment cannot satisfy this gate.
 

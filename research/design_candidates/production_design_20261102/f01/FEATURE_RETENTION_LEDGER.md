@@ -78,3 +78,7 @@ The search/comparison page p-1S-0, All Tools/research launcher p-1R-0, investor-
 This candidate proposes a refined composition, selected-state policy and precise width/focus contracts. It does not supersede the source law, route registry, historical data, source-owned domain views, incumbent F02 review findings or retained predecessor evidence. A later accepted source must name the exact clauses it supersedes.
 
 Unqualified items remain explicit: route-family presentation mapping, final F01/F02 visual qualification, complete native return restoration, Options local-query reserialization, manifest freshness/failure behavior, full browser keyboard/zoom/locale proof, all Paper effects and independent review. The acceptance test specifications bind these gaps; no feature is marked proven solely because it appears in a mockup.
+
+## Candidate.3 review response
+
+The initial candidate.2 reviews remain bound to245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7. The source response adds the actual11-column Tape/30-column CSV mapping, compact-toggle scope, explicit Brain/evidence proposal and CF01–CF04 history/selection tests. It does not mark L11–L21 visually proven. C/D/E local navigation, C field selection, A/C/H current treatment and H control/tooltip anatomy remain native findings. Five more retained state boards were captured read-only; they do not complete the new atlas or reconcile its original effect.

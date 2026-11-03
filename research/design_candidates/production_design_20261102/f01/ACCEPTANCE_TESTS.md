@@ -72,7 +72,7 @@ Owners: [AppNav](https://github.com/mastermindx-market-intelligence/mastermind-t
 
 | ID | Action | Required result |
 | --- | --- | --- |
-| N01 | Visit market, Company, Options, Research and specialist families | One primary global destination; independent market context; local tabs do not compete as another global selection. F03 mapping remains authoritative for admission. |
+| N01 | Visit market, Company, Options, Research and specialist families | At most one correctly mapped primary global destination; zero when no qualified mapping exists; independent market context; local tabs do not compete as another global selection. F03 mapping remains authoritative for admission. |
 | N02 | US → China while research is open | Correct available destination/listing or truthful unsupported state. Never relabel cached US data. No watchlist, holdings or preference mutation from navigation. |
 | N03 | Search EN/ZH/full-width aliases, same-label destinations and canonical paths | Correct admitted matches with product/market/type disambiguation; no guessed URL; no deduplication by display title alone. |
 | N04 | Change search/category, Show more, close/reopen | Intentional query/category retention, correct 48-result increments and count, stable focus; no accidental reset hiding a previous result. |
@@ -139,7 +139,27 @@ Candidate: 224px nav ≥1200;196px at >860 and <1200;72px explicit compact;overl
 | G08 | 400% zoom/reflow and full inspector on small CSS viewport | Application reflows; component-scoped two-dimensional overflow only; close/action controls remain visible and reachable. |
 | G09 | Macro, Company and Options under every materially different content class | Actual primary task remains usable in the measured content slot. Standalone1440 screenshots do not satisfy shell integration. |
 
-## 9. Review closure
+## 9. Source-review additions — all NOT_RUN
+
+These cases close specification omissions found against candidate.2. They are candidate.3 acceptance obligations, not results. Native findings remain open until their actual artifacts are repaired and re-reviewed.
+
+| ID | Setup / action | Required result and retained owner |
+| --- | --- | --- |
+| N09 | Expanded → explicit compact using the existing brand toggle → evidence open/close → <=860 → >860 → expanded | Mode controls remain visible/named in both desktop states, 44px house target, keyboard activation and focus retained. The mounted-instance choice survives the narrow presentation without auto-collapse; reload/remount follows the actual existing state scope. No new preference persistence is claimed. |
+| N10 | At C's 1280 dock width, D's 1024 modal width and 390 phone width: evidence → Ask Mastermind → existing Brain close → explicit evidence reopen | One Brain, one modal owner, no simultaneous evidence/Brain docks, no main-width squeeze. Selected object/filter/sort/scroll retained; no duplicate source attachment. Actual D06 lifecycle signals must be bound before this case can run; comments or a guessed event name cannot pass it. |
+| N11 | Search/directory/nav/account while evidence is docked or modal; attempt a shortcut while Brain or an unsaved account dialog owns the layer | Apply PRODUCT_UX_SPEC §6 transition table exactly. No focus escape, hidden focused element, discarded domain write or false cancellation. No second modal; close returns to a valid logical trigger. |
+| N12 | Mapped Company, market route and unmapped specialist at expanded/compact widths | At most one correctly mapped primary current item; zero for no qualified mapping. Inactive Today uses the inactive treatment. Product title/current shortcut stays clear; the registry is unchanged. |
+| N13 | Toolbar, mobile and directory chart entries with valid URL-selected symbol, stale cursor, no company context and explicit invalid identity | Company-specific action names the exact symbol; generic action says Open Terminal. Invalid identity never falls back silently. Actual href/return target and enabled/unavailable state agree across the existing entry owners. |
+| CF01 | Real Company Financials at 664px primary and phone width; choose Statements, Statistics, Revenue, Dividends and Compare, then each available statement type | Every source-owned subview remains reachable with the selected view named. Preserve D07 page/pane grammar; do not invent missing routes or infer a view from a fixture label. |
+| CF02 | In real financial history, switch annual/quarterly and move to earlier then later periods | Retain available history, units, reporting basis, missing/zero distinction and window. No artificial four-period cap; source absence is explicit. |
+| CF03 | From the same company, reach available transcripts, Saved research and Your theses, then return to the selected Financials context | Existing domain entry points and immutable identity remain intact. A missing transcript has its actual absence state; navigation does not create or save a research object. |
+| CF04 | Open Revenue FY2024 evidence, then FY2025 evidence; close after sort/rerender and after true row removal | Exactly one inspector replaces its field/period identity; visible selection and subject-named trigger agree with value/unit. Preserve the historical window and scroll; resolve focus by stable field key, with named-heading fallback only on true removal. |
+| O07 | Actual Tape at narrow/docked widths, scroll to all columns and export a filtered collection larger than150 rows | Retain the 11 source columns in their actual order and all flags/semantics. Evidence is an additional action; row drill still works. Existing CSV exports all filtered/sorted events with its 30-column schema, source/stale metadata and null semantics, not only rendered rows. |
+| O08 | `~buy`, `~sell`, `mixed`, null vol_gt_oi/premium_z and absent swept; no supplied bid/ask/exchange | Keep inferred classification and genuine absence. Never relabel inferred side At ask or manufacture venue, quotes, multiplier or source citation to fit the native specimen. |
+| O09 | Valid tapeView, malformed/unknown-version/extra-key/over-limit/duplicate tapeView; local tab switch and named return | Preserve the real strict filter codec, explicit invalid-view state and existing recovery. No auth/payload/event identity or historical-snapshot promise in share state. Keep the separately documented local query reserialization limitation visible. |
+| V01 | Corrected native C/D/E/H plus mapped/unmapped navigation samples; retained access/save references | Capture actual local-view selectors, complete analytical object, selected field/period, mode control, tooltip/focus labels and 44px important-action anatomy. A matrix or source commitment alone cannot close a missing visual state. |
+
+## 10. Review closure
 
 No case is passed by this document. Future implementation-entry evidence must bind the exact F01/F02 source versions, editable Paper candidates, supported captures/exports, actual source/data contracts and independent review findings. Preserve formal RIG state and predecessor conditions. Design acceptance, implemented code, deployment and served-production proof remain separate.
 

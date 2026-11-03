@@ -1,0 +1,77 @@
+{
+  "originalMissionPin": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "closeoutPin": "e999c6e2161a77c7e4f35a9acf3ec3e3f6b9fc0c",
+  "schema": "mastermind.sol_skillpack.v1",
+  "version": "1.0.1",
+  "minimumBootstrapMajor": 1,
+  "compatible": true,
+  "indexBlob": "df05f9dd5d1c27976374dd6dd3a2f139dc1b76c3",
+  "procedures": [
+    {
+      "path": "docs/sol_skills/COLD_START.md",
+      "sha": "23d976f4993e6fa55050679e08c5afe346d6074b",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/ACTIVE_EXECUTION.md",
+      "sha": "bebcb2b28608cfe79360bf086b5d91b3910d3457",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/SESSION_RELIABILITY.md",
+      "sha": "dbe58d520724c33ba69e66ab4a4ef5cc03da0269",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/WEB_CEO_DELEGATION.md",
+      "sha": "07d5a85a2e6bcfab3ebcc0bc143e25af7398b60d",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/REVIEW_RETURN.md",
+      "sha": "233d5f01b8f01ca6499a9cf0d2ab7033821956d3",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/RECONCILE_STATE.md",
+      "sha": "e72bb4e6609eb61a042cee8c30367869672e7ca9",
+      "unchanged": true
+    },
+    {
+      "path": "docs/sol_skills/CLOSEOUT.md",
+      "sha": "8757525f707c95282ce607e7274e62a55703cf46",
+      "unchanged": true
+    },
+    {
+      "path": "docs/CEO_PROJECT_PLAN_CONTINUITY.md",
+      "sha": "63a8ebe1d9bda903c165657a7fd05e6c3707168a",
+      "unchanged": true
+    },
+    {
+      "path": "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "sha": "7b5eaf8ae2e1d3f1162b276fe87253daa0754bf5",
+      "unchanged": true
+    },
+    {
+      "path": "docs/SESSION_INDEPENDENT_REVIEW_ROUTING.md",
+      "sha": "f92f96d151ffbd67527f36d7640115bcfba69677",
+      "unchanged": true
+    },
+    {
+      "path": "skills/paper-design-workflow/SKILL.md",
+      "sha": "1c8c8c713e3648a0f503477494b3d0c334e63665",
+      "unchanged": true
+    },
+    {
+      "path": "skills/paper-design-workflow/references/connection.md",
+      "sha": "4498df7752f3827f9208481a2980d77a7199eb10",
+      "unchanged": true
+    },
+    {
+      "path": "docs/PAPER_DESIGN_INTEGRATION.md",
+      "sha": "a9da97dfe192dcfe3b5a08c44a8f1e8857571e4d",
+      "unchanged": true
+    }
+  ],
+  "scope": "Thirteen relevant procedures were fetched at the closeout pin and match their original mission-pin Git blobs; no authority or effect-state change inferred."
+}
