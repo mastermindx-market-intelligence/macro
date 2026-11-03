@@ -1247,6 +1247,9 @@ def test_exact_sha_acquisition_fetches_only_the_requested_commit(
         "git",
         "fetch",
         "--no-tags",
+        "--no-recurse-submodules",
+        "--no-write-fetch-head",
+        "--filter=blob:none",
         "--depth=1",
         "origin",
         SHA_BASE,
@@ -4282,3 +4285,187 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                     else:
                         guard(path)
                 self.assert_head(f)
+
+
+def _filtered_replay_fixture(tmp_path, *, complete=False):
+    root = tmp_path / 'source'
+    root.mkdir()
+    env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+    env.update(GIT_ALLOW_PROTOCOL='', GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+    def git(*args):
+        return subprocess.run(['git', *args], cwd=root, env=env, check=True,
+                              capture_output=True, text=True).stdout.strip()
+    git('init', '-q', '-b', 'main')
+    git('config', 'user.name', 'Offline Replay Fixture')
+    git('config', 'user.email', 'fixture@example.invalid')
+    files = {'scripts/base.py': 'base control\n', 'tests/deleted.py': 'old test\n',
+             'fixture_site/full.html': 'full base generated content\n', 'fixture_data/raw.txt': 'full base data\n',
+             'shared.txt': 'shared content\n'}
+    for name, text in files.items():
+        file = root / name; file.parent.mkdir(parents=True, exist_ok=True); file.write_text(text)
+    git('add', '.'); git('commit', '-qm', 'exact base')
+    base = git('rev-parse', 'HEAD')
+    base_objects = {}
+    for line in git('rev-list', '--objects', '--all').splitlines():
+        oid = line.split()[0]; kind = git('cat-file', '-t', oid)
+        value = subprocess.run(['git', 'cat-file', kind, oid], cwd=root, env=env,
+                               capture_output=True, check=True).stdout
+        base_objects[oid] = (kind, value)
+    (root / 'scripts/base.py').write_text('head control\n')
+    (root / 'tests/deleted.py').unlink()
+    git('add', '-A'); git('commit', '-qm', 'current tested tree')
+    head = git('rev-parse', 'HEAD')
+    # The head tree stays fully materialized, as in an unfiltered depth1 checkout.
+    current = {git('rev-parse', 'HEAD^{tree}')}
+    for row in git('ls-tree', '-r', '-t', 'HEAD').splitlines(): current.add(row.split()[2])
+    missing = {oid: item for oid, item in base_objects.items() if oid not in current}
+    if not complete:
+        for oid in missing:
+            (root / '.git/objects' / oid[:2] / oid[2:]).unlink()
+        (root / '.git/shallow').write_text(head + '\n')
+    git('remote', 'add', 'origin', 'https://fixture.invalid/never-contacted')
+    git('update-ref', 'refs/remotes/origin/main', head)
+    (root / '.git/FETCH_HEAD').write_text(head + '\t\tcaller-original\n')
+    return root, git, base, head, files, missing
+
+
+def _filtered_replay_provider(monkeypatch, root, git, base, head, missing, *, outcome='complete'):
+    real_run = subprocess.run
+    calls = []
+    want_blobs = {oid for oid, (kind, _) in missing.items() if kind == 'blob'}
+    def restore(oid):
+        kind, content = missing[oid]
+        written = real_run(['git', 'hash-object', '-w', '-t', kind, '--stdin'],
+                           cwd=root, input=content, capture_output=True, check=True).stdout.decode().strip()
+        assert written == oid
+    def provider(argv, *args, **kwargs):
+        command = list(argv) if isinstance(argv, (tuple, list)) else []
+        if command[:2] == ['git', 'fetch']:
+            calls.append((command, kwargs))
+            assert '--filter=blob:none' in command, 'exact-base acquisition is unfiltered'
+            env = kwargs['env']
+            assert env['GIT_ALLOW_PROTOCOL'] == os.environ['GIT_ALLOW_PROTOCOL']
+            assert env['GIT_NO_LAZY_FETCH'] == '1'
+            assert env['GIT_CONFIG_KEY_0'] == 'credential.helper'
+            assert env['GIT_CONFIG_VALUE_0'] == 'fixture-preserved-helper'
+            assert env['GIT_CONFIG_COUNT'] == '3'
+            assert env['GIT_CONFIG_KEY_1'] == 'remote.origin.promisor'
+            assert env['GIT_CONFIG_KEY_2'] == 'remote.origin.partialclonefilter'
+            assert '--filter=blob:none' in command
+            assert '--no-write-fetch-head' in command and '--no-recurse-submodules' in command
+            assert 0 < kwargs['timeout'] <= 30
+            if not env['GIT_ALLOW_PROTOCOL']:
+                raise subprocess.CalledProcessError(128, command, stderr='protocol restriction preserved')
+            if outcome == 'commit-timeout' and '--stdin' not in command:
+                raise subprocess.TimeoutExpired(command, kwargs['timeout'])
+            if outcome == 'commit-failure' and '--stdin' not in command:
+                raise subprocess.CalledProcessError(128, command, stderr='fixture acquisition failure')
+            if '--stdin' not in command:
+                assert command[-2:] == ['origin', base] and '--depth=1' in command
+                if outcome != 'missing-commit':
+                    for oid, (kind, _) in missing.items():
+                        if kind != 'blob' and not (outcome == 'missing-tree' and kind == 'tree'):
+                            restore(oid)
+                if outcome == 'first-changed-origin':
+                    git('remote', 'set-url', 'origin', 'https://fixture.invalid/changed-origin')
+                if outcome == 'first-changed-config': git('config', 'fixture.changed', 'yes')
+                if outcome == 'first-changed-ref': git('update-ref', 'refs/remotes/origin/main', base)
+                if outcome == 'first-changed-head': git('update-ref', 'HEAD', base)
+                if outcome == 'first-changed-fetch-head': (root / '.git/FETCH_HEAD').write_text(base + '\n')
+            else:
+                assert set(kwargs['input'].splitlines()) == want_blobs
+                assert '--depth=1' not in command
+                if outcome == 'batch-timeout':
+                    raise subprocess.TimeoutExpired(command, kwargs['timeout'])
+                if outcome == 'batch-failure':
+                    raise subprocess.CalledProcessError(128, command, stderr='fixture batch failure')
+                if outcome != 'incomplete-batch':
+                    for oid in want_blobs: restore(oid)
+                if outcome == 'changed-ref': git('update-ref', 'refs/remotes/origin/main', base)
+                if outcome == 'changed-fetch-head': (root / '.git/FETCH_HEAD').write_text(base + '\n')
+                if outcome == 'changed-config': git('config', 'fixture.changed', 'yes')
+            return subprocess.CompletedProcess(command, 0, '', '')
+        if command[:2] == ['git', 'ls-tree'] and outcome == 'malformed-tree':
+            result = real_run(argv, *args, **kwargs)
+            return subprocess.CompletedProcess(command, 0, result.stdout.rstrip('\0'), '')
+        if command[:2] == ['git', 'cat-file'] and '--batch-check=%(objectname) %(objecttype)' in command:
+            result = real_run(argv, *args, **kwargs)
+            if outcome == 'partial-probe': return subprocess.CompletedProcess(command, 0, '', '')
+            if outcome == 'wrong-probe-oid': return subprocess.CompletedProcess(command, 0, result.stdout.replace(result.stdout[:40], 'f' * 40, 1), '')
+            if outcome == 'wrong-probe-type': return subprocess.CompletedProcess(command, 0, result.stdout.replace(' blob', ' tree', 1), '')
+            return result
+        return real_run(argv, *args, **kwargs)
+    monkeypatch.setattr(PACK.subprocess, 'run', provider)
+    return calls
+
+
+def _filtered_replay_env(monkeypatch, tmp_path, *, denied=False):
+    monkeypatch.setenv('GIT_ALLOW_PROTOCOL', '' if denied else 'https')
+    monkeypatch.setenv('GIT_NO_LAZY_FETCH', '1')
+    monkeypatch.setenv('GIT_CONFIG_COUNT', '1')
+    monkeypatch.setenv('GIT_CONFIG_KEY_0', 'credential.helper')
+    monkeypatch.setenv('GIT_CONFIG_VALUE_0', 'fixture-preserved-helper')
+    runner_temp = tmp_path / 'runner-temp'; runner_temp.mkdir()
+    monkeypatch.setenv('RUNNER_TEMP', str(runner_temp))
+
+
+@pytest.mark.parametrize('complete', [False, True])
+def test_filtered_exact_base_complete_tree_private_origin_and_continuity(tmp_path, monkeypatch, complete):
+    root, git, base, head, files, missing = _filtered_replay_fixture(tmp_path, complete=complete)
+    original_config = git('config', '--local', '--list')
+    original_fetch = (root / '.git/FETCH_HEAD').read_bytes()
+    _filtered_replay_env(monkeypatch, tmp_path)
+    calls = _filtered_replay_provider(monkeypatch, root, git, base, head, missing)
+    with PACK._exact_base_worktree(root, base, deadline=PACK.time.monotonic() + 30) as replay:
+        for name, content in files.items(): assert (replay / name).read_text() == content
+        assert subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=replay, capture_output=True, text=True, check=True).stdout.strip() == base
+        assert subprocess.run(['git', 'rev-parse', 'origin/main'], cwd=replay, capture_output=True, text=True, check=True).stdout.strip() == base
+        origin = subprocess.run(['git', 'remote', 'get-url', 'origin'], cwd=replay, capture_output=True, text=True, check=True).stdout.strip()
+        assert Path(origin).is_dir() and 'fixture.invalid' not in origin
+        assert subprocess.run(['git', '--git-dir', origin, 'rev-parse', 'refs/heads/main'], capture_output=True, text=True, check=True).stdout.strip() == base
+        config = subprocess.run(['git', 'config', '--local', '--list'], cwd=replay, capture_output=True, text=True, check=True).stdout
+        assert 'promisor' not in config and 'credential.helper' not in config
+        assert git('rev-parse', 'HEAD') == head
+    assert not replay.exists()
+    assert git('config', '--local', '--list') == original_config
+    assert (root / '.git/FETCH_HEAD').read_bytes() == original_fetch
+    assert git('rev-parse', 'origin/main') == head
+    assert os.environ['GIT_CONFIG_COUNT'] == '1'
+    assert len(calls) == (0 if complete else 2)
+    if calls:
+        assert calls[1][1]['timeout'] <= calls[0][1]['timeout']
+        blobs = {oid for oid, (kind, _) in missing.items() if kind == 'blob'}
+        assert len(blobs) == 2  # full base has five files; shared three stay local
+
+
+@pytest.mark.parametrize('outcome,expected_calls', [
+    ('commit-timeout', 1), ('commit-failure', 1), ('missing-commit', 1),
+    ('missing-tree', 1), ('malformed-tree', 1), ('partial-probe', 1),
+    ('wrong-probe-oid', 1), ('wrong-probe-type', 1),
+    ('batch-timeout', 2), ('batch-failure', 2), ('incomplete-batch', 2),
+    ('changed-ref', 2), ('changed-fetch-head', 2), ('changed-config', 2),
+    ('protocol-denied', 1),
+    ('first-changed-origin', 1), ('first-changed-config', 1),
+    ('first-changed-ref', 1), ('first-changed-head', 1), ('first-changed-fetch-head', 1),
+])
+def test_filtered_exact_base_refuses_without_retry_or_partial_tree(tmp_path, monkeypatch, outcome, expected_calls):
+    root, git, base, head, files, missing = _filtered_replay_fixture(tmp_path)
+    _filtered_replay_env(monkeypatch, tmp_path, denied=outcome == 'protocol-denied')
+    calls = _filtered_replay_provider(monkeypatch, root, git, base, head, missing, outcome=outcome)
+    with pytest.raises((RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired)):
+        with PACK._exact_base_worktree(root, base, deadline=PACK.time.monotonic() + 30):
+            raise AssertionError('invalid acquisition yielded a replay workspace')
+    assert len(calls) == expected_calls
+    assert not list((tmp_path / 'runner-temp').iterdir())
+
+
+@pytest.mark.parametrize('case', ['bad-config-count', 'expired'])
+def test_filtered_exact_base_rejects_before_any_transport(tmp_path, monkeypatch, case):
+    root, git, base, head, files, missing = _filtered_replay_fixture(tmp_path)
+    _filtered_replay_env(monkeypatch, tmp_path)
+    if case == 'bad-config-count': monkeypatch.setenv('GIT_CONFIG_COUNT', 'invalid')
+    calls = _filtered_replay_provider(monkeypatch, root, git, base, head, missing)
+    deadline = PACK.time.monotonic() + (-1 if case == 'expired' else 30)
+    with pytest.raises((RuntimeError, TimeoutError)):
+        PACK._ensure_exact_commit(root, base, deadline=deadline)
+    assert calls == []
