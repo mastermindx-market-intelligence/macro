@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-03",
-  "generated_utc": "2026-11-03T05:48:26.098234+00:00",
+  "generated_utc": "2026-11-03T09:32:06.782107+00:00",
   "n_tickers": 2916,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -2705,8 +2705,8 @@
       ],
       "weighted_score": 0.2,
       "wsb_mentions": 37,
-      "days_to_earnings": 7,
-      "next_earnings": "2026-11-10",
+      "days_to_earnings": 9,
+      "next_earnings": "2026-11-12",
       "earnings_surprise_pct": 82.1,
       "convergence_score": 1,
       "trump_linked": false,
@@ -2897,8 +2897,8 @@
       "weighted_score": 0.65,
       "opt_vol_oi": 0.262,
       "opt_put_call": 0.18,
-      "days_to_earnings": 8,
-      "next_earnings": "2026-11-11",
+      "days_to_earnings": 13,
+      "next_earnings": "2026-11-16",
       "earnings_surprise_pct": 14.3,
       "convergence_score": 1,
       "trump_linked": false,
@@ -3850,6 +3850,20 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "TR": {
+      "ticker": "TR",
+      "channels": [
+        "short_squeeze"
+      ],
+      "weighted_score": 0.3,
+      "days_to_earnings": 1,
+      "next_earnings": "2026-11-04",
+      "days_to_cover": 16.0,
+      "si_change_pct": 1.4,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "AEE": {
       "ticker": "AEE",
       "channels": [],
@@ -4604,18 +4618,6 @@
       "weighted_score": 0.3,
       "days_to_cover": 16.4,
       "si_change_pct": -3.4,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "TR": {
-      "ticker": "TR",
-      "channels": [
-        "short_squeeze"
-      ],
-      "weighted_score": 0.3,
-      "days_to_cover": 16.0,
-      "si_change_pct": 1.4,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
