@@ -92,7 +92,7 @@
   function unitEC() { return IS_INTL ? "Market" : "Sector"; }   // capitalised English
   function unitZ() { return IS_INTL ? "市场" : "板块"; }         // Chinese
   function isMobile() { return window.innerWidth <= 880; }
-  function isCnMobile() { return IS_CN && isMobile(); }
+  function isCnMobile() { return (IS_CN || (typeof window !== "undefined" && !!window.SC_PLATFORM)) && isMobile(); }
   var mobileSel = null;        // explicit per-id chart selection (Series picker); null = leaders default
   var mobileShowAll = false;   // user opted into the full overlay
   function mobileLeaders() {   // top-5 of the ACTIVE family by relative strength
@@ -255,7 +255,7 @@
   // miss. Display-only context — full receipt/copy in the hover title.
   // v2: receiving card (to_sector) shows "money rotating in" copy variant;
   //     severity class uses severity_effective when present (faltering events demote it).
-  function rotationCardChip(s) {
+  function rotationCardChip(s) { if (_ROT_STATE && _ROT_STATE !== "fresh" && _ROT_STATE !== "empty" && typeof window !== "undefined" && window.SC_STATES && window.SC_STATES.stateHTML) return window.SC_STATES.stateHTML(_ROT_STATE, {context: "rotation", compact: true, align: _ROT_ALIGN});
     var evs = ROT_BY_SEC[s.id];
     if (!evs || !evs.length) return "";
     var e = evs[0];
@@ -271,7 +271,7 @@
     return '<span class="cc-rot cc-rot-' + esc(sev) + '" title="' + esc(tip) + '">⟲ ' +
       L("handoff active", "轮动进行中") + (e.day_n != null ? " · d" + esc(e.day_n) : "") + '</span>';
   }
-  function fragCardChip(s) {
+  function fragCardChip(s) { if (_FRAG_STATE && _FRAG_STATE !== "fresh" && _FRAG_STATE !== "empty" && typeof window !== "undefined" && window.SC_STATES && window.SC_STATES.stateHTML) return window.SC_STATES.stateHTML(_FRAG_STATE, {context: "fragmentation", compact: true, align: _FRAG_ALIGN});
     var r = FRAG_BY_KEY[s.id];
     if (!r) return "";
     var tip = curLang() === "zh" ? (r.copy_zh || "") : (r.copy_en || "");
@@ -644,8 +644,8 @@
 
   /* ---- phase filter chips ------------------------------------------------- */
   var PHASE_FILTER = [
-    { key: "Peak", label: ["Topping", "见顶"] },
-    { key: "Expansion", label: ["Trending", "上行"] },
+    { key: "Peak", label: (typeof window !== "undefined" && window.SC_FACE) ? ["Topping · late", "见顶 · 晚期"] : ["Topping", "见顶"] },
+    { key: "Expansion", label: (typeof window !== "undefined" && window.SC_FACE) ? ["Trending", "上行中"] : ["Trending", "上行"] },
     { key: "Downturn", label: ["Rolling over", "回落中"] },
     { key: "Recovery", label: ["Prime entry", "入场良机"] },
     { key: "Trough", label: ["Bottoming", "筑底中"] }
@@ -1164,7 +1164,7 @@
      model ledger (cell_verdict), so every visible number gets an evidence badge:
      PASS = calibrated model probability (passed the W4.2 calibration gate vs family-stratified KM);
      PRIOR = KM base rate, muted. No naked probabilities. Display-only context. */
-  function _hzPass(c) { return !!c && c.p != null && (c.cell_verdict === "PASS" || c.source === "MODEL"); }
+  function _hzPass(c, ek, key) { if (typeof window !== "undefined" && window.SC_FACE && window.SC_FACE.hazardPass) return window.SC_FACE.hazardPass(c, ek, key); return !!c && c.p != null && c.cell_verdict === "PASS" && !(ek && ek.model_cell_current_claim && ek.model_cell_current_claim !== "parity_holds"); }
   function _hzTip(hz, key, pass) {
     var epoch = hz.epoch || "", dir = hz.direction || "";
     var revOpt = hz.revision_optimistic
@@ -1189,7 +1189,7 @@
          "Epoch: " + epoch + revOpt + "。未用之后的结果核对。");
     return L(en, zh);
   }
-  function _hzBadge(pass) {
+  function _hzBadge(pass, q) { if (q) return '<span class="hz-badge hz-q cyc-outline">' + L("Live parity unproven", "实时一致性未证实") + '</span>';
     return pass ? '<span class="hz-badge hz-pass">' + L("PASS", "通过") + '</span>'
                 : '<span class="hz-badge hz-prior">' + L("PRIOR", "先验") + '</span>';
   }
@@ -1204,12 +1204,12 @@
     function cell(key, label, labelZh) {
       var c = hz[key];
       if (!c || c.p == null) return "";
-      var pass = _hzPass(c);
-      return '<span class="hz-cell' + (pass ? '' : ' hz-muted') + '" title="' + esc(_hzTip(hz, key, pass)) + '">' +
-        L(label, labelZh) + ' ' + Math.round(c.p * 100) + '% ' + _hzBadge(pass) + '</span>';
+      var pass = _hzPass(c, s.estimate_kinds, key), q = !pass && c.source === "MODEL";
+      return '<span class="hz-cell' + (pass ? '' : ' hz-muted') + '" title="' + esc(q ? L("Probability that the open leg’s next confirmed turn lands inside each horizon. Historical calibration only; not a current claim while live parity is unproven.", "开放周期段的下一个已确认拐点落在各时间窗内的概率。仅为历史校准；实时一致性未证实期间不构成当前判断。") : _hzTip(hz, key, pass)) + '">' +
+        L(label, labelZh) + ' ' + Math.round(c.p * 100) + '% ' + _hzBadge(pass, q) + '</span>';
     }
     var cells = [
-      cell("1m", "P(turn ≤ 1m)", "P(转折≤1月)"),
+      cell("1m", "P(turn ≤ 1m)", "转折≤1月"),
       cell("3m", "≤3m", "≤3月"),
       cell("6m", "≤6m", "≤6月")
     ].filter(Boolean);
@@ -1220,7 +1220,7 @@
         "PASS cells: isotonic-calibrated hazard model (calibration-gated vs KM, W4.2 gate). " +
         "PRIOR cells: KM base rate, shown muted. Display-only context — never a signal.",
         "开放周期段在各时间窗内出现下一个已确认拐点的概率。PASS=经W4.2门槛校准的模型输出；PRIOR=KM基准率（弱化显示）。仅供展示，绝非信号。")) + '">' +
-      L("Turn hazard (calibrated)", "转折风险（校准）") + '</span>' +
+      ((typeof window !== "undefined" && window.SC_FACE) ? L("Turn hazard (historical qualification only)", "转折风险（仅历史校验）") : L("Turn hazard (calibrated)", "转折风险（校准）")) + '</span>' +
       cells.join('<span class="hz-sep"> · </span>') +
       '</div>';
   }
@@ -1228,12 +1228,12 @@
   // its gate cell PASSED for this record's direction (down-legs: down/3m PASS); else
   // fall back to a passing 1m (up-legs: up/1m is the only PASS cell); else show the
   // 3m KM prior, PRIOR-badged and muted. The badge is never omitted.
-  function _hzPick(hz) {
-    if (_hzPass(hz["3m"])) return { key: "3m", c: hz["3m"], pass: true };
-    if (_hzPass(hz["1m"])) return { key: "1m", c: hz["1m"], pass: true };
-    if (hz["3m"] && hz["3m"].p != null) return { key: "3m", c: hz["3m"], pass: false };
-    if (hz["1m"] && hz["1m"].p != null) return { key: "1m", c: hz["1m"], pass: false };
-    return null;
+  function _hzPick(hz, ek) {
+    if (_hzPass(hz["3m"], ek, "3m")) return { key: "3m", c: hz["3m"], pass: true };
+    if (_hzPass(hz["1m"], ek, "1m")) return { key: "1m", c: hz["1m"], pass: true };
+    if (hz["3m"] && hz["3m"].p != null && hz["3m"].source !== "MODEL") return { key: "3m", c: hz["3m"], pass: false };
+    if (hz["1m"] && hz["1m"].p != null && hz["1m"].source !== "MODEL") return { key: "1m", c: hz["1m"], pass: false };
+    var qk = (hz["3m"] && hz["3m"].p != null) ? "3m" : (hz["1m"] && hz["1m"].p != null) ? "1m" : null; return qk ? { key: qk, c: hz[qk], pass: false, q: true } : null;
   }
   function _hzWithheld(hz) {
     if (!hz || !hz.unavailable) return "";
@@ -1255,8 +1255,8 @@
         '<span class="cc-hz-k">' + L("Turn hazard", "转折风险") + '</span> ' +
         L("Unavailable today", "今日暂不可用") + '</div>';
     }
-    var pick = _hzPick(hz);
-    if (!pick) return "";
+    var pick = _hzPick(hz, s.estimate_kinds);
+    if (!pick) return ""; if (pick.q) return '<div class="cc-hz hz-muted" title="' + esc(L("Probability that the open leg’s next confirmed turn lands inside each horizon. Historical calibration only; not a current claim while live parity is unproven.", "开放周期段的下一个已确认拐点落在各时间窗内的概率。仅为历史校准；实时一致性未证实期间不构成当前判断。")) + '"><span class="cc-hz-k">' + L("Turn hazard", "转折风险") + '</span> ' + _hzBadge(false, true) + '</div>';
     return '<div class="cc-hz' + (pick.pass ? '' : ' hz-muted') + '" title="' + esc(_hzTip(hz, pick.key, pick.pass)) + '">' +
       '<span class="cc-hz-k">' + L("Turn ≤" + pick.key, "转折≤" + (pick.key === "3m" ? "3月" : pick.key === "1m" ? "1月" : "6月")) + '</span> ' +
       '<b>' + Math.round(pick.c.p * 100) + '%</b> ' + _hzBadge(pick.pass) +
@@ -1808,7 +1808,7 @@
   function initSheet() {
     var sheet = document.getElementById("sc-detail"), handle = document.getElementById("sc-handle");
     if (!sheet || !handle) return;
-    if (!IS_CN) {   // US / standalone Cycle page: original simple expand toggle, verbatim
+    if (!IS_CN && !(typeof window !== "undefined" && window.SC_PLATFORM)) {   // US / standalone Cycle page: original simple expand toggle, verbatim
       handle.addEventListener("click", function () { sheet.classList.toggle("expanded"); });
       var sY = 0, drag0 = false;
       handle.addEventListener("touchstart", function (e) { sY = e.touches[0].clientY; drag0 = true; }, { passive: true });
@@ -2199,6 +2199,7 @@
      was applied, so the listeners can clear focus when the hash no longer names one. */
   function applyFocusHash() {
     var h = (location.hash || "").replace("#", "");
+    var q = _pendingQs(h); if (q != null) return _applyQs(q);
     if (!(h && byId[h])) return false;
     var hs = byId[h];
     if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
@@ -2225,7 +2226,7 @@
       if (e.key === "Escape") { var w = document.querySelector(".sc-chartwrap.sc-fs"); if (w) toggleChartFs(false); }
     });
     var h = (location.hash || "").replace("#", "");
-    if (h && byId[h]) setTimeout(applyFocusHash, 350);
+    if ((h && byId[h]) || _hasQs(h)) setTimeout(applyFocusHash, 350);
     else { guideEntry(); showFirstHint(); }   // novice entry: highlight one line + a tap hint
     // J-restore (§8/§10): Back/Forward (popstate) or a same-page hash edit (hashchange)
     // re-applies the focus deep link through the shared reader without a reload; a hash
@@ -2264,30 +2265,308 @@
   // and no chips render. No MutationObserver — this page re-renders on 'langchange' via
   // rerender()→mountCards(), so the chips pick up the language flip for free.
   function loadRotation() {
+    var ST = (typeof window !== "undefined") ? window.SC_STATES : null;
+    if (_rotFromContext(ST)) return;
     if (typeof fetch !== "function") return;
+    if (ST && typeof ST.fetchTyped === "function") {
+      // typed path (Sector Central): every outcome is a named state, never a silent null
+      Promise.all([
+        ST.fetchTyped("marketdata/rotation_events.json", { list: "active" }),
+        ST.fetchTyped("marketdata/sector_fragmentation.json", { list: "sectors" })
+      ]).then(function (res) {
+        var ev = res[0] || {}, fr = res[1] || {};
+        _ROT_STATE = ev.state || "unavailable"; _ROT_ALIGN = ev;
+        _FRAG_STATE = fr.state || "unavailable"; _FRAG_ALIGN = fr;
+        _indexRotation(_ROT_STATE === "fresh" && ev.data ? ev.data.active : null,
+                       _FRAG_STATE === "fresh" && fr.data ? fr.data.sectors : null);
+      });
+      return;
+    }
     Promise.all([
       fetch("marketdata/rotation_events.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch("marketdata/sector_fragmentation.json", { cache: "no-cache" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (res) {
       var ev = res[0], fr = res[1];
-      ROT_BY_SEC = {};
-      ((ev && ev.active) || []).forEach(function (e) {
-        // Index by donor sector (v1 path — always present)
-        (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
-        // v2: also index by to_sector when present and different from donor sector,
-        // so cross-sector events chip the receiving card too (e.g. xlk->xlv chips XLV).
-        if (e.to_sector && e.to_sector !== e.sector) {
-          var _recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
-          // Tag a copy with _is_receiver=true so the chip builder can vary the copy.
-          var _copy = Object.assign({}, e, { _is_receiver: true });
-          _recv.push(_copy);
-        }
-      });
-      FRAG_BY_KEY = {};
-      ((fr && fr.sectors) || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
-      if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length) mountCards();
+      _indexRotation(ev && ev.active, fr && fr.sectors);
     });
   }
+  // C28/C20/C21: the build stamps rotation_context (build_sector_cycles._stamp_rotation_context);
+  // each side is read on its own alignment, so another generation is dated and marked, never merged,
+  // and a missing side is unavailable, never "none". Absent block or no SC_STATES -> fetch paths below.
+  function _rotFromContext(ST) {
+    var RC = (typeof window !== "undefined" && window.SECTOR_CYCLES) ? window.SECTOR_CYCLES.rotation_context : null;
+    if (!ST || typeof ST.fromAlignment !== "function" || !RC || typeof RC !== "object") return false;
+    var whole = (RC.status === "unavailable" || (!RC.events && !RC.fragmentation)) ? { status: "unavailable", reason: RC.reason || "projection_error" } : null;
+    function side(s, key) {
+      s = whole || s || { status: "missing_input", reason: "missing_session" };
+      if (s.status !== "aligned") return { state: ST.fromAlignment(s), align: s, list: null };
+      var list = s[key];
+      if (!Array.isArray(list)) return { state: "malformed", align: s, list: null };
+      return { state: list.length ? "fresh" : "empty", align: s, list: list };
+    }
+    var ev = side(RC.events, "active"), fr = side(RC.fragmentation, "sectors");
+    _ROT_STATE = ev.state; _ROT_ALIGN = ev.align; _FRAG_STATE = fr.state; _FRAG_ALIGN = fr.align;
+    _indexRotation(ev.list, fr.list);
+    return true;
+  }
+  function _indexRotation(evActive, frSectors) {
+    ROT_BY_SEC = {};
+    (evActive || []).forEach(function (e) {
+      // Index by donor sector (v1 path — always present)
+      (ROT_BY_SEC[e.sector] = ROT_BY_SEC[e.sector] || []).push(e);
+      // v2: also index by to_sector when present and different from donor sector,
+      // so cross-sector events chip the receiving card too (e.g. xlk->xlv chips XLV).
+      if (e.to_sector && e.to_sector !== e.sector) {
+        var _recv = ROT_BY_SEC[e.to_sector] = ROT_BY_SEC[e.to_sector] || [];
+        // Tag a copy with _is_receiver=true so the chip builder can vary the copy.
+        var _copy = Object.assign({}, e, { _is_receiver: true });
+        _recv.push(_copy);
+      }
+    });
+    FRAG_BY_KEY = {};
+    (frSectors || []).forEach(function (r) { if (r.fragmented) FRAG_BY_KEY[r.key] = r; });
+    var odd = function (st) { return !!st && st !== "fresh" && st !== "empty"; };
+    if (Object.keys(ROT_BY_SEC).length || Object.keys(FRAG_BY_KEY).length || odd(_ROT_STATE) || odd(_FRAG_STATE)) mountCards();
+  }
+
+  // ---- L3 platform seam (Sector Central only): every branch below is gated on window.SC_PLATFORM,
+  // which only the Sector Central shell loads. Standalone and China pages keep the BASE behaviour.
+  function _seam() { return typeof window !== "undefined" && !!window.SC_PLATFORM; }
+  var _quiet = false, _cmp = [], _heroDeferred = false, _lastUserAct = 0, _wTimer = null, _turnSel = null;
+  var _SPDR_IDS = ["xlb", "xlc", "xle", "xlf", "xli", "xlk", "xlp", "xlre", "xlu", "xlv", "xly"];
+  var _ROT_STATE, _ROT_ALIGN, _FRAG_STATE, _FRAG_ALIGN;
+  var SVG_PK = '<svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M5 1 9 9H1z" fill="currentColor"/></svg>';
+  var SVG_TR = '<svg viewBox="0 0 10 10" width="10" height="10" aria-hidden="true"><path d="M1 1h8L5 9z" fill="currentColor"/></svg>';
+  function _announce(msg) { if (_seam() && window.SC_PLATFORM.announce && msg) window.SC_PLATFORM.announce(msg); }
+  function _cmpMax() { return (typeof window !== "undefined" && window.SC_COMPARE && window.SC_COMPARE.max) || 4; }
+  function _ctx() { var c = { today: META.today, meta: META, asof: META.asOf, fixture: false }; try { var n = document.getElementById("si-cycles-ctx"); if (n) { var j = JSON.parse(n.textContent || "{}"); for (var k in j) if (Object.prototype.hasOwnProperty.call(j, k)) c[k] = j[k]; } } catch (e) {} c.lang = curLang(); return c; }
+  function _winDomain(w) { var hi = META.xDomain[1]; var P = { "0": META.xDomain, "2": [hi - 3.3, hi], "3": [hi - 1.3, hi], "4": [hi - 0.85, hi] }; if (!w) return DEFAULT_VIEW; if (P[w]) return P[w]; var m = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/.exec(w); if (m) { var a = +m[1], b = +m[2]; if (isFinite(a) && isFinite(b) && b > a) return [a, b]; } return DEFAULT_VIEW; }
+  function _winKey() { if (!heroChart || !heroChart.getView) return ""; var v = heroChart.getView(), hi = META.xDomain[1], E = 0.02; function eq(d) { return Math.abs(v[0] - d[0]) < E && Math.abs(v[1] - d[1]) < E; } if (eq(DEFAULT_VIEW)) return ""; var P = { 0: META.xDomain, 2: [hi - 3.3, hi], 3: [hi - 1.3, hi], 4: [hi - 0.85, hi] }; for (var i in P) if (eq(P[i])) return String(i); return v[0].toFixed(3) + "-" + v[1].toFixed(3); }
+  function _stateQs() {
+    var p = [], on = [], all = true;
+    if (state.family && state.family !== "sectors") p.push("f=" + encodeURIComponent(state.family));
+    PHASE_FILTER.forEach(function (x) { if (phaseState[x.key]) on.push(encodeURIComponent(x.key)); else all = false; });
+    if (!all) p.push("g=" + on.join(","));
+    if (_cmp.length) p.push("m=" + _cmp.map(encodeURIComponent).join(","));
+    var w = _winKey(); if (w) p.push("w=" + w);
+    if (state.focus) p.push("s=" + encodeURIComponent(state.focus));
+    if (state.mode && state.mode !== "osc") p.push("v=" + state.mode);
+    if (state.scale && state.scale !== "log") p.push("x=" + state.scale);
+    return p.join("&");
+  }
+  function _writeHash() { if (!_seam() || _quiet) return; var qs = _stateQs(); try { if (window.__siCyclesHash) window.__siCyclesHash(qs); else if (history.replaceState) history.replaceState(null, "", "#cycles/" + qs); } catch (e) {} }
+  function _writeStateSoon() { if (_wTimer) clearTimeout(_wTimer); _wTimer = setTimeout(function () { _wTimer = null; _writeHash(); }, 60); }
+  function _parseQs(qs) {
+    var o = {};
+    String(qs || "").split("&").forEach(function (kv) {
+      var i = kv.indexOf("="); if (i < 1) return;
+      var k = kv.slice(0, i), v = kv.slice(i + 1);
+      if (!/^[fgmwsvx]$/.test(k) || v.length >= 400) return;
+      try { o[k] = decodeURIComponent(v); } catch (e) {}
+    });
+    return o;
+  }
+  function _hasQs(h) { if (!_seam()) return false; var p = window.__siCyclesPending; if (typeof p === "string" && p) return true; return typeof h === "string" && h.indexOf("cycles/") === 0 && h.length > 7; }
+  function _pendingQs(h) { if (!_seam()) return null; var p = window.__siCyclesPending; if (typeof p === "string" && p) { try { window.__siCyclesPending = null; } catch (e) {} return p; } if (typeof h === "string" && h.indexOf("cycles/") === 0 && h.length > 7) return h.slice(7); return null; }
+  function _applyQs(qs) {
+    var o = _parseQs(qs), q0 = _quiet; _quiet = true;
+    try {
+      var fam = o.f && FAM[o.f] ? o.f : "sectors";
+      if (fam !== state.family) switchFamily(fam);
+      var g = o.g != null ? o.g.split(",") : null, gch = false;
+      PHASE_FILTER.forEach(function (x) { var on = g ? g.indexOf(x.key) >= 0 : true; if (phaseState[x.key] !== on) { phaseState[x.key] = on; gch = true; } });
+      if (gch) syncGroups();
+      var v = o.v && /^[a-z]+$/.test(o.v) && document.querySelector('.sc-mbtn[data-mode="' + o.v + '"]') ? o.v : "osc";
+      var x = o.x && /^[a-z]+$/.test(o.x) && document.querySelector('.sc-sbtn[data-scale="' + o.x + '"]') ? o.x : "log";
+      if (v !== state.mode || x !== state.scale) { state.mode = v; state.scale = x; syncHeroControls(); rebuildHero(true); remountSparks(); }
+      if (heroChart && heroChart.setView && heroChart.getView) { var d = _winDomain(o.w), cv = heroChart.getView(); if (Math.abs(cv[0] - d[0]) > 0.02 || Math.abs(cv[1] - d[1]) > 0.02) heroChart.setView(d.slice(), !_heroDeferred); }
+      var sid = null;
+      if (o.s) { var lo = o.s.toLowerCase(); for (var i = 0; i < ALL.length; i++) if (String(ALL[i].id).toLowerCase() === lo) { sid = ALL[i].id; break; } }
+      _cmp = (o.m ? o.m.split(",") : []).filter(function (id, j, a) { return byId[id] && a.indexOf(id) === j; }).slice(0, _cmpMax());
+      if (sid && sid !== state.focus) setFocus(sid, true);
+      else if (!sid && state.focus) setFocus(null, true);
+      _paintCompare(); applyVisibility(); _syncAdd();
+      if (!sid) guideEntry();
+    } finally { _quiet = q0; }
+    return true;
+  }
+  function _turnsOf(s) { return ((s && (s.turns || s.turns_tail)) || []).filter(function (t) { var k = t && String(t.k || "").toLowerCase(); return !!t && t.provisional !== true && t.x != null && (k === "peak" || k === "trough"); }); }
+  function _paintRail() {
+    if (!_seam()) return;
+    var ch = document.getElementById("sc-chart"), rail = document.getElementById("sc-turnrail");
+    if (!rail) { if (!ch || !ch.parentNode) return; rail = el("div", "sc-turnrail"); rail.id = "sc-turnrail"; rail.setAttribute("role", "group"); rail.setAttribute("aria-label", L("Peak", "波峰") + " / " + L("Trough", "波谷")); rail.addEventListener("click", _onRailClick); ch.parentNode.insertBefore(rail, ch.nextSibling); }
+    var s = state.focus && byId[state.focus], W = ch ? ch.clientWidth : 0, v = (heroChart && heroChart.getView) ? heroChart.getView() : null;
+    if (!s || !v || _heroDeferred || !W || !(v[1] > v[0])) { rail.innerHTML = ""; rail.hidden = true; return; }
+    var span = v[1] - v[0], h = "";
+    _turnsOf(s).forEach(function (t, i) {
+      if (t.x < v[0] || t.x > v[1]) return;
+      var pk = String(t.k).toLowerCase() === "peak", lab = (pk ? L("Peak", "波峰") : L("Trough", "波谷")) + " " + (t.d || t.date || Number(t.x).toFixed(2));
+      var left = HERO_PAD.l + (t.x - v[0]) / span * (W - HERO_PAD.l - HERO_PAD.r);
+      h += '<button type="button" class="sc-turn-mk' + (pk ? ' is-peak' : ' is-trough') + '" data-i="' + i + '" aria-pressed="' + (_turnSel === i ? 'true' : 'false') + '" aria-label="' + esc(lab) + '" title="' + esc(lab) + '" style="left:' + left.toFixed(1) + 'px">' + (pk ? SVG_PK : SVG_TR) + '</button>';
+    });
+    rail.innerHTML = h; rail.hidden = !h;
+  }
+  function _onRailClick(e) {
+    var b = e.target && e.target.closest ? e.target.closest(".sc-turn-mk") : null, s = state.focus && byId[state.focus];
+    if (!b || !s) return;
+    var i = +b.getAttribute("data-i"), list = _turnsOf(s); if (!list[i]) return;
+    _turnSel = i;
+    var slot = document.querySelector("#sc-panel-focus .sc-turn-slot");
+    if (slot && window.SC_FACE && window.SC_FACE.turnInspector) slot.innerHTML = window.SC_FACE.turnInspector(Object.assign({}, s, { turns_tail: list }), _ctx(), i) || "";
+    var mk = document.querySelectorAll("#sc-turnrail .sc-turn-mk");
+    for (var j = 0; j < mk.length; j++) mk[j].setAttribute("aria-pressed", mk[j] === b ? "true" : "false");
+    _announce(b.getAttribute("aria-label"));
+  }
+  function _paintEmpty() {
+    var cards = document.querySelectorAll(".cyc-card"), n = 0;
+    for (var i = 0; i < cards.length; i++) { var id = cards[i].getAttribute("data-id"); if (!cards[i].classList.contains("sc-hide") && (!id || !byId[id] || isActive(byId[id]))) n++; }
+    var box = document.getElementById("sc-empty-search");
+    if (n > 0 || !cards.length) { if (box) box.hidden = true; return; }
+    if (!box) {
+      var g = document.getElementById("sc-groups"); if (!g || !g.parentNode) return;
+      box = el("div", "sc-empty-search"); box.id = "sc-empty-search";
+      box.innerHTML = '<strong>' + esc(L("No items match this phase", "该阶段暂无条目")) + '</strong> <span>' + esc(L("Nothing on the clock. Tap an item or hit Select all visible to chart them.", "图中暂无条目。点击任一条目或点全选可见即可绘制。")) + '</span> <button type="button">' + esc(L("All phases", "全部阶段")) + '</button>';
+      box.querySelector("button").addEventListener("click", function () { var a = document.getElementById("sc-gall"); if (a) a.click(); else { PHASE_FILTER.forEach(function (p) { phaseState[p.key] = true; }); syncGroups(); } });
+      g.parentNode.insertBefore(box, g.nextSibling);
+    }
+    box.hidden = false;
+  }
+  function _syncAdd() { var b = document.querySelector("#sc-panel-focus .sc-cmp-add"); if (!b) return; var inT = _cmp.indexOf(b.getAttribute("data-id")) >= 0; b.setAttribute("aria-pressed", inT ? "true" : "false"); b.disabled = !inT && _cmp.length >= _cmpMax(); }
+  function _cmpToggle(id) {
+    var i = _cmp.indexOf(id);
+    if (i >= 0) _cmp.splice(i, 1); else if (_cmp.length < _cmpMax() && byId[id]) _cmp.push(id); else return;
+    _paintCompare(); applyVisibility(); _syncAdd(); _writeHash();
+    _announce(L("Compare", "对比") + " " + _cmp.length + "/" + _cmpMax());
+  }
+  function _paintCompare() {
+    if (!_seam() || !window.SC_COMPARE || !window.SC_COMPARE.tray) return;
+    var box = document.getElementById("sc-compare");
+    if (!box) {
+      var host = document.querySelector("#sc-detail .cyc-panels"); if (!host) { var f = document.getElementById("sc-panel-focus"); host = f && f.parentNode; } if (!host) return;
+      box = el("div", "sc-compare"); box.id = "sc-compare"; box.addEventListener("click", _onCmpClick); host.appendChild(box);
+    }
+    var recs = _cmp.map(function (id) { return byId[id]; }).filter(Boolean);
+    box.innerHTML = window.SC_COMPARE.tray(recs, _ctx()) || ""; box.hidden = !recs.length;
+  }
+  function _onCmpClick(e) {
+    var t = e.target && e.target.closest ? e.target.closest("button") : null; if (!t) return;
+    var add = function () { return document.querySelector("#sc-panel-focus .sc-cmp-add"); };
+    if (t.getAttribute("data-act") === "clear") { _cmp = []; _paintCompare(); applyVisibility(); _syncAdd(); _writeHash(); _announce(L("Compare", "对比") + " 0/" + _cmpMax()); if (add()) add().focus(); return; }
+    var id = t.getAttribute("data-id"); if (!id) return;
+    var k = Array.prototype.indexOf.call(document.querySelectorAll("#sc-compare .sc-cmp-btn"), t);
+    _cmpToggle(id);
+    var nb = document.querySelectorAll("#sc-compare .sc-cmp-btn"), nx = nb[Math.min(k, nb.length - 1)] || add();
+    if (nx) nx.focus();
+  }
+  function _paintCoverage(def) {
+    if (document.getElementById("si-cycles-cov") || def.querySelector(".sc-coverage-line")) return;
+    var cv = _ctx().coverage;
+    if (!cv && window.SC_STATES && window.SC_STATES.coverage) cv = window.SC_STATES.coverage(SECTORS, _SPDR_IDS);
+    if (!cv || cv.expected == null || !(cv.measured < cv.expected)) return;
+    var body = L("Based on {x} of {y} checks", "基于 {y} 项检查中的 {x} 项"), p = el("p", "sc-coverage-line");
+    var h = '<strong>' + esc(L("Partial coverage", "覆盖不完整")) + '</strong> ' + esc(body.replace("{x}", String(cv.measured)).replace("{y}", String(cv.expected)));
+    if (cv.missing && cv.missing.length) h += ' <details class="cyc-prov"><summary>' + esc(L("Sector measurement coverage", "板块测量覆盖")) + '</summary>' + esc(cv.missing.join(", ")) + '</details>';
+    p.innerHTML = h; def.appendChild(p);
+  }
+  function _labelChrome() {
+    if (!_seam()) return;
+    var b = document.querySelector(".sc-chart-fs-btn"), w = document.querySelector(".sc-chartwrap");
+    if (b) {
+      if (b.__g == null) { b.__g = b.innerHTML; b.__a = b.getAttribute("aria-label"); }
+      var on = !!(w && w.classList.contains("sc-fs"));
+      if (on) { b.removeAttribute("aria-label"); b.textContent = L("Done", "完成"); }
+      else { b.innerHTML = b.__g; if (b.__a != null) b.setAttribute("aria-label", b.__a); }
+    }
+    var x = document.querySelector(".sc-sheet-x"); if (x) { x.textContent = L("Close", "关闭"); x.removeAttribute("aria-label"); }
+  }
+  function _onShow(retry) {
+    if (!heroChart) return;
+    var n = document.getElementById("sc-chart");
+    if (n && !n.getClientRects().length && retry < 1) { (window.requestAnimationFrame || setTimeout)(function () { _onShow(retry + 1); }); return; }
+    _heroDeferred = false; rebuildHero(false); _paintRail();
+  }
+  var _sf0 = setFocus;
+  setFocus = function (id, fromHistory) {
+    if (!_seam()) return _sf0(id, fromHistory);
+    _sf0(id, true); _turnSel = null; _syncAdd(); _paintRail();
+    if (!fromHistory && !_quiet) { _writeHash(); if (id && byId[id]) _announce(nm(byId[id])); }
+  };
+  var _rp0 = renderPanel;
+  renderPanel = function (id) {
+    _rp0(id);
+    if (!_seam()) return;
+    try {
+      if (id && byId[id]) {
+        var foc = document.getElementById("sc-panel-focus");
+        if (foc) {
+          var b = el("button", "sc-cmp-btn sc-cmp-add"); b.type = "button"; b.setAttribute("data-id", id); b.textContent = L("Compare", "对比");
+          b.addEventListener("click", function () { _cmpToggle(id); });
+          var back = null; for (var c = foc.firstElementChild; c; c = c.nextElementSibling) if (c.classList.contains("cyc-back")) { back = c; break; }
+          foc.insertBefore(b, back ? back.nextSibling : foc.firstChild);
+          if (window.SC_FACE && window.SC_FACE.prov) { var pv = window.SC_FACE.prov(byId[id], _ctx()); if (pv) foc.appendChild(el("div", "sc-prov-slot", pv)); }
+          foc.appendChild(el("div", "sc-turn-slot"));
+        }
+      } else {
+        var def = document.getElementById("sc-panel-default");
+        if (def) {
+          if (window.SC_FACE && window.SC_FACE.methods && !def.querySelector(".sc-methods-slot")) { var ms = window.SC_FACE.methods(META, _ctx()); if (ms) def.appendChild(el("div", "sc-methods-slot", ms)); }
+          _paintCoverage(def);
+        }
+      }
+    } catch (e) {}
+    _syncAdd(); _paintRail();
+  };
+  var _av0 = applyVisibility;
+  applyVisibility = function () {
+    _av0();
+    if (!_seam()) return;
+    var changed = false;
+    _cmp.forEach(function (id) { if (chartHidden[id] && byId[id] && isActive(byId[id])) { chartHidden[id] = false; changed = true; } });
+    if (changed && heroChart) { heroChart.setHidden(chartHidden); rebuildHero(false); }
+    _paintEmpty();
+  };
+  var _rr0 = rerender;
+  rerender = function () {
+    var q0 = _quiet; _quiet = true;
+    try { _rr0(); } finally { _quiet = q0; }
+    if (_seam()) { _paintCompare(); _paintRail(); _labelChrome(); }
+  };
+  var _mh0 = mountHero;
+  mountHero = function () { _mh0(); if (!_seam()) return; var n = document.getElementById("sc-chart"); if (n && n.getClientRects && !n.getClientRects().length) _heroDeferred = true; };
+  var _sr0 = scheduleReanchor;
+  scheduleReanchor = function (domain) { _sr0(domain); if (!_seam()) return; _paintRail(); if (!_quiet && Date.now() - _lastUserAct < 2000) _writeStateSoon(); };
+  var _fb0 = mountChartFsBtn;
+  mountChartFsBtn = function () { _fb0(); _labelChrome(); };
+  var _tf0 = toggleChartFs;
+  toggleChartFs = function (force) {
+    _tf0(force);
+    if (!_seam()) return;
+    _labelChrome();
+    var w = document.querySelector(".sc-chartwrap"), b = document.querySelector(".sc-chart-fs-btn");
+    if (b && !(w && w.classList.contains("sc-fs")) && window.SC_PLATFORM.returnFocus) window.SC_PLATFORM.returnFocus(b);
+    _paintRail();
+  };
+  var _is0 = initSheet;
+  initSheet = function () { _is0(); _labelChrome(); };
+  function _platInit() {
+    if (!_seam()) return;
+    var P = window.SC_PLATFORM, host = document.getElementById("sc-cyclemap") || document.querySelector(".sc-page") || document.body;
+    var api = { closeDetail: function () { if (state.focus) setFocus(null); } };
+    try { if (P.initMobile) P.initMobile(host, api); } catch (e) {}
+    try { if (P.initKeyboard) P.initKeyboard(host, api); } catch (e) {}
+    var last = null;
+    var onView = function (e) { if (e === last) return; last = e; if (e && e.detail === "cycles") _onShow(0); };
+    var onState = function (e) { if (e === last) return; last = e; var q = e && e.detail && e.detail.qs; try { window.__siCyclesPending = null; } catch (x) {} if (typeof q === "string") _applyQs(q); };
+    [window, document].forEach(function (t) { t.addEventListener("si:view", onView); t.addEventListener("si:cycles-state", onState); });
+    document.addEventListener("click", function (e) { var t = e.target && e.target.closest ? e.target.closest(".sc-mbtn, .sc-sbtn, .cyc-zbtn, #sc-zreset, .cyc-gchip, #sc-gall, .sc-tab") : null; if (t) { _lastUserAct = Date.now(); _writeStateSoon(); } }, true);
+    var ch = document.getElementById("sc-chart");
+    if (ch) ["wheel", "pointerdown", "keydown"].forEach(function (n) { ch.addEventListener(n, function () { _lastUserAct = Date.now(); }, { passive: true }); });
+    var rt = null; window.addEventListener("resize", function () { if (rt) return; rt = setTimeout(function () { rt = null; _paintRail(); }, 120); });
+    _labelChrome(); _paintRail();
+  }
+  var _boot0 = boot;
+  boot = function () { _boot0(); try { _platInit(); } catch (e) {} };
+
   // public hook: let a host page (e.g. Sector Central) focus the embedded overlay on a
   // sector/basket by id, switching family + scrolling the chart into view. Returns false
   // if the id is unknown so the caller can fall back to a normal link.
