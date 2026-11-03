@@ -42,4 +42,3 @@ Status vocabulary for delivery: NOT_STARTED, IN_PROGRESS, PARTIAL, BLOCKED_RETUR
 | D26 | Public site, editorial, learning and utilities | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | D27 | Internal Mastermind OS and administration | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | QA01 | Independent integration and production-design re-audit | NOT_STARTED | — | not submitted | user delivery / assigned session |
-

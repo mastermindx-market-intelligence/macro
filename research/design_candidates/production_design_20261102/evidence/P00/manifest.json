@@ -1,6 +1,6 @@
 {
   "kind": "P00_FROZEN_ARTIFACT_SET_V1",
-  "finalized_at": "2026-11-03 01:38:54 UTC",
+  "finalized_at": "2026-11-03 01:40:47 UTC",
   "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
   "protected_source_pin": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
   "source_candidate_sha": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
@@ -12,15 +12,15 @@
   "files": [
     {
       "path": "returns/P00.md",
-      "bytes": 30143,
-      "sha256": "e824e1f78a97ca7769ae338f452af977956939716ba681d1b2e2358561de0e98",
-      "git_blob_sha": "0bb9552466c808176c8b66e7819283f6d5ed67d3"
+      "bytes": 30229,
+      "sha256": "32baa78bdac1df967135686a6fcc3e3a5d353b89e5c49994af6345a1cfb5a1e4",
+      "git_blob_sha": "ced02c1b9b2cbeb325539cab3e221e72af387c44"
     },
     {
       "path": "SESSION_RETURNS.md",
-      "bytes": 5262,
-      "sha256": "234833c2495d970dc20aaf3cabfa7b5123ccd9a51c463dd4c6ab5f21dea9cdca",
-      "git_blob_sha": "747cfcd2ddc61480d4372a31c4c963c40e71b0b9"
+      "bytes": 5261,
+      "sha256": "343ad6b773f04696f05cbb625235096689f4c2a6a2d37bbd4609f82481499de5",
+      "git_blob_sha": "e3dae966c68c1ae0718134630795a45c9f04db6f"
     },
     {
       "path": "evidence/P00/live-catalog.json",
