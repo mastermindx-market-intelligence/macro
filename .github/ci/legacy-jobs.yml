@@ -34756,6 +34756,8 @@ jobs:
       - "tests/test_gate_crash_failopen.py"
       - "tests/test_mi_s2_theme_relative_intraday_registration.py"
       - "tests/test_mtf_upturn.py"
+      - "tests/test_prophet_mtf_health.py"
+      - "tests/test_prophet_mtf_states.py"
       - "tests/test_oracle_memory_analogues_step.py"
       - "tests/test_p0_prophet_candidate_board.py"
       - "tests/test_p_mp1_shell_ladder_error_state.py"
@@ -34912,7 +34914,7 @@ jobs:
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
       - name: Prophet detector, organ and disposition contracts (one native process)
-        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_prophet_mtf_health.py tests/test_prophet_mtf_states.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
         run: python -m pytest tests/test_prophet_r7_wave_a_guards.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards

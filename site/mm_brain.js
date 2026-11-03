@@ -9,6 +9,8 @@
  * Config (optional, set window.MM_BRAIN_CFG before this script):
  *   anchor: 'br'  (bottom-right launcher — dashboard, default)
  *         | 'top' (host provides its own launcher; call MMBrain.open())
+ *   externalLauncher: connected native button adopted without changing anchor/context.
+ *         MMBrain.setLauncher(button) also adopts it after an existing mount.
  *   api:    gateway base (default '' = same origin)
  *   symbol: fn()->active ticker string (context awareness)
  *   page:   context label (default derived from location)
@@ -34,6 +36,11 @@
   var ANCHOR = CFG.anchor || 'br';
   var API = (CFG.api || '').replace(/\/$/, '');
   var DOC = document;
+  function validExternalLauncher(node) {
+    return !!(node && node.ownerDocument === DOC && node.tagName === 'BUTTON'
+      && DOC.documentElement.contains(node) && node.type === 'button');
+  }
+  var externalLauncher = validExternalLauncher(CFG.externalLauncher) ? CFG.externalLauncher : null;
 
   /* Optional native presentation assets come from THIS widget's origin, including
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
@@ -1133,7 +1140,7 @@
   root.id = 'mmb-root';
   var st = DOC.createElement('style'); st.textContent = CSS; root.appendChild(st);
 
-  var launchHtml = ANCHOR === 'br' ? (
+  var launchHtml = ANCHOR === 'br' && !externalLauncher ? (
     /* A div rather than a <button> because the pill collapses to a bare orb on phones and
        carries its own layout — so it is given a button's manners by hand: role + tab stop
        here, Enter/Space wired below, aria-expanded kept in sync by open()/close(). */
@@ -1214,7 +1221,7 @@
   var $ = function (s) { return root.querySelector(s); };
   var scrim = $('#mmb-scrim'), panel = $('#mmb-panel'), scroll = $('#mmb-scroll'),
       ta = $('#mmb-ta'), sendBtn = $('#mmb-send'), qEl = $('#mmb-q'), ctxEl = $('#mmb-ctx'),
-      upgradeEl = $('#mmb-upgrade'), tlist = $('#mmb-tlist'), launch = $('#mmb-launch'),
+      upgradeEl = $('#mmb-upgrade'), tlist = $('#mmb-tlist'), launch = externalLauncher || $('#mmb-launch'),
       thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
       searchWrap = $('#mmb-search'), searchIn = $('#mmb-search-in'), boxEl = $('.mmb-box'),
       ctxInspEl = $('#mmb-ctxinsp'), ctxInspBody = $('#mmb-ctxinsp-body'), ctxInspRev = $('#mmb-ctxinsp-rev');
@@ -3495,7 +3502,10 @@
   function open() {
     refreshCtx(); scrim.classList.add('open'); panel.classList.add('open');
     if (ANCHOR === 'top') panel.classList.add('mmb-top');
-    if (launch) { launch.classList.add('mmb-hide'); launch.setAttribute('aria-expanded', 'true'); }
+    if (launch) {
+      if (!externalLauncher) launch.classList.add('mmb-hide');
+      launch.setAttribute('aria-expanded', 'true');
+    }
     /* WAAPI entry (transform only; opacity fades via CSS) — the sole transform owner. */
     if (!reduceMotion() && typeof panel.animate === 'function') {
       if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
@@ -3566,7 +3576,9 @@
          A host-selected research object may own the more exact return; the launcher is
          still the fallback. Only when focus was ours to begin with, so a scrim click
          never steals it. */
-      if (wasInside && !hostReturnedFocus && launch) { try { launch.focus(); } catch (e) {} }
+      if (wasInside && !hostReturnedFocus && launch) {
+        try { launch.focus(externalLauncher ? { preventScroll: true } : undefined); } catch (e) { try { launch.focus(); } catch (_) {} }
+      }
     }
   }
   function toggle() { panel.classList.contains('open') ? close() : open(); }
@@ -3763,16 +3775,40 @@
      document (theme.js setLang), the Terminal fires 'mm:lang' on window (i18n.tsx). */
   DOC.addEventListener('langchange', relabel);
   window.addEventListener('mm:lang', relabel);
-  if (launch) {
-    launch.addEventListener('click', open);
-    /* role="button" buys the semantics; the keys are still ours to wire. Space is
-       preventDefault'd or the page scrolls away underneath the panel that just opened. */
-    launch.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
-      e.preventDefault();
-      open();
-    });
+  var wiredLauncher = null;
+  function launcherKeydown(e) {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    e.preventDefault();
+    open();
   }
+  function wireLauncher() {
+    if (wiredLauncher === launch) return;
+    if (wiredLauncher) {
+      wiredLauncher.removeEventListener('click', open);
+      wiredLauncher.removeEventListener('keydown', launcherKeydown);
+    }
+    wiredLauncher = launch;
+    if (!launch) return;
+    launch.addEventListener('click', open);
+    /* Native buttons already turn Enter/Space into one click. */
+    if (launch.tagName !== 'BUTTON') launch.addEventListener('keydown', launcherKeydown);
+  }
+  function setLauncher(button) {
+    if (!validExternalLauncher(button)) return false;
+    var previous = launch;
+    externalLauncher = button; launch = button;
+    wireLauncher();
+    if (previous && previous !== button && previous.id === 'mmb-launch' && previous.parentNode === root) {
+      previous.parentNode.removeChild(previous);
+    }
+    button.hidden = false;
+    button.setAttribute('aria-controls', 'mmb-panel');
+    button.setAttribute('aria-expanded', panel.classList.contains('open') ? 'true' : 'false');
+    button.setAttribute('aria-label', L('Ask Mastermind', '问操盘大脑'));
+    return true;
+  }
+  if (externalLauncher) setLauncher(externalLauncher);
+  else wireLauncher();
   scrim.addEventListener('click', close);
   /* Send button doubles as Stop mid-stream (the arrow morphs to a square). A retract
      flips it straight back to Send with the prompt reloaded, so the SECOND half of an
@@ -4342,7 +4378,7 @@
   boot();
   initExplain();
 
-  window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain,
+  window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain, setLauncher: setLauncher,
     setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
     mounted: true };

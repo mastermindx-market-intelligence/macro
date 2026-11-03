@@ -1,0 +1,3479 @@
+{
+  "source_head": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
+  "base_build_source_head": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
+  "static_asset_followup": null,
+  "public_html_sha256": "78b2b40f85869d0015dccfdcdbad7d0800256dcbc13885dae6a89b03516e77e4",
+  "essential_payload_sha256": "65cc9b96aef70c80ecbad2a32b97353a230908ba2996c265710f261e2aa6e9d8",
+  "public_html_bytes": 808783,
+  "essential_payload_bytes": 11256942,
+  "public_today_articles": 2,
+  "public_rich_cards": 2,
+  "public_pool_rows": 3,
+  "private_top_level": {
+    "schema": "str",
+    "page": "str",
+    "gated": "bool",
+    "required_tier": "str",
+    "built": "str",
+    "total": "int",
+    "preview": "int",
+    "locked": "int",
+    "as_of": "str",
+    "cards_html": "str",
+    "preview_cards_html": "str",
+    "rows": "list",
+    "today_cards_html": "str",
+    "today_preview": "int",
+    "today_total": "int",
+    "today_rows_meta": "list",
+    "today_source_binding": "dict",
+    "panels": "dict",
+    "candidate_pool_html": "str",
+    "candidate_pool_source": "dict",
+    "leader_observations_html": "str",
+    "setups_html": "str",
+    "leaders_html": "str",
+    "ran_html": "str",
+    "actnow_html": "str",
+    "tape_html": "str",
+    "plv_names": "dict",
+    "what_changed_html": "str",
+    "passed_html": "str",
+    "life_gate": "dict",
+    "plan_cards_html": "str"
+  },
+  "scope": "Normal producer HTML unchanged; anonymous offline browser; no premium payload served; no live/authenticated acceptance.",
+  "build_modules": [
+    {
+      "module": "scripts.build_site",
+      "exit": 0,
+      "seconds": 1740.59
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "exit": 0,
+      "seconds": 12.08
+    },
+    {
+      "module": "scripts.externalize_css",
+      "exit": 0,
+      "seconds": 19.25
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "exit": 0,
+      "seconds": 54.51
+    }
+  ],
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4909,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 40,
+          "y": 689.015625,
+          "width": 1360,
+          "height": 604.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 40,
+              "y": 689.015625,
+              "width": 328,
+              "height": 604.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 384,
+              "y": 689.015625,
+              "width": 328,
+              "height": 604.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "",
+            "y": 1505.390625
+          },
+          {
+            "text": "",
+            "y": 1505.390625
+          },
+          {
+            "text": "",
+            "y": 2969.90625
+          },
+          {
+            "text": "",
+            "y": 2966.90625
+          },
+          {
+            "text": "",
+            "y": 4176.4375
+          },
+          {
+            "text": "",
+            "y": 4176.4375
+          },
+          {
+            "text": "",
+            "y": 5806.5625
+          },
+          {
+            "text": "",
+            "y": 6345.65625
+          },
+          {
+            "text": "",
+            "y": 7283.375
+          },
+          {
+            "text": "",
+            "y": 7493.4375
+          },
+          {
+            "text": "",
+            "y": 1544.390625
+          },
+          {
+            "text": "",
+            "y": 1544.390625
+          },
+          {
+            "text": "",
+            "y": 3033.703125
+          },
+          {
+            "text": "",
+            "y": 3030.703125
+          },
+          {
+            "text": "",
+            "y": 3477.890625
+          },
+          {
+            "text": "",
+            "y": 3477.890625
+          },
+          {
+            "text": "",
+            "y": 5108.015625
+          },
+          {
+            "text": "",
+            "y": 5647.109375
+          },
+          {
+            "text": "",
+            "y": 6620.828125
+          },
+          {
+            "text": "",
+            "y": 7008.328125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1719.765625
+          },
+          {
+            "text": "Market context",
+            "y": 2743.484375
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2847.828125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3049.859375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3730.4375
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3993.71875
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4448.3125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4588.8125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696865087",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-en.png",
+      "screenshot_sha256": "97baf8ba33175fa78adf202db2b318c8dedabaaf4708528531e47c207caffa54"
+    },
+    {
+      "case": "1440-light-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4818,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 40,
+          "y": 688.796875,
+          "width": 1360,
+          "height": 586.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 40,
+              "y": 688.796875,
+              "width": 328,
+              "height": 586.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 384,
+              "y": 688.796875,
+              "width": 328,
+              "height": 586.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "",
+            "y": 1470.671875
+          },
+          {
+            "text": "",
+            "y": 1470.671875
+          },
+          {
+            "text": "",
+            "y": 2927.4375
+          },
+          {
+            "text": "",
+            "y": 2924.4375
+          },
+          {
+            "text": "",
+            "y": 3857.15625
+          },
+          {
+            "text": "",
+            "y": 3857.15625
+          },
+          {
+            "text": "",
+            "y": 5577.9375
+          },
+          {
+            "text": "",
+            "y": 5989.5625
+          },
+          {
+            "text": "",
+            "y": 6721.09375
+          },
+          {
+            "text": "",
+            "y": 6914.65625
+          },
+          {
+            "text": "",
+            "y": 1526.171875
+          },
+          {
+            "text": "",
+            "y": 1526.171875
+          },
+          {
+            "text": "",
+            "y": 2982.9375
+          },
+          {
+            "text": "",
+            "y": 2979.9375
+          },
+          {
+            "text": "",
+            "y": 3429.21875
+          },
+          {
+            "text": "",
+            "y": 3429.21875
+          },
+          {
+            "text": "",
+            "y": 5150
+          },
+          {
+            "text": "",
+            "y": 5561.625
+          },
+          {
+            "text": "",
+            "y": 6293.15625
+          },
+          {
+            "text": "",
+            "y": 6662.0625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1683.75
+          },
+          {
+            "text": "市场背景",
+            "y": 2708.46875
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2812.8125
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3014.84375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3660.421875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3918.859375
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 4356.953125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4497.453125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696867776",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-zh.png",
+      "screenshot_sha256": "ca3d96cc8972ffb3a33da6e983a3f1506b2b7eab77c8cfe73a314394dd3f1566"
+    },
+    {
+      "case": "1440-dark-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4899,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 40,
+          "y": 689.015625,
+          "width": 1360,
+          "height": 604.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 40,
+              "y": 689.015625,
+              "width": 328,
+              "height": 604.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 384,
+              "y": 689.015625,
+              "width": 328,
+              "height": 604.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "",
+            "y": 1505.390625
+          },
+          {
+            "text": "",
+            "y": 1505.390625
+          },
+          {
+            "text": "",
+            "y": 2969.90625
+          },
+          {
+            "text": "",
+            "y": 2966.90625
+          },
+          {
+            "text": "",
+            "y": 4176.4375
+          },
+          {
+            "text": "",
+            "y": 4176.4375
+          },
+          {
+            "text": "",
+            "y": 5806.5625
+          },
+          {
+            "text": "",
+            "y": 6345.65625
+          },
+          {
+            "text": "",
+            "y": 7283.375
+          },
+          {
+            "text": "",
+            "y": 7493.4375
+          },
+          {
+            "text": "",
+            "y": 1544.390625
+          },
+          {
+            "text": "",
+            "y": 1544.390625
+          },
+          {
+            "text": "",
+            "y": 3033.703125
+          },
+          {
+            "text": "",
+            "y": 3030.703125
+          },
+          {
+            "text": "",
+            "y": 3477.890625
+          },
+          {
+            "text": "",
+            "y": 3477.890625
+          },
+          {
+            "text": "",
+            "y": 5108.015625
+          },
+          {
+            "text": "",
+            "y": 5647.109375
+          },
+          {
+            "text": "",
+            "y": 6620.828125
+          },
+          {
+            "text": "",
+            "y": 7008.328125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1719.765625
+          },
+          {
+            "text": "Market context",
+            "y": 2743.484375
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2847.828125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3049.859375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3720.4375
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3983.71875
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4438.3125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4578.8125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696870198",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-en.png",
+      "screenshot_sha256": "df88abfd454d71f8d6acdd8a8143d5a5ad59eefe630127d9b1d4400234dffbd7"
+    },
+    {
+      "case": "1440-dark-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4808,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 40,
+          "y": 688.796875,
+          "width": 1360,
+          "height": 586.875
+        },
+        "columns": "328px 328px 328px 328px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 40,
+              "y": 688.796875,
+              "width": 328,
+              "height": 586.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 384,
+              "y": 688.796875,
+              "width": 328,
+              "height": 586.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "",
+            "y": 1470.671875
+          },
+          {
+            "text": "",
+            "y": 1470.671875
+          },
+          {
+            "text": "",
+            "y": 2927.4375
+          },
+          {
+            "text": "",
+            "y": 2924.4375
+          },
+          {
+            "text": "",
+            "y": 3857.15625
+          },
+          {
+            "text": "",
+            "y": 3857.15625
+          },
+          {
+            "text": "",
+            "y": 5577.9375
+          },
+          {
+            "text": "",
+            "y": 5989.5625
+          },
+          {
+            "text": "",
+            "y": 6721.09375
+          },
+          {
+            "text": "",
+            "y": 6914.65625
+          },
+          {
+            "text": "",
+            "y": 1526.171875
+          },
+          {
+            "text": "",
+            "y": 1526.171875
+          },
+          {
+            "text": "",
+            "y": 2982.9375
+          },
+          {
+            "text": "",
+            "y": 2979.9375
+          },
+          {
+            "text": "",
+            "y": 3429.21875
+          },
+          {
+            "text": "",
+            "y": 3429.21875
+          },
+          {
+            "text": "",
+            "y": 5150
+          },
+          {
+            "text": "",
+            "y": 5561.625
+          },
+          {
+            "text": "",
+            "y": 6293.15625
+          },
+          {
+            "text": "",
+            "y": 6662.0625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1683.75
+          },
+          {
+            "text": "市场背景",
+            "y": 2708.46875
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2812.8125
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3014.84375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3650.421875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3908.859375
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 4346.953125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4487.453125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696872733",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-zh.png",
+      "screenshot_sha256": "c8ee90bd4268c1a76751f32319576451990ae853538e080f77e435146f3881fb"
+    },
+    {
+      "case": "768-light-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 6183,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 770.015625,
+          "width": 732,
+          "height": 604.875
+        },
+        "columns": "358px 358px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 770.015625,
+              "width": 358,
+              "height": 604.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 392,
+              "y": 770.015625,
+              "width": 358,
+              "height": 604.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 230
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 506.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 694.015625
+          },
+          {
+            "text": "",
+            "y": 1586.390625
+          },
+          {
+            "text": "",
+            "y": 1586.390625
+          },
+          {
+            "text": "",
+            "y": 3050.90625
+          },
+          {
+            "text": "",
+            "y": 3047.90625
+          },
+          {
+            "text": "",
+            "y": 4257.4375
+          },
+          {
+            "text": "",
+            "y": 4257.4375
+          },
+          {
+            "text": "",
+            "y": 5887.5625
+          },
+          {
+            "text": "",
+            "y": 6426.65625
+          },
+          {
+            "text": "",
+            "y": 7364.375
+          },
+          {
+            "text": "",
+            "y": 7574.4375
+          },
+          {
+            "text": "",
+            "y": 1625.390625
+          },
+          {
+            "text": "",
+            "y": 1625.390625
+          },
+          {
+            "text": "",
+            "y": 3114.703125
+          },
+          {
+            "text": "",
+            "y": 3111.703125
+          },
+          {
+            "text": "",
+            "y": 3558.890625
+          },
+          {
+            "text": "",
+            "y": 3558.890625
+          },
+          {
+            "text": "",
+            "y": 5189.015625
+          },
+          {
+            "text": "",
+            "y": 5728.109375
+          },
+          {
+            "text": "",
+            "y": 6701.828125
+          },
+          {
+            "text": "",
+            "y": 7089.328125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1822.015625
+          },
+          {
+            "text": "Market context",
+            "y": 3059.984375
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3164.328125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3366.359375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 4649.71875
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 5124.25
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 5730.09375
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 5870.59375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696875176",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-768-light-en.png",
+      "screenshot_sha256": "79c86c83021c4c9d60b185a9ddf2e4084b03128e83b483447cd8d564fdecc960"
+    },
+    {
+      "case": "768-light-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5897,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 769.796875,
+          "width": 732,
+          "height": 586.875
+        },
+        "columns": "358px 358px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 769.796875,
+              "width": 358,
+              "height": 586.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 392,
+              "y": 769.796875,
+              "width": 358,
+              "height": 586.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 230
+          },
+          {
+            "text": "机会工作台",
+            "y": 506.796875
+          },
+          {
+            "text": "今日",
+            "y": 692.796875
+          },
+          {
+            "text": "",
+            "y": 1551.671875
+          },
+          {
+            "text": "",
+            "y": 1551.671875
+          },
+          {
+            "text": "",
+            "y": 3008.4375
+          },
+          {
+            "text": "",
+            "y": 3005.4375
+          },
+          {
+            "text": "",
+            "y": 3938.15625
+          },
+          {
+            "text": "",
+            "y": 3938.15625
+          },
+          {
+            "text": "",
+            "y": 5658.9375
+          },
+          {
+            "text": "",
+            "y": 6070.5625
+          },
+          {
+            "text": "",
+            "y": 6802.09375
+          },
+          {
+            "text": "",
+            "y": 6995.65625
+          },
+          {
+            "text": "",
+            "y": 1607.171875
+          },
+          {
+            "text": "",
+            "y": 1607.171875
+          },
+          {
+            "text": "",
+            "y": 3063.9375
+          },
+          {
+            "text": "",
+            "y": 3060.9375
+          },
+          {
+            "text": "",
+            "y": 3510.21875
+          },
+          {
+            "text": "",
+            "y": 3510.21875
+          },
+          {
+            "text": "",
+            "y": 5231
+          },
+          {
+            "text": "",
+            "y": 5642.625
+          },
+          {
+            "text": "",
+            "y": 6374.15625
+          },
+          {
+            "text": "",
+            "y": 6743.0625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1803.046875
+          },
+          {
+            "text": "市场背景",
+            "y": 2894.515625
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2998.859375
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3200.890625
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 4465.25
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 4937.78125
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 5444.125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 5584.625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696877449",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-768-light-zh.png",
+      "screenshot_sha256": "6e52e31cd98efb44469793883944bb3cb9125423a873fefc5f8e2c02fc4b19a0"
+    },
+    {
+      "case": "768-dark-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 6173,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 770.015625,
+          "width": 732,
+          "height": 604.875
+        },
+        "columns": "358px 358px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 770.015625,
+              "width": 358,
+              "height": 604.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 392,
+              "y": 770.015625,
+              "width": 358,
+              "height": 604.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 230
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 506.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 694.015625
+          },
+          {
+            "text": "",
+            "y": 1586.390625
+          },
+          {
+            "text": "",
+            "y": 1586.390625
+          },
+          {
+            "text": "",
+            "y": 3050.90625
+          },
+          {
+            "text": "",
+            "y": 3047.90625
+          },
+          {
+            "text": "",
+            "y": 4257.4375
+          },
+          {
+            "text": "",
+            "y": 4257.4375
+          },
+          {
+            "text": "",
+            "y": 5887.5625
+          },
+          {
+            "text": "",
+            "y": 6426.65625
+          },
+          {
+            "text": "",
+            "y": 7364.375
+          },
+          {
+            "text": "",
+            "y": 7574.4375
+          },
+          {
+            "text": "",
+            "y": 1625.390625
+          },
+          {
+            "text": "",
+            "y": 1625.390625
+          },
+          {
+            "text": "",
+            "y": 3114.703125
+          },
+          {
+            "text": "",
+            "y": 3111.703125
+          },
+          {
+            "text": "",
+            "y": 3558.890625
+          },
+          {
+            "text": "",
+            "y": 3558.890625
+          },
+          {
+            "text": "",
+            "y": 5189.015625
+          },
+          {
+            "text": "",
+            "y": 5728.109375
+          },
+          {
+            "text": "",
+            "y": 6701.828125
+          },
+          {
+            "text": "",
+            "y": 7089.328125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1822.015625
+          },
+          {
+            "text": "Market context",
+            "y": 3059.984375
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3164.328125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3366.359375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 4639.71875
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 5114.25
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 5720.09375
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 5860.59375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696879870",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-768-dark-en.png",
+      "screenshot_sha256": "891744620d9cc91db7893dac9e08965e3091355165d20394564e9303c368cc29"
+    },
+    {
+      "case": "768-dark-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5887,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 769.796875,
+          "width": 732,
+          "height": 586.875
+        },
+        "columns": "358px 358px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 769.796875,
+              "width": 358,
+              "height": 586.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 392,
+              "y": 769.796875,
+              "width": 358,
+              "height": 586.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 230
+          },
+          {
+            "text": "机会工作台",
+            "y": 506.796875
+          },
+          {
+            "text": "今日",
+            "y": 692.796875
+          },
+          {
+            "text": "",
+            "y": 1551.671875
+          },
+          {
+            "text": "",
+            "y": 1551.671875
+          },
+          {
+            "text": "",
+            "y": 3008.4375
+          },
+          {
+            "text": "",
+            "y": 3005.4375
+          },
+          {
+            "text": "",
+            "y": 3938.15625
+          },
+          {
+            "text": "",
+            "y": 3938.15625
+          },
+          {
+            "text": "",
+            "y": 5658.9375
+          },
+          {
+            "text": "",
+            "y": 6070.5625
+          },
+          {
+            "text": "",
+            "y": 6802.09375
+          },
+          {
+            "text": "",
+            "y": 6995.65625
+          },
+          {
+            "text": "",
+            "y": 1607.171875
+          },
+          {
+            "text": "",
+            "y": 1607.171875
+          },
+          {
+            "text": "",
+            "y": 3063.9375
+          },
+          {
+            "text": "",
+            "y": 3060.9375
+          },
+          {
+            "text": "",
+            "y": 3510.21875
+          },
+          {
+            "text": "",
+            "y": 3510.21875
+          },
+          {
+            "text": "",
+            "y": 5231
+          },
+          {
+            "text": "",
+            "y": 5642.625
+          },
+          {
+            "text": "",
+            "y": 6374.15625
+          },
+          {
+            "text": "",
+            "y": 6743.0625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1803.046875
+          },
+          {
+            "text": "市场背景",
+            "y": 2894.515625
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2998.859375
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3200.890625
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 4455.25
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 4927.78125
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 5434.125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 5574.625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696882219",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-768-dark-zh.png",
+      "screenshot_sha256": "aecb8ad9859b4243f75e9142417c8ffcda1a67ebe1f024139affd1d456551fe4"
+    },
+    {
+      "case": "390-light-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 8104,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 808.703125,
+          "width": 354,
+          "height": 1241.75
+        },
+        "columns": "354px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 808.703125,
+              "width": 354,
+              "height": 612.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1437.578125,
+              "width": 354,
+              "height": 612.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "",
+            "y": 1697.078125
+          },
+          {
+            "text": "",
+            "y": 2357.921875
+          },
+          {
+            "text": "",
+            "y": 3136.578125
+          },
+          {
+            "text": "",
+            "y": 3378.703125
+          },
+          {
+            "text": "",
+            "y": 3883.765625
+          },
+          {
+            "text": "",
+            "y": 4589.546875
+          },
+          {
+            "text": "",
+            "y": 5120.546875
+          },
+          {
+            "text": "",
+            "y": 5637.640625
+          },
+          {
+            "text": "",
+            "y": 6575.359375
+          },
+          {
+            "text": "",
+            "y": 6785.421875
+          },
+          {
+            "text": "",
+            "y": 2388.953125
+          },
+          {
+            "text": "",
+            "y": 3025
+          },
+          {
+            "text": "",
+            "y": 3893.65625
+          },
+          {
+            "text": "",
+            "y": 4135.78125
+          },
+          {
+            "text": "",
+            "y": 4361.9375
+          },
+          {
+            "text": "",
+            "y": 5067.71875
+          },
+          {
+            "text": "",
+            "y": 5598.71875
+          },
+          {
+            "text": "",
+            "y": 6115.8125
+          },
+          {
+            "text": "",
+            "y": 7089.53125
+          },
+          {
+            "text": "",
+            "y": 7477.03125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2709.4375
+          },
+          {
+            "text": "Market context",
+            "y": 4143.796875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 4296.59375
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 4668.125
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 6211.953125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 6760.578125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 7488.265625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 7698.765625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696884499",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-en.png",
+      "screenshot_sha256": "1073e8703610383eda926d1fa96f4b3453822d80f71731f5bc6e9cd53fe60855"
+    },
+    {
+      "case": "390-light-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7650,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 754.734375,
+          "width": 354,
+          "height": 1205.75
+        },
+        "columns": "354px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 754.734375,
+              "width": 354,
+              "height": 594.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1365.609375,
+              "width": 354,
+              "height": 594.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "",
+            "y": 1625.109375
+          },
+          {
+            "text": "",
+            "y": 2229.9375
+          },
+          {
+            "text": "",
+            "y": 3193.40625
+          },
+          {
+            "text": "",
+            "y": 3438.40625
+          },
+          {
+            "text": "",
+            "y": 3852.59375
+          },
+          {
+            "text": "",
+            "y": 4500.5
+          },
+          {
+            "text": "",
+            "y": 4997
+          },
+          {
+            "text": "",
+            "y": 5386.625
+          },
+          {
+            "text": "",
+            "y": 6118.15625
+          },
+          {
+            "text": "",
+            "y": 6311.71875
+          },
+          {
+            "text": "",
+            "y": 2298.984375
+          },
+          {
+            "text": "",
+            "y": 2903.8125
+          },
+          {
+            "text": "",
+            "y": 3918.28125
+          },
+          {
+            "text": "",
+            "y": 4163.28125
+          },
+          {
+            "text": "",
+            "y": 4372.9375
+          },
+          {
+            "text": "",
+            "y": 5020.84375
+          },
+          {
+            "text": "",
+            "y": 5517.34375
+          },
+          {
+            "text": "",
+            "y": 5906.96875
+          },
+          {
+            "text": "",
+            "y": 6638.5
+          },
+          {
+            "text": "",
+            "y": 7007.40625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 2518.125
+          },
+          {
+            "text": "市场背景",
+            "y": 3846.328125
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 3939.875
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 4265.65625
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 5755.859375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 6262.140625
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 7127.734375
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 7315.734375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696886775",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-zh.png",
+      "screenshot_sha256": "0aba2307d86adcd0b6945048e30cb62a24bac7c21890b5d39a605b5fcc71b465"
+    },
+    {
+      "case": "390-dark-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 8094,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 808.703125,
+          "width": 354,
+          "height": 1241.75
+        },
+        "columns": "354px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 808.703125,
+              "width": 354,
+              "height": 612.875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1437.578125,
+              "width": 354,
+              "height": 612.875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "",
+            "y": 1697.078125
+          },
+          {
+            "text": "",
+            "y": 2357.921875
+          },
+          {
+            "text": "",
+            "y": 3136.578125
+          },
+          {
+            "text": "",
+            "y": 3378.703125
+          },
+          {
+            "text": "",
+            "y": 3883.765625
+          },
+          {
+            "text": "",
+            "y": 4589.546875
+          },
+          {
+            "text": "",
+            "y": 5120.546875
+          },
+          {
+            "text": "",
+            "y": 5637.640625
+          },
+          {
+            "text": "",
+            "y": 6575.359375
+          },
+          {
+            "text": "",
+            "y": 6785.421875
+          },
+          {
+            "text": "",
+            "y": 2388.953125
+          },
+          {
+            "text": "",
+            "y": 3025
+          },
+          {
+            "text": "",
+            "y": 3893.65625
+          },
+          {
+            "text": "",
+            "y": 4135.78125
+          },
+          {
+            "text": "",
+            "y": 4361.9375
+          },
+          {
+            "text": "",
+            "y": 5067.71875
+          },
+          {
+            "text": "",
+            "y": 5598.71875
+          },
+          {
+            "text": "",
+            "y": 6115.8125
+          },
+          {
+            "text": "",
+            "y": 7089.53125
+          },
+          {
+            "text": "",
+            "y": 7477.03125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2709.4375
+          },
+          {
+            "text": "Market context",
+            "y": 4143.796875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 4296.59375
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 4668.125
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 6201.953125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 6750.578125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 7478.265625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 7688.765625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696888986",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-en.png",
+      "screenshot_sha256": "a945cf124f89b2c1ee4c5d714f2ea91bc20089fb91fd4f532b93ba4254d1e0bc"
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7640,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 754.734375,
+          "width": 354,
+          "height": 1205.75
+        },
+        "columns": "354px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 754.734375,
+              "width": 354,
+              "height": 594.875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1365.609375,
+              "width": 354,
+              "height": 594.875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "",
+            "y": 1625.109375
+          },
+          {
+            "text": "",
+            "y": 2229.9375
+          },
+          {
+            "text": "",
+            "y": 3193.40625
+          },
+          {
+            "text": "",
+            "y": 3438.40625
+          },
+          {
+            "text": "",
+            "y": 3852.59375
+          },
+          {
+            "text": "",
+            "y": 4500.5
+          },
+          {
+            "text": "",
+            "y": 4997
+          },
+          {
+            "text": "",
+            "y": 5386.625
+          },
+          {
+            "text": "",
+            "y": 6118.15625
+          },
+          {
+            "text": "",
+            "y": 6311.71875
+          },
+          {
+            "text": "",
+            "y": 2298.984375
+          },
+          {
+            "text": "",
+            "y": 2903.8125
+          },
+          {
+            "text": "",
+            "y": 3918.28125
+          },
+          {
+            "text": "",
+            "y": 4163.28125
+          },
+          {
+            "text": "",
+            "y": 4372.9375
+          },
+          {
+            "text": "",
+            "y": 5020.84375
+          },
+          {
+            "text": "",
+            "y": 5517.34375
+          },
+          {
+            "text": "",
+            "y": 5906.96875
+          },
+          {
+            "text": "",
+            "y": 6638.5
+          },
+          {
+            "text": "",
+            "y": 7007.40625
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 2518.125
+          },
+          {
+            "text": "市场背景",
+            "y": 3846.328125
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 3939.875
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 4265.65625
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 5745.859375
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 6252.140625
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 7117.734375
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 7305.734375
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696891228",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-zh.png",
+      "screenshot_sha256": "b5631eb8bfbe1728573d51d98c8db62b7994da0abbc6311a11d59e01dcbe7b5f"
+    },
+    {
+      "case": "320-light-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 8721,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 842.828125,
+          "width": 284,
+          "height": 1318.9375
+        },
+        "columns": "284px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 842.828125,
+              "width": 284,
+              "height": 651.46875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1510.296875,
+              "width": 284,
+              "height": 651.46875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 519.109375
+          },
+          {
+            "text": "TODAY",
+            "y": 738.828125
+          },
+          {
+            "text": "",
+            "y": 1769.796875
+          },
+          {
+            "text": "",
+            "y": 2430.640625
+          },
+          {
+            "text": "",
+            "y": 3209.296875
+          },
+          {
+            "text": "",
+            "y": 3451.421875
+          },
+          {
+            "text": "",
+            "y": 3956.484375
+          },
+          {
+            "text": "",
+            "y": 4662.265625
+          },
+          {
+            "text": "",
+            "y": 5193.265625
+          },
+          {
+            "text": "",
+            "y": 5710.359375
+          },
+          {
+            "text": "",
+            "y": 6648.078125
+          },
+          {
+            "text": "",
+            "y": 6858.140625
+          },
+          {
+            "text": "",
+            "y": 2500.265625
+          },
+          {
+            "text": "",
+            "y": 3136.3125
+          },
+          {
+            "text": "",
+            "y": 4004.96875
+          },
+          {
+            "text": "",
+            "y": 4247.09375
+          },
+          {
+            "text": "",
+            "y": 4473.25
+          },
+          {
+            "text": "",
+            "y": 5179.03125
+          },
+          {
+            "text": "",
+            "y": 5710.03125
+          },
+          {
+            "text": "",
+            "y": 6227.125
+          },
+          {
+            "text": "",
+            "y": 7200.84375
+          },
+          {
+            "text": "",
+            "y": 7588.34375
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2855.046875
+          },
+          {
+            "text": "Market context",
+            "y": 4541.40625
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 4694.203125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 5065.734375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 6740.203125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 7318.515625
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 8064.203125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 8315.953125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696893492",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-320-light-en.png",
+      "screenshot_sha256": "6f0f432c312f7993d96f647560ae345b6f285176461d90b2a11d744094750fbb"
+    },
+    {
+      "case": "320-light-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 8201,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 808.484375,
+          "width": 284,
+          "height": 1282.9375
+        },
+        "columns": "284px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 808.484375,
+              "width": 284,
+              "height": 633.46875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1457.953125,
+              "width": 284,
+              "height": 633.46875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 502.234375
+          },
+          {
+            "text": "今日",
+            "y": 704.484375
+          },
+          {
+            "text": "",
+            "y": 1717.453125
+          },
+          {
+            "text": "",
+            "y": 2322.28125
+          },
+          {
+            "text": "",
+            "y": 3285.75
+          },
+          {
+            "text": "",
+            "y": 3530.75
+          },
+          {
+            "text": "",
+            "y": 3944.9375
+          },
+          {
+            "text": "",
+            "y": 4592.84375
+          },
+          {
+            "text": "",
+            "y": 5089.34375
+          },
+          {
+            "text": "",
+            "y": 5478.96875
+          },
+          {
+            "text": "",
+            "y": 6210.5
+          },
+          {
+            "text": "",
+            "y": 6404.0625
+          },
+          {
+            "text": "",
+            "y": 2429.921875
+          },
+          {
+            "text": "",
+            "y": 3034.75
+          },
+          {
+            "text": "",
+            "y": 4049.21875
+          },
+          {
+            "text": "",
+            "y": 4294.21875
+          },
+          {
+            "text": "",
+            "y": 4503.875
+          },
+          {
+            "text": "",
+            "y": 5151.78125
+          },
+          {
+            "text": "",
+            "y": 5648.28125
+          },
+          {
+            "text": "",
+            "y": 6037.90625
+          },
+          {
+            "text": "",
+            "y": 6769.4375
+          },
+          {
+            "text": "",
+            "y": 7138.34375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 2667.5625
+          },
+          {
+            "text": "市场背景",
+            "y": 4178.765625
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 4331.5625
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 4685.09375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 6216.921875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 6764.546875
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 7648.890625
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 7836.890625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696895691",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-320-light-zh.png",
+      "screenshot_sha256": "5c024e7b62e1262f4451ed6cbbb02497e464012b4dedb81fd467d43ca514620a"
+    },
+    {
+      "case": "320-dark-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 8711,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": {
+          "x": 18,
+          "y": 842.828125,
+          "width": 284,
+          "height": 1318.9375
+        },
+        "columns": "284px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 842.828125,
+              "width": 284,
+              "height": 651.46875
+            },
+            "text": "Buy · partial\n$79.01\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nFLS\nFlowserve\nIndustrials\nPriority\n75\nⓘ\n Featured\nBottoming\n\nPartial entry — half size now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTurning\nReady\nTre"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1510.296875,
+              "width": 284,
+              "height": 651.46875
+            },
+            "text": "Buy\n$619.00\n—\nAs of 2026-10-30\nDaily closes\nAs of 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\nPriority\n62\nⓘ\n Featured\nContinuation\n\nBuy zone — entry open now\n\nKey caution Already moving. Don't chase above the buy zone.\n\nBottoming\nTu"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 519.109375
+          },
+          {
+            "text": "TODAY",
+            "y": 738.828125
+          },
+          {
+            "text": "",
+            "y": 1769.796875
+          },
+          {
+            "text": "",
+            "y": 2430.640625
+          },
+          {
+            "text": "",
+            "y": 3209.296875
+          },
+          {
+            "text": "",
+            "y": 3451.421875
+          },
+          {
+            "text": "",
+            "y": 3956.484375
+          },
+          {
+            "text": "",
+            "y": 4662.265625
+          },
+          {
+            "text": "",
+            "y": 5193.265625
+          },
+          {
+            "text": "",
+            "y": 5710.359375
+          },
+          {
+            "text": "",
+            "y": 6648.078125
+          },
+          {
+            "text": "",
+            "y": 6858.140625
+          },
+          {
+            "text": "",
+            "y": 2500.265625
+          },
+          {
+            "text": "",
+            "y": 3136.3125
+          },
+          {
+            "text": "",
+            "y": 4004.96875
+          },
+          {
+            "text": "",
+            "y": 4247.09375
+          },
+          {
+            "text": "",
+            "y": 4473.25
+          },
+          {
+            "text": "",
+            "y": 5179.03125
+          },
+          {
+            "text": "",
+            "y": 5710.03125
+          },
+          {
+            "text": "",
+            "y": 6227.125
+          },
+          {
+            "text": "",
+            "y": 7200.84375
+          },
+          {
+            "text": "",
+            "y": 7588.34375
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 2855.046875
+          },
+          {
+            "text": "Market context",
+            "y": 4541.40625
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 4694.203125
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 5065.734375
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 6730.203125
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 7308.515625
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 8054.203125
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 8305.953125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696897762",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-320-dark-en.png",
+      "screenshot_sha256": "f558b7566d29c5857475c25486fae2cb29a275f674ba9eea2791865031e5c225"
+    },
+    {
+      "case": "320-dark-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 8191,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": {
+          "x": 18,
+          "y": 808.484375,
+          "width": 284,
+          "height": 1282.9375
+        },
+        "columns": "284px",
+        "cards": [
+          {
+            "ticker": "FLS",
+            "rect": {
+              "x": 18,
+              "y": 808.484375,
+              "width": 284,
+              "height": 633.46875
+            },
+            "text": "买入 · 部分\n$79.01\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nFLS\nFlowserve\nIndustrials\n优先级\n75\nⓘ\n 精选\n筑底\n\n部分入场 — 当前可建半仓\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$76.30–$79.01\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          },
+          {
+            "ticker": "CVCO",
+            "rect": {
+              "x": 18,
+              "y": 1457.953125,
+              "width": 284,
+              "height": 633.46875
+            },
+            "text": "买入\n$619.00\n—\n截至 2026-10-30\n每日收盘\n截至 2026-10-30\nCVCO\nCavco Industries, Inc.\nConsumer Discretionary\n优先级\n62\nⓘ\n 精选\n延续\n\n买入区 — 入场窗口已开启\n\n关键注意 已在异动。不要在买区上方追高。\n\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-10-29\n\n入场区间\n$589.20–$619.00\nUSD\n截至 2026-10-30\n入榜 2026-10-30\n查看形态 →\n对比"
+          }
+        ],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 502.234375
+          },
+          {
+            "text": "今日",
+            "y": 704.484375
+          },
+          {
+            "text": "",
+            "y": 1717.453125
+          },
+          {
+            "text": "",
+            "y": 2322.28125
+          },
+          {
+            "text": "",
+            "y": 3285.75
+          },
+          {
+            "text": "",
+            "y": 3530.75
+          },
+          {
+            "text": "",
+            "y": 3944.9375
+          },
+          {
+            "text": "",
+            "y": 4592.84375
+          },
+          {
+            "text": "",
+            "y": 5089.34375
+          },
+          {
+            "text": "",
+            "y": 5478.96875
+          },
+          {
+            "text": "",
+            "y": 6210.5
+          },
+          {
+            "text": "",
+            "y": 6404.0625
+          },
+          {
+            "text": "",
+            "y": 2429.921875
+          },
+          {
+            "text": "",
+            "y": 3034.75
+          },
+          {
+            "text": "",
+            "y": 4049.21875
+          },
+          {
+            "text": "",
+            "y": 4294.21875
+          },
+          {
+            "text": "",
+            "y": 4503.875
+          },
+          {
+            "text": "",
+            "y": 5151.78125
+          },
+          {
+            "text": "",
+            "y": 5648.28125
+          },
+          {
+            "text": "",
+            "y": 6037.90625
+          },
+          {
+            "text": "",
+            "y": 6769.4375
+          },
+          {
+            "text": "",
+            "y": 7138.34375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 2667.5625
+          },
+          {
+            "text": "市场背景",
+            "y": 4178.765625
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 4331.5625
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 4685.09375
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 6206.921875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 6754.546875
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 7638.890625
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 7826.890625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:53127/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/risk_state.json?t=1793696899913",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:53127/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:53127/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-320-dark-zh.png",
+      "screenshot_sha256": "ff36d22d33dd52ad519b6bf6e02d9462336d0203bd9d8158810590ff11042d0f"
+    }
+  ],
+  "completed_at": 1793696902.0002098
+}

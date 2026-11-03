@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "63327214997788b069ce7ae5899e03c467cecda4",
+  "source_revision": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1412,7 +1412,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "6f89a1209fd765f13ce75beae2fb59a42f378fa552c77a3994365b1bb7960432",
+      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1440,7 +1440,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-withdrawn-en-dark-390.png",
-      "sha256": "13ec3f890f5f2ddec259876337c02d0c55fe4649f86c8adf975fcf969295fddd",
+      "sha256": "7e90042418225c828b9b2e42a4e0923fa6b2919d69ba8705f9cd0a6db536d7c7",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1994,7 +1994,7 @@
   "pr_source_equivalence": {
     "note": "All 68 screenshots and five contact sheets were genuinely regenerated with the canonical tests/probe_ew_p4_descriptive_ui_browser.py at source_revision, in local anonymous synthetic Playwright contexts. The render inputs below were checked against the committed source before and after capture. The pending evidence-only commit retains those exact blobs. Prophet includes newly consumed by the dashboard are bound explicitly. This is not production or authenticated product acceptance.",
     "pr_branch": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
-    "pr_parent_of_evidence_commit": "63327214997788b069ce7ae5899e03c467cecda4",
+    "pr_parent_of_evidence_commit": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2052,8 +2052,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "abaea55f539083437baee59bc6363e6efe29d1e4",
-        "blob_on_pr_branch": "abaea55f539083437baee59bc6363e6efe29d1e4",
+        "blob_at_source_revision": "8267124fc1f8118607b8caf47e86478da7465a07",
+        "blob_on_pr_branch": "8267124fc1f8118607b8caf47e86478da7465a07",
         "equal": true
       },
       {
@@ -2198,8 +2198,8 @@
     "all_equal": true
   },
   "previous_capture": {
-    "source_revision": "5370b9f51740fe87d25da33d46552cd33b628596",
-    "receipt_git_blob": "d7fa9678106c12d0a7a1a1bf52c0ccb5c3127543",
-    "receipt_sha256": "d4ab766108dc1d819b6145e683c9c6878edbcfab068054c0b38a88c69712d5ca"
+    "source_revision": "63327214997788b069ce7ae5899e03c467cecda4",
+    "receipt_git_blob": "50bf109e20a7587405c3c5cdefcd75ad593d5f7c",
+    "receipt_sha256": "23caa13bdcd3faa9a46ccd7752a7dc0f13459c4d39e450a76b02efe83056c5cb"
   }
 }

@@ -119,3 +119,16 @@ def test_turn_setups_have_truthful_no_script_and_accessible_recovery_boundaries(
     assert body.select_one(".mtf-skel").has_attr("hidden")
     assert panel.select_one("noscript")
     assert not panel.select(".dash-mtf-absent")
+
+
+def test_header_assistant_has_one_native_trigger_and_honest_no_script_route():
+    header = render(_base_vm()).select_one("#stocks-header")
+    triggers = header.select("#prophet-assistant")
+    assert len(triggers) == 1
+    trigger = triggers[0]
+    assert trigger.name == "button" and trigger["type"] == "button"
+    assert trigger.has_attr("hidden")
+    assert trigger["aria-controls"] == "mmb-panel"
+    status = header.find(id=trigger["aria-describedby"])
+    assert status and status["role"] == "status" and status["aria-live"] == "polite"
+    assert header.select_one("noscript a[href='chat.html']")

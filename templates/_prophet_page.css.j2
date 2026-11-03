@@ -12,6 +12,30 @@ body.page-stocks #stocks-header .stk-headline {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-6,24px); flex-wrap: wrap;
 }
+body.page-stocks .prophet-assistant-slot {
+  flex: none; min-width: 76px; min-height: 44px;
+}
+body.page-stocks #stocks-header .prophet-assistant-trigger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-width: 76px; min-height: 44px; box-sizing: border-box; padding: 8px 12px;
+  border: 1px solid var(--line); border-radius: var(--r-ctl,8px);
+  background: var(--panel2); color: var(--ink-link,var(--link));
+  font: inherit; font-size: var(--fs-sm,12.5px); font-weight: 650;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+body.page-stocks #stocks-header .prophet-assistant-trigger svg {
+  width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5;
+}
+body.page-stocks #stocks-header .prophet-assistant-trigger:focus-visible {
+  outline: 2px solid var(--link); outline-offset: 3px;
+}
+body.page-stocks #stocks-header .prophet-assistant-trigger[aria-busy="true"] { cursor: progress; }
+body.page-stocks #stocks-header .prophet-assistant-status {
+  margin: 10px 0 0; color: var(--muted); font-size: var(--fs-sm,12.5px); line-height: 1.5;
+}
+body.page-stocks #stocks-header :is(.prophet-assistant-trigger,.prophet-assistant-status)[hidden] {
+  display: none !important;
+}
 body.page-stocks .prophet-eyebrow {
   display: block; color: var(--muted); font-size: var(--fs-label,11px);
   font-weight: 650; letter-spacing: .1em; text-transform: uppercase;
@@ -190,6 +214,11 @@ body.page-stocks :is(.dash-mtf-retry,.mtf-skel)[hidden] { display: none !importa
      Keep all clocks, warning text, source switches and 44px controls visible. */
   body.page-stocks #stocks-header { padding: 14px 16px 0; }
   body.page-stocks #stocks-header .stk-headline { gap: 10px; }
+  body.page-stocks #stocks-header .prophet-heading {
+    order: 0; flex: 1 1 min-content; min-width: min-content; max-width: 100%;
+  }
+  body.page-stocks #stocks-header .prophet-assistant-slot { order: 1; align-self: center; }
+  body.page-stocks #stocks-header .stk-head-meta { order: 2; flex-basis: 100%; }
   body.page-stocks #stocks-header h1 {
     margin: 4px 0; font-size: var(--fs-h1,28px); gap: 8px 12px;
   }

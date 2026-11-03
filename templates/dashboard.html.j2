@@ -2638,7 +2638,16 @@
         <span class="stk-status"><span class="l-en">Regime</span><span class="l-zh">周期</span> <strong>{{ td(latest.quad_name|trim) if latest.quad_name is string and latest.quad_name|trim else t('Unavailable', '暂无数据') }}</strong></span>
         {% if pb and pb.dial %}<span class="stk-status"><span class="l-en">Posture</span><span class="l-zh">姿态</span> <strong>{{ td(pb.dial.posture) }}</strong></span>{% endif %}
       </div>
+      <div class="prophet-assistant-slot">
+        <button id="prophet-assistant" class="prophet-assistant-trigger" type="button" hidden
+                aria-controls="mmb-panel" aria-expanded="false" aria-describedby="prophet-assistant-status">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></svg>
+          {{ t('Ask', '提问') }}
+        </button>
+        <noscript><a class="prophet-assistant-trigger" href="chat.html">{{ t('Ask', '提问') }}</a></noscript>
+      </div>
     </div>
+    <p id="prophet-assistant-status" class="prophet-assistant-status" role="status" aria-live="polite" hidden></p>
     <nav class="stk-header-links prophet-section-nav" aria-label="Prophet">
       <a href="#us-standouts">{{ t('Opportunities', '机会') }}</a>
       <a href="#prophet-market-context">{{ t('Market context', '市场背景') }}</a>

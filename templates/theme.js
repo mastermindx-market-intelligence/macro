@@ -5590,6 +5590,23 @@
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;
+  var _mmBootHeader = false, _mmBootState = '';
+  function _mmProphetLauncher() {
+    var el = document.getElementById('prophet-assistant');
+    return el && el.tagName === 'BUTTON' && el.type === 'button'
+      && el.closest('#stocks-header') ? el : null;
+  }
+  function _mmBootFeedback(state) {
+    _mmBootState = state;
+    if (!_mmBootHeader) return;
+    var status = document.getElementById('prophet-assistant-status');
+    if (!status) return;
+    status.hidden = !state;
+    status.textContent = state === 'loading'
+      ? (curLang() === 'zh' ? '正在打开助手…' : 'Opening assistant…')
+      : state === 'unavailable'
+        ? (curLang() === 'zh' ? '助手暂时无法打开，请再次点击提问重试。' : 'Assistant could not open. Select Ask to try again.') : '';
+  }
 
   function _mmBrainSrc() {
     var q = MM_BRAIN_VER ? '?v=' + MM_BRAIN_VER : '';
@@ -5607,16 +5624,27 @@
     if (window.MMBrain && window.MMBrain.mounted) { if (done) done(true); return; }
     if (done) _mmBrainWaiters.push(done);
     if (_mmBrainScript) return;
-    _mmBrainScript = document.createElement('script');
-    _mmBrainScript.src = _mmBrainSrc();
-    _mmBrainScript.async = true;
-    _mmBrainScript.onload = function () {
-      var ok = !!(window.MMBrain && window.MMBrain.mounted);
-      if (!ok) _mmBrainScript = null;
+    var script = document.createElement('script'), settled = false, timer;
+    _mmBrainScript = script;
+    script.src = _mmBrainSrc();
+    script.async = true;
+    function settle(ok) {
+      if (settled || _mmBrainScript !== script) return;
+      settled = true; clearTimeout(timer);
+      window.removeEventListener('mm-brain-ready', ready);
+      script.onload = script.onerror = null;
+      if (!ok) {
+        _mmBrainScript = null;
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
       _mmBrainFlush(ok);
-    };
-    _mmBrainScript.onerror = function () { _mmBrainScript = null; _mmBrainFlush(false); };
-    (document.body || document.documentElement).appendChild(_mmBrainScript);
+    }
+    function ready() { if (window.MMBrain && window.MMBrain.mounted) settle(true); }
+    script.onload = function () { settle(!!(window.MMBrain && window.MMBrain.mounted)); };
+    script.onerror = function () { settle(false); };
+    window.addEventListener('mm-brain-ready', ready);
+    timer = setTimeout(function () { settle(false); }, 10000);
+    (document.body || document.documentElement).appendChild(script);
   }
 
   /* The stub's resting appearance. Mirrors mm_brain.js's #mmb-launch block —
@@ -5708,6 +5736,7 @@
     var ll = _mmBootEl.querySelector('.ll'), lk = _mmBootEl.querySelector('.lk');
     if (ll) ll.textContent = t.ll;
     if (lk) lk.textContent = t.lk;
+    _mmBootFeedback(_mmBootState);
   }
   /* Hand over to the real launcher. mm_brain.js mounts its own #mmb-launch DURING
      script execution, so by the time onload runs the replacement is already on the
@@ -5715,10 +5744,22 @@
      in that same tick is an invisible swap. Do NOT fade it out: a 200ms ghost
      fading on top of the identical pill underneath is the only way to make the
      handover visible. */
+  function _mmBootReady() {
+    // A timed-out script can still evaluate. Retire its old control, but only
+    // a currently pending activation's load waiter may open the panel.
+    if (window.MMBrain && window.MMBrain.mounted) _mmBootRetire();
+  }
   function _mmBootRetire() {
     if (!_mmBootEl) return;
+    window.removeEventListener('mm-brain-ready', _mmBootReady);
     var el = _mmBootEl; _mmBootEl = null;
-    if (el.parentNode) el.parentNode.removeChild(el);
+    if (_mmBootHeader) {
+      el.removeEventListener('click', _mmBootActivate);
+      el.removeEventListener('pointerenter', _mmBrainWarm);
+      el.removeEventListener('focus', _mmBrainWarm);
+      el.removeAttribute('aria-busy');
+      _mmBootFeedback('');
+    } else if (el.parentNode) el.parentNode.removeChild(el);
     document.removeEventListener('langchange', _mmBootRelabel);
   }
   /* Load + mount, then retire the stub. `open` asks for the panel too — the reader
@@ -5728,6 +5769,7 @@
     loadBrain(function (ok) {
       if (!ok) {                       // stay a usable, retryable launcher
         if (_mmBootEl) _mmBootEl.removeAttribute('aria-busy');
+        _mmBootFeedback('unavailable');
         return;
       }
       _mmBootRetire();
@@ -5748,11 +5790,24 @@
     } catch (e) {}
   }
   function _mmBootActivate() {
-    if (!_mmBootEl) return;
+    if (!_mmBootEl || _mmBootEl.getAttribute('aria-busy') === 'true') return;
     _mmBootEl.setAttribute('aria-busy', 'true');
+    _mmBootFeedback('loading');
     _mmBrainMount(true);
   }
   function _mmMountBootLauncher() {
+    window.addEventListener('mm-brain-ready', _mmBootReady);
+    var host = _mmProphetLauncher();
+    if (host) {
+      _mmBootEl = host; _mmBootHeader = true;
+      _mmBootRelabel();
+      host.addEventListener('click', _mmBootActivate);
+      host.addEventListener('pointerenter', _mmBrainWarm);
+      host.addEventListener('focus', _mmBrainWarm);
+      document.addEventListener('langchange', _mmBootRelabel);
+      host.hidden = false;
+      return;
+    }
     var st = document.createElement('style');
     st.id = 'mmb-boot-css';
     st.textContent = MMB_BOOT_AT + MMB_BOOT_CSS;
@@ -5793,7 +5848,13 @@
     if (/\/chat\.html([?#]|$)/.test(location.pathname + location.search + location.hash)) return;
     // a page-authored <script src=mm_brain.js> already mounted the real widget —
     // reuse it, make no second request, and never stack a stub on top of it.
-    if (window.MMBrain || document.getElementById('mmb-root')) return;
+    var headerLauncher = _mmProphetLauncher();
+    if (window.MMBrain || document.getElementById('mmb-root')) {
+      if (headerLauncher && window.MMBrain && typeof window.MMBrain.setLauncher === 'function') {
+        window.MMBrain.setLauncher(headerLauncher);
+      }
+      return;
+    }
     if (_mmBootEl || document.getElementById('mmb-boot')) return;      // idempotent
     // The unified Mastermind Brain widget mounts its OWN bottom-right launcher + an
     // expandable overlay and wires the /api/brain gateway. Bridge the site's active
@@ -5806,6 +5867,7 @@
             || (typeof window.ACTIVE_SYMBOL === 'string' && window.ACTIVE_SYMBOL) || '';
       }
     };
+    if (headerLauncher) window.MM_BRAIN_CFG.externalLauncher = headerLauncher;
     _mmMountBootLauncher();
     /* mm_brain.js also injects a per-card "Ask the Brain" button onto every
        .sx[id^=sx-] card face, and those buttons are part of the page at rest —

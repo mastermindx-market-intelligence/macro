@@ -4,7 +4,17 @@ Status: active implementation specification; no design acceptance or release cla
 Commission: Chris's rejection of the deployed replacement cards and request for the complete Paper-informed Prophet system. Original root/parent: 01a11e89-b35d-7a81-9404-5fce2c6170cb.
 Canonical programme: macro#6817/comment6107291350. This specification refines the existing R6 mission; it does not replace its research, source, or scientific contracts.
 
-## Verified design and native build continuation — 3 November 2026
+## Current direct implementation continuation — 3 November 2026
+
+The Chairman explicitly directs ChatGPT2 to own the continuation on this existing Prophet branch and complete the work directly. An archived session or an imagined original Fabric executive is not a dependency, and Grok Secretary is not a substitute implementation owner. Check actual source custody and uncertain effects, preserve held work, and advance a concrete safe implementation or verification step. The historical Fabric/Paper operations below remain held on their original effects; this direct source continuation does not replay them.
+
+Direct source commits through `381bb7aa89ab200730e080a26b9d2ac4c83d7c3a` implement reliable Turn Setups, a first-paint neutral session strip, tighter mobile discovery, candidate-preserving failed Plan navigation and 44px Plan controls. The normal generated page passes 16 responsive/theme/locale cases, 12 public/protected integrity checks and six fresh loading measurements. At 390px EN the first card moved from 918.5px to 808.7px; mobile lab CLS fell from 0.12055 to 0.01613. These are anonymous offline results, not authenticated or production proof.
+
+The next source slice in this continuation adds the persistent inline header assistant using the actual shared widget: lazy loading, one native keyboard button, same-button retry, 10-second failure deadline, late-response safety, pre-mounted-widget adoption, enlarged-text wrapping, close-focus return and a no-script Chat route. It preserves actual host context/configuration, default launchers on other pages, authentication and message/backend authority. The focused assistant regression batch passed 133 tests; final emitted-page proof and exact-head CI remain required.
+
+The cumulative implementation and evidence frontier is `mockups/evidence/prophet-opportunity-workspace/full-page-20261103/README.md`. Keep the held untracked `tests/test_prophet_plan_review_integration.py` unread, unexecuted, unmodified and unstaged. No release action is authorized here: no Ready, un-draft, relabel, enqueue, merge or deploy. Eligible signed-in Sources → Plan → same candidate/focus/scroll still requires real permitted account-path evidence.
+
+## Historical verified design and native build continuation — 3 November 2026
 
 The established Prophet Paper page p-C-0 now has three completed native R8 artboards: 1440 light English YW1-0, 390 light English ZRL-0, and 390 dark Chinese 1092-0. Native screenshots, JSX and an independent visual review are recorded at mockups/evidence/prophet-opportunity-workspace/full-page-20261103/paper-r8/. Dark desktop ZE5-0 has an unresolved original palette edit and is held.
 
@@ -12,7 +22,7 @@ The incumbent source is at local 5370b9f51740fe87d25da33d46552cd33b628596. A ful
 
 Original Fabric run prophet-page-revamp-20261102-ux-refinement has EFFECT_UNKNOWN and may overlap native page/assistant/Turn Setups scope. Its effect must be reconciled before overlapping changes or re-dispatch. The current PR is #9495; source commits remain local until push validation. A separate eligible operator owns protected release; this account is excluded. Anonymous offline checks do not satisfy signed-in Sources to Plan to same-candidate return proof.
 
-## Current full-page continuation — 2 November 2026
+## Historical full-page continuation — 2 November 2026
 
 Chris has explicitly commissioned a full Paper redesign and production replacement of
 `us_stocks.html`, with the supplied live-page screenshots as the failure baseline.
