@@ -95,6 +95,7 @@ with sync_playwright() as pw:
         link = dialog.locator(".pvs-plan-link")
         link.scroll_into_view_if_needed()
         link.focus()
+        assert link.bounding_box()["height"] >= 44, "Plan action needs a touch-sized target"
         before = page.evaluate("""() => ({
           dialogScroll: document.querySelector('#pv-setup-dialog').scrollTop,
           pageScroll: scrollY,

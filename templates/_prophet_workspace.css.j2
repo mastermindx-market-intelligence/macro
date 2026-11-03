@@ -222,6 +222,23 @@ html[data-theme="light"] .pv-setup-body .pvs-section-tab[aria-selected="true"] {
   .pv-setup-body .pvs-section-tab { flex: 1 1 auto; padding: 8px 10px; }
 }
 
+.pv-setup-body .pvs-plan-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-ctl, 8px);
+  background: var(--panel2);
+  color: var(--link);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pv-setup-body .pvs-plan-link:hover { border-color: var(--link); }
+.pv-setup-body .pvs-plan-link:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+
 /* Keep an empty live region present without spending vertical space. */
 .pv-setup-body .pvs-plan-feedback { margin: 0; }
 .pv-setup-body .pvs-plan-feedback[data-state="unavailable"] { margin-top: var(--sp-2, 8px); }
