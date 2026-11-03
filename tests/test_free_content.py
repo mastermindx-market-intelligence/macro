@@ -646,6 +646,36 @@ class TestJsonLd:
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestBreadcrumbs:
+    @pytest.mark.parametrize("family", [None, "article"])
+    def test_shared_base_accepts_minimal_nonlesson_page(self, family):
+        """The incumbent earnings-wire page contract omits estate family."""
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+        page = {
+            "title": "Earnings call records",
+            "description": "Receipt-bound excerpts.",
+            "canonical": "https://www.mastermind-x.com/stocks/earnings/index.html",
+            "url_path": "/stocks/earnings/index.html",
+            "breadcrumbs": [
+                {"label": "Home", "href": "/index.html"},
+                {"label": "Earnings call records", "href": None},
+            ],
+        }
+        if family is not None:
+            page["family"] = family
+        env = Environment(
+            loader=FileSystemLoader(str(_TEMPLATES_DIR)),
+            autoescape=True,
+            undefined=StrictUndefined,
+        )
+        html = env.get_template("seo_base.html.j2").render(
+            page=page, rel="../../", site={"base": "https://www.mastermind-x.com/"},
+            jsonld_extra="",
+        )
+        crumb = html.split('<nav class="est-crumb"', 1)[1].split("</nav>", 1)[0]
+        assert '<a href="../../index.html">Home</a>' in crumb
+        assert 'class="l-zh"' not in crumb
+
     def test_article_breadcrumbs(self):
         import scripts.build_free_content as bfc
         fm = _make_valid_fm(description="A" * 120, family="article")
