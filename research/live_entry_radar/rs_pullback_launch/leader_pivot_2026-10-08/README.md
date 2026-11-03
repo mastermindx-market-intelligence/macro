@@ -58,3 +58,11 @@ No old source carrier, original refusal, registered calendar, incumbent Entry En
 [Terminal Rotation & Pivot Intelligence](ROTATION_PIVOT_EXTENSION_2026-11-03.md) connects the existing RS study, Leadership Rotation measurements, Quote Hub and Radar/Evaluation owners into a proposed live observation and causal pivot-watch experience. It includes the current-code integration audit, primary research and counterevidence, latency/clock requirements, Terminal UX, staged backtests and implementation slices.
 
 Status: **SPEC_ONLY**. This dated proposal does not change the historical report, existing DNR dispositions, admitted source/experiment state, event authority or production behavior. No new market backtest or live forecast is claimed.
+
+## R1 implementation candidate — 3 November 2026
+
+[Terminal PR #1259](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1259), head `17798f2331ab24c0821cc76d9d6761e3c195e842`, implements a current-session **Rotation monitor** beside the RS × 30m study. It compares eleven sector ETF proxies with SPY over common completed 5m/30m intervals, separates prior-close returns, displays source ages and fixed coverage, and transfers a selected ETF into the existing study controls.
+
+Local verification passed **95 unit/component tests** and **24 responsive browser journeys** across desktop, tablet and phone in English and Chinese, plus TypeScript, scoped lint and whitespace checks. The [implementation evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/17798f2331ab24c0821cc76d9d6761e3c195e842/terminal/docs/rotation-regime/r1/README.md) contains the source contract, commands and synthetic-fixture screenshots. The [Agent OS handoff](../../../../../agentos/handoffs/LIVE-ENTRY-RADAR-2026-11-03-rotation-r1.md) records the original workspace, review request, exact next actions and non-retry dispositions.
+
+Status: **IMPLEMENTED_CANDIDATE / LOCAL_PROOF_ONLY**. Hosted CI and a requested non-author review remain separate gates; no merge, deployment, production latency qualification, admitted market backtest or predictive edge is claimed. The broader specification, prospective pivot work and original B0/P1 research programme retain their existing scientific and authority boundaries.
