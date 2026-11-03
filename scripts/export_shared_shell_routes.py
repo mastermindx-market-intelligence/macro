@@ -158,8 +158,12 @@ def calculator_directory_titles(text: str) -> dict[str, dict[str, str]]:
     for entry in entries:
         if not isinstance(entry, dict):
             raise ValueError("invalid canonical calculator metadata")
+        # Only explicitly authored bilingual metadata enrolls extra directory rows.
+        # An English-only historical manifest retains its sealed old directory.
+        if "title_zh" not in entry:
+            continue
         slug, title = entry.get("slug"), entry.get("title")
-        translated = entry.get("title_zh", title)
+        translated = entry["title_zh"]
         if (not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug)
                 or not isinstance(title, str) or not title.strip()
                 or not isinstance(translated, str) or not translated.strip()
@@ -169,8 +173,6 @@ def calculator_directory_titles(text: str) -> dict[str, dict[str, str]]:
         href = "/tools/calculators/" + slug + ".html"
         if href in result:
             raise ValueError("duplicate canonical calculator slug")
-        # The canonical document title is English where its owner has supplied no
-        # Chinese title. Preserve that identity, rather than inventing a translation.
         result[href] = {"en": title.strip(), "zh": translated.strip()}
     return result
 

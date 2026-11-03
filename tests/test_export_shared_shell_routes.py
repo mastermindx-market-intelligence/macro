@@ -47,15 +47,26 @@ def test_families_expand_only_concrete_tracked_documents_and_keep_payload_gates(
     assert next(r for r in p["directory"] if r["href"] == "/macro.html")["payloadTier"] == "public_shell_premium_payload"
 
 
-def test_calculator_titles_preserve_canonical_document_identity_without_slug_translation():
-    titles = calculator_directory_titles('- slug: cagr\n  title: CAGR Calculator\n'
+def test_calculator_titles_require_authored_bilingual_metadata_and_keep_historical_directory():
+    historical = '- slug: cagr\n  title: CAGR Calculator\n'
+    assert calculator_directory_titles(historical) == {}
+    owner = row("/tools/<id>.html", kind="family", page_id="macro:tools_family")
+    doc = catalog(owner)
+    kwargs = {"registry_digest": "digest", "inventory_ref": PIN}
+    before = derive_projection(doc, ["/tools/calculators/cagr.html"], {"exact": set(), "prefixes": ()}, {}, **kwargs)
+    after = derive_projection(doc, ["/tools/calculators/cagr.html"], {"exact": set(), "prefixes": ()}, {},
+                              calculator_titles=calculator_directory_titles(historical), **kwargs)
+    assert after == before
+    titles = calculator_directory_titles('- slug: cagr\n  title: CAGR Calculator\n  title_zh: 复合年增长率计算器\n'
                                         '- slug: compounding\n  title: Compound Interest Calculator\n'
                                         '  title_zh: 复利计算器\n')
-    assert titles["/tools/calculators/cagr.html"] == {"en": "CAGR Calculator", "zh": "CAGR Calculator"}
+    assert titles["/tools/calculators/cagr.html"] == {"en": "CAGR Calculator", "zh": "复合年增长率计算器"}
     assert titles["/tools/calculators/compounding.html"] == {"en": "Compound Interest Calculator", "zh": "复利计算器"}
-    for invalid in ('{}', '- slug: ../admin\n  title: Bad', '- slug: cagr\n  title: ""',
-                    '- slug: cagr\n  title: "<script>bad</script>"',
-                    '- slug: cagr\n  title: Good\n- slug: cagr\n  title: Duplicate'):
+    for invalid in ('{}', '- slug: ../admin\n  title: Bad\n  title_zh: 坏',
+                    '- slug: cagr\n  title: ""\n  title_zh: 空',
+                    '- slug: cagr\n  title: "<script>bad</script>"\n  title_zh: 坏',
+                    '- slug: cagr\n  title: Good\n  title_zh: null',
+                    '- slug: cagr\n  title: Good\n  title_zh: 好\n- slug: cagr\n  title: Duplicate\n  title_zh: 重复'):
         with pytest.raises(ValueError, match="canonical calculator"):
             calculator_directory_titles(invalid)
 
