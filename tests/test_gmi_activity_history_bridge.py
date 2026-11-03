@@ -145,13 +145,15 @@ class Rig:
         self.receipts_path = tmp_path / "activity_history_bridge_receipts.jsonl"
 
     def plan(self, *, ruling=True, allow_fixture=True, existing=None,
-             recorded_at=RECORDED_AT, rows=None):
+             recorded_at=RECORDED_AT, rows=None, ruling_paths=None, target_tiers=None,
+             root=None):
+        if ruling_paths is None:
+            ruling_paths = [str(self.ruling)] if ruling else []
         return bridge.plan_bridge(
             rows if rows is not None else [self.proposed, self.terminal],
-            receipts_dir=self.receipts_dir,
-            ruling_paths=[str(self.ruling)] if ruling else [],
+            receipts_dir=self.receipts_dir, ruling_paths=ruling_paths,
             recorded_at=recorded_at, existing_events=existing or [],
-            allow_fixture=allow_fixture)
+            allow_fixture=allow_fixture, target_tiers=target_tiers, root=root)
 
     def apply(self, plan, *, recorded_at=RECORDED_AT):
         return bridge.apply_plan(plan, events_path=self.events_path,
@@ -542,6 +544,120 @@ def test_tampered_existing_event_for_the_same_key_conflicts(rig):
     assert decision["reason_code"] == "EVENT_KEY_CONFLICT"
 
 
+
+# ---------------------------------------------------------------------------
+# Producer-side tier gate: never append an event every loader would refuse
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("tiers,outcome,code", [
+    ({"theme:hbm_packaging": "micro_theme"}, "APPEND", "GRAPH_MEMBERSHIP_USE_GRANTED"),
+    ({"theme:hbm_packaging": "sub_theme"}, "APPEND", "GRAPH_MEMBERSHIP_USE_GRANTED"),
+    ({"theme:hbm_packaging": "theme"}, "REFUSED", "ACTIVITY_TARGET_TIER_NOT_ADMITTED"),
+    ({"theme:hbm_packaging": "macro_category"}, "REFUSED",
+     "ACTIVITY_TARGET_TIER_NOT_ADMITTED"),
+    ({}, "REFUSED", "ACTIVITY_TARGET_TIER_NOT_ADMITTED"),
+], ids=["micro_theme", "sub_theme", "theme", "macro_category", "unknown_node"])
+def test_bridge_tier_gate(rig, tiers, outcome, code):
+    [decision] = rig.plan(target_tiers=tiers)
+    assert (decision["outcome"], decision["reason_code"]) == (outcome, code)
+    [lazy] = rig.plan(target_tiers=lambda: tiers)
+    assert (lazy["outcome"], lazy["reason_code"]) == (outcome, code)
+
+
+def test_bridge_tier_gate_unreadable_taxonomy_refuses_the_run(rig):
+    def broken():
+        raise OSError("crosswalk unreadable")
+
+    with pytest.raises(bridge.BridgeRefusal) as exc:
+        rig.plan(target_tiers=broken)
+    assert exc.value.code == "ACTIVITY_TARGET_TAXONOMY_UNREADABLE"
+
+
+def test_bridge_real_crosswalk_admits_the_c01_micro_theme_target(rig):
+    tiers = bridge.activity_target_tiers_from_crosswalk_path(
+        ROOT / bridge.DEFAULT_CROSSWALK_PATH)
+    assert tiers["theme:hbm_packaging"] == "micro_theme"
+    [decision] = rig.plan(target_tiers=tiers)
+    assert decision["outcome"] == "APPEND"
+
+
+# ---------------------------------------------------------------------------
+# Reruns are idempotent across recorded_at; content differences conflict
+# ---------------------------------------------------------------------------
+
+LATER_RECORDED_AT = "2026-10-22T09:30:00Z"
+
+
+def test_rerun_differing_only_in_recorded_at_is_already_bridged(rig):
+    [first] = rig.plan()
+    rig.apply([first])
+    events_before = rig.events_path.read_bytes()
+    receipts_before = rig.receipts_path.read_bytes()
+    [stored] = bridge.read_events(rig.events_path)
+    [rerun] = rig.plan(existing=[stored], recorded_at=LATER_RECORDED_AT)
+    assert (rerun["outcome"], rerun["reason_code"]) == ("SKIPPED", "ALREADY_BRIDGED")
+    # The decision carries the event already on file, not a re-stamped twin.
+    assert rerun["event"] == stored
+    assert rerun["event"]["clocks"]["recorded_at"] == RECORDED_AT
+    assert rig.apply([rerun], recorded_at=LATER_RECORDED_AT) == {
+        "appended_events": 0, "receipt_rows": 0, "skipped": 1}
+    assert rig.events_path.read_bytes() == events_before
+    assert rig.receipts_path.read_bytes() == receipts_before
+
+
+def test_rerun_with_a_content_difference_at_a_new_recorded_at_conflicts(rig):
+    [first] = rig.plan()
+    rig.apply([first])
+    [stored] = bridge.read_events(rig.events_path)
+    changed = copy.deepcopy(stored)
+    changed["role"] = "platform_owner"
+    changed["clocks"]["recorded_at"] = LATER_RECORDED_AT
+    changed["event_sha256"] = materialize.activity_history_event_digest(changed)
+    changed["event_id"] = "actevt:" + changed["event_sha256"][:24]
+    [decision] = rig.plan(existing=[changed], recorded_at=LATER_RECORDED_AT)
+    assert (decision["outcome"], decision["reason_code"]) == ("REFUSED",
+                                                              "EVENT_KEY_CONFLICT")
+
+
+def test_existing_event_with_a_stale_digest_conflicts(rig):
+    """recorded_at edited in place without re-digesting: the recorded_at-neutral
+    content matches, but the event no longer hashes to its own sha — a conflict, never
+    a silent skip."""
+    [first] = rig.plan()
+    rig.apply([first])
+    [stored] = bridge.read_events(rig.events_path)
+    stale = copy.deepcopy(stored)
+    stale["clocks"]["recorded_at"] = LATER_RECORDED_AT
+    [decision] = rig.plan(existing=[stale], recorded_at=LATER_RECORDED_AT)
+    assert (decision["outcome"], decision["reason_code"]) == ("REFUSED",
+                                                              "EVENT_KEY_CONFLICT")
+
+
+# ---------------------------------------------------------------------------
+# Ruling paths resolve against the repo root and are recorded repo-relative
+# ---------------------------------------------------------------------------
+
+def test_relative_ruling_path_resolves_against_root_not_cwd(rig, tmp_path, monkeypatch):
+    rel = "research/theme_graph/fixture_ruling/C01_GRAPH_MEMBERSHIP_USE_RULING.json"
+    placed = tmp_path / rel
+    placed.parent.mkdir(parents=True)
+    placed.write_bytes(rig.ruling.read_bytes())
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+    [decision] = rig.plan(ruling_paths=[rel], root=tmp_path)
+    assert decision["outcome"] == "APPEND"
+    assert decision["use_ruling_path"] == rel
+    # An absolute path under the root is recorded repo-relative too.
+    [absolute] = rig.plan(ruling_paths=[str(placed)], root=tmp_path)
+    assert absolute["outcome"] == "APPEND"
+    assert absolute["use_ruling_path"] == rel
+    rig.apply([absolute])
+    [row] = bridge.read_bridge_receipts(rig.receipts_path)
+    assert row["use_ruling_path"] == rel
+    assert row["use_ruling_sha256"] == hashlib.sha256(placed.read_bytes()).hexdigest()
+
+
 def test_flip_from_held_to_append_needs_only_files(tmp_path, proposed, original_ruling,
                                                    original_ruling_sha):
     receipts_dir, terminal = _ratified(tmp_path, proposed)
@@ -737,6 +853,10 @@ def test_cli_flip_end_to_end_at_the_default_glob(tmp_path, proposed, monkeypatch
     ruling_dir.mkdir(parents=True)
     (ruling_dir / "C01_GRAPH_MEMBERSHIP_USE_RULING.json").write_text(
         json.dumps(revision, sort_keys=True), encoding="utf-8")
+    # The CLI's tier gate reads the node taxonomy from the crosswalk under its root.
+    (glob_root / "config").mkdir()
+    (glob_root / "config/theme_crosswalk.yml").write_bytes(
+        (ROOT / "config/theme_crosswalk.yml").read_bytes())
     monkeypatch.setattr(cli, "ROOT", glob_root)
     rc = cli.main(["--recorded-at", RECORDED_AT, "--ledger", str(ledger),
                    "--receipts-dir", str(receipts_dir),
@@ -748,6 +868,10 @@ def test_cli_flip_end_to_end_at_the_default_glob(tmp_path, proposed, monkeypatch
     assert printed["counts"] == {"appended_events": 1, "receipt_rows": 1, "skipped": 0}
     [stored] = bridge.read_events(tmp_path / "events.jsonl")
     assert stored["use_qualification"] == {"graph_membership_use": "GRANTED"}
+    # The receipt row names the ruling repo-relative, never this host's absolute path.
+    [row] = bridge.read_bridge_receipts(tmp_path / "receipts.jsonl")
+    assert row["use_ruling_path"] == (
+        "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json")
 
 
 def test_cli_top_level_refusal_exits_2_via_subprocess(tmp_path):

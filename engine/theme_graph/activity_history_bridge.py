@@ -37,17 +37,28 @@ A HELD decision carries the would-be event it evaluated — that is the event th
 refused — for audit only; ``apply_plan`` appends ONLY ``APPEND`` events, so a HELD
 event is never written to the events file, and the HELD bridge receipt records
 ``event_id``/``event_sha256`` as null because nothing was emitted.
+
+Load-side binding (``load_bound_activity_events``): the events file is belief input
+only through this module. BOTH loaders (``scripts/build_theme_graph.py`` and
+``scripts/build_thematic_state.py``) read it through that one helper, which keeps an
+event only when the bridge's own receipt row, the seat's curation receipt BYTES and a
+real Chairman ruling file all bind it, and its target is a ``micro_theme`` or
+``sub_theme`` node. Anything else refuses the WHOLE ledger with a named code; the
+fold (``materialize.apply_activity_membership_events``) stays pure and unchanged.
 """
 from __future__ import annotations
 
 import copy
 import hashlib
 import json
+from collections.abc import Mapping
 from datetime import timezone
 from functools import lru_cache
 from pathlib import Path
 
-from engine.theme_graph import materialize, probation
+import yaml
+
+from engine.theme_graph import identity, materialize, probation
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -58,6 +69,21 @@ DEFAULT_EVENTS_PATH = "data/theme_graph/probation/activity_history_events.jsonl"
 DEFAULT_BRIDGE_RECEIPTS_PATH = (
     "data/theme_graph/probation/activity_history_bridge_receipts.jsonl")
 DEFAULT_USE_RULING_GLOB = "research/theme_graph/*/*GRAPH_MEMBERSHIP_USE_RULING*.json"
+DEFAULT_CROSSWALK_PATH = "config/theme_crosswalk.yml"
+# An activity membership names a curated micro/sub theme. A main ``theme`` target is
+# refused: it would leak into the market-ontology exposure map and the ontology's
+# theme-level membership roll-up, which read MEMBER_OF on main themes as THEIR roster.
+ACTIVITY_TARGET_TIERS = frozenset({"micro_theme", "sub_theme"})
+# Every refusal ``load_bound_activity_events`` can raise (BridgeRefusal.code).
+ACTIVITY_BINDING_CODES = (
+    "ACTIVITY_EVENTS_FILE_INVALID",
+    "BRIDGE_RECEIPTS_FILE_INVALID",
+    "ACTIVITY_EVENT_UNBOUND",
+    "ACTIVITY_CURATION_RECEIPT_MISMATCH",
+    "ACTIVITY_USE_RULING_UNBOUND",
+    "ACTIVITY_TARGET_TIER_NOT_ADMITTED",
+    "ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+)
 
 _SOURCE_PURPOSE_RULING_SCHEMA = "company_intelligence.source_purpose_ruling/v1"
 _FIXTURE_RULING_PREFIX = "FIXTURE"
@@ -173,6 +199,24 @@ def _resolve_repo_path(value) -> Path | None:
     return path if path.is_absolute() else ROOT / path
 
 
+def _ruling_file(raw_path, root=None) -> Path:
+    """A ruling path as given: absolute verbatim, relative against the REPO root (never
+    the process cwd)."""
+    path = Path(str(raw_path))
+    return path if path.is_absolute() else Path(root or ROOT) / path
+
+
+def repo_relative_ruling_path(raw_path, root=None) -> str:
+    """The ruling path a bridge receipt row records: repo-relative POSIX when the file
+    lies under ``root`` (default: the repo root), else the path exactly as given."""
+    base = Path(root or ROOT)
+    candidate = _ruling_file(raw_path, base)
+    try:
+        return candidate.resolve().relative_to(base.resolve()).as_posix()
+    except ValueError:
+        return str(raw_path) if Path(str(raw_path)).is_absolute() else str(candidate)
+
+
 def _ruling_refusal(path, code: str, detail: str) -> dict:
     return {"path": None if path is None else str(path), "code": code, "detail": detail}
 
@@ -282,7 +326,7 @@ def _ruling_revision_failure(path: str, ruling: dict, proposed_row: dict, *,
 
 
 def qualify_graph_membership_use(proposed_row: dict, ruling_paths, *,
-                                 allow_fixture: bool = False) -> dict:
+                                 allow_fixture: bool = False, root=None) -> dict:
     """Qualify graph-membership use against Chairman ruling REVISION files.
 
     NEVER raises for a bad ruling: every failing file is recorded as one refusal and
@@ -290,13 +334,17 @@ def qualify_graph_membership_use(proposed_row: dict, ruling_paths, *,
     Zero qualifying files -> NOT_GRANTED. More than one -> NOT_GRANTED plus
     USE_RULING_AMBIGUOUS (none is ever picked). Exactly one -> GRANTED. No paths at
     all -> NOT_GRANTED with USE_RULING_ABSENT.
+
+    A relative ruling path resolves against ``root`` (default: the repo root), never
+    the process cwd, and the qualified path is recorded repo-relative when the file
+    lies under that root (``repo_relative_ruling_path``).
     """
     refusals: list[dict] = []
     qualified: list[tuple[str, dict, str]] = []
     for raw_path in ruling_paths or []:
-        path = str(raw_path)
+        path = repo_relative_ruling_path(raw_path, root)
         try:
-            raw = Path(path).read_bytes()
+            raw = _ruling_file(raw_path, root).read_bytes()
             ruling = json.loads(raw.decode("utf-8"))
         except Exception as exc:  # noqa: BLE001 — an unreadable ruling is recorded
             refusals.append(_ruling_refusal(path, "USE_RULING_UNREADABLE", str(exc)))
@@ -459,10 +507,32 @@ def _decision(pid, proposed_row, *, outcome, reason_code=None, use=None, event=N
     }
 
 
+def _recorded_at_neutral_digest(event: dict) -> str:
+    """The event digest with ``clocks.recorded_at`` removed: two bridge runs that differ
+    ONLY in when they ran share it; any content difference does not."""
+    body = copy.deepcopy({k: v for k, v in event.items()
+                          if k not in {"event_id", "event_sha256"}})
+    if isinstance(body.get("clocks"), dict):
+        body["clocks"].pop("recorded_at", None)
+    return materialize.activity_history_event_digest(body)
+
+
+def activity_target_tier_problem(event: dict, tiers: Mapping) -> str | None:
+    """None when the event's target is a ``micro_theme``/``sub_theme`` node in ``tiers``
+    (node_id -> tier); otherwise why not. Pure."""
+    target = ((event or {}).get("endpoints") or {}).get("target_node_id")
+    tier = tiers.get(target) if isinstance(target, str) else None
+    if tier in ACTIVITY_TARGET_TIERS:
+        return None
+    return (f"target {target!r} has tier {tier!r}; an activity membership target must "
+            f"be one of {sorted(ACTIVITY_TARGET_TIERS)}")
+
+
 def _decide_ratified(pid, proposed, terminal, *, receipts_dir, ruling_paths,
-                     recorded_at, existing_events, allow_fixture) -> dict:
+                     recorded_at, existing_events, allow_fixture, target_tiers=None,
+                     root=None) -> dict:
     use = qualify_graph_membership_use(proposed, ruling_paths,
-                                       allow_fixture=allow_fixture)
+                                       allow_fixture=allow_fixture, root=root)
     def refused(code, fold_verdict=None):
         return _decision(pid, proposed, outcome="REFUSED", reason_code=code,
                          use=use, event=None, fold_verdict=fold_verdict)
@@ -471,7 +541,16 @@ def _decide_ratified(pid, proposed, terminal, *, receipts_dir, ruling_paths,
         event = build_append_event(proposed, terminal, use, recorded_at=recorded_at)
     except BridgeRefusal as exc:
         return refused(exc.code)
+    # The producer-side twin of the load-side tier gate: never append an event every
+    # loader would refuse (and that would refuse the whole ledger with it).
+    if target_tiers is not None and activity_target_tier_problem(event, target_tiers()):
+        return refused("ACTIVITY_TARGET_TIER_NOT_ADMITTED")
     # Idempotency, keyed (proposal_id, graph_membership_use), against the events file.
+    # A rerun that differs ONLY in ``clocks.recorded_at`` is the same bridge decision
+    # (SKIPPED, carrying the event already on file); any other difference — curation
+    # receipt, target, role, ruling clock — or an existing event whose bytes no longer
+    # hash to its own ``event_sha256`` is EVENT_KEY_CONFLICT.
+    neutral = _recorded_at_neutral_digest(event)
     for existing in existing_events:
         if not isinstance(existing, dict) or existing.get("action") != "APPEND":
             continue
@@ -479,9 +558,12 @@ def _decide_ratified(pid, proposed, terminal, *, receipts_dir, ruling_paths,
         qualified = existing.get("use_qualification") or {}
         if (lineage.get("proposal_id") == pid
                 and qualified.get("graph_membership_use") == use["graph_membership_use"]):
-            if existing.get("event_sha256") == event["event_sha256"]:
+            if (existing.get("event_sha256")
+                    == materialize.activity_history_event_digest(existing)
+                    and _recorded_at_neutral_digest(existing) == neutral):
                 return _decision(pid, proposed, outcome="SKIPPED",
-                                 reason_code="ALREADY_BRIDGED", use=use, event=event)
+                                 reason_code="ALREADY_BRIDGED", use=use,
+                                 event=copy.deepcopy(existing))
             return refused("EVENT_KEY_CONFLICT")
     try:
         check_curation_receipt(proposed, terminal,
@@ -515,8 +597,30 @@ def _decide_ratified(pid, proposed, terminal, *, receipts_dir, ruling_paths,
                      use=use, event=event, fold_verdict=verdict)
 
 
+def _resolve_target_tiers(target_tiers) -> dict:
+    """``target_tiers`` as a node_id -> tier dict: a Mapping verbatim, or a zero-argument
+    callable evaluated now. Any failure is ACTIVITY_TARGET_TAXONOMY_UNREADABLE."""
+    if isinstance(target_tiers, Mapping):
+        return dict(target_tiers)
+    if not callable(target_tiers):
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            "no node tier map was supplied")
+    try:
+        resolved = target_tiers()
+    except BridgeRefusal:
+        raise
+    except Exception as exc:  # noqa: BLE001 — an unreadable taxonomy is a refusal
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            f"{type(exc).__name__}: {exc}") from None
+    if not isinstance(resolved, Mapping):
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            "the node tier map is not a mapping")
+    return dict(resolved)
+
+
 def plan_bridge(ledger_rows: list[dict], *, receipts_dir, ruling_paths, recorded_at: str,
-                existing_events: list[dict], allow_fixture: bool = False) -> list[dict]:
+                existing_events: list[dict], allow_fixture: bool = False,
+                target_tiers=None, root=None) -> list[dict]:
     """One bridge decision per ``proposal_id``, sorted by ``proposal_id``.
 
     Outcomes: SKIPPED (awaiting curation, rejected, already bridged), HELD (ratified
@@ -524,7 +628,19 @@ def plan_bridge(ledger_rows: list[dict], *, receipts_dir, ruling_paths, recorded
     accepts the event as current belief), REFUSED (a typed code; the caller writes
     nothing for that run). Reads only the curation receipt files under
     ``receipts_dir``; the ledger and the events file are caller-supplied.
+
+    ``target_tiers`` (node_id -> tier, or a zero-argument callable returning it, read
+    at most once) arms the tier gate: a ratified proposal whose target is not a
+    ``micro_theme``/``sub_theme`` is REFUSED ``ACTIVITY_TARGET_TIER_NOT_ADMITTED``.
+    ``root`` is the repo root relative ruling paths resolve and are recorded against.
     """
+    memo: dict[str, dict] = {}
+
+    def tiers() -> dict:
+        if "tiers" not in memo:
+            memo["tiers"] = _resolve_target_tiers(target_tiers)
+        return memo["tiers"]
+
     rows_by_pid: dict[str, list[dict]] = {}
     for row in ledger_rows:
         rows_by_pid.setdefault(str(row.get("proposal_id")), []).append(row)
@@ -550,7 +666,9 @@ def plan_bridge(ledger_rows: list[dict], *, receipts_dir, ruling_paths, recorded
                 _decide_ratified(pid, proposed, terminals[0], receipts_dir=receipts_dir,
                                  ruling_paths=ruling_paths, recorded_at=recorded_at,
                                  existing_events=existing_events,
-                                 allow_fixture=allow_fixture))
+                                 allow_fixture=allow_fixture,
+                                 target_tiers=None if target_tiers is None else tiers,
+                                 root=root))
     return decisions
 
 
@@ -727,3 +845,205 @@ def apply_plan(plan: list[dict], *, events_path, receipts_path, recorded_at: str
     assert appended == counts["appended_events"], "event write must match the count"
     assert written == counts["receipt_rows"], "receipt write must match the count"
     return counts
+
+
+# ---------------------------------------------------------------------------
+# Load-side binding: the ONE helper both loaders read the events file through
+# ---------------------------------------------------------------------------
+
+def activity_target_tiers_from_crosswalk(doc) -> dict[str, str]:
+    """node_id -> tier for every theme node the crosswalk declares: the hierarchy's
+    ``macro_category``/``sub_theme``/``micro_theme`` declarations, plus ``theme`` for
+    each main theme row (``theme_node_id`` or ``theme:<id>``, exactly as the graph
+    builder mints it). Pure; an invalid document is ACTIVITY_TARGET_TAXONOMY_UNREADABLE."""
+    if not isinstance(doc, dict):
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            "the crosswalk document is not a mapping")
+    try:
+        validated = materialize.validate_theme_hierarchy(doc)
+    except materialize.ThemeHierarchyError as exc:
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            f"hierarchy: {exc}") from None
+    tiers: dict[str, str] = {}
+    for entry in (validated["categories"] + validated.get("sub_themes", [])
+                  + validated["micro_themes"]):
+        tiers[entry["id"]] = entry["tier"]
+    for row in doc.get("themes") or []:
+        if not isinstance(row, dict):
+            continue
+        theme_id = materialize._text(row.get("id"))
+        if not theme_id:
+            continue
+        node_id = materialize._text(row.get("theme_node_id")) or identity.theme_node_id(theme_id)
+        tiers.setdefault(node_id, "theme")
+    return tiers
+
+
+def activity_target_tiers_from_crosswalk_path(path) -> dict[str, str]:
+    """``activity_target_tiers_from_crosswalk`` over the YAML file at ``path``."""
+    try:
+        doc = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError) as exc:
+        raise BridgeRefusal("ACTIVITY_TARGET_TAXONOMY_UNREADABLE",
+                            f"{path}: {type(exc).__name__}: {exc}") from None
+    return activity_target_tiers_from_crosswalk(doc)
+
+
+def _ruling_files_by_sha(ruling_root) -> dict[str, list[Path]]:
+    """Content address -> resolved files for every ruling revision at the default glob
+    under ``ruling_root``. An unreadable file simply binds nothing."""
+    out: dict[str, list[Path]] = {}
+    for path in sorted(Path(ruling_root).glob(DEFAULT_USE_RULING_GLOB)):
+        try:
+            raw = path.read_bytes()
+        except OSError:
+            continue
+        out.setdefault(hashlib.sha256(raw).hexdigest(), []).append(path.resolve())
+    return out
+
+
+def _use_ruling_binding_problem(row: dict, rulings: dict[str, list[Path]],
+                                ruling_root) -> str | None:
+    """None when the receipt row's ruling is a real ruling file; else why not.
+
+    The binding is CONTENT-addressed: ``use_ruling_sha256`` must be the sha256 of a
+    file at ``DEFAULT_USE_RULING_GLOB``. A repo-relative ``use_ruling_path`` must then
+    resolve to that same file. An absolute path (rows written before paths were
+    recorded repo-relative) is never trusted as a location and never rewritten: it
+    binds through the sha alone."""
+    sha = row.get("use_ruling_sha256")
+    if not isinstance(sha, str) or sha not in rulings:
+        return (f"use_ruling_sha256 {sha!r} is the content of no ruling file at "
+                f"{DEFAULT_USE_RULING_GLOB}")
+    recorded = row.get("use_ruling_path")
+    if not isinstance(recorded, str) or not recorded:
+        return "use_ruling_path is empty"
+    if Path(recorded).is_absolute():
+        return None
+    if (Path(ruling_root) / recorded).resolve() not in rulings[sha]:
+        return (f"use_ruling_path {recorded!r} does not resolve to the ruling file "
+                f"whose sha256 is {sha[:12]}…")
+    return None
+
+
+def _event_label(lineno: int, event: dict) -> str:
+    return f"line {lineno} ({event.get('event_id')!r})"
+
+
+def load_bound_activity_events(*, events_path, bridge_receipts_path, receipts_dir,
+                               ruling_root, target_tiers) -> dict | None:
+    """Read the activity history events file, keeping it ONLY if every event is bound.
+
+    Returns None when the events file is absent, else
+    ``{"events": [...], "events_sha256": <sha256 of the file bytes>}``. Each APPEND or
+    CORRECT (indeed every) event must be bound, in this order:
+
+    (a) ``ACTIVITY_EVENT_UNBOUND`` — a bridge receipt row whose outcome equals the
+        event's action carries the identical ``event_sha256`` and ``event_id``, the
+        event's ``proposal_id`` and its ``graph_membership_use``;
+    (b) ``ACTIVITY_CURATION_RECEIPT_MISMATCH`` — the sha256 of the bytes at
+        ``curation_receipt_path(receipts_dir, proposal_id)`` equals the event's
+        ``curation.receipt_sha256`` and such a row's ``curation_receipt_sha256``;
+    (c) ``ACTIVITY_USE_RULING_UNBOUND`` — such a row's ``use_ruling_sha256`` is a real
+        ruling file (``_use_ruling_binding_problem``);
+    (d) ``ACTIVITY_TARGET_TIER_NOT_ADMITTED`` — the target is a ``micro_theme`` or
+        ``sub_theme`` in ``target_tiers`` (node_id -> tier, or a zero-argument
+        callable returning it; read only when the file holds an event).
+
+    Any failure raises ``BridgeRefusal`` and refuses the WHOLE ledger, never one event:
+    a partial history must not read as a shorter honest one, dropping an APPEND
+    orphans the CORRECT/REMOVE events that supersede it, an unbound line is a write
+    that bypassed the bridge (a forged REMOVE is a suppression), and both loaders must
+    agree on the same history. The events' own validity and digests stay the fold's
+    job (``materialize.apply_activity_membership_events``, pure and unchanged).
+    Malformed files: ``ACTIVITY_EVENTS_FILE_INVALID`` / ``BRIDGE_RECEIPTS_FILE_INVALID``;
+    an unreadable node taxonomy: ``ACTIVITY_TARGET_TAXONOMY_UNREADABLE``.
+    """
+    events_path = Path(events_path)
+    try:
+        raw = events_path.read_bytes()
+    except FileNotFoundError:
+        return None
+    except OSError as exc:
+        raise BridgeRefusal("ACTIVITY_EVENTS_FILE_INVALID",
+                            f"{type(exc).__name__}: {exc}") from None
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise BridgeRefusal("ACTIVITY_EVENTS_FILE_INVALID", f"not UTF-8: {exc}") from None
+    numbered: list[tuple[int, dict]] = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except ValueError as exc:
+            raise BridgeRefusal("ACTIVITY_EVENTS_FILE_INVALID",
+                                f"line {lineno}: {exc}") from None
+        if not isinstance(event, dict):
+            raise BridgeRefusal("ACTIVITY_EVENTS_FILE_INVALID",
+                                f"line {lineno}: not a JSON object")
+        numbered.append((lineno, event))
+    result = {"events": [event for _, event in numbered],
+              "events_sha256": hashlib.sha256(raw).hexdigest()}
+    if not numbered:
+        return result
+
+    try:
+        receipts = read_bridge_receipts(bridge_receipts_path)
+    except (OSError, UnicodeDecodeError) as exc:
+        raise BridgeRefusal("BRIDGE_RECEIPTS_FILE_INVALID",
+                            f"{type(exc).__name__}: {exc}") from None
+    for index, row in enumerate(receipts, start=1):
+        problems = _bridge_receipt_row_problems(row)
+        if problems:
+            raise BridgeRefusal("BRIDGE_RECEIPTS_FILE_INVALID",
+                                f"row {index}: {problems[0]}")
+    # The taxonomy and the ruling files are read lazily, so the reported code is the
+    # FIRST failing check in the (a)-(d) order above, never an incidental read.
+    tiers: dict | None = None
+    rulings: dict[str, list[Path]] | None = None
+
+    for lineno, event in numbered:
+        label = _event_label(lineno, event)
+        action = event.get("action")
+        event_sha = event.get("event_sha256")
+        pid = (event.get("evidence_lineage") or {}).get("proposal_id")
+        use = (event.get("use_qualification") or {}).get("graph_membership_use")
+        candidates = [
+            row for row in receipts
+            if isinstance(event_sha, str) and row["outcome"] == action
+            and row["event_sha256"] == event_sha
+            and row["event_id"] == event.get("event_id")
+            and row["proposal_id"] == pid and row["graph_membership_use"] == use]
+        if (not candidates or not isinstance(pid, str) or not pid
+                or "/" in pid or "\\" in pid):
+            raise BridgeRefusal(
+                "ACTIVITY_EVENT_UNBOUND",
+                f"{label}: no bridge receipt row with outcome {action!r} carries "
+                f"event_sha256 {event_sha!r} for proposal {pid!r}; activity history "
+                f"is written only by scripts/bridge_activity_history.py")
+        recorded_curation = (event.get("curation") or {}).get("receipt_sha256")
+        on_disk = hashlib.sha256(read_curation_receipt_bytes(receipts_dir, pid)).hexdigest()
+        candidates = [row for row in candidates
+                      if row["curation_receipt_sha256"] == recorded_curation]
+        if recorded_curation != on_disk or not candidates:
+            raise BridgeRefusal(
+                "ACTIVITY_CURATION_RECEIPT_MISMATCH",
+                f"{label}: curation.receipt_sha256 {str(recorded_curation)[:12]}… does "
+                f"not match the bytes at {curation_receipt_path(receipts_dir, pid)} "
+                f"({on_disk[:12]}…) and its bridge receipt row")
+        if rulings is None:
+            rulings = _ruling_files_by_sha(ruling_root)
+        ruling_problems = [_use_ruling_binding_problem(row, rulings, ruling_root)
+                           for row in candidates]
+        if all(problem is not None for problem in ruling_problems):
+            raise BridgeRefusal("ACTIVITY_USE_RULING_UNBOUND",
+                                f"{label}: {ruling_problems[0]}")
+        if tiers is None:
+            tiers = _resolve_target_tiers(target_tiers)
+        tier_problem = activity_target_tier_problem(event, tiers)
+        if tier_problem:
+            raise BridgeRefusal("ACTIVITY_TARGET_TIER_NOT_ADMITTED",
+                                f"{label}: {tier_problem}")
+    return result
