@@ -60,9 +60,39 @@ import sys
 # CJK unified ideographs + extension A, CJK punctuation, fullwidth forms.
 _CJK = re.compile(r"[一-鿿㐀-䶿　-〿＀-￯]")
 
-# A title attribute and its quoted value (either quote style). [^"']* deliberately
-# spans newlines so a wrapped attribute is still caught.
-_TITLE = re.compile(r"title\s*=\s*(\"[^\"]*\"|'[^']*')")
+# Recognize attributes within an HTML start tag, not arbitrary source assignments
+# such as `var title = '<div>…</div>'`. Quoted values may contain `>` or the other
+# quote character. Scan all source, including HTML literals inside JavaScript:
+# skipping script bodies would hide real generated title attributes.
+# Jinja expressions/conditions may contain comparison operators before an attr.
+_START_TAG = re.compile(
+    r'''<[A-Za-z][A-Za-z0-9:._-]*(?P<attrs>(?:\{\{.*?\}\}|\{%.*?%\}|[^<>"']|"[^"]*"|'[^']*')*)>''',
+    re.S,
+)
+_ATTRIBUTE = re.compile(
+    r'''(?P<name>[^\s=/<>"']+)(?:\s*=\s*(?P<value>\\?"[^"]*"|\\?'[^']*'|[^\s<>"'=]+))?'''
+)
+
+
+def _title_attributes(src: str):
+    """Yield (source offset, value) for native title attributes in static tags.
+
+    Backslash-quoted delimiters also occur in generated HTML string literals;
+    unwrap those delimiters without evaluating JavaScript or Jinja expressions.
+    """
+    for tag in _START_TAG.finditer(src):
+        for attr in _ATTRIBUTE.finditer(tag.group("attrs")):
+            raw = attr.group("value")
+            if attr.group("name").lower() != "title" or raw is None:
+                continue
+            if raw.startswith(('\\"', "\\'")):
+                quote = raw[1]
+                val = raw[2:-2] if raw.endswith("\\" + quote) else raw[2:-1]
+            elif raw.startswith(('"', "'")):
+                val = raw[1:-1]
+            else:
+                val = raw
+            yield tag.start("attrs") + attr.start("name"), val
 
 # t()/td() interpolation markers (dual-span renderers — must never run inside an
 # attribute or a <title> element).
@@ -110,8 +140,7 @@ def find_violations(paths: list[str]):
             continue
 
         # -- title= ATTRIBUTE rules (all scanned files) --
-        for m in _TITLE.finditer(src):
-            val = m.group(1)[1:-1]
+        for offset, val in _title_attributes(src):
             reasons = []
             if _CJK.search(val):
                 reasons.append("CJK in title")
@@ -120,7 +149,7 @@ def find_violations(paths: list[str]):
             if path.endswith(".j2") and _ZH_VAR.search(val):
                 reasons.append("zh variable in title")
             if reasons:
-                line = src.count("\n", 0, m.start()) + 1
+                line = src.count("\n", 0, offset) + 1
                 out.append((path, line, " + ".join(reasons), val[:90]))
 
         # -- <title> ELEMENT rules (RCDATA) --
@@ -177,6 +206,53 @@ def _self_test() -> int:
                 '<head>\n<title>\nBoard — <span class="l-en">X</span>'
                 '<span class="l-zh">宏观</span></title>\n</head>\n',
             ),
+            "opposite quote in attribute": w(
+                "bad_apostrophe.html", '<span title="Issuer\'s 中文">x</span>\n'
+            ),
+            "uppercase wrapped attribute": w(
+                "bad_wrapped.html", "<span\n TITLE =\n '中文'>x</span>\n"
+            ),
+            "unquoted attribute": w(
+                "bad_unquoted.html", "<span title=中文>x</span>\n"
+            ),
+            "greater-than inside another attribute": w(
+                "bad_gt.html", '<span data-op=">" title="中文">x</span>\n'
+            ),
+            "conditional Jinja attributes": w(
+                "bad_conditional.j2",
+                '<span{% if active %} title="{{ value.zh }}"{% endif %}>x</span>\n',
+            ),
+            "comparison inside Jinja attributes": w(
+                "bad_comparison.j2",
+                '<span{% if value > 0 %} class="active"{% endif %} title="{{ value.zh }}">x</span>\n',
+            ),
+            "real title beside data-title": w(
+                "bad_beside_data_title.html",
+                '<span data-title="hint" title="中文">x</span>\n',
+            ),
+            "generated HTML inside JavaScript": w(
+                "bad_generated.html",
+                '<script>var title = "中文"; const html = \'<a title="中文">x</a>\';</script>\n',
+            ),
+            "escaped generated HTML inside JavaScript": w(
+                "bad_generated_escaped.html",
+                '<script>const html = "<a title=\\"中文\\">x</a>";</script>\n',
+            ),
+            "single-quoted generated HTML inside JavaScript": w(
+                "bad_generated_single.html",
+                '<script>const html = "<a title=\'中文\'>x</a>";</script>\n',
+            ),
+            "markup inside a real attribute": w(
+                "bad_markup_attr.html",
+                '<span title="<span class=\'l-zh\'>中文</span>">x</span>\n',
+            ),
+            "retained International bilingual tooltip": w(
+                "bad_intl_tip.html",
+                '<span title="Evidence tier not yet defined · 证据层级尚未定义">Abstain</span>\n',
+            ),
+            "retained Morning Edition title": w(
+                "bad_am_title.j2", "<title>{{ t('Morning Edition', '早间版') }} — {{ as_of }}</title>\n"
+            ),
         }
         good = {
             "plain CJK <title>": w(
@@ -196,12 +272,28 @@ def _self_test() -> int:
             "data-tip attributes": w(
                 "good_tip.j2", '<span data-tip-en="hint" data-tip-zh="提示">x</span>\n'
             ),
+            # Exact retained dashboard.html.j2:9796 / macro.html:2831 preimage.
+            "retained Jinja JavaScript title variable": w(
+                "good_dashboard.j2",
+                '      var title = \'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>\';\n',
+            ),
+            "retained generated JavaScript title variable": w(
+                "good_macro.html",
+                '<script>\n      var title = \'<div class="rr-scoreboard-title"><span class="l-en">Track record</span><span class="l-zh">历史评分</span></div>\';\n</script>\n',
+            ),
+            "other attribute contains title text": w(
+                "good_other_attr.html", '<span data-note="title=\'中文\'">x</span>\n'
+            ),
+            "data-title is not native title": w(
+                "good_data_title.html", '<span data-title="中文">x</span>\n'
+            ),
         }
 
         failures = []
         for label, p in bad.items():
-            if not find_violations([p]):
-                failures.append(f"known-bad NOT flagged: {label}")
+            hits = find_violations([p])
+            if len(hits) != 1:
+                failures.append(f"known-bad expected one hit: {label} -> {hits}")
         for label, p in good.items():
             hits = find_violations([p])
             if hits:
