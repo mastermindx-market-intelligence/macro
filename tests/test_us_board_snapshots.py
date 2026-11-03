@@ -116,6 +116,32 @@ def test_a_symlinked_parts_dir_is_refused(tmp_path):
         ubs.read_lines(b)
 
 
+# Without the next three guards these layouts raise OSError, and
+# engine/prophet_board_since.py catches OSError around its ledger reads and
+# returns [], so a broken layout would read as an empty board history.
+
+
+def test_a_parts_path_that_is_a_file_is_refused(tmp_path):
+    b = _layout(tmp_path, _row("A") + "\n")
+    (b.parent / ubs.PARTS_DIRNAME).write_text(_row("B") + "\n")
+    with pytest.raises(ubs.SnapshotLedgerError, match="not a directory"):
+        ubs.read_lines(b)
+
+
+def test_a_part_that_is_a_directory_is_refused(tmp_path):
+    b = _layout(tmp_path, _row("A") + "\n", _row("B") + "\n")
+    (b.parent / ubs.PARTS_DIRNAME / "part-000002.jsonl").mkdir()
+    with pytest.raises(ubs.SnapshotLedgerError, match="regular file"):
+        ubs.read_lines(b)
+
+
+def test_a_base_that_is_a_directory_is_refused(tmp_path):
+    b = tmp_path / "us_board_ledger" / "snapshots.jsonl"
+    b.mkdir(parents=True)
+    with pytest.raises(ubs.SnapshotLedgerError, match="base is not a file"):
+        ubs.read_lines(b)
+
+
 def test_a_torn_line_before_a_later_file_is_refused(tmp_path):
     b = _layout(tmp_path, _row("A") + "\n" + '{"as_of":"tor', _row("B") + "\n")
     with pytest.raises(ubs.SnapshotLedgerError, match="newline"):
@@ -194,6 +220,14 @@ def test_append_refuses_a_multi_line_row(tmp_path):
     with pytest.raises(ubs.SnapshotLedgerError, match="single line"):
         ubs.append_line(b, _row("B") + "\n" + _row("C"))
     assert ubs.read_lines(b) == [_row("A")]
+
+
+def test_append_refuses_a_row_with_a_carriage_return(tmp_path):
+    # iter_lines (text mode) and read_lines (splitlines) both split on "\r",
+    # so this one written row would read back as two.
+    b = _layout(tmp_path, _row("A") + "\n")
+    with pytest.raises(ubs.SnapshotLedgerError, match="single line"):
+        ubs.append_line(b, _row("B") + "\r" + _row("C"))
 
 
 def test_append_refuses_a_row_larger_than_a_part(tmp_path):
