@@ -1,0 +1,309 @@
+# RIG round 8 receipt — normalized from critic_return/*_product_regression.md (byte-exact agent returns) by the seat's rig_normalize8.py; values copied, not rewritten.
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: product_regression
+artifact_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
+review_round: 8
+supersedes:
+  artifact_sha: 78c14f7d1fb5d0b46f4dbf3cb093e9dfa6ccd86e
+  receipt: reviews/round7_78c14f7d/product_regression.yml
+reviewer:
+  identity: opus-auditor-product-regression-sic-20261021-r8
+  model: 'claude-opus-5-5 (native reviewer agent a29cc1ceb621c5201, ROUTE: review, MODE: READ_ONLY; the round-7
+    agent resumed by message, no re-spawn)'
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (42 frozen boards 0-41 incl. HTML specimen boards 23-41 + design_refs/sector-paper-20261021
+    at 213a91b9)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-7 receipt (reviews/round7_78c14f7d/<role>.yml)
+  - the round-7 verdict conditions SIC-V7-C01..C06 (restated) and the adjudications SIC-ADJ-05 / SIC-ADJ-04 / SIC-ADJ-03
+    / SIC-ADJ-02 / SIC-ADJ-01a / SIC-ADJ-01 as stated in the commission
+  first_pass_path: critic_return/first_pass_product_regression.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-11-02T02:17:13.586Z'
+  verdict: PASS_WITH_CONDITIONS
+  round7_dispositions:
+  - id: PRC-046
+    disposition: cured
+    evidence:
+    - COMPONENTS.md not in the wave-7 diff; the round-7 cure at :139-145 stands
+  - id: PRC-047
+    disposition: cured
+    evidence:
+    - engine/cycle_ontology.py, cycles_ia.md, COMPONENTS.md, tests/test_cycle_ontology.py not in the wave-7 diff;
+      1059-1063 citations and test :1061 stand
+  - id: PRC-048
+    disposition: cured
+    evidence:
+    - copy_deck.json:161 clock_ladder cites templates/sector_cycles.js:164-165 (EN) + ZH NEW; window :161-168 carries
+      'the cycle read and the timing ladder disagree' as whole words
+  - id: PRC-049
+    disposition: cured
+    evidence:
+    - tests/test_sector_paper_copy_deck.py:241-246 ZH rule intact under _present; falsifier :322-327 keeps its five
+      assertions
+  - id: PRC-050
+    disposition: cured
+    evidence:
+    - copy_deck.json:241 source 'templates/sector_cycles.js:162 (stanceHTML opens at :158)'
+    - 'test docstring :312-321: stanceHTML opens at :158, :155 is the TONE_CLS anticipatory/neutral row (true, sector_cycles.js:155),
+      window :152-158, EN clears via whole token stance in nw.stance at :157, ZH fails'
+    - cycles.html 'stanceHTML opens at :158' x6, ':155' x0
+  - id: PRC-051
+    disposition: cured
+    evidence:
+    - copy_deck.json:272 cites engine/sector_central_grader.py:498-506, ZH NEW kept
+    - grader :498 produces dir_hit_rate, :506 dir_hit_rate_definition; :331-336 is the frozen_df window predicate,
+      no longer cited
+    - cycles.html carries no grader citation (grep :332 = 0)
+  - id: PRC-052
+    disposition: upheld
+    evidence:
+    - proposal.yml outside the screenshot entries and :45 is quarantined in pass 1; verification deferred to pass
+      2 (C05)
+  findings:
+  - id: PRC-053
+    severity: minor
+    finding: 'The whole-word rule''s documentation is false. _present docstring :155-157 says ''norm keeps an identifier
+      as one word''; :297-299 says ''an identifier substring never satisfies it''; header :9-11 says the same. norm
+      (:140) maps ''_'' and ''.'' to spaces, so snake_case and dotted identifiers split into words whose parts DO
+      satisfy the check. The C02 row itself passes only this way: in window :495-509, ''hit'' and ''rate'' occur
+      only inside dir_hit_rate (:498), _DIR_HIT_RATE_DEFINITION (:506) and pos_rate (:496); the only prose line
+      (:505) carries none of the caption''s fragments. The :155 falsifier also clears on stance_zh as well as nw.stance
+      (:157). The rule rejects substrings of alphanumeric runs (window, stanceHTML, stances), not identifier substrings
+      in general.'
+    cure: 'Text only, no re-render: restate header :9-11, _present :155-158 and test_cited_sources_carry_a_fragment
+      :297-299. They should say: norm splits on every non-alphanumeric character, including ''_'' and ''.''; a Latin
+      fragment must equal a whole alphanumeric run; a substring of a run (win in window, stance in stanceHTML/stances)
+      is not a hit; a component of a snake_case or dotted identifier (hit in dir_hit_rate, stance in nw.stance /
+      stance_zh) is. Optionally pin that dir_hit_rate counts.'
+  - id: PRC-054
+    severity: minor
+    finding: 'fragments (:164-171) via en_words (:143-144) keeps 3+ letter function words (not, all, the, over,
+      and), so the EN any-fragment check can pass on a stopword. Fixture 1 is one line from that: citing :331 (window
+      :328-334) would add ''if col not in'' (:328), and ''not'' would clear the stale grader row.'
+    cure: 'Implementation-bound at the production proof: either exclude a stated stopword list from EN fragments
+      or require at least one non-stopword whole-word hit; every deck row still passes.'
+  strengths: []
+  round1_residuals: []
+  freeze_check:
+  - 'git rev-parse: HEAD 4356fa60, 213a91b9, 78c14f7d all resolve. proposal.yml:45, manifest.yml:24 and :27 = 213a91b9…;
+    manifest.yml:4 status in_review.'
+  - 'git diff --stat 78c14f7d 213a91b9, product files: copy_deck.json (10 lines, 5 rows), cycles_repair README.md,
+    capture.log, cycles.html, seven PNGs (30/31/34/35/36/39/41), boards_manifest.yml, proposal.yml, tests/test_sector_paper_copy_deck.py
+    (64 lines). The rest are RIG records (manifest.yml, verdict.yml, reviews/**) from the round-6 re-freeze and
+    round 7. No engine/, templates/, site/, stamp_doctrine.py, example_dataset.json or build_cycles.py change. git
+    diff --stat 213a91b9 HEAD touches only research/reference_integrity/** review records.'
+  inputs_opened:
+  - git rev-parse; git diff --stat 78c14f7d 213a91b9; git diff --stat 213a91b9 HEAD
+  - tests/test_sector_paper_copy_deck.py :1-30, :130-379
+  - templates/sector_cycles.js:148-166; engine/sector_central_grader.py:327-336, :494-510; engine/sector_central.py:449-457
+  - copy_deck.json rows :160-164, :175-177, :215-219 (grep), :239-242, :271-273
+  - cycles_repair/cycles.html (greps); build_cycles.py:112-132; capture.log:57-67; README.md:126-137 and table :57-61
+  - sips on boards 28-41; boards_manifest.yml png_px rows; proposal.yml :45 and screenshot entries :272-345; manifest.yml
+    :4, :24, :27
+  - PNG boards 34 and 41
+  user_tasks:
+    brief: BETTER
+    cycles: BETTER
+    dossier: EQUIVALENT
+    rotation: EQUIVALENT
+    others: UNKNOWN
+    note: 'Brief boards 0-27 and 32/33/37/38 are byte-identical. Cycles ZH Clocks lines now read in one 显示 construction
+      (boards 34/41). Fences intact on 34/41: hazard history-only with 实时一致性未证实, PRIOR cells labeled 先验, sizing
+      1.0 并非仓位大小, lead-lag 不作声明, grader 条件命中率并非胜率, fixtures labeled 示例数据, no invented signal.'
+  conditions:
+  - id: SIC-V8-C01
+    class: DEFECT
+    text: 'tests/test_sector_paper_copy_deck.py header :9-11, the _present docstring :155-158 and the test_cited_sources_carry_a_fragment
+      docstring :297-299 state all of the following: norm splits on ''_'' and ''.''; a Latin fragment must equal
+      a whole alphanumeric run; a substring of a run (win in window, stance in stanceHTML/stances) is not a hit;
+      a component of a snake_case or dotted identifier (hit in dir_hit_rate, stance in nw.stance / stance_zh) is.
+      No docstring says ''keeps an identifier as one word'' or ''an identifier substring never satisfies it''. Code
+      and boards unchanged.'
+  - id: SIC-V8-C02
+    class: NON-BINDING NOTE
+    text: At the production proof, the deck EN check either excludes a stated stopword list from fragments or requires
+      at least one non-stopword whole-word hit, and every cited deck row still passes.
+  conditions_check:
+  - id: SIC-V7-C01
+    result: met
+    evidence:
+    - copy_deck.json:241
+    - tests/test_sector_paper_copy_deck.py:312-321
+    - 'grep '':155'': deck hits are only :1551-:1557 citations of other rows (copy_deck.json:215-219); test hits
+      :313-326 make no stanceHTML-opening claim'
+  - id: SIC-V7-C02
+    result: met
+    evidence:
+    - copy_deck.json:272
+    - grader :498 / :506 content as cited
+    - face strings unchanged; board 34 grader card reads 定义 · 全部已结算判断（含中性）的条件命中率，并非胜率。
+  - id: SIC-V7-C03
+    result: met
+    outcome: (i) with the authority-elected row-choice deviation; the deviation holds
+    evidence:
+    - '_present :154-161: whole-word regex (?<![0-9a-z])…(?![0-9a-z]) on the normalized window for Latin fragments,
+      substring for CJK (_CJK :151). row_gaps :238/:241/:245 use it for the EN check and both ZH checks. Exactly
+      one outcome; substring EN matching is gone.'
+    - 'Deviation holds: norm :137-140 maps every char outside [0-9a-z一-鿿] to a space, so sector_cycles.js:157 ''nw.stance_zh
+      || nw.stance'' becomes ''nw stance zh nw stance''. ''stance'' is a whole token inside the :155 window (:152-158),
+      so whole-word matching cannot make that row fail its EN half.'
+    - 'Fixture 1 (:342-344): grader :332, window :329-335. No whole-word caption fragment (conviction/call/hit/rate/over/all/resolved/calls/neutral/included/not/win).
+      Substring assert :343 holds on win inside window (:330-335). Fails EN for the stated reason.'
+    - 'Fixture 2 (:345-348): sector_cycles.js:153, window :150-156. ''stance'' only inside ''stances'' (:152); resolved/engine
+      absent; ZH absent. Gives [''fragment not found'', zh gap] for the stated reason; with ZH NEW, only the EN
+      gap.'
+    - 'All cited rows pass after the C02 cure: not executed (no tests run). Read-checked: clock_read/clock_ladder
+      :164-165; stance_label :162; grader :498-506 (hit/rate as parts of dir_hit_rate, see PRC-053); sizing_inert
+      :453, window :450-456 (sizing from risk-sizing, size from size_mult).'
+  - id: SIC-V7-C04
+    result: met
+    evidence:
+    - copy_deck.json:162 '{a_name}显示{a} · {b_name}显示{b}', :163 '{phase_name}显示{phase} · {ladder_name}分歧——…', :176
+      '{phase_name}显示{phase} · {ladder_name}显示{ladder}——引擎说明见来源抽屉'; EN 'says' constructions as in round 7
+    - 'cycles.html: ''阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉'' x2, ''周期读数显示筑底中 · 阶段时钟显示回落中'' x2, 时钟为/阶梯为/读数为 = 0'
+    - board 34 XLF Clocks block (ladder line wraps to 2 lines) and XLC Clocks block (读数分歧 line); board 41 same three
+      cards
+    - build_cycles.py unchanged (:116-130 draw from DECK only)
+  - id: SIC-V7-C05
+    result: deferred_to_pass2
+    evidence:
+    - proposal.yml :2067/:2190 quarantined in pass 1
+  - id: SIC-V7-C06
+    result: met
+    evidence:
+    - Only seven PNGs differ from 78c14f7d. 28/29/40 and all non-Cycles boards are byte-identical. 31 (449320→449325
+      B) and 39 (456355→456354 B) are re-encoded at the same png_px. The ≤1-channel hero-band delta is seat-measured
+      (README :135-136), not re-measured.
+    - 'png_px triple (sips == boards_manifest == proposal note): 28 1440x2343; 29 1440x2343; 30 390x4350; 31 390x4879;
+      34 1440x2260; 35 1440x2260; 36 390x4350; 39 390x4775; 40 1440x3400; 41 1440x3279. README Boards table :57-61
+      agrees. The +23/+18 px on 30/36/34/35 is the one-char 显示 wrap of the XLF ladder line (board 34).'
+    - 'capture.log :57-67: zh-latin=0 with the SIC-ADJ-03 scope string on 30/34/35/36/41. cycles.html cyc-warn =
+      1 (page level), none in cards.'
+    - 'Tests read, not run: _present and both falsifiers discriminate as judged under C03; the HOLD test is unchanged.
+      The record states outcome (i) (README :130-131).'
+  quarantine_breaches: []
+second_pass:
+  amended_at: '2026-11-02T08:20:57.761Z'
+  rationale_received: true
+  amendments:
+  - finding: PRC-053
+    action: upheld
+    note: Keeps class DEFECT, severity minor. The rationale accepts it and confirms it against the tree (norm :137-140;
+      _present docstring :155-157; :297-299; header :9-11). Nothing is cured at 213a91b9, and a promised cure does
+      not cure.
+  - finding: SIC-V8-C01
+    action: upheld
+    action_as_filed: reworded
+    note: 'Answers the author''s question: the optional pin is bound. The new docstring sentence (''a component
+      of a snake_case or dotted identifier is a hit'') then becomes falsifiable, not just prose. The pin is test-only
+      and uses literals, not engine line numbers, so it cannot drift. Production code, deck and boards stay unchanged.'
+  - finding: PRC-054
+    action: upheld
+    note: Keeps class NON-BINDING NOTE, severity minor. The author accepts it as implementation-bound. Not reopening
+      the frozen test rule in wave 8 is consistent with SIC-ADJ-05.
+  - finding: SIC-V8-C02
+    action: upheld
+    action_as_filed: reworded
+    note: 'Answers the author''s question: either form stays acceptable, but the production proof must name the
+      chosen form, state the list, and carry a falsifier. Otherwise ''either form'' cannot be checked. The concrete
+      stopword exposure is grader :328 ''if col not in'', one line outside the :332 fixture window.'
+  - finding: SIC-V7-C05
+    action: upheld
+    action_as_filed: upgraded
+    note: From deferred_to_pass2 to met; evidence in conditions_check_after_pass2.
+  - finding: PRC-052
+    action: upheld
+    action_as_filed: upgraded
+    note: From upheld (pending pass 2) to cured; evidence in round7_dispositions_after_pass2.
+  verdict: PASS_WITH_CONDITIONS
+  round7_dispositions_after_pass2:
+  - id: PRC-052
+    disposition: cured
+    evidence:
+    - git show 213a91b9:proposal.yml :2067 bracketed residual reads 'at 66829d17 the sentence omitted the Peak extended-uptrend
+      HOLD override (engine/cycle_ontology.py:1059-1063)'
+    - at 213a91b9, grep -n '1060-1063' proposal.yml hits only :2190, which carries the SHA qualifier 'the :1060-1063
+      range quoted here is the finding as filed against 204500aa'
+  conditions:
+  - id: SIC-V8-C01
+    class: DEFECT
+    text: 'tests/test_sector_paper_copy_deck.py header :9-11, the _present docstring :155-158 and the test_cited_sources_carry_a_fragment
+      docstring :297-299 state all of the following: norm splits on every non-alphanumeric character, including
+      ''_'' and ''.''; a Latin fragment must equal a whole alphanumeric run; a substring of a run (win in window,
+      stance in stanceHTML / stances) is not a hit; a component of a snake_case or dotted identifier (hit in dir_hit_rate,
+      stance in nw.stance / stance_zh) is. No docstring says ''keeps an identifier as one word'' or ''an identifier
+      substring never satisfies it''. The only code change is one added test assertion pinning both halves with
+      literals: _present(norm(''dir_hit_rate''), ''hit'') is True and _present(norm(''window''), ''win'') is False.
+      No other assertion changes. Production code, deck and PNGs are byte-identical to 213a91b9.'
+  - id: SIC-V8-C02
+    class: NON-BINDING NOTE
+    text: 'At the production proof (implementation-bound in approval.yml), the deck EN check names its form: either
+      (a) a stopword list stated in the test is excluded from EN fragments, or (b) each cited row needs at least
+      one whole-word hit outside that stated list. A falsifier asserts that a row whose only whole-word EN hit is
+      a listed stopword fails: grader_caption cited at engine/sector_central_grader.py:331, window :328-334, where
+      only ''not'' (:328) matches. Every cited deck row still passes.'
+  - id: SIC-V8-C03
+    class: DEFECT
+    text: At the wave-8 frozen sha, the proposal.yml revision_mandate_round6 PRC-047 cure note (the :2190 row at
+      213a91b9) carries the SHA-qualified line history of the PRC-037 round-5 residual as at 4356fa60. Every line
+      number it names is paired with the SHA at which that line holds, and the pointer for the wave-8 frozen sha
+      resolves to the line reading 'HOLD override (engine/cycle_ontology.py:1059-1063)'. grep -n '1060-1063' proposal.yml
+      returns only that note and revision_mandate rows quoting a finding as filed.
+  conditions_check_after_pass2:
+  - id: SIC-V7-C05
+    result: met
+    evidence:
+    - 213a91b9:proposal.yml:2067 cites 1059-1063
+    - 213a91b9:proposal.yml:2190 is the only 1060-1063 hit and is SHA-qualified
+    - the cross-reference inside that qualifier is wrong at the frozen bytes, filed as PRC-055
+  quarantine: Held. No visual_taste file, Reviewer B output, agentos/**, .claude/**, research/sector_completion_20261021/**
+    or scratchpad opened.
+  tool_calls_pass2: 3
+  round: 8
+  user_tasks_after_rationale:
+    brief: BETTER
+    cycles: BETTER
+    dossier: EQUIVALENT
+    rotation: EQUIVALENT
+    others: UNKNOWN
+  inputs_opened_pass2:
+  - 'HEAD proposal.yml: grep -n ''1060-1063''; lines 2248-2253'
+  - 'git show 213a91b9:proposal.yml and git show HEAD:proposal.yml: grep for 1060-1063 and the :2067 1059-1063 string;
+    lines :2067 (residual excerpt) and :2190 (qualifier excerpt)'
+  - git diff --stat 213a91b9 HEAD -- proposal.yml
+  - 'verdict.yml: grep SIC-V7-C05 (lines 44, 62 header)'
+  - git log -1 --format=%B 4356fa60 (excerpt around ':2066')
+  - 'Not opened: wave-7 commit body, continuity.yml, own round-7 receipts, any visual_taste file'
+  new_findings_from_rationale:
+  - id: PRC-055
+    severity: minor
+    finding: 'The wave-7 C05 qualifier carries a wrong line citation at the frozen bytes. At 213a91b9:proposal.yml:2190
+      it reads '':2066 — the round-5 PRC-037 residual, :2061 before the round-7 header lines — reads :1059-1063
+      from wave 7''. At 213a91b9 the residual is at :2067; :2066 holds a different line. The seat discloses this
+      (re-freeze body 4356fa60; HEAD proposal.yml:2253) and corrected the qualifier at the re-freeze 4356fa60. That
+      correction is after frozen_sha, so it is not part of the approved bytes (SIC-ADJ-04). The corrected HEAD :2190
+      qualifier SHA-qualifies every line it names (:2056 at 78c14f7d, :2061 at the round-6 re-freeze, :2066 at 90e9682d,
+      :2067 at 213a91b9), so the form is robust. One more detail in the HEAD record: :2253 calls :2190 ''the only
+      other 1060-1063 string'', but :2252 and :2253 themselves contain it (mandate rows quoting the finding).'
+    evidence:
+    - git show 213a91b9:research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml :2190 vs :2067
+    - HEAD proposal.yml:2190 (SHA-qualified form), :2252-2253
+    - 'git diff --stat 213a91b9 HEAD -- proposal.yml: 35 insertions, 3 deletions'
+    cure: 'Record only, already present at 4356fa60: the wave-8 frozen sha carries the SHA-qualified :2190 form,
+      so the defect is cured by the wave-8 freeze with no further edit.'
+    source: rationale
+  quarantine_breaches: []
+  second_pass_path: critic_return/second_pass_product_regression.md
+  disposition_notes: 'Judged as frozen at 213a91b9; the pass-2 grant revealed proposal.yml revision_mandate_round7
+    + wave7_summary (+ the :2067 / :2190 record lines), verdict.yml (round 7: SIC-V7-C01..C06, SIC-ADJ-05), continuity.yml
+    and the wave-7 / re-freeze commit message bodies only. Amendment actions are normalized to the checker vocabulary
+    (upheld/downgraded/withdrawn); the critic''s own wording is kept in action_as_filed and a raised severity in
+    severity_after_pass2.'
