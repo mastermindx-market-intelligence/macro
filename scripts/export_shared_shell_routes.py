@@ -148,10 +148,38 @@ def document_heading_label(text: str) -> dict[str, str]:
     return {"en": parts[0], "zh": parts[1]}
 
 
+def calculator_directory_titles(text: str) -> dict[str, dict[str, str]]:
+    """Read the existing calculator metadata; do not translate or infer slug labels."""
+    import yaml
+    entries = yaml.safe_load(text)
+    if not isinstance(entries, list) or len(entries) > 128:
+        raise ValueError("invalid canonical calculator metadata")
+    result: dict[str, dict[str, str]] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError("invalid canonical calculator metadata")
+        slug, title = entry.get("slug"), entry.get("title")
+        translated = entry.get("title_zh", title)
+        if (not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug)
+                or not isinstance(title, str) or not title.strip()
+                or not isinstance(translated, str) or not translated.strip()
+                or any(len(value) > 200 or re.search(r"[<>\x00-\x1f]", value)
+                       for value in (title, translated))):
+            raise ValueError("invalid canonical calculator metadata")
+        href = "/tools/calculators/" + slug + ".html"
+        if href in result:
+            raise ValueError("duplicate canonical calculator slug")
+        # The canonical document title is English where its owner has supplied no
+        # Chinese title. Preserve that identity, rather than inventing a translation.
+        result[href] = {"en": title.strip(), "zh": translated.strip()}
+    return result
+
+
 def derive_projection(registry: dict[str, Any], tracked_html: list[str],
                       deny: dict[str, Any], labels: dict[str, dict[str, str]],
                       *, registry_digest: str, inventory_ref: str,
-                      document_paths: set[str] | None = None) -> dict[str, Any]:
+                      document_paths: set[str] | None = None,
+                      calculator_titles: dict[str, dict[str, str]] | None = None) -> dict[str, Any]:
     if registry.get("schema") != registry_owner.SCHEMA:
         raise ValueError("unrecognized canonical registry")
     if registry.get("sources", {}).get("macro", {}).get("sha") != inventory_ref:
@@ -246,6 +274,26 @@ def derive_projection(registry: dict[str, Any], tracked_html: list[str],
             "question": row["primary_user_question"],
             "payloadTier": row["payload_tier"],
         })
+    # This is presentation for already-admitted members of one existing family.
+    # Metadata never contributes paths, bypasses exclusion, or enumerates another family.
+    tools_owner = next((row for row in rows if row["repo"] == "macro"
+                        and row["page_id"] == "macro:tools_family"
+                        and row["route_kind"] == "family"
+                        and row["route"] == "/tools/<id>.html"), None)
+    if tools_owner is not None:
+        existing = {item["href"] for item in directory}
+        for href in members.get(tools_owner["page_id"], []):
+            title = (calculator_titles or {}).get(href)
+            if (href in existing or title is None
+                    or not re.fullmatch(r"/tools/calculators/[a-z0-9]+(?:-[a-z0-9]+)*\.html", href)):
+                continue
+            directory.append({
+                "id": tools_owner["page_id"] + ":" + href,
+                "href": href, "kind": "legacy", "title": title,
+                "group": tools_owner["nav_family"],
+                "question": tools_owner["primary_user_question"],
+                "payloadTier": tools_owner["payload_tier"],
+            })
     directory.sort(key=lambda item: (item["title"]["en"].casefold(), item["href"]))
     return {
         "schema": SCHEMA, "generatedAt": registry["generated_at"],
@@ -406,9 +454,16 @@ def main() -> int:
     for path in ("allocation", "baskets_china"):
         labels.setdefault("/" + path + ".html", document_heading_label(
             source("templates/" + path + ".html.j2")))
+    # Historical inventories without this metadata keep their exact old directory.
+    # Both the presence check and the bytes use the same immutable inventory ref.
+    calculator_path = "content/seo/calculators.yml"
+    calculator_source = subprocess.check_output(
+        ["git", "ls-tree", "--name-only", ref, "--", calculator_path], cwd=ROOT, text=True)
+    calculators = calculator_directory_titles(source(calculator_path)) if calculator_source.strip() else {}
     doc = derive_projection(registry, paths, denied, labels,
                             registry_digest=hashlib.sha256(raw).hexdigest(), inventory_ref=source_pin,
-                            document_paths=document_inventory(ROOT, ref, paths))
+                            document_paths=document_inventory(ROOT, ref, paths),
+                            calculator_titles=calculators)
     # These admitted documents own their bilingual names in rendered H1 spans.
     # Existing navigation labels win; absent, excluded and historical pages need no read.
     for item in doc["directory"]:

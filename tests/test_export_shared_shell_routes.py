@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from scripts.export_shared_shell_routes import ROOT, derive_projection, document_heading_label, document_inventory, is_html_document, navigation_labels, normalized_path
+from scripts.export_shared_shell_routes import ROOT, calculator_directory_titles, derive_projection, document_heading_label, document_inventory, is_html_document, navigation_labels, normalized_path
 
 PIN = "a" * 40
 
@@ -44,6 +45,58 @@ def test_families_expand_only_concrete_tracked_documents_and_keep_payload_gates(
     assert all("<" not in path for path in p["legacyPaths"])
     assert p["nativePaths"] == ["/analysis"]
     assert next(r for r in p["directory"] if r["href"] == "/macro.html")["payloadTier"] == "public_shell_premium_payload"
+
+
+def test_calculator_titles_preserve_canonical_document_identity_without_slug_translation():
+    titles = calculator_directory_titles('- slug: cagr\n  title: CAGR Calculator\n'
+                                        '- slug: compounding\n  title: Compound Interest Calculator\n'
+                                        '  title_zh: 复利计算器\n')
+    assert titles["/tools/calculators/cagr.html"] == {"en": "CAGR Calculator", "zh": "CAGR Calculator"}
+    assert titles["/tools/calculators/compounding.html"] == {"en": "Compound Interest Calculator", "zh": "复利计算器"}
+    for invalid in ('{}', '- slug: ../admin\n  title: Bad', '- slug: cagr\n  title: ""',
+                    '- slug: cagr\n  title: "<script>bad</script>"',
+                    '- slug: cagr\n  title: Good\n- slug: cagr\n  title: Duplicate'):
+        with pytest.raises(ValueError, match="canonical calculator"):
+            calculator_directory_titles(invalid)
+
+
+def test_current_canonical_calculator_names_cover_the_measured_bilingual_tool_set():
+    titles = calculator_directory_titles((ROOT / "content/seo/calculators.yml").read_text())
+    assert len(titles) == 26
+    assert titles["/tools/calculators/cagr.html"] == {
+        "en": "CAGR Calculator", "zh": "复合年增长率计算器"}
+    assert titles["/tools/calculators/compounding.html"] == {
+        "en": "Compound Interest Calculator", "zh": "复利计算器"}
+    assert all(re.search(r"[\u3400-\u9fff]", title["zh"]) for title in titles.values())
+
+
+def test_calculator_directory_rows_are_only_metadata_for_already_admitted_exact_members():
+    owner = row("/tools/<id>.html", kind="family", page_id="macro:tools_family")
+    doc = catalog(owner, row("/tools/calculators/retired.html", lifecycle="retired"),
+                  row("/tools/calculators/private.html", access="signed_in"),
+                  row("/tools/calculators/nonindex.html", tier="internal"),
+                  row("/stocks/<id>.html", kind="family"), row("/macro.html"))
+    paths = ["/tools/calculators/cagr.html", "/tools/calculators/missing-title.html",
+             "/tools/calculators/denied.html", "/tools/calculators/retired.html",
+             "/tools/calculators/private.html", "/tools/calculators/nonindex.html",
+             "/tools/spreadsheets/journal.html", "/stocks/CAGR.html", "/macro.html"]
+    deny = {"exact": {"/tools/calculators/denied.html"}, "prefixes": ()}
+    titles = {p: {"en": "Canonical title", "zh": "Canonical title"} for p in paths}
+    titles.pop("/tools/calculators/missing-title.html")
+    titles["/tools/calculators/unpublished.html"] = {"en": "Not published", "zh": "Not published"}
+    kwargs = {"registry_digest": "digest", "inventory_ref": PIN}
+    before = derive_projection(doc, paths, deny, {}, **kwargs)
+    after = derive_projection(doc, paths, deny, {}, calculator_titles=titles, **kwargs)
+    for key in before:
+        if key != "directory":
+            assert after[key] == before[key], key
+    added = [item for item in after["directory"] if item not in before["directory"]]
+    assert [item["href"] for item in added] == ["/tools/calculators/cagr.html"]
+    assert added[0]["id"] == "macro:tools_family:/tools/calculators/cagr.html"
+    assert all(item in after["directory"] for item in before["directory"])
+    # The same title cannot enroll a different PARAM family or a caller-invented tools owner.
+    other = catalog(row("/tools/<id>.html", kind="family", page_id="macro:other_family"))
+    assert not derive_projection(other, paths[:1], deny, {}, calculator_titles=titles, **kwargs)["directory"]
 
 
 def test_exact_deny_and_prefix_deny_win_over_live_family():
