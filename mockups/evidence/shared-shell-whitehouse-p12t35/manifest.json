@@ -1,0 +1,605 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "source-focus",
+        "spec": "source-focus:focus(#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri .wh-src a)",
+        "value": "#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri .wh-src a"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-03T16:36:11Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site/wh_banner.js?v=b1207f44",
+          "text": "Fetch API cannot load file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site/wh_banner.json. URL scheme \"file\" is not supported."
+        },
+        {
+          "source_url": "file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site/wh_banner.js?v=b1207f44",
+          "text": "Fetch API cannot load file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site/rr_banner.json. URL scheme \"file\" is not supported."
+        },
+        {
+          "source_url": "file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site/account.js?v=20261101-expectation-surface-nav",
+          "text": "Failed to load resource: net::ERR_FILE_NOT_FOUND"
+        }
+      ],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 5937,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 10150,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 3,
+        "document_height_px": 5937,
+        "duplicate_heading_texts": [
+          "ai analysis",
+          "names that benefit",
+          "sector impact",
+          "source and context"
+        ],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 3,
+          "h3": 9,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 2,
+        "payload_bytes_total": 570785,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 14,
+        "screenshot_completion": 1.0,
+        "section_count": 1,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1661
+      },
+      "page_id": "whitehouse.html#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
+      "registry_route": "/whitehouse.html#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
+      "route": "/whitehouse.html#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1052987,
+          "captured": true,
+          "file": "capture/548c62ec399ed800.png",
+          "force_state": null,
+          "height": 5937,
+          "locale": "en",
+          "sha256": "548c62ec399ed800e988c6db4592237a124903e3461047bc3b5c8ae49aaf7ee5",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.024433201919367285,
+            "inp_proxy_ms": null,
+            "lcp_ms": 136,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1053175,
+          "captured": true,
+          "file": "capture/1d0c5cbc1e2dab37--source-focus.png",
+          "force_state": "source-focus",
+          "height": 5937,
+          "locale": "en",
+          "sha256": "1d0c5cbc1e2dab37d6d88360523b5b60e289e8cb1e5fe3992b6cb3908b7472f5",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.024433201919367285,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1038186,
+          "captured": true,
+          "file": "capture/94799e517f6a2226.png",
+          "force_state": null,
+          "height": 5937,
+          "locale": "en",
+          "sha256": "94799e517f6a2226df8111f9a6b0e3ee2a127aca496228219f3dd711062b720e",
+          "theme": "light",
+          "timing": {
+            "cls": 0.0255396110628858,
+            "inp_proxy_ms": null,
+            "lcp_ms": 76,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1038149,
+          "captured": true,
+          "file": "capture/f302ba38b0a97620--source-focus.png",
+          "force_state": "source-focus",
+          "height": 5937,
+          "locale": "en",
+          "sha256": "f302ba38b0a97620efd5e31598932c3c6c4ab5cf2c34bde35b066830797fde9a",
+          "theme": "light",
+          "timing": {
+            "cls": 0.0255396110628858,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1116437,
+          "captured": true,
+          "file": "capture/12f3719f1094e7f6.png",
+          "force_state": null,
+          "height": 5998,
+          "locale": "zh",
+          "sha256": "12f3719f1094e7f6f571c5576fd3c7bdbf90a6d70cd39553017c55ee77bcf1e6",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.024433201919367285,
+            "inp_proxy_ms": null,
+            "lcp_ms": 88,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1117013,
+          "captured": true,
+          "file": "capture/9f2c8caf49cd2ebc--source-focus.png",
+          "force_state": "source-focus",
+          "height": 5998,
+          "locale": "zh",
+          "sha256": "9f2c8caf49cd2ebc9a5b657b78a393efc60f1dbb1aa8cace0ad540871cf1baa0",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.024433201919367285,
+            "inp_proxy_ms": null,
+            "lcp_ms": 88,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1104503,
+          "captured": true,
+          "file": "capture/8463163522aa7899.png",
+          "force_state": null,
+          "height": 5998,
+          "locale": "zh",
+          "sha256": "8463163522aa789957d48db9523fcee96aefb700eae450ab900b41d078bc25a8",
+          "theme": "light",
+          "timing": {
+            "cls": 0.0255396110628858,
+            "inp_proxy_ms": null,
+            "lcp_ms": 96,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1104872,
+          "captured": true,
+          "file": "capture/fa094eb9bd41e63d--source-focus.png",
+          "force_state": "source-focus",
+          "height": 5998,
+          "locale": "zh",
+          "sha256": "fa094eb9bd41e63db7117d119698f0f0791d22bbf0eaa1e013025700936d77ab",
+          "theme": "light",
+          "timing": {
+            "cls": 0.0255396110628858,
+            "inp_proxy_ms": null,
+            "lcp_ms": 84,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 941489,
+          "captured": true,
+          "file": "capture/e1ee8ecb66331a57.png",
+          "force_state": null,
+          "height": 10150,
+          "locale": "en",
+          "sha256": "e1ee8ecb66331a57eca129f38f5a89719f0b58e8512357a661135e27c3642d4a",
+          "theme": "dark",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 68,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 937135,
+          "captured": true,
+          "file": "capture/00e2e251c30306e4--source-focus.png",
+          "force_state": "source-focus",
+          "height": 10150,
+          "locale": "en",
+          "sha256": "00e2e251c30306e44cfd3e5f0a1287e8dd900761b32e0617a9e464a10f08f2e2",
+          "theme": "dark",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 68,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 924524,
+          "captured": true,
+          "file": "capture/33949ce63accc7a6.png",
+          "force_state": null,
+          "height": 10150,
+          "locale": "en",
+          "sha256": "33949ce63accc7a6a0852b243dcc12fc3ad987b6160dc3c17889d112c86cca9e",
+          "theme": "light",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 68,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 919934,
+          "captured": true,
+          "file": "capture/3052d38f8830c4a5--source-focus.png",
+          "force_state": "source-focus",
+          "height": 10150,
+          "locale": "en",
+          "sha256": "3052d38f8830c4a572b4e2a742d80180a35cb3d56aefb83be3d66cf45ad44e68",
+          "theme": "light",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 72,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 983865,
+          "captured": true,
+          "file": "capture/d18448206e737f4c.png",
+          "force_state": null,
+          "height": 9700,
+          "locale": "zh",
+          "sha256": "d18448206e737f4c83a0894d6b830eff49da5e5b80b879e2a8b581be0b2c108e",
+          "theme": "dark",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 72,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 978081,
+          "captured": true,
+          "file": "capture/bcaa8fcdb90b9663--source-focus.png",
+          "force_state": "source-focus",
+          "height": 9700,
+          "locale": "zh",
+          "sha256": "bcaa8fcdb90b9663ab6a9067e6f0b7ee0ebe78be1590c254ef00cd6130ea61a0",
+          "theme": "dark",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 970180,
+          "captured": true,
+          "file": "capture/ee62fe068dcbc78a.png",
+          "force_state": null,
+          "height": 9700,
+          "locale": "zh",
+          "sha256": "ee62fe068dcbc78a472d0319c3fc2bab2e3a17f2cecc4b907fe4a3dad586e536",
+          "theme": "light",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "source-focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 964475,
+          "captured": true,
+          "file": "capture/390b04ddf7875440--source-focus.png",
+          "force_state": "source-focus",
+          "height": 9700,
+          "locale": "zh",
+          "sha256": "390b04ddf7875440aab87764c3e5ee0d9aeb7f1f000384e290e8d38c94cc2d33",
+          "theme": "light",
+          "timing": {
+            "cls": 0,
+            "inp_proxy_ms": null,
+            "lcp_ms": 72,
+            "resource_count": 0,
+            "server_timing": [],
+            "transfer_bytes": 0
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/whitehouse.html#wh-2026-10-29-memorandum-of-understanding-between-the-government-of-the-united-states-of-ameri"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "file:///Volumes/Mastermind/agent-workspaces/codex/6e18/family-acceptance/whitehouse-20261103/t35/source-349e12c9/site",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

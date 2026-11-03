@@ -288,6 +288,14 @@ def _alert_view(r: dict) -> dict:
     v = dict(r)
     v["date_display"] = _date_display(r.get("published"))
     v["generated_display"] = _date_display(r.get("generated_at"))
+    # Treasury shares this report renderer, but its primary source is not a
+    # White House announcement. Correct only the incumbent standard display
+    # preamble; preserve custom disclaimers and the append-only source row.
+    v["display_disclaimer"] = r.get("disclaimer") or wb.DISCLAIMER
+    if r.get("section") == "treasury" and v["display_disclaimer"] == wb.DISCLAIMER:
+        v["display_disclaimer"] = wb.DISCLAIMER.replace(
+            "primary-source White House announcement", "primary-source U.S. Treasury event", 1)
+
     reason = str(r.get("degraded_reason") or "")
     v["served_by"] = (_SERVED_BY.get(reason.split(":", 1)[1], "")
                       if reason.startswith("served_by:") else "")
