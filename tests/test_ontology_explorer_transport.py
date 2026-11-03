@@ -1078,7 +1078,7 @@ def published_wti(monkeypatch, tmp_path, x2_inputs, request):
     yahoo = data / 'yahoo'
     yahoo.mkdir(parents=True)
     monkeypatch.setattr(store.config, 'data_dir', lambda: data)
-    monkeypatch.setattr(store, '_availability_now', lambda: now)
+    monkeypatch.setattr(store, '_availability_now', lambda: now - timedelta(minutes=1))
     frame = historical.series.to_frame('close')
     path = yahoo / 'CL_F.parquet'
     frame.to_parquet(path)
@@ -1196,6 +1196,8 @@ def test_prospective_wti_http_requires_independent_native_admission(monkeypatch,
         for stale in (replace(admission, native_facts_sha256="0"*64),
                       replace(admission, subject=replace(expected, txi_generation="stale")),
                       replace(admission, subject=replace(expected, knowledge_cutoff="stale")),
+                      # Export was known, but TXI had not yet finished reading its inputs.
+                      replace(admission, known_by=export["exported_known_by_utc"]),
                       replace(admission, known_by="2099-01-01T00:00:00Z")):
             client.app.state.wti_session_selector = lambda subject: stale
             assert result() == "UNAVAILABLE"

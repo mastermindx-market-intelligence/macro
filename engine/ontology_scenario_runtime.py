@@ -143,7 +143,8 @@ def _wti_history(root: Path, observation: dict, cutoff: datetime) -> tuple[dict,
     return image, generation, binding, receipt['effective_bar_date'], clocks[0], clocks[3], facts
 
 
-def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: dict, cutoff: datetime) -> str:
+def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: dict,
+                        cutoff: datetime) -> tuple[str, datetime]:
     state = json.loads(_read_bound(root, state_receipt))
     capture = state['input_capture']
     # The WTI input of this selected generation, not a claim about other TXI inputs.
@@ -156,9 +157,10 @@ def _wti_txi_generation(root: Path, state_receipt: dict, source: dict, binding: 
             or capture['causal_state_sha256'] != hashlib.sha256(txi._capture_json(txi._causal_projection(state))).hexdigest()
             or [r for r in capture['reads'] if r['path'] == _WTI_FILE] != [{**binding, 'status': 'present'}]):
         raise _unqualified('native_txi_generation_binding')
-    if not (_stamp(capture['capture_started_at']) <= _stamp(capture['capture_completed_at']) <= cutoff):
+    completed = _stamp(capture['capture_completed_at'])
+    if not (_stamp(capture['capture_started_at']) <= completed <= cutoff):
         raise _unqualified('native_txi_generation_at_cutoff')
-    return txi_generation
+    return txi_generation, completed
 
 
 def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
@@ -181,7 +183,7 @@ def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
             raise _unqualified('vendor_session_label_mapping', 'futures_calendar_id_and_version',
                                'future_owner_sessions', 'source_use_receipt')
         image, generation, binding, last_label, adapter_known_by, exported_at, facts = _wti_history(root, receipts[_WTI_EXPORT], cutoff)
-        txi_generation = _wti_txi_generation(root, receipts[_TXI_STATE], source, binding, cutoff)
+        txi_generation, txi_completed = _wti_txi_generation(root, receipts[_TXI_STATE], source, binding, cutoff)
         sessions = verified_sessions
         if facts is not None:
             # The export supplies facts, never its own admission. The selector sees
@@ -204,7 +206,7 @@ def _load_native_baseline(root: Path, snapshot: dict, assumption: dict, *,
         if (sessions.observation_sha256 != receipts[_WTI_EXPORT]['sha256'] or sessions.txi_generation != txi_generation
                 or sessions.manifest_hash != source['source_manifest_hash'] or _stamp(sessions.knowledge_cutoff) != cutoff
                 or not (_stamp(sessions.last_session_completed_at) <= _stamp(sessions.known_by) <= cutoff)
-                or exported_at > _stamp(sessions.known_by)
+                or max(exported_at, txi_completed) > _stamp(sessions.known_by)
                 or assumption['baseline_effective_at'] != source['asof']
                 or _stamp(assumption['baseline_knowledge_cutoff']) != cutoff):
             raise _unqualified('verified_sessions_at_selected_cutoff')
