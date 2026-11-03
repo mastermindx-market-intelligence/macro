@@ -132,26 +132,16 @@ def fresh_options_entitlement(request: OptionUseRequest, *, access_token: str) -
 
 def _fresh_product_allowed(principal: OptionsPrincipal, email: str) -> bool:
     """The existing uncached Terminal Options predicate, shared by read consumers."""
-    return (options_product_allowed(principal.principal_id, email)
-            and time.time() < principal.expires_at)
-
-
-def options_product_allowed(principal_id: str, email: str = "") -> bool:
-    """Check product membership for an already authenticated server-side subject."""
-    if not principal_id or principal_id == "unknown" or principal_id.startswith("guest:"):
-        return False
     from app import billing, paywall
+    from lib.tiers import has_terminal_options_feature
 
-    entitlement = billing.read_entitlement(principal_id)
+    entitlement = billing.read_entitlement(principal.principal_id)
     if type(entitlement) is not dict:
         return False
-    features = entitlement.get("features")
-    tier = entitlement.get("tier")
-    allowed = ((type(features) is list and "terminal_live_options" in features)
-               or (type(tier) is str and tier.strip().lower() == "unlimited")
+    allowed = (has_terminal_options_feature(entitlement)
                or (type(email) is str and bool(email)
                    and paywall._operator_unlimited(email) is True))
-    return bool(allowed)
+    return bool(allowed and time.time() < principal.expires_at)
 
 
 def resolve_entitled_options_principal(access_token: str) -> OptionsPrincipal:

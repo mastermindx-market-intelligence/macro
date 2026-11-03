@@ -24,8 +24,8 @@ verified:
     command: "Read M1 daily_refresh manifest, launchctl state, and response code of the existing symbols health probe."
     result: "01:00 UTC November 3 receipt for D November 2 and S October 30 failed before pulls. Listener was running. Subsequent health probe returned HTTP 429."
   - claim: Focused backend tests passed on the candidate.
-    command: "python -m pytest -q tests/test_brain_options_freshness.py tests/test_options_nw_wiring.py tests/test_topup_thetadata_daily.py tests/test_brain_seed_router.py tests/test_brain_tool_economics.py tests/test_ask_brain.py"
-    result: "512 passed at the first source checkpoint. The expanded cohort and publisher test group subsequently passed 603 cases, and the gateway and authorization group passed another 529."
+    command: "Run the existing topup daily/legacy/scheduler, Options Hub, options wiring, Brain gateway, ask_brain, and options authorization pytest suites. The PR splits the regressions among their actual CI owners."
+    result: "512 passed at the first checkpoint, then 603 in the expanded cohort/publisher group and 529 in gateway/authorization. After isolating the shared Hub source read from the HTTP application router, 1,023 cases passed in the combined gateway, authorization, Hub, options wiring and top-up owner suites."
   - claim: The full Terminal US candidate list can be measured from production source catalogs.
     command: "Match the served Terminal security manifest, filtered by US equity/fund venue and exact security symbol, to the subscribed local symbol catalog."
     result: "3,445 matches among 3,805 Terminal US equities and funds; 360 unmatched. Catalog hash 967f1d47f589cbd2306dbceb9c0d4640c3e82f06cd7909f3e681de8b9e7ab2f8. The vendor catalog includes historical symbols; only a session-specific observation proves coverage."

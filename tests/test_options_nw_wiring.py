@@ -260,3 +260,13 @@ def test_lobe_ignores_non_weather_roots(tmp_root):
         tmp_root / "data" / "options_entry" / "state.parquet", index=False)
     out = _compose_options_weather(tmp_root)
     assert out["n_roots"] is None  # none are weather roots → empty frame path
+
+
+def test_mixed_family_dates_do_not_revive_old_volatility():
+    from datetime import date
+    row = {"as_of": "2026-11-02", "src_skew_asof": "2026-11-02", "skew": 0.1,
+           "src_gex_asof": "2026-08-21", "iv30": 30, "pin_risk": True,
+           "src_flow_asof": "2030-01-01", "net_doi": 3}
+    out = cortex.current_state(row, date(2026, 11, 2))
+    assert out["iv30"] is None and out["pin_risk"] is None and out["net_doi"] is None
+    assert out["skew"] == 0.1 and out["source_status"]["gex"] == "historical"

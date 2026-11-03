@@ -2551,3 +2551,8 @@ def test_question_profile_specialist_macro_stays_ambiguous():
     )
     assert profile.name == "ambiguous"
     assert profile.grounding_scope == "ambiguous"
+
+
+def test_screenshot_contract_wording_selects_options():
+    query = "Would you recommend doing a $280 strike sell put with end of November expiry on GOOG? Tell me in chinese"
+    assert ab._question_profile(query, "GOOG").name == "options_single_name"

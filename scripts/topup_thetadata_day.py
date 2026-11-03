@@ -1258,7 +1258,6 @@ def _maintained_roots(store: Path, session: _date, configured: list[str]) -> lis
 def _terminal_session_coverage(store, ctx, td, workers, deadline, prior, started_at):
     """Use spare capacity under the same writer lock after the baseline consumer."""
     import hashlib
-    from engine.options_universe import baskets_universe
     from engine.terminal_options_universe import terminal_candidates
 
     if _time.monotonic() >= deadline:
@@ -1274,8 +1273,7 @@ def _terminal_session_coverage(store, ctx, td, workers, deadline, prior, started
     # a slow tail from being permanently cut off. Already-stored cells are cheap
     # no-ops in the incumbent pool. No vendor limits or schedules are increased.
     seed = started_at.strftime("%Y-%m-%dT%H")
-    basket = {s for s in baskets_universe() if re.fullmatch(r"[A-Z0-9][A-Z0-9.\\-]{0,14}", s)}
-    extra = sorted((candidates | basket) - prior.keys(),
+    extra = sorted(candidates - prior.keys(),
                    key=lambda s: hashlib.sha256(f"{seed}/{s}".encode()).digest())
     remaining = (deadline - _time.monotonic()) / 60
     added, cutoff, lost = {}, bool(extra), False

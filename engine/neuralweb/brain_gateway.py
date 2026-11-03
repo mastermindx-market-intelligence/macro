@@ -7864,16 +7864,19 @@ def _dispatch_brain_tool(
         )
     result = _dispatch_read_tool(tool_name, tool_params, root)
     if tool_name in {"read_options_entry_state", "explain_options_context"} and tool_params.get("ticker"):
-        from app.options_auth import options_product_allowed
+        from lib.tiers import has_terminal_options_feature
         from engine.neuralweb.options_evidence import published_volatility
         from lib import nyse_calendar
         try:
-            allowed = options_product_allowed(user_id)
+            signed_in = bool(user_id and user_id != "unknown" and not user_id.startswith("guest:"))
+            grant = _resolve_tier(user_id, root=root) if signed_in else {}
+            allowed = (grant.get("status") in {"active", "trialing"}
+                       and has_terminal_options_feature(grant))
         except Exception:
             allowed = False
         if allowed:
             ticker = str(tool_params["ticker"]).strip().upper()
-            evidence = published_volatility(root, ticker, tool_params, nyse_calendar.expected_last_session())
+            evidence = published_volatility(ticker, tool_params, nyse_calendar.expected_last_session())
             result = {**result, "volatility_evidence": evidence}
     return result
 

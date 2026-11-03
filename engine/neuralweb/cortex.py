@@ -65,12 +65,12 @@ import json
 import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from engine.neuralweb.options_evidence import current_state
 from lib import nyse_calendar
+from lib.options_coverage import options_session_status
 
 log = logging.getLogger(__name__)
 
@@ -677,6 +677,41 @@ def _read_options_state(root: Path):
         return pd.read_parquet(p), None
     except Exception as exc:  # noqa: BLE001
         return None, f"options_entry/state.parquet unreadable: {exc}"
+
+
+_FAMILIES = {
+    "gex": ("iv30", "gamma_regime", "gamma_regime_structurally_constant", "dist_to_flip_pct",
+            "wall_up_dist_pct", "wall_down_dist_pct", "max_pain_dist_pct", "pin_risk",
+            "gex_confirm_verdict", "vanna_hedge_5d", "opex_days"),
+    "skew": ("skew", "skew_5d_chg"),
+    "ivspread": ("ivspread_rel", "ivspread_5d_chg"),
+    "flow": ("net_doi", "doi_pc", "fresh_contracts", "fresh_premium_mn", "zerodte_share"),
+}
+
+
+def current_state(row: dict, expected: date) -> dict:
+    """A recent skew print cannot renew older GEX, volatility spread or flow evidence."""
+    row = dict(row)
+    statuses = {}
+    for family, fields in _FAMILIES.items():
+        status = options_session_status(row.get(f"src_{family}_asof"), expected)
+        statuses[family] = status
+        if status != "latest_completed_session":
+            for field in fields:
+                if field in row:
+                    row[field] = None
+    # These exposures come from a separately dated chain. The entry table does not carry
+    # that chain's clock. The row maximum and GEX summary date cannot qualify them.
+    for field in ("front7_charm_share", "front7_gex_share", "signed_vanna_pressure"):
+        if field in row:
+            row[field] = None
+    row["stored_evidence_quality"] = row.pop("evidence_quality", None)
+    count = sum(status == "latest_completed_session" for status in statuses.values())
+    missing = "stale" if "historical" in statuses.values() else "unavailable"
+    row["evidence_quality"] = (missing, "thin", "partial", "partial", "full")[count]
+    row["source_status"] = statuses
+    row["expected_session"] = expected.isoformat()
+    return row
 
 
 _OPTIONS_ROW_CAP = 100
