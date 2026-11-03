@@ -36199,8 +36199,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      # soupsieve 4.0 (released 2026-11-03) stopped matching <template> contents
+      # from the document root; the Prophet presentation suites and
+      # scripts/prophet_journey_reconcile.py select template bodies that way.
+      # Pinned to the last 2.x line those suites pass on until the Prophet
+      # selectors move to the template element itself (the #10666 pattern).
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 soupsieve==2.9.2 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
