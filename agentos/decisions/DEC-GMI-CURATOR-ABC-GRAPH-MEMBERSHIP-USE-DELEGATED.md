@@ -21,9 +21,12 @@ rationale: >
   Curator ABC and Graph membership use, you should make the decision for me").
   A is strictly narrower than the fact-only paid_product_display the Chairman
   ruled covered for the same bytes on 2026-10-11: internal graph membership adds
-  no audience, quotation, magnitude, ranking, sizing or trade authority. B keeps
-  the existing derived-fact/verbatim split that the relationship envelope
-  already displays and asserts no vendor licence. C only describes a role the
+  no audience, quotation, magnitude, ranking, sizing or trade authority. B is a
+  new display-tier policy: today every relationship edge carries
+  public_display=unknown with a null ruling_ref. This record creates no A7
+  GMI-REL ruling; B takes effect only when one is minted with honest delegated
+  provenance and independently reviewed. B asserts no vendor licence. C only
+  describes a role the
   seat already holds under the 2026-10-21 commission.
 alternatives:
   - option: Keep A/B/C as an EXACT_HUMAN_GATE and keep asking the Chairman
@@ -33,10 +36,10 @@ alternatives:
   - option: Widen A to every C01 fact, edition or vendor
     why_not: Only one proposal is curated and ratified; any other fact still needs its own curation and ruling.
   - option: CHANGE B (publish verbatim excerpts, or hide derived facts)
-    why_not: Publishing verbatim text adds redistribution risk for no product gain; hiding cited facts discards public-record evidence the envelope already shows.
+    why_not: Publishing verbatim text adds redistribution risk for no product gain; hiding cited facts would discard public-record evidence once an A7 ruling lets the envelope show it.
 evidence:
   - "Chairman 2026-11-02 delegation in seat 6f14c2da-02a9-467e-9f37-7c2ebaccfe09: For Curator ABC and Graph membership use, you should make the decision for me"
-  - "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json sha256 1e90a8d558bb4117050dc18f4edcc0f0a536efd1809bb3d782f8c84ad58297da"
+  - "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json sha256 1443c6e47b1da8bef15eb5672c96c91d4bcc3481da93bf159d66ab973eabfc7f (evidence_kind chairman_delegated_decision)"
   - "revises research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json sha256 5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117 (source and permitted_use copied verbatim)"
   - "engine.theme_graph.activity_history_bridge.qualify_graph_membership_use -> GRANTED, refusals [] for the PROPOSED and RATIFIED rows of actprop:287edbf7e04b8aba873b7493"
   - "python3 scripts/bridge_activity_history.py --recorded-at 2026-11-02T23:50:00Z --dry-run -> APPEND GRAPH_MEMBERSHIP_USE_GRANTED actevt:35da49f7682bb2b5fd2c7779 actmem:dbdf774cb011d26f3c6d6936"
@@ -63,8 +66,12 @@ They stop being a human gate. This record is the decision.
 `actprop:287edbf7e04b8aba873b7493` only, over the same source bytes (sha256
 `a7efabf9…`). `display` and `redistribution` are false. The original ruling's
 `source` and `permitted_use` are copied unchanged. No licence document was
-inspected and none is claimed. The existing validator (unchanged) returns
-GRANTED, and the bridge dry-run appends exactly one event.
+inspected and none is claimed. The ruling's `evidence_kind` is
+`chairman_delegated_decision`, not a direct Chairman confirmation. The bridge
+validator accepts that kind only with a delegation record naming the Chairman
+as grantor, the delegating quote, the deciding seat and this record; it returns
+GRANTED, and the bridge dry-run appends exactly one event. The A7 relationship
+gate and the issuer-disclosure owner still accept only the direct kind.
 
 **B: CONFIRM.** This is a display-tier policy for facts taken from SEC EDGAR
 filings. A derived fact (who supplies whom, what was disclosed) may be shown
@@ -77,7 +84,9 @@ feed, and SEC fair-access limits still bind every fetch.
 commission. A receipt still needs its own evidence check; this note does not
 let any other seat sign on the seat's behalf.
 
-Not covered: other C01 facts or editions, other issuers, sources outside the
-2026-10-23 commercial attestation, #868's hold, D2E sealing, or any ranking,
-sizing or trade authority. An independent reviewer must accept this record
+Not covered: any source other than the C01 Micron IR bytes (A) and SEC EDGAR
+filings (B). This record neither relies on nor extends the 2026-10-23
+commercial-data attestation (Yahoo/yfinance, Massive/Polygon, Tiingo,
+ThetaData). Also not covered: other C01 facts or editions, other issuers,
+#868's hold, D2E sealing, or any ranking, sizing or trade authority. An independent reviewer must accept this record
 before it merges.

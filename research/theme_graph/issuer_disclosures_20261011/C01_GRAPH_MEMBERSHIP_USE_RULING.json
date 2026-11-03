@@ -6,7 +6,7 @@
   "revises_ruling_sha256": "5b3fc66029456f38d40358496ba308596751ef7ffae0d3711adb1ab5caa84117",
   "decision": "covered",
   "decision_owner": "Chairman Chris",
-  "evidence_kind": "direct_chairman_source_rights_confirmation",
+  "evidence_kind": "chairman_delegated_decision",
   "delegation": {
     "granted_by": "Chairman Chris",
     "granted_on": "2026-11-02",
