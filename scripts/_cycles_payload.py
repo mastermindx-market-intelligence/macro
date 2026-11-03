@@ -35,7 +35,9 @@ FAMILY_KEYS = ("sectors", "baskets", "nasdaq", "russell")
 # heavy arrays pulled into the series chunk, by family class
 _HEAVY_ALL = ("price",)                              # every family
 _HEAVY_NON_SECTORS = ("osc", "turns")                # baskets / nasdaq / russell
-_HEAVY_SECTORS = ("fx", "usd_record")                # only the sectors family (country FX card)
+# only the sectors family: the country FX card, plus rs_history — the 252-point
+# reconstructed RS trail engine.sector_cycles emits per sector, hydrated after first paint
+_HEAVY_SECTORS = ("fx", "usd_record", "rs_history")
 
 
 def _heavy_keys_for(family: str) -> tuple[str, ...]:

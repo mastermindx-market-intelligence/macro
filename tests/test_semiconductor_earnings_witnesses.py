@@ -36,12 +36,14 @@ from pathlib import Path
 
 import pytest
 
+from engine.company_intelligence.defense_profiles import DEFENSE_TICKERS, defense_issuer
 from engine.company_intelligence.event_workspace import (
     AAPL_CIK,
     production_registry,
 )
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.company_intelligence.events import FiscalPeriod
+from engine.company_intelligence.gd_profile import gd_issuer
 from engine.company_intelligence.guidance_history import assess_management_sequence
 from engine.company_intelligence.identity import ALIAS_EPOCH
 from engine.company_intelligence.issuer_profiles import (
@@ -186,16 +188,15 @@ def _bind_on(exhibit_body: str = ON_SYNTHETIC_EXHIBIT):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# (a) Production registry — 7 issuers, apple first, homebuilders unchanged,
-# TSM and ON added at the end.
+# (a) Production registry — apple first, homebuilders unchanged, TSM and ON
+# straight after them; the defense owner's issuers and GD follow unchanged.
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_production_registry_has_seven_issuers_apple_first_then_homebuilders_then_semis() -> None:
-    registry = production_registry()
-    assert len(registry) == 7
-    ordered = [issuer.company_id for issuer in registry]
+def test_production_registry_apple_first_then_homebuilders_then_semis_then_defense() -> None:
+    ordered = [issuer.company_id for issuer in production_registry()]
+    assert len(ordered) == len(set(ordered))
     # Apple first, four homebuilders unchanged, TSM, then ON.
-    assert ordered == [
+    assert ordered[:7] == [
         "cik:0000320193",  # AAPL
         "cik:0000882184",  # DHI
         "cik:0000822416",  # PHM
@@ -204,6 +205,9 @@ def test_production_registry_has_seven_issuers_apple_first_then_homebuilders_the
         "cik:0001046179",  # TSM
         "cik:0001097864",  # ON
     ]
+    # The defense profiles own their issuers and order; the witnesses only sit ahead of them.
+    defense = [defense_issuer(ticker).company_id for ticker in DEFENSE_TICKERS]
+    assert ordered[7:] == [*defense, gd_issuer().company_id]
 
 
 def test_tsm_issuer_has_sec_attested_identity() -> None:

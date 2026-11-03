@@ -1,0 +1,40 @@
+{
+  "cik": "0000914475",
+  "filings_10k": [
+    {
+      "accessionNumber": "0000914475-22-000013",
+      "filingDate": "2022-02-11",
+      "form": "10-K",
+      "primaryDocument": "nbix-20211231.htm",
+      "reportDate": "2021-12-31"
+    },
+    {
+      "accessionNumber": "0000914475-23-000011",
+      "filingDate": "2023-02-09",
+      "form": "10-K",
+      "primaryDocument": "nbix-20221231.htm",
+      "reportDate": "2022-12-31"
+    },
+    {
+      "accessionNumber": "0000914475-24-000054",
+      "filingDate": "2024-02-09",
+      "form": "10-K",
+      "primaryDocument": "nbix-20231231.htm",
+      "reportDate": "2023-12-31"
+    }
+  ],
+  "fiscalYearEnd": "1231",
+  "name": "NEUROCRINE BIOSCIENCES INC",
+  "response_sha256": {
+    "https://data.sec.gov/submissions/CIK0000914475.json": "6b7fa6cf0d175efc074701cfcebac136db8e61eea510518777721706a1ea006d"
+  },
+  "retrieved_at": "2026-11-01T20:23:07Z",
+  "sic": "2836",
+  "sicDescription": "Biological Products, (No Diagnostic Substances)",
+  "source_urls": [
+    "https://data.sec.gov/submissions/CIK0000914475.json"
+  ],
+  "tickers": [
+    "NBIX"
+  ]
+}

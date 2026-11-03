@@ -1,0 +1,386 @@
+{
+  "award_action_versions.parquet": {
+    "clocks": {
+      "effective_at": {
+        "earliest": "1984-04-30T00:00:00+00:00",
+        "latest": "2026-10-02T00:00:00+00:00",
+        "missing_n": 0,
+        "observed_n": 35622
+      },
+      "first_seen_at": {
+        "earliest": "2026-08-07T19:38:30.810277+00:00",
+        "latest": "2026-10-09T02:31:02.953885+00:00",
+        "missing_n": 0,
+        "observed_n": 35622
+      },
+      "known_at": {
+        "earliest": "2026-08-07T19:38:30.810277+00:00",
+        "latest": "2026-10-09T02:31:02.953885+00:00",
+        "missing_n": 0,
+        "observed_n": 35622
+      }
+    },
+    "event_eligible_counts": {
+      "False": 34307,
+      "True": 1315
+    },
+    "receipt_verified_counts": {
+      "True": 35622
+    },
+    "row_n": 35622
+  },
+  "award_event_snapshots.parquet": {
+    "clocks": {
+      "effective_at": {
+        "earliest": "2021-11-04T00:00:00+00:00",
+        "latest": "2026-10-05T00:00:00+00:00",
+        "missing_n": 0,
+        "observed_n": 475
+      },
+      "first_seen_at": {
+        "earliest": "2026-08-07T19:38:30.810277+00:00",
+        "latest": "2026-10-06T02:30:59.703564+00:00",
+        "missing_n": 0,
+        "observed_n": 475
+      },
+      "known_at": {
+        "earliest": "2026-08-07T19:38:30.810277+00:00",
+        "latest": "2026-10-09T02:31:02.953885+00:00",
+        "missing_n": 0,
+        "observed_n": 475
+      }
+    },
+    "event_eligible_counts": {
+      "False": 169,
+      "True": 306
+    },
+    "receipt_verified_counts": {
+      "True": 475
+    },
+    "row_n": 475
+  },
+  "candidate_display_queue": {
+    "admitted_historical_input_shapes_not_issuances": [
+      {
+        "candidate_id": "grc1-e9af2adae7cd84729d198125",
+        "effective_at": "2026-08-27T00:00:00+00:00",
+        "issuer_company_id": "central:TDY",
+        "known_at": "2026-08-31T01:10:50.489948+00:00",
+        "ticker": "TDY"
+      },
+      {
+        "candidate_id": "grc1-5133a2081e9f5e84e61fc21f",
+        "effective_at": "2026-08-26T00:00:00+00:00",
+        "issuer_company_id": "central:LDOS",
+        "known_at": "2026-08-28T07:50:14.386742+00:00",
+        "ticker": "LDOS"
+      },
+      {
+        "candidate_id": "grc1-9c2785c168efe1ac7813616b",
+        "effective_at": "2026-08-24T00:00:00+00:00",
+        "issuer_company_id": "central:BWXT",
+        "known_at": "2026-08-27T02:39:58.581371+00:00",
+        "ticker": "BWXT"
+      },
+      {
+        "candidate_id": "grc1-8415958b18564c8c7e3179b6",
+        "effective_at": "2026-07-23T00:00:00+00:00",
+        "issuer_company_id": "central:BWXT",
+        "known_at": "2026-08-22T23:18:03.375950+00:00",
+        "ticker": "BWXT"
+      },
+      {
+        "candidate_id": "grc1-3b938e60947d2c3b3831e041",
+        "effective_at": "2026-08-17T00:00:00+00:00",
+        "issuer_company_id": "central:BA",
+        "known_at": "2026-08-19T20:17:48.860729+00:00",
+        "ticker": "BA"
+      },
+      {
+        "candidate_id": "grc1-c23c474f43a98b1fe1b42af4",
+        "effective_at": "2026-08-17T00:00:00+00:00",
+        "issuer_company_id": "central:LDOS",
+        "known_at": "2026-08-19T20:17:48.860729+00:00",
+        "ticker": "LDOS"
+      },
+      {
+        "candidate_id": "grc1-054df25c61b7aed3e783919d",
+        "effective_at": "2026-08-14T00:00:00+00:00",
+        "issuer_company_id": "central:BA",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "BA"
+      },
+      {
+        "candidate_id": "grc1-2431cef9fbca1f209edb0f45",
+        "effective_at": "2026-08-11T00:00:00+00:00",
+        "issuer_company_id": "central:BWXT",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "BWXT"
+      },
+      {
+        "candidate_id": "grc1-5afb580189d627d960173ea2",
+        "effective_at": "2026-08-13T00:00:00+00:00",
+        "issuer_company_id": "central:VSAT",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "VSAT"
+      },
+      {
+        "candidate_id": "grc1-702391df138e26fd9218c0f9",
+        "effective_at": "2026-08-10T00:00:00+00:00",
+        "issuer_company_id": "central:KTOS",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "KTOS"
+      },
+      {
+        "candidate_id": "grc1-c106aa8bc014b7e1fbd1eac9",
+        "effective_at": "2026-08-10T00:00:00+00:00",
+        "issuer_company_id": "central:LDOS",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "LDOS"
+      },
+      {
+        "candidate_id": "grc1-c6f08c7a958804464bba4c7f",
+        "effective_at": "2026-08-14T00:00:00+00:00",
+        "issuer_company_id": "central:TDY",
+        "known_at": "2026-08-19T05:44:34.128190+00:00",
+        "ticker": "TDY"
+      }
+    ],
+    "admitted_house_clocks": {
+      "earliest": "2026-08-19T05:44:34.128190+00:00",
+      "latest": "2026-08-31T01:10:50.489948+00:00",
+      "missing_n": 0,
+      "observed_n": 12
+    },
+    "as_of": "2026-09-01T23:59:59.999999+00:00",
+    "candidate_n": 173,
+    "existing_grv_fa1_admission": {
+      "admitted_input_shape": 12,
+      "ceiling_change_out_of_family": 40,
+      "deobligation": 10,
+      "family_rail_mismatch": 58,
+      "late_discovery": 53
+    },
+    "generated_at": "2026-09-01T04:06:02.556890+00:00",
+    "source_rail_counts": {
+      "usaspending_award_action": 75,
+      "usaspending_award_snapshot": 98
+    }
+  },
+  "effects": {
+    "issuance_appended": false,
+    "price_outcomes_read": false,
+    "source_mutated": false,
+    "trial_generated": false
+  },
+  "existing_family": {
+    "declaration_matches_code": true,
+    "family_id": "grv-fa1",
+    "prereg_sha256": "d8dc5d3cf6ced25424906dfb31ee4b8565b74b625080a9664926f2959cc00c41",
+    "version": "4.1.0"
+  },
+  "existing_trial_ledger_read_only": {
+    "corrupt_lines": 0,
+    "hash_implementation": "sha1(family + NUL + canonical_config)[:16]",
+    "load_error": null,
+    "no_trial_logged_by_this_census": true
+  },
+  "fms": {
+    "365d_mature_asof_2026_10_12_n": 0,
+    "binary_outcome_ascertainment": "NOT_ADMITTED",
+    "case_n": 68,
+    "coverage": {
+      "history_disclosure": "In-scope 2026 DSCA articles + the 26-13 certification PDF only; the pre-2026 DSCA archive is not covered in v1.",
+      "law": "official_union_v1",
+      "reconciliation": {
+        "cases_built": 68,
+        "denominator_transmittals": 67,
+        "denominator_unbuilt": [],
+        "web_absent_cases": [
+          "25-70",
+          "26-16",
+          "26-18",
+          "26-21",
+          "26-23",
+          "26-24",
+          "26-26",
+          "26-27",
+          "26-28",
+          "26-29",
+          "26-3",
+          "26-30",
+          "26-31",
+          "26-32",
+          "26-34",
+          "26-36",
+          "26-37",
+          "26-38",
+          "26-39",
+          "26-40",
+          "26-41",
+          "26-42",
+          "26-43",
+          "26-44",
+          "26-45",
+          "26-46",
+          "26-47",
+          "26-48",
+          "26-49",
+          "26-50",
+          "26-51",
+          "26-52",
+          "26-53",
+          "26-54",
+          "26-56",
+          "26-58",
+          "26-60",
+          "26-62",
+          "26-63",
+          "26-64",
+          "26-67",
+          "26-72",
+          "26-73",
+          "26-74"
+        ],
+        "web_only_cases": 1
+      },
+      "sources": {
+        "dsca_press": {
+          "articles_staged": 14,
+          "disclosure": "In-scope 2026 articles + the 26-13 certification PDF only; the pre-2026 DSCA archive is NOT covered.",
+          "role": "historical_observations_bounded",
+          "status": "ok"
+        },
+        "federal_register": {
+          "amendments_excluded": 96,
+          "corrections": 2,
+          "docs_scanned": 289,
+          "originals": 67,
+          "out_of_scope_originals": 124,
+          "publication_window": [
+            "2026-01-01",
+            "2026-10-11"
+          ],
+          "role": "denominator_and_recovery",
+          "status": "ok"
+        },
+        "state_pm_bureau": {
+          "articles_failed": 0,
+          "articles_succeeded": 10,
+          "listing_pages": 1,
+          "qualifying_articles": 10,
+          "role": "current_presentation_staged",
+          "status": "ok"
+        }
+      }
+    },
+    "house_clocks": {
+      "earliest": "2026-08-26T09:37:21.528793+00:00",
+      "latest": "2026-10-06T07:35:59.582488+00:00",
+      "missing_n": 0,
+      "observed_n": 94
+    },
+    "later_stage_counts": {
+      "stage_not_observed": 68
+    },
+    "native_case_unique_n": 68,
+    "observation_n": 94,
+    "stage_counts": {
+      "congressional_notification": 68
+    }
+  },
+  "kind": "existing_owner_input_admission_audit",
+  "local_candidate_issuance_logs": [],
+  "native_parent": "01a13337-1958-7a32-bdd7-5004d2362fab",
+  "not_sealed_evaluation": true,
+  "observed_at": "2026-10-13T03:15:44.218899+00:00",
+  "original_root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "owner_tests": {
+    "claim": "existing-owner regression only; not a new target or efficacy test",
+    "command": "python3 -m pytest -q tests/test_government_revenue_candidate_grader.py -k 'registered_family_still or out_of_family or deobligation_and_late or maturity_gate_is_not or denominator_is_the_issuance or point_estimate_is_not or kill_condition_is_reachable or calendar_revision or horizon_running_off or non_finite'",
+    "deselected": 126,
+    "exit_code": 0,
+    "passed": 15,
+    "seconds": 19.33,
+    "stdout_tail": "15 passed, 126 deselected in 19.33s"
+  },
+  "proposed_families_currently_registered": 0,
+  "references": [
+    {
+      "bytes": 9795,
+      "path": "research/defense_intelligence/DEFENSE_RESEARCH_PROTOCOL_2026-10-12.md",
+      "sha256": "9885d39deb0c5edf3e2a06ea8fe8d26851bf7698a99a0ad38f779dafa5ca41db"
+    },
+    {
+      "bytes": 69052,
+      "path": "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md",
+      "sha256": "d8dc5d3cf6ced25424906dfb31ee4b8565b74b625080a9664926f2959cc00c41"
+    },
+    {
+      "bytes": 159513,
+      "path": "engine/government_revenue/candidate_grader.py",
+      "sha256": "95e350545103cc8492ceddab550de244f9dfcaf687de5c4cc87b12e62aa5eb28"
+    },
+    {
+      "bytes": 7710,
+      "path": "engine/government_revenue/point_in_time.py",
+      "sha256": "bb747d91fcdcf2a7b7773dcc14c80a40f7d5aab344b41953ea5225b9af981a3a"
+    },
+    {
+      "bytes": 17150,
+      "path": "engine/trial_ledger.py",
+      "sha256": "3df853fd7210d9dcd4c4efbd2e1a3ca15f1a4f451a06127836fcc879d71378a7"
+    },
+    {
+      "bytes": 68813,
+      "path": "engine/fundamental_forensics/production_datasets.py",
+      "sha256": "9d4de1d7c9a9304a6aa7f848b1d7b0556dc7f29837561a921b3f636e453b89e9"
+    },
+    {
+      "bytes": 12156,
+      "path": "engine/fundamental_forensics/production_provider.py",
+      "sha256": "51183673239e6a8d0ac4e3fa96d460a2d80facb77dbf03c36ca7cd1f13327ca6"
+    },
+    {
+      "bytes": 30379,
+      "path": "collectors/yahoo.py",
+      "sha256": "b919e82ef6061e883b921344c28d4ae80437a89f9c386c53a0079c9b9f4e5580"
+    },
+    {
+      "bytes": 169753,
+      "path": "data/government_revenue/fms_observations.jsonl",
+      "sha256": "535f74f59ea4bdcc01937293347b9f5d4c6203e55a446f75003c6e514ee33ce3"
+    },
+    {
+      "bytes": 183688,
+      "path": "data/government_revenue/fms_case_graph.json",
+      "sha256": "f586d2a25722d8aa98a61b0be1863bee7f736c7025a45e26c35f3e8e15a2581e"
+    },
+    {
+      "bytes": 1205500,
+      "path": "data/government_revenue/candidate_queue.json",
+      "sha256": "2187ece0c0070b61b1943686d6a0946db0cad86ebf4d35c081f497cfc839b69d"
+    },
+    {
+      "bytes": 1573616,
+      "path": "data/government_revenue/candidate_ledger.jsonl",
+      "sha256": "4c7444f63a922b0e2acbc8645d4ce627026fe2443f803f0a9894bceaf91af66b"
+    },
+    {
+      "bytes": 4164960,
+      "path": "data/government_revenue/award_action_versions.parquet",
+      "sha256": "f8796c44c0d38317e473d1de4e263e256152cf04320e2ef88ac4a994b1193a34"
+    },
+    {
+      "bytes": 177632,
+      "path": "data/government_revenue/award_event_snapshots.parquet",
+      "sha256": "890344c5028bfd49aec30f74bdbd139ce0a13b82a763e5e0fbeaf7e0101c9c93"
+    },
+    {
+      "bytes": 6649,
+      "path": "data/government_revenue/award_event_projection_state.json",
+      "sha256": "bdfc0fc4994eeab0edfd16f073e6159f79e8f97307f4ff817b9cabfb1a84ff17"
+    }
+  ],
+  "source_head": "984ed6e16cca71bed534e39d707883fee87bd673"
+}

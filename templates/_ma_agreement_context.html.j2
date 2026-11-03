@@ -1,0 +1,41 @@
+{# Dated facts for the exact same issuer/accession as the featured premium. #}
+{% set agreement = agreement if agreement is defined else none %}
+<section class="cs-latest-card cs-ma-agreement" id="cs-ma-agreement" aria-labelledby="cs-ma-agreement-title">
+  <div class="cs-section-heading">
+    <div>
+      <p class="cs-kicker">{{ t('Inside the merger agreement', '合并协议条款') }}</p>
+      <h2 id="cs-ma-agreement-title">{{ t('Committed funding and the cost of termination', '承诺融资与终止费用') }}</h2>
+    </div>
+    <span class="cs-state-chip">{{ t('Dated agreement facts', '有日期的协议事实') }}</span>
+  </div>
+  {% if agreement and agreement.status == 'qualified' %}
+  <p><strong>{{ agreement.company }}</strong> · {{ t('Buyer', '买方') }}: <strong>{{ agreement.buyer }}</strong> · {{ t('Agreement dated', '协议日期') }} {{ agreement.agreement_date }}.</p>
+  <p>{{ t('The filing describes commitments, not cash already funded. The buyer has no financing condition to closing; other closing conditions and limits on enforcement still apply.', '文件披露的是融资承诺，并非已到账现金。买方交割不以融资到位为条件；其他交割条件及强制履行限制仍然适用。') }}</p>
+  <div class="cs-latest-grid">
+    <div><span>{{ t('Equity committed to Parent', '向买方母公司承诺的股权融资') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.equity_commitment) }}</strong></div>
+    <div><span>{{ t('Term loan facility', '定期贷款额度') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.term_loan_commitment) }}</strong></div>
+    <div><span>{{ t('Revolving facility', '循环信贷额度') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.revolver_commitment) }}</strong></div>
+    <div><span>{{ t('Delayed-draw term loan', '延迟提款定期贷款额度') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.delayed_draw_commitment) }}</strong></div>
+  </div>
+  <details>
+    <summary>{{ t('Funding conditions', '提款条件') }}</summary>
+    <p>{{ t('Debt lenders commit to Merger Sub as initial borrower. Draws require customary notices, representations and security documents, with the merger and equity funding substantially concurrent. This page does not establish a draw or completed closing.', '债务融资以合并子公司为初始借款人。提款须满足惯常通知、陈述及担保文件要求，合并和股权融资须基本同时完成。本页不认定已经提款或完成交割。') }}</p>
+  </details>
+  <h3>{{ t('Fees run in both directions', '双方分别承担的终止费') }}</h3>
+  <div class="cs-latest-grid">
+    <div><span>{{ t('Bowman → Parent', 'Bowman → 买方母公司') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.company_to_parent_fee) }}</strong></div>
+    <div><span>{{ t('Parent → Bowman', '买方母公司 → Bowman') }}</span><strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.parent_to_company_fee) }}</strong></div>
+  </div>
+  <p>{{ t('These are conditional amounts, not a finding that either fee is currently owed.', '上述金额均附有触发条件，并不代表目前任何一方已须支付。') }}</p>
+  <details>
+    <summary>{{ t('Termination triggers and the historical reduced-fee window', '终止费触发条件与历史减免窗口') }}</summary>
+    <p>{{ t('Bowman’s fee covers specified superior-proposal and board-recommendation changes before stockholder approval, and specified terminations where a public proposal was not withdrawn before termination, followed by a transaction or agreement within 12 months. The full conditions are in the filing.', 'Bowman 的费用适用于股东批准前特定的更优要约及董事会建议变更，也适用于终止前已有公开且未撤回的要约、特定终止以及随后 12 个月内达成交易或协议等组合条件。完整条件见原文件。') }}</p>
+    <p>{{ t('The Parent fee is subject to limitations and cure provisions: specified breaches preventing closing, failure to close after Bowman confirms it is ready, willing and able, or the stated termination-date case while Bowman has that failure-to-close right.', '买方母公司的费用受限制及补救条款约束：包括特定违约导致无法交割、Bowman 确认已准备且愿意并能够交割后仍未交割，或 Bowman 当时具有该未交割终止权的约定终止日情形。') }}</p>
+    <p>{{ t('Historical window — the reduced Bowman fee was', '历史窗口 — Bowman 的减免后费用为') }} <strong>{{ agreement.currency }} {{ '{:,.0f}'.format(agreement.reduced_company_fee) }}</strong>, {{ t('only for the specified Excluded Party proposal or recommendation-change conditions on or before', '仅适用于指定被排除方要约或建议变更条件，截止日期为') }} <strong>{{ agreement.reduced_fee_deadline }}</strong>. {{ t('This is not a current reduced-fee option.', '这不是当前仍可选择的减免费率。') }}</p>
+  </details>
+  <p>{{ t('Filed', '披露日期') }} {{ agreement.filed_date }} · {{ t('SEC accepted', 'SEC 接收时间') }} {{ agreement.accepted_at }} · {{ t('Source retrieved', '来源获取时间') }} {{ agreement.retrieved_at }}</p>
+  <p><a href="{{ agreement.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('Read the proxy: financing and termination sections', '阅读委托书：融资与终止条款') }}</a></p>
+  {% else %}
+  <div class="cs-unavailable"><span class="cs-unavailable-mark" aria-hidden="true">↳</span><div><strong>{{ t('No agreement terms are qualified for the displayed deal.', '当前展示交易暂无经核对的协议条款。') }}</strong><span>{{ t('The issuer, filing, retained source and dates must match before amounts appear.', '须先核对发行人、披露文件、留存来源及日期，才会显示金额。') }}</span></div></div>
+  {% endif %}
+</section>

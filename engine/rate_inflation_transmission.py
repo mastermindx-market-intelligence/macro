@@ -21,6 +21,11 @@ from __future__ import annotations
 
 import json
 import logging
+import ast
+import hashlib
+import inspect
+from datetime import UTC, datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -605,6 +610,168 @@ def scenarios(f: pd.DataFrame, cal: dict, cfg: dict) -> list:
     return out
 
 
+# Additive producer receipts for the EXISTING scalar betas above. These do not
+# fit a model, create a market calendar, confer a data licence or change scoring.
+SCENARIO_METADATA_SCHEMA = 'rate_inflation_scenario_metadata.v1'
+SCENARIO_METHOD = 'rate_inflation.same_window_beta.v1'
+
+
+def scenario_content_hash(value) -> str:
+    raw = json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+    return 'sha256:' + hashlib.sha256(raw).hexdigest()
+
+
+def scenario_method_versions() -> dict:
+    """Bind relevant method source, without importing/running a calibrator."""
+    path = Path(__file__).resolve().parents[1] / 'scripts/calibrate_rate_inflation.py'
+    source = path.read_text()
+    tree = ast.parse(source)
+    estimator = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'scenario_betas')
+    return {'estimator': scenario_content_hash(ast.get_source_segment(source, estimator).strip()),
+            'display': scenario_content_hash(inspect.getsource(scenarios).strip()),
+            'receipt': scenario_content_hash([inspect.getsource(f).strip() for f in
+                                              [scenario_cell_metadata, scenario_calibration_metadata]]),
+            'pandas': pd.__version__, 'numpy': np.__version__}
+
+
+def scenario_cell_metadata(j: pd.DataFrame, beta: float) -> dict:
+    """Describe the actual native paired sample, never reconstruct a lost N."""
+    try:
+        pairs = [[str(i), float(x), float(r)] for i, x, r in zip(j.index, j['x'], j['r'])]
+        if not pairs or not np.isfinite(beta) or not all(np.isfinite([p[1], p[2]]).all() for p in pairs):
+            raise ValueError('nonfinite native sample')
+        if not j.index.is_unique or not j.index.is_monotonic_increasing: raise ValueError('native index order')
+        return {'state': 'available', 'beta': beta, 'n': len(j), 'start': str(j.index[0]),
+                'end': str(j.index[-1]), 'paired_sample_sha256': scenario_content_hash(pairs),
+                'sample_count_kind': 'overlapping_paired_observations', 'effective_n': None}
+    except (ValueError, TypeError, OverflowError):
+        return {'state': 'unavailable', 'reason': 'native_sample_not_reproducible'}
+
+
+def scenario_calibration_metadata(f: pd.DataFrame, betas: dict, cells: dict, *,
+                                  generated_at: str | None = None,
+                                  horizon_sessions: int = 63, minimum_n: int = 504) -> dict:
+    """Receipt over this producer run. Observation labels are NOT future dates.
+
+    The digest describes actual derived estimator inputs, not unrecorded raw
+    vendor files or historical PIT availability. Existing owner display policy
+    is a publication scope, never an invented licensing/rights receipt.
+    """
+    try:
+        if f.empty or not f.index.is_unique or not f.index.is_monotonic_increasing:
+            raise ValueError('native feature index')
+        labels = [str(i) for i in f.index]
+        return {'schema': SCENARIO_METADATA_SCHEMA, 'state': 'available', 'method': SCENARIO_METHOD,
+                'generated_at': generated_at or datetime.now(UTC).isoformat(),
+                'effective_at': str(f.index[-1].date()), 'horizon_sessions': horizon_sessions, 'minimum_n': minimum_n,
+                'driver_unit': 'percentage_points', 'response_unit': 'return_fraction',
+                'alignment': 'asset_ffill_to_native_feature_index',
+                'calendar': {'owner_ref': 'engine.inputs.build_features.index',
+                             'unit': 'native_feature_index_positions', 'count': len(labels),
+                             'start': labels[0], 'end': labels[-1],
+                             'sha256': scenario_content_hash(labels)},
+                'method_versions': scenario_method_versions(),
+                'scalar_betas_sha256': scenario_content_hash(betas), 'cells': cells,
+                'publication_contract': 'engine.rate_inflation_transmission.scenarios:display_only',
+                'historical_vintage_claim': False}
+    except (ValueError, TypeError, OverflowError, OSError, StopIteration, SyntaxError):
+        # A receipt failure must not change the incumbent scalar calibration.
+        return {'schema': SCENARIO_METADATA_SCHEMA, 'state': 'unavailable',
+                'reason': 'native_metadata_not_reproducible'}
+
+
+class ScenarioMetadataUnavailable(ValueError):
+    """A constant native admission reason, safe to display without raw inputs."""
+
+
+def evaluate_scenario_beta(cal: dict, *, shock_bp: float, horizon: str,
+                           path_shape: str, effective_at: str, knowledge_cutoff: str) -> dict:
+    """Read the producer's receipt and call the existing display method exactly.
+
+    No calibration, historical-cutoff substitution, future calendar or raw series
+    read occurs here. Old scalar artifacts remain valid for their old consumer;
+    they cannot acquire missing sample/clock identities through this adapter.
+    """
+    def refuse(reason): raise ScenarioMetadataUnavailable(reason)
+    def stamp(value):
+        if not isinstance(value, str): raise ValueError('instant')
+        result = datetime.fromisoformat(value.replace(' UTC', '+00:00').replace('Z', '+00:00'))
+        if result.tzinfo is None: raise ValueError('timezone')
+        return result
+    def digest(value):
+        return isinstance(value, str) and len(value) == 71 and value.startswith('sha256:') and all(c in '0123456789abcdef' for c in value[7:])
+    if horizon != '63d': refuse('HORIZON_INCOMPATIBLE')
+    if path_shape != 'terminal_only': refuse('NUMERIC_PATH_SHAPE_UNSUPPORTED')
+    if isinstance(shock_bp, bool) or not isinstance(shock_bp, (int, float)) or not np.isfinite(shock_bp):
+        refuse('NUMERIC_SHOCK_UNAVAILABLE')
+    try:
+        m = cal['scenario_beta_metadata']; betas = cal['scenario_betas']; cells = m['cells']['real10y_chg63']
+        row = betas['real10y_chg63']; calendar = m['calendar']; methods = m['method_versions']
+        if (m['schema'] != SCENARIO_METADATA_SCHEMA or m['state'] != 'available' or m['method'] != SCENARIO_METHOD
+                or m['horizon_sessions'] != 63 or m['minimum_n'] != 504
+                or m['driver_unit'] != 'percentage_points' or m['response_unit'] != 'return_fraction'
+                or m['alignment'] != 'asset_ffill_to_native_feature_index'
+                or m['historical_vintage_claim'] is not False
+                or m['publication_contract'] != 'engine.rate_inflation_transmission.scenarios:display_only'
+                or m['scalar_betas_sha256'] != scenario_content_hash(betas)):
+            raise ValueError('metadata contract')
+        current = scenario_method_versions()
+        if any(methods[k] != current[k] for k in ['estimator', 'display', 'receipt']):
+            refuse('NUMERIC_METHOD_VERSION_UNAVAILABLE')
+        if any(not isinstance(methods[k], str) or not methods[k] for k in ['pandas', 'numpy']):
+            raise ValueError('producer versions')
+        generated = stamp(m['generated_at']); cutoff = stamp(knowledge_cutoff)
+        effective = datetime.fromisoformat(effective_at).date()
+        observed = datetime.fromisoformat(m['effective_at']).date()
+        if (generated > cutoff or observed > effective or observed > generated.date()
+                or cal['meta']['asof'] != m['effective_at'] or cal['meta']['horizon_d'] != 63):
+            refuse('NUMERIC_OWNER_CLOCK_UNAVAILABLE')
+        if (calendar['owner_ref'] != 'engine.inputs.build_features.index'
+                or calendar['unit'] != 'native_feature_index_positions'
+                or not digest(calendar['sha256']) or type(calendar['count']) is not int
+                or calendar['count'] < 63 + 504
+                or datetime.fromisoformat(calendar['end']).date() != observed):
+            raise ValueError('native observation index')
+        calendar_start = datetime.fromisoformat(calendar['start'])
+        calendar_end = datetime.fromisoformat(calendar['end'])
+        if calendar_start >= calendar_end or not isinstance(row, dict) or not row or len(row) > 128:
+            raise ValueError('coverage')
+        if set(cells) != set(row): raise ValueError('metadata coverage')
+        for asset, beta in row.items():
+            cell = cells[asset]
+            if (asset not in ASSETS_META or isinstance(beta, bool) or not isinstance(beta, (int, float))
+                    or not np.isfinite(beta) or cell['state'] != 'available' or isinstance(cell['beta'], bool) or cell['beta'] != beta
+                    or type(cell['n']) is not int or not 504 <= cell['n'] <= calendar['count'] - 63
+                    or not digest(cell['paired_sample_sha256']) or cell['effective_n'] is not None
+                    or cell['sample_count_kind'] != 'overlapping_paired_observations'
+                    or not calendar_start <= datetime.fromisoformat(cell['start']) <= datetime.fromisoformat(cell['end']) <= calendar_end):
+                raise ValueError('cell metadata')
+        # No copied coefficient arithmetic: preserve the owner's filter, order,
+        # five-per-side coverage and one-decimal rounding, including empty output.
+        cfg = {'scenarios': [{'key': 'ontology_explicit_real10y', 'driver': 'real10y_chg63',
+            'shock_bp': shock_bp, 'label_en': 'Assumed real 10Y change — same-window illustration',
+            'label_zh': '假设实际10年期收益率变化—同窗示意'}]}
+        native = scenarios(None, cal, cfg)[0]
+        displayed = [v['asset'] for k in ['headwinds', 'tailwinds'] for v in native[k]]
+        if any(not np.isfinite(v['implied_move_pct']) for k in ['headwinds', 'tailwinds'] for v in native[k]):
+            raise ValueError('nonfinite illustration')
+        return {'status': 'NUMERIC_ILLUSTRATION', 'method_class': 'EMPIRICAL_SAME_WINDOW_BETA',
+                'node_ref': 'transmission:real10y_chg63', 'confirmed': None, 'scenario': native,
+                'horizon': {'label': '63d', 'unit': 'native_feature_index_positions', 'count': 63},
+                'coverage': {'calibrated_assets': list(row), 'displayed_assets': displayed,
+                    'not_displayed': [{'asset': a, 'reason': 'native_display_floor_or_five_per_side_limit'}
+                                      for a in row if a not in displayed]},
+                'samples': {a: cells[a] for a in row}, 'caveats': CAVEATS,
+                'uncertainty': 'not_provided_by_native_owner',
+                'calibration': {'generated_at': m['generated_at'], 'effective_at': m['effective_at'],
+                    'calendar': calendar, 'method_versions': methods,
+                    'publication_contract': m['publication_contract'], 'historical_vintage_claim': False}}
+    except ScenarioMetadataUnavailable:
+        raise
+    except (KeyError, TypeError, ValueError, OverflowError, OSError, StopIteration, SyntaxError):
+        refuse('NUMERIC_OWNER_METADATA_UNAVAILABLE')
+
+
 CAVEATS = [
     _bil("Display-only — never scored. The repricing of rates/inflation is REACTIVE; the curve moves after the data and the Fed, it does not lead them.",
          "仅供展示，从不计入评分。利率/通胀的重新定价是被动的；曲线在数据与美联储之后变动，而非领先。"),
@@ -647,4 +814,43 @@ def snapshot(f: pd.DataFrame) -> dict | None:
             f"仅供展示。可计分腿检验：{'，'.join(elig) if elig else '没有任何利率/通胀腿通过前瞻回撤门槛并满足清洗交叉验证稳健性'}（详见校准报告）。"),
         "caveats": CAVEATS,
         "calibrated": cal is not None,
+        "curve_accounting": _curve_accounting_or_shell(f),
     }
+
+
+# --- RIC Y1b: curve accounting producer (display-only, additive) -------------
+def _curve_accounting_or_shell(f: pd.DataFrame) -> dict:
+    """Y1 curve accounting for the transmission snapshot, fail-open.
+
+    Never None and never silent: any failure -- including the lazy import --
+    returns the curve_accounting.v1 shell with status "unavailable" and the
+    exception named in ``reason``; every number stays null. Display-only."""
+    try:
+        from engine.yield_momentum import build_curve_accounting
+
+        out = build_curve_accounting(f)
+        if not isinstance(out, dict):
+            raise TypeError(f"build_curve_accounting returned {type(out).__name__}")
+        return out
+    except Exception as exc:  # noqa: BLE001 -- fail-open by contract
+        reason = f"{type(exc).__name__}: {' '.join(str(exc).split())}"[:240]
+        log.warning("transmission: curve_accounting unavailable (%s)", reason)
+        return {
+            "schema": "curve_accounting.v1",
+            "calculation_version": "ric_y1_curve_accounting.v1",
+            "basis_schema": None,
+            "cutoff": None,
+            "asof": None,
+            "status": "unavailable",
+            "reason": reason,
+            "display_only": True,
+            "authority": False,
+            "can_score": False,
+            "can_size": False,
+            "can_trade": False,
+            "law": [],
+            "observations": {},
+            "comparisons": {},
+            "accounting_views": [],
+            "views_are_alternatives_never_summed": True,
+        }

@@ -238,11 +238,13 @@ def _parse_sse(chunks: list[str]) -> list[tuple[str, dict]]:
     return events
 
 
-def _collect_sse(ticker_news, **kwargs) -> list[tuple[str, dict]]:
+def _collect_sse(ticker_news, *, on_chunk=None, **kwargs) -> list[tuple[str, dict]]:
     async def collect():
         out = []
         async for chunk in ticker_news._sse_events(**kwargs):
             out.append(chunk)
+            if on_chunk is not None:
+                on_chunk(chunk)
         return out
 
     return _parse_sse(asyncio.run(collect()))
@@ -572,12 +574,8 @@ def test_sse_rights_revoked_between_cycles_emits_restricted_and_ends(
 ):
     surface = _arm(monkeypatch, tmp_path)
     ticker_news = surface["ticker_news"]
-    real = ticker_news._rights_for_user
-    seen = {"n": 0}
-
-    def revoke_after_first_cycle(user):
-        seen["n"] += 1
-        if seen["n"] >= 2:
+    def revoke_after_delivery(chunk):
+        if chunk.startswith("event: upsert"):
             _write(
                 surface["rights_path"],
                 _rights(
@@ -586,11 +584,10 @@ def test_sse_rights_revoked_between_cycles_emits_restricted_and_ends(
                     status="revoked",
                 ),
             )
-        return real(user)
 
-    monkeypatch.setattr(ticker_news, "_rights_for_user", revoke_after_first_cycle)
     events = _collect_sse(
         ticker_news,
+        on_chunk=revoke_after_delivery,
         ticker="NVDA",
         user={"id": "user-n-matrix"},
         after_sequence=0,
@@ -614,18 +611,16 @@ def test_sse_store_unavailable_midstream_emits_unavailable_and_ends(
 ):
     surface = _arm(monkeypatch, tmp_path)
     ticker_news = surface["ticker_news"]
-    seen = {"n": 0}
-    db = surface["db"]
+    def lose_store_after_delivery(chunk):
+        if chunk.startswith("event: upsert"):
+            monkeypatch.setattr(
+                ticker_news, "_news_db_path",
+                lambda: tmp_path / "store-gone.sqlite3",
+            )
 
-    def lose_store_after_first_open():
-        seen["n"] += 1
-        if seen["n"] == 1:
-            return db
-        return tmp_path / "store-gone.sqlite3"
-
-    monkeypatch.setattr(ticker_news, "_news_db_path", lose_store_after_first_open)
     events = _collect_sse(
         ticker_news,
+        on_chunk=lose_store_after_delivery,
         ticker="NVDA",
         user={"id": "user-n-matrix"},
         after_sequence=0,

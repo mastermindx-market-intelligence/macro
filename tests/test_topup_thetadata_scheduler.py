@@ -189,3 +189,31 @@ def test_successful_run_then_immediate_reinvocation_is_cheap_noop(tmp_path, monk
     rc2 = topup._daily_main(workers=1, deadline_min=topup._DEFAULT_DEADLINE_MIN, forced=False, now_fn=now_fn)
     assert rc2 == 0
     assert len(fake.calls) == n_calls_first   # zero NEW vendor calls
+
+
+def test_d_session_source_preparation_does_not_activate_any_rung():
+    import inspect
+    import scripts.topup_thetadata_day as topup
+    assert inspect.signature(topup._daily_main).parameters['d_session_observation'].default is None
+    assert topup._DSessionObservation.__dataclass_fields__['transport'].default is None
+    text=WRAPPER_PATH.read_text()
+    assert 'd-session' not in text and 'DSessionObservation' not in text
+    assert sorted((d['Hour'],d['Minute']) for d in _load_plist()['StartCalendarInterval'])==sorted(EXPECTED_FIRE_POINTS)
+
+
+def test_thin_wrapper_preserves_optin_environment_without_new_arguments(tmp_path):
+    """Synthetic executable boundary: real shell source, no Python producer run."""
+    import json,os,sys
+    wrapper=tmp_path/'scripts/launchd/theta_daily_refresh.sh';wrapper.parent.mkdir(parents=True)
+    capture=tmp_path/'python-fixture'
+    capture.write_text('#!'+sys.executable+'\nimport os,sys,json\nprint(json.dumps({"argv":sys.argv[1:],"operation":os.environ.get("THETADATA_D_SESSION_OBSERVATION")}))\n')
+    capture.chmod(0o700)
+    source=WRAPPER_PATH.read_text()
+    source=source.replace('PYTHON="/opt/homebrew/Caskroom/miniconda/base/bin/python"','PYTHON="'+str(capture)+'"')
+    wrapper.write_text(source)
+    for value in (None,'spy-2026-10-26-1730-observation-v1'):
+        env={**os.environ};env.pop('THETADATA_D_SESSION_OBSERVATION',None)
+        if value:env['THETADATA_D_SESSION_OBSERVATION']=value
+        p=subprocess.run(['bash',str(wrapper)],env=env,capture_output=True,text=True,check=True)
+        result=json.loads(p.stdout)
+        assert result=={'argv':['-m','scripts.topup_thetadata_day','--daily','--baseline-runtime','/Users/chriswong/liveflow-ops-wt'],'operation':value}

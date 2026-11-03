@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-13T00:39:54.585079+00:00",
-  "posts_seen": 5,
-  "seen_total": 282,
-  "evaluated": 0,
-  "activated": 0,
+  "as_of": "2026-11-02T23:32:40.447802+00:00",
+  "posts_seen": 6,
+  "seen_total": 312,
+  "evaluated": 2,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-11-02-president-trump-completes-historic-travel-blitz-30-events-20-states-32-days",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "tw-2026-10-27-tga-release",
+      "importance": 82,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

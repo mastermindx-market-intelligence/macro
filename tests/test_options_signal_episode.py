@@ -4077,7 +4077,8 @@ def test_locked_broad_snapshot_blocks_late_index_writer(tmp_path: Path) -> None:
         "#!/usr/bin/env bash\n"
         "set -euo pipefail\n"
         "oip_after_locked_tree_snapshot() {\n"
-        "  printf 'v2\\n' > config/foreign.txt\n"
+        # Deliberately change byte length: same-size v1/v2 is a racy Git stat test.
+        "  printf 'v2-late\\n' > config/foreign.txt\n"
         "  if git add config/foreign.txt >/dev/null 2>&1; then return 91; fi\n"
         "  return 0\n"
         "}\n"

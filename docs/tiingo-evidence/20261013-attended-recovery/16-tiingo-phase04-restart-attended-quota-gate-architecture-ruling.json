@@ -1,0 +1,124 @@
+{
+  "schema": "tiingo.attended_quota_gate_architecture_ruling/v1",
+  "recorded_at_utc": "2026-10-13T04:36:05.117164+00:00",
+  "decision": "PASS_ARCHITECTURE_CONDITIONAL_ON_EXACT_CANDIDATE_REVIEW_AND_ROOT_ACCEPTANCE",
+  "original_root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer_native_thread": "01a13385-9767-7a32-83b2-d216c2c9778d",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "scope": "Bounded recovery control adjudication only; parent implements and submits exact candidate for independent source review.",
+  "protected_source": {
+    "commit": "c9c1d618894be3c4ecba82178e46d04ee63cfd31",
+    "skillpack": "1.0.1",
+    "minimum_bootstrap_major": 1,
+    "pin_reused_from_verified_parent_commission": true,
+    "saved_INDEX_ACTIVE_RECONCILE_RELIABILITY_and_two_universal_companions_compared_equal_to_pinned_git_bytes": true
+  },
+  "input_sha256": {
+    "recovered-exact-phase04-capture-e7ddeb38.py": "e7ddeb3874fed231df4013f08d875f87d849483629275f1d8af9d837cb964c7e",
+    "recovered-exact-phase04-preflight-cbe6c5d3.py": "cbe6c5d3fbe5377179886a2f77b32c420fc0a08dd0b62ad89f05a26bec328928",
+    "tiingo-phase04-recovered-exact-reviewed-source-verification.json": "403bf6da7c4a06def6dada17936709d2c224230fb3c633aeb3686bad4e20c2a2",
+    "tiingo-phase04-original-capture76884-restart-pre-provider-reconciliation.json": "4c61408c41ce28b4583e606827ef2f3c452130f3b6a635478287a66e3ffc65cd",
+    "tiingo-wave15-continuation04-capture-independent-review.json": "3eb987f080aa9c50dcdb2fdc14086a4bd60b7a749aa03d5dacd0eb05daec1de6",
+    "tiingo-wave15-continuation04-refresh01-independent-review.json": "af96e7d7eaaeffccd996070ee3798dda3a0793edd5cd47fe2080f9e6c86f8338",
+    "tiingo-wave15-continuation04-readonly-preflight-actual-parent.json": "024010c2e5570ba0377e15aa428c98b1dc8b428351dcfd055f2109748689fd47"
+  },
+  "problem": "The full receipt collision scan reportedly takes about 17 minutes, longer than the immutable visible quota proof freshness limit of 900 seconds. Binding quota before repeating the scan predictably expires it before admission.",
+  "recommended_contract": [
+    "One finite attended process runs the same complete non-effectful validation once, including all source pins, exact selection/accounting, held symbols, historical return consumption, canonical module acceptance, storage and full receipt collision checks.",
+    "Snapshot the complete receipts/eod-bars namespace and lstat metadata before the collision parse and compare a fresh complete snapshot afterward. Only stable equality permits READY. Retain the snapshot in the same process; no authoritative cache or new scheduler.",
+    "READY is emitted only after the validation function actually returns success. Bind exact method/plan hashes, original root/RUN, current process identity, validation timestamps, selected-request identity, receipt snapshot digest and a bounded monotonic wait deadline. Flush exact JSON bytes. Call it pre-provider validation complete, awaiting fresh quota; it is not provider admission and is not a terminal process result.",
+    "The original root consumes the actual tool session/chunk READY bytes and writes one exclusive consumption record bound to their digest, method/plan, process and root. The root reloads the legitimate visible Chrome usage page for mastermindx6031 after READY and saves one exclusive quota proof.",
+    "The process accepts one bounded stdin record carrying the readiness-consumption path/hash and fresh quota path/hash. Restrict files to the known evidence root and accepted schemas; read once, hash the exact consumed bytes, parse those same bytes, and bind to this READY and process. No arbitrary command or source injection.",
+    "After input, compare the complete receipt namespace/metadata snapshot again; recheck current source/carrier/module/accepted evidence identity, known writer custody, scope/result absence, external mount and 40 GiB storage floor. Retain exact selected requests and prior disposition accounting.",
+    "Check quota provenance, intended account and positive observed time with 0 <= age <= 900 seconds LAST, after potentially slow checks and immediately before exclusive scope creation/key read/provider admission. Keep hourly >=10000, daily >=50000 and monthly GB >=60. Visible proof must postdate READY; clock rollback/future timestamp fails closed.",
+    "Create the original same-RUN scope exclusively with method/plan, readiness, parent consumption, snapshot and quota digests; then preserve the exact reviewed key/TLS/collector/admission body. Keep the full process result and actual terminal return separate for later parent consumption."
+  ],
+  "actual_zero_gate_ruling": {
+    "historical_preflight": "Original tool session20348 actual rc0 remains consumed only for cbe6c5d3 method and 141ebcdb plan; never relabel it as execution of the repaired method.",
+    "same_process_truth": "A successful validation-function return is an actual stage outcome, but never an operating-system process exit. READY must carry validation_returned_successfully=true and process_terminal_exit_code=null; no original_exit_code=0 while waiting.",
+    "acceptance_change": "The parent may explicitly accept the reviewed replacement gate: historical actual0 proof plus execution of unchanged full validation in the new attended process, exact READY consumption, and fresh final checks. This is a bounded proof-contract repair inside the assignment, not permission to silently waive or falsify a terminal-exit condition. Exact source review and root acceptance must record the amendment before execution.",
+    "literal_zero_alternative": "If the original actual terminal0 wording must remain literal, run the repaired credentialless preflight once as its own process and consume its genuine terminal rc0 with an exclusive snapshot artifact. A later short capture wrapper may reuse that exact snapshot only after identical complete namespace/stat, source, custody and storage checks and fresh quota. This avoids a second JSON parse but adds snapshot serialization and another process boundary; do not mislabel a waiting wrapper as exited."
+  },
+  "receipt_snapshot_contract": {
+    "namespace": "All directories and all receipt JSON leaves in the exact source namespace, including new/deleted day directories; deterministic relative paths. Reject unreadable entries, unexpected symlinks or escaping paths. Preserve the original collision coverage; a newly appearing relevant leaf must change the snapshot.",
+    "file_stat": [
+      "st_dev",
+      "st_ino",
+      "st_mode",
+      "st_nlink",
+      "st_size",
+      "st_mtime_ns",
+      "st_ctime_ns"
+    ],
+    "exclude": "atime, because reading itself may change it.",
+    "stability": "Before and after parse snapshots must be identical; final fresh snapshot must match. Never silently refresh the baseline after a mutation. Failure exits pre-provider; no unbounded rescan or quota refresh loop.",
+    "immutability_evidence": "Current collector _publish_once uses temporary file plus os.link(tmp,path) atomic no-replace and preserves existing receipt bytes on FileExistsError. This supports metadata reuse under incumbent source law; it is not an adversarial tamper-proof seal or an exclusive provider lease.",
+    "insufficient_checks": [
+      "Top-level directory stat alone",
+      "Only known file count",
+      "Only originally listed leaf filenames without complete namespace traversal",
+      "A snapshot taken solely after parsing",
+      "A receipt snapshot claimed to prove all possible writers absent"
+    ]
+  },
+  "writer_custody_ruling": {
+    "sufficient_bounded_basis": "Use current known-run terminal settlements/parent consumption, recovered same-operation pre-provider reconciliation, current carrier/source identity, exclusive same-RUN scope/result absence and stable complete EOD snapshots with no contradictory writer or unresolved-effect cue. Keep the existing mission owner; no new lease system or hypothetical global process enumeration is required.",
+    "honest_claim": "No competing EOD writer identified in the reconciled mission scope; receipt namespace unchanged across observed boundaries.",
+    "not_proven": "Scoped lsof absence or stable snapshots do not prove universal absence of an idle or future writer. Atomic no-replace protects archive bytes but cannot prevent two actors from making the same provider request.",
+    "stop_condition": "Any positively identified active competing EOD writer, unreconciled effect, carrier change or ambiguous owner blocks admission through the existing owner. Do not kill it, seize custody or route around it.",
+    "disjoint_work": "Known MAG7 intraday and source-only PR work may continue while they do not mutate capture pins or EOD archive custody."
+  },
+  "preserved_invariants": {
+    "selected_never_admitted_requests": 1816,
+    "excluded_started_request_pairs": 2576,
+    "held_symbols": 34,
+    "raw_stop_threshold_bytes": 24478712262,
+    "max_inflight": 4,
+    "rolling_minimum_seconds": 5,
+    "initial_prior_wave_delay_seconds": 5,
+    "maximum_admitted_overshoot_bytes": 2147483648,
+    "storage_floor_bytes": 42949672960,
+    "same_RUN_root_carrier_selection_source_pins": true,
+    "strict_TLS_and_stable_key_owner": true,
+    "exclusive_scope_result_no_overwrite": true,
+    "first_error_latch_drain_and_actual_return_consumption": true,
+    "failed_request_retry": false,
+    "automatic_successor": false,
+    "quota_refresh_loop": false,
+    "new_queue_or_scheduler": false,
+    "PR955_approval_denial_preserved": true,
+    "fundamentals_refusals_preserved": true,
+    "Fabric_transport_and_log_permission_refusals_preserved": true
+  },
+  "required_falsifiers": [
+    "Full collision validation has not actually returned before READY, or any source/module/accounting check was deferred or skipped.",
+    "Any receipt is added, removed, replaced or mutated during parse/wait; any day directory appears/disappears; unreadable/symlink path; snapshot mismatch even with unchanged count.",
+    "Changed caller/collector/module/evidence/plan bytes, wrong process/root/RUN/readiness binding, replayed consumption record, absent proof hash or bytes changed after hashing.",
+    "Quota stale (>900 seconds), future-dated, not observed after READY, wrong username/origin or inadequate allowance; account observation not actually visible/refreshed.",
+    "Timeout, EOF, malformed/oversized stdin, duplicate input, missing consumption proof or unexpected session loss. Prove zero key/provider/archive effects and no automatic continuation in each pre-provider failure.",
+    "Existing scope/result, contradictory active EOD writer/effect cue, unmounted storage or free space below40GiB. Preserve original artifact bytes.",
+    "Any changed provider selection, rate, TLS, error-drain, raw budget or failed-request behavior in exact candidate diff.",
+    "Root reports READY as original process exit0 or reports original lost76884 terminal status as known. Receipt must preserve observed stage and terminal distinctions."
+  ],
+  "acceptance_sequence": [
+    "Parent implements narrow candidate and records exact hash plus amended proof contract.",
+    "Independent review checks exact diff, negative pre-provider fixture evidence and unchanged capture body; no provider calls during review.",
+    "Root executes one attended process, consumes actual READY and binds fresh visible quota.",
+    "Root consumes actual final same-operation result and process status; qualifies captured receipts through existing QA before programme acceptance."
+  ],
+  "effect_report": {
+    "candidate_executed": false,
+    "provider_calls": 0,
+    "credentials_read": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "process_kills": 0,
+    "children_created": 0,
+    "artifact_only_exclusive_write": true
+  },
+  "programme_acceptance_claimed": false,
+  "limitations": [
+    "Architecture approval is conditional, not approval of an unseen source candidate or live provider admission.",
+    "Parent supplied current mission custody and refusal facts; this reviewer verified listed durable evidence, recovered source bytes and pinned procedure equality, not global runtime absence."
+  ]
+}

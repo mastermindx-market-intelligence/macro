@@ -33,7 +33,7 @@
             </div>
             <h3 id="{{ payload_id|e }}-title" data-im-inspector-title tabindex="-1">{{ words(inspector.market.name_en, inspector.market.name_zh) }}</h3>
             {% if inspector.market.index_label is not none %}<p data-im-inspector-index>{{ inspector.market.index_label|e }}</p>{% endif %}
-            <p class="intl-inspector__context"><span>{{ inspector.context.horizon|e }}</span> · {% if inspector.context.currency_basis == 'usd_unhedged' %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% else %}{{ words('Local currency', '本币') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>
+            {% set _hl = intl_workspace.surveillance.horizon_labels.get(inspector.context.horizon) if intl_workspace is defined and intl_workspace.surveillance is defined and intl_workspace.surveillance.horizon_labels is defined else none %}<p class="intl-inspector__context"><span>{% if _hl %}{{ words(_hl.en, _hl.zh) }}{% else %}{{ inspector.context.horizon|e }}{% endif %}</span> · {% if inspector.context.currency_basis == 'usd_unhedged' %}{{ words('USD · Unhedged', '美元 · 未对冲') }}{% else %}{{ words('Local currency', '本币') }}{% endif %} · {{ words('Price return', '价格回报') }}</p>
           </header>
           <section class="intl-inspector__read" data-im-inspector-page="read" aria-labelledby="{{ payload_id|e }}-read-title">
             <h4 id="{{ payload_id|e }}-read-title">{{ words('What the returns show', '回报所显示的信息') }}</h4>

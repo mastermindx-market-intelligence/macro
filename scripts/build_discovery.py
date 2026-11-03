@@ -148,6 +148,19 @@ def _signal_verdicts(site: Path, closes) -> dict:
     return out
 
 
+def _gate_validity(site: Path) -> dict | None:
+    """site/factordata/signal_gate.json's top-level `validity` receipt, or None."""
+    try:
+        p = site / "factordata" / "signal_gate.json"
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text())
+        v = data.get("validity") if isinstance(data, dict) else None
+        return v if isinstance(v, dict) else None
+    except Exception:  # noqa: BLE001 — a missing receipt is never fatal
+        return None
+
+
 def _names_sectors() -> dict:
     from engine.equity_factors import _names_sectors as ns
     try:
@@ -278,6 +291,7 @@ def main() -> int:
             "rev_pctile": a.get("rev_pctile"), "sector_rank": a.get("sector_rank"),
             "sector_n": a.get("sector_n"),
             "ins_buyers": ins.get("buyers") or 0, "ins_bps": _clean(ins.get("bps")),
+            "ins_sellers": ins.get("sellers") or 0, "ins_net_mn": _clean(ins.get("net_mn")),
             "attn_z": _clean(at.get("z")),   # offshore-attention z (display-only caution)
             # extension / exhaustion axis (display-only; never in the score)
             "grade": g, "grade_en": g_en, "grade_zh": g_zh, "grade_css": g_css,
@@ -355,6 +369,7 @@ def main() -> int:
         tilt_legs=list(TILT_LEGS), alpha_w=ALPHA_W, tilt_w=TILT_W, banner=banner,
         attn_threshold=float((config.load().get("wiki_pageviews") or {}).get("chip_threshold", 2.0)),
         as_of=alpha.get("as_of"), windows=alpha.get("windows") or {},
+        gate_validity=_gate_validity(site),
         n=len(rows), n_buyable=n_buyable, built=built)
     write_page(site / "discovery.html", html)
     log.info("wrote %s/discovery.html (%d names, %d sectors, %d buy-zone, %d KB)",

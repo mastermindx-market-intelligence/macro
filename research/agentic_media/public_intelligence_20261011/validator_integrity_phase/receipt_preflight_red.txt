@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_insufficient_distinct_receipts_refuses_before_spending_attempt ______
+tests/test_press_official_staging.py:735: in test_insufficient_distinct_receipts_refuses_before_spending_attempt
+    assert out['staged'] is False and 'receipt' in out['reason']
+E   assert (True is False)
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 0 passed, 1 quarantined of 1 planned (tokens 0/240000)
+::warning title=press_staging_empty::press staging produced NO passing draft — every planned slot was quarantined or dropped. A thin day is legal; a permanently thin lane is a defect. Check data/press/staging/ for reasons.
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-f43b43ad5193 status quarantined (public article approval: false — no emit path)
+------------------------------ Captured log call -------------------------------
+WARNING  run_press:run_press.py:691 press: slot press-official-cd2747adeed2 quarantined — validators: fact_anchor, our_value, receipts
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_staging.py::test_insufficient_distinct_receipts_refuses_before_spending_attempt
+1 failed, 45 deselected in 2.33s

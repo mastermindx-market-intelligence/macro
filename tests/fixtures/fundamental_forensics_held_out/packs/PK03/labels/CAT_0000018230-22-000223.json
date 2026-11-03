@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-22-000223",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "1209000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20220930.htm | us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments @ i247146bbe0174bf686cedcb9a51b2faa_D20220701-20220930 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; ConsolidationItemsAxis=us-gaap:OperatingSegmentsMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember) | 'Construction Industries $ 1,209 $ 866 $ 3,255 $ 2,937' | Segment profit for the largest segment, Construction Industries, for the Q3 2022 (three months ended September 30, 2022); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_profit_or_loss",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-22-000223|extract|segment_profit_or_loss"
+  },
+  {
+    "accession": "0000018230-22-000223",
+    "expected_period_end": "2022-09-30",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": "6276000000",
+    "fiscal_year": 2022,
+    "form_type": "10-Q",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_positive",
+    "pack_id": "PK03",
+    "polarity": "positive",
+    "reason": "cat-20220930.htm | us-gaap:Revenues @ i4f09a35863524f5e910480d2f582e618_D20220701-20220930 (StatementBusinessSegmentsAxis=cat:ConstructionIndustriesMember; SubsegmentsConsolidationItemsAxis=us-gaap:ReportableSubsegmentsMember) | 'Construction Industries $ 3,106 $ 799 $ 1,247 $ 1,084 $ 6,236 $ 40 $ 6,276' | Largest reportable segment by total sales and revenues for the Q3 2022 (three months ended September 30, 2022): Construction Industries (vs Energy & Transportation 6,186; Resource Industries 3,087; Financial Products 819); segment information note, in millions.",
+    "section_family": "segments",
+    "split": "held_out",
+    "target_id": "segment_revenue",
+    "target_kind": "extract",
+    "trial_id": "PK03|0000018230-22-000223|extract|segment_revenue"
+  }
+]

@@ -13,6 +13,17 @@ SLATES = {
     ("HK", 2027): "01-01 02-08 02-09 03-26 03-29 04-05 05-13 06-09 07-01 09-16 10-01 10-08 12-27",
     ("US", 2026): "01-01 01-19 02-16 04-03 05-25 06-19 07-03 09-07 11-26 12-25",
     ("US", 2027): "01-01 01-18 02-15 03-26 05-31 06-18 07-05 09-06 11-25 12-24",
+    # Retained NYSE notices checked 2026-10-14; these are not historical receipt times.
+    ("US", 2014): "01-01 01-20 02-17 04-18 05-26 07-04 09-01 11-27 12-25",
+    ("US", 2015): "01-01 01-19 02-16 04-03 05-25 07-03 09-07 11-26 12-25",
+    ("US", 2016): "01-01 01-18 02-15 03-25 05-30 07-04 09-05 11-24 12-26",
+    ("US", 2017): "01-02 01-16 02-20 04-14 05-29 07-04 09-04 11-23 12-25",
+    ("US", 2018): "01-01 01-15 02-19 03-30 05-28 07-04 09-03 11-22 12-25",
+    ("US", 2019): "01-01 01-21 02-18 04-19 05-27 07-04 09-02 11-28 12-25",
+    ("US", 2020): "01-01 01-20 02-17 04-10 05-25 07-03 09-07 11-26 12-25",
+    ("US", 2021): "01-01 01-18 02-15 04-02 05-31 07-05 09-06 11-25 12-24",
+    ("US", 2022): "01-17 02-21 04-15 05-30 06-20 07-04 09-05 11-24 12-26",
+    ("US", 2023): "01-02 01-16 02-20 04-07 05-29 06-19 07-04 09-04 11-23 12-25",
     ("CA", 2026): "01-01 02-16 04-03 05-18 07-01 08-03 09-07 10-12 12-25 12-28",
 }
 HALVES = {
@@ -20,6 +31,16 @@ HALVES = {
     ("HK", 2027): ("02-05 12-24 12-31", time(12, 10), time(13, 30)),
     ("US", 2026): ("11-27 12-24", time(13), time(14)),
     ("US", 2027): ("11-26", time(13), time(14)),
+    ("US", 2014): ("07-03 11-28 12-24", time(13), time(14)),
+    ("US", 2015): ("11-27 12-24", time(13), time(14)),
+    ("US", 2016): ("11-25", time(13), time(14)),
+    ("US", 2017): ("07-03 11-24", time(13), time(14)),
+    ("US", 2018): ("07-03 11-23 12-24", time(13), time(14)),
+    ("US", 2019): ("07-03 11-29 12-24", time(13), time(14)),
+    ("US", 2020): ("11-27 12-24", time(13), time(14)),
+    ("US", 2021): ("11-26", time(13), time(14)),
+    ("US", 2022): ("11-25", time(13), time(14)),
+    ("US", 2023): ("07-03 11-24", time(13), time(14)),
     ("CA", 2026): ("12-24", time(13), time(14)),
 }
 
@@ -106,7 +127,7 @@ def test_regular_day_buffers_unchanged_and_local_date_wins(market, zone, d):
 
 
 @pytest.mark.parametrize("market,years", [
-    ("CN", {2026}), ("HK", {2026, 2027}), ("US", {2026, 2027}), ("CA", {2026}),
+    ("CN", {2026}), ("HK", {2026, 2027}), ("US", set(range(2014, 2024)) | {2026, 2027}), ("CA", {2026}),
 ])
 def test_coverage_never_claims_unknown_year_verification(market, years):
     from lib.exchange_holidays import announced_holidays, calendar_coverage, early_close
@@ -186,3 +207,48 @@ def test_calendar_lookups_require_no_filesystem_network_or_subprocess(monkeypatc
                 assert early_close(market, day) is None
                 assert not CALENDARS[market].is_session(day)
             CALENDARS[market].expected_last_session(datetime(year, 8, 18, 23, tzinfo=timezone.utc))
+
+
+@pytest.mark.parametrize("year", [2010, 2011, 2012, 2013, 2024, 2025, 2031])
+def test_missing_us_annual_notices_retain_explicit_unverified_fallback(year):
+    from lib import nyse_calendar as legacy
+    from lib.exchange_holidays import announced_holidays, calendar_coverage
+    from lib.market_session import calendar_verified
+
+    metadata = calendar_coverage("US")
+    assert announced_holidays("US", year) is None
+    assert year not in metadata["year_source_urls"]
+    assert year not in metadata["year_verified_on"]
+    assert not calendar_verified("US", year)
+    assert us.holidays(year) == legacy.holidays(year)
+
+
+def test_historical_notice_verification_dates_do_not_claim_original_receipt_times():
+    from lib.exchange_holidays import calendar_coverage
+
+    metadata = calendar_coverage("US")
+    assert metadata["verified_on"] == date(2026, 10, 7)
+    for year in range(2014, 2024):
+        assert metadata["year_verified_on"][year] == date(2026, 10, 14)
+        assert all(url.startswith("https://ir.theice.com/press/news-details/")
+                   for url in metadata["year_source_urls"][year])
+    assert len(metadata["year_source_urls"][2018]) == 2  # Annual notice + Bush closure.
+    assert metadata["year_verified_on"][2026] == date(2026, 10, 7)
+    with pytest.raises(TypeError):
+        metadata["year_verified_on"][2014] = date(2013, 12, 20)
+
+
+def test_historical_us_notice_corrections_preserve_open_days_and_one_offs():
+    from lib.exchange_holidays import early_close
+
+    assert us.is_session(date(2021, 6, 18))  # NYSE Juneteenth begins in 2022.
+    assert not us.is_session(date(2022, 6, 20))
+    assert not us.is_session(date(2023, 6, 19))
+    assert not us.is_session(date(2018, 12, 5))  # Bush mourning.
+    assert not us.is_session(date(2012, 10, 29))  # Sandy remains a legacy one-off.
+    assert not us.is_session(date(2012, 10, 30))
+    day = date(2020, 7, 2)  # The notice does not announce an early close.
+    assert us.is_session(day)
+    assert early_close("US", day) is None
+    assert us.expected_last_session(datetime(2020, 7, 2, 14, tzinfo=us.ET)) == date(2020, 7, 1)
+    assert us.expected_last_session(datetime(2020, 7, 2, 17, tzinfo=us.ET)) == day

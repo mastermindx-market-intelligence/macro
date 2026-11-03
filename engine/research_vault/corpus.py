@@ -30,6 +30,7 @@ above them for why the cache lives here rather than in the router.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import os
 import re
@@ -133,6 +134,8 @@ _V2_COLUMNS: tuple[tuple[str, str], ...] = (
     ("pdf_created_at", "TEXT"),
     ("pdf_modified_at", "TEXT"),
 )
+
+_INDEX_COLUMNS: tuple[tuple[str, str], ...] = (("fulltext_binding", "TEXT"),)
 
 # Deliberately NOT a column: ``first_page_text``. ``body`` is truncated at the
 # TAIL (BODY_MAX_CHARS), so page 1 is always inside the row we already store —
@@ -540,7 +543,7 @@ def _migrate(conn: sqlite3.Connection) -> list[str]:
     if not have:  # no documents table (should not happen — DDL ran first)
         return []
     added: list[str] = []
-    for name, decl in _V2_COLUMNS:
+    for name, decl in (*_V2_COLUMNS, *_INDEX_COLUMNS):
         if name in have:
             continue
         try:
@@ -680,6 +683,7 @@ def search(
     date_from: str | None = None,
     date_to: str | None = None,
     limit: int = 50,
+    *, allowed_ids: set[str] | frozenset[str] | None = None,
 ) -> list[dict]:
     """FTS5 BM25 search with optional institution + date-range facets.
 
@@ -703,6 +707,17 @@ def search(
         where.append("d.published_date <= ?")
         params.append(date_to[:10])
 
+    # Membership restricts eligibility before SQL LIMIT, without changing MATCH,
+    # BM25 weights, ties or the meaning of a genuinely empty request. JSON1 uses
+    # one parameter even for a large cohort and works on query-only connections.
+    has_facets = bool(where)
+    if allowed_ids is not None:
+        if not isinstance(allowed_ids, (set, frozenset)) or any(not valid_doc_id(i) for i in allowed_ids):
+            return []
+        if not allowed_ids:
+            return []
+        where.append("d.doc_id IN (SELECT value FROM json_each(?))")
+        params.append(json.dumps(sorted(allowed_ids), separators=(",", ":")))
     try:
         if fts:
             sql = f"""
@@ -719,7 +734,7 @@ def search(
             rows = conn.execute(sql, [fts, *params, limit]).fetchall()
         else:
             # No text query: facet-only listing (newest first).
-            if not where:
+            if not has_facets:
                 return []
             sql = f"""
                 SELECT d.doc_id, d.title, d.institution, d.side, d.published_at,

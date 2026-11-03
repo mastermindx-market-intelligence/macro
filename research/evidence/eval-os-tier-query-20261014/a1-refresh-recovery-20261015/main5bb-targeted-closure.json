@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-15T18:12:35.259365+00:00",
+  "source": {
+    "at": "2026-10-15T18:11:20.447883+00:00",
+    "scratch": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-intl-closure-20261015-ca1cbf15a7963c73",
+    "previous_detached": "0add301edcf8d435b751a92ffe75be780fc67ac2",
+    "preview_commit": "c074d85a917f67809f3cb21fd1fefcbd7edd46e8",
+    "tree": "75c17e9d81ff51f68511c10a20eea9b4f64ffda6",
+    "untracked_preserved": [
+      ".venv-browser/",
+      "node_modules/"
+    ],
+    "carrier_mutated": false,
+    "qualified": false
+  },
+  "jobs": {
+    "eval-os-a1": {
+      "canonical_closure_count": 1240,
+      "missing": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "note": "derived scopes for 1/1 jobs"
+    },
+    "qledger-cluster-honest-ci": {
+      "canonical_closure_count": 922,
+      "missing": [
+        "collectors/yahoo.py",
+        "lib/stooq.py"
+      ],
+      "note": "derived scopes for 1/1 jobs"
+    }
+  },
+  "elapsed_seconds": 34.19,
+  "scope": "Targeted dependency diagnosis after actual main Yahoo/store changes. Not final qualification, carrier integration or production."
+}

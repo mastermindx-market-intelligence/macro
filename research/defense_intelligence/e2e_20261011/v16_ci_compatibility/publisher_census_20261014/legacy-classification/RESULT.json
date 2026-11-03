@@ -1,0 +1,818 @@
+{
+  "schema": "defense.readonly_legacy_classification.v1",
+  "at": "2026-10-14T13:54:15.635947+00:00",
+  "scope": "Existing classifier on authenticated original records; no Actions identity, checkpoint, retirement, dispatch, cancellation or publication",
+  "results": [
+    {
+      "run_id": 38550373792,
+      "classification": {
+        "run_id": 38550373792,
+        "run_attempt": 1,
+        "job_id": 115806585138,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "9ab95cb622c6f4027dc680eda265fe4284fb8884",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "9ab95cb622c6f4027dc680eda265fe4284fb8884",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "08e15f2b0097e3c0f4d8adc5a8971e3a5a772740af594a96fb4d4c2333342b2d",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-14T10:33:37Z",
+          "scheduler_completed_at": "2026-10-14T10:33:37Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38516074489,
+      "classification": {
+        "run_id": 38516074489,
+        "run_attempt": 1,
+        "job_id": 115695057462,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "cf8ebe9e4f3d6c5dce1eb86883ed231618e03fdd81fd5def5566d6f398a41309",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-14T05:20:28Z",
+          "scheduler_completed_at": "2026-10-14T05:20:28Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38490926141,
+      "classification": {
+        "run_id": 38490926141,
+        "run_attempt": 1,
+        "job_id": 115615651993,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "ee3b1907497c4d5179d76626777b007e0da93d18",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "ee3b1907497c4d5179d76626777b007e0da93d18",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "c1097ebc5529455c591d713e6c6f0ed00f8f69230545efdb2ece483e7e7816b5",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-14T00:44:20Z",
+          "scheduler_completed_at": "2026-10-14T00:44:20Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38471067088,
+      "classification": {
+        "run_id": 38471067088,
+        "run_attempt": 1,
+        "job_id": 115549972764,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "ce1da9761ae0cfcdd2cf2c7ae5a641b260bc1092",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "fb637c85a6eb4a2ab4242c3429cf66dc4b541d93",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "c015e9112b75df2c2482a57066ca832bd8f3442e1d4e3c804272cf4f39da84db",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-13T21:35:32Z",
+          "scheduler_completed_at": "2026-10-13T21:35:32Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38430053602,
+      "classification": {
+        "run_id": 38430053602,
+        "run_attempt": 1,
+        "job_id": 115409560154,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "7b30b8580e01c0f9e4ea77f5c692fabc442e8194",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "7b30b8580e01c0f9e4ea77f5c692fabc442e8194",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "e249f476549fc3010d98e33a712251aba9075a909f0cb93e2b052fb6f6b7e07f",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-13T16:23:21Z",
+          "scheduler_completed_at": "2026-10-13T16:23:21Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38368851360,
+      "classification": {
+        "run_id": 38368851360,
+        "run_attempt": 1,
+        "job_id": 115200518250,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "8ecc9d70f9d8d42653c2999238a443deba45a712",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": null,
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "8ecc9d70f9d8d42653c2999238a443deba45a712",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "63a93d76d2ad78849fae07fac0c6654ef9dafe6a3d8e49463b758c65d7d0f4fb",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-13T08:23:05Z",
+          "scheduler_completed_at": "2026-10-13T08:23:05Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    },
+    {
+      "run_id": 38441558179,
+      "classification": {
+        "run_id": 38441558179,
+        "run_attempt": 1,
+        "job_id": 115450545382,
+        "operation_scope": "govrev_publisher",
+        "disposition": "authenticated_audited_publication_step_skipped",
+        "workflow_head_sha": "9424deaae27fe7737bed7c69feb3f53fa48345e9",
+        "workflow_identity": {
+          "git_blob_sha": "33e09e0a5ad62d5b2ff3316e36992d20059b9681",
+          "sha256": "f683ec3a78dae317ced62be724ffbc4d790fe9f27eacdf0c8e27de1e2d74fbea",
+          "bytes": 58405
+        },
+        "caller_identity": {
+          "git_blob_sha": "ebe9d19e6df5ebc5fc11f5e6c3257f73d54ff050",
+          "sha256": "88b395b0e200a9dee8bd93a66560eef036ff7c618892dd78598aab675cb0ffe0",
+          "bytes": 9039
+        },
+        "audit_evidence_sha256": "4a21ca40d438cad158a9bbcd8b7a1664d45d19999b63747076ead6456f01ba40",
+        "runtime_checkout_commit": "d8e12d0092fb49fc25fa66d9b21b01e036f61a57",
+        "runtime_entrypoint_identities": {
+          "collectors/base.py": {
+            "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+            "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+            "bytes": 37286
+          },
+          "collectors/sam_gov.py": {
+            "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+            "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+            "bytes": 73568
+          },
+          "scripts/build_government_revenue.py": {
+            "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+            "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+            "bytes": 69074
+          },
+          "scripts/ci/push_retry.sh": {
+            "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+            "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+            "bytes": 55096
+          },
+          "scripts/collect.py": {
+            "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+            "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+            "bytes": 99361
+          }
+        },
+        "job_log_sha256": "da8a3ec89f3a7210257191086bd1b7873c4f243e77ad668a91ff48d33d0de116",
+        "publication_step": {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "scheduler_started_at": "2026-10-13T18:08:19Z",
+          "scheduler_completed_at": "2026-10-13T18:08:19Z"
+        },
+        "scheduler_clocks_are_execution_evidence": false,
+        "issuance_authority": false,
+        "unrelated_parent_effects_retired": false,
+        "runtime_scope": "inspected entrypoints only; no arbitrary transitive source or unrelated effect claim"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "000.bin.gz",
+      "bytes": 81788,
+      "sha256": "a017aa69320e43322aa0abaf6318abf8804591697a58f5b64ff61b6860439c2a"
+    },
+    {
+      "origin": "https://productionresultssa9.blob.core.windows.net",
+      "path": "/actions-results/95bc29d0-2a52-8f40-90fd-b1e8a537fa47/workflow-job-run-179a1419-0254-5685-84c4-3708fdd88b17/logs/job/job-logs.txt",
+      "file": "001.bin.gz",
+      "bytes": 44779,
+      "sha256": "08e15f2b0097e3c0f4d8adc5a8971e3a5a772740af594a96fb4d4c2333342b2d"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115806585138/logs",
+      "file": "002.bin.gz",
+      "bytes": 44779,
+      "sha256": "08e15f2b0097e3c0f4d8adc5a8971e3a5a772740af594a96fb4d4c2333342b2d"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "003.bin.gz",
+      "bytes": 52508,
+      "sha256": "0fe7485377721a5ec6048e828858050ddc102b472d37939e390f5e451142bd25"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "004.bin.gz",
+      "bytes": 102517,
+      "sha256": "9d05caf5fa2e53b7a93b85b70d0bcabf07f6cbe4606d47b3633d78b054a47a03"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "005.bin.gz",
+      "bytes": 96426,
+      "sha256": "6e96238ee1dbcea245a3723fa78800f00900d8937d2aa8ebb57aa5dec2dd1002"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "006.bin.gz",
+      "bytes": 77090,
+      "sha256": "ce2124f96e20d8c7a3c75510044e6c40493c4b3ac1b49bbfb53c724fdb761200"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "007.bin.gz",
+      "bytes": 138039,
+      "sha256": "91daa05177b272ebb7e4611e276461f2a73d2958f1bb43b4e47075fdc9f35f4f"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "008.bin.gz",
+      "bytes": 81788,
+      "sha256": "acda3c12ee487bf2eeb5c58b007005b4735179f3bd9aed9cb046ce42d47e4f65"
+    },
+    {
+      "origin": "https://productionresultssa5.blob.core.windows.net",
+      "path": "/actions-results/0ae89a4d-890d-831b-a13e-a2737d0939a8/workflow-job-run-3888b77c-9d82-5fc2-a96c-2ccf676196da/logs/job/job-logs.txt",
+      "file": "009.bin.gz",
+      "bytes": 44554,
+      "sha256": "cf8ebe9e4f3d6c5dce1eb86883ed231618e03fdd81fd5def5566d6f398a41309"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115695057462/logs",
+      "file": "010.bin.gz",
+      "bytes": 44554,
+      "sha256": "cf8ebe9e4f3d6c5dce1eb86883ed231618e03fdd81fd5def5566d6f398a41309"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "011.bin.gz",
+      "bytes": 52508,
+      "sha256": "0d1a2d0ae3d7d0fb575dd04d869a6361e1c5bd520aa9fc4a634c01d6d920a556"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "012.bin.gz",
+      "bytes": 102517,
+      "sha256": "56d2ec69a3b252b79665a9338274fca317331ce4112530f4f5d965d7df4bf603"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "013.bin.gz",
+      "bytes": 96426,
+      "sha256": "5155caf4670931665c1ea65b838ab4e6e8721444547fb7d1c74d07460d4bb578"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "014.bin.gz",
+      "bytes": 77090,
+      "sha256": "d8a31b4647e4922adde9b906ba0ec300257f389955b6b9a1c2108096fc3b2806"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "015.bin.gz",
+      "bytes": 138039,
+      "sha256": "87939d5b60ae9fa7a43600046246ea01e9fb9a8f6374f20c4fe2715d966af103"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "016.bin.gz",
+      "bytes": 81788,
+      "sha256": "0cfbb77f600227293bfb484f35f6c165cfd8993c97a515e39ce2abd9bd2f967d"
+    },
+    {
+      "origin": "https://productionresultssa15.blob.core.windows.net",
+      "path": "/actions-results/84724dd4-243c-88c3-a62d-14c3b06a4f90/workflow-job-run-ce6cbe3d-b857-5fce-a148-eb0090942bb4/logs/job/job-logs.txt",
+      "file": "017.bin.gz",
+      "bytes": 57684,
+      "sha256": "c1097ebc5529455c591d713e6c6f0ed00f8f69230545efdb2ece483e7e7816b5"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115615651993/logs",
+      "file": "018.bin.gz",
+      "bytes": 57684,
+      "sha256": "c1097ebc5529455c591d713e6c6f0ed00f8f69230545efdb2ece483e7e7816b5"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "019.bin.gz",
+      "bytes": 52508,
+      "sha256": "8fec9b72e89412f6336bb2dc733c8900f22f45684188fd00a261a270369742da"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "020.bin.gz",
+      "bytes": 102517,
+      "sha256": "13a862202945bd8ada8a3e847f6f72341320f0029a883e59a87eb054f2be980e"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "021.bin.gz",
+      "bytes": 96426,
+      "sha256": "4de1e3338fc98bbae801dd1e6d687f147a07d772d622c3c511ee2d5d6cfbde59"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "022.bin.gz",
+      "bytes": 77090,
+      "sha256": "02300effa1010e3db436fe6d60307feb96e1bca02a622f60f80e142a6e5fbe39"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "023.bin.gz",
+      "bytes": 138039,
+      "sha256": "303271737b67d5e9378352bb63c6f92bfa149b3230652b8731da5c9566084cc7"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "024.bin.gz",
+      "bytes": 81788,
+      "sha256": "1e7eb0337cfa91832bf922896ba68868120850d5a59caab8592f90e2267abf0c"
+    },
+    {
+      "origin": "https://productionresultssa15.blob.core.windows.net",
+      "path": "/actions-results/b6e61725-68b5-800d-9250-5774c1dab9be/workflow-job-run-6e6bddff-08ad-5ad6-814b-55c7fcda4330/logs/job/job-logs.txt",
+      "file": "025.bin.gz",
+      "bytes": 44709,
+      "sha256": "c015e9112b75df2c2482a57066ca832bd8f3442e1d4e3c804272cf4f39da84db"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115549972764/logs",
+      "file": "026.bin.gz",
+      "bytes": 44709,
+      "sha256": "c015e9112b75df2c2482a57066ca832bd8f3442e1d4e3c804272cf4f39da84db"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "027.bin.gz",
+      "bytes": 52508,
+      "sha256": "939ea8e2e8876f824948f534dac5665b2470fc955d3601213b778dbe00b5b784"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "028.bin.gz",
+      "bytes": 102517,
+      "sha256": "d7f9cb753b4990871519405a0a90b4030e4d5d6e5edeaf872e3c6dc99e366872"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "029.bin.gz",
+      "bytes": 96426,
+      "sha256": "cf75801b02521216a751f564669439ce7673fd4541e63ea7a67de073e78c82f5"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "030.bin.gz",
+      "bytes": 77090,
+      "sha256": "13236ecceeef1a09da9c8e3d81611fcaf9f53c8c07ae37a8bc6fe19249b6e934"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "031.bin.gz",
+      "bytes": 138039,
+      "sha256": "17ff1830438d3420712e81df0841ee3989fe04a7b38545fdb01a35450925d886"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "032.bin.gz",
+      "bytes": 81788,
+      "sha256": "c30acdca3f2e6bc6c2499285e7684bde7f244e368b0368c42169aabb0ea1401a"
+    },
+    {
+      "origin": "https://productionresultssa17.blob.core.windows.net",
+      "path": "/actions-results/0bb924ec-a4cb-89b5-b8ae-1c8505efa035/workflow-job-run-90ba0dc7-962f-5513-8aeb-6c27412a3269/logs/job/job-logs.txt",
+      "file": "033.bin.gz",
+      "bytes": 44978,
+      "sha256": "e249f476549fc3010d98e33a712251aba9075a909f0cb93e2b052fb6f6b7e07f"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115409560154/logs",
+      "file": "034.bin.gz",
+      "bytes": 44978,
+      "sha256": "e249f476549fc3010d98e33a712251aba9075a909f0cb93e2b052fb6f6b7e07f"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "035.bin.gz",
+      "bytes": 52508,
+      "sha256": "64820675ca500402d76492a0f758b4b91ecbb5a5693f8897e44f4bfa30d3583f"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "036.bin.gz",
+      "bytes": 102517,
+      "sha256": "1ccdbea24f1df807742531abae59c8994fcaffc97c08a2e5d64921616c5b7fcc"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "037.bin.gz",
+      "bytes": 96426,
+      "sha256": "529e0fd57fbd0742a9c2befd4f0ee37fabc9746070682fc3625a00e4a5a6465d"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "038.bin.gz",
+      "bytes": 77090,
+      "sha256": "f0917122a7d54d88bf6929b194210233f4a81719847fab849c8da7d54452c1c6"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "039.bin.gz",
+      "bytes": 138039,
+      "sha256": "0281a7ee444194aae426be9be983453f10669fb22ee2fa401fab4aa827f68f05"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "040.bin.gz",
+      "bytes": 81788,
+      "sha256": "8781a39e2f91915bd9032245c297b701a53c2a0bd84d91ba116d9af34429135f"
+    },
+    {
+      "origin": "https://productionresultssa4.blob.core.windows.net",
+      "path": "/actions-results/616b0258-0dd3-8cef-81b4-e660aeb2efcf/workflow-job-run-fcd8fcb6-1aab-5d91-9ddc-b57e44d28c3f/logs/job/job-logs.txt",
+      "file": "041.bin.gz",
+      "bytes": 43891,
+      "sha256": "63a93d76d2ad78849fae07fac0c6654ef9dafe6a3d8e49463b758c65d7d0f4fb"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115200518250/logs",
+      "file": "042.bin.gz",
+      "bytes": 43891,
+      "sha256": "63a93d76d2ad78849fae07fac0c6654ef9dafe6a3d8e49463b758c65d7d0f4fb"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "043.bin.gz",
+      "bytes": 52508,
+      "sha256": "f2dae9e43638516f7e07e80035633d793c671632f6bb4f90d0e904cfbb2ad150"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "044.bin.gz",
+      "bytes": 102517,
+      "sha256": "b82a74afb2044f70305899dae292ebe5619f8ef3e27fa1af9bb0e413fdd4739f"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "045.bin.gz",
+      "bytes": 96426,
+      "sha256": "a5e6802fa3f9da28487cb5108a43e7e3325a03a41cf766ca05b43b748a5da073"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "046.bin.gz",
+      "bytes": 77090,
+      "sha256": "dbecbdece6b495e5099e5439664097652f45b2612706024784bf4f3173fb66c7"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "047.bin.gz",
+      "bytes": 138039,
+      "sha256": "08df8a6353179cba45627b0defee237d2b215dcec9ebf7174adce22b7b37ed2c"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/government-revenue-live.yml",
+      "file": "048.bin.gz",
+      "bytes": 81788,
+      "sha256": "1f1a6cf5e2c31f29ef0b4a992f0fea7e31d2e9e7ba102caab10db84fbeb4e169"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/.github/workflows/fms-acquire.yml",
+      "file": "049.bin.gz",
+      "bytes": 13685,
+      "sha256": "60d073b8f2f0df689173b19f964e7c4675300606b4f755798bf9623e7a727b60"
+    },
+    {
+      "origin": "https://productionresultssa3.blob.core.windows.net",
+      "path": "/actions-results/13d5f805-baf2-81c2-9b45-3a79c3632bf2/workflow-job-run-bd72ffc2-573d-51e2-9f3c-97b7497d8ca3/logs/job/job-logs.txt",
+      "file": "050.bin.gz",
+      "bytes": 54227,
+      "sha256": "da8a3ec89f3a7210257191086bd1b7873c4f243e77ad668a91ff48d33d0de116"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/actions/jobs/115450545382/logs",
+      "file": "051.bin.gz",
+      "bytes": 54227,
+      "sha256": "da8a3ec89f3a7210257191086bd1b7873c4f243e77ad668a91ff48d33d0de116"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/base.py",
+      "file": "052.bin.gz",
+      "bytes": 52508,
+      "sha256": "91e05b07549d0ebe3089a36819f78817c3b5694a1fba21e6a53cd2550d3dca66"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/collectors/sam_gov.py",
+      "file": "053.bin.gz",
+      "bytes": 102517,
+      "sha256": "4d3b1e0353a33a496d9370f0c9152bdead5d32c0c7f3d77fdf4dadfa6adf56d1"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/build_government_revenue.py",
+      "file": "054.bin.gz",
+      "bytes": 96426,
+      "sha256": "0bd6de9fd02409492b3389befe6b3946c6def7c7fb2c7f9d2de829f115ce614d"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/ci/push_retry.sh",
+      "file": "055.bin.gz",
+      "bytes": 77090,
+      "sha256": "55f3398b666fc186b898954fa4da8ac3aa765abe9e12527df52ff6d235084994"
+    },
+    {
+      "origin": "https://api.github.com",
+      "path": "/repos/mastermindx-market-intelligence/macro/contents/scripts/collect.py",
+      "file": "056.bin.gz",
+      "bytes": 138039,
+      "sha256": "9e21c40d5856690b1127b11be807f29f0d882ea44d48898fa2032b3322da19bd"
+    }
+  ]
+}

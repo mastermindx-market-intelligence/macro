@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -24,10 +25,12 @@ from .financial_intelligence_packet import (
     load_packet_schema,
     sha256_file,
 )
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .query import (
     BitemporalMetricQueryEngine,
     QueryBounds,
     QueryBoundsError,
+    QueryEntity,
     QueryValidationError,
     UnsupportedMetricError,
 )
@@ -55,6 +58,56 @@ _RESPONSE_SCHEMA = "fundamental_forensics.financial_revision_response/v1"
 _FIP1_CANONICAL_ENTITY_ID = "mmx.issuer.fip1"
 _FIP1_CIK = "0000999999"
 _FIP1_TICKER = "FIP1"
+
+
+def occurrence_keyed_filing_metadata(
+    ledger: Any,
+    filing_metadata: Any,
+) -> dict[str, Any]:
+    """Rekey a filing-metadata mapping onto ledger occurrence ids (pure).
+
+    The golden/FIP1 fixtures key filing metadata by OCCURRENCE ID; the
+    production store keys it by ACCESSION — one entry per admitted filing
+    (``ixbrl_raw_ledger.convert_parsed_filings``). The packet assembler and
+    its entity-isolation assertions resolve metadata by occurrence id only,
+    so the packet-service boundary normalizes accession-keyed input here,
+    with exactly ``query.py`` ``_freeze_filing_metadata``'s keying law:
+
+    * an occurrence-id key binds that occurrence. An input already keyed by
+      occurrence ids returns an equal mapping (same keys, same value
+      objects), so golden/FIP1 bytes never move;
+    * an accession key binds every ledger event filed under that accession;
+    * an occurrence bound twice with DIFFERENT metadata fails closed;
+    * a key that identifies neither an occurrence nor an accession fails
+      closed.
+    """
+    by_occurrence: dict[str, Any] = {}
+    events_by_accession: dict[str, list[Any]] = {}
+    for event in ledger.events:
+        by_occurrence.setdefault(event.occurrence_id, event)
+        events_by_accession.setdefault(event.source.accession, []).append(event)
+    keyed: dict[str, Any] = {}
+    for raw_key, metadata in filing_metadata.items():
+        key = str(raw_key)
+        occurrence = by_occurrence.get(key)
+        candidates = (
+            (occurrence,)
+            if occurrence is not None
+            else tuple(events_by_accession.get(key, ()))
+        )
+        if not candidates:
+            raise ValueError(
+                "filing metadata key does not identify a ledger occurrence or accession: "
+                f"{key}"
+            )
+        for event in candidates:
+            existing = keyed.get(event.occurrence_id)
+            if existing is not None and existing != metadata:
+                raise ValueError(
+                    f"conflicting filing metadata for occurrence {event.occurrence_id}"
+                )
+            keyed[event.occurrence_id] = metadata
+    return keyed
 
 
 @dataclass(frozen=True)
@@ -222,13 +275,35 @@ def _refuse_unsupported_metrics(
     binding: CanonicalEntityBinding,
     dataset: FinancialPacketDataset,
     query_request: PacketQueryRequest,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> None:
-    """Reuse the frozen kernel's cutoff-visible metric gate. Do not scan a live catalog."""
+    """Reuse the frozen kernel's cutoff-visible metric gate. Do not scan a live catalog.
+
+    A0-h1 (review F1): engine construction reads ONLY dataset-side inputs
+    (ledger, registry, binding, filing metadata) and fixed bounds, so any
+    refusal there — including the QueryValidationError that
+    ``_freeze_filing_metadata`` raises for an unknown or malformed metadata
+    key — is a dataset defect: typed unavailability, exactly as the packet
+    path answers the same defect. Only ``query_matrix``, which reads the
+    request's metrics/periods/policy, maps QueryValidationError to the
+    request-side 400.
+    """
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     try:
         engine = BitemporalMetricQueryEngine(
             ledger=dataset.ledger,
             registry=dataset.registry,
-            entities={binding.ticker: binding.source_entity_id},
+            entities=[
+                QueryEntity(
+                    ticker=binding.ticker,
+                    entity_id=binding.source_entity_id,
+                    issuer_sic=sic_resolver(binding.source_entity_id),
+                )
+            ],
             filing_metadata=dataset.filing_metadata,
             bounds=QueryBounds(
                 max_tickers=1,
@@ -237,6 +312,9 @@ def _refuse_unsupported_metrics(
                 max_cells=MAX_CELLS,
             ),
         )
+    except Exception:
+        raise FinancialQueryUnavailableError() from None
+    try:
         engine.query_matrix(
             tickers=[binding.ticker],
             metrics=list(query_request.metrics),
@@ -260,6 +338,7 @@ def execute_financial_revisions(
     body: bytes,
     provider: FinancialPacketProvider | None = None,
     provider_factory: Callable[[], FinancialPacketProvider] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> FinancialQueryResult:
     """Admit, construct the packet request, resolve, assemble, and project.
 
@@ -278,20 +357,40 @@ def execute_financial_revisions(
     # A12: the dataset's own admission clock gates the system view. The
     # admitted QueryPolicy object itself passes through untouched.
     enforce_dataset_admission_floor(admitted.policy, dataset)
+    sic_resolver = (
+        issuer_sic_resolver
+        if issuer_sic_resolver is not None
+        else partial(resolve_issuer_sic)
+    )
     _refuse_unsupported_metrics(
         binding=binding,
         dataset=dataset,
         query_request=query_request,
+        issuer_sic_resolver=sic_resolver,
     )
+    # A0 (D-2): the production store keys filing metadata by accession while
+    # the packet assembler resolves it by occurrence id; normalize at this
+    # boundary. Identity for the occurrence-keyed golden/FIP1 fixtures.
+    # A0-h1 (MINOR-4): the normalization sits INSIDE the assemble try, AFTER
+    # the typed admission gates above (floor, unsupported metrics) and
+    # immediately before the assembly it feeds — so a request those gates
+    # refuse keeps its typed refusal instead of the helper's raw ValueError
+    # winning the race. A metadata defect surfaces as a typed
+    # FinancialQueryUnavailableError from the service, never a raw
+    # ValueError into the API catch-all: an engine-visible defect (unknown
+    # key) is refused by the metric gate's engine construction above, an
+    # engine-invisible one (raw conflicting double bind) by this helper.
     try:
+        filing_metadata = occurrence_keyed_filing_metadata(dataset.ledger, dataset.filing_metadata)
         packet = assemble_financial_intelligence_packet(
             entity=dataset.entity,
             ledger=dataset.ledger,
-            filing_metadata=dataset.filing_metadata,
+            filing_metadata=filing_metadata,
             query_request=query_request,
             metric_registry=dataset.registry,
             context=dataset.context,
             input_digests=dataset.input_digests,
+            issuer_sic_resolver=sic_resolver,
         )
     except FinancialQueryAdmissionError:
         raise

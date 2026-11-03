@@ -1,0 +1,5096 @@
+{
+  "aggregates": {
+    "EZ": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^STOXX",
+          "^STOXX50E",
+          "^GDAXI",
+          "^FCHI"
+        ],
+        "fx": "EURUSD=X",
+        "fx_invert": false,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.EZ"
+      },
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.EZ",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.EZ.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.EZ.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "counted_in_denominator": false,
+      "currency": "EUR",
+      "kind": "statistical_area",
+      "members": [
+        "AT",
+        "BE",
+        "DE",
+        "ES",
+        "FI",
+        "FR",
+        "GR",
+        "IE",
+        "IT",
+        "NL",
+        "PT"
+      ],
+      "name": "Euro area"
+    }
+  },
+  "denominators": {
+    "capitalization": {
+      "source": null,
+      "state": "not_frozen",
+      "vintage": null
+    },
+    "note": "WFE statistics are internal_only until redistribution terms are decided; no completeness ratio may be published before a denominator is frozen.",
+    "turnover": {
+      "source": null,
+      "state": "not_frozen",
+      "vintage": null
+    }
+  },
+  "effective_date": "2026-10-21",
+  "exclusions": [
+    {
+      "id": "HR",
+      "name": "Croatia",
+      "reason": "materiality_review_pending",
+      "reconsider_when": "an approved capitalization/turnover denominator is frozen and the venue clears the materiality review"
+    },
+    {
+      "id": "JO",
+      "name": "Jordan",
+      "reason": "materiality_review_pending",
+      "reconsider_when": "an approved capitalization/turnover denominator is frozen and the venue clears the materiality review"
+    },
+    {
+      "id": "MU",
+      "name": "Mauritius",
+      "reason": "materiality_review_pending",
+      "reconsider_when": "an approved capitalization/turnover denominator is frozen and the venue clears the materiality review"
+    },
+    {
+      "id": "SI",
+      "name": "Slovenia",
+      "reason": "materiality_review_pending",
+      "reconsider_when": "an approved capitalization/turnover denominator is frozen and the venue clears the materiality review"
+    },
+    {
+      "id": "TN",
+      "name": "Tunisia",
+      "reason": "materiality_review_pending",
+      "reconsider_when": "an approved capitalization/turnover denominator is frozen and the venue clears the materiality review"
+    }
+  ],
+  "identity_note": "Jurisdiction ids are ISO 3166-1 alpha-2; venues are ISO 10383 MICs; consistent with the <CC>-<MIC>-<CODE> instrument convention. Not a security identity surface.",
+  "jurisdictions": {
+    "AE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "AED",
+      "name": "United Arab Emirates",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Dubai",
+      "venues": [
+        {
+          "mic": "XADS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XDFM",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "AR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "ARS",
+      "name": "Argentina",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Argentina/Buenos_Aires",
+      "venues": [
+        {
+          "mic": "XBUE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "AT": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Austria",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Vienna",
+      "venues": [
+        {
+          "mic": "XWBO",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "AU": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^AXJO"
+        ],
+        "fx": "AUDUSD=X",
+        "fx_invert": false,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.AU"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.AU",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.AU.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.AU.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "AUD",
+      "name": "Australia",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Australia/Sydney",
+      "venues": [
+        {
+          "mic": "XASX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "BD": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "BDT",
+      "name": "Bangladesh",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Dhaka",
+      "venues": [
+        {
+          "mic": "XDHA",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "BE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Belgium",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Brussels",
+      "venues": [
+        {
+          "mic": "XBRU",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "BH": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "BHD",
+      "name": "Bahrain",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Bahrain",
+      "venues": [
+        {
+          "mic": "XBAH",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "BR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "BRL",
+      "name": "Brazil",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Sao_Paulo",
+      "venues": [
+        {
+          "mic": "BVMF",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CA": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "CAD",
+      "name": "Canada",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Toronto",
+      "venues": [
+        {
+          "mic": "XTSE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CH": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "CHF",
+      "name": "Switzerland",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Zurich",
+      "venues": [
+        {
+          "mic": "XSWX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CL": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "CLP",
+      "name": "Chile",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Santiago",
+      "venues": [
+        {
+          "mic": "XSGO",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CN": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "CNY",
+      "name": "China",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Shanghai",
+      "venues": [
+        {
+          "mic": "XSHG",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XSHE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CO": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "COP",
+      "name": "Colombia",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Bogota",
+      "venues": [
+        {
+          "mic": "XBOG",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "CZ": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "CZK",
+      "name": "Czech Republic",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Prague",
+      "venues": [
+        {
+          "mic": "XPRA",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "DE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Germany",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Berlin",
+      "venues": [
+        {
+          "mic": "XETR",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XFRA",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "DK": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "DKK",
+      "name": "Denmark",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Copenhagen",
+      "venues": [
+        {
+          "mic": "XCSE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "EG": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "EGP",
+      "name": "Egypt",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Africa/Cairo",
+      "venues": [
+        {
+          "mic": "XCAI",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "ES": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Spain",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Madrid",
+      "venues": [
+        {
+          "mic": "XMAD",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "FI": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Finland",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Helsinki",
+      "venues": [
+        {
+          "mic": "XHEL",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "FR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "France",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Paris",
+      "venues": [
+        {
+          "mic": "XPAR",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "GB": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^FTSE",
+          "^FTMC"
+        ],
+        "fx": "GBPUSD=X",
+        "fx_invert": false,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.GB"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.GB",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.GB.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.GB.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "GBP",
+      "name": "United Kingdom",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/London",
+      "venues": [
+        {
+          "mic": "XLON",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "GR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "EUR",
+      "name": "Greece",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Athens",
+      "venues": [
+        {
+          "mic": "ASEX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "HK": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "HKD",
+      "name": "Hong Kong",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Hong_Kong",
+      "venues": [
+        {
+          "mic": "XHKG",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "HU": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "HUF",
+      "name": "Hungary",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Budapest",
+      "venues": [
+        {
+          "mic": "XBUD",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "ID": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "IDR",
+      "name": "Indonesia",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Jakarta",
+      "venues": [
+        {
+          "mic": "XIDX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Ireland",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Dublin",
+      "venues": [
+        {
+          "mic": "XDUB",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IL": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "ILS",
+      "name": "Israel",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Jerusalem",
+      "venues": [
+        {
+          "mic": "XTAE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IN": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^NSEI",
+          "^BSESN"
+        ],
+        "fx": "USDINR=X",
+        "fx_invert": true,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.IN"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.IN",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.IN.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.IN.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "INR",
+      "name": "India",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Kolkata",
+      "venues": [
+        {
+          "mic": "XNSE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XBOM",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "special_handling",
+      "currency": "IRR",
+      "name": "Iran",
+      "region": "middle_east_africa",
+      "special_handling_reason": "access_and_sanctions_review_pending",
+      "timezone": "Asia/Tehran",
+      "venues": [
+        {
+          "mic": "XTEH",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IS": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "additional_classification",
+      "currency": "ISK",
+      "name": "Iceland",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Atlantic/Reykjavik",
+      "venues": [
+        {
+          "mic": "XICE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "IT": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Italy",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Rome",
+      "venues": [
+        {
+          "mic": "XMIL",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "JP": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^N225"
+        ],
+        "fx": "USDJPY=X",
+        "fx_invert": true,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.JP"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.JP",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.JP.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.JP.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "JPY",
+      "name": "Japan",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Tokyo",
+      "venues": [
+        {
+          "mic": "XJPX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XTKS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "KE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "KES",
+      "name": "Kenya",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Africa/Nairobi",
+      "venues": [
+        {
+          "mic": "XNAI",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "KR": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^KS11"
+        ],
+        "fx": "USDKRW=X",
+        "fx_invert": true,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.KR"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.KR",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": "config.yml#intl.countries.KR.fred",
+          "reason": "fred_10y_only_no_curve_or_credit",
+          "rights_ref": "fred.oecd_mirror_rates",
+          "state": "partial"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.KR.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "KRW",
+      "name": "South Korea",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Seoul",
+      "venues": [
+        {
+          "mic": "XKRX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XKOS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "KW": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "KWD",
+      "name": "Kuwait",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Kuwait",
+      "venues": [
+        {
+          "mic": "XKUW",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "KZ": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "KZT",
+      "name": "Kazakhstan",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Almaty",
+      "venues": [
+        {
+          "mic": "XKAZ",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "AIXK",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "LK": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "LKR",
+      "name": "Sri Lanka",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Colombo",
+      "venues": [
+        {
+          "mic": "XCOL",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "MA": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "MAD",
+      "name": "Morocco",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Africa/Casablanca",
+      "venues": [
+        {
+          "mic": "XCAS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "MX": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "MXN",
+      "name": "Mexico",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Mexico_City",
+      "venues": [
+        {
+          "mic": "XMEX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "MY": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "MYR",
+      "name": "Malaysia",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Kuala_Lumpur",
+      "venues": [
+        {
+          "mic": "XKLS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "NG": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "NGN",
+      "name": "Nigeria",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Africa/Lagos",
+      "venues": [
+        {
+          "mic": "XNSA",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "NL": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Netherlands",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Amsterdam",
+      "venues": [
+        {
+          "mic": "XAMS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "NO": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "NOK",
+      "name": "Norway",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Oslo",
+      "venues": [
+        {
+          "mic": "XOSL",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "NZ": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "NZD",
+      "name": "New Zealand",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Pacific/Auckland",
+      "venues": [
+        {
+          "mic": "XNZE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "OM": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "OMR",
+      "name": "Oman",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Muscat",
+      "venues": [
+        {
+          "mic": "XMUS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "PE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "PEN",
+      "name": "Peru",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/Lima",
+      "venues": [
+        {
+          "mic": "XLIM",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "PH": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "PHP",
+      "name": "Philippines",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Manila",
+      "venues": [
+        {
+          "mic": "XPHS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "PK": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "frontier_regional",
+      "currency": "PKR",
+      "name": "Pakistan",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Karachi",
+      "venues": [
+        {
+          "mic": "XKAR",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "PL": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "PLN",
+      "name": "Poland",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Warsaw",
+      "venues": [
+        {
+          "mic": "XWAR",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "PT": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "EUR",
+      "name": "Portugal",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Lisbon",
+      "venues": [
+        {
+          "mic": "XLIS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "QA": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "QAR",
+      "name": "Qatar",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Qatar",
+      "venues": [
+        {
+          "mic": "DSMD",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "RO": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "additional_classification",
+      "currency": "RON",
+      "name": "Romania",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Bucharest",
+      "venues": [
+        {
+          "mic": "XBSE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "RU": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "special_handling",
+      "currency": "RUB",
+      "name": "Russia",
+      "region": "europe",
+      "special_handling_reason": "access_and_sanctions_review_pending",
+      "timezone": "Europe/Moscow",
+      "venues": [
+        {
+          "mic": "MISX",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "SA": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "SAR",
+      "name": "Saudi Arabia",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Asia/Riyadh",
+      "venues": [
+        {
+          "mic": "XSAU",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "SE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "SEK",
+      "name": "Sweden",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Stockholm",
+      "venues": [
+        {
+          "mic": "XSTO",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "SG": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "SGD",
+      "name": "Singapore",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Singapore",
+      "venues": [
+        {
+          "mic": "XSES",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "TH": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "THB",
+      "name": "Thailand",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Bangkok",
+      "venues": [
+        {
+          "mic": "XBKK",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "TR": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "TRY",
+      "name": "Turkey",
+      "region": "europe",
+      "special_handling_reason": null,
+      "timezone": "Europe/Istanbul",
+      "venues": [
+        {
+          "mic": "XIST",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "TW": {
+      "benchmark_candidates": {
+        "configured_series": [
+          "^TWII"
+        ],
+        "fx": "USDTWD=X",
+        "fx_invert": true,
+        "selection": "legacy_configured",
+        "source": "config.yml#intl.countries.TW"
+      },
+      "calendar_policy_ref": "intl-conservative-observed-eod-tplus2-v1",
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": "config.yml#intl.countries.TW",
+          "reason": "legacy_configured_eod_t_plus_2",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_configured_index_fx_series",
+          "state": "delayed"
+        },
+        "history_pit_rights": {
+          "evidence_ref": "config/intl_source_rights_matrix_v1.json#intl_yahoo_eod.legacy_seven_eod_history",
+          "reason": "history_retained_redistribution_scope_unresolved",
+          "rights_ref": "intl_yahoo_eod.legacy_seven_eod_history",
+          "state": "partial"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": "config.yml#intl.countries.TW.fred",
+          "reason": "fred_oecd_subset",
+          "rights_ref": "fred.oecd_mirror_macro",
+          "state": "partial"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "TWD",
+      "name": "Taiwan",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Taipei",
+      "venues": [
+        {
+          "mic": "XTAI",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "ROCO",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "US": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "DM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_dm",
+      "currency": "USD",
+      "name": "United States",
+      "region": "americas",
+      "special_handling_reason": null,
+      "timezone": "America/New_York",
+      "venues": [
+        {
+          "mic": "XNYS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "XNAS",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "VE": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "special_handling",
+      "currency": "VES",
+      "name": "Venezuela",
+      "region": "americas",
+      "special_handling_reason": "access_and_sanctions_review_pending",
+      "timezone": "America/Caracas",
+      "venues": [
+        {
+          "mic": "BVCC",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "VN": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": null,
+          "status": null,
+          "verification": "pending_provider_review"
+        }
+      },
+      "cohort": "additional_classification",
+      "currency": "VND",
+      "name": "Vietnam",
+      "region": "asia_pacific",
+      "special_handling_reason": null,
+      "timezone": "Asia/Ho_Chi_Minh",
+      "venues": [
+        {
+          "mic": "XSTC",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        },
+        {
+          "mic": "HSTC",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    },
+    "ZA": {
+      "benchmark_candidates": {
+        "configured_series": [],
+        "fx": null,
+        "fx_invert": null,
+        "selection": "unselected",
+        "source": null
+      },
+      "calendar_policy_ref": null,
+      "capabilities": {
+        "constituent_breadth": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "dollar_funding_external": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "equity_index_fx": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "history_pit_rights": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "local_rates_credit": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "macro_policy": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        },
+        "us_exposure_transmission": {
+          "evidence_ref": null,
+          "reason": "no_admitted_source",
+          "rights_ref": null,
+          "state": "unavailable"
+        }
+      },
+      "classification": {
+        "ftse": null,
+        "msci": {
+          "source": "MSCI ACWI factsheet September 2026",
+          "status": "EM",
+          "verification": "claimed_not_provider_verified"
+        }
+      },
+      "cohort": "msci_em",
+      "currency": "ZAR",
+      "name": "South Africa",
+      "region": "middle_east_africa",
+      "special_handling_reason": null,
+      "timezone": "Africa/Johannesburg",
+      "venues": [
+        {
+          "mic": "XJSE",
+          "mic_register_check": {
+            "register_vintage": null,
+            "status": "unverified"
+          }
+        }
+      ]
+    }
+  },
+  "legacy_aliases": {
+    "AU": {
+      "id": "AU",
+      "kind": "jurisdiction"
+    },
+    "EZ": {
+      "id": "EZ",
+      "kind": "aggregate"
+    },
+    "GB": {
+      "id": "GB",
+      "kind": "jurisdiction"
+    },
+    "IN": {
+      "id": "IN",
+      "kind": "jurisdiction"
+    },
+    "JP": {
+      "id": "JP",
+      "kind": "jurisdiction"
+    },
+    "KR": {
+      "id": "KR",
+      "kind": "jurisdiction"
+    },
+    "TW": {
+      "id": "TW",
+      "kind": "jurisdiction"
+    }
+  },
+  "roster_digest": "79d3ce36c9261984a2634d3f643ac5b57d038e610e126a0e7a9c9af19798d5f4",
+  "target_jurisdictions": 63,
+  "universe_version": "intl-global-universe-v1"
+}

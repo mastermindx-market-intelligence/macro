@@ -1,0 +1,9 @@
+{
+  "schema": "tiingo.actual_tool_log_exact_utf8_retention/v1",
+  "original_log_file": "terminal955-canonical972-affected-Pine-unit-original.log",
+  "original_log_bytes": 587,
+  "original_log_sha256": "fe3fb8ba549f668159d7d7eb262c29d1f1dffb076777ca9d470479a14d918bb9",
+  "stdout_utf8": "\u001b[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.\u001b[39m\n\n RUN  v2.1.9 /Volumes/Mastermind/agent-workspaces/claude/5600d31ffa29643a/tiingo-boats-quotehub-b2b25c10fd296613/terminal\n\n \u2713 lib/__tests__/chartPanelPineSessionAnchor.test.ts (2 tests) 119ms\n \u2713 lib/__tests__/pineHost.test.ts (75 tests) 365ms\n\n Test Files  2 passed (2)\n      Tests  77 passed (77)\n   Start at  14:39:39\n   Duration  1.00s (transform 265ms, setup 0ms, collect 731ms, tests 484ms, environment 0ms, prepare 165ms)\n\n",
+  "output_content_unchanged": true,
+  "encoding_purpose": "Preserve exact original blank lines without introducing Git whitespace violations."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "mastermind.leader_pivot.initiation_evidence.v1",
+  "operation_id": "leader-pivot-publication-p0b30m-20261008-c1",
+  "parent": "WS:LIVE-ENTRY-RADAR",
+  "protected_mastermind_sha": "c7e47c859eb2925c5626931fd511800773ba09ac",
+  "macro_base_sha": "7f9fc1dcd92da568afee49dbf71762dbbfb41578",
+  "research_publication_commit": "dfd05d290ed138f061f73c36b9e08c90ddef2251",
+  "source_sha256": "f71fffb044c5d7a4a2a527d25fd3a0554c1ac05e28195a36a215757175bb4150",
+  "test_sha256": "a9f5825202afd6fae4c081e98dbc7fad389e2aa9cb84f6cc5664ac892b7af0f9",
+  "source_blob": "7b031cfa26a01b02a08a5d16809d24c820506aaf",
+  "test_blob": "71471442078d2bfe6440a0c7805f8253e471ece9",
+  "owner_blobs": {
+    "engine/entry_radar/contracts.py": "e59a07cc28ede82d532a031036eb72110fadc0a3",
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": "25b03eba5d3a80c2e7d5fdaf2c0dc139f10d52f3",
+    "tests/test_entry_radar_rs_pullback_phase1.py": "6c705e0b17486361fa8371c432966b31c8dd3f99"
+  },
+  "red": {
+    "process_id": 18178,
+    "tests_run": 29,
+    "failures": 29,
+    "errors": 0,
+    "skips": 0,
+    "reason": "Missing descriptor behavior, before implementation; placeholder returned NOT_IMPLEMENTED."
+  },
+  "green": {
+    "process_id": 19534,
+    "tests_run": 29,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "elapsed_seconds": 0.613,
+    "python": "3.14.7",
+    "blocked_test_effects": [],
+    "runner": "unittest.TextTestRunner over exact GitHub source bytes in isolated package namespaces",
+    "synthetic_positive_descriptor_sha256": "f22703069d50b0c2bcb929c0d9ea774ab70568529de5c1da42b9243a5c83301e",
+    "synthetic_positive_owner_snapshot_sha256": "7a67ad3eada1d04186680c4cebcdaf19c838ea5c670a83442648382b6c63c8a0"
+  },
+  "research_verification": {
+    "github_readback_process_id": 13490,
+    "original_files_verified": 16,
+    "mismatches": 0,
+    "report_bytes": 124006,
+    "report_sha256": "f73b345fa542768008c6a7271d7eacc6f46b57a26ddf3c62b18010aae65365a9",
+    "original_audit_assertions_passed": 40,
+    "original_audit_result_sha256": "d6904e5e0115ee35c13e24bca72831f74104a7991e89ff2569fec2f53ed8023c",
+    "report_rebuild_and_tamper_refusal_checked": true
+  },
+  "proof_limits": [
+    "Synthetic inputs only; no acquired market witness or source admission.",
+    "Exact owner functions were loaded unchanged, but normal package initialization and full-repository pytest/CI were not exercised.",
+    "A Python test audit hook is defense in depth, not operating-system sandbox attestation.",
+    "Same-session warmup and inherited combined daily eligibility are bounded tranche limitations, not final scientific population decisions.",
+    "No independent reviewer, real consumer, deployment, provider request, runtime Job or worker dispatch is claimed."
+  ],
+  "market_trials_executed": 0,
+  "source_admitted": false,
+  "detector_registered": false,
+  "production_enabled": false,
+  "hypotheses": {"H1": "NOT_TESTED", "H2": "NOT_TESTED", "H3": "NOT_TESTED"},
+  "p0b30m_complete": false
+}

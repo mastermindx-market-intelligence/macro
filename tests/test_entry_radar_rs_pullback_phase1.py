@@ -662,5 +662,408 @@ class Phase1SourceCensusTests(unittest.TestCase):
             assess_source_census(value)
 
 
+class Phase1LeaderPivotConsumerSuiteTests(unittest.TestCase):
+    """Execute the previously unowned pivot cases under the existing Phase-1 CI owner.
+
+    Research-price-panel already selects this Phase-1 source suite. This
+    integrity assertion runs the original test classes by normal module import,
+    instead of adding another CI job, changing selection manifests or masking a
+    failure. Its result is still synthetic conformance, never market admission.
+    """
+
+    def test_pivot_consumer_65_case_conformance(self):
+        from tests.test_entry_radar_leader_pivot_descriptor import LeaderPivotDescriptorTests
+        from tests.test_entry_radar_leader_pivot_progress import LeaderPivotProgressTests
+        from tests.test_entry_radar_leader_pivot_progress_edges import LeaderPivotProgressEdgeTests
+
+        classes = (
+            LeaderPivotDescriptorTests,
+            LeaderPivotProgressTests,
+            LeaderPivotProgressEdgeTests,
+        )
+        suite = unittest.TestSuite(
+            unittest.defaultTestLoader.loadTestsFromTestCase(cls) for cls in classes
+        )
+        result = unittest.TestResult()
+        suite.run(result)
+
+        failures = [(case.id(), traceback) for case, traceback in result.failures]
+        errors = [(case.id(), traceback) for case, traceback in result.errors]
+        self.assertEqual(result.testsRun, 65, "pivot consumer test count drift")
+        self.assertEqual(result.skipped, [], "pivot consumer tests cannot silently skip")
+        self.assertEqual(failures, [], "pivot consumer failures: " + repr(failures[:2]))
+        self.assertEqual(errors, [], "pivot consumer errors: " + repr(errors[:2]))
+
+
+    def test_first_green_comparator_21_case_conformance(self):
+        """Run the separate first-green research comparator under the existing CI owner."""
+        from tests.test_entry_radar_first_green_descriptor import (
+            FirstGreenFormationTests, FirstGreenProgressTests,
+        )
+        suite = unittest.TestSuite(
+            unittest.defaultTestLoader.loadTestsFromTestCase(cls)
+            for cls in (FirstGreenFormationTests, FirstGreenProgressTests)
+        )
+        result = unittest.TestResult()
+        suite.run(result)
+        failures = [(case.id(), tb) for case, tb in result.failures]
+        errors = [(case.id(), tb) for case, tb in result.errors]
+        self.assertEqual(result.testsRun, 21, "first-green comparator case count drift")
+        self.assertEqual(result.skipped, [], "first-green comparator cases cannot skip")
+        self.assertEqual(failures, [], "first-green comparator failures: " + repr(failures[:2]))
+        self.assertEqual(errors, [], "first-green comparator errors: " + repr(errors[:2]))
+
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
+# Explicit v2 window selection; synthetic source receipts never grant admission.
+EVENT_ANCHORED_INPUT_V2 = "mastermind.rs_pullback_launch.phase1_input.v2"
+
+
+def event_anchored_fixture(anchor="2026-10-06T14:00:00Z",
+                           decision="2026-10-06T14:15:00Z", delay=900,
+                           max_age=3600):
+    value = fixture([candidate(decision=decision)])
+    value["schema"] = EVENT_ANCHORED_INPUT_V2
+    value["candidates"][0].update(event_anchor_at=anchor,
+                                   max_feature_age_seconds=max_age)
+    for row in value["minutes"]:
+        row["known_at"] = iso(clock(row["end"]) + timedelta(seconds=delay))
+    return value
+
+
+class Phase1EventAnchorV2Tests(unittest.TestCase):
+    def test_explicit_v2_reads_earlier_windows_at_actual_later_cutoff(self):
+        panel = build_input_panel(event_anchored_fixture())
+        self.assertEqual(panel["schema"], "mastermind.rs_pullback_launch.phase1_panel.v2")
+        f = panel["frames"][0]
+        self.assertEqual(f["availability"], "available")
+        self.assertEqual(f["decision_at"], "2026-10-06T14:15:00Z")
+        self.assertEqual(f["event_anchor_at"], "2026-10-06T14:00:00Z")
+        self.assertEqual(f["feature_age_seconds"], 900)
+        self.assertEqual(f["max_feature_age_seconds"], 3600)
+        for role in ROLES:
+            for width in ("15", "30"):
+                bar = f["bars"][role][width]
+                self.assertEqual(bar["end"], f["event_anchor_at"])
+                self.assertEqual(bar["known_at"], f["decision_at"])
+        self.assertEqual(f["bars"]["stock"]["15"]["start"], "2026-10-06T13:45:00Z")
+
+    def test_v1_does_not_silently_select_v2_from_candidate_keys(self):
+        a = fixture()
+        before = build_input_panel(a)
+        a["candidates"][0].update(event_anchor_at="invalid", max_feature_age_seconds=-1)
+        after = build_input_panel(a)
+        self.assertEqual(before["frames"], after["frames"])
+        self.assertEqual(after["schema"], "mastermind.rs_pullback_launch.phase1_panel.v1")
+        self.assertNotIn("event_anchor_at", after["frames"][0])
+
+    def test_legacy_latest_window_still_refuses_delayed_data(self):
+        b = event_anchored_fixture()
+        b["schema"] = INPUT_SCHEMA
+        self.assertEqual(frame(b)["availability"], "unavailable")
+
+    def test_version_is_not_inferred_from_an_unknown_schema(self):
+        b = event_anchored_fixture()
+        b["schema"] = "mastermind.rs_pullback_launch.phase1_input.v999"
+        with self.assertRaises(InputContractError):
+            build_input_panel(b)
+
+    def test_exact_declared_age_limit_is_inclusive(self):
+        self.assertEqual(frame(event_anchored_fixture(max_age=900))["availability"], "available")
+
+    def test_one_microsecond_over_age_limit_refuses_without_dropping_candidate(self):
+        b = event_anchored_fixture(decision="2026-10-06T14:15:00.000001Z", max_age=900)
+        p = build_input_panel(b)
+        self.assertEqual(p["population_count"], p["retained_count"])
+        self.assertIn("EVENT_ANCHOR_TOO_OLD", p["frames"][0]["refusals"])
+        self.assertIsNone(p["frames"][0]["eligible"])
+
+    def test_zero_age_is_valid_for_complete_immediate_inputs(self):
+        b = event_anchored_fixture(decision="2026-10-06T14:00:00Z", delay=0, max_age=0)
+        self.assertEqual(frame(b)["availability"], "available")
+
+    def test_age_limit_must_be_explicit_nonnegative_integer(self):
+        for value in (None, -1, True, 900.0, "900"):
+            with self.subTest(value=value):
+                b = event_anchored_fixture(max_age=value)
+                self.assertIn("EVENT_ANCHOR_AGE_LIMIT_INVALID", frame(b)["refusals"])
+        b = event_anchored_fixture()
+        del b["candidates"][0]["max_feature_age_seconds"]
+        self.assertIn("EVENT_ANCHOR_AGE_LIMIT_INVALID", frame(b)["refusals"])
+
+    def test_missing_malformed_or_naive_anchor_is_unavailable(self):
+        for value in (None, 42, {}, "bad", "2026-10-06T14:00:00"):
+            with self.subTest(value=value):
+                b = event_anchored_fixture(anchor=value)
+                self.assertIn("EVENT_ANCHOR_INVALID", frame(b)["refusals"])
+        b = event_anchored_fixture()
+        del b["candidates"][0]["event_anchor_at"]
+        self.assertIn("EVENT_ANCHOR_INVALID", frame(b)["refusals"])
+
+    def test_equivalent_aware_offset_has_same_anchor(self):
+        b = event_anchored_fixture(anchor="2026-10-06T10:00:00-04:00")
+        self.assertEqual(frame(b)["event_anchor_at"], "2026-10-06T14:00:00Z")
+        self.assertEqual(frame(b)["availability"], "available")
+
+    def test_future_anchor_cannot_rewind_or_advance_cutoff(self):
+        b = event_anchored_fixture(anchor="2026-10-06T14:30:00Z")
+        f = frame(b)
+        self.assertIn("EVENT_ANCHOR_AFTER_DECISION", f["refusals"])
+        self.assertEqual(f["decision_at"], "2026-10-06T14:15:00Z")
+
+    def test_anchor_must_be_in_same_session_after_open(self):
+        for value in ("2026-10-05T14:00:00Z", "2026-10-06T13:30:00Z"):
+            with self.subTest(value=value):
+                self.assertIn("EVENT_ANCHOR_OUTSIDE_SESSION", frame(event_anchored_fixture(anchor=value))["refusals"])
+
+    def test_anchor_must_be_exact_completed_30m_boundary(self):
+        for value in ("2026-10-06T13:45:00Z", "2026-10-06T14:00:00.000001Z"):
+            with self.subTest(value=value):
+                self.assertIn("EVENT_ANCHOR_NOT_30M_BOUNDARY", frame(event_anchored_fixture(anchor=value))["refusals"])
+
+    def test_actual_after_close_decision_stays_outside_rth(self):
+        b = event_anchored_fixture(anchor="2026-10-06T20:00:00Z", decision="2026-10-06T20:15:00Z")
+        self.assertIn("DECISION_OUTSIDE_RTH", frame(b)["refusals"])
+
+    def test_half_session_boundary_uses_supplied_calendar(self):
+        b = event_anchored_fixture(anchor="2026-10-06T16:30:00Z", decision="2026-10-06T16:45:00Z")
+        b["calendar"]["sessions"][SESSION]["close"] = "2026-10-06T17:00:00Z"
+        self.assertEqual(frame(b)["availability"], "available")
+        b["candidates"][0]["decision_at"] = "2026-10-06T17:15:00Z"
+        self.assertIn("DECISION_OUTSIDE_RTH", frame(b)["refusals"])
+
+    def test_no_automatic_search_for_an_older_complete_window(self):
+        b = event_anchored_fixture(anchor="2026-10-06T14:30:00Z", decision="2026-10-06T14:45:00Z")
+        b["minutes"].remove(minute(b, "2026-10-06T14:10:00Z"))
+        f = frame(b)
+        self.assertEqual(f["availability"], "unavailable")
+        self.assertEqual(f["bars"]["stock"]["30"]["end"], "2026-10-06T14:30:00Z")
+        self.assertIn("stock:30m:MISSING_OR_NOT_YET_KNOWN_MINUTE", f["refusals"])
+
+    def test_later_same_day_gap_does_not_remove_a_valid_earlier_frame(self):
+        b = event_anchored_fixture()
+        before = frame_bytes(frame(b))
+        b["minutes"] = [r for r in b["minutes"] if clock(r["start"]) < clock("2026-10-06T16:00:00Z")]
+        self.assertEqual(before, frame_bytes(frame(b)))
+
+    def test_current_incumbent_receipt_after_anchor_is_selected(self):
+        b = event_anchored_fixture()
+        row = copy.deepcopy(next(c for c in b["contexts"] if c["kind"] == "incumbent"))
+        row["known_at"] = "2026-10-06T14:10:00Z"
+        row["payload"]["buyable_input"] = False
+        row["receipt_sha256"] = "c" * 64
+        b["contexts"].append(row)
+        self.assertIs(frame(b)["incumbent_assessment"]["payload"]["buyable_input"], False)
+
+    def test_incumbent_expiry_uses_actual_decision_not_anchor(self):
+        b = event_anchored_fixture()
+        next(c for c in b["contexts"] if c["kind"] == "incumbent")["valid_until"] = "2026-10-06T14:05:00Z"
+        self.assertIn("incumbent:STALE_RECEIPT", frame(b)["refusals"])
+
+    def test_identity_receipt_after_anchor_but_before_decision_is_visible(self):
+        b = event_anchored_fixture()
+        b["streams"]["stock"]["identity"]["known_at"] = "2026-10-06T14:10:00Z"
+        self.assertEqual(frame(b)["availability"], "available")
+        b["streams"]["stock"]["identity"]["known_at"] = "2026-10-06T14:15:00.000001Z"
+        self.assertIn("stock:IDENTITY_NOT_BOUND_AT_DECISION", frame(b)["refusals"])
+
+    def test_current_daily_close_cannot_replace_previous_completed_session(self):
+        b = event_anchored_fixture()
+        daily = next(c for c in b["contexts"] if c["kind"] == "daily")
+        late = copy.deepcopy(daily)
+        late.update(asof_session=SESSION, known_at="2026-10-06T14:10:00Z")
+        late["payload"] = {"is_leader": False, "controlled_pullback": False}
+        b["contexts"].append(late)
+        self.assertIs(frame(b)["eligible"], True)
+
+    def test_news_received_during_delay_is_not_replaced_by_old_context(self):
+        b = event_anchored_fixture()
+        latest = copy.deepcopy(next(c for c in b["contexts"] if c["kind"] == "catalyst"))
+        latest["known_at"] = "2026-10-06T14:10:00Z"
+        latest["payload"]["coverage_state"] = "EVENT_OBSERVED"
+        latest["receipt_sha256"] = "c" * 64
+        b["contexts"].append(latest)
+        self.assertEqual(frame(b)["catalyst_state"], "EVENT_OBSERVED")
+
+    def test_unknown_news_stays_unknown(self):
+        self.assertEqual(frame(event_anchored_fixture())["catalyst_state"], "UNKNOWN")
+
+    def test_revision_selection_keeps_real_known_at_cutoff(self):
+        b = event_anchored_fixture()
+        r = copy.deepcopy(minute(b, "2026-10-06T13:45:00Z"))
+        r.update(known_at="2026-10-06T14:10:00Z", high=105., revision_id="r7-visible-correction", receipt_sha256="c" * 64)
+        b["minutes"].append(r)
+        self.assertEqual(frame(b)["bars"]["stock"]["30"]["ohlcv"]["high"], 105.)
+        before = frame_bytes(frame(b))
+        future = copy.deepcopy(r)
+        future.update(known_at="2026-10-06T14:15:00.000001Z", high=999., revision_id="r7-future-correction")
+        b["minutes"].append(future)
+        self.assertEqual(before, frame_bytes(frame(b)))
+
+    def test_same_clock_conflicting_revision_stays_unavailable(self):
+        b = event_anchored_fixture()
+        r = copy.deepcopy(minute(b, "2026-10-06T13:45:00Z"))
+        r.update(high=999., revision_id="r7-conflict")
+        b["minutes"].append(r)
+        self.assertIn("stock:30m:CONFLICTING_MINUTE_REVISION", frame(b)["refusals"])
+
+    def test_terminal_scalar_basis_cannot_admit_an_occurrence(self):
+        b = event_anchored_fixture()
+        minute(b, "2026-10-06T13:45:00Z")["source_ref"] = "terminal-minute-capture:synthetic-r7"
+        self.assertIn("stock:30m:TERMINAL_BASIS_UNPROVEN", frame(b)["refusals"])
+
+    def test_source_metadata_basis_and_ohlcv_refusals_are_not_weakened(self):
+        b = event_anchored_fixture()
+        b["streams"]["stock"]["basis"]["corporate_actions_sha256"] = None
+        self.assertIn("stock:BASIS_NOT_BOUND_AT_DECISION", frame(b)["refusals"])
+        b = event_anchored_fixture()
+        minute(b, "2026-10-06T13:45:00Z")["volume"] = None
+        self.assertIn("stock:30m:INVALID_OHLCV", frame(b)["refusals"])
+
+    def test_all_four_stream_roles_remain_mandatory(self):
+        b = event_anchored_fixture()
+        del b["candidates"][0]["streams"]["qqq"]
+        with self.assertRaises(InputContractError):
+            build_input_panel(b)
+
+    def test_one_bad_anchor_does_not_discard_other_declared_candidates(self):
+        b = event_anchored_fixture()
+        bad = copy.deepcopy(b["candidates"][0])
+        bad.update(candidate_id="bad-anchor", event_anchor_at="bad")
+        b["candidates"].append(bad)
+        p = build_input_panel(b)
+        self.assertEqual((p["population_count"], p["retained_count"], p["available_count"]), (2, 2, 1))
+        self.assertIn("EVENT_ANCHOR_INVALID", p["frames"][1]["refusals"])
+
+    def test_no_input_mutation_and_no_authority_or_outcome_promotion(self):
+        b = event_anchored_fixture()
+        before = copy.deepcopy(b)
+        p = build_input_panel(b)
+        self.assertEqual(b, before)
+        self.assertTrue(all(v is False for v in p["authority"].values()))
+        self.assertFalse(p["detector_registered"])
+        self.assertFalse(p["outcomes_computed"])
+        self.assertEqual(p["frames"][0]["label_endpoint"], "2026-10-06T16:15:00Z")
+        self.assertEqual(p["frames"][0]["label_status"], "NOT_COMPUTED_PHASE1")
+
+    def test_observed_input_label_does_not_self_admit_market_evidence(self):
+        b = event_anchored_fixture()
+        b["input_kind"] = "OBSERVED_MARKET"
+        p = build_input_panel(b)
+        self.assertEqual(p["status"], "INPUT_PANEL_BUILT_NOT_ADMITTED")
+        self.assertTrue(all(v is False for v in p["authority"].values()))
+
+
+def anchored_pivot_fixture(delay=900):
+    b = event_anchored_fixture(anchor="2026-10-06T16:30:00Z", decision="2026-10-06T16:45:00Z", delay=delay)
+    opening = clock("2026-10-06T13:30:00Z")
+    for row in b["minutes"]:
+        if row["stream"] != "stock":
+            continue
+        i = int((clock(row["start"]) - opening).total_seconds() // 60)
+        if 30 <= i < 150:
+            row.update(open=102., high=102.5, low=100.5, close=101.)
+        elif 150 <= i < 180:
+            row.update(open=100., high=101.5, low=99.5, close=101.)
+        elif i == 195:
+            row.update(open=101., high=102.5, low=100.5, close=102.)
+        elif i >= 196:
+            row.update(open=101., high=102.5, low=100.5, close=102.)
+    return b
+
+
+class Phase1EventAnchoredNativeConsumersTests(unittest.TestCase):
+    def test_both_existing_descriptors_form_without_rewriting_decision_time(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import describe_first_green_candidate
+        from engine.entry_radar.replay.leader_pivot_descriptor import describe_candidate
+        b = anchored_pivot_fixture()
+        for describe, expected in ((describe_first_green_candidate, "FIRST_GREEN_FORMED"), (describe_candidate, "PIVOT_FORMED")):
+            with self.subTest(state=expected):
+                f = describe(b, "earlier")
+                self.assertEqual(f["state"], expected)
+                self.assertEqual(f["pivot"]["bar_end"], "2026-10-06T16:30:00Z")
+                self.assertEqual(f["decision_at"], "2026-10-06T16:45:00Z")
+                self.assertEqual(f["price_structure_known_at"], "2026-10-06T16:45:00Z")
+                self.assertFalse(f["source_admitted"])
+
+    def test_both_original_warmups_remain_different(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import describe_first_green_candidate
+        from engine.entry_radar.replay.leader_pivot_descriptor import describe_candidate
+        b = event_anchored_fixture(anchor="2026-10-06T14:30:00Z", decision="2026-10-06T14:45:00Z")
+        for r in b["minutes"]:
+            if r["stream"] == "stock" and r["start"] < "2026-10-06T14:00:00Z":
+                r.update(open=102., high=103., low=99., close=100.)
+        self.assertEqual(describe_first_green_candidate(b, "earlier")["state"], "FIRST_GREEN_FORMED")
+        self.assertEqual(describe_candidate(b, "earlier")["state"], "UNAVAILABLE")
+
+    def test_green_confirmation_waits_for_actual_known_at_and_keeps_unknown_tail(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import freeze_first_green_reference, describe_first_green_progress
+        b = anchored_pivot_fixture()
+        ref = freeze_first_green_reference(b, "earlier", buffer_size=.01, episode_expires_at="2026-10-06T17:45:00Z")
+        self.assertEqual(ref["first_minute_start"], "2026-10-06T16:45:00Z")
+        b["candidates"][0]["decision_at"] = "2026-10-06T17:00:59.999999Z"
+        self.assertIsNone(describe_first_green_progress(b, "earlier", reference=ref)["confirmation"])
+        b["candidates"][0]["decision_at"] = "2026-10-06T17:01:00Z"
+        v = describe_first_green_progress(b, "earlier", reference=ref)
+        self.assertEqual(v["confirmation"]["bar_end"], "2026-10-06T16:46:00Z")
+        self.assertEqual(v["confirmation"]["known_at"], "2026-10-06T17:01:00Z")
+        self.assertEqual(v["state"], "UNAVAILABLE")
+
+    def test_undercut_confirmation_and_unknown_tail_use_the_same_real_clock(self):
+        from engine.entry_radar.replay.leader_pivot_descriptor import freeze_pivot_reference, describe_pivot_progress
+        b = anchored_pivot_fixture()
+        ref = freeze_pivot_reference(b, "earlier", tick_size=.01, episode_expires_at="2026-10-06T17:45:00Z")
+        b["candidates"][0]["decision_at"] = "2026-10-06T17:01:00Z"
+        v = describe_pivot_progress(b, "earlier", reference=ref)
+        self.assertEqual(v["confirmation"]["bar_end"], "2026-10-06T16:46:00Z")
+        self.assertEqual(v["confirmation"]["known_at"], "2026-10-06T17:01:00Z")
+        self.assertEqual(v["state"], "UNAVAILABLE")
+
+    def test_both_low_breach_rules_preserve_terminal_invalidation(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import freeze_first_green_reference, describe_first_green_progress
+        from engine.entry_radar.replay.leader_pivot_descriptor import freeze_pivot_reference, describe_pivot_progress
+        for freeze, progress, keyword in ((freeze_first_green_reference, describe_first_green_progress, "buffer_size"), (freeze_pivot_reference, describe_pivot_progress, "tick_size")):
+            with self.subTest(parameter=keyword):
+                b = anchored_pivot_fixture()
+                ref = freeze(b, "earlier", episode_expires_at="2026-10-06T17:45:00Z", **{keyword: .01})
+                minute(b, "2026-10-06T16:45:00Z")["low"] = 99.
+                b["candidates"][0]["decision_at"] = "2026-10-06T17:01:00Z"
+                v = progress(b, "earlier", reference=ref)
+                self.assertEqual(v["state"], "INVALIDATED")
+                self.assertIsNone(v["confirmation"])
+
+    def test_later_failure_preserves_original_confirmation(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import freeze_first_green_reference, describe_first_green_progress
+        b = anchored_pivot_fixture()
+        ref = freeze_first_green_reference(b, "earlier", buffer_size=.01, episode_expires_at="2026-10-06T17:45:00Z")
+        minute(b, "2026-10-06T16:46:00Z")["low"] = 99.
+        b["candidates"][0]["decision_at"] = "2026-10-06T17:02:00Z"
+        v = describe_first_green_progress(b, "earlier", reference=ref)
+        self.assertEqual(v["state"], "INVALIDATED")
+        self.assertIsNotNone(v["confirmation"])
+        self.assertIsNotNone(v["invalidation"])
+
+    def test_both_pivots_reject_terminal_occurrences_despite_v2_anchor(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import describe_first_green_candidate
+        from engine.entry_radar.replay.leader_pivot_descriptor import describe_candidate
+        b = anchored_pivot_fixture()
+        for r in b["minutes"]:
+            r["source_observation"] = {"observer_id": "terminal.backfill_intraday"}
+        for describe in (describe_first_green_candidate, describe_candidate):
+            v = describe(b, "earlier")
+            self.assertEqual(v["state"], "UNAVAILABLE")
+            self.assertTrue(any("TERMINAL_BASIS_UNPROVEN" in x for x in v["refusals"]))
+
+    def test_zero_delay_both_progress_paths_still_confirm_normally(self):
+        from engine.entry_radar.replay.first_green_reversal_descriptor import freeze_first_green_reference, describe_first_green_progress
+        from engine.entry_radar.replay.leader_pivot_descriptor import freeze_pivot_reference, describe_pivot_progress
+        for freeze, progress, keyword, state in ((freeze_first_green_reference, describe_first_green_progress, "buffer_size", "GREEN_BREAK_CONFIRMED"), (freeze_pivot_reference, describe_pivot_progress, "tick_size", "PIVOT_CONFIRMED")):
+            with self.subTest(state=state):
+                b = anchored_pivot_fixture(delay=0)
+                ref = freeze(b, "earlier", episode_expires_at="2026-10-06T17:45:00Z", **{keyword: .01})
+                b["candidates"][0]["decision_at"] = "2026-10-06T16:46:00Z"
+                self.assertEqual(progress(b, "earlier", reference=ref)["state"], state)

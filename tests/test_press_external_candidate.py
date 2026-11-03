@@ -79,6 +79,134 @@ def test_evidence_hash_mismatch(inputs, key):
     with pytest.raises(ValueError, match='hash mismatch'): P.plan_external_candidate(**inputs)
 
 
+def test_explicit_no_share_keeps_only_reviewed_source_claims(inputs):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(derived_share=None))
+    result = P.plan_external_candidate(**inputs)
+    claims = json.loads(inputs['qualification_path'].read_text())['external_planning']['reviewed_claims']
+    facts = result['validation_context']['facts']
+    assert [fact['text'] for fact in facts] == [claim['literal'] for claim in claims]
+    assert all(fact['tier'] == 'third_party' for fact in facts)
+    assert all(not fact.get('derived_from_external') for fact in facts)
+    assert result['validation_context']['allowed_links'] == ['https://www.mastermind-x.com/stocks/NVDA.html']
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+    assert result['cadence_consumed'] is False
+
+
+@pytest.mark.parametrize('value', [{}, [], False, '', {'percent': '0'}])
+def test_no_share_requires_explicit_null_not_a_malformed_calculation(inputs, value):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(derived_share=value))
+    with pytest.raises(ValueError, match='share derivation'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_missing_share_review_is_not_implicit_no_share(inputs):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].pop('derived_share'))
+    with pytest.raises(ValueError, match='explicit external planning'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('gate', ['rights', 'event', 'ticker', 'literal'])
+def test_no_share_keeps_other_qualification_gates(inputs, gate):
+    def change(q):
+        q['external_planning']['derived_share'] = None
+        if gate == 'rights': q['rights_basis']['qualification'] = 'unqualified'
+        elif gate == 'event': q['event_date'] = '2026-10-01'
+        elif gate == 'ticker': q['external_planning']['reviewed_tickers'] = {'FAKE': 'NVIDIA'}
+        elif gate == 'literal': q['external_planning']['reviewed_claims'][0]['literal'] = 'invented'
+    mutate(inputs, 'qualification', change)
+    with pytest.raises(ValueError):
+        P.plan_external_candidate(**inputs)
+
+
+def qualify_context(inputs, *, dated='2026-10-10', fact_id='market_state_score'):
+    artifact = 'data/market_state/latest.json'
+    path = inputs['root'] / artifact
+    path.parent.mkdir(parents=True, exist_ok=True)
+    digest = dump(path, {'asof': dated, 'score': 53, 'verdict': 'MIXED'})
+    row = {'id': fact_id, 'artifact': artifact, 'sha256': digest,
+           'relevance': 'Market backdrop for interpreting the announced investment; not evidence of its price effect.'}
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    return path, row
+
+
+def test_reviewed_context_uses_bound_engine_bytes_without_promoting_external_claims(inputs):
+    path, row = qualify_context(inputs)
+    before = path.read_bytes()
+    result = P.plan_external_candidate(**inputs)
+    facts = result['validation_context']['facts']
+    assert len(facts) == 10
+    assert {fact['tier'] for fact in facts[:-1]} == {'third_party'}
+    assert facts[-1]['id'] == 'market_state_score'
+    assert facts[-1]['values'] == ['53']
+    assert facts[-1]['tier'] == 'first_party'
+    assert facts[-1]['dated'] == '2026-10-10'
+    assert facts[-1]['receipt'] == 'sha256:' + row['sha256']
+    assert facts[-1]['context_relevance'] == row['relevance']
+    assert result['source_revisions']['artifact:data/market_state/latest.json'] == facts[-1]['receipt']
+    assert path.read_bytes() == before
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+
+
+@pytest.mark.parametrize('dated', ['2026-10-07', '2026-10-12', None, '2026-13-10'])
+def test_reviewed_context_rejects_stale_future_missing_or_invalid_date(inputs, dated):
+    qualify_context(inputs, dated=dated)
+    with pytest.raises(ValueError, match='context.*date|context.*window'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('change', ['hash', 'artifact', 'id', 'duplicate', 'empty', 'relevance', 'tier'])
+def test_reviewed_context_cannot_inject_or_relabel_facts(inputs, change):
+    path, _ = qualify_context(inputs)
+    if change == 'hash':
+        path.write_text(path.read_text() + ' ')
+    else:
+        def patch(q):
+            rows = q['external_planning']['first_party_context']
+            if change == 'artifact': rows[0]['artifact'] = 'data/vendor/news.json'
+            elif change == 'id': rows[0]['id'] = 'invented_fact'
+            elif change == 'duplicate': rows.append(rows[0].copy())
+            elif change == 'empty': rows.clear()
+            elif change == 'relevance': rows[0]['relevance'] = ''
+            elif change == 'tier': rows[0]['tier'] = 'first_party'
+        mutate(inputs, 'qualification', patch)
+    with pytest.raises(ValueError):
+        P.plan_external_candidate(**inputs)
+
+
+def test_reviewed_context_rejects_symlinked_artifact(inputs, tmp_path):
+    path, _ = qualify_context(inputs)
+    outside = tmp_path / 'outside.json'
+    path.rename(outside)
+    path.symlink_to(outside)
+    with pytest.raises(ValueError):
+        P.plan_external_candidate(**inputs)
+
+
+def test_selected_measurements_meet_receipt_floor_but_do_not_approve_story(inputs):
+    from engine.press import validators as V
+    plain = P.plan_external_candidate(**inputs)['validation_context']
+    path, row = qualify_context(inputs)
+    payload = json.loads(path.read_text())
+    payload['components'] = [
+        {'key': key, 'label_en': key, 'score': score, 'weight': 0.2}
+        for key, score in [('trend', 71), ('risk', 29), ('vol', 83), ('breadth', 17)]
+    ]
+    digest = dump(path, payload)
+    rows = [{**row, 'id': fid, 'sha256': digest} for fid in [
+        'market_state_score', 'market_state_trend', 'market_state_risk',
+        'market_state_vol', 'market_state_breadth']]
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=rows))
+    context = P.plan_external_candidate(**inputs)['validation_context']
+    draft = {'body_html': '<p>The market-state composite reads 53. Trend scores 71. '
+             'Risk appetite scores 29. Volatility scores 83. Breadth scores 17.</p>'}
+    cfg = P.load_config(inputs['root'])
+    assert V.check_receipts(draft, plain, cfg)['ok'] is False
+    result = V.check_receipts(draft, context, cfg)
+    assert result['ok'] is True
+    assert context['min_anchored_receipts'] == 5
+    assert set(result['metrics']['values']) == {53, 71, 29, 83, 17}
+
+
 @pytest.mark.parametrize('patch', [
     {'body': 'different'}, {'body_sha256': '0' * 64}, {'url': 'https://evil.example/doc'},
     {'published': '2026-10-08T15:05:07+00:00'}, {'guid': 'different'},
@@ -270,4 +398,122 @@ def test_aggregate_admission_does_not_bypass_freshness_or_rights(inputs):
     inputs['as_of'] = '2026-10-11T23:00:00Z'
     mutate(inputs, 'qualification', lambda q: q['rights_basis'].update(qualification='unqualified'))
     with pytest.raises(ValueError, match='rights qualification'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('payload', [
+    {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': {'trend': 70}},
+    {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': 7},
+])
+def test_malformed_extractor_payload_rejects_as_value_error(inputs, payload):
+    path, row = qualify_context(inputs)
+    row['sha256'] = dump(path, payload)
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='artifact is malformed'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('rows', [None, {}, 'none', [], [{}] * 21])
+def test_context_presence_requires_nonempty_bounded_review_not_null(inputs, rows):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=rows))
+    with pytest.raises(ValueError, match='bounded reviewed'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('artifact', ['/data/market_state/latest.json', 'data/../data/market_state/latest.json'])
+def test_context_artifact_identity_is_canonical_relative_path(inputs, artifact):
+    _, row = qualify_context(inputs)
+    row['artifact'] = artifact
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='identity'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_conflicting_context_revisions_reject_without_rereading(inputs, monkeypatch):
+    from engine.press import external_candidate as E
+    _, row = qualify_context(inputs)
+    other = {**row, 'id': 'market_state_trend', 'sha256': 'a' * 64}
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row, other]))
+    read, calls = E._read_bound, []
+    def count(path, *args):
+        calls.append(path)
+        return read(path, *args)
+    monkeypatch.setattr(E, '_read_bound', count)
+    with pytest.raises(ValueError, match='conflicting artifact revisions'):
+        P.plan_external_candidate(**inputs)
+    assert calls.count(inputs['root'] / row['artifact']) == 1
+
+
+def test_reviewed_context_rejects_symlinked_parent_even_for_identical_bytes(inputs, tmp_path):
+    path, _ = qualify_context(inputs)
+    outside = tmp_path / 'engine-data'
+    path.parent.rename(outside)
+    path.parent.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match='traverse a symlink'):
+        P.plan_external_candidate(**inputs)
+
+
+@pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+    artifact = 'data/risk_radar/forward_log.jsonl'
+    path = inputs['root'] / artifact
+    path.parent.mkdir(parents=True, exist_ok=True)
+    history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                    drawdown_prob={'h21': 0.12}),
+               dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                    drawdown_prob={'h21': 0.19, 'h10': 0.11, 'h5': 0.06})]
+    path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+    row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+               relevance='Dated risk backdrop, not evidence of the event effect.')
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    if suffix:
+        with pytest.raises(ValueError, match='artifact is malformed'):
+            P.plan_external_candidate(**inputs)
+    else:
+        fact = P.plan_external_candidate(**inputs)['validation_context']['facts'][-1]
+        assert fact['id'] == 'risk_radar' and fact['dated'] == '2026-10-10'
+        # This legacy row has no target/calibration evidence. Keep its dated
+        # state receipt, but do not make its naked probabilities quotable.
+        assert fact['values'] == ['70']
+        assert 'probability' not in fact['text']
+        assert fact['receipt'] == 'sha256:' + row['sha256']
+
+
+def test_no_share_plus_context_changes_candidate_identity_and_writes_nothing(inputs):
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(derived_share=None))
+    plain = P.plan_external_candidate(**inputs)
+    qualify_context(inputs)
+    snapshot = lambda: {str(p): p.read_bytes() for p in inputs['root'].rglob('*') if p.is_file()}
+    before = snapshot()
+    result = P.plan_external_candidate(**inputs)
+    assert result['candidate_id'] != plain['candidate_id']
+    assert result['validation_context']['facts'][:-1] == plain['validation_context']['facts']
+    assert len(result['validation_context']['facts']) == len(plain['validation_context']['facts']) + 1
+    assert result['allow_stage'] is result['allow_emit'] is result['publication_approved'] is False
+    assert snapshot() == before
+
+
+@pytest.mark.parametrize('relevance', ['  ', 'x' * 501])
+def test_context_relevance_must_be_bounded_substantive_metadata(inputs, relevance):
+    _, row = qualify_context(inputs)
+    row['relevance'] = relevance
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='relevance'):
+        P.plan_external_candidate(**inputs)
+
+
+def test_external_literals_alone_do_not_count_as_our_measurements(inputs):
+    from engine.press import validators as V
+    plain = P.plan_external_candidate(**inputs)['validation_context']
+    draft = {'body_html': '<p>' + '. '.join(f['text'] for f in plain['facts']) + '.</p>'}
+    cfg = P.load_config(inputs['root'])
+    assert V.check_receipts(draft, plain, cfg)['ok'] is False
+    assert V.check_our_value(draft, plain, cfg)['ok'] is False
+
+
+def test_reviewed_context_cannot_admit_lexicon_violating_engine_text(inputs):
+    path, row = qualify_context(inputs)
+    row['sha256'] = dump(path, {'asof': '2026-10-10', 'score': 53, 'verdict': 'guaranteed'})
+    mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+    with pytest.raises(ValueError, match='Press lexicon'):
         P.plan_external_candidate(**inputs)

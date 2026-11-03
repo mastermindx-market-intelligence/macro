@@ -1,0 +1,15 @@
+{
+  "accepted": false,
+  "next_review_scope": "Final hardened source plus actual CI entry-pin and dependency-reachability repairs; prefer another normally admitted independent economical pool. Original account cooldown remains enforced.",
+  "parent_run_id": "market-time-machine-20261015",
+  "provider_key": "none",
+  "provider_thread": "none",
+  "rc": 75,
+  "reason": "REQUIRED_ACCOUNT_UNAVAILABLE account=Kris reason=cooldown",
+  "retained_response_sha256": "e837ef06c552aeeafd62e8c2cf80495d3d5051c741d433e2950f3785ed42cd1f",
+  "retry_or_key_override_performed": false,
+  "root_id": "market-time-machine-20261015",
+  "run_id": "market-time-machine-20261015-hardening-review-03",
+  "schema": "market_memory.review_preexecution_failure.v1",
+  "state": "TERMINAL"
+}

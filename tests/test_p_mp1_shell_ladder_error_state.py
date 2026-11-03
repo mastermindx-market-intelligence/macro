@@ -43,14 +43,14 @@ def test_loading_state_unaffected_by_the_error_param_default():
 
 def test_build_site_distinguishes_missing_from_unreadable():
     src = (ROOT / "scripts" / "build_site.py").read_text()
-    assert "us_prophet_book_error = False" in src
-    assert "us_prophet_book_error = True" in src
-    # the True assignment must be inside the except branch of the read, not
-    # the absent-file branch (which leaves the flag at its False default)
-    idx_pbk = src.index('_pbk = site / "prophet" / "index.json"')
-    idx_true = src.index("us_prophet_book_error = True", idx_pbk)
-    idx_except = src.rindex("except Exception as e:", idx_pbk, idx_true)
-    assert idx_except < idx_true, "the error flag must be set inside the except branch"
+    idx_read = src.index("def _read_us_prophet_book")
+    idx_absent = src.index("if not path.exists():", idx_read)
+    idx_except = src.index("except Exception as exc:", idx_read)
+    # Missing retains loading; the unreadable flag belongs to the exception
+    # branch, before main consumes both halves of the reader result.
+    assert src.index("return None, False", idx_absent) < idx_except
+    assert src.index("return None, True", idx_except) > idx_except
+    assert "us_prophet_book, us_prophet_book_error = _read_us_prophet_book(" in src
 
 
 def test_build_site_wires_the_error_flag_through_both_render_call_sites():

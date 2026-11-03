@@ -1,0 +1,31 @@
+{
+  "head": "c99ee6cfdde62f00ac1a94c5918f298a43277fd9",
+  "test": "test_planner_never_seeds_banned_vocabulary_into_the_prompt_context",
+  "result": "PASS",
+  "facts": 15,
+  "inputs": {
+    "data/market_state/latest.json": {
+      "sha256": "462b7b7cebc50b09f672ea1f130d934494fefb65e740a9ad0076b87e71d40537",
+      "bytes": 30209
+    },
+    "data/gex/latest.json": {
+      "sha256": "37d95d486f459ff9d2719c37b1da6c29480d190a5cad9589b28bafbd4b556c54",
+      "bytes": 2298
+    },
+    "site/basketdata/breadth_split.json": {
+      "sha256": "b8efef380bf96ee40e298df79e390797ebc425c88d708b1d5b135c90c688dc24",
+      "bytes": 1840
+    },
+    "site/basketdata/fear_greed.json": {
+      "sha256": "9dd231adb1edd9b4d4c2a9874a1196adcfceaa9b3037e75d9cdd9bf95dd6066f",
+      "bytes": 7980
+    },
+    "data/risk_radar/forward_log.jsonl": {
+      "sha256": "240c202431cc160ca8ec53ec65125c2f9d858597bea60e416a91f01dea55017d",
+      "bytes": 162312
+    }
+  },
+  "inputs_unchanged": true,
+  "runtime_writes": false,
+  "method": "Exact unchanged test function against isolated committed HEAD artifact bytes. Initial full selected test run had 803pass/1sparse-data failure/1existing skip."
+}

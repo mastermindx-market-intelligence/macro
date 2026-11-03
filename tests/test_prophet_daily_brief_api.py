@@ -8,6 +8,8 @@ final registered-app test below using the actual native writer/reader.
 """
 from __future__ import annotations
 
+from contextlib import nullcontext
+
 import importlib
 import importlib.util
 import os
@@ -173,7 +175,8 @@ def client(route):
 
 
 @pytest.mark.parametrize("denial", [401, 403])
-def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, denial):
+@pytest.mark.parametrize("busy", [False, True])
+def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, denial, busy):
     import app.main as main
     import app.paywall as paywall
 
@@ -192,8 +195,9 @@ def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, d
     bind_owner(monkeypatch, forbidden_owner)
     app = FastAPI()
     app.include_router(route.router)
-    with TestClient(app) as boundary:
-        response = boundary.get(URL + "?source_sha256=not-a-hash&pair_id=../private")
+    with route._READ_ADMISSION if busy else nullcontext():
+        with TestClient(app) as boundary:
+            response = boundary.get(URL + "?source_sha256=not-a-hash&pair_id=../private")
     assert response.status_code == denial
     assert calls == (["authenticate"] if denial == 401 else ["authenticate", "entitle"])
     private(response)
@@ -378,3 +382,77 @@ def test_actual_native_owner_pending_then_same_source_api_reread(tmp_path, monke
         assert response.headers["cache-control"] == "private, no-store"
         assert response.headers["vary"] == "Authorization"
     assert calls == ["authenticated", "paid"] * 4
+
+
+def test_overlapping_read_is_refused_without_queuing_and_then_recovers(client, monkeypatch):
+    """One expensive read must not admit another or block an unrelated route."""
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    entered, release = Event(), Event()
+    calls = []
+
+    def held_owner(*args, **kwargs):
+        calls.append((args, kwargs))
+        entered.set()
+        assert release.wait(15), "test did not release the owner"
+        return AVAILABLE
+
+    bind_owner(monkeypatch, held_owner)
+    client.app.add_api_route("/health-for-admission-test", lambda: {"ok": True})
+    pool = ThreadPoolExecutor(max_workers=2)
+    first = pool.submit(client.get, URL, params=GOOD)
+    try:
+        assert entered.wait(5), "first owner read did not start"
+        second = pool.submit(client.get, URL, params=GOOD)
+        busy = second.result(timeout=5)
+        assert busy.status_code == 503
+        assert busy.json() == {"error": "DAILY_BRIEF_UNAVAILABLE"}
+        private(busy)
+        assert len(calls) == 1
+        assert not first.done()
+        health = pool.submit(client.get, "/health-for-admission-test").result(timeout=5)
+        assert health.status_code == 200 and health.json() == {"ok": True}
+    finally:
+        release.set()
+        pool.shutdown(wait=True)
+    response = first.result()
+    assert response.status_code == 200 and response.json() == AVAILABLE
+    private(response)
+    after = client.get(URL, params=GOOD)
+    assert after.status_code == 200 and after.json() == AVAILABLE
+    assert len(calls) == 2
+
+
+@pytest.mark.parametrize("failure", ["import", "owner", "serialization", "shape"])
+def test_failed_read_releases_admission_for_next_request(client, route, monkeypatch, failure):
+    with monkeypatch.context() as patch:
+        if failure == "import":
+            patch.setitem(sys.modules, "scripts.build_stock_library", None)
+        elif failure == "owner":
+            def broken_owner(*args, **kwargs):
+                raise RuntimeError("private source detail")
+            bind_owner(patch, broken_owner)
+        elif failure == "serialization":
+            bind_owner(patch, recording_owner([], {"status": "AVAILABLE", "bad": float("nan")}))
+        else:
+            bind_owner(patch, lambda *args, **kwargs: None)
+        refused = client.get(URL, params=GOOD)
+        assert refused.status_code == 503
+        assert refused.json() == {"error": "DAILY_BRIEF_UNAVAILABLE"}
+        private(refused)
+    calls = []
+    bind_owner(monkeypatch, recording_owner(calls, AVAILABLE))
+    recovered = client.get(URL, params=GOOD)
+    assert recovered.status_code == 200 and recovered.json() == AVAILABLE
+    private(recovered)
+    assert len(calls) == 1
+
+
+def test_busy_reader_does_not_replace_invalid_query_response(client, route, monkeypatch):
+    bind_owner(monkeypatch, forbidden_owner)
+    with route._READ_ADMISSION:
+        response = client.get(URL, params={**GOOD, "root": "/private"})
+    assert response.status_code == 400
+    assert response.json() == {"error": "INVALID_QUERY"}
+    private(response)

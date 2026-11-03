@@ -1,0 +1,63 @@
+{
+  "schema": "mastermind.rs_pullback_launch.pivot_progress_conformance.v1",
+  "operation": "leader-pivot-publication-p0b30m-20261008-c1",
+  "parent_head": "2089c5f6c4ce62cc15994da2a24a40b996303b78",
+  "protected_procedure": "c7e47c859eb2925c5626931fd511800773ba09ac",
+  "review_disposition": "CHAIRMAN_WAIVED_NOT_INDEPENDENTLY_REVIEWED",
+  "authority_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8649#issuecomment-6069276063",
+  "red_before_implementation": {
+    "process": 13282,
+    "tests": 28,
+    "failures": 28,
+    "errors": 0,
+    "skips": 0,
+    "expected_missing_behavior": true,
+    "log_sha256": "274186e10663e8e143fd604d5551e294ca2fec5bec2ac09e456703122f589592"
+  },
+  "initial_green": {
+    "process": 15511,
+    "source_blob": "533739ce1f29f9a43f8dac948e71ed8e01d3c592",
+    "tests": 57,
+    "failures": 0,
+    "errors": 0,
+    "log_sha256": "abe972cf1078a1fe8cfa2be93f1bfb0b1d75a949fa193e7232cfdfce85815d8a"
+  },
+  "edge_regression_before_repair": {
+    "process": 32235,
+    "tests": 8,
+    "failures": 2,
+    "errors": 0,
+    "findings": ["valid integer buffer failed frozen-reference read", "integer and equal float buffer had different identities"],
+    "log_sha256": "6cb4016417d1498a716763dea9cae60e3a5926f13cf918d4dba66e60061c8937"
+  },
+  "final_green": {
+    "process": 35244,
+    "process_exit": 0,
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "python": "3.14.7",
+    "elapsed_seconds": 1.98,
+    "original_functions_ast_exact": true,
+    "blocked_test_effects": [],
+    "log_sha256": "66bdab13b15b1c379248de80f8d9b10713a5736cbb277c664b6b54151ffbb25e"
+  },
+  "source_bindings": {
+    "engine/entry_radar/replay/leader_pivot_descriptor.py": {"blob": "2f5670a83959256b7c7f151acef0b541690e382e", "sha256": "a4f476e5652490838078233d99b02e6fbea77ac5ae0ccea472b5df777e690c64"},
+    "tests/test_entry_radar_leader_pivot_progress.py": {"blob": "8c9c9da4ac63ae3ef4b6292c02f1f2a15ae0be9e", "sha256": "c12f8febff7f112bbdb264951fb1c5b714d6244f3cbd9ddecd1e6e504404bac7"},
+    "tests/test_entry_radar_leader_pivot_progress_edges.py": {"blob": "bd8ecf4580f1f0c825276e694c06ee307c284b00", "sha256": "243ea496727cf516eb579e9c768abe856e7265f83bcee19f1138ebb331fd1c32"},
+    "engine/entry_radar/replay/rs_pullback_launch_data.py": {"blob": "25b03eba5d3a80c2e7d5fdaf2c0dc139f10d52f3", "sha256": "c7b3ea3fada013364c40c1cd041194ef30ff3f97f098b5bbadda9dc246dd1820"},
+    "engine/entry_radar/contracts.py": {"blob": "e59a07cc28ede82d532a031036eb72110fadc0a3", "sha256": "d8c7d8599d101fb4e764f25b41059eccf1cda8d50311a73e395e428bbae9ab98"},
+    "tests/test_entry_radar_rs_pullback_phase1.py": {"blob": "6c705e0b17486361fa8371c432966b31c8dd3f99", "sha256": "25a01209db7ccb95036976722017b96c7d1df7629f8eaad9cfaf2ed4a56caf6c"},
+    "tests/test_entry_radar_leader_pivot_descriptor.py": {"blob": "71471442078d2bfe6440a0c7805f8253e471ece9", "sha256": "a9f5825202afd6fae4c081e98dbc7fad389e2aa9cb84f6cc5664ac892b7af0f9"}
+  },
+  "scope": "Exact source modules and original synthetic fixture loaded into isolated in-memory package namespaces. Audit hook barred test-side write/network/process effects; no such attempts occurred. This is not an OS sandbox attestation.",
+  "normal_package_initialization_proven": false,
+  "repository_pytest_configuration_proven": false,
+  "new_suite_hosted_ci_proven": false,
+  "source_admitted": false,
+  "market_trials": 0,
+  "hypotheses": {"H1": "NOT_TESTED", "H2": "NOT_TESTED", "H3": "NOT_TESTED"},
+  "original_historical_evidence": "Original report, 40-assertion audit and Phase-1 refusal artifacts remain unchanged; not rerun or relabeled as this proof."
+}

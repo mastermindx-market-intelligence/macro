@@ -41,7 +41,29 @@ SEC_FILING_PARSER_VERSION = "1"
 # on previously accepted inputs holds by construction - the new predicate
 # runs only on the path that used to raise - and the 132/132 corpus byte
 # identity was checked out of band by the D1-ext lane; its receipts live on
-# the lane host, not in git.  Refusal verdicts are not fingerprint-bound;
+# the lane host, not in git.  The one exception to "strict superset": D1X-5
+# (PR #9095) narrowed that widening under this same fingerprint - a member
+# carrying ANY element whose local name casefolds to ``base`` (any namespace;
+# previously only an exact-case XHTML ``base``) now refuses where a pre-D1X-5
+# build admits it.  The 140-file corpus census found 0 such members, so no
+# accepted output changed.  The nil-fact inert-attribute tolerance
+# (DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031) is another
+# strict widening under this same fingerprint: a nil numeric fact carrying
+# inert decimals/precision/scale/format/sign is admitted with all five dropped
+# and exactly one per-fact ``nil_fact_inert_attributes_dropped`` diagnostic, a
+# path that previously raised, so every accepted output stays byte-identical.
+# The iXBRL 1.1 spec-conformance widening
+# (DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102) is another
+# strict widening under this same fingerprint: an ix:footnote that is a direct
+# child of the single ix:hidden (§9.1), an ix:footnote that no ix:relationship
+# references (§13.1.2 binds each toRefs IDREF, not the converse), and a
+# continuation chain of up to 256 links are admitted.  Each of those paths
+# previously raised, so every accepted output stays byte-identical.  A
+# pre-widening build refuses these inputs on replay - the ADI/AVGO primaries
+# with the header-footnote and unreferenced-footnote refusals, the AMZN
+# primaries with "continuation chain limit exceeded" - exactly as it refuses
+# the CAT primaries admitted by the fragment-href widening above.
+# Refusal verdicts are not fingerprint-bound;
 # they are bound by the committed ``_VERDICT_PIN`` in
 # tests/test_fif_gsrc_capture.py, regenerated in the same PR.  Runtime
 # library versions are observed provenance and must not invalidate retained
@@ -82,7 +104,7 @@ SUPPORTED_TRANSFORMS: Mapping[str, str] = {
 
 _HARD_LIMITS = MappingProxyType({
     "max_bytes": 32 * 1024 * 1024,
-    "max_nodes": 200_000,
+    "max_nodes": 300_000,
     "max_depth": 128,
     "max_attributes_per_element": 256,
     "max_total_attributes": 500_000,
@@ -94,16 +116,16 @@ _HARD_LIMITS = MappingProxyType({
     "max_total_namespace_bytes": 8 * 1024 * 1024,
     "max_text_bytes": 16 * 1024 * 1024,
     "max_text_events": 100_000,
-    "max_fact_text_bytes": 1 * 1024 * 1024,
+    "max_fact_text_bytes": 2 * 1024 * 1024,
     "max_contexts": 5_000,
     "max_units": 2_000,
-    "max_facts": 10_000,
+    "max_facts": 12_000,
     "max_continuations": 10_000,
-    "max_continuation_chain": 16,
+    "max_continuation_chain": 256,
     "max_dimensions_per_context": 256,
     "max_measures_per_unit": 256,
     "max_abs_scale": 308,
-    "max_output_bytes": 24 * 1024 * 1024,
+    "max_output_bytes": 64 * 1024 * 1024,
     "max_metadata_bytes": 16 * 1024,
 })
 # Public immutable admission profile.  A deployment may replace the mapping
@@ -567,9 +589,10 @@ def _is_same_document_fragment_href(
 ) -> bool:
     """Admit exactly one base-URI-free shape inside escaped nonNumeric markup.
 
-    A document carrying any ``xml:base`` attribute or any XHTML ``base``
-    element can redirect a fragment to another resource, so such a document
-    never qualifies.
+    A document carrying any ``xml:base`` attribute, or any element whose local
+    name casefolds to ``base`` in any namespace, is treated as able to redirect
+    a fragment to another resource (fail closed), so such a document never
+    qualifies.
     """
     return (
         not document_base_changed
@@ -602,7 +625,7 @@ def _escaped_nonnumeric_markup(
     ``#`` plus an ASCII name that is the ``id`` of exactly one element in this
     member - which needs no base URI, so its markup is retained unchanged,
     and only when the member carries no base-changing construct (``xml:base``
-    anywhere, or an XHTML ``base`` element).
+    anywhere, or any element whose local name casefolds to ``base``).
     """
     chunks: list[bytes] = []
 
@@ -824,6 +847,13 @@ def _apply_numeric(
 
 
 def _direct_text(node: _Node, events: list[_TextEvent]) -> str:
+    if isinstance(events, _TextEvents):
+        # Built events are source ordered. Keep the identity check (including
+        # excluded text), but do not scan unrelated siblings for every context.
+        assert node.end is not None
+        left = bisect_left(events.starts, node.start_tag_end)
+        right = bisect_left(events.starts, node.end)
+        events = events[left:right]
     return "".join(event.value for event in events if event.owner is node)
 
 
@@ -1257,7 +1287,7 @@ def _fact_accuracy(
     nil: bool,
     inline: bool,
     limits: Mapping[str, int],
-) -> tuple[str | None, str | None, str | None, int | None, str | None]:
+) -> tuple[str | None, str | None, str | None, int | None, str | None, list[str]]:
     decimals = _attr(node, "decimals")
     precision = _attr(node, "precision")
     _validate_accuracy_lexicals(decimals, precision)
@@ -1268,15 +1298,34 @@ def _fact_accuracy(
     if not numeric:
         if any(value is not None for value in (decimals, precision, sign, scale)):
             raise SecFilingParseError("non-numeric fact carries numeric attributes")
+        if nil and format_qname is not None:
+            raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     elif not nil and (decimals is None and precision is None):
         raise SecFilingParseError("numeric fact must carry decimals or precision unless nil")
-    if nil and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
-        raise SecFilingParseError("nil fact cannot carry accuracy, transform, sign, or scale")
     if not inline and any(value is not None for value in (sign, scale, format_qname)):
         raise SecFilingParseError("native XBRL fact cannot carry Inline XBRL attributes")
+    if nil:
+        # DEC:FIF-PARSER-NIL-FACT-INERT-ATTRIBUTES-TOLERATED-20261031: a nil
+        # fact has no value, so decimals/precision/scale/format/sign on it are
+        # inert.  They are dropped (and reported per fact) instead of refusing
+        # the member.  The native Inline-attribute check above deliberately
+        # stays first: a structural violation is not inert.  This branch used
+        # to raise, so the widening never changes accepted output bytes.
+        dropped = sorted(
+            name
+            for name, value in (
+                ("decimals", decimals),
+                ("format", format_qname),
+                ("precision", precision),
+                ("scale", scale),
+                ("sign", sign),
+            )
+            if value is not None
+        )
+        return None, None, None, None, None, dropped
     if inline and sign not in {None, "-"}:
         raise SecFilingParseError("Inline XBRL sign must be '-' when present")
-    return decimals, precision, sign, scale, format_qname
+    return decimals, precision, sign, scale, format_qname, []
 
 
 def _fact_record(
@@ -1293,7 +1342,7 @@ def _fact_record(
     inline: bool,
     document_ids: Mapping[str, int],
     document_base_changed: bool,
-) -> tuple[dict[str, Any], dict[str, Any] | None]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     fact_id = _attr(node, "id")
     if fact_id is not None:
         _normalized_identifier(fact_id, field_name="fact id")
@@ -1334,7 +1383,7 @@ def _fact_record(
             _assert_allowed_attrs(node, common | {"unitRef"}, field_name="ix:fraction")
     else:
         _assert_allowed_attrs(node, {"id", "contextRef", "unitRef", "decimals", "precision", f"{{{XSI}}}nil", f"{{{XML}}}lang"}, field_name="native XBRL fact")
-    decimals, precision, sign, scale, format_qname = _fact_accuracy(
+    decimals, precision, sign, scale, format_qname, dropped_attributes = _fact_accuracy(
         node, numeric=numeric, nil=nil, inline=inline, limits=limits
     )
     if kind == "fraction" and any(value is not None for value in (decimals, precision, sign, scale, format_qname)):
@@ -1386,7 +1435,7 @@ def _fact_record(
     # order used to construct raw_value: fact-local material, then each link.
     raw = _node_text_bytes("".join(raw_parts), limits, field_name="fact")
     fraction: dict[str, Any] | None = None
-    diagnostic: dict[str, Any] | None = None
+    fact_diagnostics: list[dict[str, Any]] = []
     if nil:
         if raw or excluded_events or node.children:
             raise SecFilingParseError("nil fact must not contain content")
@@ -1429,11 +1478,23 @@ def _fact_record(
             raw, format_qname=format_qname, sign=sign, scale=scale, inline=inline
         )
     if status in {"unsupported_transform", "invalid_value"}:
-        diagnostic = {
-            "code": status,
-            "fact_start": node.start,
-            "format": format_qname,
-        }
+        fact_diagnostics.append(
+            {
+                "code": status,
+                "fact_start": node.start,
+                "format": format_qname,
+            }
+        )
+    if dropped_attributes:
+        # Per-fact diagnostic, never a counter: it is emitted only on the
+        # previously-refusing path, so accepted output stays byte-identical.
+        fact_diagnostics.append(
+            {
+                "code": "nil_fact_inert_attributes_dropped",
+                "fact_start": node.start,
+                "attributes": dropped_attributes,
+            }
+        )
     return (
         {
             "fact_id": fact_id,
@@ -1460,7 +1521,7 @@ def _fact_record(
             "excluded_text_spans": _event_spans(excluded_events),
             "source_span": _span(node.start, int(node.end)),
         },
-        diagnostic,
+        fact_diagnostics,
     )
 
 
@@ -1554,6 +1615,25 @@ def _limits_snapshot() -> dict[str, int]:
 
 def _inline_ancestor(node: _Node | None, local: str) -> bool:
     return _has_ancestor(node, IX11, local) if node is not None else False
+
+
+def _is_hidden_direct_header_child(node: _Node | None) -> bool:
+    """True when ``node`` is an ``ix:hidden`` that is a direct header child.
+
+    DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: iXBRL 1.1
+    §9.1 permits ``ix:footnote`` as a direct child of the single
+    ``ix:hidden``.  The at-most-one-``ix:hidden`` and direct-header-child
+    placement of the hidden node itself remain enforced by
+    ``_validate_document_structure``.
+    """
+    return (
+        node is not None
+        and node.namespace == IX11
+        and node.local == "hidden"
+        and node.parent is not None
+        and node.parent.namespace == IX11
+        and node.parent.local == "header"
+    )
 
 
 def _nearest_inline_owner(node: _Node | None) -> _Node | None:
@@ -1650,8 +1730,12 @@ def _validate_relationship_and_footnote_structure(
 
     Neither element is a fact: they never enter fact records, values, or
     spans.  Relationships live only as direct (empty) children of the single
-    ``ix:resources``; footnotes live in document content, transparently
-    wrapping any facts inside them, and every footnote must be referenced.
+    ``ix:resources``; footnotes live in document content or as direct children
+    of the single ``ix:hidden``, transparently wrapping any facts inside them.
+    Every ``fromRefs``/``toRefs`` reference must resolve; iXBRL 1.1 §13.1.2
+    does not require the converse, so a footnote referenced by no
+    relationship is admitted
+    (DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102).
     """
     footnotes = [node for node in nodes if node.namespace == IX11 and node.local == "footnote"]
     relationships = [node for node in nodes if node.namespace == IX11 and node.local == "relationship"]
@@ -1671,7 +1755,7 @@ def _validate_relationship_and_footnote_structure(
     }
     footnote_ids: set[str] = set()
     for node in footnotes:
-        if _inline_ancestor(node.parent, "header"):
+        if _inline_ancestor(node.parent, "header") and not _is_hidden_direct_header_child(node.parent):
             raise SecFilingParseError("ix:footnote must not appear in ix:header")
         for ancestor in _ancestor_nodes(node.parent):
             if ancestor.namespace == IX11 and ancestor.local in forbidden_footnote_owners:
@@ -1687,7 +1771,6 @@ def _validate_relationship_and_footnote_structure(
         continued_at = _attr(node, "continuedAt")
         if continued_at is not None:
             _normalized_identifier(continued_at, field_name="footnote continuedAt")
-    referenced: set[str] = set()
     for node in relationships:
         if node.parent is not resource:
             raise SecFilingParseError("ix:relationship must be a direct child of ix:resources")
@@ -1720,9 +1803,6 @@ def _validate_relationship_and_footnote_structure(
             raise SecFilingParseError("ix:relationship toRefs repeats a reference")
         if any(token not in footnote_ids for token in to_tokens):
             raise SecFilingParseError("ix:relationship toRefs does not resolve to an ix:footnote")
-        referenced.update(to_tokens)
-    if footnote_ids != referenced:
-        raise SecFilingParseError("ix:footnote is not referenced by any ix:relationship")
     return len(relationships), len(footnotes)
 
 
@@ -1799,8 +1879,13 @@ def _validate_document_structure(
     for hidden in hidden_nodes:
         if hidden.parent is not header:
             raise SecFilingParseError("ix:hidden must be a direct ix:header child")
+        # DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: iXBRL 1.1
+        # §9.1 also permits ix:footnote as a direct child of ix:hidden; any
+        # other content, or a footnote nested deeper (for example inside a
+        # hidden fact), still refuses above and in the footnote header check.
         if not hidden.children or _direct_text(hidden, events).strip() or any(
-            child.namespace != IX11 or child.local not in {"nonFraction", "nonNumeric", "fraction"}
+            child.namespace != IX11
+            or child.local not in {"nonFraction", "nonNumeric", "fraction", "footnote"}
             for child in hidden.children
         ):
             raise SecFilingParseError("ix:hidden must contain only direct Inline XBRL facts")
@@ -1870,7 +1955,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             # is compatible because it is a strict UTF-8 subset, but accepting
             # UTF-8 multibyte bytes under an ASCII declaration would make this
             # admission policy silently contradict the source declaration.
-            if declared_encoding in {b"ascii", b"us-ascii"} and any(byte > 0x7F for byte in content):
+            if declared_encoding in {b"ascii", b"us-ascii"} and not content.isascii():
                 raise SecFilingParseError("XML declaration ASCII contradicts non-ASCII content")
 
     root, nodes, events = _TreeBuilder(content, limits).build()
@@ -1879,7 +1964,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     for node in nodes:
         if "id" in node.attrs:
             document_ids[node.attrs["id"]] += 1
-        if _XML_BASE_ATTRIBUTE in node.attrs or (node.namespace == XHTML and node.local == "base"):
+        if _XML_BASE_ATTRIBUTE in node.attrs or node.local.casefold() == "base":
             document_base_changed = True
     if any(
         node.namespace in LEGACY_IX_NAMESPACES or IX10 in node.namespaces.values()
@@ -1931,7 +2016,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
     facts: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
     for node in facts_nodes:
-        fact, diagnostic = _fact_record(
+        fact, fact_diagnostics = _fact_record(
             node,
             events,
             chains.get(node.start, []),
@@ -1946,8 +2031,7 @@ def parse_sec_filing_document(content: bytes, *, document_name: str) -> dict[str
             document_base_changed=document_base_changed,
         )
         facts.append(fact)
-        if diagnostic is not None:
-            diagnostics.append(diagnostic)
+        diagnostics.extend(fact_diagnostics)
     for context in contexts:
         if context["segment_content_status"] == "partial":
             diagnostics.append(
@@ -2253,7 +2337,7 @@ def validate_sec_filing_parse_result(
     )
     facts = _exact_list(result["facts"], field_name="facts", maximum=limits["max_facts"])
     diagnostics = _exact_list(
-        result["diagnostics"], field_name="diagnostics", maximum=limits["max_facts"] + (2 * limits["max_contexts"])
+        result["diagnostics"], field_name="diagnostics", maximum=(2 * limits["max_facts"]) + (2 * limits["max_contexts"])
     )
     for label, items in (("contexts", contexts), ("units", units), ("continuations", continuations), ("facts", facts)):
         _source_ordered(items, field_name=label, length=length)
@@ -2630,7 +2714,52 @@ def validate_sec_filing_parse_result(
             item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
         )
     )
-    if diagnostics != expected_diagnostics:
+    # nil_fact_inert_attributes_dropped cannot be recomputed from the fact
+    # records (the dropped attributes are gone by design), so it is admitted
+    # structurally against the nil numeric fact records instead.
+    inert_diagnostics: list[Any] = []
+    admitted_diagnostics: list[Any] = []
+    for item in diagnostics:
+        if isinstance(item, dict) and item.get("code") == "nil_fact_inert_attributes_dropped":
+            inert_diagnostics.append(item)
+        else:
+            admitted_diagnostics.append(item)
+    if admitted_diagnostics != expected_diagnostics:
+        raise SecFilingParseError("diagnostics are not derived from parser records")
+    nil_numeric_fact_by_start = {
+        fact["source_span"]["start"]: fact
+        for fact in facts
+        if fact["kind"] == "numeric"
+        and fact["nil"]
+        and all(fact[name] is None for name in ("decimals", "format", "precision", "scale", "sign"))
+    }
+    inert_starts: set[Any] = set()
+    for item in inert_diagnostics:
+        if (
+            set(item) != {"code", "fact_start", "attributes"}
+            or isinstance(item["fact_start"], bool)
+            or not isinstance(item["fact_start"], int)
+            or type(item["attributes"]) is not list
+            or not item["attributes"]
+            or any(
+                not isinstance(name, str) or name not in {"decimals", "format", "precision", "scale", "sign"}
+                for name in item["attributes"]
+            )
+            or len(item["attributes"]) != len(set(item["attributes"]))
+            or item["attributes"] != sorted(item["attributes"])
+        ):
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is malformed")
+        if item["fact_start"] not in nil_numeric_fact_by_start:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic does not point at a nil numeric fact")
+        if item["fact_start"] in inert_starts:
+            raise SecFilingParseError("nil-fact inert-attribute diagnostic is duplicated")
+        inert_starts.add(item["fact_start"])
+    if diagnostics != sorted(
+        diagnostics,
+        key=lambda item: (
+            item.get("fact_start", item.get("source_spans", [{"start": 0}])[0]["start"]), item["code"]
+        ),
+    ):
         raise SecFilingParseError("diagnostics are not derived from parser records")
     coverage_fields = {"document_scope", "fact_inventory_complete", "context_references_complete", "unit_references_complete", "continuation_graph_complete", "canonical_value_complete", "context_count", "unit_count", "continuation_count", "fact_count", "diagnostic_count", "unknown_scenario_content_count", "unknown_segment_content_count", "structural_validation_complete", "ixds_validation_complete", "xbrl_schema_validation_complete", "taxonomy_validation_complete"}
     ix_coverage_fields = {"ix_relationship_count", "ix_footnote_count", "ix_footnote_continuation_count"}
@@ -2642,7 +2771,11 @@ def validate_sec_filing_parse_result(
         for key in sorted(ix_coverage_fields):
             if isinstance(coverage[key], bool) or not isinstance(coverage[key], int) or coverage[key] < 0:
                 raise SecFilingParseError("coverage Inline XBRL counts are invalid")
-        if coverage["ix_relationship_count"] < 1 or coverage["ix_footnote_count"] < 1:
+        # DEC:FIF-PARSER-IXBRL11-SPEC-CONFORMANCE-WIDENING-20261102: an
+        # unreferenced footnote is admitted, so a relationship count of zero
+        # is valid exactly when at least one footnote is present; a count set
+        # with no footnote at all is still invalid.
+        if coverage["ix_footnote_count"] < 1:
             raise SecFilingParseError("coverage Inline XBRL counts are invalid")
     else:
         coverage = _exact_dict(raw_coverage, coverage_fields, field_name="coverage")

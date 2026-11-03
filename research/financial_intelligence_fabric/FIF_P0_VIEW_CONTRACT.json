@@ -351,15 +351,15 @@
         ],
         "tabs_px": {
           "en": [
-            633,
-            694
+            647,
+            708
           ],
           "zh": [
             605,
             666
           ]
         },
-        "note": "AM7: every glance module (nav, desk, lead, stats, coverage, next) ends inside the 900px fold above the tab rail; the rail plus the top of the active panel are navigation chrome, not modules.",
+        "note": "AM7: every glance module (nav, desk, lead, stats, coverage, next) ends inside the 900px fold above the tab rail; the rail plus the top of the active panel are navigation chrome, not modules. A43 r3 (2026-10-20): the en tab rail is remeasured at [647,708] (was [633,694]) because the partial-coverage stat label ('of expected metrics compared · gaps left blank') wraps one line further in the seat capture environment than in the 10-12 receipt, so the covstat box is 14px taller; every pinned module span (desk, lead) and the zh rail are unchanged, and the rail stays inside the 900px fold.",
         "lead_px": {
           "en": [
             370,

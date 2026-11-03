@@ -311,12 +311,40 @@ def _r2_client():
             config=cfg,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("ext_quotes: R2 client build failed: %s", exc)
+        if _r2_access_denied(exc):
+            raise R2PublicationDenied("R2 denied client initialization") from None
+        log.warning("ext_quotes: R2 client build failed (%s)", type(exc).__name__)
         return None
 
 
+class R2PublicationDenied(RuntimeError):
+    """Storage refused this invocation; no later callback may retry its writes."""
+
+
+def _r2_access_denied(error: Exception) -> bool:
+    # boto3 ClientError exposes structured metadata. Do not inspect or retain
+    # the provider's message, which can include request/credential information.
+    response = getattr(error, "response", None)
+    if not isinstance(response, dict):
+        return False
+    metadata = response.get("ResponseMetadata", {})
+    detail = response.get("Error", {})
+    status = metadata.get("HTTPStatusCode") if isinstance(metadata, dict) else None
+    code = detail.get("Code") if isinstance(detail, dict) else None
+    return (type(status) is int and status in (401, 403)) or code in (
+        "401", "403", "Forbidden", "Unauthorized", "AccessForbidden",
+        "AccessDenied", "AccessDeniedException", "AllAccessDisabled",
+        "InvalidAccessKeyId", "SignatureDoesNotMatch", "InvalidToken",
+        "ExpiredToken", "TokenRefreshRequired", "AccountProblem",
+    )
+
+
 def _publish_r2(payload_json: str) -> bool:
-    """Publish only the approved BOATS allowlist to the existing relay key."""
+    """Publish only the approved BOATS allowlist to the existing relay key.
+
+    Raises R2PublicationDenied on a structured access refusal. Callers must
+    stop further storage attempts for this invocation; other failures return False.
+    """
     try:
         payload_json = json.dumps(public_boats_payload(json.loads(payload_json)),
                                   separators=(",", ":"), allow_nan=False)
@@ -339,7 +367,9 @@ def _publish_r2(payload_json: str) -> bool:
         log.info("ext_quotes: published → R2 %s/%s", bucket, R2_KEY)
         return True
     except Exception as exc:  # noqa: BLE001
-        log.warning("ext_quotes: R2 publish failed: %s", exc)
+        if _r2_access_denied(exc):
+            raise R2PublicationDenied("R2 denied publication") from None
+        log.warning("ext_quotes: R2 publish failed (%s)", type(exc).__name__)
         return False
 
 
@@ -347,6 +377,10 @@ def _publish_r2(payload_json: str) -> bool:
 # This is a last-trade display, never an NBBO, close, or executable quote.
 BOATS_MAX_AGE_S = 30
 BOATS_PUBLISH_S = 5
+# Hard public coverage ceiling shared by the frame reducer and the public
+# allowlist. Sized for the 15,380 valid tickers observed across retained REST and firehose captures with
+# headroom; no publisher or validator may invent its own bound.
+MAX_BOATS_SYMBOLS = 20_000
 
 
 def boats_session_date(now: datetime) -> str | None:
@@ -404,16 +438,17 @@ def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:
             or payload["session_date"] != boats_session_date(published)):
         raise ValueError("invalid publication clock or session")
     symbols = payload["coverage_symbols"]
-    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= 500
+    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= MAX_BOATS_SYMBOLS
             or any(not isinstance(s, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.:-]{0,31}", s) for s in symbols)
             or len(set(symbols)) != len(symbols)):
         raise ValueError("invalid coverage identity")
+    covered = frozenset(symbols)
     rows = payload["quotes"]
     if not isinstance(rows, dict) or (status != "connected" and rows):
         raise ValueError("inactive stream cannot publish trades")
     approved = {}
     for symbol, row in rows.items():
-        if symbol not in symbols or not isinstance(row, dict) or set(row) != set(row_keys):
+        if symbol not in covered or not isinstance(row, dict) or set(row) != set(row_keys):
             raise ValueError("unapproved row fields or symbol")
         if (row["extSource"] != "tiingo_boats" or row["extVenue"] != "BOATS"
                 or row["extPriceKind"] != "LAST_TRADE" or row["extBasis"] != "LIVE"
@@ -444,13 +479,16 @@ class BoatsLastTrade:
 
     def __init__(self, symbols: list[str], capture_id: str):
         from collectors.tiingo_archive import symbol_path
-        if not symbols or len(symbols) > 500 or len(set(symbols)) != len(symbols):
+        if not symbols or len(symbols) > MAX_BOATS_SYMBOLS or len(set(symbols)) != len(symbols):
             raise ValueError("bounded unique symbol coverage required")
         for symbol in symbols:
             symbol_path(symbol)
             if symbol != symbol.upper():
                 raise ValueError("uppercase display coverage keys required")
         self.symbols = tuple(symbols)
+        # Stable coverage ordering stays in self.symbols; the hot consume path
+        # tests membership against this constant-time view instead.
+        self.covered = frozenset(self.symbols)
         self.capture_id = capture_id
         self.connection = 0
         self.status = "disconnected"
@@ -489,7 +527,7 @@ class BoatsLastTrade:
         # Tiingo BOATS emits lowercase ticker strings. Map ASCII case only
         # into the accepted display coverage; the raw/decoded identity stays exact.
         symbol = vendor_symbol.upper()
-        if symbol not in self.symbols:
+        if symbol not in self.covered:
             return
         try:
             event = decode_boats(message, received_at)
@@ -509,7 +547,10 @@ class BoatsLastTrade:
             if not 0 <= age <= BOATS_MAX_AGE_S or boats_session_date(stamp) != boats_session_date(arrival) or boats_session_date(stamp) is None:
                 raise ValueError("outside current overnight session or age budget")
         except (ValueError, TypeError, OverflowError, TiingoArchiveError):
-            self.quotes.pop(symbol, None)
+            # An unusable quote clock carries no trade fact. T/B stay
+            # fail-closed; a Q must neither erase nor refresh a last trade.
+            if data[0] != "Q":
+                self.quotes.pop(symbol, None)
             return
         if event["kind"] == "Q":
             return  # A quote cannot advance or refresh a last-trade clock.
@@ -574,21 +615,39 @@ def publish_boats_stream(*, max_seconds: int = 600, max_messages: int = 20000,
     reducer = BoatsLastTrade(symbols or DEFAULT_SYMBOLS, str(uuid.uuid4()))
     last_publish = -math.inf
     publication = {"requested": publish, "attempted": 0, "succeeded": 0,
-                   "failed": 0, "final_invalidation_delivered": None}
+                   "failed": 0, "final_invalidation_delivered": None,
+                   "access_denied": False}
+    publication_denied = False
 
     def emit(force=False):
-        nonlocal last_publish
+        nonlocal last_publish, publication_denied
+        if publication_denied:
+            # Continue bounded archival/cleanup without another storage effect.
+            # In particular, an ended callback must not retry a denied PUT.
+            # Consumers expire the last accepted snapshot independently.
+            if reducer.status == "ended":
+                publication["final_invalidation_delivered"] = False
+            return
         tick = time.monotonic()
         if force or tick - last_publish >= BOATS_PUBLISH_S:
             payload = reducer.snapshot(datetime.now(timezone.utc))
             if publish:
                 publication["attempted"] += 1
-                delivered = _publish_r2(json.dumps(payload, separators=(",", ":")))
+                try:
+                    delivered = _publish_r2(json.dumps(payload, separators=(",", ":")))
+                except R2PublicationDenied:
+                    publication_denied = True
+                    publication["access_denied"] = True
+                    delivered = False
+                    log.warning("ext_quotes: R2 access denied; publication stopped for this invocation")
                 publication["succeeded" if delivered else "failed"] += 1
+                # A failed attempt consumes this publication slot too, so one
+                # transient storage failure cannot promote every later frame
+                # into an immediate retry PUT. Forced terminal invalidation and
+                # the strict denied-PUT latch below are unaffected.
+                last_publish = tick
                 if reducer.status == "ended":
                     publication["final_invalidation_delivered"] = delivered
-                if delivered:
-                    last_publish = tick
             else:
                 last_publish = tick
 
@@ -707,7 +766,10 @@ def build_ext_quotes(
         return payload
 
     if publish:
-        _publish_r2(payload_json)
+        try:
+            _publish_r2(payload_json)
+        except R2PublicationDenied:
+            log.warning("ext_quotes: R2 access denied; cycle publication stopped")
     else:
         # Dry-run: write to /tmp for inspection.
         out = Path("/tmp/ext_quotes_debug.json")
@@ -731,8 +793,11 @@ def main() -> None:
     parser.add_argument("--boats", action="store_true", help="One bounded BOATS archive and display segment.")
     parser.add_argument("--max-seconds", type=int, default=600)
     parser.add_argument("--max-messages", type=int, default=20000)
+    parser.add_argument("--symbols-file", help="Bounded line-oriented BOATS coverage; defaults to the existing watchlist.")
     parser.add_argument("--session", action="store_true", help="Print the current ET session for the existing runner.")
     args = parser.parse_args()
+    if args.symbols_file and not args.boats:
+        parser.error("--symbols-file requires --boats")
     if args.publish and not args.boats and not args.smoke:
         parser.error("public relay publication requires --boats; legacy diagnostics are private")
     if args.session:
@@ -742,6 +807,15 @@ def main() -> None:
     if args.boats:
         if args.smoke:
             parser.error("--boats and --smoke are incompatible; smoke cannot open or publish a live stream")
+        symbols = None
+        if args.symbols_file:
+            from scripts.tiingo_ingest import load_symbols
+            # The display publisher admits its own full public coverage ceiling;
+            # the ordinary 12000-symbol collector default would truncate the file.
+            symbols = load_symbols("", args.symbols_file, limit=MAX_BOATS_SYMBOLS)
+            # Validate before any provider, archive or R2 effect. An empty file
+            # must not silently fall back to the default watchlist.
+            BoatsLastTrade(symbols, "coverage-validation")
         now = datetime.now(timezone.utc)
         if boats_session_date(now) is None:
             log.info("BOATS outside conservative overnight window")
@@ -749,7 +823,8 @@ def main() -> None:
         local = now.astimezone(ET)
         boundary = datetime.combine(local.date() + timedelta(days=1 if local.hour >= 20 else 0), dtime(4), tzinfo=ET)
         seconds = min(args.max_seconds, max(1, int((boundary - local).total_seconds())))
-        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages, publish=args.publish)
+        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages,
+                                      symbols=symbols, publish=args.publish)
         log.info("BOATS bounded segment settled %s", json.dumps(result))
         if args.publish and result["publication_ok"] is not True:
             raise SystemExit(1)

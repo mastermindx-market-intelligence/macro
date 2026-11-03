@@ -32,6 +32,12 @@ Design principles (house laws):
    asof that is back within the ceiling. Entries without the key are not
    measured this way. no_advance and session_lag on the same ledger are one
    alert carrying both reasons.
+ - Vanish is opt-in. A manifest entry may set stall_on_vanish to True.
+   When the file is not a file, a non-null asof is already stored, it is a
+   trading day, and the site republished, the stall reason is vanished.
+   Same-day re-runs do not alert twice, and the stored asof is left in
+   place. Entries without the key, and a missing file with no stored asof,
+   stay silent.
  - Fail-open: any read/parse error degrades gracefully; exit 0 always.
  - Render-happened flag: the workflow passes --render-happened when the site
    commit step ran for that date.  Without it, stall detection is suppressed
@@ -44,9 +50,10 @@ Design principles (house laws):
 Ledger manifest (extend this constant; add a comment when adding):
 _LEDGER_MANIFEST is the authoritative list.  Each entry is a repo-root-relative
 path to a JSONL forward ledger.  The asof field is the first key tried; fallback
-tries 'date', then 'logged_at'.  A ledger that does not exist yet (e.g.
-leadership_crack/forward_log.jsonl before W6 ships) is silently skipped — a
-missing file is never escalated as a stall (it may simply not have been built yet).
+tries 'date', then 'logged_at'.  A ledger that does not exist yet is silently
+skipped — a missing file is not a stall unless the entry sets stall_on_vanish
+and a previous run stored a non-null asof. Without that opt-in a missing file
+may simply not have been built yet.
 
 Background (#2738 fail-streak pattern, CSP-W6):
 The 2026-07-16 collect-cancel-while-always() incident showed that a silent
@@ -73,11 +80,15 @@ log = logging.getLogger(__name__)
 
 # ── Ledger manifest ────────────────────────────────────────────────────────
 # Registry extension: add an entry here when a new forward ledger is created.
-# Each path is relative to the repo root.  The script silently skips missing
-# files, so entries can be pre-registered before the building pipeline ships.
+# Each path is relative to the repo root.  A missing file is silent unless
+# the entry sets stall_on_vanish, so entries can be pre-registered before
+# the building pipeline ships.
 # Optional max_sessions_behind (int): omit it to keep the no-advance check
 # only. When set, a newest asof more than that many NYSE sessions behind the
 # last session on or before yesterday is also a session_lag stall.
+# Optional stall_on_vanish (True): omit it and a missing file stays silent.
+# When set, a missing file whose stored asof is non-null is a vanished stall
+# on a render-happened trading day. The stored asof is not cleared.
 _LEDGER_MANIFEST: list[dict[str, Any]] = [
     {
         # RIC-W3: monthly OPEX window read — advances only near each monthly
@@ -148,6 +159,17 @@ _LEDGER_MANIFEST: list[dict[str, Any]] = [
         # NOTE: one row per basket per US session (engine/us_basket_turn.py,
         # #4924) — plain heartbeat semantics; asof resolves via 'date'.
         # Silently skipped until the first nightly stamp lands.
+    },
+    {
+        "path": "data/grey_deer_pullback/forward_log.jsonl",
+        "label": "grey_deer_pullback",
+        # Stall when strictly more than 2 NYSE sessions behind yesterday.
+        "max_sessions_behind": 2,
+        # A deleted log must not look healthy once an asof has been stored.
+        "stall_on_vanish": True,
+        # NOTE: Grey Deer pullback prospective lane (O7/W5) — SPY rows at
+        # h5/h10/h21 per US session (scripts/grey_deer_pullback_nightly.py);
+        # asof resolves via 'asof'. No stored asof yet → still skipped.
     },
 ]
 
@@ -222,12 +244,24 @@ def _sessions_behind(ledger_asof: date, today: date) -> int:
     return len(sessions_between(ledger_asof + timedelta(days=1), expected))
 
 
+_VANISHED_STALL_TEXT = (
+    "The forward log has vanished after a stored asof was recorded."
+)
+
+
 def _stall_reason_text(stall: dict[str, Any]) -> str:
-    """Comma-joined stall reasons, for the one alert a ledger emits today."""
+    """Comma-joined stall reasons, for the one alert a ledger emits today.
+
+    ``vanished`` is a sentence. Every other reason stays the reason code.
+    """
     reasons = stall.get("stall_reasons")
     if isinstance(reasons, list) and reasons:
+        if reasons == ["vanished"]:
+            return _VANISHED_STALL_TEXT
         return ",".join(str(r) for r in reasons)
     reason = stall.get("stall_reason")
+    if reason == "vanished":
+        return _VANISHED_STALL_TEXT
     if isinstance(reason, str) and reason:
         return reason
     return "no_advance"
@@ -471,6 +505,16 @@ def run_check(
             and curr_asof <= prev_asof  # not advanced (equality = same value = stall)
             and last_check_date != today_str  # idempotent: same-day re-run = skip
         )
+        # Opt-in only. A missing file with no stored asof, and every entry
+        # without stall_on_vanish, stays silent. Same-day dedup as no_advance.
+        # curr_asof is None here, so the asof snapshot below keeps prev_asof.
+        is_vanished = (
+            entry.get("stall_on_vanish") is True
+            and not full_path.is_file()
+            and prev_asof is not None
+            and render_happened
+            and last_check_date != today_str
+        )
 
         # Only a strictly newer asof is an advance. A same-day rerun, a night
         # without a republish, or an unreadable ledger is NOT one, so it must
@@ -514,7 +558,7 @@ def run_check(
             and last_check_date != today_str
         )
 
-        if is_no_advance:
+        if is_no_advance or is_vanished:
             # Preserve stalled_since across consecutive stall days.
             stalled_since_val = stalled_since or prev_entry.get("last_check_date") or today_str
         elif advanced:
@@ -548,6 +592,8 @@ def run_check(
             reasons.append("no_advance")
         if alert_session_lag:
             reasons.append("session_lag")
+        if is_vanished:
+            reasons.append("vanished")
 
         if reasons:
             stall_row: dict[str, Any] = {

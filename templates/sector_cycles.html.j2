@@ -46,6 +46,14 @@
     </div>
   </header>
 
+  {% with lock_renderer='sector_cycles.js', lock_fill='sc-cards',
+    lock_hide='#sc-tabs,.cyc-stage,.cyc-cards-hd,#sc-cards,.cyc-asof',
+    lock_en='Members get each sector fund on the cycle clock, '
+    ~ 'its scorecard, and what drove each leg of the move.',
+    lock_zh='会员可查看每只板块 ETF 的周期时钟、记分卡，以及每一段走势背后的原因。' %}
+  {% include "_cycle_locked_slot.html.j2" %}
+  {% endwith %}
+
   <div class="sc-tabs" id="sc-tabs" role="tablist">
     <button class="sc-tab on" data-fam="sectors" role="tab">🧭 <span class="l-en">Sector ETFs</span><span class="l-zh">板块 ETF</span> <i id="sc-tab-n-sec"></i></button>
     <button class="sc-tab" data-fam="baskets" role="tab">🧺 <span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span> <i id="sc-tab-n-bsk"></i></button>
@@ -110,7 +118,33 @@
 <script src="mm_charts.js"></script>
 <script>window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];window.SC_SERIES_DATA='sector_cycles_series_data.js';</script>
 <script src="sector_cycles.js"></script>
-<script>try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}</script>
+<script>document.addEventListener('DOMContentLoaded',function(){try{document.getElementById('sc-asof').textContent=(window.SECTOR_CYCLES&&window.SECTOR_CYCLES.meta||{}).asOf||'';}catch(e){}});</script>
+<script>
+// window.SECTOR_CYCLES comes from a deferred script, which has run by DOMContentLoaded.
+document.addEventListener("DOMContentLoaded", function () {
+// basis other than tr prints nothing, since the sentence would then be wrong.
+try {
+  var meta = window.SECTOR_CYCLES && window.SECTOR_CYCLES.meta || {};
+  var h = meta.rs_history;
+  var asof = document.getElementById("sc-asof");
+  if (asof && h && h.naturally_observed === false && h.basis === "tr") {
+    var en = document.createElement("span");
+    en.className = "l-en";
+    en.textContent = "RS rank is rebuilt from total-return price history against "
+      + h.benchmark + ", through " + h.as_of
+      + ". It is not an observed record.";
+    var zh = document.createElement("span");
+    zh.className = "l-zh";
+    zh.textContent = "相对强度排名由总回报价格历史重建，基准 "
+      + h.benchmark + "，截至 " + h.as_of
+      + "。并非当时观察到的记录。";
+    asof.parentNode.appendChild(document.createElement("br"));
+    asof.parentNode.appendChild(en);
+    asof.parentNode.appendChild(zh);
+  }
+} catch(e) {}
+});
+</script>
 <script src="theme.js"></script>
 </body>
 </html>

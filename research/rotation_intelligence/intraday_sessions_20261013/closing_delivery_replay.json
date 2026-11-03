@@ -1,0 +1,69 @@
+{
+  "delivered_at": "2026-10-13T20:16:00+00:00",
+  "financial_edge_tested": false,
+  "grounding_digest": "[CURRENT DASHBOARD STATE \u2014 nightly desk state, no live tape; stamps per section. Ground your answer in this, but NEVER name files or fields \u2014 give the plain read. Numbers here are the desk's own reads.]\nLEADERS (10-13 20:00Z, last full session): since prior observation vs SPY (not fund flows) - AI semiconductors \u22121.96% price, \u22121.96% vs SPY (10-13 19:44Z to 10-13 20:00Z; regular-session close; 1/1 matched) \u00b7 health care sector +1.01% price, +1.01% vs SPY (10-13 19:44Z to 10-13 20:00Z; regular-session close; 1/1 matched)",
+  "mode": "last_rth",
+  "production_verified": false,
+  "proof_kind": "synthetic_actual_closing_delivery_path_not_production",
+  "repeat_statuses": [
+    "benchmark_nonadvancing",
+    "benchmark_nonadvancing"
+  ],
+  "rows": [
+    {
+      "comparison": {
+        "absolute_change_pct": -1.960784,
+        "benchmark": "SPY",
+        "benchmark_change_pct": 0.0,
+        "coverage_pct": 100.0,
+        "elapsed_minutes": 16.016666666666666,
+        "excluded": {},
+        "matched_members": 1,
+        "max_clock_skew_seconds": 60.0,
+        "method": "matched_member_equal_weight",
+        "observation_kind": "settled_regular",
+        "positive_relative_breadth_pct": 0.0,
+        "reference_asof": "2026-10-13T19:44:00+00:00",
+        "relative_change_pct": -1.960784,
+        "schema": "basket_intraday_comparison.v1",
+        "session_date": "2026-10-13",
+        "settlement_tolerance_seconds": 90.0,
+        "source_asof": "2026-10-13T20:00:01+00:00",
+        "status": "observed",
+        "total_members": 1
+      },
+      "day_change_pct": 0.0,
+      "id": "ai_semiconductors"
+    },
+    {
+      "comparison": {
+        "absolute_change_pct": 1.010101,
+        "benchmark": "SPY",
+        "benchmark_change_pct": 0.0,
+        "coverage_pct": 100.0,
+        "elapsed_minutes": 16.016666666666666,
+        "excluded": {},
+        "matched_members": 1,
+        "max_clock_skew_seconds": 60.0,
+        "method": "matched_member_equal_weight",
+        "observation_kind": "settled_regular",
+        "positive_relative_breadth_pct": 100.0,
+        "reference_asof": "2026-10-13T19:44:00+00:00",
+        "relative_change_pct": 1.010101,
+        "schema": "basket_intraday_comparison.v1",
+        "session_date": "2026-10-13",
+        "settlement_tolerance_seconds": 90.0,
+        "source_asof": "2026-10-13T20:00:01+00:00",
+        "status": "observed",
+        "total_members": 1
+      },
+      "day_change_pct": 0.0,
+      "id": "us_sector_health"
+    }
+  ],
+  "settled_close": true,
+  "source_hashes": {
+    "engine/neuralweb/market_packet.py": "85228bc66ee7c74c6fc36655fcd3a47c6fce48512c2fe90981d0b3c5efbd316f",
+    "scripts/build_basket_pulse.py": "971f3b7f4a83c781357771bb8266490898efac6b30b0fc6449aae957c698d71e"
+  }
+}

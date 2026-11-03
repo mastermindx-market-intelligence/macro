@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermindx.market-intelligence/schemas/prophet_ni/label_return.v1.json",
+  "title": "Labeler return v1 — one case, one labeler",
+  "description": "Draft return of one labeler (one model family) for one benchmark case. Carries the 12 critical fields of the case's template, each as a value plus a replayable source span or a typed absence. No confidence, probability or score field exists anywhere in this schema (DNR:KILL-LLM-CONFIDENCE). Envelope fields (fact_id, document_id, observed_at, source_available_at, supersedes_fact_id) are machine-set by the harness and are deliberately absent (freeze PHASE0_FREEZE_2026-10-11.md section 3, line 100).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "labeler_family",
+    "model_vintage",
+    "prompt_version",
+    "template",
+    "fields",
+    "abstentions",
+    "notes",
+    "unsolicited_instruction_detected"
+  ],
+  "properties": {
+    "schema": { "const": "label_return.v1" },
+    "case_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "labeler_family": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Family token, not a vendor name. Requirement: two different model families draft each case; a third family resolves disagreements (freeze section 7)."
+    },
+    "model_vintage": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Dated model vintage (masterplan section 11: 'Use dated model vintages')."
+    },
+    "prompt_version": {
+      "type": "string",
+      "pattern": "^prompt-v[0-9]+\\.[0-9]+$",
+      "description": "Version of labeler_packet.template.md the labeler answered."
+    },
+    "template": {
+      "enum": [
+        "capital_allocation_event.v1",
+        "demand_guidance_contract_event.v1",
+        "strategic_product_partnership_event.v1"
+      ]
+    },
+    "fields": {
+      "type": "object",
+      "description": "Exactly the 12 critical fields of the case's template; selected by the template discriminator below."
+    },
+    "abstentions": {
+      "type": "array",
+      "maxItems": 12,
+      "items": { "$ref": "#/$defs/abstention" },
+      "description": "Case-level record of critical fields the labeler declined to label at all (budget, rights, instruction). A field labelled as a typed absence is NOT an abstention; it is a field entry."
+    },
+    "notes": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/note" }
+    },
+    "unsolicited_instruction_detected": {
+      "type": "boolean",
+      "description": "True when the case's source text attempted to instruct the labeler. The attempt must also be recorded as a notes entry with kind=injection_attempt and is then ignored (masterplan section 3.5)."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "template": { "const": "capital_allocation_event.v1" } }, "required": ["template"] },
+      "then": { "properties": { "fields": { "$ref": "#/$defs/fields_T1" } } }
+    },
+    {
+      "if": { "properties": { "template": { "const": "demand_guidance_contract_event.v1" } }, "required": ["template"] },
+      "then": { "properties": { "fields": { "$ref": "#/$defs/fields_T2" } } }
+    },
+    {
+      "if": { "properties": { "template": { "const": "strategic_product_partnership_event.v1" } }, "required": ["template"] },
+      "then": { "properties": { "fields": { "$ref": "#/$defs/fields_T3" } } }
+    }
+  ],
+  "$defs": {
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_sha256", "segment_index", "byte_start", "byte_end", "excerpt"],
+      "properties": {
+        "text_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "sha256 of the case source text the span points into; must equal the packet's source_sha256." },
+        "segment_index": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "byte_start": { "type": "integer", "minimum": 0, "maximum": 50000000 },
+        "byte_end": { "type": "integer", "minimum": 1, "maximum": 50000000 },
+        "excerpt": { "type": "string", "minLength": 1, "maxLength": 500, "description": "The exact bytes being cited (the claimed_quote role). Reproduced byte-for-byte by replay; never paraphrased." }
+      }
+    },
+    "typed_absence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "authority", "reason", "subject", "detail", "missing_fields"],
+      "properties": {
+        "schema": { "const": "field_absence.v1" },
+        "authority": { "const": "context_only" },
+        "reason": { "enum": ["not_stated", "stated_without_number", "range_only", "redacted_rights", "parse_failed"] },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "detail": { "type": "string", "maxLength": 240 },
+        "missing_fields": {
+          "type": "array",
+          "maxItems": 8,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        },
+        "owner_reason": {
+          "enum": [
+            "no_source_document", "no_transcript", "no_primary_release", "no_span_addressable_evidence",
+            "document_bytes_not_held", "scanned_image_no_text_layer", "unjoinable_filing_identity",
+            "speaker_unresolvable", "slide_family_discontinued", "superseded_by_duplicate",
+            "missing_basis", "missing_units", "unit_mismatch", "cross_check_conflict",
+            "missing_period", "missing_source"
+          ],
+          "description": "Only when the harness supplied a documents.py ABSENCE_REASONS value."
+        }
+      }
+    },
+    "field_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "source_span", "typed_absence"],
+      "properties": {
+        "value": {
+          "description": "The labelled critical-field value in the frozen contract's shape (enum token, boolean, company id, quantity object, fiscal_period object, evidence object, ...). null only together with a typed_absence."
+        },
+        "source_span": {
+          "anyOf": [
+            { "$ref": "#/$defs/span" },
+            { "type": "null" }
+          ]
+        },
+        "typed_absence": {
+          "anyOf": [
+            { "$ref": "#/$defs/typed_absence" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["source_span", "typed_absence"],
+          "properties": { "source_span": { "type": "object" }, "typed_absence": { "type": "null" } }
+        },
+        {
+          "required": ["source_span", "typed_absence"],
+          "properties": { "source_span": { "type": "null" }, "typed_absence": { "type": "object" } }
+        }
+      ]
+    },
+    "fields_T1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company_id", "issuer_role", "novelty", "action_type", "commitment_status",
+        "primary_amount_role", "incremental_amount", "remaining_authorization",
+        "executed_amount", "horizon_period", "negated", "action_span"
+      ],
+      "properties": {
+        "company_id": { "$ref": "#/$defs/field_entry" },
+        "issuer_role": { "$ref": "#/$defs/field_entry" },
+        "novelty": { "$ref": "#/$defs/field_entry" },
+        "action_type": { "$ref": "#/$defs/field_entry" },
+        "commitment_status": { "$ref": "#/$defs/field_entry" },
+        "primary_amount_role": { "$ref": "#/$defs/field_entry" },
+        "incremental_amount": { "$ref": "#/$defs/field_entry" },
+        "remaining_authorization": { "$ref": "#/$defs/field_entry" },
+        "executed_amount": { "$ref": "#/$defs/field_entry" },
+        "horizon_period": { "$ref": "#/$defs/field_entry" },
+        "negated": { "$ref": "#/$defs/field_entry" },
+        "action_span": { "$ref": "#/$defs/field_entry" }
+      }
+    },
+    "fields_T2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company_id", "issuer_role", "demand_stage", "metric", "commitment_status",
+        "stated_amount", "fiscal_period", "revision_direction", "negated", "novelty",
+        "counterparty_company_id", "baseline"
+      ],
+      "properties": {
+        "company_id": { "$ref": "#/$defs/field_entry" },
+        "issuer_role": { "$ref": "#/$defs/field_entry" },
+        "demand_stage": { "$ref": "#/$defs/field_entry" },
+        "metric": { "$ref": "#/$defs/field_entry" },
+        "commitment_status": { "$ref": "#/$defs/field_entry" },
+        "stated_amount": { "$ref": "#/$defs/field_entry" },
+        "fiscal_period": { "$ref": "#/$defs/field_entry" },
+        "revision_direction": { "$ref": "#/$defs/field_entry" },
+        "negated": { "$ref": "#/$defs/field_entry" },
+        "novelty": { "$ref": "#/$defs/field_entry" },
+        "counterparty_company_id": { "$ref": "#/$defs/field_entry" },
+        "baseline": { "$ref": "#/$defs/field_entry" }
+      }
+    },
+    "fields_T3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company_id", "issuer_role", "event_kind", "object_name", "commitment_status",
+        "novelty", "counterparty_company_id", "counterparty_role", "stated_quantity",
+        "economic_claim_class", "negated", "action_span"
+      ],
+      "properties": {
+        "company_id": { "$ref": "#/$defs/field_entry" },
+        "issuer_role": { "$ref": "#/$defs/field_entry" },
+        "event_kind": { "$ref": "#/$defs/field_entry" },
+        "object_name": { "$ref": "#/$defs/field_entry" },
+        "commitment_status": { "$ref": "#/$defs/field_entry" },
+        "novelty": { "$ref": "#/$defs/field_entry" },
+        "counterparty_company_id": { "$ref": "#/$defs/field_entry" },
+        "counterparty_role": { "$ref": "#/$defs/field_entry" },
+        "stated_quantity": { "$ref": "#/$defs/field_entry" },
+        "economic_claim_class": { "$ref": "#/$defs/field_entry" },
+        "negated": { "$ref": "#/$defs/field_entry" },
+        "action_span": { "$ref": "#/$defs/field_entry" }
+      }
+    },
+    "abstention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "reason", "detail"],
+      "properties": {
+        "field": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "reason": { "enum": ["parse_failed", "redacted_rights", "budget_exceeded", "refused_source_instruction"] },
+        "detail": { "type": "string", "maxLength": 240 }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "text"],
+      "properties": {
+        "kind": { "enum": ["injection_attempt", "template_defect", "ambiguity"] },
+        "text": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    }
+  }
+}

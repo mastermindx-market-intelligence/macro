@@ -1,0 +1,47 @@
+{
+  "schema": "tiingo.fourteen_diagnostic_disposition_exact_source_review/v1",
+  "recorded_at_utc": "2026-10-14T04:47:50.978501+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "verdict": "HOLD_ONE_CURRENT_CENSUS_LINEAGE_REPAIR",
+  "source_file": "tiingo-fourteen-diagnostic-disposition-bound01.py",
+  "source_sha256": "d68de3a28d77295ef0a65166e3b1634700c7f582db227068ba02bf89cb035d0c",
+  "baseline_method_sha256": "58b408064550e95966618e8f482761cf8dbae115e0c4a13b46b64dd86e438a61",
+  "current_capture_parent_sha256": "f30f3579d44dec5a97fc710d528a02f9766c51e9174d783c42bfe6091809c0b3",
+  "findings": [
+    {
+      "id": "H1",
+      "location": "coverage finalbase.update",
+      "issue": "The prior census schema is current_qualified_census_with_actual_later_repair/v1 and carries later_repair_result_sha256=f234... for elevenrequests, original_census_file=eleven-delta and original_census_sha256=1d7d.... Currentcoverage replaces q/method/counts but inherits these current-looking lineage fields unchanged, creating a fourteen-request census that still points to eleven-request result provenance.",
+      "required_repair": "Bind later_repair_result_sha256 to current PINS[RUN+'-result.json'] (6a58...). Bind original_census_file/original_census_sha256 to the immediate prior BASE/c54 or explicitly rename/move old fields into clearly historical prior-eleven lineage. Preserve originals unchanged and retained prior_census_sha256 chain. Update the stale actual_capture04 compatibility comment from separate11 to fourteen.",
+      "acceptance_width": "A focused source delta is sufficient. No raw capture, historical reader or broad baseline revalidation needed."
+    }
+  ],
+  "verified": [
+    "Exactd68de3 sourcehash and AST compile; all eightdirectPINS match retainedbytes.",
+    "Actual83517exit0chunkc27e64 consumedrootf30, scope37eba6/capturemethodda261/result6a58 match literal14plan0ff; fourteenactualsuccesspairs equalexactselectedmissingwindows.",
+    "All130 acceptedpredecessorqualification hashes match, and no acceptedvalid/qualityrequestpair overlaps new14.",
+    "scalar_check, artifacts, qualify, source_freeze and strictselector helpers are AST-identical toaccepted58b. They preserve losslessnormalization, wholequality policy, foreigncustody checks, missing-onlyimmutablematerialization and allnewfullreader equality.",
+    "Preflight selects onlyactualcurrent14successes within currentcapturestart/settled clocks. It reads historicalqualificationmetadata fordisjointness; it doesnot rerunoldrawnormalization/readers except any exactcollisionforeign-owner check required by actualnewselector conflict.",
+    "Coverage nowcorrectly updates generic/incrementalQhash, keeps no-retryflagFalse andfiltersknownuncapturedlist; conservation logic remainsunchanged.",
+    "Four intendedstageoutputslots currentlylstatabsent. No stagewasimported/executed."
+  ],
+  "whole_pipeline_conditions_after_focused_clearance": [
+    "Root may deterministically prepare/check each stagepacket underacceptedwrapperc0a630 without another reviewer round ifsource,scope andcontract remainexactlyaccepted; materialchanges or failed/unknown effects require focusedreview/reconciliation.",
+    "Everypacket: exactroot/run/mode/prefix01/sourcehash/wrapperhash; max0provider/creds; noauto retry; distincttrue-lstatabsentoutput/log/intent/identity/wait/validation slots thatcannotcollidewithinputs; frozenhashmap rejects duplicatepath conflicts.",
+    "Freeze allsourcecontext dependencies from recursivepreviousmethods/h.PINS/producerfiles/directPINS and exactacceptedpredecessorQ metadata; wrapperpre/postverify allsuppliedinputs and currentstageoutputs. Sourcefreeze handles its ownrecursiveproducer/context controls.",
+    "Preflightpacket allows onlynewsnapshot+pfcontroloutputs, noarchivewrites. Rootconsumesactualnative+durablewait+validation and verifies14selected,valid/qualitypartition, windows/raw/receiptidentity, expected56selectors or justifieddeduplicatedcount, protectedpartials andsource/ancestor stability. Do notassumeall14valid beforeactualpreflight.",
+    "Qualifierpacket additionally freezesactualpf/snapshot/rootparent/wait/validation; rootparentbindsroot/method/prefix/pfhash/nativeactual0. Allowatmost14preflight-selected materializer calls; finalstrictselector/protectedcustody/fullnewreaderparity remainrequired, with40GiBfloor.",
+    "Coveragepacket additionally freezesactualq/qualifierrootsemanticacceptance/wait/validation pluspf,parent,snapshot; noarchivewrites/provider. Rootconsumesactualcoverageexit/wait/validation/censushash and verifiesprior+qualifiedvalidbars/history/empty/qualitypartition and47689catalogueconservation.",
+    "No individualpacket review isneeded for deterministicbinding ofthisacceptedpipeline; source reviewdoesnotitselfclaim anystageexecuted or grantnewproviderrequests.",
+    "Preserveoriginal90730/22925/91287unknownterminalfacts and oldgenericreasonclasses; no newcausalityimputation. KeepHTTP403/404/quality/R2/Fabric/publisherholds unchanged."
+  ],
+  "review_effects": {
+    "candidate_executions": 0,
+    "provider_requests": 0,
+    "credential_reads": 0,
+    "archive_writes": 0,
+    "old_raw_reader_rescans": 0,
+    "source_edits": 0,
+    "delegations": 0
+  }
+}

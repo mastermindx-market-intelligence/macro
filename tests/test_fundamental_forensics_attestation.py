@@ -116,7 +116,7 @@ def install_parser(monkeypatch):
     module.SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
     module.SEC_FILING_PARSER_VERSION = "1"
     module.SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = sha256(b"fixture parser").hexdigest()
-    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 10_000, "max_continuation_chain": 16, "max_output_bytes": 24 * 1024 * 1024}
+    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 12_000, "max_continuation_chain": 32, "max_output_bytes": 64 * 1024 * 1024}
     module.SUPPORTED_TRANSFORMS = {}
     module.parse_sec_filing_document = parse
     module.validate_sec_filing_parse_result = lambda value, *, source_content=None: value
@@ -194,7 +194,7 @@ def _numeric_extraction(
     module.SEC_FILING_PARSER_PROFILE = "strict_offline_ixbrl/v1"
     module.SEC_FILING_PARSER_VERSION = "1"
     module.SEC_FILING_PARSER_ALGORITHM_FINGERPRINT = fingerprint
-    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 10_000, "max_continuation_chain": 16, "max_output_bytes": 24 * 1024 * 1024}
+    module.PARSER_LIMITS = {"max_contexts": 5_000, "max_units": 2_000, "max_continuations": 10_000, "max_facts": 12_000, "max_continuation_chain": 32, "max_output_bytes": 64 * 1024 * 1024}
     module.SUPPORTED_TRANSFORMS = {}
     module.parse_sec_filing_document = parse
     module.validate_sec_filing_parse_result = lambda value, *, source_content=None: value
@@ -394,3 +394,20 @@ def test_exact_companyfacts_projection_is_one_to_one_and_preserves_decimal_preci
     )
     assert len(same_day.to_dict()["company_facts"]["matches"]) == 1
     assert filing_attestation_from_json_bytes(same_day.to_json_bytes()).to_dict() == same_day.to_dict()
+
+
+def test_attestation_match_cap_admits_every_mintable_fact_count():
+    # Each attested match binds one fact, so the match cap must admit every fact
+    # count the wrapper and the parser can mint (B'2 raised max_facts to 12,000).
+    # The cap is a bound, not an id input: it never enters the policy
+    # fingerprint, a match id, or the attestation id.
+    import importlib
+
+    from engine.fundamental_forensics import filing_attestation, ixbrl_extraction
+
+    real_parser = importlib.import_module("collectors.sec_filing_parser")
+    assert hasattr(real_parser, "_HARD_LIMITS")
+    assert Path(real_parser.__file__).as_posix().endswith("collectors/sec_filing_parser.py")
+    assert filing_attestation.HARD_MAX_MATCHES == 12_000
+    assert filing_attestation.HARD_MAX_MATCHES >= ixbrl_extraction.FFXBRL_LIMITS["max_facts"]
+    assert filing_attestation.HARD_MAX_MATCHES >= real_parser._HARD_LIMITS["max_facts"]

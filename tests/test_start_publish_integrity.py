@@ -8,6 +8,7 @@ single-instance and make every lane that writes the page fail closed before push
 from __future__ import annotations
 
 import re
+import hashlib
 from pathlib import Path
 
 from scripts.workflow_run_source import resolved_workflow_text
@@ -153,3 +154,36 @@ def test_wh_banner_dismiss_control_meets_interaction_contract() -> None:
         assert ': "Dismiss market alert"' in text
         assert 'document.addEventListener("langchange", syncCloseLabel);' in text
         assert 'document.removeEventListener("langchange", syncCloseLabel);' in text
+
+
+def test_mobile_menu_parks_globe_and_resumes_once_when_closed() -> None:
+    source = (ROOT / "site" / "globe-deck.js").read_text(encoding="utf-8")
+    assert "document.querySelector('.site-nav')" in source
+    assert "classList.contains('nav-open')" in source
+    assert 'if (_navMenuOpen()) { _park(); return; }' in source
+    assert 'if (_navMenuOpen()) return;' in source
+    assert 'if (open === _navWasOpen) return;' in source
+    assert 'if (open) _park(); else _wake();' in source
+    assert "attributeFilter: ['class']" in source
+    assert "window.__gdDeckInit" in source
+
+
+def test_mobile_menu_parks_sky_and_unparks_only_on_transition() -> None:
+    source = (ROOT / "site" / "sky.js").read_text(encoding="utf-8")
+    assert "document.querySelector('.site-nav')" in source
+    assert "classList.contains('nav-open')" in source
+    assert 'if (_navMenuOpen()) { running = false; raf = 0; return; }' in source
+    assert 'if (_navMenuOpen()) return; lastActT = nowMs();' in source
+    assert 'if (open === _navWasOpen) return;' in source
+    assert 'if (raf) cancelAnimationFrame(raf);' in source
+    assert 'else _activity();' in source
+    assert "attributeFilter: ['class']" in source
+    assert "window.__skyDeckInit" in source
+
+
+def test_start_hub_serves_current_content_hashed_animation_scripts() -> None:
+    html = START.read_text(encoding="utf-8")
+    for filename in ('globe-deck.js', 'sky.js'):
+        values = re.findall(rf'<script defer src="{re.escape(filename)}\?v=([0-9a-f]{{8}})"', html)
+        expected = hashlib.sha256((ROOT / 'site' / filename).read_bytes()).hexdigest()[:8]
+        assert values == [expected], filename

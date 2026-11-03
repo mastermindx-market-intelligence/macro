@@ -1,0 +1,16 @@
+{
+  "accepted": true,
+  "head": "81e258a9b263800a4237664f4b178c5aa5c4bf32",
+  "controls": [
+    "corrupt-accounting-refused",
+    "single-attempt-and-quarantine-retention",
+    "changed-guid-and-revision-replay-refused",
+    "emit-refused-after-provenance-and-source-metadata-strip"
+  ],
+  "fixture_writer_calls": 1,
+  "real_provider_calls": 0,
+  "production_inputs_unchanged": true,
+  "production_staging_writes": 0,
+  "public_writes": 0,
+  "scope": "Historical isolated fixture proof only"
+}

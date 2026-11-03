@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-10-14T03:09:57.067619+00:00",
+  "transport": "existing approved SSH; read-only /opt/macro/.venv/bin/python -B",
+  "source": "/opt/macro/site.served",
+  "observed": [
+    {
+      "path": "stockdata/NVDA.json",
+      "sha256": "f3ed794b66327f073917ce5af632c471010f049fa14a5fcd6e97435326c4f18b",
+      "bytes": 133085,
+      "asof": "2026-10-08",
+      "capital_allocation_asof_date": null,
+      "cash_runway_status": "no_cash_facts",
+      "capital_need_status": "unknown",
+      "not_qualified_for_current_brief": true
+    },
+    {
+      "path": "stockbrief/NVDA.json",
+      "sha256": "51a29b8adeaa4968953bfad87a8c503300c80d3238073acfb5ce97f78ba30a2a",
+      "bytes": 843,
+      "asof": "2026-10-07",
+      "generated_at": "2026-10-08T15:26:01.994499+00:00",
+      "not_qualified_for_current_brief": true
+    }
+  ],
+  "additional_finding": "Installed NVDA accounting-quality prose labels a 3820% multiyear raw share-count change as dilution. Source engine/stock_fundamentals.py computes raw end/start without split basis; this claim is unqualified for Press use, not independently adjudicated as a complete capital-actions repair. Do not copy into new article.",
+  "incumbent_reference": {
+    "pr": 8419,
+    "head": "d0f655c65cd3dac332f22bb47693be206cbc229e",
+    "scope": "Commission13 capital-actions research; HOLD-FOR-SOL and no implementation authority. Preserve its existing source/program rather than inventing a parallel repair."
+  },
+  "production_writes": 0,
+  "provider_calls": 0,
+  "stage_writes": 0,
+  "release_state_claim": false,
+  "purpose": "Reject stale or ambiguous issuer facts as current Press receipts, not a PR9209 installation or live publication check."
+}

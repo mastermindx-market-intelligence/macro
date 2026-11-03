@@ -1,0 +1,173 @@
+{
+  "schema": "research_codegen.scientific_protocol_proposal.v1",
+  "state": "ROOT_SELECTED_DESIGN_PENDING_REAL_QUALIFICATION_AND_INDEPENDENT_METHODS_ACCEPTANCE",
+  "macro_commit": "719e71f16fccf8ecfbd6e5515ec7b503b15c4daa",
+  "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
+  "cohort": [
+    "XLB",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLU",
+    "XLV",
+    "XLY"
+  ],
+  "cohort_scope": "fixed named ETFs, not general sector-universe discovery",
+  "price_owner": "collectors/yahoo.py",
+  "price_basis": "total_return close, explicitly bound adjustment vintage; no fallback stores",
+  "read_only_panel_ref": "engine/oracle/panel.py::build_panel_s",
+  "baseline_rule": {
+    "id": "bare_washout",
+    "entry_rule": {
+      "col": "washout_w",
+      "op": "gt",
+      "value": 0
+    },
+    "type": "existing price-only declarative rule"
+  },
+  "formation_protocol": {
+    "calendar_owner": "lib/market_session.py + lib/us_cash_calendar.py",
+    "historic_anchor": "2010-01-04",
+    "stride_us_cash_sessions": 26,
+    "trigger_bar": "scheduled completed cash-session close",
+    "decision_cutoff": "09:00 America/New_York on next verified cash session",
+    "refuse_if_source_not_received_by_cutoff": true,
+    "candidate_input_trailing_sessions": 63,
+    "formation_price_warmup_sessions": 260,
+    "eligible_nodes": "all fixed-cohort nodes with finite incumbent washout_w>0 and qualified complete warmup; if any required node source fails, whole-date unqualified",
+    "source_exclusions": "frozen common to both arms before candidate output; retain all scheduled denominators and reasons",
+    "opportunity_bearing": "at least one eligible node at the scheduled formation"
+  },
+  "candidate_selection": {
+    "k": "ceil(n_eligible/2)",
+    "ordering": "higher_feature_first",
+    "tie_break": "lexicographic symbol",
+    "requires_all_eligible_features_finite": true,
+    "may_abstain_to_claim_benefit": false,
+    "failure_disposition": "any runtime/output/refusal failure on otherwise source-qualified opportunity-bearing formation => entire candidate numerical result REFUSED; never complete-case deletion"
+  },
+  "reference_comparison": {
+    "baseline": "mean native loss over all eligible nodes on same formation",
+    "candidate": "mean native loss over trusted top-K nodes",
+    "total_simulated_reference_exposure": 1,
+    "not_capital_sizing": true,
+    "trade_count_difference_disclosed": true,
+    "estimand": "equal-date mean of mean single-entry 25-session adverse losses, conditional on qualified complete original two-position opportunity blocks in the fixed nine-ETF cohort; no general-universe or all-calendar-date claim",
+    "direction": "long-only simulated reference, no position-sizing or trading authority"
+  },
+  "numerical_ruler": {
+    "source": "scripts/oracle_reversion_screen.py::_per_entry_rows",
+    "version": "exact pinned source SHA and subsequent reviewed input seam",
+    "entry": "next cash-session close after trigger bar",
+    "window_sessions": 25,
+    "exit_sessions": 21,
+    "exit_mode": "time",
+    "primary_loss": "max(0,-native_MAE): 25-session single-entry post-entry adverse excursion, including four sessions after the 21-session reference exit; not realized trade drawdown or portfolio MAE",
+    "difference": "mean_loss_baseline-mean_loss_candidate",
+    "missing_price_return": "refuse, never use incumbent fillna(0) on unqualified inputs",
+    "labels": "trusted evaluator only; mature full25-session horizon + source receipt; single declared basis/vintage"
+  },
+  "cost_policy": {
+    "entry_bps_per_reference_notional": 10,
+    "exit_bps_per_reference_notional": 10,
+    "primary_loss": "gross native excursion with separately disclosed identical normalized entry cost",
+    "secondary_exit_return": "native21-session exit return minus20bps round trip",
+    "sensitivity_roundtrip_bps": [
+      10,
+      40
+    ],
+    "cannot_change_primary_or_winner": true,
+    "meaning": "predeclared conservative research assumption, not measured implementation cost",
+    "secondary_status": "descriptive only; no additional confirmatory claim or champion selection"
+  },
+  "development": {
+    "start": "2010-01-04",
+    "end": "2017-12-29",
+    "historical_class": "reconstructed unless original availability+vintage receipts qualify; model contamination disclosed",
+    "label_cutoff": "2017-12-29; exclude from tuning any formation whose full 25-session labels are not mature and received by that cutoff"
+  },
+  "selection": {
+    "start": "2018-01-02",
+    "end": "2023-12-29",
+    "feedback_releases": 1,
+    "all_variants_frozen_before_release": true,
+    "preknown_market_periods": "historical exploratory evidence, never prospective confirmation",
+    "label_cutoff": "2023-12-29; use only full 25-session labels mature and received by that fixed cutoff; no outcome-dependent extension"
+  },
+  "post_selection_2024_to_freeze": "do not treat as fresh holdout; kept out of v1 selection/generation feedback unless existing Vault owner separately admits a counted diagnostic",
+  "prospective": {
+    "start": "first scheduled qualified source capture strictly after accepted freeze",
+    "champions_max": 1,
+    "first2cycles": "machinery/temporal/idempotence proof only",
+    "formal_confirmation": "only after predeclared matured sample+assumption+source gates; no repeated interim significance peeks",
+    "natural_time_lower_bound": "39 gaps times 26 cash sessions = 1014 sessions between the first and fortieth triggers, plus about 26 sessions to entry and label maturity: approximately 1040 total, over four trading years at perfect coverage",
+    "champion_selector": "Among protocol-qualified eligible variants, largest independently accepted lower confidence bound; exact tie resolved by lexicographic canonical candidate_id; no champion when none eligible. Freeze before feedback.",
+    "final_read_owner": "Existing Research Factory forward/experiment owner, exact admitted operation and authoritative record must be identified before prospective activation; this document creates no watcher."
+  },
+  "budget": {
+    "total_variants_max": 4,
+    "mechanisms_max": 2,
+    "refinement_cycles_per_lineage_max": 2,
+    "refinements_count_in_total4": true,
+    "generation_count_before_measurement": true,
+    "family": "rf.codegen.sector_entry_v1",
+    "canonical_trial_owner_required": true,
+    "runtime_spend": "root approved envelope only; no new grant",
+    "controls_charge": "known-answer synthetic and deliberately leaky pilot code variants consume root total4 unless incumbent owner qualifies separate preexisting non-generation fixtures; no free pilot search"
+  },
+  "inference": {
+    "primary_target_absolute_mae_reduction": 0.005,
+    "minimum_episode_pairs": 40,
+    "calendar_cluster_unit": "one complete formation date; ETF rows never independent trials",
+    "inference_block": "2 fixed formation positions by original scheduled calendar index (52-session span); no compression or adjacency reassignment after source exclusions",
+    "minimum_blocks": 20,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seed": "first64bits of accepted protocol_sha256",
+    "family_alpha": 0.05,
+    "max_comparisons": 4,
+    "one_sided_alpha_per_variant": 0.0125,
+    "eligibility": "proposed family-adjusted one-sided lower bound on paired mean reduction exceeds0.005; exact interval coverage independently qualified first; source/coverage/power/assumption gates satisfied; advisory only",
+    "sample_plan": "N_blocks=max(20,ceil(((z(1-0.05/4)+z(0.8))*max(qualified_development_long_run_SD,0.005)/(0.010-0.005))^2)); freeze before selection release; N_episode_pairs>=2*N_blocks",
+    "power_claim": "planning approximation only, no achieved power claim without data-qualified clustered estimate",
+    "dependence_or_nonstationarity": "inference unqualified if declared block adequacy weak-stationarity assumption cannot be supported; no post-outcome block tuning to obtain PASS",
+    "dsr": "not required primary MAE-loss inference; optional predeclared return-series diagnostic only",
+    "pbo_cpcv": "predeclared optional diagnostic or required only if trusted protocol specifies; never substitutes for sources/multiplicity/temporal proof",
+    "block_qualification": "both scheduled formation positions must be source-qualified and opportunity-bearing; retain denominator and reasons for excluded/no-opportunity positions; candidate failures refuse entire numerical result",
+    "coverage_claim": "NOT_PROVEN; Bonferroni family envelope does not establish valid marginal/bootstrap interval coverage",
+    "null": "mean improvement <= 0.005",
+    "planned_alternative_improvement": 0.01,
+    "power_gap": 0.005,
+    "variance_qualification": "Raw block SD is not a long-run SD unless variance adequacy and dependence assumptions are qualified before outcomes; overlapping 63/260-session warmup persists across 26/52-session formation/block spans. No inferential PASS until the exact procedure, missingness, variance and marginal interval coverage are independently qualified."
+  },
+  "required_proof_categories": [
+    "root_ratified_protocol",
+    "qualified_identity_boundary",
+    "effective_protection",
+    "exact_source_runtime_input_output_bindings",
+    "lawful_price_basis_vintage_receipts",
+    "per_decision_causal_schedule",
+    "complete_original_trial_family_and_durable_readback",
+    "existing_Vault_access_mediation_and_consumption",
+    "independent_fixed_ruler_and_matched_opportunities",
+    "complete_coverage_and_mature_labels",
+    "predeclared_clustered_inference_and_sample",
+    "independent_review_and_actor_packet_law"
+  ],
+  "actual_unqualified_facts": [
+    "current source rights receipt",
+    "actual historical row availability/revision/adjustment vintage",
+    "exact eligible row/cohort counts and completeness",
+    "development block variance and required final N",
+    "existing trial family collision/history/remaining budget",
+    "actual reserved window seals/peeks and label-release owner",
+    "effective boundary/protection/independent acceptance",
+    "future accrued prospective observations"
+  ],
+  "generation_enabled": false,
+  "execution_enabled": false,
+  "evaluation_enabled": false,
+  "authority_granted": false,
+  "proposal_sha256": "af9c6e44c95b34832401b94cf2c7280b29532e93d1202f4502d2f9ae4e0da966"
+}

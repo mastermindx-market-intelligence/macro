@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-10-20T19:21:24.734069+00:00",
+  "state": "MEASURED_BOUND_RECORDED_STAGED",
+  "head": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "incoming": "df3cba80e5ff43e3411209381b32d9d4df06bd1f",
+  "index_before": "9c4769eadba206fe5d51e3025b7e449e86cf02c1",
+  "measurement_sha256": "51a7fea06c976d46db9d64898629ce97eb0039f93f588c28406cc32c2809b34e",
+  "procedure_unchanged": {
+    "AGENTS.md": {
+      "head": "7aa82fbb309081c6d1297ee35405507d30e7d3c6",
+      "incoming": "7aa82fbb309081c6d1297ee35405507d30e7d3c6"
+    },
+    "CLAUDE.md": {
+      "head": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419",
+      "incoming": "ddbcf1b2b63aed6eeea5dcf644a1e749b095c419"
+    }
+  },
+  "old_sha256": "15af084d773ba164646f2394df1c8657909ae4bfa396253a3af9f0eaa407c682",
+  "new_sha256": "e5ec9cf0f8f48687ce45e65cd31e5088f2901d3789bca6dd5b76b1769dde6332",
+  "sole_executable_change": "free-content max_weight 5795 -> 5802",
+  "docstring_note": "    2026-10-20 Shared Shell composition with protected df3cba80: the actual\n    canonical planner on the composed tree measured index 135 jobs / 5,829,\n    free-content 135 / 5,802 and plan-book 128 / 5,578, all at ten packs.\n    Applying the incoming manifest's weights to those same selected job IDs\n    gives 5,822 / 5,795 / 5,571. The only weight differences are the retained\n    data-base-shim 7 -> 12 and unrun-nav-chrome 30 -> 32. Free-content also\n    selects the incoming ticker-news-qbus job at its unchanged weight of 98.\n    This same-ID attribution is not a fresh incoming-tree selection replay.\n    Compose that measured +7 with the incoming news allowance below: change\n    only free-content's 5,795 -> 5,802. Keep its 135-job ceiling, the other\n    probe ceilings, ten packs, selectors, declarations and suites unchanged.\n\n",
+  "scope": "Observed composed planner result; same-ID incoming weight attribution, not incoming-tree selection replay",
+  "finished_at": "2026-10-20T19:21:37.558956+00:00",
+  "index_after": "17f8cca6de011cb467cd13246c3cf076e56b9e05",
+  "ast_only_measured_bound_changed": true
+}

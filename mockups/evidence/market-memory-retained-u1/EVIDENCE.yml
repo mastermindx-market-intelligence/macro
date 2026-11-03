@@ -1,0 +1,16 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme.css
+  - site/theme.css
+  - templates/market_memory.html.j2
+  - templates/market_memory_retained.html.j2
+  - templates/market_memory_retained.css
+  - templates/market_memory_retained.js
+  - templates/market_memory_intent.js
+  - templates/market_memory.js
+  - site/market_memory.html
+  - site/market_memory_retained.css
+  - site/market_memory_retained.js
+  - site/market_memory_intent.js
+  - site/market_memory.js
+manifest: mockups/evidence/market-memory-retained-u1/manifest.json

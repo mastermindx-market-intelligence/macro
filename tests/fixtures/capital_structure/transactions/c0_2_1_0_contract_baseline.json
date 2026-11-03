@@ -1,0 +1,416 @@
+{
+  "added_schema_defs": [
+    "instrument_version",
+    "realized_cash",
+    "share_reconciliation",
+    "transaction_binding",
+    "transaction_filing_coverage",
+    "transaction_observation",
+    "transaction_usage"
+  ],
+  "base_all": [
+    "AUTHORITY",
+    "ActionSelection",
+    "Assumption",
+    "COMPATIBLE_INPUT_SCHEMAS",
+    "CalculationReceipt",
+    "CandidateBundle",
+    "CapabilityProof",
+    "CapacityEnvelope",
+    "CapitalInputs",
+    "CapitalState",
+    "CashEffect",
+    "CommitmentInputs",
+    "Constraint",
+    "ContractViolation",
+    "CorporateActionBasis",
+    "CorporateActionInputs",
+    "ECONOMIC_TERM_NAMES",
+    "ECONOMIC_TERM_STATUSES",
+    "EconomicTerm",
+    "EvidenceRef",
+    "FORBIDDEN_PROPERTY_PATTERN",
+    "FamilyProvenance",
+    "FamilyState",
+    "FinancialInputs",
+    "FinancingScenario",
+    "Flow",
+    "FundingPeriod",
+    "FundingSchedule",
+    "GenerationBinding",
+    "INHERITED_UNAVAILABLE_CAPABILITIES",
+    "INTERFACE_OWNER",
+    "INTERFACE_OWNERSHIP",
+    "INTERFACE_READER",
+    "Instrument",
+    "InstrumentSet",
+    "PROJECTION_COMPATIBILITY",
+    "PriceAssumption",
+    "Provenance",
+    "Quantity",
+    "RECORD_SCHEMAS",
+    "REQUIRED_FUNDING_ASSUMPTIONS",
+    "Resolution",
+    "ResolutionInputs",
+    "RouteBound",
+    "RulePack",
+    "RuleRef",
+    "SHARE_BASES",
+    "STATE_CONTRACT_VERSION",
+    "STATE_FAMILIES",
+    "STATE_SCHEMA",
+    "STATE_SCHEMA_FILE",
+    "STATE_SCHEMA_PATH",
+    "ShareBasisResult",
+    "ShareInputs",
+    "ShareObservationRef",
+    "StateRequest",
+    "SupplyEnvelope",
+    "TERM_FACT_ORIGINS",
+    "Unknown",
+    "UnknownResolution",
+    "WitnessAllocation",
+    "load_state_schema",
+    "projection_compatibility",
+    "sha256_of",
+    "stable_id",
+    "validate_state_record"
+  ],
+  "base_commit": "e32d41092080be8adb24bdd10bfeb4115765a0ce",
+  "base_compatible_input_schemas": {
+    "corporate_actions": [
+      "capital_structure.corporate_action_observation.v1"
+    ],
+    "corrections": [],
+    "covenant_terms": [
+      "capital_structure.covenant_term_observation.v1"
+    ],
+    "document_terms": [
+      "capital_structure.document_term_observation.v1"
+    ],
+    "event_edges": [
+      "capital_structure.event_edge.v1"
+    ],
+    "event_projection": [
+      "capital_structure.projection_bundle.v1"
+    ],
+    "events": [
+      "capital_structure.event.v1"
+    ],
+    "financials": [
+      "capital_structure.financial_item_observation.v1"
+    ],
+    "instrument_candidate_terms": [
+      "capital_structure.instrument_candidate_term.v1"
+    ],
+    "instrument_economic_terms": [
+      "capital_structure.instrument_economic_term.v1"
+    ],
+    "instrument_term_bindings": [
+      "capital_structure.instrument_term_binding.v1"
+    ],
+    "registration_lifecycle": [
+      "capital_structure.registration_lifecycle_bundle.v1"
+    ],
+    "share_count_observations": [
+      "capital_structure.share_count_observation.v1",
+      "capital_structure.share_count_observation.v2"
+    ]
+  },
+  "base_projection_compatibility": {
+    "observed_event_reader": "engine.capital_structure.projection.build_projection_bundle",
+    "observed_event_reader_status": "preserved",
+    "projection_bundle_schema": "capital_structure.projection_bundle.v1",
+    "projection_version_floor": "capital-structure-event-projection/1.0.0",
+    "projection_version_prefix": "capital-structure-event-projection/1.",
+    "state_contract_version": "capital-structure-state-contracts/2.1.0"
+  },
+  "base_state_contract_version": "capital-structure-state-contracts/2.1.0",
+  "declared_module_deltas": {
+    "COMPATIBLE_INPUT_SCHEMAS": {
+      "added_keys": {
+        "transaction_bindings": [
+          "capital_structure.transaction_binding.v1"
+        ],
+        "transaction_filing_coverage": [
+          "capital_structure.transaction_filing_coverage.v1"
+        ],
+        "transaction_observations": [
+          "capital_structure.transaction_observation.v1"
+        ]
+      },
+      "removed_keys": []
+    },
+    "PROJECTION_COMPATIBILITY": {
+      "changed_keys": [
+        "state_contract_version"
+      ]
+    },
+    "STATE_CONTRACT_VERSION": {
+      "base": "capital-structure-state-contracts/2.1.0",
+      "head": "capital-structure-state-contracts/2.2.0"
+    },
+    "added_module_tables": {
+      "BINDING_ORIGINS": [
+        "canonical_join",
+        "adjudicated_gold"
+      ],
+      "BINDING_TARGET_KINDS": [
+        "registration_path",
+        "instrument"
+      ],
+      "REALIZED_CASH_KINDS": [
+        "proceeds",
+        "repayment",
+        "no_cash"
+      ],
+      "REPORTING_BASES": [
+        "individual",
+        "cumulative",
+        "point_in_time"
+      ],
+      "TRANSACTION_KINDS": [
+        "registered_takedown",
+        "atm_sales",
+        "warrant_exercise",
+        "conversion",
+        "redemption",
+        "repurchase",
+        "cancellation",
+        "resale",
+        "outstanding_balance",
+        "instrument_issuance"
+      ],
+      "TRANSACTION_ORIGINS": [
+        "canonical_extraction",
+        "adjudicated_gold"
+      ],
+      "USAGE_CLASSES": [
+        "shelf_takedown",
+        "programme_sale",
+        "resale",
+        "not_applicable"
+      ]
+    }
+  },
+  "declared_schema_deltas": {
+    "compatibility": {
+      "additionalProperties": false,
+      "properties": {
+        "observed_event_reader": {
+          "const": "engine.capital_structure.projection.build_projection_bundle"
+        },
+        "observed_event_reader_status": {
+          "const": "preserved"
+        },
+        "projection_bundle_schema": {
+          "const": "capital_structure.projection_bundle.v1"
+        },
+        "projection_version_floor": {
+          "const": "capital-structure-event-projection/1.0.0"
+        },
+        "projection_version_prefix": {
+          "const": "capital-structure-event-projection/1."
+        },
+        "state_contract_version": {
+          "const": "capital-structure-state-contracts/2.1.0"
+        }
+      },
+      "required": [
+        "projection_bundle_schema",
+        "projection_version_floor",
+        "projection_version_prefix",
+        "observed_event_reader",
+        "observed_event_reader_status",
+        "state_contract_version"
+      ],
+      "type": "object"
+    },
+    "input_family": {
+      "enum": [
+        "event_projection",
+        "events",
+        "event_edges",
+        "registration_lifecycle",
+        "document_terms",
+        "covenant_terms",
+        "instrument_candidate_terms",
+        "instrument_economic_terms",
+        "instrument_term_bindings",
+        "share_count_observations",
+        "financials",
+        "corporate_actions",
+        "corrections"
+      ]
+    },
+    "input_schema": {
+      "enum": [
+        "capital_structure.projection_bundle.v1",
+        "capital_structure.event.v1",
+        "capital_structure.event_edge.v1",
+        "capital_structure.registration_lifecycle_bundle.v1",
+        "capital_structure.document_term_observation.v1",
+        "capital_structure.covenant_term_observation.v1",
+        "capital_structure.instrument_candidate_term.v1",
+        "capital_structure.instrument_economic_term.v1",
+        "capital_structure.instrument_term_binding.v1",
+        "capital_structure.share_count_observation.v1",
+        "capital_structure.share_count_observation.v2",
+        "capital_structure.financial_item_observation.v1",
+        "capital_structure.corporate_action_observation.v1"
+      ]
+    }
+  },
+  "digest_function": "engine.capital_structure.issuer_state_contracts.sha256_of",
+  "fixture": "c0_2_1_0_contract_baseline",
+  "generation": [
+    "mkdir -p /tmp/basepkg && cp -R engine contracts /tmp/basepkg/",
+    "git show e32d41092080be8adb24bdd10bfeb4115765a0ce:engine/capital_structure/issuer_state_contracts.py > /tmp/basepkg/engine/capital_structure/issuer_state_contracts.py",
+    "git show e32d41092080be8adb24bdd10bfeb4115765a0ce:contracts/capital_structure_state.v2.schema.json > /tmp/basepkg/contracts/capital_structure_state.v2.schema.json",
+    "python3 -c \"import pathlib; pathlib.Path('/tmp/basepkg/engine/capital_structure/transactions.py').unlink(missing_ok=True)\"",
+    "cd /tmp && PYTHONPATH=/tmp/basepkg python3 <generator that emits this file>"
+  ],
+  "module_tables": {
+    "AUTHORITY": "e252a7645f423363f3ce2c6ad8bf9e7c5eafcd70292d63391a60f8c6efd3b470",
+    "CASH_BASES": "95061d9bd835f1b6355db4e511443eaf98ef96d302dcc5392db2a80023cb9653",
+    "CASH_EFFECT_KINDS": "afd499826d9e7831937f92a8895fe39afdbcda3c64bdca4a08ef1a7719c5d5d2",
+    "COMPATIBLE_INPUT_SCHEMAS": "afd58af99509e6e2a00030c7c62e627cfdf8ab8c8dcb275fa2285b68d48788e5",
+    "CONSTRAINT_KINDS": "2609b065a02f42bb5d2335b2573fd854536f2b138c15a613dd431bbd14f86e1d",
+    "CONSTRAINT_STATUSES": "90c4b1ccde01560c34d93da5528a5183d57edc949d7119905524365f7839fece",
+    "CORPORATE_ACTION_KINDS": "68122292c11ffd699a3d5c83f5f9539f817da6089c07cccd72a7ae7600d7493a",
+    "ECONOMIC_TERM_DATE_NAMES": "4d74269887fcb875d82e0e9cca8bad49172338452b2e2e3a55a132c08f27d3be",
+    "ECONOMIC_TERM_EFFECTIVE_NAMES": "a3e76484441fcdcfd53c148410dbd58171118e7eb2fbff960fa8b99ee54ea85d",
+    "ECONOMIC_TERM_FLAG_NAMES": "cd5c956105332ddfeb4962812f4e9b83d716688d0eed008e06ce76ea87e150ee",
+    "ECONOMIC_TERM_NAMES": "50767d78f5396f38256578c29ef5a3a0a8afc8e7ab865c5d00b77ad1ce5145bb",
+    "ECONOMIC_TERM_STATUSES": "e3ce69328f25ea8b105a5841b983bb0f72317c89da84cd174df9c4b53794d23c",
+    "ECONOMIC_TERM_UNITS": "59f6f35387abdcb015b6c96119b81746929314d478679125fffcfd4a2816f152",
+    "FLOW_CERTAINTIES": "822479d668631898a7f67f07aac90922e6dc5e3faa8691dafb5664fa14bc52e6",
+    "FLOW_KINDS": "d6c5624b9fbadfd2f768b4c3cb6e65f3175327a48ed1f585db5d6ba51f97c696",
+    "INHERITED_UNAVAILABLE_CAPABILITIES": "9351dd5c47522f2c4fdf07a6271a5b14385cc5358dead640d3e034b48f496f1d",
+    "INSTRUMENT_KINDS": "4ec77c2b8ad5ff912ad02f204bd78361a59fcecaa836c0a4dabe798eb97bab5f",
+    "INSTRUMENT_STATUSES": "129cb1cd109e4f919c99523870e8cf2b4eec61ce2e4ba0baf3b88822eb306f93",
+    "INTERFACE_OWNERSHIP": "646d40a2e5dd68cef3db06ef9c4beab69c3a101679df75d6f547e6c812a45a7b",
+    "PRICE_KINDS": "72b246a13627518606a24bfd7684431e164a4c20c4e569f9cc7789f20165bda0",
+    "PROJECTION_AUTHORITY": "e252a7645f423363f3ce2c6ad8bf9e7c5eafcd70292d63391a60f8c6efd3b470",
+    "PROJECTION_COMPATIBILITY": "d5f72e4ce6f4ddb94a72a63bf2cfff7167a1d8aa31b4bde2e2e99e556cdde2d5",
+    "PROJECTION_UNAVAILABLE_CAPABILITIES": "9351dd5c47522f2c4fdf07a6271a5b14385cc5358dead640d3e034b48f496f1d",
+    "QUANTITY_STATUSES": "3d8ca01b9c43eec195a0cbeadd7aed27d7c03ee5ab660429cd9dbefcfa16cd12",
+    "RECORD_SCHEMAS": "9b0b28896ef8f263bed548ed151606a492671a9a58e25e84d507993a51a7c168",
+    "REQUIRED_FUNDING_ASSUMPTIONS": "3a8538c864ab20c47cf92d7a5a1d0991714ded13ea6cdd966743161a1f183eef",
+    "RESOLUTION_METHODS": "687f8d81cc19bcfae0eeb6635c9d5d62bf68c2d2aeb271fda096eb855481d7cb",
+    "ROUTE_KINDS": "39577c1ac23b015ac02dfaad71af811c6aa1768159ee8de56165ee1946b07170",
+    "ROUTE_STATUSES": "6aa5c85ef53e62403b41db8b33c4550a20418cd03a1affad05e61098b75389ae",
+    "RULE_CLASSES": "23e1b0aee9cb044b13aeb5ebe9a6a4fa5195fffe1be15ec8212ed4992d8cb260",
+    "SCENARIO_VIEWS": "fd70201c057377edc72de250422ada69202f612d59c9f9489a97d392a5b65416",
+    "SETTLEMENTS": "dddb5b88c7001bea8f35b5409d5ed3133dbdf80cd36c9e472eeee1f1656d40f4",
+    "SHARE_BASES": "3622f7814eab31e0abf304900decfd91478ecb97efe3b9f097b96220e7bfd3fd",
+    "SHARE_BASIS_STATUSES": "24a3960349b54ba28c21390355f948a0df80f2c87a6af7d985c0702f5bf480f7",
+    "STATE_FAMILIES": "623e014246ebea29fb408546b01030da1bf29cc27481b6a66d47356b87307a5d",
+    "STOCK_OR_FLOW": "328e16dc2c2ee0d936513828d1b1540b0663548c6e2843ec21a462fdd3fc89af",
+    "SUPPORT_STATES": "40ccd55a1301cc7bfe1740514380ed32572431a124b2db97845adede759001b7",
+    "TERM_FACT_ORIGINS": "59261406e3622b2e04da197808ff51fe3621eb7078fe89bfce5063793b3d0a9a",
+    "UNIT_KINDS": "d412b0f54d45efe1e2f50955289c0d1f61f93c071d1c7f4b4a9fb2eb008a453b",
+    "VIEW_MODES": "550316378f10a5d305a09e8cbfc472311d9f7a2ff8742a0102627cbbd42a9ab7",
+    "_INPUT_FIELDS": "49b87fadd01b04ddddca40c572cdd56e0af6384fbc3fb15e1044e889385fdcda"
+  },
+  "origin": "adjudicated_gold",
+  "provenance_note": "Hand-built adjudicated gold record: NOT extracted filing text, and it quotes no filing. It freezes the C0 2.1.0 contract surface at the base commit so a test can prove the 2.2.0 delta is purely additive (SPEC_X0 \u00a70 item 9). Every digest below is derived with engine.capital_structure.issuer_state_contracts.sha256_of over canonical JSON, and the test re-derives the live digest the same way rather than hard-coding one.",
+  "schema_defs": {
+    "action_selection": "4fa6863238a30ae60c86f0a596f62f0bcc8258e2818758aa1560b20588b25234",
+    "assumption": "aa7739b16392dac1c9baa36d9128926b1955710bc10b1cf0513cfe32f5d194bc",
+    "authority": "79b0455bf936228fc88465d0f634df0ab4553b41748583e30aafe4bdf9d44410",
+    "calculation_receipt": "dd5e60fffb371efa13ac823cc53f4e367449c09e78827c1765e955d17f2ec3d1",
+    "capability_proof": "6fe81e3f97e1f255d3ad33ee91f366a61755501951959f8ba6737e7508f58361",
+    "capacity_envelope": "c0a77addee3e9630a9daccb78783ccea44ba122f7f6a24c48063bffe8dd68be3",
+    "capital_inputs": "716f6234180196090771ab8ebee559fc5ade1b40217e5d2efb7f798e4c8edd2a",
+    "cash_basis": "2498f0ce4cca54abb2ff65ac3f63a6ffd01f06dd4cd01c41f06f143ed8fa4871",
+    "cash_effect": "27bd2b7012f7b53108ded779bcad0ac5d793fc02001dda65926d33deec7da81b",
+    "cash_effect_kind": "cc562909f58dac36c9590905fd58582d5450ef5cf9642e87771ce83efee99ae5",
+    "compatibility": "51230193eeb3c6b51928641ff81f931b5cbb1783cd96428c61cbd72ba61e2b70",
+    "constraint": "0b555a9bb5ed82b529e20545ef82be547d89288c220e8f5d51df6ba70d96bb1f",
+    "constraint_kind": "b9847729cae372ee99f5c643c1f9e73b518560c518c102bf71afad411464eda0",
+    "constraint_status": "ae8b8edbb2aef4ee2e68a43f3ee2e264a98fd9f6c9641b9abd1ddc877df372be",
+    "corporate_action_basis": "2da44492a462d6d94cf67ed5f578bec599201d43b9c4173cd79db3f1aece5fdf",
+    "corporate_action_kind": "b5548ab4e79405bb378447a105a5f6395881beea3d8b34173955fb188e3be1a1",
+    "date": "5dfe7b68e9fbba1f2a12f725e17c4bf0f802fa459e6eb4418dcd2308ae17c5a6",
+    "decimal": "cfc0b861bc3a255bf730c894aeb6dfb4c9a645faf5f10021de3ef9728b42dd14",
+    "economic_term": "69347667aca9d99219d2a01506eda545d897f9c06f9d230ddf4f1acb4dea5822",
+    "economic_term_name": "e4bf1d91e04d996e6ddfe6f4e98ec615ddf6d14b52709291fd88b8a25ea1a70d",
+    "economic_term_status": "794e7b94480123387b0beef6bfea1e423af4d32474570eb36ab3f55b813a5fc9",
+    "evidence_array": "b271e2e1e9dac92be37fb19029ba5b66f5e938126d4ff31b5805bb2d780f81ba",
+    "evidence_ref": "b126bcb5bc2adc1738d04267afac35e423e82e2d10f04674c5caee07f28cf768",
+    "family_provenance": "a94fc49f424136d375eb6e3c2ba8cab237e1bf40f7b0f4e297349eefd71f2483",
+    "family_state": "47ef50ca345f00ec8f77b8d0c56e9cc066dda87b16fa46c4031cdaa35c24331f",
+    "financing_scenario": "3a20ca647dc74e14af082714b940604bbd714f64d076f495e2dbf36f47c40e9e",
+    "flow": "3f2c6bf70240e3b51b9dc5e0e528b3420cb5a2ba32425777c29f72fb0faa0d36",
+    "flow_certainty": "d0220b465f8e8c64801bc05af70bb6da1aec8303bcc12f6525e1f1d3f7e83372",
+    "flow_kind": "9d67f1e8a8d29882b50603d76b182d7d658532a9a1689dd58c617560db098f70",
+    "funding_period": "4a6e2e7990911d47b4e14fbf41511dd400b313c63e6983f8e5717f5b84f0b1a7",
+    "funding_schedule": "42428bf476c38837792a6fd99813c75a7ca339fa086ec2cb784e90b8e26340f3",
+    "generation_binding": "b5e5888900f63dc0365b81b1bdd621c6d620b41a1d48a90bf41eb287c5ce868b",
+    "identifier": "3c63260b79e84ee45869e7a918b2fa5af8552cc7a057737ff11df0b2a5d25d32",
+    "identifier_array": "33a9559fc10edf77241f4fb770b2eae18d736d4eb1702ff2e9846b8ea118c07c",
+    "input_family": "88e16d9d159b4b24f6185fdf39ba91fb5528a0e028892bd3afef2807caf5e3ff",
+    "input_schema": "50f238ea53ee4bede5774fe1fe34f380bf268f62c0c6a6ac61a22263f7ea2986",
+    "instrument": "b36578e5ccfaebe282f92b023d3be365d4a259ab4df36735f87ac9f240b694e4",
+    "instrument_kind": "de96ee25e7e071fb273038c8717da4df8578a9d521b7d72857142f671946986c",
+    "instrument_set": "d7140e6c54b90b4ee02497b6d3411b946e4bfee304196c8f17985869bc0fe102",
+    "instrument_status": "341a602ae93d4576e7444da6eba77d943971e8ca27794af5001bf11177c1d1db",
+    "nonempty_string": "9ac136edb99a2063b3091602181c8d2022fdccb5b514991319d58544c2e57e95",
+    "nullable_date": "3dc569e837e75f7c99e9ee7510199d491a40eb65fd10b66b4ebae25a091c53d8",
+    "nullable_decimal": "2c26c954933960c4945689d13bdca0868f18fef7f6297b7a94c284d25388e80c",
+    "nullable_identifier": "1c845eaae76f60b194b95a8c359e71ff26728649266382a772e96f938087cb88",
+    "nullable_input_schema": "f3c793295f1e74b1769082fda468250c2a33db3acac820a4540c18d4d3cc37d4",
+    "nullable_provenance": "ea21c39f4f92714e6d4924ac39537f10dc931cc7267b44585b4084effa8a6c74",
+    "nullable_quantity": "c31ef390b17f4f35eb13cbd59f5ea4b48e5260d501444f465aba837c4925a4f6",
+    "nullable_rate": "ccf3108b1568388cc7a912f90160450a8446153443715ad9768c0871fa5e6db8",
+    "nullable_scenario_id": "45837849b4e6be4d1e8cd31fbf5f85fe2d697c856862eaa055674a30de47fca9",
+    "nullable_sha256": "df77556eb80afa1d2c81759982888afcc5b8ccfb55e32ec78e5cd2b941478a95",
+    "nullable_string": "f090cb615c84d7324e2e4975c584267473e030c801e11713a3ec1d99192db7bd",
+    "nullable_timestamp": "a534a51f2b2bfd9cf011467404644c4a144f2472ec4cf9819252e291d1b76ca2",
+    "price_assumption": "aac7db4750616df8e00403afef6d58e4ceb2a71a4c14e9edc5e75daff18f101e",
+    "price_kind": "19f5f362fe68e8327cc3792b3ae87a6a4d716792601788c7b5a9a6acf56cf6ad",
+    "provenance": "6d140f099a6a42f0f3febdd810e9179572941f2ed29e6d0f57434043ab0c31b7",
+    "quantity": "c1580a7ab2bf4c1ca1a091a80ae5d4cd05c36c4069eb6fff196c26b203b9abf5",
+    "quantity_status": "999a57a1f8c3de6eeb3e409eaf6490bcdfaa86b0793326f54eb536a1513d7f25",
+    "rate": "633c6b8075949c7b3a02fa91a4ae272a1c8c01425a6eac69586ee321906c2941",
+    "resolution": "0e8204f0c5823400139960a7bd5794ade6a419d800906ab4fc938373a13ec8ab",
+    "resolution_method": "1318ed44dea48828d6a2b467a29fcd663a577a23be590bf7676ea243976e46b9",
+    "route_bound": "adba45cb69f5d6dd234dd287506c02ae5249bce38377f5325a04e8d537d84899",
+    "route_kind": "8c9de473aecfbe6aa24548fa64a4fa8f6ead7b2d4acecba21f71e77d1f5bbf22",
+    "route_status": "78eafe914454165cb360196c7f00828079765979b09c552d1806ddfdd19210e4",
+    "rule_class": "50b08e0ffb81a383b4a5eddfb44f22c73a504b4e57f12df291427d205198a9bd",
+    "rule_pack": "2ea6b05e1208057deee53c3e1ed8437469605a4466f8b47ed394676a1fe23950",
+    "rule_ref": "81014fba973d24d3847740d9f7d8d555e94d1ce90bab9f0961ded08283f773ab",
+    "safe_object": "8b10da0086878d179346b959aa6e9c94a0c5800f1cf9506ce33efbb96b576916",
+    "safe_property_name": "5a259d4731e52de02fd7320859c051fef33d820fbcce7ae2c766880c0f770707",
+    "safe_record_array": "40cc6d2c30bacb3b70a6764a2ad7ab4cbdbb9449be2f8e5e448e3787a974fc3a",
+    "safe_value": "81e51b5c1ce763feb0a74c254a44ca56c6697b7c61e9382b0d1324976ff0a0a8",
+    "scenario_id": "f92165d015747d8e57a6645f54f7f8c57d36797a3a79173bacc6e5419bde508d",
+    "scenario_view": "7c95ba9400915f46fd83bc539b1ccfbc41bc0328663a762a186b42377b89bf3a",
+    "settlement": "4a40cb6c2f05e6ef36fa7bf8b8311c1fdadf7d16ab341225a105a328f0c49ab1",
+    "sha256": "8c4647ad1e04c508be34065150c9b8fd69d1a20426bbc254a2f2c2c6182d60f5",
+    "share_basis": "73d187955a4804275e1a933404fe36a97ab4171887d0997ac098c24ba7b323de",
+    "share_basis_result": "156f3a67a660abb9b8c25d692eddef374281a40488b7f0c46217281ef104294c",
+    "share_basis_status": "631b92339c1621cf235823e960baa0192dd8fcbc5cdd3262f4e6e10d7857c382",
+    "share_observation_ref": "8042670ca10d7fa67b176405d7fc04bd2bcc591dc95a3aa8f4e935ee67bbe9e3",
+    "share_quantity_of": "ce436b87281cc8b6ac6ec864401f0bb0d268daa385280b575b7c257450d0d1f9",
+    "state_family": "08064f45c822251551b136a2dda0f694f27eb1dd3160e7184b8ae0bbfb9c36c2",
+    "state_id": "e16a9896a2ddee87f582db50051144e4516f682632155f0d0665c794051d9398",
+    "state_request": "ecabcf1614b76e5f865f709709d307a7a2cdfd4ed38a99718d12c8e0bd350283",
+    "stock_or_flow": "c53a22a8f0557fa789e1b6d9fbac8be22484eb6957a65c6c9cf84dd7bb815e46",
+    "string_array": "681004346c78d5f384b654c986b4eda8fea28010db3be7da70b19aa0080f3ff9",
+    "supply_envelope": "53c84bf1af38975fd91ddc9f207af765c38a6f83bb4f850a6f1fb0975ca6fafb",
+    "support": "26e396e5a12b8ef767b99c1bd4d65cb1a5fc062610a8c628d94092fbb814ca6e",
+    "term_fact_origin": "b849714c094a8276f5425b1a1c48398e51fbf910b4bbee3dc1ad15cb38126565",
+    "timestamp": "9947ea9789fb2a0b04dd6af05e53c6b745a43e768f2bc8e339b05ef45b53ad8c",
+    "unique_string_array": "822d2c4e6703eb393715480193efb615514ff80267f15d3455e52c66a235f824",
+    "unit": "b03cb56fb5a4fda2ba19541777117a9808f32864b8f8c8d2a85522879ea0a835",
+    "unknown": "e86600deffbdbb50d73d47b0419180093a3b537f7ec3bd071e9bf8c736341777",
+    "unknown_array": "1516521685a1aedf483414e275e184d03461c6a54001f8261fbd11fa3b041e60",
+    "unknown_resolution": "8e739599b542411ff27f7b396f7979b9fc20f0920987c1e8f3df24dc509e8a3f",
+    "usd_quantity": "3324e2963d46eb6cf2acf368d348d35f6a98505bb6d8815a649cdc739a711fcf",
+    "view_mode": "2d1148e6980c3bf6bce6ed471cd81c2fffc1c8acf826be49dfbb7cb8153c5b16",
+    "witness_allocation": "836d90214a73ba4e76f2f24d30e312f5c276dbac736fb5266dad4c7d17371a2c"
+  }
+}
