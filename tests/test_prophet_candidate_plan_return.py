@@ -364,7 +364,9 @@ function candidate(kind, ticker, planId) {
   const link = mk('button', 'pvs-plan-link', {'data-pvs-plan-target': 'pv-' + planId, type: 'button'});
   const en = mk('span', 'l-en'); en.textContent = 'View in Plans';
   const zh = mk('span', 'l-zh'); zh.textContent = '在计划中查看';
-  link.append(en, zh); rec.append(link); relation.append(rec);
+  const feedback = mk('p', 'pvs-note pvs-plan-feedback', {'role': 'status', 'aria-live': 'polite', 'aria-atomic': 'true'});
+  feedback.append(mk('span', 'l-en'), mk('span', 'l-zh'));
+  link.append(en, zh); rec.append(link, feedback); relation.append(rec);
   bodyEl.append(mk('span', 'pvs-chart-slot', {'data-pvs-chart': '1'}), relation);
   if (isTable) {
     const holder = mk('template', 'pvs-body-source'); holder.content.append(bodyEl);
@@ -736,6 +738,91 @@ assert.equal(other.row.isConnected, true, 'the row stayed live: only its identit
     )
 
 
+@pytest.mark.parametrize("kind,pre", [
+    ("pool", _PRE["grid"]), ("board", _PRE["grid"]),
+    ("today", _PRE["today"]), ("table", _PRE["table"]),
+])
+@pytest.mark.parametrize("failure,mutation", [
+    ("missing target", "origin.link.setAttribute('data-pvs-plan-target', 'pv-MISSING');"),
+    ("malformed target", "origin.link.setAttribute('data-pvs-plan-target', 'not-a-plan');"),
+    ("withheld target", "targetCard.setAttribute('hidden', '');"),
+    ("tier-hidden target", "targetCard.classList.add('mx-tier-hidden');"),
+    ("invalid lifecycle", "targetCard.setAttribute('data-life', 'unknown');"),
+    ("not a model record", "targetCard.setAttribute('data-record-only', '0');"),
+    ("missing owner", "window.USProphetLife = null;"),
+    ("missing method", "window.USProphetLife = {};"),
+    ("non-callable method", "window.USProphetLife = {selectPlan: true};"),
+    ("rejected selection", "window.USProphetLife = {selectPlan: () => false};"),
+    ("throwing owner", "window.USProphetLife = {selectPlan: () => {throw new Error('unavailable');}};"),
+])
+def test_unavailable_plan_keeps_candidate_context_and_retries_in_place(kind, pre, failure, mutation):
+    """A failed native target selection must not spend the reader's current context."""
+    _run(
+        "const origin = origins[%r];\n" % kind
+        + """
+fire(origin.trigger); await flush();
+origin.link.focus({preventScroll: true});
+dialogEl().scrollTop = 240;
+const targetId = origin.link.getAttribute('data-pvs-plan-target');
+const targetCard = document.getElementById(targetId);
+const targetLife = targetCard.getAttribute('data-life');
+const owner = window.USProphetLife;
+const feedback = origin.body.querySelector('.pvs-plan-feedback');
+const before = {mode: window.USProphetSource.get(), view: window.USStockTable._getView(),
+  inits: stockTableInitCalls, scroll: scrollState.y, table: JSON.stringify(tableState),
+  body: origin.body.parentNode, controls: origin.body.querySelectorAll('button').length};
+"""
+        + mutation
+        + """
+for (let attempt = 0; attempt < 2; attempt++) {
+  fire(origin.link); await flush();
+  assert.equal(document.body.dataset.pvsPlanLinkResult, 'missing');
+  assert.equal(dialogEl().open, true, 'failed Plan hop must keep the candidate open');
+  assert.equal(origin.body.parentNode, before.body, 'keep the same candidate body');
+  assert.equal(window.USProphetSource.get(), before.mode, 'keep source mode');
+  assert.equal(window.USStockTable._getView(), before.view, 'keep grid/table view');
+  assert.equal(document.activeElement, origin.link, 'do not steal button focus');
+  assert.equal(dialogEl().scrollTop, 240, 'keep dialog reading position');
+  assert.equal(scrollState.y, before.scroll, 'keep page reading position');
+  assert.equal(stockTableInitCalls, before.inits, 'do not reinitialize the table');
+  assert.equal(JSON.stringify(tableState), before.table, 'keep filters and sorting');
+  assert.equal(returnBtns().length, 0, 'an unsuccessful hop earns no return');
+  assert.equal(window.PVSetupReturn.available(), false);
+  assert.equal(feedback.getAttribute('role'), 'status');
+  assert.equal(feedback.getAttribute('aria-live'), 'polite');
+  assert.equal(feedback.getAttribute('data-state'), 'unavailable');
+  assert.ok(feedback.querySelector('.l-en').textContent.includes('not available'));
+  assert.ok(feedback.querySelector('.l-zh').textContent.includes('无法'));
+  assert.equal(origin.body.querySelectorAll('.pvs-plan-feedback').length, 1);
+  assert.equal(origin.body.querySelectorAll('button').length, before.controls);
+}
+// Recover through the SAME still-open button; no dialog/source/view reset.
+origin.link.setAttribute('data-pvs-plan-target', targetId);
+targetCard.removeAttribute('hidden');
+targetCard.classList.remove('mx-tier-hidden');
+targetCard.setAttribute('data-life', targetLife);
+targetCard.setAttribute('data-record-only', '1');
+window.USProphetLife = owner;
+fire(origin.link); await flush();
+assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
+assert.equal(feedback.textContent, '');
+assert.equal(feedback.getAttribute('data-state'), null);
+assert.equal(dialogEl().open, false);
+assert.equal(window.USProphetSource.get(), 'plans');
+assert.equal(document.activeElement, targetCard);
+assert.equal(returnBtns().length, 1);
+assert.equal(window.PVSetupReturn.run(), true);
+assert.equal(window.USProphetSource.get(), before.mode);
+assert.equal(window.USStockTable._getView(), before.view);
+assert.equal(origin.body.parentNode, before.body);
+assert.equal(scrollState.y, before.scroll);
+assert.equal(stockTableInitCalls, before.inits);
+assert.equal(JSON.stringify(tableState), before.table);
+""",
+        pre=pre,
+    )
+
+
 def test_direct_plan_visit_offers_no_return_and_a_failed_hop_inherits_no_stale_context():
     """Plans reached without a candidate detail is a direct visit; a plan link whose exact
     target is missing claims no journey; and an explicit unrelated visit ends a live one."""
@@ -757,11 +844,11 @@ assert.equal(document.body.dataset.pvsPlanLinkResult, 'missing');
 assert.equal(returnBtns().length, 0, 'no confirmed target, so no journey');
 assert.equal(window.PVSetupReturn.available(), false);
 
-// a real hop from a real candidate detail: the shipped owner had already moved to Plans
+// The failed hop never left the candidate. Retry its exact still-open detail.
+assert.equal(window.USProphetSource.get(), 'candidates');
+assert.equal(dialogEl().open, true);
 origin.link.setAttribute('data-pvs-plan-target', 'pv-BOAR-BULL-20260810');
-fire(srcBtn('cand'));
-fire(origin.trigger);
-assert.equal(dialogEl().open, true, 'the retried hop must start from a live candidate detail');
+assert.equal(dialogEl().open, true, 'the retried hop must keep the live candidate detail');
 fire(origin.link);
 assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
 assert.equal(returnBtns().length, 1);

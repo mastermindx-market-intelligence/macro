@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "5370b9f51740fe87d25da33d46552cd33b628596",
+  "source_revision": "63327214997788b069ce7ae5899e03c467cecda4",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1412,7 +1412,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
+      "sha256": "6f89a1209fd765f13ce75beae2fb59a42f378fa552c77a3994365b1bb7960432",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1440,7 +1440,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-withdrawn-en-dark-390.png",
-      "sha256": "7e90042418225c828b9b2e42a4e0923fa6b2919d69ba8705f9cd0a6db536d7c7",
+      "sha256": "13ec3f890f5f2ddec259876337c02d0c55fe4649f86c8adf975fcf969295fddd",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1496,7 +1496,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
+      "sha256": "cf76b5116a47408bf08a80fc9fa96aca4cc7d7b0e2f0ed0df1e28c5904ba2e24",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1994,7 +1994,7 @@
   "pr_source_equivalence": {
     "note": "All 68 screenshots and five contact sheets were genuinely regenerated with the canonical tests/probe_ew_p4_descriptive_ui_browser.py at source_revision, in local anonymous synthetic Playwright contexts. The render inputs below were checked against the committed source before and after capture. The pending evidence-only commit retains those exact blobs. Prophet includes newly consumed by the dashboard are bound explicitly. This is not production or authenticated product acceptance.",
     "pr_branch": "claude/ssd-prophet-opportunity-system-20261015-5ba805642dd9aece",
-    "pr_parent_of_evidence_commit": "5370b9f51740fe87d25da33d46552cd33b628596",
+    "pr_parent_of_evidence_commit": "63327214997788b069ce7ae5899e03c467cecda4",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2028,8 +2028,8 @@
       },
       {
         "path": "templates/_prophet_page.css.j2",
-        "blob_at_source_revision": "f73b33b9dcae329f0c97ae7ee5e82aebdcb7638a",
-        "blob_on_pr_branch": "f73b33b9dcae329f0c97ae7ee5e82aebdcb7638a",
+        "blob_at_source_revision": "2fa1cf65869b131a8960e131be1eaf585ba3ee3f",
+        "blob_on_pr_branch": "2fa1cf65869b131a8960e131be1eaf585ba3ee3f",
         "equal": true
       },
       {
@@ -2052,8 +2052,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "65375f83e2812252f3dc64594c63fdc3d984af83",
-        "blob_on_pr_branch": "65375f83e2812252f3dc64594c63fdc3d984af83",
+        "blob_at_source_revision": "abaea55f539083437baee59bc6363e6efe29d1e4",
+        "blob_on_pr_branch": "abaea55f539083437baee59bc6363e6efe29d1e4",
         "equal": true
       },
       {
@@ -2198,8 +2198,8 @@
     "all_equal": true
   },
   "previous_capture": {
-    "source_revision": "915af4624daf28c25ce08bb17270918d035cbbd2",
-    "receipt_git_blob": "8b5a92d64755b09abfc2e4fc8704b2c62ce185d2",
-    "receipt_sha256": "cdf80473f7dd29be21a9e8de7997d27247c568593fdf1cd8846e3a00c6c0c3e6"
+    "source_revision": "5370b9f51740fe87d25da33d46552cd33b628596",
+    "receipt_git_blob": "d7fa9678106c12d0a7a1a1bf52c0ccb5c3127543",
+    "receipt_sha256": "d4ab766108dc1d819b6145e683c9c6878edbcfab068054c0b38a88c69712d5ca"
   }
 }

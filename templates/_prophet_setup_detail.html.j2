@@ -138,6 +138,7 @@
             <p>{{ t('Recorded date','记录日期') }} {{ value(plan.get('recorded_at')) }}</p>
             <p>{{ t('Plan as of','计划截至') }} {{ value(plan.get('plan_asof')) }}</p>
             <button type="button" class="pvs-plan-link" data-pvs-plan-target="pv-{{ (plan.get('id') or '')|e }}"><span class="l-en">View in Plans</span><span class="l-zh">在计划中查看</span></button>
+            <p class="pvs-note pvs-plan-feedback" role="status" aria-live="polite" aria-atomic="true"><span class="l-en"></span><span class="l-zh"></span></p>
           </div>
           {% endfor %}
           <p class="pvs-note">{{ t('Dates describe sessions or calendar days. Publication / first-visible time not supplied. A historical signal or record status does not establish current entry availability.','日期表示交易日或日历日。未提供发布／首次可见时间。历史信号或记录状态不代表当前可入场。') }}</p>

@@ -20877,9 +20877,33 @@ if (document.readyState === 'loading') {
     var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
     if (!button) return;
     var target = button.getAttribute('data-pvs-plan-target');
+    var card = document.getElementById(target);
+    var record = button.closest('.pvs-plan-rec');
+    var feedback = record && record.querySelector('.pvs-plan-feedback');
+    var feedbackEn = feedback && feedback.querySelector('.l-en');
+    var feedbackZh = feedback && feedback.querySelector('.l-zh');
+    if (feedback) feedback.removeAttribute('data-state');
+    if (feedbackEn) feedbackEn.textContent = '';
+    if (feedbackZh) feedbackZh.textContent = '';
+    /* Resolve through the existing lifecycle/access owner BEFORE leaving the
+       candidate. A missing/withheld record must not close the detail, switch
+       the source or reset the reader's table view, focus or reading position. */
+    var selected = false;
+    if (card && target && target.indexOf('pv-') === 0 &&
+        window.USProphetLife && typeof window.USProphetLife.selectPlan === 'function') {
+      try { selected = window.USProphetLife.selectPlan(card) === true; } catch(e) {}
+    }
+    if (!selected) {
+      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
+      document.body.dataset.pvsPlanLinkResult='missing';
+      if (feedback) feedback.setAttribute('data-state', 'unavailable');
+      if (feedbackEn) feedbackEn.textContent = 'This plan is not available in the current view. Your candidate is still here; continue reviewing it or try again.';
+      if (feedbackZh) feedbackZh.textContent = '当前视图无法打开此计划。候选详情仍保留在此处，您可继续查看或重试。';
+      return;
+    }
     var dialog = document.getElementById('pv-setup-dialog');
-    /* Snapshot BEFORE the existing .pvs-close releases the live candidate source;
-       nothing is claimed until the exact target is confirmed further down. */
+    /* The exact native target is confirmed. Snapshot BEFORE the existing
+       .pvs-close releases the live candidate source. */
     var pending = window.PVSetupReturn ? window.PVSetupReturn.snapshot({
       mode: window.USProphetSource ? window.USProphetSource.get() : null,
       view: window.USStockTable && window.USStockTable._getView ? window.USStockTable._getView() : null,
@@ -20889,15 +20913,6 @@ if (document.readyState === 'loading') {
       if (close) close.click();
     }
     if (window.USProphetSource) window.USProphetSource.set('plans');
-    var card = document.getElementById(target);
-    if (!card || !target || target.indexOf('pv-') !== 0 ||
-        !window.USProphetLife || !window.USProphetLife.selectPlan(card)) {
-      /* No confirmed target, so no journey — a hop into Plans must never inherit a
-         stale return from an earlier candidate. */
-      if (window.PVSetupReturn) window.PVSetupReturn.abandon();
-      document.body.dataset.pvsPlanLinkResult='missing';
-      return;
-    }
     if (card.classList.contains('sm-hidden')) card.classList.remove('sm-hidden');
     if (card.classList.contains('sm-reveal')) card.classList.remove('sm-reveal');
     card.setAttribute('tabindex','-1');

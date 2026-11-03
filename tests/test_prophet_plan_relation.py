@@ -296,6 +296,12 @@ def test_setup_detail_renders_related_security_record():
     assert "Plan as of 计划截至 2026-08-16" in records[0].get_text(" ", strip=True)
     button = records[0].select_one(".pvs-plan-link")
     assert button["data-pvs-plan-target"] == "pv-LFUS-BULL-20260810"
+    feedback = records[0].select(".pvs-plan-feedback")
+    assert len(feedback) == 1
+    assert feedback[0]["role"] == "status" and feedback[0]["aria-live"] == "polite"
+    assert feedback[0]["aria-atomic"] == "true" and not feedback[0].has_attr("hidden")
+    assert feedback[0].get_text(strip=True) == ""
+    assert feedback[0].select_one(".l-en") and feedback[0].select_one(".l-zh")
     text = section.get_text(" ", strip=True)
     assert "It is not this candidate's plan and not a position you hold." in text
     assert "这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。" in text
@@ -394,6 +400,7 @@ function element(attrs, classes=[]) {
     removeAttribute(name){delete this.attrs[name];},
     addEventListener(name,fn){this.listeners[name]=fn;},
     querySelectorAll(){return [];},
+    querySelector(){return null;},
     closest(){return null;},
   };
 }
@@ -427,7 +434,10 @@ const elements={'us-standouts':panel,'us-src-toggle':toggle,'us-life-grid':grid,
   'pv-LFUS-BULL-20260810':card,'pv-LFUS-BULL-20260801':sibling};
 global.document={body:{dataset:{}},listeners:{},getElementById:id=>elements[id]||null,
   addEventListener(name,fn){this.listeners[name]=fn;}};
-global.window={getComputedStyle:row=>({display:visible(row)?'flex':'none'})};
+// Computed display is the row's own value, even under a display:none source block.
+// Native #us-life-grid lifecycle CSS also reveals matching .sm-hidden records.
+global.window={getComputedStyle:row=>({display:!withheld &&
+  panel.getAttribute('data-lifef')===row.getAttribute('data-life')?'flex':'none'})};
 global.location={pathname:'/us_stocks.html',search:'?foo=keep&life=resolved',hash:''};
 global.history={replaceState(_a,_b,url){historyCalls.push(url);location.search=url.slice(url.indexOf('?'));}};
 ''' + lifecycle + navigation + r'''
@@ -469,11 +479,12 @@ def test_view_in_plans_rejects_unavailable_or_malformed_targets_without_filter_o
     _run_plan_navigation(setup + r'''
 activate();
 assert.equal(document.body.dataset.pvsPlanLinkResult,'missing');
-assert.equal(panel.getAttribute('data-prophet-src'),'plans'); // existing missing-target behavior
+assert.equal(panel.getAttribute('data-prophet-src'),'candidates', 'unavailable target keeps its source');
+assert.equal(dialog.open,true, 'unavailable target keeps the candidate detail open');
 assert.equal(panel.getAttribute('data-lifef'),'resolved');
 assert.deepEqual(historyCalls,[]);
 assert.equal(focused,null);
-assert.deepEqual(effects,[['close']]);
+assert.deepEqual(effects,[], 'no close, focus or scroll on failure');
 assert.equal(card.classList.contains('sm-hidden'),true);
 ''')
 

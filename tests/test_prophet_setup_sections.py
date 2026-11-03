@@ -78,7 +78,7 @@ const sectioned = (c, names, auditOpen) => {
     if (name === 'sources') {
       const audit = mk('details', 'pvs-audit', auditOpen ? {open: ''} : null);
       const summary = mk('summary'); summary.textContent = 'Evidence & source details';
-      audit.append(summary, section, c.link);   // nested once — no duplicate control or content
+      audit.append(summary, section, c.link.closest('.pvs-plan-rec') || c.link); // same native record + feedback
       c.audit = audit;
       group.append(audit);
     } else {
@@ -125,7 +125,8 @@ def test_tabs_exist_only_after_the_native_dialog_opens_with_correct_aria():
 assert.equal(tabsBar(), null, 'no generated navigation outside the open dialog');
 assert.equal(origin.body.querySelectorAll('[data-pvs-section][hidden]').length, 0,
              'no-JS: every group is visible');
-assert.equal(origin.body.querySelectorAll('[role]').length, 0, 'no-JS: no generated roles');
+assert.deepEqual(origin.body.querySelectorAll('[role]').map(n => n.getAttribute('role')), ['status'],
+                 'no-JS: only the native feedback live region; no generated navigation roles');
 assert.equal(origin.body.querySelectorAll('[aria-selected],[aria-labelledby],[aria-controls]').length, 0);
 assert.equal(origin.body.querySelectorAll('[data-pvs-section][id]').length, 0, 'no-JS: no temporary ids');
 assert.equal(origin.body.querySelectorAll('[data-pvs-section]').length, 4, 'fixture control: four groups');
@@ -476,7 +477,8 @@ assert.equal(audit2.hasAttribute('open'), true, 'an initially open disclosure go
     )
 
 
-def test_plan_relation_stays_operable_from_sources_and_return_restores_section():
+@pytest.mark.parametrize("fail_first", [False, True])
+def test_plan_relation_stays_operable_from_sources_and_return_restores_section(fail_first):
     """From the Sources panel the exact Plan hop still works through the shipped owner, and
     returning to the SAME candidate reopens that body with Sources selected again — with
     its source disclosure shown immediately, exactly as the first selection did: one
@@ -499,7 +501,28 @@ assert.equal(sourcePanel.querySelector('details.pvs-audit').hasAttribute('open')
              'the hop starts from a Sources panel whose details are already shown');
 origins.board.link.focus();                      // the reader is on the exact Plan-link control
 dialogEl().scrollTop = 177;                      // ... at their own dialog reading position
+""" + ("""
+const targetId = origin.link.getAttribute('data-pvs-plan-target');
+origin.link.setAttribute('data-pvs-plan-target', 'pv-UNAVAILABLE');
+const feedback = sourcePanel.querySelector('.pvs-plan-feedback');
+for (let attempt = 0; attempt < 2; attempt++) {
+  fire(origin.link); await flush();
+  assert.equal(document.body.dataset.pvsPlanLinkResult, 'missing');
+  assert.equal(dialogEl().open, true);
+  assert.equal(sectionOf(), 'sources');
+  assert.equal(visiblePanels()[0], sourcePanel);
+  assert.equal(origin.audit.hasAttribute('open'), true);
+  assert.equal(document.activeElement, origin.link);
+  assert.equal(dialogEl().scrollTop, 177);
+  assert.equal(window.USProphetSource.get(), 'candidates');
+  assert.equal(returnBtns().length, 0);
+  assert.equal(feedback.getAttribute('data-state'), 'unavailable');
+  assert.ok(feedback.querySelector('.l-en').textContent.includes('not available'));
+}
+origin.link.setAttribute('data-pvs-plan-target', targetId);
+""" if fail_first else "") + """
 fire(origins.board.link);                        // View in Plans, from inside the panel
+assert.equal(origin.body.querySelector('.pvs-plan-feedback').textContent, '');
 assert.equal(document.body.dataset.pvsPlanLinkResult, 'ok');
 assert.equal(window.USProphetSource.get(), 'plans');
 assert.equal(window.PVSetupReturn.available(), true);
