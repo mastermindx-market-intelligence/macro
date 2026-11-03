@@ -1,0 +1,23 @@
+{
+  "head": "11c6b0ff6ea09b339ecf357f8b696be292329eee",
+  "accepted_main": "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_relationship_m2_envelope.py",
+    "tests/test_gmi_explorer_model.py",
+    "-k",
+    "read_edges or relationship_m2_envelope",
+    "-q"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 4.398,
+  "completed_at": "2026-11-03T03:28:57.818722+00:00",
+  "log": "docs/evidence/news-cockpit-20261102/accepted-main-focus-20261103.log.gz",
+  "log_sha256": "0aa3ce1c991de14e534671f51127d4efd65b8f66d678ed1219d54dcf78a1f521",
+  "scope": "Focused verification of the accepted main relationship envelope and read_edges boundary after the exact base moved; full GMI pages still require full-tree hosted CI.",
+  "log_encoding": "gzip; log_sha256 addresses exact uncompressed bytes",
+  "stored_log_sha256": "ac719e4d1b11858348436b814ccb77dde614dd62357cc4ca749d156ff46fefb5",
+  "failure_classification": "Required relationship fixtures are absent from the sparse checkout (m2_inputs panel/leaves, m2 judging, m2_recall reports and M1 observation package). Preserve the red result; not accepted as full GMI verification."
+}

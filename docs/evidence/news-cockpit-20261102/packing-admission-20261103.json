@@ -1,0 +1,40 @@
+{
+  "schema": "news.measured-ci-admission.v1",
+  "recorded_at": "2026-11-03T03:38:27.376023+00:00",
+  "measured_head": "11c6b0ff6ea09b339ecf357f8b696be292329eee",
+  "accepted_main": "9f33cc8ab9a9eab438405167b5f6a4e1e3f061ed",
+  "closure_findings": {},
+  "measurement_receipt": "canonical-clean-20261103.json",
+  "main_manifest_comparison_receipt": "packing-main-manifest-comparison-20261103.json",
+  "admitted_change": {
+    "probe": "scripts/build_free_content.py",
+    "axis": "max_weight",
+    "before": 5877,
+    "after": 5881,
+    "increase": 4
+  },
+  "cause": "Retained News tests increase only collector-registry from 17 to 27 planning units; the previous six-unit margin covers the rest. All probe-selected IDs remain identical.",
+  "main_manifest_comparison_is_historical_source_run": false,
+  "test_ast_only_executable_change": "PACKING_PROBES build_free_content max_weight 5877 -> 5881",
+  "preserved": {
+    "job_ceilings": [
+      137,
+      138,
+      130
+    ],
+    "other_weight_ceilings": [
+      5886,
+      5636
+    ],
+    "max_packs": 10,
+    "all_manifest_jobs": 378,
+    "all_commands_and_suites": true,
+    "selectors": true,
+    "observed_duration_overrides": true,
+    "runtime_limits": true,
+    "daily_workflow_limit_bytes": 487000,
+    "daily_workflow_actual_bytes": 482604
+  },
+  "test_source_sha256": "4346250fd658f1430dff29338eb8d3fef010bccf13da48a3da5dac58c5fbec76",
+  "release_authority": "No technical review, formal approval, merge or deployment acceptance is conveyed."
+}

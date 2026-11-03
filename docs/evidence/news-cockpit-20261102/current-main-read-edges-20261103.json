@@ -1,0 +1,17 @@
+{
+  "head": "11c6b0ff6ea09b339ecf357f8b696be292329eee",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_gmi_explorer_model.py",
+    "-k",
+    "read_edges",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 11.74,
+  "log": "docs/evidence/news-cockpit-20261102/current-main-read-edges-20261103.log",
+  "log_sha256": "730451a46de6873b7381449342407ca793e7f54f38cc6c75b21f8fe907f650f6",
+  "scope": "Exact current-head read_edges boundary tests only; complete GMI integration remains a hosted full-tree gate."
+}

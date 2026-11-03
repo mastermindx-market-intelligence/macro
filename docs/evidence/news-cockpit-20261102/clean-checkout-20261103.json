@@ -1,0 +1,12 @@
+{
+  "head": "11c6b0ff6ea09b339ecf357f8b696be292329eee",
+  "root": "/tmp/news-nov3-clean-ci-11c6b0ff6ea0",
+  "purpose": "Temporary read-only CI comparison at the same exact commit. Original source workspace and managed publisher remain authoritative. No commits or source edits in this checkout.",
+  "sparse_patterns_sha256": "d5010fbdf5e09917781e9d294628325600af9b9f534b664b52563be0d4602c18",
+  "ignored_aapl_present": false,
+  "original_ignored_aapl_untouched": true,
+  "materialized": true,
+  "index_matches_head": true,
+  "tracked_worktree_clean": true,
+  "setup_note": "git sparse-checkout set after --no-checkout set patterns only; explicit read-tree -mu HEAD materialized the initially empty comparison directory before any CI measurement."
+}

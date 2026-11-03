@@ -5435,7 +5435,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_886),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_877),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_881),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_636),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5444,6 +5444,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-03 News #9612 composition with accepted main 9f33cc8a:
+    clean exact-commit planner on 11c6b0ff6ea0, inventory 80b105c14411,
+    passes full exclusive closure over the 378-job registry. It measures
+    index136/5852, free-content137/5881 and plan-book129/5604, ten packs.
+    The incoming-main manifest on the SAME candidate source/inventory
+    measures 5842/5871/5594 with identical selected IDs; this is not a
+    historical main-source run. The only step/weight delta is the retained
+    News collector-registry coverage, 17 -> 27 estimator units. Existing
+    free-content margin covers six of those ten units: fund only its four
+    measured excess units, 5877 -> 5881, with no padding. Keep index/plan
+    weights, all job-count/pack ceilings, commands, selectors, duration
+    overrides and runtime limits unchanged. The separate daily.yml cap
+    remains 487000 bytes (actual 482604). The original ignored AAPL sample
+    is preserved; the clean checkout has no missing tracked dependencies.
+    Evidence: docs/evidence/news-cockpit-20261102/canonical-clean-20261103.json
+    and packing-main-manifest-comparison-20261103.json. These weights are
+    deterministic planning units, not measured execution durations.
 
     2026-11-02 News #9612 composition with main b4a0ae4e: actual
     372-job registry, all seven additive shared path fields preserved.
