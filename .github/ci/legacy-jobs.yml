@@ -6112,6 +6112,15 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -14598,6 +14607,10 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "templates/_prophet_card.html.j2"
+      - "templates/_track_record_dlg.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/sector_central_china.html.j2"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -14635,6 +14648,10 @@ jobs:
       - "site/factordata/china_standouts.json"
       - "tests/test_china_standout_track.py"
       - "tests/test_cn_board_lane_gate.py"
+      - "tests/test_china_prophet_shadow.py"
+      - "tests/test_cn_board_unified_grid.py"
+      - "templates/_cn_prophet_peer_context.html.j2"
+      - "templates/china.html.j2"
       - "tests/test_cn_entry_price_integrity.py"
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
@@ -14650,13 +14667,15 @@ jobs:
         # (exit 2) — locally invisible because dev envs carry it, and the sibling jobs that
         # import the builder (e.g. unrun-picks-boards) get it transitively via jinja2. With
         # it added, every suite in this job passes in a from-scratch minimal venv.
-        run: pip install pytest pandas numpy pyarrow pyyaml markupsafe
+        run: pip install pytest pandas numpy pyarrow pyyaml markupsafe jinja2
       - name: SA-W2 CN standout audit tests
         run: python -m pytest tests/test_cn_standout_audit.py tests/test_china_standout_track.py -v -q
       - name: CN entry-price integrity (corrupt-bar gate, PIT latch, fail-closed lane — PR 5000)
         run: python -m pytest tests/test_cn_entry_price_integrity.py -q
       - name: CN board-append lane gate (fail-closed CN_LANE — board/ripening/audit/event-latch)
         run: python -m pytest tests/test_cn_board_lane_gate.py -q
+      - name: A-share Prophet peer participation and bilingual disclosure
+        run: python -m pytest tests/test_china_prophet_shadow.py tests/test_cn_board_unified_grid.py -k peer -q
 
   ci-control-plane-contracts:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -22829,6 +22848,15 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -33177,6 +33205,14 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -33775,6 +33811,15 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -35250,6 +35295,14 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py

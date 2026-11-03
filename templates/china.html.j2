@@ -3390,13 +3390,20 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {%- if _cn_v2 %}{%- set _shelf_rows = _shelf_rows + [
           {'tone':'info', 'k':('Glowing','发光'),'v':('A card below can score higher — it missed one of the four above, not the ranking; its chip says which.','下方的卡片分数可能更高 — 那是没通过上面某一条，而不是排名更靠后；其标签会写明是哪一条。')},
         ] -%}{%- endif %}
+      {% set _weights = (setups.get('ranking') or {}).get('formula_points') or {} %}
+      {% set _weight_labels = [('signal','signal','信号'),('entry','entry','入场'),('runway','runway','上行空间'),('bottom_quality','bottom quality','底部质量'),('reversal_member','reversal','反转'),('theme_timing','theme timing','主题时机')] %}
+      {% set _formula = namespace(en=[], zh=[]) %}
+      {% for key, en, zh in _weight_labels if _weights.get(key) is number %}
+        {% set _ = _formula.en.append(en ~ ' ' ~ _weights[key] ~ '%') %}
+        {% set _ = _formula.zh.append(zh ~ _weights[key] ~ '%') %}
+      {% endfor %}
       {{ lens.lens(
         kind='define', ill=lens.ILL_SHELF,
         kick=('What earns a slot','入选条件'),
         title=('Only the ready ones','只放已就绪的'),
         rows=_shelf_rows,
         body=('Priority 0-100 ranks <b>how ready</b> a name is. It is not a win rate and not a return forecast. Broader and blocked names stay below, on demand.','优先级 0-100 衡量的是<b>就绪程度</b>，既不是胜率，也不是收益预测。更多候选与受阻标的可在下方按需展开。'),
-        receipt=('signal 35% · entry 25% · runway 20% · bottom quality 10% · deep-reversal 10% · forward record still accruing','信号35% · 入场25% · 上行空间20% · 底部质量10% · 深度反转10% · 前瞻记录仍在积累')) }}
+        receipt=((_formula.en|join(' · ') or 'Weights unavailable for this publication') ~ ' · Forward record accruing', (_formula.zh|join(' · ') or '本期权重不可用') ~ ' · 前瞻记录仍在积累')) }}
       {# W8-E: grid/table view toggle #}
       <span class="st-view-toggle" id="st-view-toggle" role="group" data-tip-en="Switch between grid and table view" data-tip-zh="切换卡片视图与表格视图">
         <button id="st-btn-grid" aria-selected="true" onclick="StockTable._setView('grid')">⊞ <span class="l-en">Grid</span><span class="l-zh">卡片</span></button>
@@ -3418,6 +3425,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <span class="muted" style="font-size:10.5px;display:block;margin-top:2px"><span class="l-en">{{ _do.get('reason','') }}</span><span class="l-zh">{{ _do.get('reason_zh', _do.get('reason','')) }}</span></span>
     </div>
     {% endif %}
+    {% if setups.get('ranking') %}{% include "_cn_prophet_peer_context.html.j2" %}{% endif %}
     {# ── W8-E: count chips row (live-updated by JS when in table mode) ── #}
     <div id="st-count-chips" style="display:none"></div>
 
@@ -3518,7 +3526,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {# The key to the grid, stated ONCE (Law 4: a constant belongs in the header, not on
        every row). It is the only thing standing between the reader and 111 cards. #}
     {%- if _cn_v2 and _entry_rows and _more_lane %}
-    <p class="cn-gridkey"><span class="cn-gridkey-dot" aria-hidden="true"></span>{{ t('Glowing = act today. The rest are real signals — each says what is holding it.', '发光卡＝今天可动手。其余同样是真实信号 — 每张都写明卡在哪一步。') }}</p>
+    <p class="cn-gridkey"><span class="cn-gridkey-dot" aria-hidden="true"></span>{{ t('Glow marks a featured setup. Check its entry window and peer evidence.', '发光代表精选形态。请核对入场窗口及同业证据。') }}</p>
     {% endif %}
     <div class="nbgrid" data-showmore-rows="3">
     {% for _mr in _mrg %}
@@ -3556,6 +3564,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% set _nmp = (n.name or n.ticker).split(' / ') %}
       {% set _mpkt = n.get('microstructure') or (cn_micro_by_ticker.get(n.ticker) if cn_micro_by_ticker else none) %}
       {% set _fl = namespace(rows=[]) %}
+      {% set _peer = n.get('peer_context') or {} %}
+      {% if _peer.get('as_of') == setups.get('as_of') and _peer.get('interpretation') == 'falling_watch' %}
+        {% set _fl.rows = _fl.rows + [('The stock made a new 20-session closing low or fell over both 5 and 20 sessions. Price has yet to confirm the technical turn.', '该股创20日收盘新低，或5日及20日均下跌。价格尚未确认技术转向。')] %}
+      {% endif %}
       {% if c %}{% for cau in (c.cautions or []) %}{% set _z = c.cautions_zh[loop.index0] if (c.cautions_zh and c.cautions_zh|length > loop.index0) else cau %}{% set _fl.rows = _fl.rows + [(cau, _z)] %}{% endfor %}{% endif %}
       {% if n.extension and n.extension.extended %}{% set _fl.rows = _fl.rows + [('Already ran a lot — chase risk', '已经大涨 — 追高风险')] %}{% endif %}
       {% if _mpkt and (_mpkt.get('chase_veto') or {}).get('flag') %}{% set _fl.rows = _fl.rows + [('Chase veto — recent spike (CN-SYS-R3)', '追涨否决 — 近期涨幅过大（CN-SYS-R3）')] %}{% endif %}
@@ -3702,8 +3714,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         'featured': _is_feat, 'marks': _mk_slot,
         'edge': _edge_txt,
         'edge_label_en': 'Priority', 'edge_label_zh': '优先级',
-        'edge_tip_en': 'China Prophet priority 0–100 — signal 35% · entry 25% · runway 20% · bottom quality 10% · reversal-sleeve membership 10%. Transparent readiness rank; not a win probability or return forecast.',
-        'edge_tip_zh': '中国 Prophet 优先级0–100 — 信号35% · 入场25% · 上行空间20% · 底部质量10% · 反转组合成员10%。透明就绪度排序；不是胜率或收益预测。',
+        'edge_tip_en': 'Setup priority. ' ~ (_formula.en|join(' · ') or 'Weights unavailable for this publication.'),
+        'edge_tip_zh': '形态优先级。' ~ (_formula.zh|join(' · ') or '本期权重不可用。'),
         'stage': _stage_n, 'spark': n.get('spark_svg'),
         'zone_kind': _zk,
         'zone_lo': ('%.2f'|format(_bz.low)) if (_bz and _bz.low is not none) else none,

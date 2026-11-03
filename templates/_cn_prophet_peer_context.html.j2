@@ -1,0 +1,68 @@
+{# The row and group identities come from the settled Prophet publication. #}
+{% set peer_text = {
+    'stock_falling': ('Stock still falling', '个股仍在下跌'),
+    'group_leader': ('Leading with peers', '个股与同业同步领涨'),
+    'isolated_leader': ('Leading despite weak peers', '个股逆同业走强'),
+    'emerging_rotation': ('Peer participation turning up', '同业参与度回升'),
+    'peers_weakening': ('Peer participation weakening', '同业参与度下降'),
+    'mixed': ('Mixed evidence', '信号分化'),
+    'benchmark_unavailable': ('Benchmark history incomplete', '基准历史不足'),
+    'stock_unavailable': ('Stock history incomplete', '个股历史不足'),
+    'insufficient_coverage': ('Peer coverage incomplete', '同业覆盖不足')
+} %}
+{% set reading = {
+  'falling_watch': ('Stock still falling', '个股仍在下跌'),
+  'unavailable': ('Evidence incomplete', '证据不足'),
+  'theme_only': ('Theme evidence only', '仅有主题证据'),
+  'risk_off_leader': ('Leading with peers in a risk-off market', '市场避险期间与同业同步领涨'),
+  'group_leader': ('Leading with peers', '与同业同步领涨'),
+  'isolated_leader': ('Stock leading against its peers', '个股逆同业领涨'),
+  'rotation_watch': ('Rotation developing', '轮动初现'),
+  'weak_peers': ('Participation weakening', '同业参与度下降'),
+  'mixed': ('Mixed evidence', '证据分化')
+} %}
+{% set featured = setups.get('buy') or [] %}
+{% set ordering = (setups.get('ranking') or {}).get('ordering') or {} %}
+{% set coverage = ((setups.get('ranking') or {}).get('input_coverage') or {}).get('intel_interest') or {} %}
+<details id="cn-peer-context" class="cn-peer-context" style="margin:8px 0 12px;padding:8px 12px;border:1px solid var(--line);border-radius:8px">
+  <summary>{{ t('What supports these stock setups?', '哪些证据支持这些个股形态？') }}</summary>
+  {% if ordering.get('order_mode') == 'v3_coverage_fallback' %}
+  <p>{{ t('This board uses setup priority. Intelligence coverage', '本期采用形态优先级排序。情报覆盖') }}
+    {{ coverage.get('n_measured', '—') }} / {{ coverage.get('n_rows', '—') }}.</p>
+  {% elif ordering.get('intel_order_active') %}
+  <p>{{ t('Intelligence orders the eligible stocks. Entry and trading checks determine which can be featured.', '情报对合格个股排序。入场与交易条件决定能否入选精选。') }}</p>
+  {% endif %}
+  <p>{{ t('Each reading compares the stock with its other industry or theme members. Breadth is the share that rose over five sessions. Its change compares the same peers with the preceding five sessions.', '每项读数均将该股与同行业或同主题的其他成分股对比。广度为五个交易日内上涨的比例，变化值与同一组同业此前五个交易日的表现相比。') }}
+  <a href="sector_central_china.html#overview">{{ t('Explore China sectors and cycles', '查看中国行业与周期') }} →</a></p>
+  {% for n in featured %}
+    {% set peer = n.get('peer_context') or {} %}
+    {% if loop.first %}
+      {% set tone = (peer.get('market_tone') if peer.get('as_of') == setups.get('as_of') else none) %}
+      {% if tone in ('on','off','neutral') %}
+        <p>{{ t('Sector Central market backdrop', '行业中枢市场环境') }} ·
+        {{ t(*{'on':('Risk-on','偏好风险'),'off':('Risk-off','回避风险'),'neutral':('Neutral','中性')}[tone]) }} · {{ peer.central_as_of }}</p>
+      {% endif %}
+    {% endif %}
+    <details><summary>{{ n.ticker }} · {{ (n.name or n.ticker)|e }} ·
+      {{ t(*reading.get(peer.get('interpretation') if peer.get('as_of') == setups.get('as_of') else none, reading.unavailable)) }}</summary>
+      {% if peer.get('as_of') == setups.get('as_of') and peer.get('stock_5d_pct') is number %}
+        <p>{{ t('Stock performance', '个股表现') }} · {{ t('5 sessions', '5日') }} {{ '%+.1f'|format(peer.stock_5d_pct) }}%
+        · {{ t('20 sessions', '20日') }} {{ '%+.1f'|format(peer.stock_20d_pct) }}%
+        {% if peer.stock_state == 'falling' %} · <strong>{{ t('Stock still falling', '个股仍在下跌') }}</strong>{% endif %}</p>
+      {% endif %}
+      {% if peer.get('as_of') == setups.get('as_of') and peer.get('groups') %}
+      {% for g in peer.groups %}
+        <p><b>{{ t(g.name|e, (g.name_zh or g.name)|e) }}</b> · {{ t(*peer_text.get(g.state, peer_text.insufficient_coverage)) }}
+        {% if g.cycle %} · {{ tr(g.cycle) }} ({{ peer.central_as_of }}){% endif %}
+        {% if g.index_lead %} · {{ t('Sector Central trend', '行业中枢走势') }} {{ tr(g.index_lead) }}{% endif %}
+        <br>{{ t('Peer coverage', '同业覆盖') }} {{ g.observed }}/{{ g.total }}
+        {% if g.breadth_pct is defined %} · {{ t('rising', '上涨') }} {{ '%.0f'|format(g.breadth_pct) }}%
+          · {{ t('breadth change', '广度变化') }} {{ '%+.1f'|format(g.breadth_change_5d_pp) }} pp
+          {% if g.peer_vs_csi300_20d_pp is number %} · {{ t('peers vs CSI 300, 20 sessions', '同业相对沪深300，20日') }} {{ '%+.1f'|format(g.peer_vs_csi300_20d_pp) }} pp{% endif %}
+          {% if g.stock_vs_peer_20d_pp is number %} · {{ t('stock vs peers', '个股相对同业') }} {{ '%+.1f'|format(g.stock_vs_peer_20d_pp) }} pp{% endif %}
+        {% endif %}</p>
+      {% endfor %}
+      {% else %}<p>{{ t('Comparable peer evidence unavailable for this session.', '本交易日缺少可比同业证据。') }}</p>{% endif %}
+    </details>
+  {% endfor %}
+</details>
