@@ -1,8 +1,14 @@
 # Verification and evidence boundaries
 
-**Candidate:** F02-SYSTEM/1.0.0-candidate.2. This report separates observed production, source evidence, static composition checks and unverified proposed behavior. No product implementation, Paper edit, account write or deployment occurred.
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
 
-## Completed evidence
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
+**Candidate:** F02-SYSTEM/1.0.0-candidate.2. This report separates observed production, source evidence, historical static checks, current native Paper evidence and unverified behavior. Native Paper edits are in progress through the accepted direct app. No product implementation, production account write or deployment is claimed.
+
+## Initial/source-static freeze — completed evidence
 
 - Read the assignment and common package at immutable Macro commit `6e1862867193ec6486a22001a0e4fb515da20448`; refreshed protected procedure source to Mastermind `c57adacb338fe837c7d585f1e372c64d9b0118ec` and relevant current Macro/Terminal pins recorded in the source contract.
 - Inspected served beta Today → Macro, Company Overview → Financials/Statements, Options tape, public blog index and the actual compound-growth article through the connected browser. The committed before screenshots show the state observed, not a proof of a particular deployed source commit.
@@ -29,23 +35,27 @@ The desktop compositions deliberately use substantial data, real unit semantics 
 
 ## Actual blockers and limits
 
-### Paper writing
+### Paper writing — current direct route and historical legacy gate
 
-The exact live adapter returned `accepted_for_write:false`, with the observed catalog digest `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` and reviewed digest `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on paper-desktop0.5.18. Read serviceability does not qualify writes. No mutation was attempted. `evidence/paper-write-gate.json` records the gate, with its initial observation time marked as approximate rather than a document revision. P00 must return the original-owner qualification and F02 must then build/read back the editable references and in-Paper annotations.
+Current direct-app authoring is `NATIVE_AUTHORING_IN_PROGRESS`, with applied effects, native IDs and readback in [paper/native-progress.json](paper/native-progress.json). Qualification uses `TOOL_SCOPED_CONTRACT_V1` on Paper Desktop 0.5.18. Final native completion, mapping, captures and review remain pending; successful effects do not establish a foundation release.
+
+**Historical initial/source-static observation:** the legacy adapter returned `accepted_for_write:false`, observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`. No mutation was attempted in that phase. The unchanged `evidence/paper-write-gate.json` preserves this observation, with approximate initial time. It is not the current direct-app receipt and does not reinstate a global F02 write blocker.
 
 ### Interactive prototype verification
 
-An ephemeral loopback HTTP preview was created on the connected m2 host; a host-side read returned200 and the full HTML bytes. The connected browser could not reach either127.0.0.1 or localhost at that preview and reported `net::ERR_SOCKET_NOT_CONNECTED`. A subsequent attempt to open an inline `data:` document was explicitly rejected by the browser URL security policy, which allows only HTTP/HTTPS. That route was not retried or worked around through another browser surface, CDP or HTML renderer. The temporary HTTP process was terminated.
+During the initial/source-static phase, an ephemeral loopback HTTP preview was created on the connected m2 host; a host-side read returned200 and the full HTML bytes. The connected browser could not reach either127.0.0.1 or localhost at that preview and reported `net::ERR_SOCKET_NOT_CONNECTED`. A subsequent attempt to open an inline `data:` document was explicitly rejected by the browser URL security policy, which allows only HTTP/HTTPS. That route was not retried or worked around through another browser surface, CDP or HTML renderer. The temporary HTTP process was terminated.
 
-The materially separate continuation was to inspect source and draw static geometry/text/data sheets without browser execution. The remaining minimum evidence is a normally authorized, reachable HTTP/HTTPS preview in the connected browser, followed by keyboard, touch, focus restoration, scrollbar/overflow, EN/ZH glyph, modal/dock, true400% zoom and reduced-motion/forced-color checks. A user approval cannot be represented as changing the browser protocol policy; the permitted route must actually exist.
+That phase continued with source inspection and static geometry/text/data sheets without browser execution. In the native continuation, the supported local-only managed preview started successfully, but one navigation through the original Chrome extension to the exact returned `http://terminal.local:4173/` URL failed with `ERR_DNS_FAIL`; the application never rendered. The preview tab was closed, no viewport override was set, and the owned preview was stopped. Sanitized receipts are [launch](paper/browser-qa/managed-preview-launch-20261103.json), [reachability](paper/browser-qa/root-preview-reachability-20261103.json) and [stop](paper/browser-qa/managed-preview-stop-20261103.json). No alternate route or network recovery was attempted.
+
+The remaining minimum evidence is a normally authorized, reachable HTTP/HTTPS preview in the connected browser, followed by keyboard, touch, focus restoration, scrollbar/overflow, EN/ZH glyph, modal/dock, true400% zoom and reduced-motion/forced-color checks. A user approval cannot be represented as changing the browser protocol policy; the permitted route must actually exist.
 
 ### Locale, fonts and accessibility
 
-EN light/dark static sheets were inspected. Chinese strings and390px SVG geometry are supplied; no CJK font was found in the inspected local font locations, so the Chinese SVG is explicitly unrendered and no tofu image is counted as proof. Existing public editorial source retains English long-form body with bilingual chrome. The specimen follows that boundary. Screen-reader, touch and real keyboard/zoom qualification remain open.
+At the initial/source-static freeze, EN light/dark sheets were inspected. Chinese strings and 390px SVG geometry were supplied; no CJK font was found in those inspected local font locations, so that historical Chinese SVG remained unrendered and no tofu image counted as proof. Native CJK construction and glyph/long-label coverage are a separate current evidence task; they are not certified by the old local-font observation or this status edit. Existing public editorial source retains English long-form body with bilingual chrome. The specimen follows that boundary. Screen-reader, touch and real keyboard/zoom qualification remain open.
 
 ### Review and release
 
-Independent native critique is advisory and cannot substitute for the required admitted independent Opus reviewer-class RIG receipts and design-authority verdict. Review readiness remains draft with no approval receipt. Review findings/remediation will be recorded in reviews/REVIEW_REPORT.md. F01's frozen joint shell contract is not yet available in this artifact set; source dimensions are baselines only.
+Independent native critique is advisory and cannot substitute for the required admitted independent Opus reviewer-class RIG receipts and design-authority verdict. Review readiness remains draft with no approval receipt. Historical review findings/remediation remain in reviews/REVIEW_REPORT.md; the native continuation needs its own exact-artifact review. F01's frozen joint shell contract is not yet available in this artifact set; source dimensions are baselines only.
 
 ## Production observations routed to existing owners
 
@@ -57,13 +67,13 @@ The source architecture review also found current `lib/illus.py:_clean` dropping
 
 No claim of editable Paper completion, frozen F01/F02 foundation, actual browser behavior of the candidate, full bilingual render qualification, production accessibility, real backend writes/readback, measured usability, deployed performance, implementation, merge, deployment or served release conformance is supported by this package. The completed evidence above remains useful and reviewable independently of those open gates.
 
-## Dependency observations carried into the repair review
+## Historical dependency observations carried into the source/static repair review
 
-At2026-11-03 02:02:00–02:02:04 UTC, the exact canonical component page p-4-0 still had25boards/850nodes and the same observed identities/dimensions. Its file binding was ready, but the separate live writer catalog qualification remained false with the same digest mismatch. Read serviceability and binding readiness do not close P00’s write gate. The exact response is preserved in evidence/paper-final-gate.json.
+At2026-11-03 02:02:00–02:02:04 UTC, the exact canonical component page p-4-0 still had25boards/850nodes and the same observed identities/dimensions. Its file binding was ready, but the separate live writer catalog qualification remained false with the same digest mismatch. At that observation, read serviceability and binding readiness did not close the legacy write gate; the later direct-route qualification is recorded separately above. The exact response is preserved in evidence/paper-final-gate.json.
 
 At02:00:58 UTC, the canonical Executive V3 Fabric roots observation returned backend_unavailable and explicitly said the reader request was not sent. No current review admission/execution binding could be established from that projection, and no formal review worker was dispatched. This is a bounded observation, not a claim that every submission service is unavailable. Native advisory critics remain separate from the required RIG admission. Evidence is in evidence/review-runtime-observation.json.
 
-A bounded open-PR title search found no F01-titled return in Macro and no P00-titled repair in Mastermind. It does not prove that no work exists elsewhere; no independently versioned frozen F01 artifact or P00 qualification was supplied/located for this candidate.
+The initial bounded open-PR title search found no F01-titled return in Macro and no P00-titled repair in Mastermind. That historical negative finding is superseded for P00 by the later source/route evidence in paper/CONTINUATION_GATES_20261103.md. No independently versioned frozen F01 joint artifact has been established for this candidate; the bounded search does not prove that no unpublished work exists.
 
 ## Candidate 2 targeted source verification
 

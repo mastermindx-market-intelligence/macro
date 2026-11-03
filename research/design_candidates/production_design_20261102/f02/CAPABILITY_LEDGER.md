@@ -1,6 +1,12 @@
 # F02 capability retention ledger
 
-This ledger covers shared capabilities plus the real consumer paths used to stress them. It does not claim a complete domain redesign. Baselines are pinned in SOURCE_AND_DATA_CONTRACT.md and captured under evidence/. All changes are proposed design/specification changes; no production or Paper capability was altered.
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
+
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
+This ledger covers shared capabilities plus the real consumer paths used to stress them. It does not claim a complete domain redesign. Baselines are pinned in SOURCE_AND_DATA_CONTRACT.md and captured under evidence/. Product behavior remains unchanged. Native Paper candidate authoring now has applied effects; the initial source/static phase's no-Paper-effect observation is historical. These capability dispositions are not production integration or reference approval.
 
 | ID | Existing capability | Baseline | Disposition | Successor / retained path | Dependency / remaining owner |
 | --- | --- | --- | --- | --- | --- |
@@ -17,7 +23,7 @@ This ledger covers shared capabilities plus the real consumer paths used to stre
 | CAP-11 | Evidence and LENS access | Canonical 2BK-0; theme.js LENS; Company EvidenceRail | IMPROVE | Exact row/field/source context; useful compact evidence; keyboard/touch and close return. | Citation precision stays source-owned; missing precision never invented. |
 | CAP-12 | Docked and modal inspector | Canonical evidence/detail patterns; EvidenceRail | IMPROVE | One active inspector; dock only when primary width supports it; modal focus and scroll restoration. | F01 dimensions; interactive browser/AT proof open. |
 | CAP-13 | Freshness, coverage and transport | Canonical 272-0; live Options; flowFreshness | IMPROVE | Separate clocks and axes; retain stale/partial observations under correct identity. | Owner-defined cadence and coverage; no global generic TTL. |
-| CAP-14 | Loading / empty / read error | Canonical 2A7-0/2M3-0 | IMPROVE | Loading no longer contains EMPTY; empty gives reason; errors retain useful prior data and retry. | No Paper change applied yet. |
+| CAP-14 | Loading / empty / read error | Canonical 2A7-0/2M3-0 | IMPROVE | Loading no longer contains EMPTY; empty gives reason; errors retain useful prior data and retry. | Native state construction/evidence binding and review remain in progress; retained originals are not claimed replaced. |
 | CAP-15 | Callouts and material limitations | Canonical 29H-0/2NG-0 and pattern35W-0 | IMPROVE | Neutral grouping, concise consequence and recovery; no colored stripe; caveat remains visible. | Domain copy retains meaning. |
 | CAP-16 | Access and tier gate | Canonical 2RE-0; source tier/access owners | IMPROVE | Separate guest, denied, expired and provider unavailable; keep permitted content, no data leak. | Actual server entitlement and route behavior not changed/tested. |
 | CAP-17 | Buttons and actions | Canonical 28D-0 | IMPROVE | Clear hierarchy, named icon control, 44px important phone target, explicit pending/disabled. | Callback/data owner supplied by consumer. |
@@ -38,14 +44,14 @@ This ledger covers shared capabilities plus the real consumer paths used to stre
 | CAP-32 | Reading versus analytical density | Canonical archetype patterns; public/analytical source | IMPROVE | Comfortable reading measure versus dense comparisons; no one-card-grid mandate. | Component thresholds consume F01 widths. |
 | CAP-33 | Icons, focus, selected and touch | Canonical controls plus source icons | IMPROVE | CurrentColor anatomy, explicit accessible names, distinct focus/selection, no hover-only task. | Real browser/AT/touch validation still open. |
 | CAP-34 | Refraction / rejected full-pane treatment | Terminal settings historical ruling; exact Refraction Paper IDs | RETAIN | Rejected full-pane design remains rejected; top-strip-only conditions preserved without promotion. | No general animated/colored border added. |
-| CAP-35 | Canonical foundations, references and archives | 48 canonical + 19 supporting boards | RETAIN | All 67 boards have per-ID disposition; no moves, deletions or fake approval. | F03 organization and P00 writer; current location does not demote authority. |
+| CAP-35 | Canonical foundations, references and archives | 48 canonical + 19 supporting boards | RETAIN | All 67 boards have per-ID disposition; no moves, deletions or fake approval. | F03 organization; final native successor binding and review. The accepted direct writer is available; current location does not demote authority. |
 | CAP-36 | Shared-source migration and rollback | Macro theme + shared template, Terminal scopes, public estate | IMPROVE | Per-source role mapping, collision-safe aliases, companion tests and reversible scoped migration. | Later separately authorized implementation; incumbent #7849 preserved. |
 
 ## Disposition totals
 
 {"RETAIN":16,"IMPROVE":20}
 
-**REMOVE: 0. RELOCATE: 0. BLOCKED_DATA: 0.** Unqualified producer mappings and infrastructure dependencies are recorded as open dependencies, not invented assertions that existing data is absent. No archive or Paper move occurred. All rows have reviewer decision pending; an author disposition is not an approval receipt.
+**REMOVE: 0. RELOCATE: 0. BLOCKED_DATA: 0.** Unqualified producer mappings and infrastructure dependencies are recorded as open dependencies, not invented assertions that existing data is absent. The initial source/static phase had no archive or Paper move. The continuation moved only the newly authored Read me board47Q-0 to page p-9-0 as recorded above; this is not a relocation of any original capability or retained baseline board. All rows have reviewer decision pending; an author disposition is not an approval receipt.
 
 A later implementation must prove the retained full domain paths, not merely this kit's four slices. If an existing feature cannot be supplied by its real producer, its domain owner must record an actual BLOCKED_DATA dependency and useful interim behavior rather than silently remove it.
 

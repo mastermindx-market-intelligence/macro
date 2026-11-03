@@ -1,6 +1,12 @@
-# F02 — Shared system candidate 1
+# F02 — Shared system candidate 2
 
-**Version:** `F02-SYSTEM/1.0.0-candidate.2` · **Delivery:** `PARTIAL` · **RIG:** `draft` · **Paper:** `NOT_APPLIED_TO_PAPER`.
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
+
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
+**Version:** `F02-SYSTEM/1.0.0-candidate.2` · **Delivery:** `PARTIAL` · **RIG:** `draft` · **Paper:** `NATIVE_AUTHORING_IN_PROGRESS`.
 
 This is the proposed shared component contract for the existing whole-site design programme, not a product release. It is bounded by the [F02 assignment](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md). The source owners and exact implementation evidence are in [SOURCE_AND_DATA_CONTRACT.md](SOURCE_AND_DATA_CONTRACT.md). Editable Paper construction, the F01 joint freeze, interactive verification and admitted independent review remain required before consumption as a frozen foundation.
 
@@ -37,7 +43,7 @@ Use one main analytical or reading object and normally no more than two supporti
 
 **Reading workspace:** a deliberately limited text measure, strong title/dek, publication metadata, headings/TOC and a comfortable line height. Charts, equations and tables remain in the argument. A callout is one concise caveat or action, not a second full article. Public pages do not inherit investor navigation by default.
 
-The nine governed Paper starters remain retained references for Command, Discovery, Instrument, Regime, Intelligence, Editorial, Monitor, Marketing and Utility. This F02 candidate qualifies shared anatomy; it does not collapse those nine jobs into one card-grid page or approve their current compositions.
+The nine governed Paper starters remain retained references for Command, Discovery, Instrument, Regime, Intelligence, Editorial, Monitor, Marketing and Utility. This F02 candidate specifies shared anatomy; it does not collapse those nine jobs into one card-grid page or approve their current compositions.
 
 ## 3. Token and typography contract
 
@@ -148,7 +154,7 @@ Breaking semantic or anatomy changes require a new candidate/review cycle and af
 
 ## 8. Builder sequence and acceptance
 
-1. P00 returns a qualified original-owner Paper writer and F01 provides its candidate dimensions/slots. Re-read exact target boards and overlaps; create the editable compositions and useful in-Paper build notes in [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md).
+1. Use the accepted direct Paper route with fresh exact-target qualification and overlap checks; complete the native compositions and useful in-Paper build notes in [PAPER_BUILD_PLAN.md](PAPER_BUILD_PLAN.md). F01 still owes the joint dimensions/slots contract before a foundation release.
 2. Freeze the full source/Paper export set with hashes, run admitted independent product-regression and taste review, and obtain the designated design authority's reference verdict. This task has not created that approval.
 3. In a separately commissioned implementation, resolve aliases in the existing style owners, preserving resolved values first. Address current #7849 instead of creating a competing primitive implementation carrier. Introduce scoped component presentation in one exemplar at a time; keep shared-template and focused-chart boundaries intact.
 4. Qualify Macro and its US sibling; Company historical/identity/access cases; Options source/transport/coverage/export cases; public English-body/bilingual-chrome/anchor cases. Use actual data fixtures from each owner. No new endpoint or formatting package is implied by this candidate.
@@ -158,7 +164,7 @@ Proposed later budgets are LCP ≤2.5s, INP ≤200ms and CLS ≤0.1 at p75, meas
 
 ## 9. Required open gates
 
-Paper writer qualification and editable artifact construction: **P00 / F02**. Joint shell/system release: **F01 / F02**. Actual browser/assistive-technology verification of candidate behaviors: **F02 / QA01**. Real field/clock/entitlement qualification: **D02, D07, D08 and public editorial source owner**. Save request identity/readback: **D23**. Admitted dual RIG critics and authority verdict: **existing review owner / QA01**. These gates are carried individually; none is hidden behind a general claim that the whole assignment is blocked.
+Editable artifact completion, final mapping and review: **F02**, using the accepted direct route. Legacy selector/v21 changes remain with the existing adapter owner and are not prerequisites invented for ordinary currently qualified F02 edits. Joint shell/system release: **F01 / F02**. Actual browser/assistive-technology verification of candidate behaviors: **F02 / QA01**. Real field/clock/entitlement qualification: **D02, D07, D08 and public editorial source owner**. Save request identity/readback: **D23**. Admitted dual RIG critics and authority verdict: **existing review owner / QA01**. These gates are carried individually; none is hidden behind a general claim that the whole assignment is blocked.
 
 ## Standards consulted
 

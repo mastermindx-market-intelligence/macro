@@ -1,0 +1,30 @@
+{
+  "status": "APPLIED_AND_NATIVE_SCREENSHOT_REVIEWED",
+  "board_key": "options-full-row-evidence-320",
+  "board_id": "74P-0",
+  "target_frame_id": "74T-0",
+  "native_operation_id": "f02-writer-options-full-row-evidence-320-header-align-20261103-01",
+  "observed_before_export": "f02/paper/exports/options-full-row-evidence-320--identity.jsx",
+  "observed_after_export": "f02/paper/exports/options-full-row-evidence-320.jsx",
+  "native_style_delta": {
+    "alignItems": {
+      "from_absent": true,
+      "to": "center"
+    }
+  },
+  "reason": "Center18px title and44px Close inside64px header; contain focus outline below provenance band.",
+  "source_input_packet": "f02/paper/core-supplement-inputs.json",
+  "source_input_sha256": "2f70a6d233b4ff2612494e02155409473d17e4e08930f1441e062dd83c223d83",
+  "source_step_key": "dialog-header",
+  "source_step_html_sha256": "bc289f0b819abe3aa1cb956add8e4976cd5713d8d4b72219c619d3f26529cf75",
+  "replacement_html": "<div layer-name=\"Print evidence / close receives initial focus\" style=\"display:flex;flex-direction:row;align-items:center;flex-shrink:0;width:320px;height:64px;padding:0 16px;gap:16px;background-color:#ffffff;border-bottom:1px solid #cbccc7;\"><div layer-name=\"Print evidence\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:18px;line-height:26px;font-weight:600;color:#1a1c20;width:196px;\">Print evidence</div><div layer-name=\"Close\" style=\"display:flex;flex-direction:row;flex-shrink:0;width:76px;height:44px;align-items:center;justify-content:center;gap:10px;padding:0 14px;background-color:#ffffff;border:1px solid #85877f;border-radius:6px;outline:2px solid #245c91;outline-offset:3px;\"><div layer-name=\"Close\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:13px;line-height:20px;font-weight:500;color:#1a1c20;\">Close</div></div></div>",
+  "source_packet_modified": false,
+  "verification": {
+    "header_centered": true,
+    "close_and_return_height": 44,
+    "twelve_fields_present": true,
+    "jsx_sha256": "2e33b6d482e19cbd28a49c12b21ac9800698d0dbd9ea231417d81819c44c4672",
+    "native_screenshot": "f02/paper/screenshots/options-full-row-evidence-320.jpg",
+    "browser_behavior_proven": false
+  }
+}

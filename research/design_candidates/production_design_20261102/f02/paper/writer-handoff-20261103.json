@@ -1,0 +1,40 @@
+{
+  "schema": "f02.paper-writer-handoff.v1",
+  "recorded_at": "2026-11-03T05:29:48.243Z",
+  "assignment_owner": "/root",
+  "previous_tool_operator": "/root",
+  "next_tool_operator": "/root/native_state_mobile",
+  "single_writer": true,
+  "fileId": "01M312VSDSZFVT45674GDVJVZN",
+  "root_last_operation_id": "f02-c2-states-matrix-notes-20261103-01",
+  "root_confirmed_operations": 293,
+  "root_unresolved_effects": 0,
+  "reason": "Root direct and legacy MCP contexts returned Session terminated; one fresh same-carrier child read returned OBSERVED exact target, write_binding_ready=true, accepted_for_write=true.",
+  "initial_scope": "Create only the 12 still-absent F02 boards from finalized mobile/supplement/core/fault inputs. Do not mutate existing 16 boards until root releases phase two after both first-pass reports freeze.",
+  "new_board_keys": [
+    "macro-dark-en-390",
+    "macro-light-zh-390",
+    "company-eps-overlay-320",
+    "company-dividend-overlay-320",
+    "macro-docked-1280",
+    "macro-zh-evidence-return-390",
+    "width-768-overlay",
+    "width-1024-overlay",
+    "width-1600-docked",
+    "controls-variants",
+    "options-full-row-evidence-320",
+    "fault-compositions"
+  ],
+  "constraints": [
+    "same qualified direct app only",
+    "root performs no concurrent Paper mutations",
+    "no original retained-board edits, tokens, resource/file creation, deletion, deployment or product implementation",
+    "fresh target guard and stable operation ID; no unknown-effect replay",
+    "local continuation state/captures, root GitHub persistence"
+  ],
+  "review_freeze_commit": "245d70bbd3ac773f3074277c771095264b31269d",
+  "review_set_sha256": "98c7569adb5827e7b3ab16350e56be642ede4ddd961dc4d599b99b7bf4d69b3b",
+  "current_git_head": "245d70bbd3ac773f3074277c771095264b31269d",
+  "continuation_state_file": "f02/paper/writer-continuation-progress.json",
+  "continuation_runtime_file": "f02_writer_runtime.json"
+}

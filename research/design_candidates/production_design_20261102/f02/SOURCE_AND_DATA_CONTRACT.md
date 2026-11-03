@@ -1,9 +1,15 @@
 # F02 — Source and data boundary contract
 
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
+
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
 **Contract ID:** `F02-SOURCE-DATA/1.0.0-candidate.2`  
-**Status:** proposed design/build contract; `SPEC_ONLY`; `NOT_APPLIED_TO_PAPER`; not a frozen F01/F02 release, RIG acceptance, implemented package, deployment or served-production proof.  
+**Status:** proposed design/build specification; `NATIVE_AUTHORING_IN_PROGRESS`; not a frozen F01/F02 release, RIG acceptance, implemented package, deployment or served-production proof. The initial source-static contract was `SPEC_ONLY` / `NOT_APPLIED_TO_PAPER`; that Paper observation is historical.  
 **Prepared:** 2026-11-03 UTC.  
-**Authority:** F02 design and specification assignment under the existing whole-site programme, Macro PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). No product files, service configuration, Paper objects, data producers or access controls were changed by this document.
+**Authority:** F02 design and specification assignment under the existing whole-site programme, Macro PR [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). This document specifies the design/build boundary. Native Paper changes are recorded separately in the continuation ledger; no product implementation, service configuration, data producer or access-control change is claimed.
 
 ## 1. Source pins and evidence discipline
 
@@ -12,7 +18,8 @@
 | Assignment package | Macro `6e1862867193ec6486a22001a0e4fb515da20448` | Exact [F02 handoff][A1], [shared-shell requirements][A2] and route-ownership projection |
 | Current Macro source | `b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e` | Source styles, design doctrine, migration factory, charts, public editorial builder/templates |
 | Current Terminal source | `b79b1e136290978ff7675087de979bb1b42b3713` | AppShell, Company/Options/data inspector implementations, formatting, freshness, Refraction record |
-| Procedure baseline carried by F02 | Mastermind `c57adacb338fe837c7d585f1e372c64d9b0118ec` | Parent session's protected-source procedure pin; compatible schema `1.0.1` |
+| Initial procedure baseline carried by F02 | Mastermind `c57adacb338fe837c7d585f1e372c64d9b0118ec` | Initial source/static phase; preserved historical pin |
+| Native-continuation procedure pin | Mastermind `1225133923333926d990b8bfd30432eec289181e` | Current continuation protected-source pin; compatible skillpack 1.0.1 / bootstrap minimum 1 |
 
 All implementation observations below refer to these source revisions. The three Macro normative documents were initially read from `main`, then checked at the immutable Macro pin: blob SHAs match exactly (`MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`: `f8a28702767b78b2e48299f55a85e21a5c2360cd`; `DESIGN_DOCTRINE.md`: `3fc7ff36799ae3855c8dc25218dff00c18b04cc1`; `DESIGN_MIGRATION_FACTORY_V1.md`: `1ae6aef395216c7990ef0367f7885f95c4db5981`). A source implementation is evidence of a capability, not proof that the current public deployment is serving this revision.
 
@@ -211,7 +218,7 @@ Consumers request changes through the existing F01/F02/domain source review path
 
 This section specifies work for a later authorized implementation phase. It does not authorize implementation or execution during this design assignment.
 
-1. **Freeze dependencies.** Resolve P00 writer qualification, produce editable compositions, freeze F01/F02 candidate IDs and component contract versions, and obtain the actual independent review dispositions. Record domain fields/owners for all exemplars. Unresolved source semantics cannot be hidden behind sample data.
+1. **Freeze dependencies.** Retain the accepted direct-route qualification, complete editable compositions and exact evidence, freeze F01/F02 candidate IDs and component contract versions when their joint contract is established, and obtain the actual independent review dispositions. Record domain fields/owners for all exemplars. Unresolved source semantics cannot be hidden behind sample data.
 2. **Prepare the existing foundation owners.** Apply collision-qualified aliases in Macro `theme.css` or the existing Terminal scoped owner only through the established design-system change path. Preserve current resolved output before intentional repaint. Reconcile `--sp-8`, radius/type naming and text-grade aliases in the same affected scope; no broad search/replace across the repositories.
 3. **Integrate by governed region/family.** Macro migrates `body.page-macro` separately from `body.page-stocks`; Company uses the existing workspace and inspector; Options uses the existing transport/schema/gates; editorial uses the actual free-content templates. Do not regenerate a different family with a convenient page builder. Retain query/return links, access, nulls, provenance and data clocks.
 4. **Verify meaningful paths and adverse states.** Exercise source-defined behavior and the cases in section9, with exact screenshots/DOM/route evidence and honest data fixtures. Run existing relevant producer/consumer checks when implementation actually changes; visual specimen inspection is not a substitute for source/runtime proof.
@@ -243,7 +250,7 @@ Each claimed variant needs a meaningful dense/reading use and failure case. Refe
 
 | Dependency / owner | Blocked action | Useful completed work | Minimum next evidence |
 | --- | --- | --- | --- |
-| P00 original adapter owner | Paper mutation / editable final composition | Read-only inventory and proposed source-mapped contract | Parent session's writer gate is false: actual catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`; qualification receipt from the existing original-owner path. No alternate carrier bypass. |
+| P00 original adapter owner / F02 native continuation | Final native evidence and review remain incomplete; ordinary qualified direct-route edits are available | Direct app qualification and applied F02 effects recorded in paper/native-progress.json; initial legacy mismatch preserved as historical evidence | F02 completes exact native capture/mapping/review. Any legacy selector or v21 activation remains the adapter owner's separate admitted release; no deployment or unsupported operation is inferred. |
 | F01 + F02 | Frozen shared shell/system and final composed stress tests | Exact observed dimensions/scopes and proposed compatibility mapping | Joint versioned contract with rail/header/local chrome/inspector dimensions, responsive behavior, focus/scroll and context-preference transport decisions. |
 | F02 + affected source owners | Numeric-face, spacing/radius and semantic alias convergence | Exact name/value collisions and scoped migration plan | Reviewed resolution preserving chart/domain scopes; contrast evidence for text-grade values; no literal copied from Paper without mapping. |
 | D02 / D03 | Macro field-level integration acceptance | Verified current Macro/US-stock render calls, nonmutating gated VM, separate international fragment and shared styles; governed-region ownership from assignment package | Current actual producer fields/schemas/clocks/cache/access for the chosen Macro metric/table/chart; explicit sibling-regression proof. Registry data_sources alone is insufficient. |

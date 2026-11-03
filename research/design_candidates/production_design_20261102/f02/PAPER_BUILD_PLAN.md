@@ -1,6 +1,12 @@
 # Exact Paper construction and annotation packet
 
-**Current state:** `PARTIALLY_APPLIED_TO_PAPER`. The updated Mastermind Paper direct app now qualifies the actual0.5.18 catalog under TOOL_SCOPED_CONTRACT_V1. Seven native boards have been constructed and captured; see [paper/README.md](paper/README.md) and [paper/native-progress.json](paper/native-progress.json). The former Studio Direct mismatch below is historical to the prepared packet. Remaining construction, review and F01 joint qualification continue under the same F02 draft.
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
+
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
+**Current state:** `NATIVE_AUTHORING_IN_PROGRESS`. The Mastermind Paper direct app qualifies the actual 0.5.18 catalog under `TOOL_SCOPED_CONTRACT_V1`; actual effects/checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json). The Read me page is p-9-0 with board47Q-0 moved there. Counts in earlier checkpoints are historical observations, not the current final total. Remaining construction, mappings, review and F01 joint qualification continue under the same F02 draft.
 
 ## Existing target and custody
 
@@ -13,11 +19,11 @@ The proposed organization “01 Foundations / MM · Design System” is a progra
 
 ## Prepared composition set
 
-Packet IDs below are **local work-item labels**, not Paper node identities. Successor Paper IDs are `null` until creation and readback. F01's final shell dimensions must be incorporated before the joint freeze. Static SVG/PNG sheets and the HTML are supporting construction aids, not substitutes for editable native Paper text, frames, shapes and controls.
+Packet IDs below are **local work-item labels**, not Paper node identities. Actual created IDs are recorded only after effect/readback in paper/native-progress.json. Final role/predecessor mappings remain pending the final snapshots; the packet labels do not invent those mappings. F01's final shell dimensions must be incorporated before the joint freeze. Static SVG/PNG sheets and the HTML are supporting construction aids, not substitutes for editable native Paper text, frames, shapes and controls.
 
 | Packet ID | Destination proposal | Editable composition to build | Source material / acceptance |
 | --- | --- | --- | --- |
-| F02-P01 | New or verified reuse: `00 · Read me & Build contract` page in canonical file | Read-me board with product/job, owner, exact source links, system/shell versions, status, limitations, task journey and current candidate directory | Exact copy below; link each important board and full source package. A bare external link is insufficient. |
+| F02-P01 | Observed `00 · Read me & Build contract` page p-9-0; F02 Read me board47Q-0 moved there | Read-me board with product/job, owner, exact source links, system/shell versions, status, limitations, task journey and current candidate directory | Exact copy below; link each important board and full source package. A bare external link is insufficient. |
 | F02-P02 | Existing p-3-0 Foundations, alongside 3XJ-1 and retained24A-0 | Dark/light semantic roles, type/density scale, units/number examples, icon/focus anatomy and source mapping | `token-map.json`; distinguish proposed aliases from actual implementation. No global token replacement by spelling. |
 | F02-P03 | Existing p-4-0 Components | Metric/change/source receipt and data-row group; desktop and phone; zero, unknown and comparator variants | 25Z-0, 26J-0,272-0,27I-0; neutral geometry; defined data fixture. |
 | F02-P04 | Existing p-4-0 Components | Tabs/actions/evidence/disclosure; selected versus focused, keyboard/touch, overlay and docked inspector | 26C-0,28D-0,2BK-0,2GG-0,2LX-0; adjacent behavioral notes below. |
@@ -39,13 +45,13 @@ Every newly or materially changed composition must remain editable. Avoid raster
 > **Owner:** F02 — shared tokens, components, chart/table/state patterns. F01 owns shell/navigation; domains own meaning; D23 owns saved-state mutations.  
 > **Job:** Compare observations, understand their units and limitations, inspect the evidence, and return to the same context.  
 > **Journey:** Read the question and period → compare the chart/table → distinguish zero, unknown and degraded coverage → inspect the exact row/source → return without losing focus or scroll → act through the existing domain owner and confirm the result.  
-> **Status:** Draft candidate. Editable construction is pending qualified Paper writing. Source and static specimen artifacts exist; they are not Paper approval or production proof. Replace this sentence only after actual creation/readback and review.  
+> **Status:** Draft candidate; NATIVE_AUTHORING_IN_PROGRESS through the qualified direct app. The Read me page is p-9-0 and its board is47Q-0. Complete native evidence/mappings and independent review before claiming reference acceptance. Source/static and native artifacts are not production proof.  
 > **Shell dependency:** F01 joint contract pending. Observed baseline: expanded rail224px, narrow desktop196px, header64/56px. These values are not a frozen shell release.  
 > **System dependency:** This candidate and its immutable source artifact commit. Do not fork global CSS or use a Paper board name as a source import.  
 > **Current scope:** Metric/change, table/chart, evidence, inspector, state/access/action, density, typography, icons, locale and source mapping. Existing verdict/count/lifecycle/domain charts retain their own semantics.  
 > **Data:** All numbers in new exemplars are explicitly illustrative fixtures. Missing is not zero. Percent, percentage points and basis points have distinct meanings. Source observation, publication, retrieval and transport clocks are separate.  
-> **Constraints that remain:** P00 writer qualification; F01 joint composition; real browser/keyboard/touch/400% verification; source-field and save-owner mapping; admitted independent RIG review.  
-> **References:** Exact candidate board links (filled after creation), source contract, capability and Paper retention ledgers, interaction states, verification report and review findings.  
+> **Constraints that remain:** Native completion/evidence binding and review; F01 joint composition; real browser/keyboard/touch/400% verification; source-field and save-owner mapping; admitted independent RIG review.  
+> **References:** Exact candidate board links (bind from final observed snapshots), source contract, capability and Paper retention ledgers, interaction states, verification report and review findings.  
 > **Implementation:** Design/specification only. Product implementation, merge, deployment and served proof require the later commissioning path.
 
 When placed, replace only the actual state and insert real source/PR and Paper links. Do not label the page “approved”, “frozen v1” or “production-ready” merely because the board exists.
@@ -69,22 +75,22 @@ When placed, replace only the actual state and insert real source/PR and Paper l
 | Editorial metadata | **Calendar publication:** published/updated describe the document, not a market source observation. Existing English body and canonical anchors remain authoritative. |
 | Domain-owned pattern | **Meaning retained:** count partitions, lifecycle transitions, verdict authority, Options side/exposure and focused-chart behavior remain with their existing owners. Shared anatomy does not redefine them. |
 
-## Mutation and verification sequence once qualified
+## Continuing mutation and verification sequence
 
-1. Obtain P00's original-owner qualification receipt for the actual live catalog/server and an admitted mutation route. An observed snapshot/token hash is not a revision or permission.
+1. Preserve the accepted direct-app qualification and refresh the exact target/tool guard for each bounded operation. Original-owner/actual route evidence is linked in paper/CONTINUATION_GATES_20261103.md. A snapshot/token hash is not a revision, approval or independent permission; no legacy or v21 release is inferred.
 2. Read exact target pages/boards and current writers/overlap. Reconcile any drift against this 67-board ledger and F01 candidate. Do not repeat the whole site census.
 3. Build one bounded component group or composition through the qualified carrier and its current schemas. Read back exact created/changed IDs, names, dimensions, native text/shape structure, theme tokens and screenshot. Reconcile an uncertain effect through the same carrier; never blind retry.
 4. Check real content density, units and absence cases before adding variants. Compose the four consumer slices with F01's actual shell slots. Do not imply domain route approval from shared-component coverage.
-5. Add the Read me page and adjacent annotations, then capture light/dark, EN/ZH chrome, meaningful narrow/docked/overlay states and the required 320/390/768/1024/1280/1440/1600 width evaluation. Native editability and behavior are separately evidenced.
+5. Complete the observed Read me page's exact candidate links and adjacent annotations, then capture light/dark, EN/ZH chrome, meaningful narrow/docked/overlay states and the required 320/390/768/1024/1280/1440/1600 width evaluation. Native editability and behavior are separately evidenced.
 6. Commit supported exports/captures and their exact SHA-256 digests together with annotations, source specs and verification evidence. Record UTC observation bounds and live Paper IDs. Submit that immutable set for admitted independent review. Later canvas changes invalidate affected evidence/receipts.
 
-## What P00/F01 must return to unblock this packet
+## Current route evidence and remaining F01 dependency
 
-**P00:** live writer catalog/server qualification, original-owner repair/review/deployment evidence where applicable, exact admitted carrier and supported operations, and evidence that a bounded write/readback is serviceable. Current mismatch is catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus reviewed `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on paper-desktop0.5.18.
+**Direct route:** original-owner v20 qualification and actual F02 write/readback are established; native authoring continues. **Historical legacy route:** the initial packet observed catalog `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` versus expected `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db` on Paper Desktop0.5.18. That mismatch does not describe the current direct route. Unsupported organization operations and any v21/legacy activation remain separate original-owner boundaries.
 
 **F01:** versioned rail/header/local-nav/inspector slots; narrow desktop and compact-rail behavior; public/focused-chart/internal shell boundaries; region/theme/language preference semantics; route/history/overlay rules; exact source/Paper artifact identity. F02 supplies its component minimums and concrete four-consumer stress examples for the joint decision.
 
-These are specific dependencies. Source/design/specification work has proceeded; editable application and qualification have not been represented as complete.
+These are specific dependencies. Editable application is now in progress; exact coverage, final mapping and qualification remain incomplete. This packet does not call the candidate a frozen foundation or approved reference.
 
 ## Repair-set construction notes
 

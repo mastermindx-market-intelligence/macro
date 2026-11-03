@@ -1,8 +1,14 @@
 # Per-board Paper retention ledger
 
-All 67 assigned boards are accounted for: 48 in the canonical file plus 19 on the two assigned MASTERMIND PAGES pages. Live exact-file reads observed these identities and dimensions on 2026-11-03 UTC. This is a design disposition, **not an applied edit or approval**. Exact page links are included; each board ID is the live observed node identity. No file, page or board was moved, renamed, deleted or created.
+## Current continuation status — NATIVE_AUTHORING_IN_PROGRESS
 
-The JSON inspection field distinguishes identity-only reads, structural trees and visual screenshots. A census row is not visual or behavioral qualification. Full deep validation of every retained domain variant remains its owner's responsibility. The paired build plan supplies next editable compositions without inventing new Paper IDs.
+The accepted **Mastermind Paper direct app** is applying and reading back editable F02 candidates in canonical file `01M312VSDSZFVT45674GDVJVZN`. Exact effects and checkpoint coverage are in [paper/native-progress.json](paper/native-progress.json); this status is not a final board count or approval. The observed [Read me / Build contract page](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) is `p-9-0`; F02 board `47Q-0` was moved there through the direct tool. Final role/predecessor mappings will bind actual snapshots; none is inferred here.
+
+The initial/source-static freeze's `NOT_APPLIED_TO_PAPER`, zero-effect and writer-blocked observations are historical. The legacy Studio Direct mismatch is separate from this working direct route. Native completion/review, the F01 joint release, consumer integration, browser behavior and formal RIG remain unqualified where not separately evidenced. No domain role is promoted to qualified, and no v21 deployment, product implementation or release is claimed. See [continuation gates](paper/CONTINUATION_GATES_20261103.md).
+
+All 67 assigned boards are accounted for: 48 in the canonical file plus 19 on the two assigned MASTERMIND PAGES pages. Live exact-file reads observed these identities and dimensions on 2026-11-03 UTC. This is the retained **initial/source-static baseline disposition**, not a current successor or approval ledger. Exact original page links and observed board IDs remain unchanged. The initial observation had no Paper effects; the continuation now has native candidate additions and the newly authored Read me board47Q-0 moved to p-9-0. No relocation of the 67 original baseline boards is claimed.
+
+The JSON inspection field distinguishes identity-only reads, structural trees and visual screenshots. A census row is not visual or behavioral qualification. Full deep validation of every retained domain variant remains its owner's responsibility. The paired build plan and native-progress.json track current editable construction. Final original-to-candidate bindings will use the final snapshots; this baseline does not invent successor IDs.
 
 | File / page | Board ID | Observed name | Dimensions | Disposition | Successor contract |
 | --- | --- | --- | --- | --- | --- |
@@ -74,7 +80,7 @@ The JSON inspection field distinguishes identity-only reads, structural trees an
 | [Canonical / p-8-1](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-8-1) | 1-0 | SOURCE / Macro · 1440 · Dark EN · Sep 11 snapshot · import under review | 1440 × 2699 | RETAIN | Retained reference/lineage at original location |
 | [Canonical / p-8-1](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-8-1) | 23O-0 | PENDING / public-browser PNG transfer · local witness preserved | 1440 × 2699 | RETAIN | Retained reference/lineage at original location |
 
-**Counts:** 25 RETAIN; 42 IMPROVE; 0 RELOCATE; 0 REMOVE; 0 BLOCKED_DATA. All 67 edit states remain NOT_APPLIED_TO_PAPER. There are no fabricated successor IDs or approval identities. Existing references remain accessible at their original URLs.
+**Counts:** 25 RETAIN; 42 IMPROVE; 0 RELOCATE; 0 REMOVE; 0 BLOCKED_DATA. The JSON rows' `NOT_APPLIED_TO_PAPER` edit states are explicitly historical initial/source-static observations of these originals, not current candidate-authoring status. Current status is NATIVE_AUTHORING_IN_PROGRESS. Final successor IDs/variant mappings remain unbound; no approval identity is fabricated. Existing references remain accessible at their original URLs.
 
 ## Specific defects verified visually
 
@@ -82,5 +88,5 @@ The JSON inspection field distinguishes identity-only reads, structural trees an
 - **2A7-0:** the first loading specimen visibly contains EMPTY / No observations yet above skeleton bars. Separate loading and empty copy is required. Colored left rails remain in other states.
 - **35W-0:** state/access/chart pattern retains accent rails/colored boundary treatments; the candidate uses neutral grouping, semantic text and focus outlines.
 
-Other improvements are contract proposals from structural/source inspection and need visual readback when applied. Existing charts, evidence, recovery and mobile bilingual patterns remain retained capabilities.
+Other baseline improvements were contract proposals from structural/source inspection. Current native candidates require their own final visual readback and original-to-successor mapping; the baseline observations alone do not qualify them. Existing charts, evidence, recovery and mobile bilingual patterns remain retained capabilities.
 

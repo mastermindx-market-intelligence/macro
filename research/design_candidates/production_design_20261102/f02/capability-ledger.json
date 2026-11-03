@@ -139,7 +139,7 @@
       "disposition": "IMPROVE",
       "successor": "Loading no longer contains EMPTY; empty gives reason; errors retain useful prior data and retry.",
       "reason": "Improve shared presentation/accessibility without deleting meaning or capability.",
-      "dependency": "No Paper change applied yet.",
+      "dependency": "Native state construction/evidence binding and review remain in progress; retained originals are not claimed replaced.",
       "reviewer_decision": "pending independent admitted review"
     },
     {
@@ -349,7 +349,7 @@
       "disposition": "RETAIN",
       "successor": "All 67 boards have per-ID disposition; no moves, deletions or fake approval.",
       "reason": "Preserve useful existing capability and its owner.",
-      "dependency": "F03 organization and P00 writer; current location does not demote authority.",
+      "dependency": "F03 organization; final native successor binding and review. The accepted direct writer is available; current location does not demote authority.",
       "reviewer_decision": "pending independent admitted review"
     },
     {
@@ -362,5 +362,20 @@
       "dependency": "Later separately authorized implementation; incumbent #7849 preserved.",
       "reviewer_decision": "pending independent admitted review"
     }
-  ]
+  ],
+  "continuation": {
+    "status": "NATIVE_AUTHORING_IN_PROGRESS",
+    "progress_receipt": "paper/native-progress.json",
+    "gates": "paper/CONTINUATION_GATES_20261103.md",
+    "carrier": "Mastermind Paper direct app",
+    "readme": {
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "page_id": "p-9-0",
+      "board_id": "47Q-0",
+      "url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
+      "observation": "Root reported admitted direct create-page and own-board move applied; final native snapshot binding remains in root continuation."
+    },
+    "final_role_predecessor_mapping": "pending final native snapshots; no mapping inferred",
+    "qualification": "No frozen F01/F02 release, domain-role qualification, consumer integration, browser behavior, formal RIG or product release is claimed."
+  }
 }
