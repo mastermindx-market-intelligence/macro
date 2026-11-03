@@ -21,7 +21,7 @@ changed:
   - path: agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md
     what: "Add this handoff pointer without changing Executive wave states or claiming live Ubuntu4 capacity."
 verified:
-  - claim: "The source candidate is published in Mastermind PR #2008 at exact head 6208177cff22ec6c849b5b2f78ac261691b396ef."
+  - claim: "The source candidate is published in Mastermind PR #2008 at exact head 5bab743fc8f99e2e2af42619a6975a5778f4ef62."
     command: "studio_git_push_current_branch; GitHub GET repos/mastermindx-market-intelligence/Mastermind/git/ref/heads/sol/web-ubuntu4-fabric-integration-20261103-c3"
     result: "APPLIED; local and remote head match; source tree clean."
   - claim: "Ubuntu4 passes physical placement gates while automatic MiniMax placement remains held."
@@ -36,6 +36,9 @@ verified:
   - claim: "Current release declarations match all staged source bytes."
     command: "python3 rollout/build_review_stage.py; verify SHA256 of each staged manifest path; python3.12 -m unittest test_support_policy_source -q"
     result: "102 files verified; manifest 9463889cb7146504095ecf2dee774c28d8ddda5cb50515f2afcb0b7b15cf8563. Five support/current-generation cases passed in the final 15-test focused run."
+  - claim: "Independent review identified five stale current-source pins; the exact repair passed all affected checks."
+    command: "fabric_result and fabric_accept for u4-sparse-review-20261103-c3-a; python3.12 -m pytest on the five affected current-reader files/cases listed in the Mastermind source plan"
+    result: "Terminal rc0, CHANGES_REQUIRED consumed and accepted as useful review; 5bab743f repairs only the five test assertions and evidence note; 8 passed, exit0. Runtime/manifest bytes unchanged."
 unverified:
   - claim: "Ubuntu4 has an accepted current-key provider enrollment and can finish a real admitted task."
     what_would_verify: "Approved host-local enrollment followed by one genuine native first-worker run, retained useful result, settled lease and original-parent acceptance."
@@ -46,7 +49,7 @@ unverified:
 unresolved:
   - "All seven Ubuntu4 modes remain qualification-only. Existing credential-owner enrollment action in Mastermind #539 comment 6398589356 remains unresolved; no secret copy or denied-path retry was attempted."
   - "The M2 broad donor/security run is not green: 69 passed and 64 failed because Apple Git emits sparse-index-expansion advice on stderr, rejected by the unchanged strict reader. Preserve this known limitation."
-  - "Independent source review u4-sparse-review-20261103-c3-a was submitted through Fabric under original root ubuntu4-fabric-hardening-20261023 and parent ubuntu4-fabric-integration-20261103-c3; reconcile its same-ID result before any continuation."
+  - "First review u4-sparse-review-20261103-c3-a returned CHANGES_REQUIRED and was accepted as useful review evidence; its five current-reader pin findings were repaired in 5bab743f and all 8 affected tests passed. Follow-up u4-sparse-review-20261103-c3-b is submitted on the same original root/parent; reconcile that distinct review result before release."
 next_actions:
   - "Current assigned receiver: inspect Mastermind #539 and PR #2008, reconcile exact branch/source custody and the existing Fabric review; finish permitted source review and hosted qualification on the same carrier."
   - "Chris or the approved credential owner: complete Ubuntu4-local MiniMax enrollment through the incumbent owner action in #539. Do not put credentials in GitHub or chat."
@@ -74,7 +77,7 @@ routing repair is published in [Mastermind PR #2008](https://github.com/mastermi
 no real Ubuntu4 provider task or session was completed by this work.
 
 The task tree is
-[UBUNTU4_INTEGRATION.md at 6208177c](https://github.com/mastermindx-market-intelligence/Mastermind/blob/6208177cff22ec6c849b5b2f78ac261691b396ef/ops/native_fabric/quota_continuity/UBUNTU4_INTEGRATION.md).
+[UBUNTU4_INTEGRATION.md at 5bab743f](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5bab743fc8f99e2e2af42619a6975a5778f4ef62/ops/native_fabric/quota_continuity/UBUNTU4_INTEGRATION.md).
 The original fleet carrier remains [Mastermind #539](https://github.com/mastermindx-market-intelligence/Mastermind/issues/539).
 This organizational link is proposed until this record is accepted through its Git carrier.
 
@@ -112,5 +115,7 @@ and this handoff contain the bounded new finding. Existing Executive wave and
 entitlement records remain at their own scope.
 
 No Slack counterpart or temporary watcher was created. The native source adviser
-is complete. The Fabric review has its original stable ID and retained controller;
-consume that result through the same Fabric owner.
+is complete. The first Fabric review is terminal and accepted as review work, not
+source approval. Follow-up review u4-sparse-review-20261103-c3-b has retained
+controller PID 96365; consume its result through the same Fabric owner. The full
+first response SHA-256 is 1d09fdd7f19c7ecdf012c8b478a8ee6c56740ed490333554b1b6a4b94e2f07c5.
