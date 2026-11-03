@@ -1,5 +1,7 @@
 # P12.T30.S2 — missing Terminal data routing correction
 
+Original root-reviewed runtime/source packet: `0ab32c77`. The source-release continuation keeps that runtime blob exact. Current test placement and natural CI integration are described in `CI-INTEGRATION.md`.
+
 Local source candidate only, based on observed protected Macro `2e17ae66adca54dcecb9cbe9c669f32d8593ff41`. Root commissioned changed-serving independent review before any release. No push, PR, CI, HTTP application request, listener, host/config write, reload, provider or browser effect occurred. `caddy adapt` parsed source without validation/provisioning/loading. Previous native error presentation input `498532c3` remains frozen and disjoint.
 
 ## Actual failure and source binding
@@ -36,7 +38,7 @@ Installed **local** adapter: Caddy v2.11.4; exact binary digest is in `source-ad
 Run the focused checks with an installed Caddy:
 
 ```sh
-python3 -m pytest tests/test_terminal_data_caddy.py -q
+CADDY_BIN=caddy python3 -m pytest tests/test_control_room_caddy.py -q
 ```
 
 The suite skips explicitly when no Caddy adapter is installed. Baseline reconstruction may point `MM_CADDY_SOURCE` to the retained exact baseline file; it performs parsing only. No behavioral HTTP model is used or reported as real traffic.
