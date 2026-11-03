@@ -19,6 +19,17 @@ steps; the #10099 G-UI-7 wording corrected on the PR body (symbol_directory `sec
 else the ticker). G-UI-5 and the resolver name field stay with their owners (commodities copy;
 Data OS identity).
 
+**Correction 2026-11-02 (G-UI-5; seat-commissioned W3B orchestrator, read at origin/main
+bc127f55).** The O5 verdict below that the negated `已验证` "still trips `check_validated_claims`"
+is wrong, and the G-UI-5 commodities copy packet is withdrawn. #10306 (947550b1, 2026-10-31)
+already replaced the stamp that did trip the gate (`身份已验证` to `身份已核实`), and the rendered
+`site/commodities.html` carries the new wording. The one `已验证` left at
+`templates/_commodity_decision_workspace.html.j2:213` sits inside `不代表已验证…`, which `_NEG_ZH`
+(`scripts/check_validated_claims.py:610`) classifies as negated. `python3
+scripts/check_validated_claims.py` exits 0 with `--scope all` and with `--scope source`. No copy
+change is owed; this note supersedes the G-UI-5 line under the recommendations and the
+"commodities copy" owner above.
+
 ---
 
 # ORCH-VERIFY (O5) return: GMI 2026-10-21 completion commission
