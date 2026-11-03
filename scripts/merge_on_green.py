@@ -2342,6 +2342,9 @@ def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
 # aborts that verdict, and a loader that reaches past the question for the
 # checkout's own filesystem ends the planner for the sweep.
 PLANNER_ROOT_ENV = "MERGE_ON_GREEN_PLANNER_ROOT"
+# The only variables the planner child inherits: never the sweep's tokens.  HOME
+# keeps a `pip --user` yaml parser importable.
+_PLANNER_ENV_KEYS = ("HOME", "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TMPDIR")
 PLANNER_START_TIMEOUT_SECONDS = 120.0
 PLANNER_CALL_TIMEOUT_SECONDS = 60.0
 # A slow planner costs one sweep this much of its 15-minute job, never more, and
@@ -2546,6 +2549,7 @@ class PlannerManifestValidator:
             self._process = subprocess.Popen(
                 [sys.executable, "-E", "-c", _PLANNER_VALIDATOR_PROGRAM],
                 cwd=self.root,
+                env={key: os.environ[key] for key in _PLANNER_ENV_KEYS if key in os.environ},
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=self._stderr,
@@ -3425,8 +3429,9 @@ class ProofFreshness:
         The planner's scope check asks it about each path a job's commands read
         that neither the job's scope nor a global invalidator covers. A path is
         absent only when every listing on the way to it is complete and says so;
-        an unreadable, truncated or ambiguous listing, a submodule on the way, or
-        a path that is not lexically canonical raises, and the caller re-proves.
+        an unreadable, truncated or ambiguous listing, a submodule or symlink on
+        the way, or a path that is not lexically canonical raises, and the caller
+        re-proves.
         """
         path = PurePosixPath(reference)
         parts = path.parts
@@ -3439,9 +3444,15 @@ class ProofFreshness:
                 return False
             if depth == len(parts):
                 return True
-            kind, _mode, object_sha = entry
-            if kind == "blob":
+            kind, mode, object_sha = entry
+            if kind == "blob" and mode in ("100644", "100755"):
                 return False
+            if kind == "blob":
+                # A checkout resolves a symlink on the way to a path, and the
+                # tree cannot say what it points at.
+                raise RuntimeError(
+                    f"{'/'.join(parts[:depth])} is a {mode} blob the planner would follow"
+                )
             if kind != "tree":
                 raise RuntimeError(
                     f"{'/'.join(parts[:depth])} is a {kind} entry, not a directory"

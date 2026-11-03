@@ -10978,6 +10978,7 @@ def _listing(sha, entries, *, truncated=False) -> dict:
         ("ambiguous", "lists an entry no path lookup can trust"),
         ("allowance", "the sweep's shared extra-read allowance is spent"),
         ("submodule", "scripts is a commit entry, not a directory"),
+        ("symlink", "scripts is a 120000 blob the planner would follow"),
     ],
 )
 def test_a_tree_that_cannot_answer_the_planner_re_proves_without_a_verdict(
@@ -10991,6 +10992,8 @@ def test_a_tree_that_cannot_answer_the_planner_re_proves_without_a_verdict(
     root = fresh._commit_tree_shas[MANIFEST_COMMIT_SHA]
     if case == "submodule":
         fresh._root_trees[root]["scripts"] = ("commit", "160000", "c" * 40)
+    elif case == "symlink":
+        fresh._root_trees[root]["scripts"] = ("blob", "120000", "d" * 40)
     else:
         subtree = fresh._root_trees[root]["scripts"][2]
         entries = fresh._root_trees.pop(subtree)
@@ -11029,6 +11032,7 @@ def test_tree_path_lookups_answer_only_from_complete_canonical_listings():
     fresh = _freshness()
     root = _seed_tree(fresh, {path: ("100644", EMPTY_BLOB_SHA) for path in PLANNER_FIXTURE_FILES})
     fresh._root_trees[root]["vendor"] = ("commit", "160000", "c" * 40)
+    fresh._root_trees[root]["tools"] = ("blob", "120000", "d" * 40)
     for reference in ("", ".", "/etc/passwd", "../x", "a/../b"):
         with pytest.raises(RuntimeError, match="is not a canonical repository path"):
             fresh._tree_path_exists(root, reference)
@@ -11038,6 +11042,9 @@ def test_tree_path_lookups_answer_only_from_complete_canonical_listings():
     assert fresh._tree_path_exists(root, "tests/test_widgets.py/x") is False
     with pytest.raises(RuntimeError, match="vendor is a commit entry, not a directory"):
         fresh._tree_path_exists(root, "vendor/x.py")
+    assert fresh._tree_path_exists(root, "tools") is True
+    with pytest.raises(RuntimeError, match="tools is a 120000 blob the planner would follow"):
+        fresh._tree_path_exists(root, "tools/x.py")
     assert fresh._commit_file_page_reads == 0
 
 
@@ -11093,6 +11100,9 @@ def load_legacy_jobs(manifest, *, gate=None, path_exists=None):
         planner_path_exists("engine")
     if case == "slow":
         time.sleep(3)
+    if case == "env":
+        seen = [key for key in ("HOME", "MERGE_TOKEN", "READ_TOKEN") if key in os.environ]
+        raise ManifestError(" ".join(seen))
     return []
 '''
 
@@ -11153,6 +11163,15 @@ def test_one_planner_child_answers_a_sweep_through_chatter_and_aborts(stub_plann
     assert validator._unavailable.endswith("it was closed")
     assert validator(b"noisy", present) == validator._unavailable
     assert validator.calls == 7
+
+
+def test_the_planner_child_never_inherits_a_sweep_token(monkeypatch, tmp_path, stub_planner):
+    """The child runs the default branch's loader and needs no credential; HOME
+    stays so a `pip --user` yaml parser still imports."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("MERGE_TOKEN", "merge-sentinel")
+    monkeypatch.setenv("READ_TOKEN", "read-sentinel")
+    assert stub_planner()(b"env", lambda _reference: True) == "HOME"
 
 
 @pytest.mark.parametrize(
