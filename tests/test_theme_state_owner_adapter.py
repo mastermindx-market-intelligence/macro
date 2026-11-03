@@ -1028,7 +1028,8 @@ def test_ths_concept_without_exactly_one_expressing_basket_binds_nothing(world, 
     assert read == {"availability": "UNAVAILABLE", "null_reason": code, "value": None}
 
 
-def test_retired_or_reversed_basket_expression_binds_nothing(world):
+def test_expired_basket_expression_edge_binds_nothing(world):
+    # The EXPRESSES edge closed (valid_to) at the capture date, so it no longer binds.
     _bind_ths_through_graph(world, [("basket:baskets_china_ths:thsc900001", THS)], valid_to="2026-10-02")
     assert _membership_read(capture(world), THS)["null_reason"] == "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
 
@@ -1108,9 +1109,16 @@ def test_basket_expressing_two_vendor_concepts_binds_neither(world):
 
 def test_successful_graph_binding_carries_no_null_reason(world):
     _bind_ths_through_graph(world, [(BASKET, THS)])
-    read = _membership_read(capture(world), THS)
+    bundle = capture(world)
+    read = _membership_read(bundle, THS)
     assert read["availability"] == "AVAILABLE"
     assert read.get("null_reason") is None
+    # The binder's own contract: a bound basket never travels with a null reason.
+    # (The capture path ignores the reason whenever a basket binds, so only a
+    # direct call can see it.)
+    reads = bundle.snapshot()["subjects"][THS]["native_reads"]
+    basket, why = adapter._expressed_basket("ths", THS, reads["ontology"], reads.get("basket_ontology"))
+    assert basket is not None and why is None
 
 
 @pytest.mark.parametrize("forge", ["drop_reverse_relation", "drop_basket_read", "retire_basket"])
