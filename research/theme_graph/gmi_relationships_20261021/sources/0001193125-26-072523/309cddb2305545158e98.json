@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-26T00:26:16Z",
+ "accession": "0001193125-26-072523",
+ "cik": "0001517228",
+ "doc_byte_length": 5973097,
+ "doc_sha256": "5a4921b39020ba2f8cb67203272fb9beb0acbc386086160cd8708b9849d3e9f1",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-26",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "visn-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 5499835,
+  "byte_start": 5497898,
+  "normalized": "Other than Comcast and TD Synnex, no direct customer accounted for 10% or more of the Company’s accounts receivable as of December 31, 2025 or 2024.",
+  "normalized_sha256": "e6989339dcf1bdef9db22b2ab46959a589b9677b9dc96d75827531404005d04a",
+  "raw": " </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">Other than Comcast and TD Synnex, </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_c8028a17-0fe1-487b-8428-28e38c7f9491\" contextRef=\"C_17e46dcc-5c2e-4241-bf15-9cf0d5c45f63\" name=\"visn:NumberOfMajorCustomers\" unitRef=\"U_Customer\" decimals=\"INF\" format=\"ixt-sec:numwordsen\"><ix:nonFraction id=\"F_327b39ad-7d8c-4c9f-b239-3694129738db\" contextRef=\"C_429d9866-9349-4f6a-8b5e-b4bc23ccdde4\" name=\"visn:NumberOfMajorCustomers\" unitRef=\"U_Customer\" decimals=\"INF\" format=\"ixt-sec:numwordsen\">no</ix:nonFraction></ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> direct customer accounted for </span><span style=\"font-size:10pt;font-family:Times New Roman;color:#000000;white-space:pre-wrap;font-kerning:none;min-width:fit-content;\"><ix:nonFraction id=\"F_28812a75-d228-4be3-88e8-33510cfcd92f\" contextRef=\"C_3cae2f33-16e5-45b9-b99d-0770cffcde36\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\"><ix:nonFraction id=\"F_048522f9-089c-4665-b1b7-356524a2432d\" contextRef=\"C_1b166493-55f1-46b7-8190-b1e3f1e35eaa\" name=\"us-gaap:ConcentrationRiskPercentage1\" unitRef=\"U_pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">10</ix:nonFraction></ix:nonFraction></span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">% or more of the Company&#8217;s accounts receivable as of </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">December 31, 2025 or 2024.",
+  "raw_sha256": "309cddb2305545158e98a9e1d11440498e30ca71e726088053ab6bf107fefe85"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1517228/000119312526072523/visn-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 155622,
+   "byte_start": 154806,
+   "context_ref": "C_3cae2f33-16e5-45b9-b99d-0770cffcde36",
+   "raw": "<xbrli:context id=\"C_3cae2f33-16e5-45b9-b99d-0770cffcde36\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001517228</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">visn:OtherThanComcastAndTDSynnexCorporationMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:AccountsReceivableMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:RangeAxis\">srt:MaximumMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7cc92e1fd03495991ed9972b4fc1b3321a397e08cdceaf757f4cd4cd86a50751"
+  }
+ ]
+}

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from engine.prophet_live import cn_clock
 from engine.prophet_live import cn_pack as CP
@@ -123,3 +124,159 @@ def test_stock_tradability_ok_matches_the_nightly_predicate() -> None:
     assert stock_tradability_ok("600000.SS", mktcap=10.0) == "mcap"
     assert stock_tradability_ok("600000.SS", mktcap=30.0) is None  # placeholder
     assert stock_tradability_ok("600000.SS", adv_yi=0.01) == "adv"
+
+
+# --- tradability gate on the live pack path (P1) ----------------------------
+# The nightly board applies stock_tradability_ok with maps loaded inline in
+# build_china_library.main; these lock the extracted read-only helper, the strict
+# Boolean map, and the main() wiring that puts the gate on the pack's path.
+
+
+def test_load_tradability_metadata_placeholder_and_latest_st_row(
+        tmp_path, monkeypatch) -> None:
+    from scripts import build_china_library as bcl
+
+    (tmp_path / "china_search").mkdir(parents=True)
+    pd.DataFrame({
+        "ticker": ["600001.SS", "600002.SS"],
+        "mktcap_yi": [500.0, 30.0],          # 30.0 exactly = the placeholder sentinel
+        "name_zh": ["名称一", "名称二"],
+        "name_en": ["One Co", "Two Co"],
+    }).to_parquet(tmp_path / "china_search" / "members.parquet")
+    (tmp_path / "tushare").mkdir(parents=True)
+    pd.DataFrame({
+        "ticker": ["600003.SS", "600003.SS", "600004.SS"],
+        "name": ["ST旧名", "正常名", "*ST新潮"],
+        "trade_date": ["20261001", "20261009", "20261009"],
+    }).to_parquet(tmp_path / "tushare" / "moneyflow.parquet")
+    monkeypatch.setattr(bcl.config, "data_dir", lambda: tmp_path)
+
+    meta = bcl.load_tradability_metadata()
+
+    assert meta["mktcap_by"] == {"600001.SS": 500.0}              # placeholder absent
+    assert meta["name_zh_by"] == {"600001.SS": "名称一", "600002.SS": "名称二"}
+    assert meta["name_en_by"] == {"600001.SS": "One Co", "600002.SS": "Two Co"}
+    assert meta["st_flag_by"] == {"600003.SS": False, "600004.SS": True}  # latest row
+
+
+def test_load_tradability_metadata_missing_files_stay_empty(
+        tmp_path, monkeypatch) -> None:
+    from scripts import build_china_library as bcl
+
+    monkeypatch.setattr(bcl.config, "data_dir", lambda: tmp_path)  # nothing written
+
+    meta = bcl.load_tradability_metadata()
+
+    assert meta == {"mktcap_by": {}, "name_zh_by": {},
+                    "name_en_by": {}, "st_flag_by": {}}
+
+
+def test_tradability_map_is_bool_pass_covers_every_ticker() -> None:
+    from scripts.build_cn_live_pack import tradability_map
+
+    meta = {
+        "mktcap_by": {"600006.SS": 10.0, "600007.SS": 30.0},
+        "name_zh_by": {"600005.SS": "ST天成"},
+        "name_en_by": {},
+        "st_flag_by": {"600004.SS": True},
+    }
+    liq_by = {"600008.SS": {"adv_yi": 0.38}}
+    tickers = ["600001.SS", "600004.SS", "600005.SS", "600006.SS",
+               "600007.SS", "600008.SS", "600009.SS"]
+
+    m = tradability_map(tickers, meta=meta, liq_by=liq_by)
+
+    assert set(m) == set(tickers)                    # every input ticker present
+    assert all(isinstance(v, bool) for v in m.values())  # raw reasons would fail here
+    assert m["600001.SS"] is True                    # nothing known -> passes through
+    assert m["600004.SS"] is False                   # ST flag
+    assert m["600005.SS"] is False                   # ST name_zh
+    assert m["600006.SS"] is False                   # cap 10.0 < 30 亿 floor
+    assert m["600007.SS"] is True                    # 30.0 exactly = placeholder -> unknown
+    assert m["600008.SS"] is False                   # ADV 0.38 < 0.5 亿/day floor
+    assert m["600009.SS"] is True                    # missing cap AND ADV -> passes
+
+
+def test_main_wires_full_tradability_map_and_universe_rows(monkeypatch) -> None:
+    import scripts.build_cn_live_pack as B
+    from scripts import build_china_library as bcl
+
+    rows = [
+        ("600519.SS", _close(), None, "Kweichow", "Consumer"),
+        ("510300.SS", _close(), None, "CSI300", "Sector ETF"),   # filtered out
+        ("000001.SZ", _close(), None, "PAB", "Financials"),
+    ]
+    seen: dict = {}
+    payload = {"meta": {}}
+
+    def fake_build(**kwargs):
+        seen.update(kwargs)
+        return payload
+
+    published: list = []
+    monkeypatch.setattr(bcl, "universe", lambda: rows)
+    monkeypatch.setattr(bcl, "load_tradability_metadata",
+                        lambda: {"mktcap_by": {}, "name_zh_by": {},
+                                 "name_en_by": {}, "st_flag_by": {}})
+    monkeypatch.setattr("engine.china_liquidity.liquidity_map", lambda ts: {})
+    monkeypatch.setattr(B, "build", fake_build)
+    monkeypatch.setattr(B.r2io, "put_json", lambda *a, **k: published.append(a))
+
+    assert B.main([]) == 0
+
+    assert set(seen["tradable"]) == {"600519.SS", "000001.SZ"}   # exactly the stocks
+    assert all(v is True for v in seen["tradable"].values())
+    assert [r[0] for r in seen["universe_rows"]] == ["600519.SS", "000001.SZ"]
+    assert seen["limit"] is None and seen["now"] is None
+    assert published == []                                       # no --publish, no --out
+    assert payload["meta"]["tradability"] == {"universe": 2, "pass": 2,
+                                              "drop": {"st": 0, "mcap": 0, "adv": 0}}
+
+
+def test_build_refuses_a_map_missing_a_universe_ticker() -> None:
+    import scripts.build_cn_live_pack as B
+
+    rows = [("600519.SS", _close(), None, "K", "Consumer"),
+            ("000001.SZ", _close(), None, "P", "Financials")]
+    with pytest.raises(RuntimeError) as ei:
+        B.build(universe_rows=rows, tradable={"600519.SS": True},
+                gate_fn=_gate(), frozen={})
+    assert "000001.SZ" in str(ei.value) and "1/2" in str(ei.value)
+    with pytest.raises(RuntimeError):
+        B.build(universe_rows=rows, tradable={},          # empty map, non-empty rows
+                gate_fn=_gate(), frozen={})
+
+
+def test_main_returns_rc1_when_the_map_cannot_cover_the_universe(
+        monkeypatch) -> None:
+    import scripts.build_cn_live_pack as B
+    from scripts import build_china_library as bcl
+
+    rows = [("600519.SS", _close(), None, "K", "Consumer"),
+            ("000001.SZ", _close(), None, "P", "Financials")]
+    built: list = []
+    monkeypatch.setattr(bcl, "universe", lambda: rows)
+    monkeypatch.setattr(bcl, "load_tradability_metadata",
+                        lambda: {"mktcap_by": {}, "name_zh_by": {},
+                                 "name_en_by": {}, "st_flag_by": {}})
+    monkeypatch.setattr("engine.china_liquidity.liquidity_map", lambda ts: {})
+    monkeypatch.setattr(B, "tradability_map",
+                        lambda ts, *, meta, liq_by: {"600519.SS": True})  # partial
+    monkeypatch.setattr(B, "build", lambda **kw: built.append(kw))
+
+    assert B.main([]) == 1            # ::error + rc 1 — no pack published
+    assert built == []                # the refusal fires before build
+
+
+def test_build_filters_untradable_names_from_the_pack() -> None:
+    import scripts.build_cn_live_pack as B
+
+    rows = [("600519.SS", _close(10.0), None, "Kweichow", "Consumer"),
+            ("000001.SZ", _close(12.0), None, "PAB", "Financials")]
+    payload = B.build(universe_rows=rows,
+                      tradable={"600519.SS": True, "000001.SZ": False},
+                      gate_fn=_gate(), frozen={})
+
+    assert "600519.SS" in payload["names"]
+    assert "000001.SZ" not in payload["names"]     # the one False never reaches the pack
+    assert payload["meta"]["universe_n"] == 1

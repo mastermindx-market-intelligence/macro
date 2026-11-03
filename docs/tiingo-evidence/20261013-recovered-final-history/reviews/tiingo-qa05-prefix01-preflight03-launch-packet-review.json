@@ -1,0 +1,38 @@
+{
+  "schema": "tiingo.qa05.exact_preflight_launch_packet_review/v1",
+  "recorded_at_utc": "2026-10-13T21:24:58.335962+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation05-20261013-01a12ab6",
+  "verdict": "PASS_SINGLE_EXACT_FOREGROUND_PREFLIGHT01_LAUNCH_BINDING",
+  "packet_file": "tiingo-qa05-prefix01-preflight03-launch-packet.json",
+  "packet_sha256": "9301bb4ea093ed6cf95e8c4e833dace90c4e6a455e76f25345af4ecbde6522bd",
+  "source_sha256": "7e734c3bfb9c6b4f79468eb1516a8d86d39361e427cb0dfa8227833acb4e93af",
+  "source_review_file": "tiingo-qa05-bound03-exact-source-review.json",
+  "source_review_sha256": "c096a26ab708bc17ca3ff8f77357bbdeef837d2b457de3b55a9c0eaa7a507d35",
+  "wrapper_sha256": "c0a6300282f8aee2a55a89f2f4ae20475b5c81fdc1c53d5ebd26815c32a44788",
+  "frozen_inputs_verified": 28,
+  "checks": [
+    "Exact modepreflight/prefix01/root/RUN05/source7e/wrapper02 agree",
+    "All28 pinned E inputs verified; sourcecontext independently verifies128 accepted predecessor files and pinned producer sources",
+    "Seven wrapper/output paths distinct, disjoint from inputs/source/packet, in E and truly absent by lstat",
+    "Only two stage outputs: unvalidated selection snapshot and disposition preflight; no archive writer or provider invocation in this branch",
+    "This exclusive packet review externally binds the exact source verdict to the already-pinned source; no packet revision needed"
+  ],
+  "new_output_files": [
+    "eod-wave15-unadmitted-continuation05-prefix01-materialization-scope.json",
+    "eod-wave15-unadmitted-continuation05-prefix01-disposition-preflight.json"
+  ],
+  "admission": "Parent may invoke this exact read-only preflight packet once on the existing foreground wrapper02 carrier. Source/PIN change or output occupation fails closed for same-operation reconciliation.",
+  "required_after_execution": [
+    "Consume actual native and durable wait/validation outcomes separately",
+    "Require snapshot and completed preflight hashes, exact121 selection and complete normalizer/artifact proof; snapshot existence alone is not successful preflight",
+    "Save original-root actual preflight consumption and obtain separate exact qualifier launch binding before any archive materialization"
+  ],
+  "qualifier_or_coverage_admitted": false,
+  "runtime_preflight_success_claimed": false,
+  "reviewer_executed_stage": false,
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "delegation": false
+}

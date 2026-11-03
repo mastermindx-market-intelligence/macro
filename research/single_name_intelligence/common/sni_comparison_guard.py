@@ -133,7 +133,31 @@ class ComparisonVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """A field documented as an id, ref, code, label, owner reference or
+    other opaque text counts as present ONLY when ``_text_present`` is True.
+
+    The seat's FAMILY TEXT RULE — rejects ``None``, empty string, whitespace-only,
+    leading/trailing whitespace, and non-str (int, float, bool, bytes, list,
+    dict, set, etc.). Equality between two caller-supplied ids is evaluated
+    only after both sides pass ``_text_present``; a non-text side is ABSENT
+    (its *_MISSING-style reason) and never equals anything. Unhashable values
+    never raise from a public guard function.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
+    """Legacy blank-check used for the numeric ``price`` slot only.
+
+    Fields documented as ids / refs / codes / labels route through
+    ``_text_present`` instead, per the seat's FAMILY TEXT RULE.
+    """
     if value is None:
         return True
     if value == "":
@@ -142,7 +166,7 @@ def _blank(value: object) -> bool:
 
 
 def _present(fact: Mapping[str, object], key: str) -> bool:
-    return not _blank(fact.get(key))
+    return _text_present(fact.get(key))
 
 
 def _as_date(text: object) -> date | None:
@@ -224,14 +248,14 @@ def _leg_reasons(
     if _as_aware_datetime(leg.get("price_ts")) is None:
         found.append("PRICE_TS_MISSING")
     session_state = leg.get("session_state")
-    if session_state not in _SESSION_KNOWN:
+    if not isinstance(session_state, str) or session_state not in _SESSION_KNOWN:
         found.append("SESSION_STATE_UNKNOWN")
     elif session_state not in _SESSION_TRADING:
         found.append("SESSION_NOT_TRADING")
     role = leg.get("instrument_role")
-    if role not in _ROLES:
+    if not isinstance(role, str) or role not in _ROLES:
         found.append("ROLE_UNKNOWN")
-    elif requested_role == "target" and role == "proxy":
+    elif _text_present(requested_role) and _text_present(role) and requested_role == "target" and role == "proxy":
         found.append("PROXY_AS_TARGET")
     if _not_known_as_of(leg.get("known_at"), as_of):
         found.append("NOT_KNOWN_AS_OF")
@@ -248,7 +272,7 @@ def _fx_reasons(
 ) -> list[str]:
     left_ccy = left.get("currency")
     right_ccy = right.get("currency")
-    if left_ccy == right_ccy:
+    if _text_present(left_ccy) and _text_present(right_ccy) and left_ccy == right_ccy:
         return []
     found: list[str] = []
     if fx is None:
@@ -264,7 +288,13 @@ def _fx_reasons(
         found.append("FX_TS_MISSING")
     base = fx.get("base")
     quote = fx.get("quote")
-    if {base, quote} != {left_ccy, right_ccy}:
+    if (
+        not _text_present(base)
+        or not _text_present(quote)
+        or not _text_present(left_ccy)
+        or not _text_present(right_ccy)
+        or {base, quote} != {left_ccy, right_ccy}
+    ):
         found.append("CURRENCY_PAIR_MISMATCH")
     if rate_ts is not None:
         for leg in (left, right):
@@ -313,10 +343,10 @@ def check_comparison(
     )
     left_iss = left.get("issuer_id")
     right_iss = right.get("issuer_id")
-    if left_iss != right_iss:
-        reasons.append("ISSUER_MISMATCH")
-    elif requested_role == "target" and (
-        (not _present(left, "issuer_id")) or (not _present(right, "issuer_id"))
+    if (
+        not _text_present(left_iss)
+        or not _text_present(right_iss)
+        or left_iss != right_iss
     ):
         reasons.append("ISSUER_MISMATCH")
     reasons.extend(

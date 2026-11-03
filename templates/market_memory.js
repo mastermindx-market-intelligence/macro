@@ -6,10 +6,15 @@
     macro: null,
     symbol: null,
     ticker: 'AAPL',
+    latestRaw: 'AAPL',
     macroRequest: 0,
     symbolRequest: 0,
     macroAuthBlocked: false,
-    symbolAuthBlocked: false
+    symbolAuthBlocked: false,
+    macroNotice: null,
+    symbolNotice: null,
+    legacyMacroPending: false,
+    legacySymbolPending: false
   };
   var ui = {};
 
@@ -75,11 +80,40 @@
     });
   }
 
+  function syncIntent(patch) {
+    if (!window.MarketMemoryIntent) return true; // Existing standalone legacy client.
+    var result = window.MarketMemoryIntent.syncReturn(patch);
+    if (result.ok) return true;
+    // Clear a stale auth destination on invalid/oversize intent. No source data is stored.
+    try { var url = new URL(location.href); url.searchParams.delete('ret'); history.replaceState(history.state, '', url.pathname + '?' + url.searchParams.toString()); } catch (error) { /* no-op */ }
+    return false;
+  }
+  function signinHref() {
+    if (!window.MarketMemoryIntent) return '#mm-symbol-form';
+    // Rendering a notice must not mutate the shared OAuth capsule.
+    var patch = {language: isZh() ? 'zh' : 'en'};
+    if (state.symbolRequest) patch.issuerInput = state.latestRaw;
+    var result = window.MarketMemoryIntent.target(patch);
+    if (!result.ok) return '#mm-symbol-form';
+    var params = new URLSearchParams();
+    params.set('signin', '1');
+    params.set('ret', result.target);
+    return '/?' + params.toString();
+  }
+  function invalidTickerFeedback() {
+    state.symbolNotice = {kind: 'invalid'};
+    ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
+    ui.gridList.innerHTML = '';
+  }
+
   function empty(titleEn, titleZh, bodyEn, bodyZh, error) {
     var action = '';
     var upgradeRequired = error && (error.status === 402 || error.status === 403);
     if (error && error.status === 401) {
-      action = ' <a href="plans.html" data-mm-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>';
+      action = ' <a href="' + esc(signinHref()) + '" data-mm-action="signin">' + esc(copy('Sign in', '登录')) + ' →</a>';
+      if (window.MarketMemoryIntent && !window.MarketMemoryIntent.oauthPreservation().ok) {
+        action += ' ' + esc(copy('This tab cannot preserve your selection through Google sign-in.', '此标签页无法在 Google 登录后保留当前选择。'));
+      }
     } else if (upgradeRequired) {
       action = ' <a href="plans.html">' + esc(copy('View plans', '查看方案')) + ' →</a>';
     }
@@ -163,26 +197,23 @@
   }
 
   function loadMacro() {
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacyMacroPending = true; return; }
     var requestId = ++state.macroRequest;
+    state.macro = null;
+    state.macroNotice = {kind: 'loading'};
+    renderMacroNotice();
     request('/macro?limit=6').then(function (payload) {
       if (requestId !== state.macroRequest) return;
       state.macroAuthBlocked = false;
       state.macro = payload;
+      state.macroNotice = null;
       renderMacro();
     }).catch(function (error) {
       if (requestId !== state.macroRequest) return;
       state.macroAuthBlocked = error.status === 401;
       state.macro = null;
-      ui.macroState.className = 'mm-state-pill is-error';
-      ui.macroState.textContent = copy('Memory unavailable', '记忆暂不可用');
-      ui.macroQuery.innerHTML = empty(
-        error.status === 401 ? 'Sign in to open Market Memory' : 'Macro memory unavailable',
-        error.status === 401 ? '登录以打开市场记忆' : '宏观记忆暂不可用',
-        error.status === 402 || error.status === 403 ? 'This evidence surface requires full-site access.' : 'The source engine did not return a complete state.',
-        error.status === 402 || error.status === 403 ? '该证据页面需要完整站点权限。' : '源引擎未返回完整状态。',
-        error
-      );
-      ui.macroEpisodes.innerHTML = '';
+      state.macroNotice = {kind: 'error', status: error.status};
+      renderMacroNotice();
     });
   }
 
@@ -193,28 +224,67 @@
     state.symbol = null;
     state.macroAuthBlocked = true;
     state.symbolAuthBlocked = !!state.ticker;
+    state.macroNotice = {kind: 'signedout', status: 401};
+    state.symbolNotice = {kind: 'signedout', status: 401};
+    renderMacroNotice();
+    renderSymbolNotice();
+  }
+
+  function renderMacroNotice() {
+    var notice = state.macroNotice;
+    if (!notice) return;
+    if (notice.kind === 'loading') {
+      ui.macroState.className = 'mm-state-pill';
+      ui.macroState.textContent = copy('Loading macro memory…', '正在加载宏观记忆…');
+      ui.macroQuery.innerHTML = '<div class="mm-skeleton mm-skeleton-query"></div>';
+      ui.macroEpisodes.innerHTML = '<div class="mm-skeleton"></div>';
+      ui.macroNote.textContent = '';
+      return;
+    }
+    var signedOut = notice.kind === 'signedout';
     ui.macroState.className = 'mm-state-pill is-error';
-    ui.macroState.textContent = copy('Sign in required', '需要登录');
+    ui.macroState.textContent = signedOut ? copy('Sign in required', '需要登录') : copy('Memory unavailable', '记忆暂不可用');
     ui.macroQuery.innerHTML = empty(
-      'Sign in to open Market Memory',
-      '登录以打开市场记忆',
-      'Authenticated context is cleared when you sign out.',
-      '退出登录后，已保存的上下文将被清除。',
-      { status: 401 }
+      notice.status === 401 ? 'Sign in to open Market Memory' : 'Macro memory unavailable',
+      notice.status === 401 ? '登录以打开市场记忆' : '宏观记忆暂不可用',
+      signedOut ? 'Authenticated context is cleared when you sign out.' :
+        (notice.status === 402 || notice.status === 403 ? 'This evidence surface requires full-site access.' : 'The source engine did not return a complete state.'),
+      signedOut ? '退出登录后，已保存的上下文将被清除。' :
+        (notice.status === 402 || notice.status === 403 ? '该证据页面需要完整站点权限。' : '源引擎未返回完整状态。'),
+      notice
     );
     ui.macroEpisodes.innerHTML = '';
-    ui.macroNote.textContent = copy(
-      'No historical payload remains in this browser view.',
-      '此浏览器视图中未保留历史载荷。'
-    );
-    ui.symbolSummary.innerHTML = empty(
-      'Sign in to open symbol memory',
-      '登录以打开个股记忆',
-      'Authenticated symbol context is cleared when you sign out.',
-      '退出登录后，已保存的个股上下文将被清除。',
-      { status: 401 }
-    );
+    ui.macroNote.textContent = signedOut ? copy(
+      'No historical payload remains in this browser view.', '此浏览器视图中未保留历史载荷。'
+    ) : '';
+  }
+
+  function renderSymbolNotice() {
+    var notice = state.symbolNotice;
+    if (!notice) return;
     ui.gridList.innerHTML = '';
+    if (notice.kind === 'invalid') { invalidTickerFeedback(); return; }
+    if (notice.kind === 'unpreservable') {
+      ui.symbolSummary.innerHTML = empty('Cannot preserve this link', '无法保留此链接',
+        'Shorten the input or correct the page reference before signing in.', '请缩短输入或修正页面引用，然后登录。');
+      return;
+    }
+    if (notice.kind === 'resume') {
+      ui.symbolSummary.innerHTML = empty('Selection unavailable after sign-in', '登录后无法恢复选择',
+        'This tab could not restore the previous selection. Choose a ticker or saved capture again.',
+        '此标签页无法恢复先前选择。请重新选择代码或已保存记录。');
+      return;
+    }
+    var signedOut = notice.kind === 'signedout';
+    ui.symbolSummary.innerHTML = empty(
+      notice.status === 404 ? 'No memory for ' + notice.ticker : (notice.status === 401 ? 'Sign in to open symbol memory' : 'Symbol memory unavailable'),
+      notice.status === 404 ? notice.ticker + ' 暂无记忆' : (notice.status === 401 ? '登录以打开个股记忆' : '个股记忆暂不可用'),
+      signedOut ? 'Authenticated symbol context is cleared when you sign out.' :
+        (notice.status === 402 || notice.status === 403 ? 'This evidence surface requires full-site access.' : 'No supported price history or event receipt was returned.'),
+      signedOut ? '退出登录后，已保存的个股上下文将被清除。' :
+        (notice.status === 402 || notice.status === 403 ? '该证据页面需要完整站点权限。' : '未返回受支持的价格历史或事件凭据。'),
+      notice
+    );
   }
 
   var GRID_LABELS = {
@@ -316,41 +386,45 @@
   function loadSymbol(raw) {
     var requestId = ++state.symbolRequest;
     state.symbol = null;  // A new intent invalidates evidence before validation or loading.
+    state.symbolNotice = null;
+    state.latestRaw = raw === null || raw === undefined ? '' : String(raw);
+    var intentSaved = syncIntent({ issuerInput: state.latestRaw, language: isZh() ? 'zh' : 'en' });
     var ticker = normalizeTicker(raw);
     state.ticker = ticker;  // Empty means the latest submitted intent cannot be retried.
     state.symbolAuthBlocked = false;
-    if (!ticker) {
-      ui.symbolSummary.innerHTML = empty('Check the ticker', '请检查代码', 'Use a canonical market symbol such as AAPL, BRK-B or BTC-USD.', '请输入 AAPL、BRK-B 或 BTC-USD 等标准市场代码。');
-      ui.gridList.innerHTML = '';
+    if (!intentSaved) {
+      state.ticker = '';
+      state.symbolNotice = {kind: 'unpreservable'};
+      renderSymbolNotice();
       return;
     }
+    if (!ticker) { invalidTickerFeedback(); return; }
     ui.symbolInput.value = ticker;
     ui.symbolSummary.innerHTML = '<div class="mm-skeleton mm-skeleton-query"></div>';
     ui.gridList.innerHTML = '<div class="mm-skeleton"></div><div class="mm-skeleton"></div><div class="mm-skeleton"></div>';
     try { localStorage.setItem('market_memory_ticker', ticker); } catch (error) { /* no-op */ }
-    try {
-      var url = new URL(location.href);
-      url.searchParams.set('ticker', ticker);
-      history.replaceState(null, '', url.pathname + '?' + url.searchParams.toString());
-    } catch (error) { /* old browser fallback */ }
+    if (window.MarketMemoryIntent) syncIntent({ticker: ticker});
+    else {
+      try {
+        var url = new URL(location.href); url.searchParams.set('ticker', ticker);
+        history.replaceState(null, '', url.pathname + '?' + url.searchParams.toString());
+      } catch (error) { /* standalone legacy client */ }
+    }
 
+    // Hidden legacy panels defer only the read; validation and intent sync above still run.
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacySymbolPending = true; return; }
     request('/symbol/' + encodeURIComponent(ticker)).then(function (payload) {
       if (requestId !== state.symbolRequest) return;
       state.symbolAuthBlocked = false;
       state.symbol = payload;
+      state.symbolNotice = null;
       renderSymbol();
     }).catch(function (error) {
       if (requestId !== state.symbolRequest) return;
       state.symbolAuthBlocked = error.status === 401;
       state.symbol = null;
-      ui.symbolSummary.innerHTML = empty(
-        error.status === 404 ? 'No memory for ' + ticker : (error.status === 401 ? 'Sign in to open symbol memory' : 'Symbol memory unavailable'),
-        error.status === 404 ? ticker + ' 暂无记忆' : (error.status === 401 ? '登录以打开个股记忆' : '个股记忆暂不可用'),
-        error.status === 402 || error.status === 403 ? 'This evidence surface requires full-site access.' : 'No supported price history or event receipt was returned.',
-        error.status === 402 || error.status === 403 ? '该证据页面需要完整站点权限。' : '未返回受支持的价格历史或事件凭据。',
-        error
-      );
-      ui.gridList.innerHTML = '';
+      state.symbolNotice = {kind: 'error', status: error.status, ticker: ticker};
+      renderSymbolNotice();
     });
   }
 
@@ -364,13 +438,25 @@
     ui.symbolSummary = document.getElementById('mm-symbol-summary');
     ui.gridList = document.getElementById('mm-grid-list');
 
+    ui.legacy = document.getElementById('mmr-legacy');
+    // The retained page hides these panels inside <details id="mmr-legacy">.
+    // Its first open starts the deferred reads; standalone pages stay eager.
+    if (ui.legacy) {
+      ui.legacy.addEventListener('toggle', function () {
+        if (!ui.legacy.hasAttribute('open')) return;
+        if (state.legacyMacroPending) { state.legacyMacroPending = false; loadMacro(); }
+        if (state.legacySymbolPending) { state.legacySymbolPending = false; loadSymbol(state.latestRaw); }
+      });
+    }
+
     ui.symbolForm.addEventListener('submit', function (event) {
       event.preventDefault();
       loadSymbol(ui.symbolInput.value);
     });
     document.addEventListener('click', function (event) {
       var action = event.target && event.target.closest && event.target.closest('[data-mm-action="signin"]');
-      if (!action) return;
+      if (!action || event.defaultPrevented || event.button > 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (!syncIntent({issuerInput: state.latestRaw, language: isZh() ? 'zh' : 'en'})) { event.preventDefault(); return; }
       if (window.MDXAuth && typeof window.MDXAuth.open === 'function') {
         event.preventDefault();
         window.MDXAuth.open('signin');
@@ -385,17 +471,53 @@
         var retryMacro = state.macroAuthBlocked;
         var retrySymbol = state.symbolAuthBlocked;
         if (retryMacro) loadMacro();
-        if (retrySymbol) loadSymbol(state.ticker);
+        if (retrySymbol && state.ticker) loadSymbol(state.latestRaw);
       });
     }
     document.addEventListener('langchange', function () {
+      var patch = {language: isZh() ? 'zh' : 'en'};
+      if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.selectLanguage === 'function') {
+        window.MarketMemoryIntent.selectLanguage(patch.language);
+      }
+      if (state.symbolRequest) patch.issuerInput = state.latestRaw;
+      syncIntent(patch);
       if (state.macro) renderMacro();
+      else renderMacroNotice();
       if (state.symbol) renderSymbol();
+      else renderSymbolNotice();
     });
 
-    var initial = '';
-    try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
-    initial = normalizeTicker(initial) || 'AAPL';
+    var initial = '', explicitInput = false;
+    if (window.MarketMemoryIntent) {
+      var resumed = window.MarketMemoryIntent.resumeStatus();
+      if (!resumed.ok) {
+        state.ticker = '';
+        state.symbolNotice = {kind: 'resume'};
+        renderSymbolNotice();
+        return;
+      }
+      var restored = window.MarketMemoryIntent.read();
+      if (!restored.ok) {
+        state.ticker = ''; invalidTickerFeedback(); syncIntent(); return;
+      }
+      if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
+      explicitInput = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput');
+      if (explicitInput) initial = restored.intent.issuerInput;
+    }
+    if (!explicitInput) {
+      try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
+      initial = normalizeTicker(initial) || 'AAPL';
+    }
+    ui.symbolInput.value = initial;
+    window.addEventListener('popstate', function () {
+      if (!window.MarketMemoryIntent) return;
+      var restored = window.MarketMemoryIntent.read();
+      if (!restored.ok) { ++state.symbolRequest; state.ticker = ''; state.symbol = null; invalidTickerFeedback(); return; }
+      if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
+      var raw = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput') ? restored.intent.issuerInput : (restored.intent.ticker || '');
+      ui.symbolInput.value = raw; loadSymbol(raw);
+    });
+
     loadMacro();
     loadSymbol(initial);
   }

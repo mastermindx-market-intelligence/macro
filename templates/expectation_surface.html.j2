@@ -1,0 +1,2071 @@
+{# Expectation Surface — Information→Price descriptive consensus layer.
+   Implements the ACCEPTED R1 design spec (2026-10-21) over the wave-1 builder
+   context (scripts/build_expectation_surface.py → summary). Shared _site_nav
+   head/nav/theme family, unchanged. All copy goes through t('EN','中文').
+   Page tokens live on body.page-es only; no colored edge/stripe on any
+   container (design doctrine). Descriptive only: financial_influence=false and
+   k3e_admissible=false stay visible in #es-method. #}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
+{%- endmacro %}
+{#- ── derived values: everything below is computed from the builder context;
+       nothing on this page is a literal number from the design board ── #}
+{% set s = summary %}
+{% set live = s.state == 'LIVE' %}
+{# Julian day number from an ISO date (days-from-civil, integer only) #}
+{% macro dfc(ds) -%}
+{%- set y = ds[0:4]|int -%}{% set m = ds[5:7]|int -%}{% set d0 = ds[8:10]|int -%}
+{%- set yy = y if m > 2 else y - 1 -%}
+{%- set era = (yy if yy >= 0 else yy - 399) // 400 -%}
+{%- set yoe = yy - era * 400 -%}
+{%- set mp = (m + 9) % 12 -%}
+{%- set doy = (153 * mp + 2) // 5 + d0 - 1 -%}
+{%- set doe = yoe * 365 + yoe // 4 - yoe // 100 + doy -%}
+{{- era * 146097 + doe - 719468 -}}
+{%- endmacro %}
+{# G1 horizon display map (seat ruling): 0q/+1q/0y/+1y; any other label verbatim #}
+{% macro hzlabel(raw) -%}
+{%- if raw == '0q' %}{{ t('Current Q','当季') }}
+{%- elif raw == '+1q' %}{{ t('Next Q','下季') }}
+{%- elif raw == '0y' %}{{ t('Current FY','当财年') }}
+{%- elif raw == '+1y' %}{{ t('Next FY','下财年') }}
+{%- else %}<span class="f">{{ raw }}</span>
+{%- endif %}
+{%- endmacro %}
+{# G4: no unit claim anywhere — EPS 2dp, revenue compact magnitudes only #}
+{% macro fval(metric, v) -%}
+{%- if v is none %}—
+{%- else -%}
+{%- set a = v if v >= 0 else -v -%}
+{%- if metric == 'revenue' -%}
+{%- if a >= 1000000000 %}{{ '−' if v < 0 }}{{ '%.2f'|format(a / 1000000000) }}B
+{%- elif a >= 1000000 %}{{ '−' if v < 0 }}{{ '%.1f'|format(a / 1000000) }}M
+{%- elif a >= 1000 %}{{ '−' if v < 0 }}{{ '%.1f'|format(a / 1000) }}k
+{%- else %}{{ '−' if v < 0 }}{{ '{:,.0f}'.format(a) }}{% endif -%}
+{%- else -%}
+{{ '−' if v < 0 }}{{ '%.2f'|format(a) }}
+{%- endif -%}
+{%- endif %}
+{%- endmacro %}
+{# signed change: +x.x% / −x.x% (U+2212) / 0.0% #}
+{% macro fpct(c) -%}
+{%- if c is none %}—
+{%- elif c > 0 %}+{{ '%.1f'|format(c * 100) }}%
+{%- elif c < 0 %}−{{ '%.1f'|format(-c * 100) }}%
+{%- else %}0.0%{% endif %}
+{%- endmacro %}
+{% macro ordinal(n) -%}
+{%- if n % 100 in (11, 12, 13) %}th
+{%- elif n % 10 == 1 %}st
+{%- elif n % 10 == 2 %}nd
+{%- elif n % 10 == 3 %}rd
+{%- else %}th{% endif %}
+{%- endmacro %}
+{# ── breadth per metric, chronological (builder orders by session clock) ── #}
+{% set bm = {} %}
+{% for row in s.breadth %}{% set _ = bm.setdefault(row.metric, []).append(row) %}{% endfor %}
+{% set bm_eps = bm.get('EPS', []) %}
+{% set bm_rev = bm.get('revenue', []) %}
+{# lead + streak per the frozen 1.2× rule, for the hero answer #}
+{% macro lead_of(up, down) -%}
+{%- if down > up * 1.2 %}cuts{% elif up > down * 1.2 %}upgrades{% else %}balanced{% endif -%}
+{%- endmacro %}
+{# EPS hero part #}
+{% if bm_eps and (bm_eps[-1].up + bm_eps[-1].down + bm_eps[-1].flat) > 0 %}
+  {% set eps_lead = lead_of(bm_eps[-1].up, bm_eps[-1].down) %}
+  {% set eps_streak = namespace(n=0, stop=false) %}
+  {% for r in bm_eps|reverse %}
+    {% if not eps_streak.stop and eps_lead != 'balanced' and lead_of(r.up, r.down) == eps_lead %}
+      {% set eps_streak.n = eps_streak.n + 1 %}
+    {% else %}{% set eps_streak.stop = true %}{% endif %}
+  {% endfor %}
+  {% if eps_lead == 'cuts' %}
+    {% if eps_streak.n >= 2 %}
+      {% set ans_eps_en = 'More EPS cuts than upgrades, the ' ~ eps_streak.n|string ~ ordinal(eps_streak.n) ~ ' session running.' %}
+      {% set ans_eps_zh = 'EPS 下调多于上调，已连续第 ' ~ eps_streak.n|string ~ ' 个采集期' %}
+    {% else %}
+      {% set ans_eps_en = 'More EPS cuts than upgrades this session.' %}
+      {% set ans_eps_zh = '本期 EPS 下调多于上调' %}
+    {% endif %}
+  {% elif eps_lead == 'upgrades' %}
+    {% if eps_streak.n >= 2 %}
+      {% set ans_eps_en = 'More EPS upgrades than cuts, the ' ~ eps_streak.n|string ~ ordinal(eps_streak.n) ~ ' session running.' %}
+      {% set ans_eps_zh = 'EPS 上调多于下调，已连续第 ' ~ eps_streak.n|string ~ ' 个采集期' %}
+    {% else %}
+      {% set ans_eps_en = 'More EPS upgrades than cuts this session.' %}
+      {% set ans_eps_zh = '本期 EPS 上调多于下调' %}
+    {% endif %}
+  {% else %}
+    {% set ans_eps_en = 'EPS upgrades and cuts roughly balanced.' %}
+    {% set ans_eps_zh = 'EPS 上调与下调大致相当' %}
+  {% endif %}
+{% else %}
+  {% set ans_eps_en = '' %}{% set ans_eps_zh = '' %}
+{% endif %}
+{# revenue hero part #}
+{% if bm_rev and (bm_rev[-1].up + bm_rev[-1].down + bm_rev[-1].flat) > 0 %}
+  {% set rev_lead = lead_of(bm_rev[-1].up, bm_rev[-1].down) %}
+  {% if rev_lead == 'cuts' %}
+    {% set ans_rev_en = 'More revenue cuts than upgrades.' %}
+    {% set ans_rev_zh = '营收预期下调多于上调。' %}
+  {% elif rev_lead == 'upgrades' %}
+    {% set ans_rev_en = 'More revenue upgrades than cuts.' %}
+    {% set ans_rev_zh = '营收预期上调多于下调。' %}
+  {% else %}
+    {% set ans_rev_en = 'Revenue estimates roughly balanced.' %}
+    {% set ans_rev_zh = '营收预期上调与下调大致相当。' %}
+  {% endif %}
+{% else %}
+  {% set ans_rev_en = '' %}{% set ans_rev_zh = '' %}
+{% endif %}
+{% if ans_eps_en and ans_rev_en %}
+  {% set ans_en = ans_eps_en ~ ' ' ~ ans_rev_en %}
+  {% set ans_zh = ans_eps_zh ~ '；' ~ ans_rev_zh %}
+{% elif ans_eps_en %}
+  {% set ans_en = ans_eps_en %}{% set ans_zh = ans_eps_zh %}
+{% elif ans_rev_en %}
+  {% set ans_en = ans_rev_en %}{% set ans_zh = ans_rev_zh %}
+{% elif live %}
+  {% set ans_en = 'No estimates were compared this session.' %}
+  {% set ans_zh = '本期没有可比较的预期。' %}
+{% else %}
+  {% set ans_en = 'Consensus data is offline, so this session has no reading.' %}
+  {% set ans_zh = '一致预期数据离线，本期暂无读数。' %}
+{% endif %}
+{# ── quick picks + default ticker: first 4 distinct tickers across EPS movers,
+      ordered by |pct_change| desc (the builder pre-sorts up desc / down asc) ── #}
+{% set eps_up = s.movers.get('EPS', {'up': [], 'down': []}).up %}
+{% set eps_dn = s.movers.get('EPS', {'up': [], 'down': []}).down %}
+{% set picks = [] %}
+{% set pk = namespace(keys=[], ui=0, di=0, done=false) %}
+{% for _ in range(16) %}
+  {% if not pk.done and picks|length < 4 %}
+  {% set U = eps_up[pk.ui] if pk.ui < eps_up|length else none %}
+  {% set D = eps_dn[pk.di] if pk.di < eps_dn|length else none %}
+  {% if U is none and D is none %}{% set pk.done = true %}{% endif %}
+  {% if D is none or (U is not none and (U.pct_change if U.pct_change is not none else 0)|abs >= (D.pct_change if D.pct_change is not none else 0)|abs) %}
+    {% set cand = U %}{% set pk.ui = pk.ui + 1 %}
+  {% else %}
+    {% set cand = D %}{% set pk.di = pk.di + 1 %}
+  {% endif %}
+  {% if cand is not none and cand.ticker not in pk.keys %}
+    {% set _ = pk.keys.append(cand.ticker) %}
+    {% set _ = picks.append(cand) %}
+  {% endif %}
+  {% endif %}
+{% endfor %}
+{% set def_t = picks[0].ticker if picks else '' %}
+{% set def_h = picks[0].horizon if picks else '+1y' %}
+{# ── census footnotes: cadence + span weeks + compared-session count ── #}
+{% set ats = s.breadth | map(attribute='at') | unique | list %}
+{% set ncmp = ats|length %}
+{% set ncap = s.census.sessions %}
+{% set weekly = true %}
+{% if ats|length >= 2 %}
+  {% set cad = namespace(ok=true, prev=ats[0][0:10]) %}
+  {% for a in ats[1:] %}
+    {% set dprev = dfc(cad.prev)|int %}{% set dnow = dfc(a[0:10])|int %}
+    {% set gap = dnow - dprev %}
+    {% if gap < 6 or gap > 8 %}{% set cad.ok = false %}{% endif %}
+    {% set cad.prev = a[0:10] %}
+  {% endfor %}
+  {% set weekly = cad.ok %}
+{% endif %}
+{% set span_weeks = 0 %}
+{% if s.census.span.first and s.census.span.last %}
+  {% set span_weeks = ((dfc(s.census.span.last[0:10])|int - dfc(s.census.span.first[0:10])|int) / 7) | round(0,'common') | int %}
+{% endif %}
+{% set first_ymd = s.census.span.first[0:10] if s.census.span.first else '—' %}
+{% set last_ymd = s.census.span.last[0:10] if s.census.span.last else '—' %}
+{% set first_md = s.census.span.first[5:10] if s.census.span.first else '—' %}
+{% set last_md = s.census.span.last[5:10] if s.census.span.last else '—' %}
+{% set lat = s.source.latest_session.at if s.source.latest_session else none %}
+{% set pat = s.source.prior_session.at if s.source.prior_session else none %}
+{% set RESEARCH_PROGRAM_URL = 'research/index.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expectation Surface</title>
+{% set seo_title = "Expectation Surface — Mastermind" %}{% set seo_desc = "How analyst EPS and revenue estimates moved, session by session." %}{% set seo_path = "expectation_surface.html" %}
+{% include "_seo_head.html.j2" %}
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<link rel="stylesheet" href="theme.css">
+<style>
+/* ===== Expectation Surface: page scope ===== */
+body.page-es{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ui);
+  --fig:var(--font-mono);
+  --hair:var(--esurf-hair);
+  --hair-soft:var(--esurf-hair-soft);
+  --es-ser1:var(--esurf-ser1);
+  --es-ser2:var(--esurf-ser2);
+  --es-band:var(--esurf-band);
+  --es-flat:var(--esurf-flat);
+  --es-skel:var(--esurf-skel);
+  --es-neutral-soft:var(--esurf-neutral-soft);
+  --es-warn-soft:var(--esurf-warn-soft);
+  --es-warn-line:var(--esurf-warn-line);
+  --es-ok-soft:var(--esurf-ok-soft);
+  --es-shadow:none;
+  --es-up:var(--ink-up,var(--up));
+  --es-down:var(--ink-down,var(--down));
+  --es-warn-ink:var(--ink-warn,var(--warn));
+  --es-ok-ink:var(--ink-ok,var(--ok));
+  --es-link-ink:var(--ink-link,var(--link));
+}
+html[data-theme="light"] body.page-es{
+  --es-shadow:var(--card-shadow);
+}
+body.page-es > .site-nav{ max-width:1200px; margin:14px auto 6px; padding:0 20px; }  /* same placement rule as page-hub; no nav restyling */
+
+.page-es .f{ font-family:var(--fig); font-variant-numeric:tabular-nums; }
+.page-es [hidden]{ display:none !important; }
+.page-es .es-sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.page-es .es-short, .page-es .es-m-only{ display:none; }
+.page-es p{ margin:0; }
+.page-es code{ font-family:var(--fig); }
+.page-es .es-ic{ flex:none; display:block; }
+
+/* focus: every control, mover row, chart */
+.page-es a:focus-visible, .page-es button:focus-visible, .page-es summary:focus-visible,
+.page-es [tabindex]:focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
+.page-es .es-mv:focus-visible{ position:relative; z-index:1; }
+.page-es .es-seg input:focus-visible + span{ outline:2px solid var(--link); outline-offset:2px; }
+
+/* ----- frame ----- */
+.es-wrap{ box-sizing:border-box; max-width:1200px; margin:0 auto; padding:6px 20px 64px; display:flex; flex-direction:column; gap:24px; }
+.es-panel{ box-sizing:border-box; background:var(--panel); border:1px solid var(--hair); border-radius:var(--r-btn,10px);
+  box-shadow:var(--es-shadow); padding:20px 22px 22px; display:flex; flex-direction:column; gap:18px; min-width:0; }
+#es-census{ gap:16px; } #es-explorer, #es-method{ gap:20px; }
+
+.es-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; }
+.es-head-text{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-head-aside{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end; }
+.es-h2{ margin:0; font:700 17px/22px var(--font-ui); letter-spacing:-0.01em; color:var(--text); }
+.es-h3{ margin:0; font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-sub{ font:400 13px/18px var(--font-ui); color:var(--muted); max-width:72ch; }
+.es-asof{ display:flex; align-items:center; gap:6px; font:600 11.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-asof .f{ font-weight:400; font-size:11.5px; }
+.es-foot{ font:400 12px/18px var(--font-ui); color:var(--muted); max-width:80ch; }
+.es-hint{ font:400 12px/18px var(--font-ui); color:var(--muted); }
+
+/* ----- shared controls ----- */
+.es-seg{ display:inline-flex; gap:2px; padding:2px; margin:0; min-width:0; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--bg); }
+.es-seg label{ position:relative; display:flex; }
+.es-seg input{ position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; }
+.es-seg span{ display:inline-flex; align-items:center; justify-content:center; height:28px; padding:0 12px; border-radius:var(--r-ctl,6px);
+  font:500 12.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-seg input:checked + span{ background:var(--panel2); color:var(--text); font-weight:600; }
+.es-seg input:disabled + span{ opacity:.45; }
+.es-seg input:disabled{ cursor:not-allowed; }
+.es-seg--line{ padding:3px; background:transparent; }
+.es-seg--line span{ border-radius:var(--r-ctl,5px); }
+.es-seg--hz span{ padding:0 10px; }
+
+.es-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; align-self:flex-start; box-sizing:border-box;
+  height:32px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); color:var(--text);
+  font:600 13px/16px var(--font-ui); white-space:nowrap; cursor:pointer; }
+.es-btn:hover{ background:var(--esurf-btn-hover); }
+
+.es-chip{ box-sizing:border-box; display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; margin:0;
+  border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:var(--panel); font:600 12px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-chip--neutral{ background:var(--es-neutral-soft); color:var(--text); }
+.es-chip--warn, .es-chip--stale{ background:var(--es-warn-soft); border-color:var(--es-warn-line); color:var(--es-warn-ink); gap:7px; padding:0 9px; }
+.es-chip--warn{ cursor:pointer; font-family:var(--font-ui); }
+:is(.es-chip--warn):hover{ background:var(--esurf-chip-warn-hover); }
+.es-chip-state{ font:500 10.5px/14px var(--fig); color:var(--es-warn-ink); }
+.es-chip--warn[aria-expanded="false"] .es-chev{ transform:rotate(180deg); }
+.es-chip-v{ font:500 11.5px/16px var(--fig); color:var(--text); }
+.es-dot{ width:7px; height:7px; border-radius:var(--r-pill,999px); background:var(--ok); flex:none; }
+.es-dot--off{ box-sizing:border-box; background:transparent; border:1.5px solid var(--muted); }
+
+/* ----- hero ----- */
+.es-hero{ display:flex; justify-content:space-between; gap:40px; padding-top:28px; }
+.es-hero-main{ flex:0 1 700px; min-width:0; display:flex; flex-direction:column; }
+.es-eyebrow{ margin-bottom:10px; font:600 12.5px/16px var(--font-ui); color:var(--muted); }
+.es-h1{ margin:0 0 8px; font:800 40px/44px var(--font-ui); letter-spacing:-0.03em; color:var(--text); }
+.es-promise{ margin-bottom:28px; font:400 15px/22px var(--font-ui); color:var(--muted); }
+.es-latest{ margin-bottom:6px; display:flex; align-items:center; gap:8px; font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-latest .f{ font-weight:500; }
+.es-answer{ margin-bottom:10px; max-width:680px; font:600 21px/29px var(--font-ui); letter-spacing:-0.01em; color:var(--text); }
+.es-hero-foot{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.es-context{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-link{ font:600 13px/20px var(--font-ui); color:var(--es-link-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+.es-status{ flex:0 0 410px; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding-top:26px; }
+.es-note{ box-sizing:border-box; width:100%; display:flex; flex-direction:column; gap:8px; padding:12px 14px;
+  background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r-ctl,8px); }
+.es-note p{ font:400 13px/19px var(--font-ui); color:var(--text); }
+.es-note p.es-note-dec{ display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; }
+.es-note-dec > span{ font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-note-dec code{ font:400 11px/16px var(--fig); color:var(--muted); overflow-wrap:anywhere; }
+.es-clocks{ display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+
+/* ----- census ----- */
+.es-tiles{ margin:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--hair);
+  border:1px solid var(--hair); border-radius:var(--r-ctl,8px); overflow:hidden; }
+.es-tile{ background:var(--panel); padding:14px 16px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-tile dt{ font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-tile dd{ margin:0; }
+.es-tile-v{ font:500 24px/30px var(--fig); font-variant-numeric:tabular-nums; color:var(--text); }
+.es-tile-v--na{ font-size:18px; line-height:22px; font-weight:600; color:var(--muted); }
+.es-tile-unit{ margin-left:6px; font:400 13px/30px var(--font-ui); color:var(--text); }
+.es-tile-sub{ font:400 12px/17px var(--font-ui); color:var(--muted); }
+.es-tile-sub.f{ font-family:var(--fig); font-size:11.5px; }
+.es-tile-pair{ display:flex; align-items:baseline; gap:6px; }
+.es-tile-pair > .f{ font:500 15px/20px var(--fig); color:var(--text); }
+.es-tile-pair > span:last-child{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+
+/* ----- breadth ----- */
+.es-breadth-body{ display:flex; justify-content:space-between; align-items:flex-start; gap:36px; }
+.es-strip{ flex:0 1 676px; min-width:0; margin:0; display:flex; flex-direction:column; gap:14px; }
+.es-legend{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin:0; padding:0; list-style:none; }
+.es-legend li{ display:flex; align-items:center; gap:6px; font:500 12px/16px var(--font-ui); color:var(--text); }
+.es-legend-note{ font:400 12px/17px var(--font-ui); color:var(--muted); margin-top:-8px; }
+.es-sw{ width:10px; height:10px; border-radius:var(--r-ctl,2px); flex:none; }
+.es-sw--up{ background:var(--up); } .es-sw--flat{ background:var(--es-flat); } .es-sw--down{ background:var(--down); }
+.es-strip-cap{ font:600 12px/16px var(--font-ui); color:var(--text); }
+.es-cols{ display:flex; justify-content:space-between; align-items:flex-end; margin:0; padding:0; list-style:none; }
+.es-col{ width:52px; display:flex; flex-direction:column; align-items:center; }
+.es-col.is-cap{ display:none; }
+.es-col-tag{ height:18px; display:flex; align-items:center; font:700 11px/14px var(--font-ui); color:var(--text); }
+.es-col-up, .es-col-down{ font:500 11.5px/16px var(--fig); }
+.es-col-up{ color:var(--es-up); margin-bottom:6px; }
+.es-col-down{ color:var(--es-down); margin-top:6px; }
+.es-bar{ box-sizing:border-box; width:40px; height:200px; display:flex; flex-direction:column; gap:1px; border-radius:var(--r-ctl,3px); overflow:hidden; }
+.es-bar-up{ flex:none; height:calc(var(--u) * 1%); background:var(--up); }
+.es-bar-flat{ flex:1 1 auto; min-height:0; background:var(--es-flat); }
+.es-bar-down{ flex:none; height:calc(var(--d) * 1%); background:var(--down); }
+.es-col-date{ margin-top:8px; font:400 11px/14px var(--fig); color:var(--muted); }
+.es-col.is-latest .es-col-up, .es-col.is-latest .es-col-down{ font-weight:700; }
+.es-col.is-latest .es-col-date{ font-weight:600; color:var(--text); }
+
+.es-btable{ flex:0 1 404px; min-width:0; display:flex; flex-direction:column; gap:10px; }
+.es-btable table, .es-ntable{ width:100%; border-collapse:collapse; table-layout:fixed; }
+.es-btable caption, .es-ntable caption{ caption-side:top; text-align:left; padding:0 0 8px; font:600 12.5px/16px var(--font-ui); color:var(--text); }
+.es-btable col.c1{ width:108px; } .es-btable col.c2{ width:72px; } .es-btable col.c3{ width:64px; }
+.es-btable col.c4{ width:84px; } .es-btable col.c5{ width:76px; }
+.es-btable thead th, .es-ntable thead th{ height:30px; padding:0; text-align:right; vertical-align:middle;
+  font:600 11.5px/14px var(--font-ui); color:var(--muted); border-bottom:1px solid var(--line); }
+.es-btable tbody th, .es-btable td, .es-ntable tbody th, .es-ntable td{ height:32px; padding:0; text-align:right;
+  font:400 12.5px/16px var(--fig); font-variant-numeric:tabular-nums; color:var(--text); border-bottom:1px solid var(--hair-soft); }
+.es-btable :is(th,td):first-child, .es-ntable :is(th,td):first-child{ text-align:left; }
+.es-btable tr.is-latest :is(th,td){ font-weight:700; }
+.es-btable:not(.is-expanded) tr.es-x{ display:none; }
+
+/* ----- movers ----- */
+.es-sortnote{ box-sizing:border-box; display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px;
+  border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:var(--es-neutral-soft); font:600 12px/16px var(--font-ui); color:var(--text); white-space:nowrap; cursor:default; }
+.es-sides{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; }
+.es-side{ display:flex; flex-direction:column; gap:8px; min-width:0; }
+.es-side-h{ display:flex; align-items:center; gap:8px; height:24px; }
+.es-side-h h3{ margin:0; font:600 14px/18px var(--font-ui); color:var(--text); }
+.es-sq{ width:8px; height:8px; border-radius:var(--r-ctl,2px); flex:none; }
+.es-sq--up{ background:var(--up); } .es-sq--down{ background:var(--down); }
+.es-side-count{ margin-left:auto; font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-mv-head, .es-mv{ display:grid; grid-template-columns:64px minmax(0,100px) 64px 64px 80px 64px 60px minmax(46px,1fr); align-items:center; }
+.es-mv-head{ height:30px; border-bottom:1px solid var(--line); font:600 11.5px/14px var(--font-ui); color:var(--muted); }
+.es-mv-head .r{ text-align:right; }
+.es-mv-head .es-mv-head-chg{ grid-column:5 / span 2; }
+.es-mv-list{ margin:0; padding:0; list-style:none; }
+.es-mv-list li.es-x{ display:none; }
+.es-side.is-expanded .es-mv-list li.es-x{ display:block; }
+.es-mv{ box-sizing:border-box; width:100%; height:42px; padding:0; margin:0; border:0; border-bottom:1px solid var(--hair-soft);
+  background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.es-mv:hover{ background:var(--esurf-mv-hover); }
+.es-mv-t{ font:600 13px/16px var(--fig); color:var(--es-link-ink); }
+.es-mv-hz{ display:flex; flex-direction:column; min-width:0; font:400 12.5px/15px var(--font-ui); color:var(--text); }
+.es-mv-pe{ font:400 11px/14px var(--fig); color:var(--muted); }
+.es-mv-prior, .es-mv-latest, .es-mv-an{ font:400 12.5px/16px var(--fig); text-align:right; }
+.es-mv-prior{ color:var(--muted); } .es-mv-latest, .es-mv-an{ color:var(--text); }
+.es-mv-bar{ justify-self:end; width:64px; height:6px; border-radius:var(--r-ctl,3px); background:var(--es-neutral-soft); overflow:hidden; }
+.es-mv-bar i{ display:block; height:100%; width:calc(var(--w) * 1%); border-radius:var(--r-ctl,3px); }
+.es-mv--up .es-mv-bar i{ background:var(--up); } .es-mv--down .es-mv-bar i{ background:var(--down); }
+.es-mv-chg{ font:600 12.5px/16px var(--fig); text-align:right; }
+.es-mv--up .es-mv-chg{ color:var(--es-up); } .es-mv--down .es-mv-chg{ color:var(--es-down); }
+.es-mv-asof{ font:400 11.5px/16px var(--fig); color:var(--muted); text-align:right; }
+.es-mv-meta{ display:none; }
+.es-empty{ display:flex; flex-direction:column; gap:6px; padding:18px 0 6px; }
+.es-empty-t{ font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-empty p:not(.es-empty-t){ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-empty-line{ padding:12px 0; font:400 13px/20px var(--font-ui); color:var(--muted); border-bottom:1px solid var(--hair-soft); }
+
+/* ----- explorer ----- */
+.es-xp{ display:grid; grid-template-columns:332px minmax(0,1fr); gap:32px; }
+.es-find{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.es-field{ position:relative; display:flex; flex-direction:column; gap:8px; }
+.es-find-label{ font:600 12.5px/16px var(--font-ui); color:var(--text); }
+.es-combo{ box-sizing:border-box; display:flex; align-items:center; gap:10px; height:44px; padding:0 6px 0 12px;
+  border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--bg); color:var(--muted); }
+.es-combo:focus-within{ outline:2px solid var(--link); outline-offset:2px; }
+.es-q{ flex:1; min-width:0; height:100%; padding:0; border:0; background:transparent; color:var(--text);
+  font:600 14px/18px var(--fig); text-transform:uppercase; outline:none; }
+.es-q::placeholder{ color:var(--muted); font-weight:400; text-transform:none; font-family:var(--font-ui); }
+.es-q-clear{ flex:none; width:32px; height:32px; display:grid; place-items:center; padding:0; border:0; border-radius:var(--r-ctl,6px); background:transparent; color:var(--muted); cursor:pointer; }
+.es-q-clear:hover{ background:var(--panel2); color:var(--text); }
+.es-q-clear[hidden]{ display:none; }
+.es-lb-wrap{ position:absolute; z-index:20; left:0; right:0; top:68px; box-sizing:border-box; padding:4px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-ctl,8px); box-shadow:var(--popover-shadow); }
+.es-lb-wrap[hidden]{ display:none; }
+.es-lb-note{ padding:6px 8px 4px; font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+.es-lb{ margin:0; padding:0; list-style:none; }
+.es-lb li{ box-sizing:border-box; height:40px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-radius:var(--r-ctl,6px); cursor:pointer; }
+.es-lb li .f{ font:600 13px/16px var(--fig); color:var(--text); }
+.es-lb li .es-lb-m{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-lb li[aria-selected="true"]{ background:var(--panel2); outline:1px solid var(--line); }
+.es-card{ display:flex; flex-direction:column; gap:14px; padding:16px; background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r-ctl,8px); }
+.es-card-h{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.es-card-link{ margin-right:auto; }
+.es-card-t{ margin:0; font:700 28px/32px var(--fig); letter-spacing:-0.01em; color:var(--text); }
+.es-card-t:focus{ outline:none; } .es-card-t:focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
+.es-pill{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:var(--r-card,12px); background:var(--es-ok-soft); font:700 11px/14px var(--font-ui); color:var(--es-ok-ink); }
+.es-pill::before{ content:""; width:6px; height:6px; border-radius:var(--r-pill,999px); background:var(--ok); }
+.es-pill--other{ background:var(--es-neutral-soft); color:var(--text); font-family:var(--fig); font-weight:500; }
+:is(.es-pill--other)::before{ background:var(--muted); }
+.es-card dl{ margin:0; display:flex; flex-direction:column; gap:8px; }
+.es-card dl > div{ display:flex; justify-content:space-between; gap:12px; }
+.es-card dt{ font:400 12.5px/16px var(--font-ui); color:var(--muted); }
+.es-card dd{ margin:0; font:400 12.5px/16px var(--fig); color:var(--text); text-align:right; }
+.es-picks{ display:flex; flex-direction:column; gap:8px; }
+.es-picks-l{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-picks-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.es-pick{ box-sizing:border-box; height:32px; padding:0 12px; border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:transparent;
+  font:600 12.5px/16px var(--fig); color:var(--es-link-ink); cursor:pointer; }
+.es-pick[aria-pressed="true"]{ background:var(--panel2); border-color:var(--line); color:var(--text); }
+.es-nomatch{ display:flex; flex-direction:column; gap:10px; }
+.es-nomatch[hidden]{ display:none; }
+.es-nomatch-t{ font:500 12px/16px var(--font-ui); color:var(--muted); }
+.es-nomatch p:not(.es-nomatch-t):not(.es-hint){ font:400 13px/19px var(--font-ui); color:var(--text); }
+
+.es-view{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.es-view-ctl{ display:flex; align-items:center; flex-wrap:wrap; gap:12px 16px; }
+.es-unit{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-unit .f{ font-size:12px; color:var(--text); }
+.es-view-body{ display:flex; flex-direction:column; gap:12px; }
+.es-readout{ margin:0; min-height:62px; display:grid; grid-template-columns:repeat(6,auto); justify-content:space-between; align-items:center; gap:8px 16px; }
+.es-readout > div{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-readout dt{ display:flex; align-items:center; gap:6px; font:400 11.5px/14px var(--font-ui); color:var(--muted); }
+.es-readout dd{ margin:0; font:600 15px/20px var(--fig); color:var(--text); white-space:nowrap; }
+.es-ro-chg.is-up{ color:var(--es-up); } .es-ro-chg.is-down{ color:var(--es-down); }
+.es-ro-sw{ width:14px; height:2px; flex:none; background:var(--es-ser1); }
+.es-ro-sw--med{ background:repeating-linear-gradient(90deg,var(--es-ser2) 0 5px,transparent 5px 9px); }
+.es-chart{ position:relative; height:266px; border-radius:var(--r-ctl,6px); }
+.es-chart svg{ display:block; width:100%; height:100%; overflow:visible; }
+.es-chart .es-g{ stroke:var(--hair); stroke-width:1; }
+.es-chart .es-base{ stroke:var(--line); stroke-width:1; }
+.es-chart .es-ylab, .es-chart .es-xlab{ font-family:var(--fig); font-size:11px; fill:var(--muted); }
+.es-chart .es-ylab{ text-anchor:end; dominant-baseline:middle; }
+.es-chart .es-xlab{ text-anchor:middle; }
+.es-chart .es-xlab.is-sel{ font-weight:600; fill:var(--text); }
+.es-chart .es-band{ fill:var(--es-band); stroke:none; }
+.es-chart .es-avg{ fill:none; stroke:var(--es-ser1); stroke-width:2.25; stroke-linecap:round; stroke-linejoin:round; }
+.es-chart .es-med{ fill:none; stroke:var(--es-ser2); stroke-width:1.75; stroke-dasharray:5 4; }
+.es-chart .es-sel{ stroke:var(--muted); stroke-width:1; stroke-dasharray:2 3; }
+.es-chart .es-pt{ fill:var(--es-ser1); stroke:var(--panel); stroke-width:2; }
+.es-cover{ display:flex; flex-direction:column; gap:6px; }
+.es-cover-l{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding-left:44px; }
+.es-cover-t{ font:600 12px/16px var(--font-ui); color:var(--text); }
+.es-cover-s{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+#es-cover-svg{ display:block; width:100%; height:78px; overflow:visible; }
+#es-cover-svg .es-cov-bar{ fill:var(--es-flat); }
+#es-cover-svg .es-cov-bar.is-sel{ fill:var(--muted); }
+#es-cover-svg .es-cov-n{ font-family:var(--fig); font-size:10.5px; fill:var(--muted); text-anchor:middle; }
+#es-cover-svg .es-cov-n.is-sel{ font-weight:600; fill:var(--text); }
+.es-view-foot{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.es-kbd-hint{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-num[hidden]{ display:none; }
+.es-loading{ display:flex; flex-direction:column; gap:12px; }
+.es-loading-l{ font:500 12px/16px var(--font-ui); color:var(--muted); }
+.es-skel{ background:var(--es-skel); border-radius:var(--r-ctl,8px); }
+.es-skel--ro{ height:62px; } .es-skel--chart{ height:266px; } .es-skel--cover{ height:60px; }
+
+/* ----- states ----- */
+.es-offline, .es-err{ box-sizing:border-box; display:flex; flex-direction:column; gap:10px; padding:14px;
+  background:var(--es-warn-soft); border:1px solid var(--line); border-radius:var(--r-btn,10px); }
+.es-offline-h{ display:flex; align-items:center; gap:10px; font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-offline > p:not(.es-offline-h):not(.es-reason), .es-err > p:not(.es-offline-h){ font:400 13px/20px var(--font-ui); color:var(--text); }
+.es-reason{ display:flex; flex-direction:column; gap:2px; }
+.es-reason span{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-reason code{ font:400 12px/16px var(--fig); color:var(--text); }
+
+/* ----- method ----- */
+.es-method-cols{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.es-acc{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+.es-acc > summary{ list-style:none; cursor:default; display:flex; align-items:center; justify-content:space-between; }
+.es-acc > summary::-webkit-details-marker{ display:none; }
+.es-acc-sub, .es-acc-chev{ display:none; }
+.es-acc-body{ display:flex; flex-direction:column; gap:12px; }
+.es-acc-body > p{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-facts{ margin:0; display:flex; flex-direction:column; gap:10px; padding:12px 14px; background:var(--panel2); border-radius:var(--r-ctl,8px); }
+.es-facts > div{ display:flex; flex-direction:column; gap:2px; }
+.es-facts dt{ font:400 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-facts dd{ margin:0; font:400 12px/17px var(--fig); color:var(--text); overflow-wrap:anywhere; }
+.es-facts dd.es-path{ font-size:11px; line-height:16px; }
+.es-dec{ display:flex; flex-direction:column; gap:6px; padding:12px 14px; background:var(--panel2); border-radius:var(--r-ctl,8px); }
+.es-dec code{ font:400 11.5px/16px var(--fig); color:var(--text); overflow-wrap:anywhere; }
+.es-dec p{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-not{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.es-not li{ display:flex; align-items:flex-start; gap:10px; font:400 13px/20px var(--font-ui); color:var(--text); }
+.es-not li svg{ flex:none; margin-top:2px; color:var(--muted); }
+.es-inset{ display:flex; flex-direction:column; gap:4px; margin-top:4px; padding:10px 12px; background:var(--bg); border:1px solid var(--hair); border-radius:var(--r-ctl,6px); }
+.es-inset span{ font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+.es-inset code{ font:400 12px/17px var(--fig); color:var(--text); }
+.es-doclink{ display:inline-flex; align-items:center; gap:8px; align-self:flex-start; font:600 13px/18px var(--font-ui);
+  color:var(--es-link-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+
+/* ----- ZH typography ----- */
+html[data-lang="zh"] .es-h1{ font-weight:700; letter-spacing:0; }
+html[data-lang="zh"] .es-h2{ font-weight:600; letter-spacing:0; }
+html[data-lang="zh"] .es-answer{ letter-spacing:0; }
+
+/* ===== 390 reduction (<768) ===== */
+@media (max-width:767px){
+  .page-es .es-long, .page-es .es-d-only{ display:none; }
+  .page-es .es-short, .page-es .es-m-only{ display:inline; }
+  .page-es p.es-m-only, .page-es div.es-m-only{ display:flex; }
+  .page-es .es-strip-cap.es-m-only{ display:block; }
+  .es-wrap{ padding:4px 16px 48px; gap:16px; }
+  .es-panel{ padding:16px 16px 18px; gap:16px; }
+  #es-census, #es-method{ gap:14px; } #es-explorer{ gap:16px; }
+  .es-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .es-head-aside{ flex-direction:column; align-items:stretch; gap:10px; }
+  .es-sub{ line-height:19px; }
+  .es-asof .f{ font-size:11px; }
+  .es-btn{ height:44px; align-self:stretch; }
+  .es-seg{ display:flex; width:100%; box-sizing:border-box; }
+  .es-seg label{ flex:1 1 0; }
+  .es-seg span{ width:100%; height:44px; padding:0 8px; font-size:13.5px; }
+  .es-seg--hz{ display:grid; grid-template-columns:1fr 1fr; }
+  .es-seg--hz span{ font-size:13px; }
+
+  .es-hero{ flex-direction:column; gap:20px; padding-top:20px; }
+  .es-hero-main{ flex:none; }
+  .es-eyebrow{ font-size:12px; }
+  .es-h1{ font-size:32px; line-height:36px; }
+  .es-promise{ font-size:14px; line-height:20px; margin-bottom:20px; }
+  .es-answer{ font-size:18px; line-height:25px; }
+  .es-link{ display:inline-flex; align-items:center; min-height:44px; font-size:13.5px; }
+  .es-status{ flex:none; width:100%; padding-top:0; }
+  .es-chip--warn{ height:44px; font-size:12.5px; }
+  .es-clocks{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+  .es-clocks .es-chip{ height:auto; min-height:44px; padding:7px 10px; flex-wrap:wrap; row-gap:2px; white-space:normal; }
+  .es-clocks .es-chip-v{ flex-basis:100%; font-size:11px; }
+  .es-clocks .es-chip--stale{ grid-column:1 / -1; }
+
+  .es-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .es-tile{ padding:10px 12px; }
+  .es-tile-v{ font-size:20px; line-height:26px; }
+  .es-tile-unit{ font-size:12px; line-height:26px; }
+  .es-tile-sub.f{ font-size:10.5px; }
+  .es-tile-pair > .f{ font-size:13px; line-height:16px; font-weight:600; }
+
+  .es-breadth-body{ flex-direction:column; gap:20px; }
+  .es-strip{ flex:none; width:100%; gap:10px; }
+  .es-legend-note{ margin-top:-4px; }
+  .es-col{ width:44px; }
+  .es-col.is-older{ display:none; }
+  .es-col-tag{ height:16px; }
+  .es-col-up, .es-col-down{ font-size:11px; }
+  .es-col.is-latest .es-col-up, .es-col.is-latest .es-col-down{ font-size:11.5px; }
+  .es-bar{ width:36px; height:160px; }
+  .es-btable{ flex:none; width:100%; gap:8px; }
+  .es-btable col.c1{ width:84px; } .es-btable col.c2{ width:56px; } .es-btable col.c3{ width:48px; }
+  .es-btable col.c4{ width:70px; } .es-btable col.c5{ width:66px; }
+  .es-btable thead th, .es-ntable thead th{ font-size:11px; }
+  .es-btable tbody th, .es-btable td, .es-ntable tbody th, .es-ntable td{ font-size:12px; }
+  .es-btable:not(.is-expanded) tr.es-xm{ display:none; }
+
+  .es-sortnote{ align-self:flex-start; }
+  .es-sides{ grid-template-columns:1fr; gap:20px; }
+  .es-mv-head{ display:none; }
+  .es-mv{ height:60px; grid-template-columns:52px minmax(0,1fr) 40px 58px; grid-template-areas:"t hz bar chg" ". meta meta meta";
+    column-gap:10px; row-gap:4px; align-content:center; }
+  .es-mv-t{ grid-area:t; font-size:14px; line-height:18px; }
+  .es-mv-hz{ grid-area:hz; flex-direction:row; align-items:baseline; gap:6px; }
+  .es-mv-bar{ grid-area:bar; width:40px; }
+  .es-mv-chg{ grid-area:chg; font-size:13.5px; line-height:18px; }
+  .es-mv-prior, .es-mv-latest, .es-mv-an, .es-mv-asof{ display:none; }
+  .es-mv-meta{ grid-area:meta; display:flex; gap:10px; font:400 11.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+  .es-mv-meta .f{ font-size:11.5px; }
+
+  .es-xp{ grid-template-columns:1fr; gap:16px; }
+  .es-combo{ padding-right:0; }
+  .es-q{ font-size:15px; font-weight:500; }
+  .es-q-clear{ width:44px; height:44px; }
+  .es-lb li{ height:48px; }
+  .es-card-t{ font-size:20px; line-height:24px; font-weight:600; }
+  .es-card dl{ display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
+  .es-card dl > div{ flex-direction:column; gap:2px; justify-content:flex-start; }
+  .es-card dt{ font-size:11px; line-height:14px; }
+  .es-card dd{ text-align:left; font:600 14px/18px var(--fig); }
+  .es-card .es-card-l{ grid-column:1 / -1; order:3; }
+  .es-card .es-card-l dd{ font-size:13px; }
+  .es-pick{ height:44px; font-size:13.5px; }
+  .es-readout{ grid-template-columns:repeat(3,minmax(0,1fr)); justify-content:stretch; row-gap:12px; min-height:0; }
+  .es-readout dd{ font-size:14px; line-height:18px; }
+  .es-chart{ height:178px; }
+  .es-cover-l{ padding-left:0; }
+  #es-cover-svg{ height:64px; }
+  #es-cover-svg .es-cov-n{ font-size:10px; }
+  .es-skel--ro{ height:52px; } .es-skel--chart{ height:160px; } .es-skel--cover{ height:48px; }
+
+  .es-method-cols{ display:flex; flex-direction:column; gap:0; border:1px solid var(--hair); border-radius:var(--r-ctl,8px); overflow:hidden; }
+  .es-acc{ gap:0; }
+  .es-acc + .es-acc{ border-top:1px solid var(--hair); }
+  .es-acc > summary{ min-height:52px; padding:0 14px; cursor:pointer; }
+  .es-acc-tt{ display:flex; flex-direction:column; gap:1px; }
+  .es-acc .es-h3{ font-size:14.5px; line-height:19px; font-weight:500; }
+  .es-acc-sub{ display:block; font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+  .es-acc[open] .es-acc-sub{ display:none; }
+  .es-acc-chev{ display:block; color:var(--muted); }
+  .es-acc[open] .es-acc-chev{ transform:rotate(180deg); color:var(--text); }
+  .es-acc[open]{ background:var(--panel2); }
+  .es-acc-body{ padding:0 14px 14px; }
+  .es-acc .es-facts, .es-acc .es-dec{ background:var(--panel); }
+  .es-not li{ font-size:13.5px; line-height:19px; }
+  .es-inset code{ font-size:12.5px; line-height:18px; }
+  .es-doclink{ box-sizing:border-box; width:100%; min-height:44px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); font-size:13.5px; }
+  .es-method-rendered{ justify-content:space-between; padding-top:2px; }
+}
+</style>
+</head>
+<body class="page-es">
+{% include "_site_nav.html.j2" %}
+
+<main class="es-wrap" id="es-main" data-state="{{ s.state }}">
+
+  {# ── #es-hero ── #}
+  <header id="es-hero" class="es-hero">
+    <div class="es-hero-main">
+      <p class="es-eyebrow">{{ t('Information→Price','信息→价格') }}</p>
+      <h1 class="es-h1">{{ t('Expectation Surface','预期曲面') }}</h1>
+      <p class="es-promise">{{ t('How analyst EPS and revenue estimates moved, session by session.','分析师 EPS 与营收预期如何逐期变动。') }}</p>
+      <p class="es-latest"><span>{{ t('Latest session','最新采集期') }}</span>{% if lat %}<time class="f" datetime="{{ lat }}">{{ lat[0:10] }}</time>{% else %}<span class="f">—</span>{% endif %}</p>
+      <p class="es-answer" id="es-answer"><span class="l-en">{{ ans_en }}</span><span class="l-zh">{{ ans_zh }}</span></p>
+      <div class="es-hero-foot">
+        <span class="es-context">{{ t('Context only — not a trade cue.','仅供背景参考，非交易提示。') }}</span>
+        <a class="es-link" href="#es-breadth">{{ t('See revision breadth','查看修正广度') }}</a>
+      </div>
+    </div>
+
+    <div class="es-status" role="group" data-a-en="Page status" data-a-zh="页面状态">
+      <p class="es-chip es-chip--neutral">{{ t('Descriptive · not a signal','描述性 · 非信号') }}</p>
+
+      <button type="button" class="es-chip es-chip--warn" id="es-id-btn"
+              aria-expanded="true" aria-controls="es-id-note">
+        <svg class="es-ic" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 2.2L14.2 13.2H1.8L8 2.2Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8 6.6V9.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="8" cy="11.4" r="0.9" fill="currentColor"/></svg>
+        {% if s.identity.state == 'COMPLETE_DEGRADED' %}
+        <span>{{ t('Identity partly matched','身份部分匹配') }}</span>
+        {% else %}
+        <span>{{ t('Identity state','身份状态') }}</span>
+        {% endif %}
+        <span class="es-chip-state">{{ s.identity.state }}</span>
+        <svg class="es-chev" width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M4 10L8 6L12 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="es-note" id="es-id-note" role="region" data-a-en="Identity disclosure" data-a-zh="身份披露">
+        {% if live %}
+        <p>{{ t('Identity is partly matched. {unresolved} vendor names are not yet matched to a security and {undated} aliases have no effective date, so both are left out. Counts on this page cover matched securities only.','身份仅部分匹配。{unresolved} 个供应商名称尚未匹配到证券，{undated} 个别名缺少生效日期，两者均未计入。本页计数仅涵盖已匹配证券。')
+              | replace('{unresolved}', '{:,}'.format(s.identity.unresolved) if s.identity.unresolved is not none else '—')
+              | replace('{undated}', '{:,}'.format(s.identity.undated_aliases) if s.identity.undated_aliases is not none else '—') | safe }}</p>
+        {% else %}
+        <p>{{ t('Identity is accepted as partly matched. Counts are unavailable while the data is offline.','身份按部分匹配接受。数据离线期间无法提供计数。') }}</p>
+        {% endif %}
+        <p class="es-note-dec"><span>{{ t('Decision','决定') }}</span><code>DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07</code></p>
+      </div>
+
+      <div class="es-clocks">
+        <p class="es-chip es-chip--clock">
+          {% if lat %}<span class="es-dot" aria-hidden="true"></span>
+          <span class="es-chip-k">{{ t('Source snapshot','源数据快照') }}</span>
+          <time class="es-chip-v f" id="es-src-at" datetime="{{ lat }}">{{ lat[0:10] }} {{ lat[11:16] }} UTC</time>
+          {% else %}<span class="es-dot es-dot--off" aria-hidden="true"></span>
+          <span class="es-chip-k">{{ t('Source snapshot unavailable','源数据快照不可用') }}</span>
+          {% endif %}
+        </p>
+        <p class="es-chip es-chip--stale" id="es-stale" hidden><svg class="es-ic" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 2.2L14.2 13.2H1.8L8 2.2Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8 6.6V9.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="8" cy="11.4" r="0.9" fill="currentColor"/></svg>
+          <span id="es-stale-text"></span></p>
+        <p class="es-chip es-chip--clock">
+          <span class="es-chip-k">{{ t('Rendered','页面生成') }}</span>
+          <time class="es-chip-v f" id="es-rendered-at" datetime="{{ s.rendered_at }}">{{ s.rendered_at[0:10] }} {{ s.rendered_at[11:16] }} UTC</time>
+        </p>
+      </div>
+    </div>
+  </header>
+
+  {# ── #es-census ── #}
+  {% macro tile_na() -%}
+    <dd class="es-tile-v es-tile-v--na f">—</dd>
+    <dd class="es-tile-sub">{{ t('Not available while offline','离线时不可用') }}</dd>
+  {%- endmacro %}
+  <section id="es-census" class="es-panel" aria-labelledby="es-census-h">
+    <div class="es-head">
+      <div class="es-head-text">
+        <h2 class="es-h2" id="es-census-h">{{ t('What the surface holds','数据覆盖范围') }}</h2>
+        <p class="es-sub">{{ t('Counts for matched securities across every captured session.','已匹配证券在全部采集期内的计数。') }}</p>
+      </div>
+      <div class="es-head-aside">
+        <p class="es-asof"><span>{{ t('As of','截至') }}</span>
+          {% if lat %}<time class="f" datetime="{{ lat }}"><span class="es-long">{{ lat[0:10] }} {{ lat[11:16] }} UTC</span><span class="es-short">{{ lat[5:10] }}</span></time>
+          {% else %}<span class="f">—</span>{% endif %}</p>
+      </div>
+    </div>
+    {% if not live %}
+    <div class="es-offline" role="status">
+      <p class="es-offline-h"><svg class="es-ic" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M10 2.5L18 16.5H2L10 2.5Z" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M10 8V11.5" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="10" cy="14" r="0.9" fill="var(--warn)"/></svg>
+        {{ t('Consensus data is offline','一致预期数据离线') }}</p>
+      <p>{{ t('The observations file was not found at render time, so counts and charts are empty. Method and definitions below still apply. The next nightly render retries automatically.','生成页面时未找到观测文件，因此计数与图表为空。下方的方法与定义仍然适用。下一次夜间生成将自动重试。') }}</p>
+      <p class="es-reason"><span>{{ t('Reason','原因') }}</span>{% for r in s.reasons %}<code>{{ r }}</code>{% endfor %}</p>
+    </div>
+    {% endif %}
+    <dl class="es-tiles">
+      <div class="es-tile"><dt>{{ t('Observations','观测值') }}</dt>
+        {% if live %}<dd class="es-tile-v f">{{ '{:,}'.format(s.census.observations) }}</dd>
+        <dd class="es-tile-sub">{{ t('Estimate values captured','已采集的预期数值') }}</dd>
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Securities','证券') }}</dt>
+        {% if live %}<dd class="es-tile-v f">{{ '{:,}'.format(s.census.securities) }}</dd>
+        <dd class="es-tile-sub">{{ t('Matched to a security','已匹配到证券') }}</dd>
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Metrics','指标') }}</dt>
+        {% if live %}<dd class="es-tile-v f">{{ s.census.metrics|length }}</dd>
+        <dd class="es-tile-sub">{{ t('EPS and revenue','EPS 与营收') }}</dd>
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Horizons','预期期限') }}</dt>
+        {% if live %}<dd class="es-tile-v f">{{ s.census.horizons|length }}</dd>
+        {% if s.census.horizons|length == 4 and '0q' in s.census.horizons and '+1q' in s.census.horizons and '0y' in s.census.horizons and '+1y' in s.census.horizons %}
+        <dd class="es-tile-sub">{{ t('Current quarter to next fiscal year','本季度至下一财年') }}</dd>
+        {% else %}
+        <dd class="es-tile-sub">{% for h in s.census.horizons %}{{ h }}{% if not loop.last %}{{ t(', ','、') }}{% endif %}{% endfor %}</dd>
+        {% endif %}
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Sessions','采集期') }}</dt>
+        {% if live %}<dd class="es-tile-v f">{{ '{:,}'.format(ncap) }}</dd>
+        {% if weekly %}<dd class="es-tile-sub">{{ t('Weekly captures','每周采集一次') }}</dd>
+        {% else %}<dd class="es-tile-sub">{{ t('Irregular captures','采集间隔不固定') }}</dd>{% endif %}
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Date span','时间跨度') }}</dt>
+        {% if live %}
+        <dd class="es-tile-v"><span class="f">{{ span_weeks }}</span><span class="es-tile-unit">{{ t('weeks','周') }}</span></dd>
+        <dd class="es-tile-sub f"><span class="es-long">{{ first_ymd }} – {{ last_ymd }}</span><span class="es-short">{{ first_md }} – {{ last_md }}</span></dd>
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Median covering analysts','覆盖分析师中位数') }}</dt>
+        {% if live and s.census.analysts_median is not none %}
+        <dd class="es-tile-v f">{{ s.census.analysts_median }}</dd>
+        <dd class="es-tile-sub">{{ t('Per estimate, latest session','每项预期，最新采集期') }}</dd>
+        {% elif live %}
+        <dd class="es-tile-v f">—</dd>
+        <dd class="es-tile-sub">{{ t('Per estimate, latest session','每项预期，最新采集期') }}</dd>
+        {% else %}{{ tile_na() }}{% endif %}</div>
+      <div class="es-tile"><dt>{{ t('Left out (identity)','未计入（身份）') }}</dt>
+        {% if live %}
+        <dd class="es-tile-pair"><span class="f">{{ '{:,}'.format(s.identity.unresolved) if s.identity.unresolved is not none else '—' }}</span>
+          <span><span class="es-long">{{ t('vendor names unmatched','个供应商名称未匹配') }}</span><span class="es-short">{{ t('names unmatched','个名称未匹配') }}</span></span></dd>
+        <dd class="es-tile-pair"><span class="f">{{ '{:,}'.format(s.identity.undated_aliases) if s.identity.undated_aliases is not none else '—' }}</span>
+          <span><span class="es-long">{{ t('aliases with no effective date','个别名无生效日期') }}</span><span class="es-short">{{ t('aliases undated','个别名缺少日期') }}</span></span></dd>
+        {% else %}
+        {{ tile_na() }}
+        {% endif %}
+      </div>
+    </dl>
+  </section>
+
+  {# ── #es-breadth ── #}
+  {# desktop strip window: the frozen 52px column fits 12 columns in the 676px
+     strip; sessions beyond the newest 12 are hidden at ≥768 (is-cap) and beyond
+     the newest 6 at <768 (is-older, per spec). The counts table keeps all n. #}
+  {% set STRIP_CAP_DESKTOP = 12 %}
+  {% macro strip_cap_line(n) -%}
+    {% if n > STRIP_CAP_DESKTOP %}
+    <p class="es-strip-cap">{{ t('Last {k} of {n} compared sessions','最近 {k} 个 / 共 {n} 个可比较采集期') | replace('{k}', STRIP_CAP_DESKTOP|string) | replace('{n}', '{:,}'.format(n)) | safe }}</p>
+    {% elif n > 6 %}
+    <p class="es-strip-cap es-m-only">{{ t('Last {k} of {n} compared sessions','最近 {k} 个 / 共 {n} 个可比较采集期') | replace('{k}', '6') | replace('{n}', '{:,}'.format(n)) | safe }}</p>
+    {% endif %}
+  {%- endmacro %}
+  {% macro breadth_body(metric, rows) %}
+    {% set n = rows|length %}
+    {% set metric_disp = 'EPS' if metric == 'EPS' else t('Revenue','营收') %}
+    <div class="es-breadth-body" data-metric="{{ metric }}"{% if metric != 'EPS' %} hidden{% endif %}>
+      <figure class="es-strip">
+        <ul class="es-legend">
+          <li><span class="es-sw es-sw--up"></span>{{ t('Upgrades','上调') }}</li>
+          <li><span class="es-sw es-sw--flat"></span>{{ t('Unchanged','不变') }}</li>
+          <li><span class="es-sw es-sw--down"></span>{{ t('Cuts','下调') }}</li>
+        </ul>
+        <p class="es-legend-note">{{ t('Each column is every estimate compared at that session.','每一列代表该采集期内被比较的全部预期。') }}</p>
+        {{ strip_cap_line(n) }}
+        <figcaption class="es-sr">{{ t('Revision breadth by session for {metric}, oldest to newest.','{metric} 各采集期修正广度，由早到晚。') | replace('{metric}', 'EPS' if metric == 'EPS' else 'revenue') | safe }}</figcaption>
+        {% if n %}
+        <ol class="es-cols">
+          {% for r in rows %}
+          {% set i = loop.index0 %}
+          {% set comp = r.up + r.down + r.flat %}
+          {% set us = (r.up / comp * 100) if comp else 0 %}
+          {% set ds = (r.down / comp * 100) if comp else 0 %}
+          {% set ui = us|round(0,'common')|int %}
+          {% set di = ds|round(0,'common')|int %}
+          <li class="es-col{% if i == n - 1 %} is-latest{% endif %}{% if i < n - 6 %} is-older{% endif %}{% if i < n - STRIP_CAP_DESKTOP %} is-cap{% endif %}" style="--u:{{ '%.2f'|format(us) }};--d:{{ '%.2f'|format(ds) }};">
+            <span class="es-col-tag" aria-hidden="true">{% if i == n - 1 %}{{ t('Latest','最新') }}{% endif %}</span>
+            <span class="es-col-up f" aria-hidden="true">{% if comp %}{{ ui }}%{% else %}—{% endif %}</span>
+            <span class="es-bar" aria-hidden="true"><span class="es-bar-up"></span><span class="es-bar-flat"></span><span class="es-bar-down"></span></span>
+            <span class="es-col-down f" aria-hidden="true">{% if comp %}{{ di }}%{% else %}—{% endif %}</span>
+            <time class="es-col-date f" datetime="{{ r.at }}" aria-hidden="true">{{ r.at[5:10] }}</time>
+            <span class="es-sr">{{ t('{date}: {up} upgrades ({upPct}), {down} cuts ({downPct}), {flat} unchanged, of {total} compared.','{date}：上调 {up}（{upPct}），下调 {down}（{downPct}），不变 {flat}，共比较 {total}。') | replace('{date}', r.at[0:10]) | replace('{up}', '{:,}'.format(r.up)) | replace('{upPct}', ui ~ '%') | replace('{down}', '{:,}'.format(r.down)) | replace('{downPct}', di ~ '%') | replace('{flat}', '{:,}'.format(r.flat)) | replace('{total}', '{:,}'.format(comp)) | safe }}</span>
+          </li>
+          {% endfor %}
+        </ol>
+        {% endif %}
+      </figure>
+
+      <div class="es-btable">
+        <table>
+          <caption>{{ t('Counts by session, newest first','各采集期计数，最新在前') }}</caption>
+          <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"></colgroup>
+          <thead><tr>
+            <th scope="col">{{ t('Session','采集期') }}</th>
+            <th scope="col">{{ t('Upgrades','上调') }}</th>
+            <th scope="col">{{ t('Cuts','下调') }}</th>
+            <th scope="col">{{ t('Unchanged','不变') }}</th>
+            <th scope="col">{{ t('Compared','比较总数') }}</th></tr></thead>
+          <tbody>
+            {% for r in rows|reverse %}
+            {% set i = loop.index0 %}
+            <tr class="{% if i == 0 %}is-latest{% elif 6 <= i <= 7 %}es-xm{% elif i >= 8 %}es-x{% endif %}">
+              <th scope="row" class="f">{{ r.at[0:10] }}</th>
+              <td class="f">{{ '{:,}'.format(r.up) }}</td>
+              <td class="f">{{ '{:,}'.format(r.down) }}</td>
+              <td class="f">{{ '{:,}'.format(r.flat) }}</td>
+              <td class="f">{{ '{:,}'.format(r.up + r.down + r.flat) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if n > 6 %}
+        <button type="button" class="es-btn" aria-expanded="false" data-more="breadth" data-n="{{ n }}">{{ t('All {n} compared sessions','全部 {n} 个可比较采集期') | replace('{n}', '{:,}'.format(n)) | safe }}</button>
+        {% endif %}
+      </div>
+    </div>
+  {% endmacro %}
+  <section id="es-breadth" class="es-panel" aria-labelledby="es-breadth-h">
+    <div class="es-head">
+      <div class="es-head-text">
+        <h2 class="es-h2" id="es-breadth-h">{{ t('Revision breadth','预期修正广度') }}</h2>
+        <p class="es-sub">{{ t('Share of compared estimates that rose, fell or held at each session.','每个采集期内，被比较的预期中上调、下调与不变的占比。') }}</p>
+      </div>
+      <div class="es-head-aside">
+        <p class="es-asof"><span>{{ t('As of','截至') }}</span>
+          {% if lat %}<time class="f" datetime="{{ lat }}"><span class="es-long">{{ lat[0:10] }} {{ lat[11:16] }} UTC</span><span class="es-short">{{ lat[5:10] }}</span></time>
+          {% else %}<span class="f">—</span>{% endif %}</p>
+        {% if live and bm_eps %}
+        <fieldset class="es-seg" data-target="breadth">
+          <legend class="es-sr">{{ t('Metric','指标') }}</legend>
+          <label><input type="radio" name="es-bm" value="EPS" checked><span>EPS</span></label>
+          <label><input type="radio" name="es-bm" value="revenue"><span>{{ t('Revenue','营收') }}</span></label>
+        </fieldset>
+        {% endif %}
+      </div>
+    </div>
+    {% if live and bm_eps %}
+      {{ breadth_body('EPS', bm_eps) }}
+    {{ breadth_body('revenue', bm_rev) }}
+    {% elif live %}
+    <div class="es-empty">
+      <p class="es-empty-t">{{ t('No compared sessions yet. The first capture has no prior session to compare with.','尚无可比较的采集期。首次采集没有上一期可供比较。') }}</p>
+    </div>
+    {% else %}
+    <div class="es-empty">
+      <p class="es-empty-t">{{ t('Not available while offline','离线时不可用') }}</p>
+      <p><span>{{ t('Reason','原因') }}</span> {% for r in s.reasons %}<code class="f">{{ r }}</code>{% endfor %}</p>
+    </div>
+    {% endif %}
+    {% if live and bm_eps %}
+    <p class="es-foot">
+      <span class="es-long">{{ t('A change is the session-over-session move in each security\'s average estimate, per metric and horizon. Unchanged means no move at the reported precision. The first capture, {first}, has no prior session, so {ncap} captures give {ncmp} compared sessions. Answer rule: one side leads when it is more than 1.2 times the other.','变动指每只证券在各指标与期限上的平均预期较上一采集期的变化。不变指在报告精度下无变化。首次采集（{first}）没有上一期可比，因此 {ncap} 次采集对应 {ncmp} 个可比较采集期。判断规则：一方超过另一方的 1.2 倍时视为占多。') | replace('{first}', first_ymd) | replace('{ncap}', '{:,}'.format(ncap)) | replace('{ncmp}', '{:,}'.format(ncmp)) | safe }}</span>
+      <span class="es-short">{{ t('A change is the session-over-session move in an estimate\'s average. {ncap} captures give {ncmp} compared sessions. One side leads when it is more than 1.2 times the other.','变动指某项预期平均值相对上一采集期的变化。{ncap} 次采集形成 {ncmp} 个可比较采集期。一方超过另一方的 1.2 倍时视为占多。') | replace('{ncap}', '{:,}'.format(ncap)) | replace('{ncmp}', '{:,}'.format(ncmp)) | safe }}</span>
+    </p>
+    {% endif %}
+  </section>
+
+  {# ── #es-movers ── #}
+  {% macro movers_side(metric, side, items, maxabs) %}
+    {% set n = items|length %}
+    <div class="es-side es-side--{{ 'up' if side == 'up' else 'down' }}">
+      <div class="es-side-h">
+        {% if side == 'up' %}<span class="es-sq es-sq--up" aria-hidden="true"></span>
+        <h3>{{ t('Estimates raised most','上调幅度最大') }}</h3>
+        {% else %}<span class="es-sq es-sq--down" aria-hidden="true"></span>
+        <h3>{{ t('Estimates cut most','下调幅度最大') }}</h3>{% endif %}
+        <span class="es-side-count" data-count="{{ metric }}">{{ t('{k} of {n} shown','显示 {k} / 共 {n}') | replace('{k}', [n, 6]|min|string) | replace('{n}', n|string) | safe }}</span>
+      </div>
+      {% if n %}
+      <div class="es-mv-head" aria-hidden="true">
+        <span>{{ t('Security','证券') }}</span><span>{{ t('Horizon','期限') }}</span>
+        <span class="r">{{ t('Prior','上期') }}</span><span class="r">{{ t('Latest','最新') }}</span>
+        <span class="r es-mv-head-chg">{{ t('Change','变动') }}</span>
+        <span class="r">{{ t('Analysts','分析师') }}</span><span class="r">{{ t('As of','截至') }}</span></div>
+      <ol class="es-mv-list">
+        {% for i in items %}
+        <li{% if loop.index0 >= 6 %} class="es-x"{% endif %}>
+          <button type="button" class="es-mv es-mv--{{ 'up' if side == 'up' else 'down' }}" data-ticker="{{ i.ticker }}" data-horizon="{{ i.horizon }}" data-metric="{{ metric }}">
+            <span class="es-mv-t f" aria-hidden="true">{{ i.ticker }}</span>
+            <span class="es-mv-hz" aria-hidden="true"><span>{{ hzlabel(i.horizon) }}</span><span class="es-mv-pe f">{{ i.period_end[0:7] if i.period_end else '—' }}</span></span>
+            <span class="es-mv-prior f" aria-hidden="true">{{ fval(metric, i.prior) }}</span>
+            <span class="es-mv-latest f" aria-hidden="true">{{ fval(metric, i.latest) }}</span>
+            <span class="es-mv-bar" aria-hidden="true"><i style="--w:{{ [(i.pct_change|abs) / maxabs * 100, 3.2]|max|round(2) }};"></i></span>
+            <span class="es-mv-chg f" aria-hidden="true">{{ fpct(i.pct_change) }}</span>
+            <span class="es-mv-an f" aria-hidden="true">{% if i.analysts is not none %}{{ '%d'|format(i.analysts) }}{% else %}—{% endif %}</span>
+            <span class="es-mv-asof f" aria-hidden="true">{{ i.latest_at[5:10] if i.latest_at else '—' }}</span>
+            <span class="es-mv-meta" aria-hidden="true"><span class="f">{{ fval(metric, i.prior) }} → {{ fval(metric, i.latest) }}</span><span>{{ t('{n} analysts','{n} 位分析师') | replace('{n}', '%d'|format(i.analysts) if i.analysts is not none else '—') | safe }}</span><span>{{ t('as of {md}','截至 {md}') | replace('{md}', i.latest_at[5:10] if i.latest_at else '—') | safe }}</span></span>
+            <span class="es-sr">{{ t('{T}, {horizon} {pe}: prior {p}, latest {l}, change {c}, {a} analysts, as of {md}. Opens in the explorer.','{T}，{horizon} {pe}：上期 {p}，最新 {l}，变动 {c}，{a} 位分析师，截至 {md}。在查询区打开。') | replace('{T}', i.ticker) | replace('{horizon}', hzlabel(i.horizon) | string) | replace('{pe}', i.period_end[0:7] if i.period_end else '—') | replace('{p}', fval(metric, i.prior)) | replace('{l}', fval(metric, i.latest)) | replace('{c}', fpct(i.pct_change)) | replace('{a}', '%d'|format(i.analysts) if i.analysts is not none else '—') | replace('{md}', i.latest_at[5:10] if i.latest_at else '—') | safe }}</span>
+          </button></li>
+        {% endfor %}
+      </ol>
+      {% if n > 6 %}
+      <button type="button" class="es-btn" aria-expanded="false" data-more="movers" data-n="{{ n }}">{{ t('Show {n} more','再显示 {n} 项') | replace('{n}', (n - 6)|string) | safe }}</button>
+      {% endif %}
+      {% else %}
+      <p class="es-empty-line">{% if side == 'up' %}{{ t('No estimates were raised this session.','本期没有上调的预期。') }}{% else %}{{ t('No estimates were cut this session.','本期没有下调的预期。') }}{% endif %}</p>
+      {% endif %}
+    </div>
+  {% endmacro %}
+  {% macro movers_bodies(metric) %}
+    {% set mv = s.movers.get(metric, {'up': [], 'down': []}) %}
+    {% if not mv.up and not mv.down %}
+    <div class="es-empty" data-metric="{{ metric }}"{% if metric != 'EPS' %} hidden{% endif %}>
+      <p class="es-empty-t">{{ t('No moves between sessions','两期之间无变动') }}</p>
+      <p>{{ t('No consensus moves to show. No average estimate changed between {prior} and {latest} for {metric}.','暂无一致预期变动。{prior} 至 {latest} 期间 {metric} 平均预期没有变化。') | replace('{prior}', pat[0:10] if pat else '—') | replace('{latest}', lat[0:10] if lat else '—') | replace('{metric}', 'EPS' if metric == 'EPS' else t('revenue','营收')) | safe }}</p>
+      <p class="es-hint">{% if metric == 'EPS' %}{{ t('Switch to Revenue, or open the breadth table for earlier sessions.','可切换至营收，或打开广度表查看更早的采集期。') }}{% else %}{{ t('Switch to EPS, or open the breadth table for earlier sessions.','可切换至 EPS，或打开广度表查看更早的采集期。') }}{% endif %}</p>
+    </div>
+    {% else %}
+    {% set allm = mv.up + mv.down %}
+    {% set mx = namespace(v=0.0) %}
+    {% for i in allm %}{% if i.pct_change is not none and (i.pct_change|abs) > mx.v %}{% set mx.v = i.pct_change|abs %}{% endif %}{% endfor %}
+    <div class="es-sides" data-metric="{{ metric }}"{% if metric != 'EPS' %} hidden{% endif %}>
+      {{ movers_side(metric, 'up', mv.up, mx.v) }}
+      {{ movers_side(metric, 'down', mv.down, mx.v) }}
+    </div>
+    {% endif %}
+  {% endmacro %}
+  <section id="es-movers" class="es-panel" aria-labelledby="es-movers-h">
+    <div class="es-head">
+      <div class="es-head-text">
+        <h2 class="es-h2" id="es-movers-h">{{ t('Largest consensus moves','预期变动最大') }}</h2>
+        <p class="es-sub">{% if lat and pat %}{{ t('Latest session against the prior one, {prior} to {latest}. Change in the average estimate.','最新采集期与上一期对比（{prior} 至 {latest}），平均预期的变化。') | replace('{prior}', pat[0:10]) | replace('{latest}', lat[0:10]) | safe }}{% endif %}</p>
+      </div>
+      <div class="es-head-aside">
+        <p class="es-sortnote"><svg class="es-ic" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M1.5 3H10.5M1.5 6H7.5M1.5 9H4.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          {{ t('Sorted by magnitude · descriptive','按变动幅度排序 · 仅描述') }}</p>
+        {% if live and (eps_up or eps_dn or s.movers.get('revenue', {'up': [], 'down': []}).up or s.movers.get('revenue', {'up': [], 'down': []}).down) %}
+        <fieldset class="es-seg" data-target="movers"><legend class="es-sr">{{ t('Metric','指标') }}</legend>
+          <label><input type="radio" name="es-mm" value="EPS" checked><span>EPS</span></label>
+          <label><input type="radio" name="es-mm" value="revenue"><span>{{ t('Revenue','营收') }}</span></label></fieldset>
+        {% endif %}
+      </div>
+    </div>
+    {% if live and (eps_up or eps_dn or s.movers.get('revenue', {'up': [], 'down': []}).up or s.movers.get('revenue', {'up': [], 'down': []}).down) %}
+      {{ movers_bodies('EPS') }}
+      {{ movers_bodies('revenue') }}
+    {% elif live %}
+    <div class="es-empty">
+      <p class="es-empty-t">{{ t('No moves between sessions','两期之间无变动') }}</p>
+      <p>{{ t('No consensus moves to show. No average estimate changed between {prior} and {latest} for {metric}.','暂无一致预期变动。{prior} 至 {latest} 期间 {metric} 平均预期没有变化。') | replace('{prior}', pat[0:10] if pat else '—') | replace('{latest}', lat[0:10] if lat else '—') | replace('{metric}', 'EPS') | safe }}</p>
+      <p class="es-hint">{{ t('Switch to Revenue, or open the breadth table for earlier sessions.','可切换至营收，或打开广度表查看更早的采集期。') }}</p>
+    </div>
+    {% else %}
+    <div class="es-empty">
+      <p class="es-empty-t">{{ t('Not available while offline','离线时不可用') }}</p>
+      <p><span>{{ t('Reason','原因') }}</span> {% for r in s.reasons %}<code class="f">{{ r }}</code>{% endfor %}</p>
+    </div>
+    {% endif %}
+    {% if live and (eps_up or eps_dn or s.movers.get('revenue', {'up': [], 'down': []}).up or s.movers.get('revenue', {'up': [], 'down': []}).down) %}
+    <p class="es-foot">{% if s.exclusions.zero_prior %}{{ t('Change = (latest − prior) ÷ |prior| of the average estimate. Rows with a prior of zero are left out ({z} this session). Selecting a row opens it in the explorer.','变动 =（最新 − 上期）÷ |上期|，基于平均预期。上期为零的行不计入（本期 {z} 行）。选择一行即可在查询区打开。') | replace('{z}', '{:,}'.format(s.exclusions.zero_prior)) | safe }}{% else %}{{ t('Change = (latest − prior) ÷ |prior| of the average estimate. Rows with a prior of zero are left out (none this session). Selecting a row opens it in the explorer.','变动 =（最新 − 上期）÷ |上期|，基于平均预期。上期为零的行不计入（本期无）。选择一行即可在查询区打开。') | safe }}{% endif %}
+      {{ t('Values as captured; unit not recorded by the source','数值按采集原样显示；来源未记录单位') }}</p>
+    {% endif %}
+  </section>
+
+  {# ── #es-explorer ── #}
+  <section id="es-explorer" class="es-panel" aria-labelledby="es-explorer-h">
+    <div class="es-head">
+      <div class="es-head-text">
+        <h2 class="es-h2" id="es-explorer-h">{{ t('Consensus explorer','一致预期查询') }}</h2>
+        <p class="es-sub">{{ t('One security\'s estimate path, session by session, with analyst coverage.','单只证券逐期的预期路径及分析师覆盖。') }}</p>
+      </div>
+      <div class="es-head-aside">
+        <p class="es-asof"><span>{{ t('As of','截至') }}</span>
+          {% if lat %}<time class="f" datetime="{{ lat }}"><span class="es-long">{{ lat[0:10] }} {{ lat[11:16] }} UTC</span><span class="es-short">{{ lat[5:10] }}</span></time>
+          {% else %}<span class="f">—</span>{% endif %}</p>
+      </div>
+    </div>
+    {% if live %}
+    <div class="es-xp">
+      <div class="es-find">
+        <div class="es-field">
+          <label class="es-find-label" for="es-q">{{ t('Find a security','查找证券') }}</label>
+          <div class="es-combo" id="es-search">
+            <svg class="es-ic" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.75" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <input id="es-q" class="es-q f" type="text" role="combobox" aria-autocomplete="list"
+                   aria-expanded="false" aria-controls="es-lb" aria-describedby="es-q-hint"
+                   autocomplete="off" spellcheck="false" autocapitalize="characters" maxlength="12"
+                   value="{{ def_t }}" data-ph-en="Ticker, e.g. MU" data-ph-zh="输入代码，如 MU">
+            <button type="button" class="es-q-clear" id="es-q-clear" data-a-en="Clear search" data-a-zh="清除搜索" hidden>
+              <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4L12 12M12 4L4 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="es-lb-wrap" id="es-lb-wrap" hidden>
+            <p class="es-lb-note" aria-hidden="true"></p>
+            <ul class="es-lb" id="es-lb" role="listbox" data-a-en="Matching tickers" data-a-zh="匹配的代码"></ul>
+          </div>
+          <p class="es-hint" id="es-q-hint">{{ t('Ticker, e.g. MU. {n} matched securities.','输入代码，如 MU。共 {n} 只已匹配证券。') | replace('{n}', '{:,}'.format(s.census.securities)) | safe }}</p>
+          <p class="es-sr" id="es-q-status" role="status" aria-live="polite"></p>
+          <div class="es-nomatch" id="es-nomatch" hidden>
+            <p class="es-nomatch-t">{{ t('No matching ticker','无匹配代码') }}</p>
+            <p id="es-nomatch-text"></p>
+            <button type="button" class="es-btn" id="es-nomatch-clear">{{ t('Clear search','清除搜索') }}</button>
+            <p class="es-hint">{{ t('The chart keeps the last security.','图表保留上一只证券。') }}</p>
+          </div>
+        </div>
+
+        <div class="es-card" id="es-card">
+          <div class="es-card-h"><h3 class="es-card-t f" id="es-card-t" tabindex="-1">{{ def_t }}</h3>
+            <a class="es-link es-card-link" id="es-card-link" hidden>{{ t('Company page','公司页面') }}</a>
+            <span class="es-pill" id="es-card-pill" hidden></span></div>
+          <dl>
+            <div class="es-card-s"><dt>{{ t('Sessions captured','已采集期数') }}</dt><dd class="f" id="es-card-sessions">—</dd></div>
+            <div class="es-card-l"><dt>{{ t('Latest capture','最近采集') }}</dt><dd class="f" id="es-card-latest">—</dd></div>
+            <div class="es-card-h2"><dt>{{ t('Horizons with estimates','有预期的期限数') }}</dt><dd class="f" id="es-card-hz">—</dd></div>
+          </dl>
+        </div>
+
+        {% if picks %}
+        <div class="es-picks">
+          <p class="es-picks-l" id="es-picks-l">{{ t("From this session's largest moves",'来自本期变动最大的证券') }}</p>
+          <div class="es-picks-row" role="group" aria-labelledby="es-picks-l">
+            {% for p in picks %}
+            <button type="button" class="es-pick f" aria-pressed="{{ 'true' if loop.first else 'false' }}" data-ticker="{{ p.ticker }}" data-horizon="{{ p.horizon }}">{{ p.ticker }}</button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        <p class="es-hint" id="es-open-hint">{% if def_t %}{{ t('Opened on {T}, the largest EPS move this session. The view is a record of what analysts published, not a forecast of the price.','默认显示 {T}（本期 EPS 变动最大）。本视图记录分析师发布的预期，并非价格预测。') | replace('{T}', def_t) | safe }}{% endif %}</p>
+      </div>
+
+      <div id="es-ticker-panel">
+        <div class="es-view" id="es-view" aria-busy="false">
+          <div class="es-view-ctl">
+            <fieldset class="es-seg es-seg--line"><legend class="es-sr">{{ t('Metric','指标') }}</legend>
+              <label><input type="radio" name="es-xm" value="EPS" checked><span>EPS</span></label>
+              <label><input type="radio" name="es-xm" value="revenue"><span>{{ t('Revenue','营收') }}</span></label></fieldset>
+            <fieldset class="es-seg es-seg--line es-seg--hz"><legend class="es-sr">{{ t('Horizon','期限') }}</legend>
+              {% for h in ['0q', '+1q', '0y', '+1y'] %}
+              <label><input type="radio" name="es-xh" value="{{ h }}"{% if h == def_h %} checked{% endif %}><span>{{ hzlabel(h) }}</span></label>
+              {% endfor %}
+            </fieldset>
+            <p class="es-unit" id="es-unit">{{ t('Values as captured; unit not recorded by the source','数值按采集原样显示；来源未记录单位') }}</p>
+          </div>
+
+          <div class="es-view-body" id="es-view-body">
+            <dl class="es-readout" id="es-readout">
+              <div><dt>{{ t('Selected session','选定采集期') }}</dt><dd class="f" id="es-ro-session">—</dd></div>
+              <div><dt><span class="es-ro-sw" aria-hidden="true"></span>{{ t('Average','平均值') }}</dt><dd class="f" id="es-ro-avg">—</dd></div>
+              <div><dt><span class="es-ro-sw es-ro-sw--med" aria-hidden="true"></span>{{ t('Median','中位数') }}</dt><dd class="f" id="es-ro-med">—</dd></div>
+              <div><dt>{{ t('Low to high','最低至最高') }}</dt><dd class="f" id="es-ro-lohi">—</dd></div>
+              <div><dt>{{ t('Analysts','分析师') }}</dt><dd class="f" id="es-ro-an">—</dd></div>
+              <div><dt>{{ t('Average vs prior session','平均值较上期') }}</dt><dd class="f es-ro-chg" id="es-ro-chg">—</dd></div>
+            </dl>
+            <div class="es-chart" id="es-chart" tabindex="0" aria-labelledby="es-chart-cap" aria-describedby="es-kbd-hint">
+              <p class="es-sr" id="es-chart-cap"></p>
+              <svg id="es-chart-svg" aria-hidden="true" focusable="false"></svg>
+            </div>
+            <p class="es-sr" id="es-chart-live" role="status" aria-live="polite"></p>
+            <div class="es-cover">
+              <p class="es-cover-l"><span class="es-cover-t">{{ t('Covering analysts','覆盖分析师') }}</span>
+                <span class="es-cover-s">{{ t('Analysts with an estimate at each session','每个采集期给出预期的分析师人数') }}</span></p>
+              <svg id="es-cover-svg" aria-hidden="true" focusable="false"></svg>
+            </div>
+          </div>
+
+          <div class="es-view-foot">
+            <button type="button" class="es-btn" id="es-num-btn" aria-expanded="false" aria-controls="es-num">{{ t('Show the numbers','查看数值') }}</button>
+            <span class="es-kbd-hint" id="es-kbd-hint">{{ t('Use the arrow keys on the chart to move between sessions.','在图表上使用方向键切换采集期。') }}</span>
+          </div>
+          <div class="es-num" id="es-num" hidden>
+            <table class="es-ntable"><caption id="es-ntable-cap"></caption>
+              <thead><tr><th scope="col">{{ t('Session','采集期') }}</th><th scope="col">{{ t('Average','平均值') }}</th><th scope="col">{{ t('Median','中位数') }}</th>
+              <th scope="col">{{ t('Low','最低') }}</th><th scope="col">{{ t('High','最高') }}</th><th scope="col">{{ t('Analysts','分析师') }}</th></tr></thead>
+              <tbody id="es-num-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="es-empty">
+      <p class="es-empty-t">{{ t('Not available while offline','离线时不可用') }}</p>
+      <p><span>{{ t('Reason','原因') }}</span> {% for r in s.reasons %}<code class="f">{{ r }}</code>{% endfor %}</p>
+    </div>
+    {% endif %}
+  </section>
+
+  {# ── #es-method ── #}
+  <section id="es-method" class="es-panel" aria-labelledby="es-method-h">
+    <div class="es-head">
+      <div class="es-head-text"><h2 class="es-h2" id="es-method-h">{{ t('Method and provenance','方法与来源') }}</h2>
+        <p class="es-sub">{{ t('Where these numbers come from, and what they must not be used for.','这些数字的来源，以及不得用于的用途。') }}</p></div>
+      <p class="es-asof es-d-only"><span>{{ t('Rendered','页面生成') }}</span><time class="f" datetime="{{ s.rendered_at }}">{{ s.rendered_at[0:10] }} {{ s.rendered_at[11:16] }} UTC</time></p>
+    </div>
+    <div class="es-method-cols">
+      <details class="es-acc" open data-m="closed">
+        <summary><span class="es-acc-tt"><h3 class="es-h3">{{ t('What this is','这是什么') }}</h3>
+          <span class="es-acc-sub">{{ t('Schemas, source file and sessions','结构、源文件与采集期') }}</span></span>
+          <svg class="es-acc-chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6L8 10L12 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="es-acc-body">
+          <p>{{ t('A regenerated view of captured analyst estimates. Every render reads the observation file again; nothing on this page is kept as a record.','对已采集分析师预期的重新生成视图。每次生成都会重新读取观测文件；本页内容不作为记录保存。') }}</p>
+          <dl class="es-facts">
+            <div><dt>{{ t('Page schema','页面结构') }}</dt><dd>{{ s.schema }}</dd></div>
+            <div><dt>{{ t('Reader schema','读取结构') }}</dt><dd>k3e.declared_capture_inspection.v1</dd></div>
+            <div><dt>{{ t('Source file','源文件') }}</dt><dd class="es-path">{{ s.source.observations_path }}</dd></div>
+            <div><dt>{{ t('Source revision','源版本') }}</dt><dd>{{ s.source.source_revision[0:8] if s.source.source_revision else '—' }}</dd></div>
+            <div><dt>{{ t('Latest session','最新采集期') }}</dt><dd>{{ (lat[0:10] ~ ' ' ~ lat[11:16] ~ ' UTC') if lat else '—' }}</dd></div>
+            <div><dt>{{ t('Prior session','上一采集期') }}</dt><dd>{{ (pat[0:10] ~ ' ' ~ pat[11:16] ~ ' UTC') if pat else '—' }}</dd></div>
+          </dl>
+        </div>
+      </details>
+      <details class="es-acc" open data-m="closed">
+        <summary><span class="es-acc-tt"><h3 class="es-h3">{{ t('Decisions on record','已记录决定') }}</h3>
+          <span class="es-acc-sub">{{ t('{n} decisions that shape this page','影响本页的 {n} 项决定') | replace('{n}', '2') | safe }}</span></span>
+          <svg class="es-acc-chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6L8 10L12 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="es-acc-body">
+          <div class="es-dec"><code>DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07</code>
+            <p>{{ t('Identity is accepted as partly matched. Vendor names without a matched security, and aliases without an effective date, stay out of every count until they are resolved.','身份按部分匹配接受。未匹配到证券的供应商名称及缺少生效日期的别名，在解决前不计入任何计数。') }}</p></div>
+          <div class="es-dec"><code>DEC:ITP-R5-NO-DURABLE-APPEND-2026-10-07</code>
+            <p>{{ t('The page is rebuilt from source at every render. It is never appended to a ledger, store or queue.','本页每次生成时都从源数据重建，从不追加到任何账本、存储或队列。') }}</p></div>
+        </div>
+      </details>
+      <details class="es-acc" open data-m="open">
+        <summary><span class="es-acc-tt"><h3 class="es-h3">{{ t('What this is not','这不是什么') }}</h3>
+          <span class="es-acc-sub">{{ t('Uses this page rules out','本页排除的用途') }}</span></span>
+          <svg class="es-acc-chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6L8 10L12 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="es-acc-body">
+          <ul class="es-not">
+            <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 12.4L12.4 3.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>{{ t('Not a ranking of securities','不是证券排名') }}</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 12.4L12.4 3.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>{{ t('Not a screen, gate or filter for decisions','不是决策筛选、门槛或过滤条件') }}</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 12.4L12.4 3.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>{{ t('Not position sizing or capital allocation','不是仓位规模或资金分配') }}</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3.6 12.4L12.4 3.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><span>{{ t('Not a trade cue or a price forecast','不是交易提示或价格预测') }}</span></li>
+          </ul>
+          <div class="es-inset"><span>{{ t('Set on every emitted record','每条输出记录均设置') }}</span>
+            <code>financial_influence: false</code><code>k3e_admissible: false</code></div>
+        </div>
+      </details>
+    </div>
+    <a class="es-doclink" href="{{ RESEARCH_PROGRAM_URL }}"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5H10.5L13 5V13.5H3V2.5Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 7.5H10.5M5.5 10H9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>{{ t('Read the research program','阅读研究项目说明') }}</a>
+    <p class="es-asof es-m-only es-method-rendered"><span>{{ t('Rendered','页面生成') }}</span><time class="f" datetime="{{ s.rendered_at }}">{{ s.rendered_at[0:10] }} {{ s.rendered_at[11:16] }} UTC</time></p>
+  </section>
+
+</main>
+
+{% set ES_STR = {
+  "en": {
+    "k_of_n":        "{k} of {n} shown",
+    "show_more":     "Show {n} more",
+    "show_fewer":    "Show fewer",
+    "all_sessions":  "All {n} compared sessions",
+    "fewer_sessions":"Fewer sessions",
+    "opt_meta":      "{n} sessions, latest {md}",
+    "matches":       "{k} matches. Arrow keys move, Enter opens, Esc closes.",
+    "match_one":     "1 match. Arrow keys move, Enter opens, Esc closes.",
+    "hint_default":  "Opened on {T}, the largest EPS move this session. The view is a record of what analysts published, not a forecast of the price.",
+    "hint_after":    "The view is a record of what analysts published, not a forecast of the price.",
+    "ro_no_prior":   "No prior session",
+    "chart_cap":     "{T} {metric}, {horizon}: average estimate by session from {first} to {last}, with the low-to-high range and the median.",
+    "chart_live":    "{date}: average {avg}, median {med}, low {lo}, high {hi}, {n} analysts.",
+    "ntable_cap":    "{T} {metric}, {horizon}, by session",
+    "loading":       "Loading {T} estimates",
+    "err_title":     "Security failed to load",
+    "err_body":      "Could not load {T}. The ticker file did not respond. The rest of the page still works.",
+    "retry":         "Retry",
+    "nomatch_title": "No matching ticker",
+    "nomatch_body":  "No ticker matches “{q}”. The surface covers {n} matched securities; {u} vendor names are not matched yet.",
+    "empty_series":  "No {metric} estimates for {T} at this horizon. Choose another horizon.",
+    "no_est":        "(no estimates)",
+    "show_numbers":  "Show the numbers",
+    "hide_numbers":  "Hide the numbers",
+    "0q":            "Current Q",
+    "+1q":           "Next Q",
+    "0y":            "Current FY",
+    "+1y":           "Next FY",
+    "metric_eps":    "EPS",
+    "metric_rev":    "revenue",
+    "id_matched":    "Matched",
+    "id_resolved":   "Identity resolved",
+    "id_undated":    "Alias undated · excluded from identity",
+    "id_unresolved": "Identity unresolved",
+    "id_unknown":    "Identity unknown (aliases unavailable)",
+    "stale":         "Snapshot is {d} days old"
+  },
+  "zh": {
+    "k_of_n":        "显示 {k} / 共 {n}",
+    "show_more":     "再显示 {n} 项",
+    "show_fewer":    "收起",
+    "all_sessions":  "全部 {n} 个可比较采集期",
+    "fewer_sessions":"收起",
+    "opt_meta":      "{n} 个采集期，最近 {md}",
+    "matches":       "{k} 个匹配。方向键移动，回车打开，Esc 关闭。",
+    "match_one":     "1 个匹配。方向键移动，回车打开，Esc 关闭。",
+    "hint_default":  "默认显示 {T}（本期 EPS 变动最大）。本视图记录分析师发布的预期，并非价格预测。",
+    "hint_after":    "本视图记录分析师发布的预期，并非价格预测。",
+    "ro_no_prior":   "无上一期",
+    "chart_cap":     "{T} {metric}，{horizon}：{first} 至 {last} 各采集期的平均预期，含最低至最高区间及中位数。",
+    "chart_live":    "{date}：平均值 {avg}，中位数 {med}，最低 {lo}，最高 {hi}，{n} 位分析师。",
+    "ntable_cap":    "{T} {metric}，{horizon}，按采集期",
+    "loading":       "正在加载 {T} 的预期",
+    "err_title":     "证券加载失败",
+    "err_body":      "无法加载 {T}。证券数据文件无响应。页面其他部分仍可使用。",
+    "retry":         "重试",
+    "nomatch_title": "无匹配代码",
+    "nomatch_body":  "没有与「{q}」匹配的代码。本页涵盖 {n} 只已匹配证券；另有 {u} 个供应商名称尚未匹配。",
+    "empty_series":  "{T} 在此期限没有 {metric} 预期。请选择其他期限。",
+    "no_est":        "（无预期）",
+    "show_numbers":  "查看数值",
+    "hide_numbers":  "隐藏数值",
+    "0q":            "当季",
+    "+1q":           "下季",
+    "0y":            "当财年",
+    "+1y":           "下财年",
+    "metric_eps":    "EPS",
+    "metric_rev":    "营收",
+    "id_matched":    "已匹配",
+    "id_resolved":   "身份已解析",
+    "id_undated":    "别名无日期 · 不计入身份",
+    "id_unresolved": "身份未解析",
+    "id_unknown":    "身份未知（别名不可用）",
+    "stale":         "快照已有 {d} 天"
+  }
+} %}
+<script type="application/json" id="es-strings">{{ ES_STR | tojson }}</script>
+<script type="application/json" id="es-default-series">{{ {"ticker": def_t, "horizon": def_h, "securities": s.census.securities, "unresolved": s.identity.unresolved if s.identity.unresolved is not none else 0} | tojson }}</script>
+<script>
+(function () {
+  'use strict';
+  var d = document, docEl = d.documentElement;
+  function $(id) { return d.getElementById(id); }
+  function qsa(sel, root) { return Array.prototype.slice.call((root || d).querySelectorAll(sel)); }
+  function mqMobile() { return window.matchMedia('(max-width:767px)').matches; }
+  function reduced() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  var NS = 'http://www.w3.org/2000/svg';
+
+  /* ---- strings ---- */
+  var STR = { en: {}, zh: {} };
+  try { STR = JSON.parse($('es-strings').textContent); } catch (e) {}
+  function lang() { return docEl.getAttribute('data-lang') === 'zh' ? 'zh' : 'en'; }
+  function fill(tpl, vars) {
+    return String(tpl == null ? '' : tpl).replace(/\{(\w+)\}/g, function (m, k) {
+      return vars && Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m;
+    });
+  }
+  function Tp(key, vars) { var L = STR[lang()] || {}; return fill(L[key], vars); }
+  function twoSpan(el, en, zh) {
+    el.textContent = '';
+    var a = d.createElement('span'); a.className = 'l-en'; a.textContent = en;
+    var b = d.createElement('span'); b.className = 'l-zh'; b.textContent = zh;
+    el.appendChild(a); el.appendChild(b);
+  }
+  function setT(el, key, vars) {
+    if (!el) return;
+    twoSpan(el, fill(STR.en && STR.en[key], vars), fill(STR.zh && STR.zh[key], vars));
+  }
+  function hzKey(raw) { return (raw === '0q' || raw === '+1q' || raw === '0y' || raw === '+1y') ? raw : null; }
+  function hzText(raw) { var k = hzKey(raw); return k ? Tp(k) : String(raw); }
+
+  /* ---- formatting (spec §8.9 + G4) ---- */
+  function fmtInt(v) { return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function minus(s) { return s.replace('-', '−'); }
+  function fmtVal(metric, v) {
+    if (v == null || isNaN(v)) return '—';
+    var a = Math.abs(v), s;
+    if (metric === 'revenue') {
+      if (a >= 1e9) s = (a / 1e9).toFixed(2) + 'B';
+      else if (a >= 1e6) s = (a / 1e6).toFixed(1) + 'M';
+      else if (a >= 1e3) s = (a / 1e3).toFixed(1) + 'k';
+      else s = fmtInt(a);
+    } else s = a.toFixed(2);
+    return minus((v < 0 ? '-' : '') + s);
+  }
+  function fmtPct(c) {
+    if (c == null || isNaN(c)) return '—';
+    if (c > 0) return '+' + (c * 100).toFixed(1) + '%';
+    if (c < 0) return '−' + (-c * 100).toFixed(1) + '%';
+    return '0.0%';
+  }
+  function md(at) { return at ? String(at).slice(5, 10) : '—'; }
+  function ymd(at) { return at ? String(at).slice(0, 10) : '—'; }
+
+  /* ---- 1. language attributes ---- */
+  function applyLang() {
+    var zh = lang() === 'zh';
+    qsa('[data-a-en]').forEach(function (n) {
+      n.setAttribute('aria-label', zh ? (n.getAttribute('data-a-zh') || '') : (n.getAttribute('data-a-en') || ''));
+    });
+    qsa('[data-ph-en]').forEach(function (n) {
+      n.setAttribute('placeholder', zh ? (n.getAttribute('data-ph-zh') || '') : (n.getAttribute('data-ph-en') || ''));
+    });
+    var q = $('es-q');
+    if (q && q.value) syncClear(q);
+  }
+  try { applyLang(); d.addEventListener('langchange', applyLang); } catch (e) {}
+
+  /* ---- 2. STALE chip (rendered_at − latest session > 9 days) ---- */
+  try {
+    var st = $('es-stale');
+    var srcAt = $('es-src-at'), renAt = $('es-rendered-at');
+    if (st && st.hidden && srcAt && renAt) {
+      var days = (Date.parse(renAt.getAttribute('datetime')) - Date.parse(srcAt.getAttribute('datetime'))) / 86400000;
+      if (isFinite(days) && days > 9) {
+        setT($('es-stale-text'), 'stale', { d: Math.floor(days) });
+        st.hidden = false;
+      }
+    }
+  } catch (e) {}
+  function bootData() {
+    try { return JSON.parse($('es-default-series').textContent); } catch (e) { return {}; }
+  }
+
+  /* ---- 3. identity chip collapse ---- */
+  try {
+    var idBtn = $('es-id-btn'), idNote = $('es-id-note');
+    if (idBtn && idNote) {
+      idBtn.addEventListener('click', function () {
+        var open = idBtn.getAttribute('aria-expanded') === 'true';
+        idBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+        idNote.hidden = open;
+      });
+      if (mqMobile()) { idBtn.setAttribute('aria-expanded', 'false'); idNote.hidden = true; }
+    }
+  } catch (e) {}
+
+  /* ---- 4. method accordions (§10.8) ---- */
+  try {
+    var accs = qsa('#es-method details.es-acc');
+    function syncAcc() {
+      var mob = mqMobile();
+      accs.forEach(function (de) {
+        var sum = de.querySelector('summary');
+        if (!mob) {
+          de.open = true;
+          sum.setAttribute('tabindex', '-1');
+          sum.setAttribute('aria-disabled', 'true');
+        } else {
+          sum.removeAttribute('tabindex');
+          sum.removeAttribute('aria-disabled');
+          if (de.getAttribute('data-m') === 'closed') de.open = false;
+        }
+      });
+    }
+    accs.forEach(function (de) {
+      de.querySelector('summary').addEventListener('click', function (ev) {
+        if (!mqMobile()) ev.preventDefault();
+      });
+    });
+    syncAcc();
+    if (window.matchMedia) {
+      var mql = window.matchMedia('(max-width:767px)');
+      var onMq = function () { try { syncAcc(); } catch (e) {} };
+      if (mql.addEventListener) mql.addEventListener('change', onMq);
+      else if (mql.addListener) mql.addListener(onMq);
+    }
+  } catch (e) {}
+
+  /* ---- 5. metric segmented (breadth, movers) ---- */
+  try {
+    [['breadth', '#es-breadth'], ['movers', '#es-movers']].forEach(function (pair) {
+      var panel = d.querySelector(pair[1]);
+      if (!panel) return;
+      qsa('input[name]', panel).filter(function (r) {
+        var fs = r.closest('fieldset');
+        return fs && fs.getAttribute('data-target') === pair[0];
+      }).forEach(function (r) {
+        r.addEventListener('change', function () {
+          qsa('[data-metric]', panel).forEach(function (body) {
+            body.hidden = body.getAttribute('data-metric') !== r.value;
+          });
+        });
+      });
+    });
+  } catch (e) {}
+
+  /* ---- 6. expanders ---- */
+  try {
+    qsa('[data-more="breadth"]').forEach(function (btn) {
+      var bt = btn.closest('.es-btable');
+      var n = btn.getAttribute('data-n');
+      btn.addEventListener('click', function () {
+        var on = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', on ? 'false' : 'true');
+        if (bt) bt.classList.toggle('is-expanded', !on);
+        setT(btn, on ? 'all_sessions' : 'fewer_sessions', { n: fmtInt(Number(n)) });
+      });
+    });
+    qsa('[data-more="movers"]').forEach(function (btn) {
+      var side = btn.closest('.es-side');
+      var n = Number(btn.getAttribute('data-n'));
+      var cnt = side ? side.querySelector('.es-side-count') : null;
+      function setCount(k) { if (cnt) setT(cnt, 'k_of_n', { k: k, n: fmtInt(n) }); }
+      btn.addEventListener('click', function () {
+        var on = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', on ? 'false' : 'true');
+        if (side) side.classList.toggle('is-expanded', !on);
+        setT(btn, on ? 'show_more' : 'show_fewer', { n: fmtInt(n - 6) });
+        setCount(on ? Math.min(6, n) : n);
+      });
+    });
+  } catch (e) {}
+
+  /* ---- 7. "Show the numbers" ---- */
+  var view = $('es-view'), viewBody = $('es-view-body');
+  var cur = { doc: null, metric: 'EPS', horizon: null, sel: -1, committed: -1 };
+  try {
+    var numBtn = $('es-num-btn'), numBox = $('es-num');
+    if (numBtn && numBox) numBtn.addEventListener('click', function () {
+      var on = numBtn.getAttribute('aria-expanded') === 'true';
+      numBtn.setAttribute('aria-expanded', on ? 'false' : 'true');
+      numBox.hidden = on;
+      setT(numBtn, on ? 'show_numbers' : 'hide_numbers');
+    });
+  } catch (e) {}
+
+  /* ---- 8. explorer ---- */
+  var q = $('es-q'), lbWrap = $('es-lb-wrap'), lb = $('es-lb'), lbNote = lbWrap ? lbWrap.querySelector('.es-lb-note') : null;
+  var qHint = $('es-q-hint'), qStatus = $('es-q-status'), nomatch = $('es-nomatch');
+  var cardT = $('es-card-t'), cardPill = $('es-card-pill');
+  var idxCache = null, idxLoading = false, active = -1, openArgs = null, lastOpts = null;
+  var VALID = /^[A-Z0-9.\-]{1,12}$/;
+
+  function syncClear(input) {
+    var c = $('es-q-clear');
+    if (c) c.hidden = !input.value;
+  }
+  function closeLb() {
+    if (!lbWrap) return;
+    lbWrap.hidden = true;
+    if (q) q.setAttribute('aria-expanded', 'false');
+    active = -1;
+    if (q) q.removeAttribute('aria-activedescendant');
+  }
+  function hideNomatch() {
+    if (nomatch) nomatch.hidden = true;
+    if (qHint) qHint.hidden = false;
+  }
+  function announce(s) { if (qStatus) qStatus.textContent = s; }
+
+  function ensureIndex() {
+    if (idxCache || idxLoading || typeof fetch !== 'function') return;
+    idxLoading = true;
+    fetch('expectation_surface/tickers/index.json')
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (list) { idxCache = Array.isArray(list) ? list : []; idxLoading = false; })
+      .catch(function () { idxCache = []; idxLoading = false; });
+  }
+  function matchList(v) {
+    if (!idxCache || !v) return [];
+    var pre = [], sub = [];
+    idxCache.forEach(function (e) {
+      var t = String(e.ticker || '');
+      if (t.indexOf(v) === 0) pre.push(e);
+      else if (t.indexOf(v) !== -1) sub.push(e);
+    });
+    pre.sort(function (a, b) { return a.ticker < b.ticker ? -1 : 1; });
+    sub.sort(function (a, b) { return a.ticker < b.ticker ? -1 : 1; });
+    return pre.concat(sub).slice(0, 8);
+  }
+  function renderOptions(list) {
+    if (!lb) return;
+    lb.textContent = '';
+    list.forEach(function (e, i) {
+      var li = d.createElement('li');
+      li.id = 'es-opt-' + e.ticker;
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+      var tt = d.createElement('span'); tt.className = 'f'; tt.textContent = e.ticker;
+      var mm = d.createElement('span'); mm.className = 'es-lb-m';
+      mm.textContent = Tp('opt_meta', { n: e.sessions, md: md(e.latest_at) });
+      li.appendChild(tt); li.appendChild(mm);
+      li.addEventListener('mousedown', function (ev) { ev.preventDefault(); choose(i); });
+      lb.appendChild(li);
+    });
+    if (lbNote) lbNote.textContent = list.length === 1 ? Tp('match_one') : Tp('matches', { k: list.length });
+    if (list.length && q) {
+      lbWrap.hidden = false;
+      q.setAttribute('aria-expanded', 'true');
+    } else closeLb();
+    announce(list.length === 1 ? Tp('match_one') : Tp('matches', { k: list.length }));
+  }
+  function setActive(i) {
+    if (!lb) return;
+    var opts = qsa('li', lb);
+    if (!opts.length) return;
+    active = (i + opts.length) % opts.length;
+    opts.forEach(function (o, j) { o.setAttribute('aria-selected', j === active ? 'true' : 'false'); });
+    q.setAttribute('aria-activedescendant', opts[active].id);
+    opts[active].scrollIntoView({ block: 'nearest' });
+  }
+  function choose(i) {
+    var opts = qsa('li', lb);
+    var opt = opts[i];
+    if (!opt) return;
+    var t = opt.querySelector('.f').textContent;
+    open(t, { metric: cur.metric, from: 'search' });
+  }
+  if (q) {
+    var debT = null;
+    q.addEventListener('focus', ensureIndex);
+    q.addEventListener('input', function () {
+      syncClear(q);
+      hideNomatch();
+      var v = q.value.trim().toUpperCase();
+      if (debT) clearTimeout(debT);
+      debT = setTimeout(function () {
+        if (!v) { closeLb(); return; }
+        renderOptions(matchList(v));
+      }, 80);
+    });
+    q.addEventListener('keydown', function (ev) {
+      var opts = qsa('li', lb);
+      var isOpen = lbWrap && !lbWrap.hidden;
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        if (!isOpen) { if (q.value.trim()) renderOptions(matchList(q.value.trim().toUpperCase())); return; }
+        setActive((active < 0 ? (ev.key === 'ArrowDown' ? -1 : 0) : active) + (ev.key === 'ArrowDown' ? 1 : -1));
+      } else if (ev.key === 'Enter') {
+        ev.preventDefault();
+        if (isOpen && active >= 0 && opts[active]) { choose(active); return; }
+        var v = q.value.trim().toUpperCase();
+        if (!v) return;
+        var hit = idxCache && idxCache.filter(function (e) { return e.ticker === v; })[0];
+        if (hit) open(v, { metric: cur.metric, from: 'search' });
+        else showNomatch(v);
+      } else if (ev.key === 'Escape') {
+        if (isOpen) { closeLb(); }
+        else { q.value = ''; syncClear(q); hideNomatch(); }
+      } else if (ev.key === 'Tab') {
+        closeLb();
+      }
+    });
+    var clearBtn = $('es-q-clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      q.value = ''; syncClear(q); closeLb(); hideNomatch(); q.focus();
+    });
+  }
+  var nomatchClear = $('es-nomatch-clear');
+  if (nomatchClear) nomatchClear.addEventListener('click', function () {
+    if (q) { q.value = ''; syncClear(q); }
+    hideNomatch();
+    announce('');
+    if (q) q.focus();
+  });
+  function showNomatch(v) {
+    if (!nomatch) return;
+    if (qHint) qHint.hidden = true;
+    var boot = bootData();
+    var body = nomatch.querySelector('#es-nomatch-text');
+    if (body) setT(body, 'nomatch_body', { q: v, n: fmtInt(boot.securities || 0), u: fmtInt(boot.unresolved || 0) });
+    nomatch.hidden = false;
+    announce(Tp('nomatch_title'));
+    closeLb();
+  }
+
+  /* ---- open(T) ---- */
+  function showLoading(T) {
+    if (!viewBody) return;
+    saveBody();
+    viewBody.textContent = '';
+    var box = d.createElement('div'); box.className = 'es-loading';
+    var l = d.createElement('p'); l.className = 'es-loading-l'; l.textContent = Tp('loading', { T: T });
+    var r1 = d.createElement('div'); r1.className = 'es-skel es-skel--ro';
+    var r2 = d.createElement('div'); r2.className = 'es-skel es-skel--chart';
+    var r3 = d.createElement('div'); r3.className = 'es-skel es-skel--cover';
+    box.appendChild(l); box.appendChild(r1); box.appendChild(r2); box.appendChild(r3);
+    viewBody.appendChild(box);
+  }
+  function showError(T) {
+    if (!viewBody) return;
+    viewBody.textContent = '';
+    var box = d.createElement('div'); box.className = 'es-err'; box.setAttribute('role', 'alert');
+    var h = d.createElement('p'); h.className = 'es-offline-h';
+    var svg = d.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'es-ic'); svg.setAttribute('width', '20'); svg.setAttribute('height', '20');
+    svg.setAttribute('viewBox', '0 0 20 20'); svg.setAttribute('aria-hidden', 'true');
+    var p1 = d.createElementNS(NS, 'path');
+    p1.setAttribute('d', 'M10 2.5L18 16.5H2L10 2.5Z');
+    p1.setAttribute('fill', 'none'); p1.setAttribute('stroke', 'currentColor');
+    p1.setAttribute('stroke-width', '1.5'); p1.setAttribute('stroke-linejoin', 'round');
+    var p2 = d.createElementNS(NS, 'path');
+    p2.setAttribute('d', 'M10 8V11.5');
+    p2.setAttribute('fill', 'none'); p2.setAttribute('stroke', 'currentColor');
+    p2.setAttribute('stroke-width', '1.5'); p2.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(p1); svg.appendChild(p2);
+    h.appendChild(svg);
+    var hs = d.createElement('span'); hs.textContent = Tp('err_title'); h.appendChild(hs);
+    var body = d.createElement('p'); body.textContent = Tp('err_body', { T: T });
+    var btn = d.createElement('button'); btn.type = 'button'; btn.className = 'es-btn'; btn.id = 'es-retry';
+    setT(btn, 'retry');
+    btn.addEventListener('click', function () { if (lastOpts) open(lastOpts.T, lastOpts.opts); });
+    box.appendChild(h); box.appendChild(body); box.appendChild(btn);
+    viewBody.appendChild(box);
+  }
+  function pillFor(status) {
+    var map = { matched: 'id_matched', resolved: 'id_resolved', undated: 'id_undated', unresolved: 'id_unresolved', unknown: 'id_unknown' };
+    var key = map[status];
+    if (!cardPill) return;
+    if (key) { cardPill.className = 'es-pill'; setT(cardPill, key); }
+    else { cardPill.className = 'es-pill es-pill--other'; cardPill.textContent = String(status || '—'); }
+    cardPill.hidden = false;
+  }
+  function updateCard(doc) {
+    if (!cardT) return;
+    cardT.textContent = doc.ticker || '';
+    pillFor(doc.identity_status);
+    var cardLink = $('es-card-link');
+    if (cardLink) {
+      var cp = doc.company_page;
+      if (typeof cp === 'string' && /^stocks\/[A-Z0-9.\-]{1,12}\.html$/.test(cp)) { cardLink.href = cp; cardLink.hidden = false; }
+      else { cardLink.removeAttribute('href'); cardLink.hidden = true; }
+    }
+    var maxLen = 0, latestAt = null, hzSet = {};
+    var ser = doc.series || {};
+    Object.keys(ser).forEach(function (m) {
+      Object.keys(ser[m]).forEach(function (h) {
+        var arr = ser[m][h] || [];
+        if (arr.length) {
+          if (arr.length > maxLen) maxLen = arr.length;
+          hzSet[h] = true;
+          arr.forEach(function (p) { if (latestAt === null || String(p.at) > String(latestAt)) latestAt = p.at; });
+        }
+      });
+    });
+    var sN = $('es-card-sessions'), sL = $('es-card-latest'), sH = $('es-card-hz');
+    if (sN) sN.textContent = maxLen ? fmtInt(maxLen) : '—';
+    if (sL) sL.textContent = latestAt ? (ymd(latestAt) + ' ' + String(latestAt).slice(11, 16) + ' UTC') : '—';
+    if (sH) sH.textContent = Object.keys(hzSet).length ? fmtInt(Object.keys(hzSet).length) : '—';
+  }
+  function updateRadios(doc, metric, horizon) {
+    var ser = doc.series || {};
+    qsa('input[name="es-xh"]').forEach(function (r) {
+      var arr = (ser[metric] && ser[metric][r.value]) || [];
+      var has = arr.length > 0;
+      r.disabled = !has;
+      var span = r.parentNode.querySelector('span');
+      if (span) {
+        var sr = span.querySelector('.es-sr');
+        if (sr) sr.remove();
+        if (!has) { var el = d.createElement('span'); el.className = 'es-sr'; el.textContent = Tp('no_est'); span.appendChild(el); }
+      }
+      r.checked = r.value === horizon;
+    });
+    qsa('input[name="es-xm"]').forEach(function (r) { r.checked = r.value === metric; });
+  }
+  function pickHorizon(doc, metric, want) {
+    var ser = doc.series || {};
+    function has(h) { return ser[metric] && ser[metric][h] && ser[metric][h].length; }
+    if (want && has(want)) return want;
+    if (has('+1y')) return '+1y';
+    var canon = ['0q', '+1q', '0y', '+1y'];
+    for (var i = 0; i < canon.length; i++) if (has(canon[i])) return canon[i];
+    var keys = ser[metric] ? Object.keys(ser[metric]).sort() : [];
+    return keys.length ? keys[0] : want;
+  }
+  function points() {
+    if (!cur.doc) return [];
+    var ser = cur.doc.series || {};
+    return (ser[cur.metric] && ser[cur.metric][cur.horizon]) || [];
+  }
+  function priorAvg(pts, i) {
+    for (var j = i - 1; j >= 0; j--) if (pts[j] && pts[j].average != null) return pts[j].average;
+    return null;
+  }
+  function updateReadout() {
+    var pts = cur.pts || [];
+    var p = pts[cur.sel] || {};
+    function set(id, v) { var n = $(id); if (n) n.textContent = v; }
+    set('es-ro-session', ymd(p.at));
+    set('es-ro-avg', fmtVal(cur.metric, p.average));
+    set('es-ro-med', fmtVal(cur.metric, p.median));
+    set('es-ro-lohi', (p.low == null && p.high == null) ? '—' : fmtVal(cur.metric, p.low) + ' – ' + fmtVal(cur.metric, p.high));
+    set('es-ro-an', p.analysts == null ? '—' : fmtInt(p.analysts));
+    var chg = $('es-ro-chg');
+    if (chg) {
+      chg.className = 'f es-ro-chg';
+      var prev = p.average == null ? null : priorAvg(pts, cur.sel);
+      if (prev == null || p.average == null) {
+        chg.textContent = '—';
+        twoSpan(chg, '—', '—');
+        chg.className = 'f es-ro-chg';
+        var srEl = d.createElement('span'); srEl.className = 'es-sr'; srEl.textContent = Tp('ro_no_prior');
+        chg.appendChild(srEl);
+      } else {
+        var pctv = (p.average - prev) / Math.abs(prev);
+        chg.textContent = fmtPct(pctv);
+        if (pctv > 0) chg.classList.add('is-up');
+        else if (pctv < 0) chg.classList.add('is-down');
+      }
+    }
+  }
+  function updateCap() {
+    var pts = cur.pts || [];
+    var cap = $('es-chart-cap');
+    if (cap && pts.length) {
+      var mk = cur.metric === 'EPS' ? 'metric_eps' : 'metric_rev';
+      setT(cap, 'chart_cap', { T: cur.doc.ticker, metric: Tp(mk), horizon: hzText(cur.horizon), first: ymd(pts[0].at), last: ymd(pts[pts.length - 1].at) });
+    }
+  }
+  var liveT = null;
+  function announceSel() {
+    var live = $('es-chart-live');
+    if (!live) return;
+    var pts = cur.pts || [];
+    var p = pts[cur.sel];
+    if (!p) return;
+    if (liveT) clearTimeout(liveT);
+    liveT = setTimeout(function () {
+      live.textContent = Tp('chart_live', { date: ymd(p.at), avg: fmtVal(cur.metric, p.average), med: fmtVal(cur.metric, p.median), lo: fmtVal(cur.metric, p.low), hi: fmtVal(cur.metric, p.high), n: p.analysts == null ? '—' : fmtInt(p.analysts) });
+    }, 250);
+  }
+  function svgEl(name, attrs) {
+    var n = d.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function txtNode(x, y, cls, s) {
+    var t = svgEl('text', { x: x, y: y, 'class': cls });
+    t.textContent = s;
+    return t;
+  }
+  function niceStep(raw) {
+    if (!isFinite(raw) || raw <= 0) return 1;
+    var k = Math.floor(Math.log10(raw / 3));
+    for (var e = k - 2; e <= k + 2; e++) {
+      var p = Math.pow(10, e);
+      var mults = [1, 2, 2.5, 5];
+      for (var m = 0; m < mults.length; m++) {
+        var s = mults[m] * p;
+        if (3 * s >= raw) return s;
+      }
+    }
+    return raw / 3;
+  }
+  function runsOf(pts, test) {
+    var runs = [], run = [];
+    pts.forEach(function (p, i) {
+      if (test(p)) run.push(i);
+      else if (run.length) { runs.push(run); run = []; }
+    });
+    if (run.length) runs.push(run);
+    return runs;
+  }
+  function drawChart() {
+    var box = $('es-chart'), svg = $('es-chart-svg');
+    if (!box || !svg) return;
+    var pts = cur.pts || [];
+    svg.textContent = '';
+    var W = box.clientWidth || 752, mob = mqMobile();
+    var H = mob ? 178 : 266, x0 = mob ? 34 : 64, x1 = W - (mob ? 8 : 24);
+    var ytop = mob ? 8 : 12, ybase = mob ? 148 : 236, gx0 = mob ? 28 : 44;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('height', H);
+    var n = pts.length;
+    if (!n) return;
+    var lo = Infinity, hi = -Infinity;
+    pts.forEach(function (p) {
+      [p.low, p.high, p.average].forEach(function (v) {
+        if (v != null) { if (v < lo) lo = v; if (v > hi) hi = v; }
+      });
+    });
+    if (lo > hi) { lo = 0; hi = 1; }
+    if (lo === hi) { lo -= 1; hi += 1; }
+    var pad = (hi - lo) * 0.08, pmin = lo - pad, pmax = hi + pad;
+    var step = niceStep(pmax - pmin);
+    var gmin = Math.floor(pmin / step) * step;
+    function X(i) { return n === 1 ? (x0 + x1) / 2 : x0 + i * (x1 - x0) / (n - 1); }
+    function Y(v) { return ybase - (v - gmin) / (step * 3) * (ybase - ytop); }
+    for (var g = 0; g < 3; g++) {
+      var yy = ytop + g * (ybase - ytop) / 3;
+      svg.appendChild(svgEl('line', { x1: gx0, y1: yy, x2: W, y2: yy, 'class': 'es-g' }));
+    }
+    svg.appendChild(svgEl('line', { x1: gx0, y1: ybase, x2: W, y2: ybase, 'class': 'es-base' }));
+    for (var L = 0; L < 4; L++) {
+      var yv = gmin + L * step;
+      svg.appendChild(txtNode(mob ? 24 : 34, Y(yv), 'es-ylab', fmtVal(cur.metric, yv)));
+    }
+    var cad = mob ? 3 : 1;
+    pts.forEach(function (p, i) {
+      if (mob && !(i % 3 === 0 || i === n - 1)) return;
+      svg.appendChild(txtNode(X(i), mob ? 170 : 258, 'es-xlab' + (i === cur.sel ? ' is-sel' : ''), md(p.at)));
+    });
+    var bandRuns = runsOf(pts, function (p) { return p.average != null && p.low != null && p.high != null; });
+    bandRuns.forEach(function (run) {
+      if (run.length < 2) return;
+      var dstr = '';
+      run.forEach(function (i, j) { dstr += (j ? 'L' : 'M') + X(i) + ' ' + Y(pts[i].low) + ' '; });
+      for (var j = run.length - 1; j >= 0; j--) { var i = run[j]; dstr += 'L' + X(i) + ' ' + Y(pts[i].high) + ' '; }
+      dstr += 'Z';
+      svg.appendChild(svgEl('path', { d: dstr, 'class': 'es-band' }));
+    });
+    [['median', 'es-med'], ['average', 'es-avg']].forEach(function (pair) {
+      var field = pair[0], cls = pair[1];
+      runsOf(pts, function (p) { return p[field] != null; }).forEach(function (run) {
+        if (run.length < 2) return;
+        var dstr = '';
+        run.forEach(function (i, j) { dstr += (j ? 'L' : 'M') + X(i) + ' ' + Y(pts[i][field]) + ' '; });
+        svg.appendChild(svgEl('path', { d: dstr, 'class': cls }));
+        if (run.length === 1) svg.appendChild(svgEl('circle', { cx: X(run[0]), cy: Y(pts[run[0]][field]), r: 2, 'class': cls }));
+      });
+    });
+    if (cur.sel >= 0) {
+      svg.appendChild(svgEl('line', { x1: X(cur.sel), y1: ytop, x2: X(cur.sel), y2: ybase, 'class': 'es-sel' }));
+      if (pts[cur.sel] && pts[cur.sel].average != null)
+        svg.appendChild(svgEl('circle', { cx: X(cur.sel), cy: Y(pts[cur.sel].average), r: 5, 'class': 'es-pt' }));
+    }
+    drawCover(X, mob);
+  }
+  function drawCover(X, mob) {
+    var svg = $('es-cover-svg');
+    if (!svg) return;
+    var pts = cur.pts || [];
+    svg.textContent = '';
+    var H = mob ? 64 : 78, base = mob ? 63 : 77, maxh = mob ? 48 : 60, bw = mob ? 12 : 18;
+    var W = (svg.parentNode && svg.parentNode.clientWidth) || 752;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    var n = pts.length;
+    if (!n) return;
+    var max = 0;
+    pts.forEach(function (p) { if (p.analysts != null && p.analysts > max) max = p.analysts; });
+    var D = Math.ceil(max * 1.6 / 5) * 5 || 1;
+    pts.forEach(function (p, i) {
+      var x = X(i);
+      if (p.analysts == null) {
+        svg.appendChild(txtNode(x, mob ? 10 : 11, 'es-cov-n', '—'));
+        return;
+      }
+      var h = Math.max(1, p.analysts / D * maxh);
+      var x0 = x - bw / 2, x1 = x + bw / 2, y0 = base - h, r = 2;
+      var dstr = 'M' + x0 + ' ' + base + 'L' + x0 + ' ' + (y0 + r) + 'Q' + x0 + ' ' + y0 + ' ' + (x0 + r) + ' ' + y0 + 'L' + (x1 - r) + ' ' + y0 + 'Q' + x1 + ' ' + y0 + ' ' + x1 + ' ' + (y0 + r) + 'L' + x1 + ' ' + base + 'Z';
+      svg.appendChild(svgEl('path', { d: dstr, 'class': 'es-cov-bar' + (i === cur.sel ? ' is-sel' : '') }));
+      svg.appendChild(txtNode(x, mob ? 10 : 11, 'es-cov-n' + (i === cur.sel ? ' is-sel' : ''), fmtInt(p.analysts)));
+    });
+  }
+  function renderView() {
+    cur.pts = points();
+    var empty = !cur.pts.length;
+    if (empty) cur.sel = -1;
+    else if (cur.sel < 0 || cur.sel >= cur.pts.length) cur.sel = cur.pts.length - 1;
+    cur.committed = cur.sel;
+    updateReadout();
+    var chartBox = $('es-chart');
+    if (chartBox) {
+      var oldEmpty = chartBox.querySelector('.es-empty');
+      if (oldEmpty) oldEmpty.remove();
+      if (empty) {
+        $('es-chart-svg').textContent = '';
+        $('es-cover-svg').textContent = '';
+        var em = d.createElement('p'); em.className = 'es-empty-t';
+        var mk = cur.metric === 'EPS' ? 'metric_eps' : 'metric_rev';
+        twoSpan(em, fill(STR.en.empty_series, { metric: STR.en[mk], T: cur.doc.ticker }), fill(STR.zh.empty_series, { metric: STR.zh[mk], T: cur.doc.ticker }));
+        chartBox.appendChild(em);
+        return;
+      }
+    }
+    drawChart();
+    updateCap();
+  }
+  function fillNumbers() {
+    var body = $('es-num-body'), cap = $('es-ntable-cap');
+    if (!body) return;
+    body.textContent = '';
+    var pts = cur.pts || [];
+    var mk = cur.metric === 'EPS' ? 'metric_eps' : 'metric_rev';
+    if (cap) setT(cap, 'ntable_cap', { T: cur.doc.ticker, metric: Tp(mk), horizon: hzText(cur.horizon) });
+    for (var i = pts.length - 1; i >= 0; i--) {
+      var p = pts[i];
+      var tr = d.createElement('tr');
+      var th = d.createElement('th'); th.scope = 'row'; th.textContent = ymd(p.at); tr.appendChild(th);
+      [p.average, p.median, p.low, p.high].forEach(function (v) {
+        var td = d.createElement('td'); td.textContent = fmtVal(cur.metric, v); tr.appendChild(td);
+      });
+      var tdA = d.createElement('td'); tdA.textContent = p.analysts == null ? '—' : fmtInt(p.analysts); tr.appendChild(tdA);
+      body.appendChild(tr);
+    }
+  }
+  function afterLoad(doc, opts) {
+    cur.doc = doc;
+    cur.metric = opts.metric || 'EPS';
+    if (!doc.series) doc.series = {};
+    if (!doc.series[cur.metric]) doc.series[cur.metric] = {};
+    cur.horizon = pickHorizon(doc, cur.metric, opts.horizon);
+    cur.sel = -1;
+    updateRadios(doc, cur.metric, cur.horizon);
+    updateCard(doc);
+    renderView();
+    fillNumbers();
+    qsa('.es-pick').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-ticker') === doc.ticker ? 'true' : 'false');
+    });
+    var hint = $('es-open-hint');
+    if (hint) {
+      if (opts.from === 'default') setT(hint, 'hint_default', { T: doc.ticker });
+      else setT(hint, 'hint_after');
+    }
+    if (view) view.setAttribute('aria-busy', 'false');
+  }
+  function open(T, opts) {
+    opts = opts || {};
+    if (!q || !VALID.test(T)) return;
+    lastOpts = { T: T, opts: opts };
+    q.value = T;
+    syncClear(q);
+    closeLb();
+    hideNomatch();
+    if (savedBody) restoreNodes();
+    if (view) view.setAttribute('aria-busy', 'true');
+    var skeletonTimer = null, skeletonShown = false;
+    if (viewBody) skeletonTimer = setTimeout(function () {
+      skeletonShown = true;
+      if (view) view.setAttribute('aria-busy', 'true');
+      saveBody();
+      showLoading(T);
+    }, 150);
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var to = setTimeout(function () { if (ctrl) ctrl.abort(); }, 10000);
+    fetch('expectation_surface/tickers/' + encodeURIComponent(T) + '.json', ctrl ? { signal: ctrl.signal } : undefined)
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (doc) {
+        clearTimeout(to); clearTimeout(skeletonTimer);
+        if (skeletonShown) restoreNodes();
+        afterLoad(doc, opts);
+      })
+      .catch(function () {
+        clearTimeout(to); clearTimeout(skeletonTimer);
+        if (skeletonShown) restoreNodes();
+        if (view) view.setAttribute('aria-busy', 'false');
+        showError(T);
+      });
+    if (opts.from === 'row' || opts.from === 'pick') {
+      try { history.replaceState(null, '', '?t=' + encodeURIComponent(T) + '#es-explorer'); } catch (e) {}
+      if (opts.from === 'row') {
+        var panel = $('es-explorer');
+        if (panel) panel.scrollIntoView({ block: 'start', behavior: reduced() ? 'auto' : 'smooth' });
+      }
+      if (cardT) cardT.focus({ preventScroll: true });
+    }
+  }
+  var savedBody = null;
+  function saveBody() {
+    if (viewBody && !savedBody) savedBody = Array.prototype.slice.call(viewBody.childNodes);
+  }
+  function restoreNodes() {
+    /* put the server-rendered body back (after a skeleton replaced it) */
+    if (!viewBody || !savedBody) return;
+    viewBody.textContent = '';
+    savedBody.forEach(function (n) { viewBody.appendChild(n); });
+    savedBody = null;
+    wireChart();
+    if (ro) { try { ro.disconnect(); ro.observe($('es-chart')); } catch (e) {} }
+  }
+
+  /* ---- chart interaction ---- */
+  function wireChart() {
+    var chart = $('es-chart');
+    if (!chart) return;
+    chart.addEventListener('keydown', function (ev) {
+      var pts = cur.pts || [];
+      if (!pts.length) return;
+      var sel = cur.committed;
+      if (ev.key === 'ArrowLeft') sel = Math.max(0, sel - 1);
+      else if (ev.key === 'ArrowRight') sel = Math.min(pts.length - 1, sel + 1);
+      else if (ev.key === 'Home') sel = 0;
+      else if (ev.key === 'End') sel = pts.length - 1;
+      else return;
+      ev.preventDefault();
+      cur.committed = sel; cur.sel = sel;
+      drawChart(); updateReadout(); announceSel();
+    });
+    chart.addEventListener('pointermove', function (ev) {
+      var pts = cur.pts || [];
+      if (pts.length < 2) return;
+      var rect = chart.getBoundingClientRect();
+      var mob = mqMobile();
+      var x0 = mob ? 34 : 64, x1 = rect.width - (mob ? 8 : 24);
+      var rel = (ev.clientX - rect.left - x0) / (x1 - x0);
+      var i = Math.round(rel * (pts.length - 1));
+      i = Math.max(0, Math.min(pts.length - 1, i));
+      if (i !== cur.sel) { cur.sel = i; drawChart(); updateReadout(); }
+    });
+    chart.addEventListener('click', function () { cur.committed = cur.sel; });
+    chart.addEventListener('pointerleave', function () {
+      if (cur.sel !== cur.committed) { cur.sel = cur.committed; drawChart(); updateReadout(); }
+    });
+  }
+  var ro = null;
+  if (typeof ResizeObserver === 'function' && $('es-chart')) {
+    var lastW = 0;
+    ro = new ResizeObserver(function () {
+      var b = $('es-chart');
+      if (!b || !cur.doc) return;
+      if (Math.abs(b.clientWidth - lastW) < 4) return;
+      lastW = b.clientWidth;
+      try { drawChart(); } catch (e) {}
+    });
+    ro.observe($('es-chart'));
+  }
+
+  /* ---- wiring: mover rows, picks, explorer radios ---- */
+  try {
+    qsa('.es-mv').forEach(function (b) {
+      b.addEventListener('click', function () {
+        open(b.getAttribute('data-ticker'), { metric: b.getAttribute('data-metric'), horizon: b.getAttribute('data-horizon'), from: 'row' });
+      });
+    });
+    qsa('.es-pick').forEach(function (b) {
+      b.addEventListener('click', function () {
+        open(b.getAttribute('data-ticker'), { metric: 'EPS', horizon: b.getAttribute('data-horizon'), from: 'pick' });
+      });
+    });
+    qsa('input[name="es-xm"],input[name="es-xh"]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        if (!cur.doc) return;
+        if (r.name === 'es-xm') cur.metric = r.value;
+        else cur.horizon = r.value;
+        if (!cur.doc.series[cur.metric]) cur.doc.series[cur.metric] = {};
+        cur.horizon = pickHorizon(cur.doc, cur.metric, cur.horizon);
+        updateRadios(cur.doc, cur.metric, cur.horizon);
+        cur.sel = -1;
+        renderView();
+        fillNumbers();
+      });
+    });
+  } catch (e) {}
+  wireChart();
+
+  /* ---- 9. boot ---- */
+  try {
+    var boot = bootData();
+    var deep = null;
+    try { deep = new URLSearchParams(window.location.search).get('t'); } catch (e) {}
+    if (deep) deep = deep.trim().toUpperCase();
+    if (deep && VALID.test(deep)) open(deep, { metric: 'EPS', from: 'deep' });
+    else if (boot.ticker) open(boot.ticker, { metric: 'EPS', horizon: boot.horizon, from: 'default' });
+  } catch (e) {}
+})();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

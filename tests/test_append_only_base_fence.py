@@ -526,3 +526,139 @@ def test_registry_identity_columns_exist_in_the_committed_artifacts():
             )
             checked += 1
     assert checked >= 4, "expected the govrev parquet spine to be present"
+
+
+# ── sharded ledgers (DEC:CS-V2-SOURCE-LEDGER-SHARDS-BYTE-EXACTLY) ──────────────
+# The CS source ledger is one append-only byte stream stored across
+# source_manifest.jsonl and source_manifest.part-NNNN.jsonl continuation parts, each
+# under GitHub's 100 MiB blob limit. The prefix law is a statement about the logical
+# stream: a new part extends it, a dropped or rewritten part does not.
+CS_MANIFEST = "data/capital_structure/source_manifest.jsonl"
+CS_PART2 = "data/capital_structure/source_manifest.part-0002.jsonl"
+CS_PART3 = "data/capital_structure/source_manifest.part-0003.jsonl"
+CS_SITE = "site/capital-structure-data/events.json"
+CS_ROWS = {
+    CS_MANIFEST: b'{"manifest_id":"manifest:cs:aaaa"}\n{"manifest_id":"manifest:cs:bbbb"}\n',
+    CS_PART2: b'{"manifest_id":"manifest:cs:cccc"}\n',
+}
+
+
+def _cs_member() -> "fence.Member":
+    cs = next(f for f in fence.load_registry(REGISTRY) if f.key == "capital-structure")
+    return next(m for m in cs.members if m.path == CS_MANIFEST)
+
+
+def _cs_sharded_lane(tmp_path: Path) -> Path:
+    """origin/main carries a two-part CS ledger plus its site twin; returns the runner."""
+    origin = tmp_path / "origin.git"
+    subprocess.run(["git", "init", "--quiet", "--bare", "-b", "main", str(origin)], check=True)
+    runner = tmp_path / "runner"
+    subprocess.run(["git", "init", "--quiet", "-b", "main", str(runner)], check=True)
+    _git(runner, "config", "user.email", "bot@example.invalid")
+    _git(runner, "config", "user.name", "dashboard-bot")
+    _git(runner, "remote", "add", "origin", str(origin))
+    for path, payload in CS_ROWS.items():
+        _write(runner, path, payload)
+    _write(runner, CS_SITE, b'{"generation":"A"}')
+    _git(runner, "add", "-A")
+    _git(runner, "commit", "--quiet", "-m", "base: cs generation A (two parts)")
+    _git(runner, "push", "--quiet", "origin", "main")
+    return runner
+
+
+def _cs_candidate(runner: Path, message: str) -> None:
+    _write(runner, CS_SITE, b'{"generation":"B"}')
+    _git(runner, "add", "-A")
+    _git(runner, "commit", "--quiet", "-m", message)
+    _git(runner, "fetch", "--quiet", "origin", "main")
+
+
+def _cs_run(runner: Path) -> int:
+    return fence.run(
+        runner, onto="origin/main", head="HEAD", registry=REGISTRY, restore=True, amend=False
+    )
+
+
+def test_cs_member_declares_its_continuation_parts():
+    member = _cs_member()
+    regex = member.sibling_regex()
+    assert regex is not None
+    assert regex.fullmatch(CS_PART2).group(1) == "0002"
+    assert regex.fullmatch(CS_MANIFEST) is None
+    assert regex.fullmatch("data/capital_structure/source_manifest.part-0002.tmp.jsonl") is None
+    assert regex.fullmatch("data/capital_structure/nested/source_manifest.part-0002.jsonl") is None
+    assert fence.member_touched(member, {CS_PART3})
+    assert fence.member_touched(member, {CS_MANIFEST})
+    assert not fence.member_touched(member, {"data/capital_structure/telemetry.json"})
+
+
+def test_logical_blob_concatenates_parts_in_index_order(tmp_path):
+    runner = _cs_sharded_lane(tmp_path)
+    member = _cs_member()
+    assert fence.sibling_paths_at(runner, "HEAD", member) == [CS_PART2]
+    assert fence.logical_blob_at(runner, "HEAD", member) == CS_ROWS[CS_MANIFEST] + CS_ROWS[CS_PART2]
+    absent = fence.Member(path="data/absent/ledger.jsonl", check="jsonl_prefix")
+    assert fence.logical_blob_at(runner, "HEAD", absent) is None
+
+
+def test_cs_new_continuation_part_extends_the_logical_ledger(tmp_path, capsys):
+    runner = _cs_sharded_lane(tmp_path)
+    _write(runner, CS_PART3, b'{"manifest_id":"manifest:cs:dddd"}\n')
+    _cs_candidate(runner, "data: cs generation B (new part)")
+
+    assert _cs_run(runner) == 0
+    assert "WITHHELD" not in capsys.readouterr().out
+    assert _git(runner, "show", f"HEAD:{CS_PART3}") == '{"manifest_id":"manifest:cs:dddd"}\n'
+    assert _git(runner, "show", f"HEAD:{CS_SITE}") == '{"generation":"B"}'
+
+
+def test_cs_rewritten_continuation_part_withholds_the_whole_family(tmp_path, capsys):
+    runner = _cs_sharded_lane(tmp_path)
+    _write(runner, CS_PART2, b'{"manifest_id":"manifest:cs:cccc-rewritten"}\n')
+    _cs_candidate(runner, "data: cs generation B (rewrites part 2)")
+
+    assert _cs_run(runner) == 0
+    assert "WITHHELD" in capsys.readouterr().out
+    for path in (CS_MANIFEST, CS_PART2, CS_SITE):
+        assert _git(runner, "show", f"HEAD:{path}") == _git(runner, "show", f"origin/main:{path}"), path
+
+
+def test_cs_dropped_continuation_part_is_restored_with_the_family(tmp_path, capsys):
+    runner = _cs_sharded_lane(tmp_path)
+    _git(runner, "rm", "--quiet", CS_PART2)
+    _write(runner, CS_PART3, b'{"manifest_id":"manifest:cs:dddd"}\n')  # orphan: part 2 is gone
+    _cs_candidate(runner, "data: cs generation B (drops part 2)")
+
+    assert _cs_run(runner) == 0
+    assert "WITHHELD" in capsys.readouterr().out
+    assert _git(runner, "show", f"HEAD:{CS_PART2}") == CS_ROWS[CS_PART2].decode()
+    tree = _git(runner, "ls-tree", "--name-only", "HEAD", "--", "data/capital_structure/").split()
+    assert CS_PART3 not in tree, "an orphan part introduced by the withheld generation is removed"
+    assert _git(runner, "show", f"HEAD:{CS_SITE}") == '{"generation":"A"}'
+
+
+def test_registry_rejects_a_siblings_pattern_that_cannot_bind(tmp_path):
+    def registry_with(member: dict) -> Path:
+        target = tmp_path / f"registry-{len(list(tmp_path.iterdir()))}.json"
+        target.write_text(json.dumps({
+            "schema_version": 1,
+            "families": [{
+                "key": "x", "why": "test", "withhold_paths": ["data/x"], "members": [member],
+            }],
+        }))
+        return target
+
+    with pytest.raises(ValueError, match="only meaningful on a jsonl_prefix member"):
+        fence.load_registry(registry_with({
+            "path": "data/x/a.parquet", "check": "parquet_rows",
+            "identity": ["id"], "siblings_pattern": "^x$",
+        }))
+    with pytest.raises(ValueError, match="does not compile"):
+        fence.load_registry(registry_with({
+            "path": "data/x/a.jsonl", "check": "jsonl_prefix", "siblings_pattern": "(",
+        }))
+    loaded = fence.load_registry(registry_with({
+        "path": "data/x/a.jsonl", "check": "jsonl_prefix",
+        "siblings_pattern": "^data/x/a\\.part-(\\d{4})\\.jsonl$",
+    }))
+    assert loaded[0].members[0].sibling_regex().fullmatch("data/x/a.part-0002.jsonl")

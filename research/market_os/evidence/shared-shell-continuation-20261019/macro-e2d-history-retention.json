@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-20T06:09:39.414354+00:00",
+  "comment_id": 6264440177,
+  "comment_updated_at": "2026-10-20T06:07:47Z",
+  "comment_chars": 65360,
+  "comment_bytes": 65459,
+  "comment_sha256": "ce1f1d40a11e7cb336abf99fb540f19718dea307cff77e41de81ecfc7954b20d",
+  "tail_chars": 52044,
+  "tail_bytes": 52072,
+  "tail_sha256": "4b502f7b65fd0eaad1b677ea8d0df38f0035cfc55bb18b8938e9335c7a6d702f",
+  "archive_ref": "e2d10f933587f58be8716505529a37f8839901f7",
+  "archive_path": "research/market_os/evidence/shared-shell-continuation-20261019/macro-full-checkpoint-0511-merging92c.md.gz",
+  "archive_blob": "49dbcdb45e84945a9e9244f4a13e7ea72956aa42",
+  "compressed_bytes": 22851,
+  "compressed_sha256": "90ec373630ec50805c7281004e15d5c55b1f08afa56cf8d9d3813cc45f22230b",
+  "plain_bytes": 65498,
+  "plain_sha256": "28e577ada9de7de0d0f0042f700e345a41d328eccd212f02885e9ce098949e82",
+  "tail_byte_offset": 13426,
+  "exact_unique_suffix": true,
+  "source_mutation": false
+}

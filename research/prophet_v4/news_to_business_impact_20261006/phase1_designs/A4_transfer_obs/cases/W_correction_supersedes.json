@@ -1,0 +1,97 @@
+{
+  "schema": "transfer_edge.v1",
+  "authority": "context_only",
+  "prophet_flags": {
+    "may_rank": false,
+    "may_size": false,
+    "may_gate": false,
+    "prophet_authority": false
+  },
+  "unsolicited_instruction_detected": false,
+  "transfer_id": "xfer_c2e70e7efa3ae4153bfc98e8",
+  "source_fact_id": "fact_9c4d47cde166501dfa2185ea",
+  "source_company_id": "cik:0000320193",
+  "target_company_id": "cik:0001046179",
+  "target_role": "supplier",
+  "edge_direction": "source_to_target",
+  "operating_effect_on_target": "unknown",
+  "mechanism_channel": "revenue_demand",
+  "exposure": {
+    "form": "unknown",
+    "absence": {
+      "schema": "field_absence.v1",
+      "authority": "context_only",
+      "reason": "not_stated",
+      "subject": "exposure",
+      "detail": "correction withdraws incremental demand; no replacement figure",
+      "missing_fields": []
+    }
+  },
+  "timing": {
+    "lag_kind": "unknown",
+    "horizon_period": {
+      "schema": "field_absence.v1",
+      "authority": "context_only",
+      "reason": "not_stated",
+      "subject": "timing.horizon_period",
+      "detail": "",
+      "missing_fields": []
+    }
+  },
+  "alternatives": {
+    "schema": "field_absence.v1",
+    "authority": "context_only",
+    "reason": "not_stated",
+    "subject": "alternatives",
+    "detail": "",
+    "missing_fields": []
+  },
+  "graph_provenance": {
+    "graph": "economic_relationship",
+    "generator_kind": "source_span_two_party",
+    "generator_id": "span_gate.v1",
+    "as_of": "2026-09-29T14:10:00Z",
+    "belief_time": "2026-09-29T14:10:00Z",
+    "hop_count": 1,
+    "path": [
+      "cik:0000320193",
+      "cik:0001046179"
+    ]
+  },
+  "two_party_span": {
+    "claimed_quote": "Apple later said the capex figure restated previously announced plans and is not incremental demand for TSMC.",
+    "span": {
+      "schema": "source_span.v1",
+      "authority": "context_only",
+      "span_id": "span_2a6417aa408f0e8e2d06",
+      "document_id": "doc_aapl_correction_20260929",
+      "document_version": 1,
+      "locator": {
+        "kind": "text_span",
+        "sub_kind": "transcript_segment",
+        "segment_index": 0,
+        "span_start_byte": 0,
+        "span_end_byte": 109
+      },
+      "text_sha256": "fe9ac6792173a7574c19d420cc57781d4016b8fbf94d4109d452f4bf91f70de8",
+      "display_excerpt": "Apple later said the capex figure restated previously announced plans and is not incremental demand for TSMC.",
+      "rights_profile": "rp_unknown_v1",
+      "receipt_state": "byte_replayed",
+      "receipt": {
+        "source_sha256": "c2dc6f65478b0414bd6133f6d1b7195cb2fe5e04d11cff35aa20ac3d355f810b",
+        "segment_index": 0,
+        "segment_sha256": "fe9ac6792173a7574c19d420cc57781d4016b8fbf94d4109d452f4bf91f70de8",
+        "segment_bytes": 109,
+        "span_start_byte": 0,
+        "span_end_byte": 109,
+        "text_sha256": "fe9ac6792173a7574c19d420cc57781d4016b8fbf94d4109d452f4bf91f70de8"
+      },
+      "unreplayable_reason": null
+    }
+  },
+  "shock_id": null,
+  "supersedes_transfer_id": "xfer_d4d635d3fd7af11f42bc115b",
+  "observed_at": "2026-09-29T14:10:00Z",
+  "source_available_at": "2026-09-29T14:08:00Z",
+  "display_summary": "Apple's later statement names TSMC and withdraws the incremental-demand reading of the prior capex item; this record supersedes the earlier transfer."
+}

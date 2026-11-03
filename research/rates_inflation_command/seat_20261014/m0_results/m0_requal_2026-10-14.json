@@ -1,0 +1,5786 @@
+{
+  "schema": "ric_m0_requal.v1",
+  "status": "ok",
+  "protocol": {
+    "path": "research/rates_inflation_command/seat_20261014/E0_RESEARCH_PROTOCOL.md",
+    "sha256": "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e2309df"
+  },
+  "trial": {
+    "family": "ric_mri_coherent_requal_v1",
+    "n": 13,
+    "declared": true,
+    "sensitivity_rescorings": [
+      {
+        "eval": "cpi_headline.v2",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.v2",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.v3_factor",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.v3_factor",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.cpi_bridge",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.cpi_bridge",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.mf_energy_t1",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.mf_energy_t1",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.coherent_ridge_v1",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_headline.coherent_ridge_v1",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.v2",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.v2",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.v3_factor",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.v3_factor",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.coherent_ridge_v1",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "cpi_core.coherent_ridge_v1",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "nfp.v1",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "nfp.v1",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "nfp.v3_factor",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "nfp.v3_factor",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "pce_headline.champion",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "pce_headline.champion",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "pce_core.champion",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "pce_core.champion",
+        "kind": "S2",
+        "trial": false
+      },
+      {
+        "eval": "ppi_final_demand.champion",
+        "kind": "S1",
+        "trial": false
+      },
+      {
+        "eval": "ppi_final_demand.champion",
+        "kind": "S2",
+        "trial": false
+      }
+    ]
+  },
+  "decision_asof": "2026-10-14",
+  "inputs": [
+    {
+      "path": "research/rates_inflation_command/seat_20261014/E0_RESEARCH_PROTOCOL.md",
+      "sha256": "87b51dcad66c6f84989675e9cce91eb5b46b3888d60b2e599a8736d87e2309df"
+    },
+    {
+      "path": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json",
+      "sha256": "51b3184da6de42d5d839ae2802d9a3baeb99f11a4f5c13fb144b6b281ad276b5"
+    },
+    {
+      "path": "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
+      "sha256": "572f0ebcbea40c98c90e6a1a100d38f5cbb3de15e9e436676bc3aa317785b98b"
+    },
+    {
+      "path": "data/fred_vintage/release_targets/PCEPI_all_vintages.parquet",
+      "sha256": "c8288122d83b7110384fbff4a51d10ea8a665f6a6b7b14c16ac4964de2fe6314"
+    },
+    {
+      "path": "data/fred_vintage/release_targets/PCEPILFE_all_vintages.parquet",
+      "sha256": "0f3881995a4eb31be9ebe9acb2026d5eb425a6821ca76488a52ca1a1c432f37e"
+    },
+    {
+      "path": "data/fred_vintage/release_targets/PPIFIS_all_vintages.parquet",
+      "sha256": "38e7c1b8868603b16b83a9b31b5864ae0db818902c7c460336d19eba4a4f2567"
+    },
+    {
+      "path": "data/release_forecast/cpi_truth/parity_report.json",
+      "sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8"
+    }
+  ],
+  "holm": {
+    "family_size": 13,
+    "alpha": 0.05,
+    "raw": {
+      "cpi_headline.v2": 0.00688081,
+      "cpi_headline.v3_factor": 0.19147063,
+      "cpi_headline.cpi_bridge": 0.04541635,
+      "cpi_headline.mf_energy_t1": 0.02184396,
+      "cpi_headline.coherent_ridge_v1": 0.00470114,
+      "cpi_core.v2": 0.59125052,
+      "cpi_core.v3_factor": 0.36233905,
+      "cpi_core.coherent_ridge_v1": 0.56011952,
+      "nfp.v1": 0.80197829,
+      "nfp.v3_factor": 0.99329929,
+      "pce_headline.champion": 1.5e-07,
+      "pce_core.champion": 0.00852916,
+      "ppi_final_demand.champion": 0.0384118
+    },
+    "adjusted": {
+      "pce_headline.champion": 1.98e-06,
+      "cpi_headline.coherent_ridge_v1": 0.05641372,
+      "cpi_headline.v2": 0.0756889,
+      "pce_core.champion": 0.08529162,
+      "cpi_headline.mf_energy_t1": 0.19659562,
+      "ppi_final_demand.champion": 0.30729438,
+      "cpi_headline.cpi_bridge": 0.31791442,
+      "cpi_headline.v3_factor": 1.0,
+      "cpi_core.v3_factor": 1.0,
+      "cpi_core.coherent_ridge_v1": 1.0,
+      "cpi_core.v2": 1.0,
+      "nfp.v1": 1.0,
+      "nfp.v3_factor": 1.0
+    },
+    "adjusted_t": {
+      "cpi_headline.v2": 0.09029877,
+      "cpi_headline.v3_factor": 1.0,
+      "cpi_headline.cpi_bridge": 0.3346796,
+      "cpi_headline.mf_energy_t1": 0.21519777,
+      "cpi_headline.coherent_ridge_v1": 0.07036805,
+      "cpi_core.v2": 1.0,
+      "cpi_core.v3_factor": 1.0,
+      "cpi_core.coherent_ridge_v1": 1.0,
+      "nfp.v1": 1.0,
+      "nfp.v3_factor": 1.0,
+      "pce_headline.champion": 1.852e-05,
+      "pce_core.champion": 0.09968531,
+      "ppi_final_demand.champion": 0.32549661
+    }
+  },
+  "evaluations": [
+    {
+      "eval_id": "cpi_headline.v2",
+      "family": "cpi_headline",
+      "model_id": "v2",
+      "target": {
+        "id": "cpi_headline.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared"
+      ],
+      "labels": [
+        "approximate_pit_lag"
+      ],
+      "units_check": "ok",
+      "units_ratio": 1.22528948,
+      "pit_legs": [
+        {
+          "leg": "cpi_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:22"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:147"
+        },
+        {
+          "leg": "median_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:148"
+        },
+        {
+          "leg": "flex_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:149"
+        },
+        {
+          "leg": "ppi_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:150"
+        },
+        {
+          "leg": "gasoline_mom",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:50"
+        },
+        {
+          "leg": "shelter_cpi_cusr0000sah1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:57"
+        },
+        {
+          "leg": "zori_shelter",
+          "pit_class": "approximate_pit_lag",
+          "citation": "research/release_forecast/PREREG_V2.md:41"
+        },
+        {
+          "leg": "zori_values",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:44"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [],
+      "missing_source": [
+        {
+          "release": "cpi_headline",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.19557066,
+          "trailing_3m_mae": 0.19051822,
+          "ar_model_mae": 0.15838434,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.25506447,
+          "trailing_3m_mae": 0.23566052,
+          "ar_model_mae": 0.23137994,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.23092427,
+          "trailing_3m_mae": 0.2282001,
+          "ar_model_mae": 0.19737438,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -2.4634263296863903,
+        "p_normal": 0.006880808650553939,
+        "p_t": 0.008208979485722478,
+        "holm_adj": 0.0756889,
+        "holm_adj_t": 0.09029877,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.07270449,
+        "ci95": [
+          -0.1403,
+          -0.0113
+        ],
+        "R": 0.68577878
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.04154972,
+            "ci95": [
+              -0.1352,
+              0.0347
+            ],
+            "R": 0.78754624,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": -0.0043634,
+            "ci95": [
+              -0.0686,
+              0.0488
+            ],
+            "R": 0.97245057,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": -0.09638902,
+            "ci95": [
+              -0.1631,
+              -0.0322
+            ],
+            "R": 0.62209938,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": -0.07270449,
+            "ci95": [
+              -0.1403,
+              -0.0113
+            ],
+            "R": 0.68577878,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.06281197,
+            "ci95": [
+              -0.0939,
+              -0.0356
+            ],
+            "R": 0.72799755,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": -0.02926207,
+            "ci95": [
+              -0.0597,
+              -0.0031
+            ],
+            "R": 0.8517433,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.15402094,
+              "baselines": {
+                "naive_mae": 0.19557066,
+                "trailing_3m_mae": 0.19051822,
+                "ar_model_mae": 0.15838434,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.04154972,
+                "ci95": [
+                  -0.1352,
+                  0.0347
+                ],
+                "R": 0.78754624,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": -0.0043634,
+                "ci95": [
+                  -0.0686,
+                  0.0488
+                ],
+                "R": 0.97245057,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.15867545,
+              "baselines": {
+                "naive_mae": 0.25506447,
+                "trailing_3m_mae": 0.23566052,
+                "ar_model_mae": 0.23137994,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.09638902,
+                "ci95": [
+                  -0.1631,
+                  -0.0322
+                ],
+                "R": 0.62209938,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": -0.07270449,
+                "ci95": [
+                  -0.1403,
+                  -0.0113
+                ],
+                "R": 0.68577878,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.1681123,
+              "baselines": {
+                "naive_mae": 0.23092427,
+                "trailing_3m_mae": 0.2282001,
+                "ar_model_mae": 0.19737438,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.06281197,
+                "ci95": [
+                  -0.0939,
+                  -0.0356
+                ],
+                "R": 0.72799755,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": -0.02926207,
+                "ci95": [
+                  -0.0597,
+                  -0.0031
+                ],
+                "R": 0.8517433,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_headline.v3_factor",
+      "family": "cpi_headline",
+      "model_id": "v3_factor",
+      "target": {
+        "id": "cpi_headline.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared",
+        "r_full_not_below_1",
+        "r_current_above_1"
+      ],
+      "labels": [
+        "approximate_pit_lag"
+      ],
+      "units_check": "ok",
+      "units_ratio": 1.22528948,
+      "pit_legs": [
+        {
+          "leg": "cpi_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:45"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:47"
+        },
+        {
+          "leg": "ppi_fis_mom_lag1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:64"
+        },
+        {
+          "leg": "ppi_fes_mom_lag1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:63"
+        },
+        {
+          "leg": "dollar_mom_dtwexbgs",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:61"
+        },
+        {
+          "leg": "shelter_nowcast",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:57"
+        },
+        {
+          "leg": "zori_shelter",
+          "pit_class": "approximate_pit_lag",
+          "citation": "research/release_forecast/PREREG_V2.md:41"
+        },
+        {
+          "leg": "zori_values",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:44"
+        },
+        {
+          "leg": "gasoline_mom",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:50"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [],
+      "missing_source": [
+        {
+          "release": "cpi_headline",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.19557066,
+          "trailing_3m_mae": 0.19051822,
+          "ar_model_mae": 0.15838434,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.25506447,
+          "trailing_3m_mae": 0.23566052,
+          "ar_model_mae": 0.23137994,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.23092427,
+          "trailing_3m_mae": 0.2282001,
+          "ar_model_mae": 0.19737438,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -0.8724897500595545,
+        "p_normal": 0.19147062873984677,
+        "p_t": 0.19307645000530366,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.02660576,
+        "ci95": [
+          -0.0965,
+          0.0321
+        ],
+        "R": 0.88501269
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.03166782,
+            "ci95": [
+              -0.1109,
+              0.0338
+            ],
+            "R": 0.83807478,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": 0.0055185,
+            "ci95": [
+              -0.0474,
+              0.0487
+            ],
+            "R": 1.03484247,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": -0.05029029,
+            "ci95": [
+              -0.109,
+              0.0014
+            ],
+            "R": 0.80283302,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": -0.02660576,
+            "ci95": [
+              -0.0965,
+              0.0321
+            ],
+            "R": 0.88501269,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.02163227,
+            "ci95": [
+              -0.045,
+              -0.0031
+            ],
+            "R": 0.90632311,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": 0.01191763,
+            "ci95": [
+              -0.0167,
+              0.0358
+            ],
+            "R": 1.06038081,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.16390284,
+              "baselines": {
+                "naive_mae": 0.19557066,
+                "trailing_3m_mae": 0.19051822,
+                "ar_model_mae": 0.15838434,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.03166782,
+                "ci95": [
+                  -0.1109,
+                  0.0338
+                ],
+                "R": 0.83807478,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": 0.0055185,
+                "ci95": [
+                  -0.0474,
+                  0.0487
+                ],
+                "R": 1.03484247,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.20477418,
+              "baselines": {
+                "naive_mae": 0.25506447,
+                "trailing_3m_mae": 0.23566052,
+                "ar_model_mae": 0.23137994,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.05029029,
+                "ci95": [
+                  -0.109,
+                  0.0014
+                ],
+                "R": 0.80283302,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": -0.02660576,
+                "ci95": [
+                  -0.0965,
+                  0.0321
+                ],
+                "R": 0.88501269,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.209292,
+              "baselines": {
+                "naive_mae": 0.23092427,
+                "trailing_3m_mae": 0.2282001,
+                "ar_model_mae": 0.19737438,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.02163227,
+                "ci95": [
+                  -0.045,
+                  -0.0031
+                ],
+                "R": 0.90632311,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": 0.01191763,
+                "ci95": [
+                  -0.0167,
+                  0.0358
+                ],
+                "R": 1.06038081,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_headline.cpi_bridge",
+      "family": "cpi_headline",
+      "model_id": "cpi_bridge",
+      "target": {
+        "id": "cpi_headline.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared",
+        "r_current_above_1"
+      ],
+      "labels": [
+        "approximate_pit_lag"
+      ],
+      "units_check": "ok",
+      "units_ratio": 1.22528948,
+      "pit_legs": [
+        {
+          "leg": "bridge_weights_frozen",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:70"
+        },
+        {
+          "leg": "gasoline_gasregw",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:89"
+        },
+        {
+          "leg": "electricity_apu000072610",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:294"
+        },
+        {
+          "leg": "food_cusr0000saf11",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:143"
+        },
+        {
+          "leg": "wpu01",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:143"
+        },
+        {
+          "leg": "shelter_cusr0000sah1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:121"
+        },
+        {
+          "leg": "zori_shelter",
+          "pit_class": "approximate_pit_lag",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:119"
+        },
+        {
+          "leg": "zori_values",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:296"
+        },
+        {
+          "leg": "core_services_cusr0000sasle",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:190"
+        },
+        {
+          "leg": "ppifis_vintages",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_CPI_BRIDGE_V1.md:161"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [
+        {
+          "period": "1997-01",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-02",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-03",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-04",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-05",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-06",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-07",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-08",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-09",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-10",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-11",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1997-12",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-01",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-02",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-03",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-04",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-05",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-06",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-07",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-08",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-09",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-10",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-11",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1998-12",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-01",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-02",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-03",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-04",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-05",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-06",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-07",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-08",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-09",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-10",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-11",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "1999-12",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-01",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-02",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-03",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-04",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-05",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-06",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-07",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-08",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-09",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-10",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-11",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2000-12",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-01",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-02",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-03",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-04",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-05",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-06",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-07",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-08",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-09",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-10",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-11",
+          "reason": "no_release_date"
+        },
+        {
+          "period": "2001-12",
+          "reason": "no_release_date"
+        }
+      ],
+      "missing_source": [
+        {
+          "release": "cpi_headline",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.19557066,
+          "trailing_3m_mae": 0.19051822,
+          "ar_model_mae": 0.15838434,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.25506447,
+          "trailing_3m_mae": 0.23566052,
+          "ar_model_mae": 0.23137994,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.23092427,
+          "trailing_3m_mae": 0.2282001,
+          "ar_model_mae": 0.19737438,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -1.6910215269899846,
+        "p_normal": 0.045416345638451504,
+        "p_t": 0.0478113718833695,
+        "holm_adj": 0.31791442,
+        "holm_adj_t": 0.3346796,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.05196782,
+        "ci95": [
+          -0.124,
+          0.0083
+        ],
+        "R": 0.77540051
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.03076399,
+            "ci95": [
+              -0.098,
+              0.0228
+            ],
+            "R": 0.84269628,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": 0.00642233,
+            "ci95": [
+              -0.0338,
+              0.0404
+            ],
+            "R": 1.04054903,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": -0.07565235,
+            "ci95": [
+              -0.139,
+              -0.0208
+            ],
+            "R": 0.7033991,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": -0.05196782,
+            "ci95": [
+              -0.124,
+              0.0083
+            ],
+            "R": 0.77540051,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.08155609,
+            "ci95": [
+              -0.1104,
+              -0.0547
+            ],
+            "R": 0.64682756,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": -0.04800619,
+            "ci95": [
+              -0.0783,
+              -0.0212
+            ],
+            "R": 0.75677595,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.16480667,
+              "baselines": {
+                "naive_mae": 0.19557066,
+                "trailing_3m_mae": 0.19051822,
+                "ar_model_mae": 0.15838434,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.03076399,
+                "ci95": [
+                  -0.098,
+                  0.0228
+                ],
+                "R": 0.84269628,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": 0.00642233,
+                "ci95": [
+                  -0.0338,
+                  0.0404
+                ],
+                "R": 1.04054903,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.17941212,
+              "baselines": {
+                "naive_mae": 0.25506447,
+                "trailing_3m_mae": 0.23566052,
+                "ar_model_mae": 0.23137994,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.07565235,
+                "ci95": [
+                  -0.139,
+                  -0.0208
+                ],
+                "R": 0.7033991,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": -0.05196782,
+                "ci95": [
+                  -0.124,
+                  0.0083
+                ],
+                "R": 0.77540051,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.14936818,
+              "baselines": {
+                "naive_mae": 0.23092427,
+                "trailing_3m_mae": 0.2282001,
+                "ar_model_mae": 0.19737438,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.08155609,
+                "ci95": [
+                  -0.1104,
+                  -0.0547
+                ],
+                "R": 0.64682756,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": -0.04800619,
+                "ci95": [
+                  -0.0783,
+                  -0.0212
+                ],
+                "R": 0.75677595,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_headline.mf_energy_t1",
+      "family": "cpi_headline",
+      "model_id": "mf_energy_t1",
+      "target": {
+        "id": "cpi_headline.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.22528948,
+      "pit_legs": [
+        {
+          "leg": "gasoline_gasregw",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_MF_ENERGY_V1.md:44"
+        },
+        {
+          "leg": "wti_dcoilwtico",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_MF_ENERGY_V1.md:58"
+        },
+        {
+          "leg": "cpiaucsl_vintages",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_MF_ENERGY_V1.md:69"
+        },
+        {
+          "leg": "cpi_ri_weights",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_MF_ENERGY_V1.md:78"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [],
+      "missing_source": [
+        {
+          "release": "cpi_headline",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.19557066,
+          "trailing_3m_mae": 0.19051822,
+          "ar_model_mae": 0.15838434,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.25506447,
+          "trailing_3m_mae": 0.23566052,
+          "ar_model_mae": 0.23137994,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.23092427,
+          "trailing_3m_mae": 0.2282001,
+          "ar_model_mae": 0.19737438,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -2.017072808101284,
+        "p_normal": 0.021843957911830792,
+        "p_t": 0.02391086318681083,
+        "holm_adj": 0.19659562,
+        "holm_adj_t": 0.21519777,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.05102591,
+        "ci95": [
+          -0.1012,
+          -0.0071
+        ],
+        "R": 0.77947133
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.09405363,
+            "ci95": [
+              -0.1995,
+              -0.0093
+            ],
+            "R": 0.51908106,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": -0.05686731,
+            "ci95": [
+              -0.1308,
+              0.0057
+            ],
+            "R": 0.64095369,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": -0.07471044,
+            "ci95": [
+              -0.1489,
+              -0.0068
+            ],
+            "R": 0.70709192,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": -0.05102591,
+            "ci95": [
+              -0.1012,
+              -0.0071
+            ],
+            "R": 0.77947133,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.08888418,
+            "ci95": [
+              -0.1211,
+              -0.0566
+            ],
+            "R": 0.61509382,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": -0.05533429,
+            "ci95": [
+              -0.0806,
+              -0.0312
+            ],
+            "R": 0.71964808,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.10151703,
+              "baselines": {
+                "naive_mae": 0.19557066,
+                "trailing_3m_mae": 0.19051822,
+                "ar_model_mae": 0.15838434,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.09405363,
+                "ci95": [
+                  -0.1995,
+                  -0.0093
+                ],
+                "R": 0.51908106,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": -0.05686731,
+                "ci95": [
+                  -0.1308,
+                  0.0057
+                ],
+                "R": 0.64095369,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.18035403,
+              "baselines": {
+                "naive_mae": 0.25506447,
+                "trailing_3m_mae": 0.23566052,
+                "ar_model_mae": 0.23137994,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.07471044,
+                "ci95": [
+                  -0.1489,
+                  -0.0068
+                ],
+                "R": 0.70709192,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": -0.05102591,
+                "ci95": [
+                  -0.1012,
+                  -0.0071
+                ],
+                "R": 0.77947133,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.14204009,
+              "baselines": {
+                "naive_mae": 0.23092427,
+                "trailing_3m_mae": 0.2282001,
+                "ar_model_mae": 0.19737438,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.08888418,
+                "ci95": [
+                  -0.1211,
+                  -0.0566
+                ],
+                "R": 0.61509382,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": -0.05533429,
+                "ci95": [
+                  -0.0806,
+                  -0.0312
+                ],
+                "R": 0.71964808,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_headline.coherent_ridge_v1",
+      "family": "cpi_headline",
+      "model_id": "coherent_ridge_v1",
+      "target": {
+        "id": "cpi_headline.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "holm_not_cleared"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.0,
+      "pit_legs": [
+        {
+          "leg": "cpi_target_vintages",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:75"
+        },
+        {
+          "leg": "vintage_feature_rows",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:77"
+        },
+        {
+          "leg": "gasoline_gasregw",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:85"
+        }
+      ],
+      "n_rows": {
+        "current": 27,
+        "tested": 63,
+        "full": 82
+      },
+      "honest_n": {
+        "current": 27,
+        "tested": 63,
+        "full": 82
+      },
+      "excluded": [
+        {
+          "period": "1996-12",
+          "reason": "coherent target lag cpi_headline/1996-11 is absent"
+        },
+        {
+          "period": "1997-01",
+          "reason": "coherent target lag cpi_headline/1996-11 is absent"
+        },
+        {
+          "period": "1997-02",
+          "reason": "coherent target lag cpi_headline/1996-11 is absent"
+        },
+        {
+          "period": "1997-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-02 is unavailable by 1997-04-14"
+        },
+        {
+          "period": "1997-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-03 is unavailable by 1997-05-14"
+        },
+        {
+          "period": "1997-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-04 is unavailable by 1997-06-16"
+        },
+        {
+          "period": "1997-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-05 is unavailable by 1997-07-15"
+        },
+        {
+          "period": "1997-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-06 is unavailable by 1997-08-13"
+        },
+        {
+          "period": "1997-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-07 is unavailable by 1997-09-15"
+        },
+        {
+          "period": "1997-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-08 is unavailable by 1997-10-15"
+        },
+        {
+          "period": "1997-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-09 is unavailable by 1997-11-17"
+        },
+        {
+          "period": "1997-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-10 is unavailable by 1997-12-15"
+        },
+        {
+          "period": "1997-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-11 is unavailable by 1998-01-12"
+        },
+        {
+          "period": "1998-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-12 is unavailable by 1998-02-23"
+        },
+        {
+          "period": "1998-02",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-01 is unavailable by 1998-03-18"
+        },
+        {
+          "period": "1998-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-02 is unavailable by 1998-04-13"
+        },
+        {
+          "period": "1998-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-03 is unavailable by 1998-05-13"
+        },
+        {
+          "period": "1998-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-04 is unavailable by 1998-06-15"
+        },
+        {
+          "period": "1998-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-05 is unavailable by 1998-07-13"
+        },
+        {
+          "period": "1998-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-06 is unavailable by 1998-08-17"
+        },
+        {
+          "period": "1998-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-07 is unavailable by 1998-09-16"
+        },
+        {
+          "period": "1998-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-08 is unavailable by 1998-10-15"
+        },
+        {
+          "period": "1998-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-09 is unavailable by 1998-11-16"
+        },
+        {
+          "period": "1998-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-10 is unavailable by 1998-12-14"
+        },
+        {
+          "period": "1998-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-11 is unavailable by 1999-01-13"
+        },
+        {
+          "period": "1999-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-12 is unavailable by 1999-02-18"
+        },
+        {
+          "period": "1999-02",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-01 is unavailable by 1999-03-17"
+        },
+        {
+          "period": "1999-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-02 is unavailable by 1999-04-12"
+        },
+        {
+          "period": "1999-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-03 is unavailable by 1999-05-13"
+        },
+        {
+          "period": "1999-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-04 is unavailable by 1999-06-15"
+        },
+        {
+          "period": "1999-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-05 is unavailable by 1999-07-14"
+        },
+        {
+          "period": "1999-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-06 is unavailable by 1999-08-16"
+        },
+        {
+          "period": "1999-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-07 is unavailable by 1999-09-14"
+        },
+        {
+          "period": "1999-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-08 is unavailable by 1999-10-18"
+        },
+        {
+          "period": "1999-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-09 is unavailable by 1999-11-16"
+        },
+        {
+          "period": "1999-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-10 is unavailable by 1999-12-13"
+        },
+        {
+          "period": "1999-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-11 is unavailable by 2000-01-13"
+        },
+        {
+          "period": "2000-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-12 is unavailable by 2000-02-17"
+        },
+        {
+          "period": "2000-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-01 is unavailable by 2000-03-16"
+        },
+        {
+          "period": "2000-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-02 is unavailable by 2000-04-13"
+        },
+        {
+          "period": "2000-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-03 is unavailable by 2000-05-15"
+        },
+        {
+          "period": "2000-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-04 is unavailable by 2000-06-13"
+        },
+        {
+          "period": "2000-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-05 is unavailable by 2000-07-17"
+        },
+        {
+          "period": "2000-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-06 is unavailable by 2000-08-15"
+        },
+        {
+          "period": "2000-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-07 is unavailable by 2000-09-14"
+        },
+        {
+          "period": "2000-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-08 is unavailable by 2000-10-17"
+        },
+        {
+          "period": "2000-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-09 is unavailable by 2000-11-15"
+        },
+        {
+          "period": "2000-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-10 is unavailable by 2000-12-14"
+        },
+        {
+          "period": "2000-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-11 is unavailable by 2001-01-16"
+        },
+        {
+          "period": "2001-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-12 is unavailable by 2001-02-20"
+        },
+        {
+          "period": "2001-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-01 is unavailable by 2001-03-20"
+        },
+        {
+          "period": "2001-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-02 is unavailable by 2001-04-16"
+        },
+        {
+          "period": "2001-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-03 is unavailable by 2001-05-15"
+        },
+        {
+          "period": "2001-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-04 is unavailable by 2001-06-14"
+        },
+        {
+          "period": "2001-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-05 is unavailable by 2001-07-17"
+        },
+        {
+          "period": "2001-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-06 is unavailable by 2001-08-15"
+        },
+        {
+          "period": "2001-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-07 is unavailable by 2001-09-17"
+        },
+        {
+          "period": "2001-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-08 is unavailable by 2001-10-18"
+        },
+        {
+          "period": "2001-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-09 is unavailable by 2001-11-15"
+        },
+        {
+          "period": "2001-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-10 is unavailable by 2001-12-13"
+        },
+        {
+          "period": "2001-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-11 is unavailable by 2002-01-15"
+        },
+        {
+          "period": "2002-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-12 is unavailable by 2002-02-19"
+        },
+        {
+          "period": "2002-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-01 is unavailable by 2002-03-20"
+        },
+        {
+          "period": "2002-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-02 is unavailable by 2002-04-15"
+        },
+        {
+          "period": "2002-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-03 is unavailable by 2002-05-14"
+        },
+        {
+          "period": "2002-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-04 is unavailable by 2002-06-17"
+        },
+        {
+          "period": "2002-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-05 is unavailable by 2002-07-18"
+        },
+        {
+          "period": "2002-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-06 is unavailable by 2002-08-15"
+        },
+        {
+          "period": "2002-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-07 is unavailable by 2002-09-17"
+        },
+        {
+          "period": "2002-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-08 is unavailable by 2002-10-17"
+        },
+        {
+          "period": "2002-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-09 is unavailable by 2002-11-18"
+        },
+        {
+          "period": "2002-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-10 is unavailable by 2002-12-16"
+        },
+        {
+          "period": "2002-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-11 is unavailable by 2003-01-15"
+        },
+        {
+          "period": "2003-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-12 is unavailable by 2003-02-20"
+        },
+        {
+          "period": "2003-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-01 is unavailable by 2003-03-20"
+        },
+        {
+          "period": "2003-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-02 is unavailable by 2003-04-15"
+        },
+        {
+          "period": "2003-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-03 is unavailable by 2003-05-15"
+        },
+        {
+          "period": "2003-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-04 is unavailable by 2003-06-16"
+        },
+        {
+          "period": "2003-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-05 is unavailable by 2003-07-15"
+        },
+        {
+          "period": "2003-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-06 is unavailable by 2003-08-14"
+        },
+        {
+          "period": "2003-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-07 is unavailable by 2003-09-15"
+        },
+        {
+          "period": "2003-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-08 is unavailable by 2003-10-15"
+        },
+        {
+          "period": "2003-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-09 is unavailable by 2003-11-17"
+        },
+        {
+          "period": "2003-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-10 is unavailable by 2003-12-15"
+        },
+        {
+          "period": "2003-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-11 is unavailable by 2004-01-14"
+        },
+        {
+          "period": "2004-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-12 is unavailable by 2004-02-19"
+        },
+        {
+          "period": "2004-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-01 is unavailable by 2004-03-16"
+        },
+        {
+          "period": "2004-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-02 is unavailable by 2004-04-13"
+        },
+        {
+          "period": "2004-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-03 is unavailable by 2004-05-13"
+        },
+        {
+          "period": "2004-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-04 is unavailable by 2004-06-14"
+        },
+        {
+          "period": "2004-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-05 is unavailable by 2004-07-15"
+        },
+        {
+          "period": "2004-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-06 is unavailable by 2004-08-16"
+        },
+        {
+          "period": "2004-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-07 is unavailable by 2004-09-15"
+        },
+        {
+          "period": "2004-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-08 is unavailable by 2004-10-18"
+        },
+        {
+          "period": "2004-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-09 is unavailable by 2004-11-16"
+        },
+        {
+          "period": "2004-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-10 is unavailable by 2004-12-16"
+        },
+        {
+          "period": "2004-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-11 is unavailable by 2005-01-18"
+        },
+        {
+          "period": "2005-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-12 is unavailable by 2005-02-22"
+        },
+        {
+          "period": "2005-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-01 is unavailable by 2005-03-22"
+        },
+        {
+          "period": "2005-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-02 is unavailable by 2005-04-19"
+        },
+        {
+          "period": "2005-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-03 is unavailable by 2005-05-17"
+        },
+        {
+          "period": "2005-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-04 is unavailable by 2005-06-14"
+        },
+        {
+          "period": "2005-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-05 is unavailable by 2005-07-13"
+        },
+        {
+          "period": "2005-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-06 is unavailable by 2005-08-15"
+        },
+        {
+          "period": "2005-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-07 is unavailable by 2005-09-14"
+        },
+        {
+          "period": "2005-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-08 is unavailable by 2005-10-13"
+        },
+        {
+          "period": "2005-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-09 is unavailable by 2005-11-15"
+        },
+        {
+          "period": "2005-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-10 is unavailable by 2005-12-14"
+        },
+        {
+          "period": "2005-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-11 is unavailable by 2006-01-17"
+        },
+        {
+          "period": "2006-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-12 is unavailable by 2006-02-21"
+        },
+        {
+          "period": "2006-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-01 is unavailable by 2006-03-15"
+        },
+        {
+          "period": "2006-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-02 is unavailable by 2006-04-18"
+        },
+        {
+          "period": "2006-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-03 is unavailable by 2006-05-16"
+        },
+        {
+          "period": "2006-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-04 is unavailable by 2006-06-13"
+        },
+        {
+          "period": "2006-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-05 is unavailable by 2006-07-18"
+        },
+        {
+          "period": "2006-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-06 is unavailable by 2006-08-15"
+        },
+        {
+          "period": "2006-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-07 is unavailable by 2006-09-14"
+        },
+        {
+          "period": "2006-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-08 is unavailable by 2006-10-17"
+        },
+        {
+          "period": "2006-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-09 is unavailable by 2006-11-15"
+        },
+        {
+          "period": "2006-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-10 is unavailable by 2006-12-14"
+        },
+        {
+          "period": "2006-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-11 is unavailable by 2007-01-17"
+        },
+        {
+          "period": "2007-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-12 is unavailable by 2007-02-20"
+        },
+        {
+          "period": "2007-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-01 is unavailable by 2007-03-15"
+        },
+        {
+          "period": "2007-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-02 is unavailable by 2007-04-16"
+        },
+        {
+          "period": "2007-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-03 is unavailable by 2007-05-14"
+        },
+        {
+          "period": "2007-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-04 is unavailable by 2007-06-14"
+        },
+        {
+          "period": "2007-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-05 is unavailable by 2007-07-17"
+        },
+        {
+          "period": "2007-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-06 is unavailable by 2007-08-14"
+        },
+        {
+          "period": "2007-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-07 is unavailable by 2007-09-18"
+        },
+        {
+          "period": "2007-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-08 is unavailable by 2007-10-16"
+        },
+        {
+          "period": "2007-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-09 is unavailable by 2007-11-14"
+        },
+        {
+          "period": "2007-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-10 is unavailable by 2007-12-13"
+        },
+        {
+          "period": "2007-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-11 is unavailable by 2008-01-15"
+        },
+        {
+          "period": "2008-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-12 is unavailable by 2008-02-19"
+        },
+        {
+          "period": "2008-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-01 is unavailable by 2008-03-13"
+        },
+        {
+          "period": "2008-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-02 is unavailable by 2008-04-15"
+        },
+        {
+          "period": "2008-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-03 is unavailable by 2008-05-13"
+        },
+        {
+          "period": "2008-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-04 is unavailable by 2008-06-12"
+        },
+        {
+          "period": "2008-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-05 is unavailable by 2008-07-15"
+        },
+        {
+          "period": "2008-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-06 is unavailable by 2008-08-13"
+        },
+        {
+          "period": "2008-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-07 is unavailable by 2008-09-15"
+        },
+        {
+          "period": "2008-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-08 is unavailable by 2008-10-15"
+        },
+        {
+          "period": "2008-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-09 is unavailable by 2008-11-18"
+        },
+        {
+          "period": "2008-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-10 is unavailable by 2008-12-15"
+        },
+        {
+          "period": "2008-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-11 is unavailable by 2009-01-15"
+        },
+        {
+          "period": "2009-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-12 is unavailable by 2009-02-19"
+        },
+        {
+          "period": "2009-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-01 is unavailable by 2009-03-17"
+        },
+        {
+          "period": "2009-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-02 is unavailable by 2009-04-14"
+        },
+        {
+          "period": "2009-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-03 is unavailable by 2009-05-14"
+        },
+        {
+          "period": "2009-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-04 is unavailable by 2009-06-16"
+        },
+        {
+          "period": "2009-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-05 is unavailable by 2009-07-14"
+        },
+        {
+          "period": "2009-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-06 is unavailable by 2009-08-13"
+        },
+        {
+          "period": "2009-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-07 is unavailable by 2009-09-15"
+        },
+        {
+          "period": "2009-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-08 is unavailable by 2009-10-14"
+        },
+        {
+          "period": "2009-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-09 is unavailable by 2009-11-17"
+        },
+        {
+          "period": "2009-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-10 is unavailable by 2009-12-15"
+        },
+        {
+          "period": "2009-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-11 is unavailable by 2010-01-14"
+        },
+        {
+          "period": "2010-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-12 is unavailable by 2010-02-18"
+        },
+        {
+          "period": "2010-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-01 is unavailable by 2010-03-17"
+        },
+        {
+          "period": "2010-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-02 is unavailable by 2010-04-13"
+        },
+        {
+          "period": "2010-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-03 is unavailable by 2010-05-18"
+        },
+        {
+          "period": "2010-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-04 is unavailable by 2010-06-16"
+        },
+        {
+          "period": "2010-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-05 is unavailable by 2010-07-15"
+        },
+        {
+          "period": "2010-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-06 is unavailable by 2010-08-12"
+        },
+        {
+          "period": "2010-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-07 is unavailable by 2010-09-16"
+        },
+        {
+          "period": "2010-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-08 is unavailable by 2010-10-14"
+        },
+        {
+          "period": "2010-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-09 is unavailable by 2010-11-16"
+        },
+        {
+          "period": "2010-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-10 is unavailable by 2010-12-14"
+        },
+        {
+          "period": "2010-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-11 is unavailable by 2011-01-13"
+        },
+        {
+          "period": "2011-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-12 is unavailable by 2011-02-16"
+        },
+        {
+          "period": "2011-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-01 is unavailable by 2011-03-16"
+        },
+        {
+          "period": "2011-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-02 is unavailable by 2011-04-14"
+        },
+        {
+          "period": "2011-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-03 is unavailable by 2011-05-12"
+        },
+        {
+          "period": "2011-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-04 is unavailable by 2011-06-14"
+        },
+        {
+          "period": "2011-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-05 is unavailable by 2011-07-14"
+        },
+        {
+          "period": "2011-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-06 is unavailable by 2011-08-17"
+        },
+        {
+          "period": "2011-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-07 is unavailable by 2011-09-14"
+        },
+        {
+          "period": "2011-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-08 is unavailable by 2011-10-18"
+        },
+        {
+          "period": "2011-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-09 is unavailable by 2011-11-15"
+        },
+        {
+          "period": "2011-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-10 is unavailable by 2011-12-15"
+        },
+        {
+          "period": "2011-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-11 is unavailable by 2012-01-18"
+        },
+        {
+          "period": "2012-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-12 is unavailable by 2012-02-16"
+        },
+        {
+          "period": "2012-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-01 is unavailable by 2012-03-15"
+        },
+        {
+          "period": "2012-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-02 is unavailable by 2012-04-12"
+        },
+        {
+          "period": "2012-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-03 is unavailable by 2012-05-14"
+        },
+        {
+          "period": "2012-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-04 is unavailable by 2012-06-13"
+        },
+        {
+          "period": "2012-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-05 is unavailable by 2012-07-16"
+        },
+        {
+          "period": "2012-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-06 is unavailable by 2012-08-14"
+        },
+        {
+          "period": "2012-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-07 is unavailable by 2012-09-13"
+        },
+        {
+          "period": "2012-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-08 is unavailable by 2012-10-15"
+        },
+        {
+          "period": "2012-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-09 is unavailable by 2012-11-14"
+        },
+        {
+          "period": "2012-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-10 is unavailable by 2012-12-13"
+        },
+        {
+          "period": "2012-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-11 is unavailable by 2013-01-15"
+        },
+        {
+          "period": "2013-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-12 is unavailable by 2013-02-20"
+        },
+        {
+          "period": "2013-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-01 is unavailable by 2013-03-14"
+        },
+        {
+          "period": "2013-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-02 is unavailable by 2013-04-15"
+        },
+        {
+          "period": "2013-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-03 is unavailable by 2013-05-15"
+        },
+        {
+          "period": "2013-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-04 is unavailable by 2013-06-17"
+        },
+        {
+          "period": "2013-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-05 is unavailable by 2013-07-15"
+        },
+        {
+          "period": "2013-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-06 is unavailable by 2013-08-14"
+        },
+        {
+          "period": "2013-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-07 is unavailable by 2013-09-16"
+        },
+        {
+          "period": "2013-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-08 is unavailable by 2013-10-29"
+        },
+        {
+          "period": "2013-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-09 is unavailable by 2013-11-19"
+        },
+        {
+          "period": "2013-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-10 is unavailable by 2013-12-16"
+        },
+        {
+          "period": "2013-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-11 is unavailable by 2014-01-15"
+        },
+        {
+          "period": "2014-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-12 is unavailable by 2014-02-19"
+        },
+        {
+          "period": "2014-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2014-01 is unavailable by 2014-03-17"
+        },
+        {
+          "period": "2014-03",
+          "reason": "PPIFIS exact period 2014-01 is unavailable by 2014-04-14"
+        },
+        {
+          "period": "2017-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2017-03 is unavailable by 2017-05-11"
+        },
+        {
+          "period": "2018-02",
+          "reason": "FLEXCPIM157SFRBATL exact period 2018-01 is unavailable by 2018-03-12"
+        },
+        {
+          "period": "2025-12",
+          "reason": "coherent target lag cpi_headline/2025-11 is absent"
+        },
+        {
+          "period": "2026-01",
+          "reason": "coherent target lag cpi_headline/2025-11 is absent"
+        },
+        {
+          "period": "2026-02",
+          "reason": "coherent target lag cpi_headline/2025-11 is absent"
+        }
+      ],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.20501155,
+          "trailing_3m_mae": 0.20623011,
+          "ar_model_mae": 0.16510004,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.26194361,
+          "trailing_3m_mae": 0.24454382,
+          "ar_model_mae": 0.23773408,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.25444631,
+          "trailing_3m_mae": 0.25480615,
+          "ar_model_mae": 0.22255587,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -2.5970696030373426,
+        "p_normal": 0.004701143476083595,
+        "p_t": 0.0058640037747287,
+        "holm_adj": 0.05641372,
+        "holm_adj_t": 0.07036805,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.08301905,
+        "ci95": [
+          -0.1564,
+          -0.017
+        ],
+        "R": 0.65079028
+      },
+      "windows": {
+        "current": {
+          "n_scored": 27,
+          "vs_naive": {
+            "mean_d": -0.04541139,
+            "ci95": null,
+            "R": 0.77849348,
+            "n": 27
+          },
+          "vs_strongest": {
+            "mean_d": -0.00549988,
+            "ci95": null,
+            "R": 0.96668758,
+            "n": 27
+          }
+        },
+        "tested": {
+          "n_scored": 63,
+          "vs_naive": {
+            "mean_d": -0.10722858,
+            "ci95": [
+              -0.1799,
+              -0.0364
+            ],
+            "R": 0.5906425,
+            "n": 63
+          },
+          "vs_strongest": {
+            "mean_d": -0.08301905,
+            "ci95": [
+              -0.1564,
+              -0.017
+            ],
+            "R": 0.65079028,
+            "n": 63
+          }
+        },
+        "full": {
+          "n_scored": 82,
+          "vs_naive": {
+            "mean_d": -0.10267086,
+            "ci95": [
+              -0.1606,
+              -0.0473
+            ],
+            "R": 0.596493,
+            "n": 82
+          },
+          "vs_strongest": {
+            "mean_d": -0.07078043,
+            "ci95": [
+              -0.1295,
+              -0.0196
+            ],
+            "R": 0.68196556,
+            "n": 82
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 27,
+              "n_rows": 27,
+              "honest_n": 27,
+              "mae_model": 0.15960016,
+              "baselines": {
+                "naive_mae": 0.20501155,
+                "trailing_3m_mae": 0.20623011,
+                "ar_model_mae": 0.16510004,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.04541139,
+                "ci95": null,
+                "R": 0.77849348,
+                "n": 27
+              },
+              "vs_strongest": {
+                "mean_d": -0.00549988,
+                "ci95": null,
+                "R": 0.96668758,
+                "n": 27
+              }
+            },
+            "tested": {
+              "n_scored": 63,
+              "n_rows": 63,
+              "honest_n": 63,
+              "mae_model": 0.15471503,
+              "baselines": {
+                "naive_mae": 0.26194361,
+                "trailing_3m_mae": 0.24454382,
+                "ar_model_mae": 0.23773408,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.10722858,
+                "ci95": [
+                  -0.1799,
+                  -0.0364
+                ],
+                "R": 0.5906425,
+                "n": 63
+              },
+              "vs_strongest": {
+                "mean_d": -0.08301905,
+                "ci95": [
+                  -0.1564,
+                  -0.017
+                ],
+                "R": 0.65079028,
+                "n": 63
+              }
+            },
+            "full": {
+              "n_scored": 82,
+              "n_rows": 82,
+              "honest_n": 82,
+              "mae_model": 0.15177544,
+              "baselines": {
+                "naive_mae": 0.25444631,
+                "trailing_3m_mae": 0.25480615,
+                "ar_model_mae": 0.22255587,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.10267086,
+                "ci95": [
+                  -0.1606,
+                  -0.0473
+                ],
+                "R": 0.596493,
+                "n": 82
+              },
+              "vs_strongest": {
+                "mean_d": -0.07078043,
+                "ci95": [
+                  -0.1295,
+                  -0.0196
+                ],
+                "R": 0.68196556,
+                "n": 82
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_core.v2",
+      "family": "cpi_core",
+      "model_id": "v2",
+      "target": {
+        "id": "cpi_core.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared",
+        "r_tested_above_0_95",
+        "r_full_not_below_1"
+      ],
+      "labels": [
+        "approximate_pit_lag"
+      ],
+      "units_check": "ok",
+      "units_ratio": 0.92945844,
+      "pit_legs": [
+        {
+          "leg": "cpi_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:22"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:165"
+        },
+        {
+          "leg": "median_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:166"
+        },
+        {
+          "leg": "flex_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:167"
+        },
+        {
+          "leg": "ppi_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V2.md:150"
+        },
+        {
+          "leg": "shelter_cpi_cusr0000sah1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:57"
+        },
+        {
+          "leg": "zori_shelter",
+          "pit_class": "approximate_pit_lag",
+          "citation": "research/release_forecast/PREREG_V2.md:92"
+        },
+        {
+          "leg": "zori_values",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:44"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [],
+      "missing_source": [
+        {
+          "release": "cpi_core",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.09952344,
+          "trailing_3m_mae": 0.09519959,
+          "ar_model_mae": 0.08865336,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.12974596,
+          "trailing_3m_mae": 0.14037385,
+          "ar_model_mae": 0.13834993,
+          "strongest": "naive",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.10211109,
+          "trailing_3m_mae": 0.1067556,
+          "ar_model_mae": 0.09672764,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": 0.23076294693761795,
+        "p_normal": 0.5912505158009654,
+        "p_t": 0.590888116969366,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": 0.00226814,
+        "ci95": [
+          -0.0153,
+          0.0216
+        ],
+        "R": 1.01748142
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.01412124,
+            "ci95": [
+              -0.021,
+              -0.0071
+            ],
+            "R": 0.85811144,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": -0.00325116,
+            "ci95": [
+              -0.0168,
+              0.0113
+            ],
+            "R": 0.96332729,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": 0.00226814,
+            "ci95": [
+              -0.0153,
+              0.0216
+            ],
+            "R": 1.01748142,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": 0.00226814,
+            "ci95": [
+              -0.0153,
+              0.0216
+            ],
+            "R": 1.01748142,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.00331142,
+            "ci95": [
+              -0.0139,
+              0.0063
+            ],
+            "R": 0.96757044,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": 0.00207203,
+            "ci95": [
+              -0.0047,
+              0.0089
+            ],
+            "R": 1.02142128,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.08540221,
+              "baselines": {
+                "naive_mae": 0.09952344,
+                "trailing_3m_mae": 0.09519959,
+                "ar_model_mae": 0.08865336,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.01412124,
+                "ci95": [
+                  -0.021,
+                  -0.0071
+                ],
+                "R": 0.85811144,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": -0.00325116,
+                "ci95": [
+                  -0.0168,
+                  0.0113
+                ],
+                "R": 0.96332729,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.1320141,
+              "baselines": {
+                "naive_mae": 0.12974596,
+                "trailing_3m_mae": 0.14037385,
+                "ar_model_mae": 0.13834993,
+                "strongest": "naive",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": 0.00226814,
+                "ci95": [
+                  -0.0153,
+                  0.0216
+                ],
+                "R": 1.01748142,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": 0.00226814,
+                "ci95": [
+                  -0.0153,
+                  0.0216
+                ],
+                "R": 1.01748142,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.09879967,
+              "baselines": {
+                "naive_mae": 0.10211109,
+                "trailing_3m_mae": 0.1067556,
+                "ar_model_mae": 0.09672764,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.00331142,
+                "ci95": [
+                  -0.0139,
+                  0.0063
+                ],
+                "R": 0.96757044,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": 0.00207203,
+                "ci95": [
+                  -0.0047,
+                  0.0089
+                ],
+                "R": 1.02142128,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_core.v3_factor",
+      "family": "cpi_core",
+      "model_id": "v3_factor",
+      "target": {
+        "id": "cpi_core.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared",
+        "r_tested_above_0_95"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 0.92945844,
+      "pit_legs": [
+        {
+          "leg": "cpi_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:54"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:56"
+        },
+        {
+          "leg": "ppi_fis_mom_lag1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:64"
+        },
+        {
+          "leg": "ppi_fes_mom_lag1",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:63"
+        },
+        {
+          "leg": "dollar_mom_dtwexbgs",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:61"
+        },
+        {
+          "leg": "shelter_nowcast",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V2.md:57"
+        }
+      ],
+      "n_rows": {
+        "current": 31,
+        "tested": 67,
+        "full": 199
+      },
+      "honest_n": {
+        "current": 30,
+        "tested": 66,
+        "full": 198
+      },
+      "excluded": [],
+      "missing_source": [
+        {
+          "release": "cpi_core",
+          "period": "2025-11",
+          "reason": "missing_source"
+        }
+      ],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.09952344,
+          "trailing_3m_mae": 0.09519959,
+          "ar_model_mae": 0.08865336,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.12974596,
+          "trailing_3m_mae": 0.14037385,
+          "ar_model_mae": 0.13834993,
+          "strongest": "naive",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.10211109,
+          "trailing_3m_mae": 0.1067556,
+          "ar_model_mae": 0.09672764,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -0.3522135580943922,
+        "p_normal": 0.3623390548700167,
+        "p_t": 0.3629087659660293,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.00301274,
+        "ci95": [
+          -0.0202,
+          0.014
+        ],
+        "R": 0.97677966
+      },
+      "windows": {
+        "current": {
+          "n_scored": 30,
+          "vs_naive": {
+            "mean_d": -0.01242752,
+            "ci95": [
+              -0.0229,
+              -0.001
+            ],
+            "R": 0.87512977,
+            "n": 30
+          },
+          "vs_strongest": {
+            "mean_d": -0.00155744,
+            "ci95": [
+              -0.0088,
+              0.0055
+            ],
+            "R": 0.98243229,
+            "n": 30
+          }
+        },
+        "tested": {
+          "n_scored": 66,
+          "vs_naive": {
+            "mean_d": -0.00301274,
+            "ci95": [
+              -0.0202,
+              0.014
+            ],
+            "R": 0.97677966,
+            "n": 66
+          },
+          "vs_strongest": {
+            "mean_d": -0.00301274,
+            "ci95": [
+              -0.0202,
+              0.014
+            ],
+            "R": 0.97677966,
+            "n": 66
+          }
+        },
+        "full": {
+          "n_scored": 198,
+          "vs_naive": {
+            "mean_d": -0.00587636,
+            "ci95": [
+              -0.0173,
+              0.0034
+            ],
+            "R": 0.94245135,
+            "n": 198
+          },
+          "vs_strongest": {
+            "mean_d": -0.00049291,
+            "ci95": [
+              -0.0091,
+              0.0076
+            ],
+            "R": 0.99490417,
+            "n": 198
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 30,
+              "n_rows": 30,
+              "honest_n": 30,
+              "mae_model": 0.08709593,
+              "baselines": {
+                "naive_mae": 0.09952344,
+                "trailing_3m_mae": 0.09519959,
+                "ar_model_mae": 0.08865336,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.01242752,
+                "ci95": [
+                  -0.0229,
+                  -0.001
+                ],
+                "R": 0.87512977,
+                "n": 30
+              },
+              "vs_strongest": {
+                "mean_d": -0.00155744,
+                "ci95": [
+                  -0.0088,
+                  0.0055
+                ],
+                "R": 0.98243229,
+                "n": 30
+              }
+            },
+            "tested": {
+              "n_scored": 66,
+              "n_rows": 66,
+              "honest_n": 66,
+              "mae_model": 0.12673321,
+              "baselines": {
+                "naive_mae": 0.12974596,
+                "trailing_3m_mae": 0.14037385,
+                "ar_model_mae": 0.13834993,
+                "strongest": "naive",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.00301274,
+                "ci95": [
+                  -0.0202,
+                  0.014
+                ],
+                "R": 0.97677966,
+                "n": 66
+              },
+              "vs_strongest": {
+                "mean_d": -0.00301274,
+                "ci95": [
+                  -0.0202,
+                  0.014
+                ],
+                "R": 0.97677966,
+                "n": 66
+              }
+            },
+            "full": {
+              "n_scored": 198,
+              "n_rows": 198,
+              "honest_n": 198,
+              "mae_model": 0.09623473,
+              "baselines": {
+                "naive_mae": 0.10211109,
+                "trailing_3m_mae": 0.1067556,
+                "ar_model_mae": 0.09672764,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.00587636,
+                "ci95": [
+                  -0.0173,
+                  0.0034
+                ],
+                "R": 0.94245135,
+                "n": 198
+              },
+              "vs_strongest": {
+                "mean_d": -0.00049291,
+                "ci95": [
+                  -0.0091,
+                  0.0076
+                ],
+                "R": 0.99490417,
+                "n": 198
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "cpi_core.coherent_ridge_v1",
+      "family": "cpi_core",
+      "model_id": "coherent_ridge_v1",
+      "target": {
+        "id": "cpi_core.same_release_first_print",
+        "source": "data/release_forecast/cpi_truth/alfred_same_release_vintage_proxy_v1.json#published_proxy_1dp",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "holm_not_cleared",
+        "r_tested_above_0_95"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.0,
+      "pit_legs": [
+        {
+          "leg": "cpi_target_vintages",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:75"
+        },
+        {
+          "leg": "vintage_feature_rows",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md:77"
+        }
+      ],
+      "n_rows": {
+        "current": 27,
+        "tested": 63,
+        "full": 82
+      },
+      "honest_n": {
+        "current": 27,
+        "tested": 63,
+        "full": 82
+      },
+      "excluded": [
+        {
+          "period": "1996-12",
+          "reason": "coherent target lag cpi_core/1996-11 is absent"
+        },
+        {
+          "period": "1997-01",
+          "reason": "coherent target lag cpi_core/1996-11 is absent"
+        },
+        {
+          "period": "1997-02",
+          "reason": "coherent target lag cpi_core/1996-11 is absent"
+        },
+        {
+          "period": "1997-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-02 is unavailable by 1997-04-14"
+        },
+        {
+          "period": "1997-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-03 is unavailable by 1997-05-14"
+        },
+        {
+          "period": "1997-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-04 is unavailable by 1997-06-16"
+        },
+        {
+          "period": "1997-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-05 is unavailable by 1997-07-15"
+        },
+        {
+          "period": "1997-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-06 is unavailable by 1997-08-13"
+        },
+        {
+          "period": "1997-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-07 is unavailable by 1997-09-15"
+        },
+        {
+          "period": "1997-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-08 is unavailable by 1997-10-15"
+        },
+        {
+          "period": "1997-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-09 is unavailable by 1997-11-17"
+        },
+        {
+          "period": "1997-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-10 is unavailable by 1997-12-15"
+        },
+        {
+          "period": "1997-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-11 is unavailable by 1998-01-12"
+        },
+        {
+          "period": "1998-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1997-12 is unavailable by 1998-02-23"
+        },
+        {
+          "period": "1998-02",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-01 is unavailable by 1998-03-18"
+        },
+        {
+          "period": "1998-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-02 is unavailable by 1998-04-13"
+        },
+        {
+          "period": "1998-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-03 is unavailable by 1998-05-13"
+        },
+        {
+          "period": "1998-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-04 is unavailable by 1998-06-15"
+        },
+        {
+          "period": "1998-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-05 is unavailable by 1998-07-13"
+        },
+        {
+          "period": "1998-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-06 is unavailable by 1998-08-17"
+        },
+        {
+          "period": "1998-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-07 is unavailable by 1998-09-16"
+        },
+        {
+          "period": "1998-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-08 is unavailable by 1998-10-15"
+        },
+        {
+          "period": "1998-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-09 is unavailable by 1998-11-16"
+        },
+        {
+          "period": "1998-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-10 is unavailable by 1998-12-14"
+        },
+        {
+          "period": "1998-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-11 is unavailable by 1999-01-13"
+        },
+        {
+          "period": "1999-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1998-12 is unavailable by 1999-02-18"
+        },
+        {
+          "period": "1999-02",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-01 is unavailable by 1999-03-17"
+        },
+        {
+          "period": "1999-03",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-02 is unavailable by 1999-04-12"
+        },
+        {
+          "period": "1999-04",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-03 is unavailable by 1999-05-13"
+        },
+        {
+          "period": "1999-05",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-04 is unavailable by 1999-06-15"
+        },
+        {
+          "period": "1999-06",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-05 is unavailable by 1999-07-14"
+        },
+        {
+          "period": "1999-07",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-06 is unavailable by 1999-08-16"
+        },
+        {
+          "period": "1999-08",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-07 is unavailable by 1999-09-14"
+        },
+        {
+          "period": "1999-09",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-08 is unavailable by 1999-10-18"
+        },
+        {
+          "period": "1999-10",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-09 is unavailable by 1999-11-16"
+        },
+        {
+          "period": "1999-11",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-10 is unavailable by 1999-12-13"
+        },
+        {
+          "period": "1999-12",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-11 is unavailable by 2000-01-13"
+        },
+        {
+          "period": "2000-01",
+          "reason": "STICKCPIM157SFRBATL exact period 1999-12 is unavailable by 2000-02-17"
+        },
+        {
+          "period": "2000-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-01 is unavailable by 2000-03-16"
+        },
+        {
+          "period": "2000-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-02 is unavailable by 2000-04-13"
+        },
+        {
+          "period": "2000-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-03 is unavailable by 2000-05-15"
+        },
+        {
+          "period": "2000-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-04 is unavailable by 2000-06-13"
+        },
+        {
+          "period": "2000-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-05 is unavailable by 2000-07-17"
+        },
+        {
+          "period": "2000-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-06 is unavailable by 2000-08-15"
+        },
+        {
+          "period": "2000-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-07 is unavailable by 2000-09-14"
+        },
+        {
+          "period": "2000-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-08 is unavailable by 2000-10-17"
+        },
+        {
+          "period": "2000-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-09 is unavailable by 2000-11-15"
+        },
+        {
+          "period": "2000-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-10 is unavailable by 2000-12-14"
+        },
+        {
+          "period": "2000-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-11 is unavailable by 2001-01-16"
+        },
+        {
+          "period": "2001-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2000-12 is unavailable by 2001-02-20"
+        },
+        {
+          "period": "2001-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-01 is unavailable by 2001-03-20"
+        },
+        {
+          "period": "2001-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-02 is unavailable by 2001-04-16"
+        },
+        {
+          "period": "2001-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-03 is unavailable by 2001-05-15"
+        },
+        {
+          "period": "2001-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-04 is unavailable by 2001-06-14"
+        },
+        {
+          "period": "2001-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-05 is unavailable by 2001-07-17"
+        },
+        {
+          "period": "2001-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-06 is unavailable by 2001-08-15"
+        },
+        {
+          "period": "2001-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-07 is unavailable by 2001-09-17"
+        },
+        {
+          "period": "2001-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-08 is unavailable by 2001-10-18"
+        },
+        {
+          "period": "2001-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-09 is unavailable by 2001-11-15"
+        },
+        {
+          "period": "2001-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-10 is unavailable by 2001-12-13"
+        },
+        {
+          "period": "2001-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-11 is unavailable by 2002-01-15"
+        },
+        {
+          "period": "2002-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2001-12 is unavailable by 2002-02-19"
+        },
+        {
+          "period": "2002-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-01 is unavailable by 2002-03-20"
+        },
+        {
+          "period": "2002-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-02 is unavailable by 2002-04-15"
+        },
+        {
+          "period": "2002-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-03 is unavailable by 2002-05-14"
+        },
+        {
+          "period": "2002-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-04 is unavailable by 2002-06-17"
+        },
+        {
+          "period": "2002-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-05 is unavailable by 2002-07-18"
+        },
+        {
+          "period": "2002-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-06 is unavailable by 2002-08-15"
+        },
+        {
+          "period": "2002-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-07 is unavailable by 2002-09-17"
+        },
+        {
+          "period": "2002-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-08 is unavailable by 2002-10-17"
+        },
+        {
+          "period": "2002-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-09 is unavailable by 2002-11-18"
+        },
+        {
+          "period": "2002-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-10 is unavailable by 2002-12-16"
+        },
+        {
+          "period": "2002-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-11 is unavailable by 2003-01-15"
+        },
+        {
+          "period": "2003-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2002-12 is unavailable by 2003-02-20"
+        },
+        {
+          "period": "2003-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-01 is unavailable by 2003-03-20"
+        },
+        {
+          "period": "2003-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-02 is unavailable by 2003-04-15"
+        },
+        {
+          "period": "2003-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-03 is unavailable by 2003-05-15"
+        },
+        {
+          "period": "2003-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-04 is unavailable by 2003-06-16"
+        },
+        {
+          "period": "2003-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-05 is unavailable by 2003-07-15"
+        },
+        {
+          "period": "2003-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-06 is unavailable by 2003-08-14"
+        },
+        {
+          "period": "2003-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-07 is unavailable by 2003-09-15"
+        },
+        {
+          "period": "2003-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-08 is unavailable by 2003-10-15"
+        },
+        {
+          "period": "2003-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-09 is unavailable by 2003-11-17"
+        },
+        {
+          "period": "2003-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-10 is unavailable by 2003-12-15"
+        },
+        {
+          "period": "2003-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-11 is unavailable by 2004-01-14"
+        },
+        {
+          "period": "2004-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2003-12 is unavailable by 2004-02-19"
+        },
+        {
+          "period": "2004-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-01 is unavailable by 2004-03-16"
+        },
+        {
+          "period": "2004-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-02 is unavailable by 2004-04-13"
+        },
+        {
+          "period": "2004-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-03 is unavailable by 2004-05-13"
+        },
+        {
+          "period": "2004-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-04 is unavailable by 2004-06-14"
+        },
+        {
+          "period": "2004-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-05 is unavailable by 2004-07-15"
+        },
+        {
+          "period": "2004-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-06 is unavailable by 2004-08-16"
+        },
+        {
+          "period": "2004-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-07 is unavailable by 2004-09-15"
+        },
+        {
+          "period": "2004-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-08 is unavailable by 2004-10-18"
+        },
+        {
+          "period": "2004-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-09 is unavailable by 2004-11-16"
+        },
+        {
+          "period": "2004-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-10 is unavailable by 2004-12-16"
+        },
+        {
+          "period": "2004-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-11 is unavailable by 2005-01-18"
+        },
+        {
+          "period": "2005-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2004-12 is unavailable by 2005-02-22"
+        },
+        {
+          "period": "2005-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-01 is unavailable by 2005-03-22"
+        },
+        {
+          "period": "2005-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-02 is unavailable by 2005-04-19"
+        },
+        {
+          "period": "2005-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-03 is unavailable by 2005-05-17"
+        },
+        {
+          "period": "2005-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-04 is unavailable by 2005-06-14"
+        },
+        {
+          "period": "2005-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-05 is unavailable by 2005-07-13"
+        },
+        {
+          "period": "2005-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-06 is unavailable by 2005-08-15"
+        },
+        {
+          "period": "2005-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-07 is unavailable by 2005-09-14"
+        },
+        {
+          "period": "2005-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-08 is unavailable by 2005-10-13"
+        },
+        {
+          "period": "2005-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-09 is unavailable by 2005-11-15"
+        },
+        {
+          "period": "2005-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-10 is unavailable by 2005-12-14"
+        },
+        {
+          "period": "2005-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-11 is unavailable by 2006-01-17"
+        },
+        {
+          "period": "2006-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2005-12 is unavailable by 2006-02-21"
+        },
+        {
+          "period": "2006-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-01 is unavailable by 2006-03-15"
+        },
+        {
+          "period": "2006-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-02 is unavailable by 2006-04-18"
+        },
+        {
+          "period": "2006-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-03 is unavailable by 2006-05-16"
+        },
+        {
+          "period": "2006-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-04 is unavailable by 2006-06-13"
+        },
+        {
+          "period": "2006-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-05 is unavailable by 2006-07-18"
+        },
+        {
+          "period": "2006-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-06 is unavailable by 2006-08-15"
+        },
+        {
+          "period": "2006-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-07 is unavailable by 2006-09-14"
+        },
+        {
+          "period": "2006-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-08 is unavailable by 2006-10-17"
+        },
+        {
+          "period": "2006-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-09 is unavailable by 2006-11-15"
+        },
+        {
+          "period": "2006-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-10 is unavailable by 2006-12-14"
+        },
+        {
+          "period": "2006-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-11 is unavailable by 2007-01-17"
+        },
+        {
+          "period": "2007-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2006-12 is unavailable by 2007-02-20"
+        },
+        {
+          "period": "2007-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-01 is unavailable by 2007-03-15"
+        },
+        {
+          "period": "2007-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-02 is unavailable by 2007-04-16"
+        },
+        {
+          "period": "2007-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-03 is unavailable by 2007-05-14"
+        },
+        {
+          "period": "2007-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-04 is unavailable by 2007-06-14"
+        },
+        {
+          "period": "2007-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-05 is unavailable by 2007-07-17"
+        },
+        {
+          "period": "2007-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-06 is unavailable by 2007-08-14"
+        },
+        {
+          "period": "2007-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-07 is unavailable by 2007-09-18"
+        },
+        {
+          "period": "2007-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-08 is unavailable by 2007-10-16"
+        },
+        {
+          "period": "2007-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-09 is unavailable by 2007-11-14"
+        },
+        {
+          "period": "2007-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-10 is unavailable by 2007-12-13"
+        },
+        {
+          "period": "2007-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-11 is unavailable by 2008-01-15"
+        },
+        {
+          "period": "2008-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2007-12 is unavailable by 2008-02-19"
+        },
+        {
+          "period": "2008-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-01 is unavailable by 2008-03-13"
+        },
+        {
+          "period": "2008-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-02 is unavailable by 2008-04-15"
+        },
+        {
+          "period": "2008-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-03 is unavailable by 2008-05-13"
+        },
+        {
+          "period": "2008-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-04 is unavailable by 2008-06-12"
+        },
+        {
+          "period": "2008-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-05 is unavailable by 2008-07-15"
+        },
+        {
+          "period": "2008-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-06 is unavailable by 2008-08-13"
+        },
+        {
+          "period": "2008-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-07 is unavailable by 2008-09-15"
+        },
+        {
+          "period": "2008-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-08 is unavailable by 2008-10-15"
+        },
+        {
+          "period": "2008-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-09 is unavailable by 2008-11-18"
+        },
+        {
+          "period": "2008-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-10 is unavailable by 2008-12-15"
+        },
+        {
+          "period": "2008-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-11 is unavailable by 2009-01-15"
+        },
+        {
+          "period": "2009-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2008-12 is unavailable by 2009-02-19"
+        },
+        {
+          "period": "2009-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-01 is unavailable by 2009-03-17"
+        },
+        {
+          "period": "2009-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-02 is unavailable by 2009-04-14"
+        },
+        {
+          "period": "2009-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-03 is unavailable by 2009-05-14"
+        },
+        {
+          "period": "2009-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-04 is unavailable by 2009-06-16"
+        },
+        {
+          "period": "2009-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-05 is unavailable by 2009-07-14"
+        },
+        {
+          "period": "2009-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-06 is unavailable by 2009-08-13"
+        },
+        {
+          "period": "2009-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-07 is unavailable by 2009-09-15"
+        },
+        {
+          "period": "2009-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-08 is unavailable by 2009-10-14"
+        },
+        {
+          "period": "2009-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-09 is unavailable by 2009-11-17"
+        },
+        {
+          "period": "2009-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-10 is unavailable by 2009-12-15"
+        },
+        {
+          "period": "2009-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-11 is unavailable by 2010-01-14"
+        },
+        {
+          "period": "2010-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2009-12 is unavailable by 2010-02-18"
+        },
+        {
+          "period": "2010-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-01 is unavailable by 2010-03-17"
+        },
+        {
+          "period": "2010-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-02 is unavailable by 2010-04-13"
+        },
+        {
+          "period": "2010-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-03 is unavailable by 2010-05-18"
+        },
+        {
+          "period": "2010-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-04 is unavailable by 2010-06-16"
+        },
+        {
+          "period": "2010-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-05 is unavailable by 2010-07-15"
+        },
+        {
+          "period": "2010-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-06 is unavailable by 2010-08-12"
+        },
+        {
+          "period": "2010-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-07 is unavailable by 2010-09-16"
+        },
+        {
+          "period": "2010-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-08 is unavailable by 2010-10-14"
+        },
+        {
+          "period": "2010-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-09 is unavailable by 2010-11-16"
+        },
+        {
+          "period": "2010-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-10 is unavailable by 2010-12-14"
+        },
+        {
+          "period": "2010-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-11 is unavailable by 2011-01-13"
+        },
+        {
+          "period": "2011-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2010-12 is unavailable by 2011-02-16"
+        },
+        {
+          "period": "2011-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-01 is unavailable by 2011-03-16"
+        },
+        {
+          "period": "2011-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-02 is unavailable by 2011-04-14"
+        },
+        {
+          "period": "2011-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-03 is unavailable by 2011-05-12"
+        },
+        {
+          "period": "2011-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-04 is unavailable by 2011-06-14"
+        },
+        {
+          "period": "2011-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-05 is unavailable by 2011-07-14"
+        },
+        {
+          "period": "2011-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-06 is unavailable by 2011-08-17"
+        },
+        {
+          "period": "2011-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-07 is unavailable by 2011-09-14"
+        },
+        {
+          "period": "2011-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-08 is unavailable by 2011-10-18"
+        },
+        {
+          "period": "2011-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-09 is unavailable by 2011-11-15"
+        },
+        {
+          "period": "2011-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-10 is unavailable by 2011-12-15"
+        },
+        {
+          "period": "2011-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-11 is unavailable by 2012-01-18"
+        },
+        {
+          "period": "2012-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2011-12 is unavailable by 2012-02-16"
+        },
+        {
+          "period": "2012-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-01 is unavailable by 2012-03-15"
+        },
+        {
+          "period": "2012-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-02 is unavailable by 2012-04-12"
+        },
+        {
+          "period": "2012-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-03 is unavailable by 2012-05-14"
+        },
+        {
+          "period": "2012-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-04 is unavailable by 2012-06-13"
+        },
+        {
+          "period": "2012-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-05 is unavailable by 2012-07-16"
+        },
+        {
+          "period": "2012-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-06 is unavailable by 2012-08-14"
+        },
+        {
+          "period": "2012-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-07 is unavailable by 2012-09-13"
+        },
+        {
+          "period": "2012-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-08 is unavailable by 2012-10-15"
+        },
+        {
+          "period": "2012-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-09 is unavailable by 2012-11-14"
+        },
+        {
+          "period": "2012-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-10 is unavailable by 2012-12-13"
+        },
+        {
+          "period": "2012-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-11 is unavailable by 2013-01-15"
+        },
+        {
+          "period": "2013-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2012-12 is unavailable by 2013-02-20"
+        },
+        {
+          "period": "2013-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-01 is unavailable by 2013-03-14"
+        },
+        {
+          "period": "2013-03",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-02 is unavailable by 2013-04-15"
+        },
+        {
+          "period": "2013-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-03 is unavailable by 2013-05-15"
+        },
+        {
+          "period": "2013-05",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-04 is unavailable by 2013-06-17"
+        },
+        {
+          "period": "2013-06",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-05 is unavailable by 2013-07-15"
+        },
+        {
+          "period": "2013-07",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-06 is unavailable by 2013-08-14"
+        },
+        {
+          "period": "2013-08",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-07 is unavailable by 2013-09-16"
+        },
+        {
+          "period": "2013-09",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-08 is unavailable by 2013-10-29"
+        },
+        {
+          "period": "2013-10",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-09 is unavailable by 2013-11-19"
+        },
+        {
+          "period": "2013-11",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-10 is unavailable by 2013-12-16"
+        },
+        {
+          "period": "2013-12",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-11 is unavailable by 2014-01-15"
+        },
+        {
+          "period": "2014-01",
+          "reason": "STICKCPIM157SFRBATL exact period 2013-12 is unavailable by 2014-02-19"
+        },
+        {
+          "period": "2014-02",
+          "reason": "STICKCPIM157SFRBATL exact period 2014-01 is unavailable by 2014-03-17"
+        },
+        {
+          "period": "2014-03",
+          "reason": "PPIFIS exact period 2014-01 is unavailable by 2014-04-14"
+        },
+        {
+          "period": "2017-04",
+          "reason": "STICKCPIM157SFRBATL exact period 2017-03 is unavailable by 2017-05-11"
+        },
+        {
+          "period": "2018-02",
+          "reason": "FLEXCPIM157SFRBATL exact period 2018-01 is unavailable by 2018-03-12"
+        },
+        {
+          "period": "2025-12",
+          "reason": "coherent target lag cpi_core/2025-11 is absent"
+        },
+        {
+          "period": "2026-01",
+          "reason": "coherent target lag cpi_core/2025-11 is absent"
+        },
+        {
+          "period": "2026-02",
+          "reason": "coherent target lag cpi_core/2025-11 is absent"
+        }
+      ],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.10381181,
+          "trailing_3m_mae": 0.09977449,
+          "ar_model_mae": 0.09283095,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.133023,
+          "trailing_3m_mae": 0.14448568,
+          "ar_model_mae": 0.14250683,
+          "strongest": "naive",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.1411156,
+          "trailing_3m_mae": 0.15231606,
+          "ar_model_mae": 0.13934902,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": 0.15127224874223427,
+        "p_normal": 0.560119520182185,
+        "p_t": 0.5598739549943539,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": 0.00150652,
+        "ci95": [
+          -0.0161,
+          0.0206
+        ],
+        "R": 1.01132528
+      },
+      "windows": {
+        "current": {
+          "n_scored": 27,
+          "vs_naive": {
+            "mean_d": -0.01858541,
+            "ci95": null,
+            "R": 0.82097018,
+            "n": 27
+          },
+          "vs_strongest": {
+            "mean_d": -0.00760454,
+            "ci95": null,
+            "R": 0.91808182,
+            "n": 27
+          }
+        },
+        "tested": {
+          "n_scored": 63,
+          "vs_naive": {
+            "mean_d": 0.00150652,
+            "ci95": [
+              -0.0161,
+              0.0206
+            ],
+            "R": 1.01132528,
+            "n": 63
+          },
+          "vs_strongest": {
+            "mean_d": 0.00150652,
+            "ci95": [
+              -0.0161,
+              0.0206
+            ],
+            "R": 1.01132528,
+            "n": 63
+          }
+        },
+        "full": {
+          "n_scored": 82,
+          "vs_naive": {
+            "mean_d": -0.01065048,
+            "ci95": [
+              -0.0352,
+              0.0114
+            ],
+            "R": 0.92452655,
+            "n": 82
+          },
+          "vs_strongest": {
+            "mean_d": -0.00888391,
+            "ci95": [
+              -0.0223,
+              0.0045
+            ],
+            "R": 0.93624709,
+            "n": 82
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "applied",
+          "n_dropped": 0,
+          "dropped_periods": [],
+          "parity_sha256": "ff17f90be8c9eb622a2bcf7acc5ace6c79d1fd4fb6d0542f83ae34daef8c15d8",
+          "windows": {
+            "current": {
+              "n_scored": 27,
+              "n_rows": 27,
+              "honest_n": 27,
+              "mae_model": 0.0852264,
+              "baselines": {
+                "naive_mae": 0.10381181,
+                "trailing_3m_mae": 0.09977449,
+                "ar_model_mae": 0.09283095,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.01858541,
+                "ci95": null,
+                "R": 0.82097018,
+                "n": 27
+              },
+              "vs_strongest": {
+                "mean_d": -0.00760454,
+                "ci95": null,
+                "R": 0.91808182,
+                "n": 27
+              }
+            },
+            "tested": {
+              "n_scored": 63,
+              "n_rows": 63,
+              "honest_n": 63,
+              "mae_model": 0.13452952,
+              "baselines": {
+                "naive_mae": 0.133023,
+                "trailing_3m_mae": 0.14448568,
+                "ar_model_mae": 0.14250683,
+                "strongest": "naive",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": 0.00150652,
+                "ci95": [
+                  -0.0161,
+                  0.0206
+                ],
+                "R": 1.01132528,
+                "n": 63
+              },
+              "vs_strongest": {
+                "mean_d": 0.00150652,
+                "ci95": [
+                  -0.0161,
+                  0.0206
+                ],
+                "R": 1.01132528,
+                "n": 63
+              }
+            },
+            "full": {
+              "n_scored": 82,
+              "n_rows": 82,
+              "honest_n": 82,
+              "mae_model": 0.13046512,
+              "baselines": {
+                "naive_mae": 0.1411156,
+                "trailing_3m_mae": 0.15231606,
+                "ar_model_mae": 0.13934902,
+                "strongest": "ar_model",
+                "not_available": []
+              },
+              "vs_naive": {
+                "mean_d": -0.01065048,
+                "ci95": [
+                  -0.0352,
+                  0.0114
+                ],
+                "R": 0.92452655,
+                "n": 82
+              },
+              "vs_strongest": {
+                "mean_d": -0.00888391,
+                "ci95": [
+                  -0.0223,
+                  0.0045
+                ],
+                "R": 0.93624709,
+                "n": 82
+              }
+            }
+          }
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "nfp.v1",
+      "family": "nfp",
+      "model_id": "v1",
+      "target": {
+        "id": "nfp.same_release_first_print",
+        "source": "engine.release_target_truth.reconstruct_release_target(PAYEMS, release_date=None)",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "non_pit_inputs",
+        "holm_not_cleared",
+        "r_tested_above_0_95",
+        "r_current_above_1"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.18902439,
+      "pit_legs": [
+        {
+          "leg": "payems_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:22"
+        },
+        {
+          "leg": "claims_survey_week",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:136"
+        },
+        {
+          "leg": "withheld_taxes",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:55"
+        },
+        {
+          "leg": "awhman",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V1.md:42"
+        }
+      ],
+      "n_rows": {
+        "current": 33,
+        "tested": 69,
+        "full": 201
+      },
+      "honest_n": {
+        "current": 32,
+        "tested": 68,
+        "full": 200
+      },
+      "excluded": [],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 173.60606061,
+          "trailing_3m_mae": 121.33333333,
+          "ar_model_mae": 96.99673494,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 201.75362319,
+          "trailing_3m_mae": 162.12560386,
+          "ar_model_mae": 213.64327958,
+          "strongest": "trailing_3m",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 404.27363184,
+          "trailing_3m_mae": 383.47263682,
+          "ar_model_mae": 570.71936712,
+          "strongest": "trailing_3m",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": 0.8487086648701213,
+        "p_normal": 0.801978288246121,
+        "p_t": 0.8004893570498224,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": 17.33330885,
+        "ci95": [
+          -21.1234,
+          51.6358
+        ],
+        "R": 1.10691284
+      },
+      "windows": {
+        "current": {
+          "n_scored": 33,
+          "vs_naive": {
+            "mean_d": -6.09107274,
+            "ci95": [
+              -18.2732,
+              0.0
+            ],
+            "R": 0.9649144,
+            "n": 33
+          },
+          "vs_strongest": {
+            "mean_d": 70.51825292,
+            "ci95": [
+              17.63,
+              125.5272
+            ],
+            "R": 1.72701677,
+            "n": 33
+          }
+        },
+        "tested": {
+          "n_scored": 69,
+          "vs_naive": {
+            "mean_d": -22.29471048,
+            "ci95": [
+              -58.0504,
+              10.7608
+            ],
+            "R": 0.88949537,
+            "n": 69
+          },
+          "vs_strongest": {
+            "mean_d": 17.33330885,
+            "ci95": [
+              -21.1234,
+              51.6358
+            ],
+            "R": 1.10691284,
+            "n": 69
+          }
+        },
+        "full": {
+          "n_scored": 201,
+          "vs_naive": {
+            "mean_d": -84.16892706,
+            "ci95": [
+              -274.2299,
+              33.7291
+            ],
+            "R": 0.79180209,
+            "n": 201
+          },
+          "vs_strongest": {
+            "mean_d": -63.36793204,
+            "ci95": [
+              -265.726,
+              61.6662
+            ],
+            "R": 0.8347524,
+            "n": 201
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "not_applicable"
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "nfp.v3_factor",
+      "family": "nfp",
+      "model_id": "v3_factor",
+      "target": {
+        "id": "nfp.same_release_first_print",
+        "source": "engine.release_target_truth.reconstruct_release_target(PAYEMS, release_date=None)",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "FALSIFIED_UNDER_COHERENT_TARGET",
+      "reasons": [],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.18902439,
+      "pit_legs": [
+        {
+          "leg": "payems_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:62"
+        },
+        {
+          "leg": "claims_survey_week",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:136"
+        },
+        {
+          "leg": "withheld_taxes",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_V1.md:55"
+        },
+        {
+          "leg": "awhman",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:65"
+        },
+        {
+          "leg": "adp_change",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:66"
+        },
+        {
+          "leg": "dollar_mom_dtwexbgs",
+          "pit_class": "revision_optimistic",
+          "citation": "research/release_forecast/PREREG_V3_FACTOR.md:61"
+        }
+      ],
+      "n_rows": {
+        "current": 33,
+        "tested": 69,
+        "full": 201
+      },
+      "honest_n": {
+        "current": 32,
+        "tested": 68,
+        "full": 200
+      },
+      "excluded": [],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 173.60606061,
+          "trailing_3m_mae": 121.33333333,
+          "ar_model_mae": 96.99673494,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 201.75362319,
+          "trailing_3m_mae": 162.12560386,
+          "ar_model_mae": 213.64327958,
+          "strongest": "trailing_3m",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 404.27363184,
+          "trailing_3m_mae": 383.47263682,
+          "ar_model_mae": 570.71936712,
+          "strongest": "trailing_3m",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": 2.4729196893497654,
+        "p_normal": 0.9932992872401868,
+        "p_t": 0.9920468894139932,
+        "holm_adj": 1.0,
+        "holm_adj_t": 1.0,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": 60.47285411,
+        "ci95": [
+          22.3293,
+          106.6603
+        ],
+        "R": 1.37300002
+      },
+      "windows": {
+        "current": {
+          "n_scored": 33,
+          "vs_naive": {
+            "mean_d": 4.82535008,
+            "ci95": [
+              -2.794,
+              17.27
+            ],
+            "R": 1.02779483,
+            "n": 33
+          },
+          "vs_strongest": {
+            "mean_d": 81.43467575,
+            "ci95": [
+              38.2877,
+              129.1934
+            ],
+            "R": 1.839561,
+            "n": 33
+          }
+        },
+        "tested": {
+          "n_scored": 69,
+          "vs_naive": {
+            "mean_d": 20.84483478,
+            "ci95": [
+              -15.9373,
+              71.8305
+            ],
+            "R": 1.10331827,
+            "n": 69
+          },
+          "vs_strongest": {
+            "mean_d": 60.47285411,
+            "ci95": [
+              22.3293,
+              106.6603
+            ],
+            "R": 1.37300002,
+            "n": 69
+          }
+        },
+        "full": {
+          "n_scored": 201,
+          "vs_naive": {
+            "mean_d": 76.78627924,
+            "ci95": [
+              -56.1073,
+              284.3159
+            ],
+            "R": 1.1899364,
+            "n": 201
+          },
+          "vs_strongest": {
+            "mean_d": 97.58727426,
+            "ci95": [
+              15.4045,
+              241.5577
+            ],
+            "R": 1.25448302,
+            "n": 201
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "not_applicable"
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "pce_headline.champion",
+      "family": "pce_headline",
+      "model_id": "champion",
+      "target": {
+        "id": "pce_headline.same_release_first_print",
+        "source": "engine.release_target_truth.reconstruct_release_target(PCEPI, release_date=None)",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "QUALIFIED_RETROSPECTIVE",
+      "reasons": [],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.03333628,
+      "pit_legs": [
+        {
+          "leg": "pce_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:50"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:225"
+        },
+        {
+          "leg": "median_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:225"
+        },
+        {
+          "leg": "flex_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:225"
+        },
+        {
+          "leg": "ppifis_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:71"
+        },
+        {
+          "leg": "gasoline_mom",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:119"
+        }
+      ],
+      "n_rows": {
+        "current": 32,
+        "tested": 67,
+        "full": 197
+      },
+      "honest_n": {
+        "current": 31,
+        "tested": 66,
+        "full": 195
+      },
+      "excluded": [],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.13228591,
+          "trailing_3m_mae": 0.12864017,
+          "ar_model_mae": 0.10287494,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.19312406,
+          "trailing_3m_mae": 0.15974034,
+          "ar_model_mae": 0.16910572,
+          "strongest": "trailing_3m",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.16997886,
+          "trailing_3m_mae": 0.1565112,
+          "ar_model_mae": 0.1415136,
+          "strongest": "ar_model",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -5.120448053623527,
+        "p_normal": 1.5240528709785282e-07,
+        "p_t": 1.4244043246846416e-06,
+        "holm_adj": 1.98e-06,
+        "holm_adj_t": 1.852e-05,
+        "holm_clear": true,
+        "borderline": false,
+        "mean_d": -0.08607233,
+        "ci95": [
+          -0.1212,
+          -0.0521
+        ],
+        "R": 0.46117349
+      },
+      "windows": {
+        "current": {
+          "n_scored": 32,
+          "vs_naive": {
+            "mean_d": -0.05953418,
+            "ci95": [
+              -0.102,
+              -0.0257
+            ],
+            "R": 0.54995824,
+            "n": 32
+          },
+          "vs_strongest": {
+            "mean_d": -0.03012321,
+            "ci95": [
+              -0.0592,
+              -0.0022
+            ],
+            "R": 0.70718612,
+            "n": 32
+          }
+        },
+        "tested": {
+          "n_scored": 67,
+          "vs_naive": {
+            "mean_d": -0.11945605,
+            "ci95": [
+              -0.176,
+              -0.0705
+            ],
+            "R": 0.38145433,
+            "n": 67
+          },
+          "vs_strongest": {
+            "mean_d": -0.08607233,
+            "ci95": [
+              -0.1212,
+              -0.0521
+            ],
+            "R": 0.46117349,
+            "n": 67
+          }
+        },
+        "full": {
+          "n_scored": 197,
+          "vs_naive": {
+            "mean_d": -0.06645102,
+            "ci95": [
+              -0.0957,
+              -0.0412
+            ],
+            "R": 0.60906303,
+            "n": 197
+          },
+          "vs_strongest": {
+            "mean_d": -0.03798576,
+            "ci95": [
+              -0.0678,
+              -0.0122
+            ],
+            "R": 0.7315752,
+            "n": 197
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "not_applicable"
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "pce_core.champion",
+      "family": "pce_core",
+      "model_id": "champion",
+      "target": {
+        "id": "pce_core.same_release_first_print",
+        "source": "engine.release_target_truth.reconstruct_release_target(PCEPILFE, release_date=None)",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "holm_not_cleared"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 0.82255904,
+      "pit_legs": [
+        {
+          "leg": "pce_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:59"
+        },
+        {
+          "leg": "sticky_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:225"
+        },
+        {
+          "leg": "ppifes_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:110"
+        }
+      ],
+      "n_rows": {
+        "current": 32,
+        "tested": 67,
+        "full": 197
+      },
+      "honest_n": {
+        "current": 31,
+        "tested": 66,
+        "full": 195
+      },
+      "excluded": [],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.09568765,
+          "trailing_3m_mae": 0.11285239,
+          "ar_model_mae": 0.08802266,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.1322228,
+          "trailing_3m_mae": 0.13443047,
+          "ar_model_mae": 0.13787656,
+          "strongest": "naive",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.10438386,
+          "trailing_3m_mae": 0.10188277,
+          "ar_model_mae": 0.10411164,
+          "strongest": "trailing_3m",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -2.3854482029129773,
+        "p_normal": 0.008529162187136527,
+        "p_t": 0.009968531176929028,
+        "holm_adj": 0.08529162,
+        "holm_adj_t": 0.09968531,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.04246442,
+        "ci95": [
+          -0.0777,
+          -0.007
+        ],
+        "R": 0.67884191
+      },
+      "windows": {
+        "current": {
+          "n_scored": 32,
+          "vs_naive": {
+            "mean_d": -0.02393631,
+            "ci95": [
+              -0.0602,
+              0.0137
+            ],
+            "R": 0.74984948,
+            "n": 32
+          },
+          "vs_strongest": {
+            "mean_d": -0.01627133,
+            "ci95": [
+              -0.041,
+              0.0098
+            ],
+            "R": 0.81514613,
+            "n": 32
+          }
+        },
+        "tested": {
+          "n_scored": 67,
+          "vs_naive": {
+            "mean_d": -0.04246442,
+            "ci95": [
+              -0.0777,
+              -0.007
+            ],
+            "R": 0.67884191,
+            "n": 67
+          },
+          "vs_strongest": {
+            "mean_d": -0.04246442,
+            "ci95": [
+              -0.0777,
+              -0.007
+            ],
+            "R": 0.67884191,
+            "n": 67
+          }
+        },
+        "full": {
+          "n_scored": 197,
+          "vs_naive": {
+            "mean_d": -0.01143345,
+            "ci95": [
+              -0.029,
+              0.0055
+            ],
+            "R": 0.89046731,
+            "n": 197
+          },
+          "vs_strongest": {
+            "mean_d": -0.00893236,
+            "ci95": [
+              -0.0268,
+              0.0082
+            ],
+            "R": 0.91232712,
+            "n": 197
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "not_applicable"
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    },
+    {
+      "eval_id": "ppi_final_demand.champion",
+      "family": "ppi_final_demand",
+      "model_id": "champion",
+      "target": {
+        "id": "ppi_final_demand.same_release_first_print",
+        "source": "engine.release_target_truth.reconstruct_release_target(PPIFIS, release_date=None)",
+        "basis": "same_release_first_print"
+      },
+      "status": "ok",
+      "verdict": "NOT_DEMONSTRATED",
+      "reasons": [
+        "holm_not_cleared",
+        "r_current_above_1"
+      ],
+      "labels": [],
+      "units_check": "ok",
+      "units_ratio": 1.0396087,
+      "pit_legs": [
+        {
+          "leg": "ppi_own_lags",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:68"
+        },
+        {
+          "leg": "ppifes_mom_lag1",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:110"
+        },
+        {
+          "leg": "gasoline_mom",
+          "pit_class": "pit_vintage",
+          "citation": "research/release_forecast/PREREG_NEW_TARGETS_V1.md:119"
+        }
+      ],
+      "n_rows": {
+        "current": 32,
+        "tested": 68,
+        "full": 90
+      },
+      "honest_n": {
+        "current": 31,
+        "tested": 67,
+        "full": 89
+      },
+      "excluded": [],
+      "missing_source": [],
+      "release_date_mismatches": [],
+      "baselines": {
+        "current": {
+          "naive_mae": 0.38785145,
+          "trailing_3m_mae": 0.31978557,
+          "ar_model_mae": 0.2987648,
+          "strongest": "ar_model",
+          "not_available": []
+        },
+        "tested": {
+          "naive_mae": 0.44846882,
+          "trailing_3m_mae": 0.36128442,
+          "ar_model_mae": 0.37223388,
+          "strongest": "trailing_3m",
+          "not_available": []
+        },
+        "full": {
+          "naive_mae": 0.44840526,
+          "trailing_3m_mae": 0.35498047,
+          "ar_model_mae": 0.35523112,
+          "strongest": "trailing_3m",
+          "not_available": []
+        }
+      },
+      "primary": {
+        "dm": -1.7694212889952843,
+        "p_normal": 0.038411797739448056,
+        "p_t": 0.04068707643475679,
+        "holm_adj": 0.30729438,
+        "holm_adj_t": 0.32549661,
+        "holm_clear": false,
+        "borderline": false,
+        "mean_d": -0.05570467,
+        "ci95": [
+          -0.1152,
+          0.0058
+        ],
+        "R": 0.84581493
+      },
+      "windows": {
+        "current": {
+          "n_scored": 32,
+          "vs_naive": {
+            "mean_d": -0.07682995,
+            "ci95": [
+              -0.1724,
+              0.0214
+            ],
+            "R": 0.80190882,
+            "n": 32
+          },
+          "vs_strongest": {
+            "mean_d": 0.0122567,
+            "ci95": [
+              -0.0473,
+              0.0657
+            ],
+            "R": 1.04102458,
+            "n": 32
+          }
+        },
+        "tested": {
+          "n_scored": 68,
+          "vs_naive": {
+            "mean_d": -0.14288906,
+            "ci95": [
+              -0.2237,
+              -0.0588
+            ],
+            "R": 0.68138463,
+            "n": 68
+          },
+          "vs_strongest": {
+            "mean_d": -0.05570467,
+            "ci95": [
+              -0.1152,
+              0.0058
+            ],
+            "R": 0.84581493,
+            "n": 68
+          }
+        },
+        "full": {
+          "n_scored": 90,
+          "vs_naive": {
+            "mean_d": -0.14744278,
+            "ci95": [
+              -0.2164,
+              -0.0762
+            ],
+            "R": 0.67118411,
+            "n": 90
+          },
+          "vs_strongest": {
+            "mean_d": -0.05401799,
+            "ci95": [
+              -0.102,
+              -0.0054
+            ],
+            "R": 0.84782829,
+            "n": 90
+          }
+        }
+      },
+      "sensitivities": {
+        "S1": {
+          "status": "not_applicable"
+        },
+        "S2": {
+          "status": "NO_APPLICABLE_ERRATA",
+          "n_affected": 0,
+          "affected_periods": [],
+          "files": [
+            {
+              "path": "data/release_forecast/defect_notices.json",
+              "sha256": "a2ce0d2d03e0e95d018e316a746293a5d53a03001393934856921d9c322685a9"
+            },
+            {
+              "path": "data/release_forecast/official_actual_defects.json",
+              "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67"
+            }
+          ]
+        }
+      },
+      "sensitivity_flags": []
+    }
+  ],
+  "h4": {
+    "contrasts": [
+      {
+        "contrast": "cpi_headline.cpi_bridge_vs_cpi_headline.v2",
+        "complex_eval": "cpi_headline.cpi_bridge",
+        "simple_eval": "cpi_headline.v2",
+        "labels": [
+          "COMPLEXITY_NOT_EARNED"
+        ],
+        "windows": {
+          "current": {
+            "n": 30,
+            "mean_d": 0.01078573,
+            "ci95": [
+              -0.026,
+              0.0497
+            ],
+            "R": 1.07002768
+          },
+          "tested": {
+            "n": 66,
+            "mean_d": 0.02073667,
+            "ci95": [
+              -0.0043,
+              0.0468
+            ],
+            "R": 1.13068607
+          },
+          "full": {
+            "n": 198,
+            "mean_d": -0.01874412,
+            "ci95": [
+              -0.0406,
+              0.0028
+            ],
+            "R": 0.88850239
+          }
+        }
+      },
+      {
+        "contrast": "cpi_headline.v3_factor_vs_cpi_headline.v2",
+        "complex_eval": "cpi_headline.v3_factor",
+        "simple_eval": "cpi_headline.v2",
+        "labels": [
+          "COMPLEXITY_NOT_EARNED"
+        ],
+        "windows": {
+          "current": {
+            "n": 30,
+            "mean_d": 0.0098819,
+            "ci95": [
+              -0.0187,
+              0.0399
+            ],
+            "R": 1.06415945
+          },
+          "tested": {
+            "n": 66,
+            "mean_d": 0.04609873,
+            "ci95": [
+              0.012,
+              0.0841
+            ],
+            "R": 1.29052213
+          },
+          "full": {
+            "n": 198,
+            "mean_d": 0.0411797,
+            "ci95": [
+              0.0211,
+              0.064
+            ],
+            "R": 1.24495352
+          }
+        }
+      },
+      {
+        "contrast": "cpi_core.v3_factor_vs_cpi_core.v2",
+        "complex_eval": "cpi_core.v3_factor",
+        "simple_eval": "cpi_core.v2",
+        "labels": [],
+        "windows": {
+          "current": {
+            "n": 30,
+            "mean_d": 0.00169372,
+            "ci95": [
+              -0.0077,
+              0.0112
+            ],
+            "R": 1.01983231
+          },
+          "tested": {
+            "n": 66,
+            "mean_d": -0.00528089,
+            "ci95": [
+              -0.0127,
+              0.0025
+            ],
+            "R": 0.95999755
+          },
+          "full": {
+            "n": 198,
+            "mean_d": -0.00256494,
+            "ci95": [
+              -0.0069,
+              0.0017
+            ],
+            "R": 0.974039
+          }
+        }
+      },
+      {
+        "contrast": "nfp.v3_factor_vs_nfp.v1",
+        "complex_eval": "nfp.v3_factor",
+        "simple_eval": "nfp.v1",
+        "labels": [
+          "COMPLEXITY_NOT_EARNED"
+        ],
+        "windows": {
+          "current": {
+            "n": 33,
+            "mean_d": 10.91642282,
+            "ci95": [
+              0.0,
+              32.7493
+            ],
+            "R": 1.06516684
+          },
+          "tested": {
+            "n": 69,
+            "mean_d": 43.13954526,
+            "ci95": [
+              -1.5685,
+              103.5448
+            ],
+            "R": 1.24038675
+          },
+          "full": {
+            "n": 201,
+            "mean_d": 160.9552063,
+            "ci95": [
+              -22.449,
+              490.1314
+            ],
+            "R": 1.5028205
+          }
+        }
+      },
+      {
+        "contrast": "cpi_headline.mf_energy_t1_vs_naive_prior",
+        "complex_eval": "cpi_headline.mf_energy_t1",
+        "simple_eval": "naive_prior",
+        "labels": [],
+        "windows": {
+          "current": {
+            "n": 30,
+            "mean_d": -0.09405363,
+            "ci95": [
+              -0.1995,
+              -0.0093
+            ],
+            "R": 0.51908106
+          },
+          "tested": {
+            "n": 66,
+            "mean_d": -0.07471044,
+            "ci95": [
+              -0.1489,
+              -0.0068
+            ],
+            "R": 0.70709192
+          },
+          "full": {
+            "n": 198,
+            "mean_d": -0.08888418,
+            "ci95": [
+              -0.1211,
+              -0.0566
+            ],
+            "R": 0.61509382
+          }
+        }
+      }
+    ],
+    "intervals": [
+      {
+        "n_interval_scored": 270,
+        "covered_k": 209,
+        "wilson_lo": 0.721,
+        "wilson_hi": 0.82,
+        "sharpness_median": 0.466,
+        "naive_sharpness_median": 0.7785,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_headline.v2",
+        "family": "cpi_headline"
+      },
+      {
+        "n_interval_scored": 270,
+        "covered_k": 213,
+        "wilson_lo": 0.736,
+        "wilson_hi": 0.833,
+        "sharpness_median": 0.69165,
+        "naive_sharpness_median": 0.7785,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_headline.v3_factor",
+        "family": "cpi_headline"
+      },
+      {
+        "n_interval_scored": 270,
+        "covered_k": 219,
+        "wilson_lo": 0.76,
+        "wilson_hi": 0.853,
+        "sharpness_median": 0.47485,
+        "naive_sharpness_median": 0.7785,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_headline.cpi_bridge",
+        "family": "cpi_headline"
+      },
+      {
+        "n_interval_scored": 270,
+        "covered_k": 198,
+        "wilson_lo": 0.678,
+        "wilson_hi": 0.783,
+        "sharpness_median": 0.36705,
+        "naive_sharpness_median": 0.7785,
+        "sharpness_status": "ok",
+        "calibrated": false,
+        "eval_id": "cpi_headline.mf_energy_t1",
+        "family": "cpi_headline"
+      },
+      {
+        "n_interval_scored": 58,
+        "covered_k": 44,
+        "wilson_lo": 0.635,
+        "wilson_hi": 0.85,
+        "sharpness_median": 0.4643,
+        "naive_sharpness_median": 0.65865,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_headline.coherent_ridge_v1",
+        "family": "cpi_headline"
+      },
+      {
+        "n_interval_scored": 270,
+        "covered_k": 211,
+        "wilson_lo": 0.728,
+        "wilson_hi": 0.827,
+        "sharpness_median": 0.26295,
+        "naive_sharpness_median": 0.2645,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_core.v2",
+        "family": "cpi_core"
+      },
+      {
+        "n_interval_scored": 270,
+        "covered_k": 210,
+        "wilson_lo": 0.724,
+        "wilson_hi": 0.823,
+        "sharpness_median": 0.2686,
+        "naive_sharpness_median": 0.2645,
+        "sharpness_status": "ok",
+        "calibrated": false,
+        "eval_id": "cpi_core.v3_factor",
+        "family": "cpi_core"
+      },
+      {
+        "n_interval_scored": 58,
+        "covered_k": 42,
+        "wilson_lo": 0.598,
+        "wilson_hi": 0.822,
+        "sharpness_median": 0.3619,
+        "naive_sharpness_median": 0.36835,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "cpi_core.coherent_ridge_v1",
+        "family": "cpi_core"
+      },
+      {
+        "n_interval_scored": 273,
+        "covered_k": 245,
+        "wilson_lo": 0.856,
+        "wilson_hi": 0.928,
+        "sharpness_median": 492.977,
+        "naive_sharpness_median": 543.9067,
+        "sharpness_status": "ok",
+        "calibrated": false,
+        "eval_id": "nfp.v1",
+        "family": "nfp"
+      },
+      {
+        "n_interval_scored": 273,
+        "covered_k": 239,
+        "wilson_lo": 0.831,
+        "wilson_hi": 0.909,
+        "sharpness_median": 496.2258,
+        "naive_sharpness_median": 543.9067,
+        "sharpness_status": "ok",
+        "calibrated": false,
+        "eval_id": "nfp.v3_factor",
+        "family": "nfp"
+      },
+      {
+        "n_interval_scored": 224,
+        "covered_k": 172,
+        "wilson_lo": 0.708,
+        "wilson_hi": 0.818,
+        "sharpness_median": 0.27785,
+        "naive_sharpness_median": 0.579,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "pce_headline.champion",
+        "family": "pce_headline"
+      },
+      {
+        "n_interval_scored": 224,
+        "covered_k": 180,
+        "wilson_lo": 0.747,
+        "wilson_hi": 0.85,
+        "sharpness_median": 0.3343,
+        "naive_sharpness_median": 0.348,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "pce_core.champion",
+        "family": "pce_core"
+      },
+      {
+        "n_interval_scored": 66,
+        "covered_k": 53,
+        "wilson_lo": 0.692,
+        "wilson_hi": 0.881,
+        "sharpness_median": 1.1093,
+        "naive_sharpness_median": 1.44705,
+        "sharpness_status": "ok",
+        "calibrated": true,
+        "eval_id": "ppi_final_demand.champion",
+        "family": "ppi_final_demand"
+      }
+    ],
+    "family_coverage": {
+      "cpi_headline": {
+        "champion_eval": "cpi_headline.v2",
+        "covered_k": 209,
+        "n": 270,
+        "wilson_lo": 0.721,
+        "wilson_hi": 0.82
+      },
+      "cpi_core": {
+        "champion_eval": "cpi_core.v2",
+        "covered_k": 211,
+        "n": 270,
+        "wilson_lo": 0.728,
+        "wilson_hi": 0.827
+      },
+      "nfp": {
+        "champion_eval": "nfp.v1",
+        "covered_k": 245,
+        "n": 273,
+        "wilson_lo": 0.856,
+        "wilson_hi": 0.928
+      },
+      "pce_headline": {
+        "champion_eval": "pce_headline.champion",
+        "covered_k": 172,
+        "n": 224,
+        "wilson_lo": 0.708,
+        "wilson_hi": 0.818
+      },
+      "pce_core": {
+        "champion_eval": "pce_core.champion",
+        "covered_k": 180,
+        "n": 224,
+        "wilson_lo": 0.747,
+        "wilson_hi": 0.85
+      },
+      "ppi_final_demand": {
+        "champion_eval": "ppi_final_demand.champion",
+        "covered_k": 53,
+        "n": 66,
+        "wilson_lo": 0.692,
+        "wilson_hi": 0.881
+      }
+    }
+  },
+  "deviations": [],
+  "gaps": []
+}

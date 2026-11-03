@@ -1,0 +1,731 @@
+{
+ "families": {
+  "fam_a": "MiniMax-M3",
+  "fam_b": "qwen3.7-plus"
+ },
+ "queue": {
+  "case_status": {
+   "routed_pending_third": 12
+  },
+  "critical_taxonomy": [
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.3143,
+     0.6857
+    ],
+    "classes": {
+     "agree_absent": 6,
+     "agree_present": 6,
+     "present_value_differs": 3,
+     "present_vs_absent": 9
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "ALL"
+    ],
+    "mismatch_components": {
+     "period": 3,
+     "value": 2
+    },
+    "n_slots": 24,
+    "worse_family_error_lower_bound": 0.25
+   },
+   {
+    "agreement_rate": 0.5555555555555556,
+    "agreement_wilson95": [
+     0.3372,
+     0.7544
+    ],
+    "classes": {
+     "agree_absent": 6,
+     "agree_present": 4,
+     "present_value_differs": 1,
+     "present_vs_absent": 7
+    },
+    "disputed_rate": 0.4444444444444444,
+    "key": [
+     "T1"
+    ],
+    "mismatch_components": {
+     "period": 1,
+     "value": 1
+    },
+    "n_slots": 18,
+    "worse_family_error_lower_bound": 0.2222222222222222
+   },
+   {
+    "agreement_rate": 0.0,
+    "agreement_wilson95": [
+     0.0,
+     0.3903
+    ],
+    "classes": {
+     "present_vs_absent": 6
+    },
+    "disputed_rate": 1.0,
+    "key": [
+     "T1",
+     "executed_amount"
+    ],
+    "mismatch_components": {},
+    "n_slots": 6,
+    "worse_family_error_lower_bound": 0.5
+   },
+   {
+    "agreement_rate": 0.6666666666666666,
+    "agreement_wilson95": [
+     0.3,
+     0.9032
+    ],
+    "classes": {
+     "agree_present": 4,
+     "present_value_differs": 1,
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 0.3333333333333333,
+    "key": [
+     "T1",
+     "incremental_amount"
+    ],
+    "mismatch_components": {
+     "period": 1,
+     "value": 1
+    },
+    "n_slots": 6,
+    "worse_family_error_lower_bound": 0.16666666666666666
+   },
+   {
+    "agreement_rate": 1.0,
+    "agreement_wilson95": [
+     0.6097,
+     1.0
+    ],
+    "classes": {
+     "agree_absent": 6
+    },
+    "disputed_rate": 0.0,
+    "key": [
+     "T1",
+     "remaining_authorization"
+    ],
+    "mismatch_components": {},
+    "n_slots": 6,
+    "worse_family_error_lower_bound": 0.0
+   },
+   {
+    "agreement_rate": 0.4,
+    "agreement_wilson95": [
+     0.1176,
+     0.7693
+    ],
+    "classes": {
+     "agree_present": 2,
+     "present_value_differs": 2,
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 0.6,
+    "key": [
+     "T2"
+    ],
+    "mismatch_components": {
+     "period": 2,
+     "value": 1
+    },
+    "n_slots": 5,
+    "worse_family_error_lower_bound": 0.3
+   },
+   {
+    "agreement_rate": 0.4,
+    "agreement_wilson95": [
+     0.1176,
+     0.7693
+    ],
+    "classes": {
+     "agree_present": 2,
+     "present_value_differs": 2,
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 0.6,
+    "key": [
+     "T2",
+     "stated_amount"
+    ],
+    "mismatch_components": {
+     "period": 2,
+     "value": 1
+    },
+    "n_slots": 5,
+    "worse_family_error_lower_bound": 0.3
+   },
+   {
+    "agreement_rate": 0.0,
+    "agreement_wilson95": [
+     0.0,
+     0.7935
+    ],
+    "classes": {
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 1.0,
+    "key": [
+     "T3"
+    ],
+    "mismatch_components": {},
+    "n_slots": 1,
+    "worse_family_error_lower_bound": 0.5
+   },
+   {
+    "agreement_rate": 0.0,
+    "agreement_wilson95": [
+     0.0,
+     0.7935
+    ],
+    "classes": {
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 1.0,
+    "key": [
+     "T3",
+     "stated_quantity"
+    ],
+    "mismatch_components": {},
+    "n_slots": 1,
+    "worse_family_error_lower_bound": 0.5
+   }
+  ],
+  "field_agreement": [
+   {
+    "agreed_or_span_only_rate": 0.6666666666666666,
+    "agreed_rate": 0.25,
+    "n_fields": 72,
+    "statuses": {
+     "agreed": 18,
+     "disputed": 24,
+     "span_only_divergence": 30
+    },
+    "template": "capital_allocation_event.v1"
+   },
+   {
+    "agreed_or_span_only_rate": 0.7333333333333333,
+    "agreed_rate": 0.15,
+    "n_fields": 60,
+    "statuses": {
+     "agreed": 9,
+     "disputed": 16,
+     "span_only_divergence": 35
+    },
+    "template": "demand_guidance_contract_event.v1"
+   },
+   {
+    "agreed_or_span_only_rate": 0.6666666666666666,
+    "agreed_rate": 0.08333333333333333,
+    "n_fields": 12,
+    "statuses": {
+     "agreed": 1,
+     "disputed": 4,
+     "span_only_divergence": 7
+    },
+    "template": "strategic_product_partnership_event.v1"
+   }
+  ],
+  "n_cases": 12,
+  "prompt_versions": {
+   "prompt-v1.2": 24
+  },
+  "span_replay": {
+   "fam_a": {
+    "cases": 12,
+    "cases_all_spans_pass": 12,
+    "injection_flagged_cases": 0,
+    "span_pass_rate": 1.0,
+    "span_pass_wilson95": [
+     0.9702,
+     1.0
+    ],
+    "spans_checked": 125,
+    "spans_replayed": 125
+   },
+   "fam_b": {
+    "cases": 12,
+    "cases_all_spans_pass": 12,
+    "injection_flagged_cases": 0,
+    "span_pass_rate": 1.0,
+    "span_pass_wilson95": [
+     0.9687,
+     1.0
+    ],
+    "spans_checked": 119,
+    "spans_replayed": 119
+   }
+  }
+ },
+ "routing_seed": 20261020,
+ "scorable": {
+  "critical_taxonomy_by_prompt_version": [
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.3792,
+     0.6208
+    ],
+    "classes": {
+     "agree_absent": 26,
+     "agree_present": 5,
+     "malformed_value": 4,
+     "present_value_differs": 15,
+     "present_vs_absent": 12
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "prompt-v1.0"
+    ],
+    "mismatch_components": {
+     "currency": 1,
+     "form": 1,
+     "period": 10,
+     "unit": 5,
+     "value": 3
+    },
+    "n_slots": 62,
+    "worse_family_error_lower_bound": 0.25
+   },
+   {
+    "agreement_rate": 0.5833333333333334,
+    "agreement_wilson95": [
+     0.4428,
+     0.7115
+    ],
+    "classes": {
+     "agree_absent": 25,
+     "agree_present": 3,
+     "malformed_value": 3,
+     "present_value_differs": 7,
+     "present_vs_absent": 10
+    },
+    "disputed_rate": 0.4166666666666667,
+    "key": [
+     "prompt-v1.0",
+     "T1"
+    ],
+    "mismatch_components": {
+     "period": 3,
+     "unit": 4,
+     "value": 1
+    },
+    "n_slots": 48,
+    "worse_family_error_lower_bound": 0.20833333333333334
+   },
+   {
+    "agreement_rate": 0.15384615384615385,
+    "agreement_wilson95": [
+     0.0433,
+     0.4223
+    ],
+    "classes": {
+     "agree_present": 2,
+     "malformed_value": 1,
+     "present_value_differs": 8,
+     "present_vs_absent": 2
+    },
+    "disputed_rate": 0.8461538461538461,
+    "key": [
+     "prompt-v1.0",
+     "T2"
+    ],
+    "mismatch_components": {
+     "currency": 1,
+     "form": 1,
+     "period": 7,
+     "unit": 1,
+     "value": 2
+    },
+    "n_slots": 13,
+    "worse_family_error_lower_bound": 0.4230769230769231
+   },
+   {
+    "agreement_rate": 1.0,
+    "agreement_wilson95": [
+     0.2065,
+     1.0
+    ],
+    "classes": {
+     "agree_absent": 1
+    },
+    "disputed_rate": 0.0,
+    "key": [
+     "prompt-v1.0",
+     "T3"
+    ],
+    "mismatch_components": {},
+    "n_slots": 1,
+    "worse_family_error_lower_bound": 0.0
+   },
+   {
+    "agreement_rate": 0.5892857142857143,
+    "agreement_wilson95": [
+     0.4588,
+     0.7083
+    ],
+    "classes": {
+     "agree_absent": 19,
+     "agree_present": 14,
+     "present_value_differs": 13,
+     "present_vs_absent": 10
+    },
+    "disputed_rate": 0.4107142857142857,
+    "key": [
+     "prompt-v1.1"
+    ],
+    "mismatch_components": {
+     "basis": 4,
+     "currency": 1,
+     "form": 1,
+     "period": 9,
+     "unit": 3,
+     "value": 5
+    },
+    "n_slots": 56,
+    "worse_family_error_lower_bound": 0.20535714285714285
+   },
+   {
+    "agreement_rate": 0.6388888888888888,
+    "agreement_wilson95": [
+     0.4758,
+     0.7752
+    ],
+    "classes": {
+     "agree_absent": 19,
+     "agree_present": 4,
+     "present_value_differs": 8,
+     "present_vs_absent": 5
+    },
+    "disputed_rate": 0.3611111111111111,
+    "key": [
+     "prompt-v1.1",
+     "T1"
+    ],
+    "mismatch_components": {
+     "basis": 2,
+     "period": 7,
+     "unit": 1,
+     "value": 3
+    },
+    "n_slots": 36,
+    "worse_family_error_lower_bound": 0.18055555555555555
+   },
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.2903,
+     0.7097
+    ],
+    "classes": {
+     "agree_present": 9,
+     "present_value_differs": 5,
+     "present_vs_absent": 4
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "prompt-v1.1",
+     "T2"
+    ],
+    "mismatch_components": {
+     "basis": 2,
+     "currency": 1,
+     "form": 1,
+     "period": 2,
+     "unit": 2,
+     "value": 2
+    },
+    "n_slots": 18,
+    "worse_family_error_lower_bound": 0.25
+   },
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.0945,
+     0.9055
+    ],
+    "classes": {
+     "agree_present": 1,
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "prompt-v1.1",
+     "T3"
+    ],
+    "mismatch_components": {},
+    "n_slots": 2,
+    "worse_family_error_lower_bound": 0.25
+   },
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.3143,
+     0.6857
+    ],
+    "classes": {
+     "agree_absent": 6,
+     "agree_present": 6,
+     "present_value_differs": 3,
+     "present_vs_absent": 9
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "prompt-v1.2"
+    ],
+    "mismatch_components": {
+     "period": 3,
+     "value": 2
+    },
+    "n_slots": 24,
+    "worse_family_error_lower_bound": 0.25
+   },
+   {
+    "agreement_rate": 0.5555555555555556,
+    "agreement_wilson95": [
+     0.3372,
+     0.7544
+    ],
+    "classes": {
+     "agree_absent": 6,
+     "agree_present": 4,
+     "present_value_differs": 1,
+     "present_vs_absent": 7
+    },
+    "disputed_rate": 0.4444444444444444,
+    "key": [
+     "prompt-v1.2",
+     "T1"
+    ],
+    "mismatch_components": {
+     "period": 1,
+     "value": 1
+    },
+    "n_slots": 18,
+    "worse_family_error_lower_bound": 0.2222222222222222
+   },
+   {
+    "agreement_rate": 0.4,
+    "agreement_wilson95": [
+     0.1176,
+     0.7693
+    ],
+    "classes": {
+     "agree_present": 2,
+     "present_value_differs": 2,
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 0.6,
+    "key": [
+     "prompt-v1.2",
+     "T2"
+    ],
+    "mismatch_components": {
+     "period": 2,
+     "value": 1
+    },
+    "n_slots": 5,
+    "worse_family_error_lower_bound": 0.3
+   },
+   {
+    "agreement_rate": 0.0,
+    "agreement_wilson95": [
+     0.0,
+     0.7935
+    ],
+    "classes": {
+     "present_vs_absent": 1
+    },
+    "disputed_rate": 1.0,
+    "key": [
+     "prompt-v1.2",
+     "T3"
+    ],
+    "mismatch_components": {},
+    "n_slots": 1,
+    "worse_family_error_lower_bound": 0.5
+   }
+  ],
+  "critical_taxonomy_by_source": [
+   {
+    "agreement_rate": 0.5423728813559322,
+    "agreement_wilson95": [
+     0.4526,
+     0.6295
+    ],
+    "classes": {
+     "agree_absent": 45,
+     "agree_present": 19,
+     "malformed_value": 4,
+     "present_value_differs": 28,
+     "present_vs_absent": 22
+    },
+    "disputed_rate": 0.4576271186440678,
+    "key": [
+     "graded_v1_body"
+    ],
+    "mismatch_components": {
+     "basis": 4,
+     "currency": 2,
+     "form": 2,
+     "period": 19,
+     "unit": 8,
+     "value": 8
+    },
+    "n_slots": 118,
+    "worse_family_error_lower_bound": 0.2288135593220339
+   },
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.3143,
+     0.6857
+    ],
+    "classes": {
+     "agree_absent": 6,
+     "agree_present": 6,
+     "present_value_differs": 3,
+     "present_vs_absent": 9
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "v2_queue"
+    ],
+    "mismatch_components": {
+     "period": 3,
+     "value": 2
+    },
+    "n_slots": 24,
+    "worse_family_error_lower_bound": 0.25
+   }
+  ],
+  "critical_taxonomy_by_template": [
+   {
+    "agreement_rate": 0.5352112676056338,
+    "agreement_wilson95": [
+     0.4533,
+     0.6152
+    ],
+    "classes": {
+     "agree_absent": 51,
+     "agree_present": 25,
+     "malformed_value": 4,
+     "present_value_differs": 31,
+     "present_vs_absent": 31
+    },
+    "disputed_rate": 0.4647887323943662,
+    "key": [
+     "ALL"
+    ],
+    "mismatch_components": {
+     "basis": 4,
+     "currency": 2,
+     "form": 2,
+     "period": 22,
+     "unit": 8,
+     "value": 10
+    },
+    "n_slots": 142,
+    "worse_family_error_lower_bound": 0.2323943661971831
+   },
+   {
+    "agreement_rate": 0.5980392156862745,
+    "agreement_wilson95": [
+     0.501,
+     0.688
+    ],
+    "classes": {
+     "agree_absent": 50,
+     "agree_present": 11,
+     "malformed_value": 3,
+     "present_value_differs": 16,
+     "present_vs_absent": 22
+    },
+    "disputed_rate": 0.4019607843137255,
+    "key": [
+     "T1"
+    ],
+    "mismatch_components": {
+     "basis": 2,
+     "period": 11,
+     "unit": 5,
+     "value": 5
+    },
+    "n_slots": 102,
+    "worse_family_error_lower_bound": 0.20098039215686275
+   },
+   {
+    "agreement_rate": 0.3611111111111111,
+    "agreement_wilson95": [
+     0.2248,
+     0.5242
+    ],
+    "classes": {
+     "agree_present": 13,
+     "malformed_value": 1,
+     "present_value_differs": 15,
+     "present_vs_absent": 7
+    },
+    "disputed_rate": 0.6388888888888888,
+    "key": [
+     "T2"
+    ],
+    "mismatch_components": {
+     "basis": 2,
+     "currency": 2,
+     "form": 2,
+     "period": 11,
+     "unit": 3,
+     "value": 5
+    },
+    "n_slots": 36,
+    "worse_family_error_lower_bound": 0.3194444444444444
+   },
+   {
+    "agreement_rate": 0.5,
+    "agreement_wilson95": [
+     0.15,
+     0.85
+    ],
+    "classes": {
+     "agree_absent": 1,
+     "agree_present": 1,
+     "present_vs_absent": 2
+    },
+    "disputed_rate": 0.5,
+    "key": [
+     "T3"
+    ],
+    "mismatch_components": {},
+    "n_slots": 4,
+    "worse_family_error_lower_bound": 0.25
+   }
+  ],
+  "n_cases": 74,
+  "n_graded_cases": 62,
+  "n_queue_cases": 12,
+  "n_slots": 142,
+  "shortfall": {
+   "T1": {
+    "scorable_cases": 34,
+    "shortfall": 166,
+    "target": 200
+   },
+   "T2": {
+    "scorable_cases": 36,
+    "shortfall": 164,
+    "target": 200
+   },
+   "T3": {
+    "scorable_cases": 4,
+    "shortfall": 196,
+    "target": 200
+   }
+  },
+  "shortfall_total": 526
+ },
+ "tool": "score_v2_queue.py"
+}

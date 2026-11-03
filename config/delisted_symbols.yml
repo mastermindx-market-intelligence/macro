@@ -45,6 +45,25 @@
 version: 1
 
 symbols:
+  ATAI:
+    company: AtaiBeckley N.V.
+    company_zh: AtaiBeckley N.V.
+    exchange: NASDAQ
+    cik: '0002081043'
+    # Seat 2fc05761 (2026-10-18): SEC filings read; last_session is the session
+    # before the delisting date. Any later store bars are vendor padding.
+    last_session: '2026-09-10'
+    delisted_on: '2026-09-11'
+    reason: acquisition
+    acquirer: Eli Lilly and Company
+    acquirer_zh: Eli Lilly and Company
+    consideration: US$6.75 per share in cash plus one CVR
+    successor_ticker: null
+    receipts:
+      - 8-K — merger completion (items 2.01/3.01). Accession 0001140361-26-036283
+      - 25-NSE — exchange delisting notification. Accession 0001354457-26-000870
+      - 15-12G — registration termination. Accession 0001140361-26-037188
+
   AVB:
     company: AvalonBay Communities, Inc.
     company_zh: AvalonBay Communities
@@ -100,6 +119,25 @@ symbols:
       - DEFM14A 2026-03-30 — definitive merger proxy. Accession 0001104659-26-036887
       - Absent from the NASDAQ symbol directory (nasdaqtraded.txt, fetched 2026-08-06);
         SEC submissions header carries no ticker and no exchange
+
+  DBRG:
+    company: DigitalBridge Group, Inc.
+    company_zh: DigitalBridge Group, Inc.
+    exchange: NYSE
+    cik: '0001679688'
+    # Seat 2fc05761 (2026-10-18): SEC filings read; last_session is the session
+    # before the delisting date. Any later store bars are vendor padding.
+    last_session: '2026-09-29'
+    delisted_on: '2026-09-30'
+    reason: acquisition
+    acquirer: SoftBank Group
+    acquirer_zh: SoftBank Group
+    consideration: US$16.00 per share in cash
+    successor_ticker: null
+    receipts:
+      - 8-K — merger completion (items 2.01/3.01). Accession 0001104659-26-112148
+      - 25-NSE — exchange delisting notification. Accession 0000876661-26-000800
+      - 15-12G — registration termination. Accession 0001104659-26-115549
 
   FBRX:
     company: Forte Biosciences, Inc.
@@ -169,6 +207,25 @@ symbols:
   # OTC tape dies (store tip goes stale >7 days), replace that ack with a real
   # row here carrying the verified final session.
 
+  QRVO:
+    company: Qorvo, Inc.
+    company_zh: Qorvo, Inc.
+    exchange: NASDAQ
+    cik: '0001604778'
+    # Seat 2fc05761 (2026-10-18): SEC filings read; last_session is the session
+    # before the delisting date. Any later store bars are vendor padding.
+    last_session: '2026-10-02'
+    delisted_on: '2026-10-05'
+    reason: acquisition
+    acquirer: Skyworks Solutions
+    acquirer_zh: Skyworks Solutions
+    consideration: 0.960 Skyworks (SWKS) shares plus US$32.50 in cash per share
+    successor_ticker: null
+    receipts:
+      - 8-K — merger completion (items 2.01/3.01). Accession 0000950103-26-015180
+      - 25-NSE — exchange delisting notification. Accession 0001354457-26-000942
+      - 15-12G — registration termination. Accession 0001104659-26-116241
+
   TPH:
     company: Tri Pointe Homes, Inc.
     company_zh: Tri Pointe Homes
@@ -222,3 +279,41 @@ symbols:
       - 25-NSE 2026-08-25 — NYSE delisting notification. Accession 0000876661-26-000705
       - Absent from the NASDAQ symbol directory (nasdaqtraded.txt, fetched
         2026-08-29); TWO$A/TWO$B/TWO$C preferreds and TWOD notes still listed
+
+  WBD:
+    company: Warner Bros. Discovery, Inc.
+    company_zh: Warner Bros. Discovery, Inc.
+    exchange: NASDAQ
+    cik: '0001437107'
+    # Seat 2fc05761 (2026-10-18): SEC filings read; last_session is the session
+    # before the delisting date. Any later store bars are vendor padding.
+    last_session: '2026-10-05'
+    delisted_on: '2026-10-06'
+    reason: acquisition
+    acquirer: Skydance
+    acquirer_zh: Skydance
+    consideration: US$31.01666668 per share in cash
+    successor_ticker: null
+    receipts:
+      - 8-K — merger completion (items 2.01/3.01). Accession 0001193125-26-415055
+      - 25-NSE — exchange delisting notification. Accession 0001354457-26-000951
+      - 15-12G — registration termination. Accession 0001193125-26-423513
+
+  WBS:
+    company: Webster Financial Corporation
+    company_zh: Webster Financial Corporation
+    exchange: NYSE
+    cik: '0000801337'
+    # Seat 2fc05761 (2026-10-18): SEC filings read; last_session is the session
+    # before the delisting date. Any later store bars are vendor padding.
+    last_session: '2026-08-19'
+    delisted_on: '2026-08-20'
+    reason: acquisition
+    acquirer: Banco Santander
+    acquirer_zh: Banco Santander
+    consideration: 2.0548 Santander (SAN) ADSs plus US$48.75 in cash per share
+    successor_ticker: null
+    receipts:
+      - 8-K — merger completion (items 2.01/3.01). Accession 0001193125-26-357758
+      - 25-NSE — exchange delisting notification. Accession 0000876661-26-000696
+      - 15-12G — registration termination. Accession 0001193125-26-409125

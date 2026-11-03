@@ -1,49 +1,19 @@
 {
-  "ts": "2026-10-13T16:20:45+00:00",
-  "main_sha": "4ce86075b7acc20a0e1b8b9409c66a8fbcc399e1",
+  "ts": "2026-11-03T00:11:07+00:00",
+  "main_sha": "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
   "red_required": [
     {
       "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38429033248/job/115406015008"
-    },
-    {
-      "name": "discover_retain_publish",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38412236794/job/115347265471"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38411847501/job/115345919590"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38411847501/job/115345919342"
-    },
-    {
-      "name": "contract-drift",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38411847501/job/115345919323"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38411847501/job/115345919234"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41550387816/job/125636234263"
     }
   ],
   "green": false,
-  "consecutive_failures": 227,
+  "consecutive_failures": 245,
   "sensed_shas": [
-    "4ce86075b7acc20a0e1b8b9409c66a8fbcc399e1",
-    "1c3b4560bf3cdbd62c7d6c00d423e7e2ba2ffa34"
+    "c6ac417f4a1d561f8c80a0a6b1977d5ffec6d090",
+    "e7232371136798c5f7e279ba6164e4f40bf1698c"
   ],
   "heartbeat_degraded": false
 }

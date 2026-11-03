@@ -30,19 +30,65 @@ def _contains(value: object, token: str) -> bool:
     return False
 
 
+# One synthetic causal view, replaced onto a bundle through ``dataclasses.replace`` —
+# never written into a fixture. The view is the subject of both arms below.
+_VIEW = {
+    "stable_subject_id": "subject:ardent-copper",
+    "view_kind": "industrial",
+    "description": "fictional smelter constraint carried over from the prior source revision",
+    "evidence_refs": ["synthetic-copper-source-4"],
+}
+
+
 def test_t07_changed_source_refuses_generation_changed_and_omits_interpretation_stale() -> None:
-    """A changed source refuses with generation_changed and does not publish interpretation_stale."""
+    """A changed source refuses with generation_changed and does not publish interpretation_stale.
+
+    W10-1 strengthening. The drawer-refusal pins (CODES and ``generation_changed``) are
+    unchanged; what changed is where the payload asserts run. They used to search the
+    ``changed_source`` compose, whose ``native_blocks`` is empty because
+    ``_suppress_native_blocks`` withdraws the economics channel — so
+    ``_contains(result["economics"]["native_blocks"], _STALE)`` was a negative assertion
+    over ``[]``, and the W9-V ``native_blocks_basis_token`` mutant (stale vocabulary
+    injected into a real block's ``basis``) survived it. Both arms now run against a
+    bundle that carries an industrial view:
+
+    * WITHDRAWN — ``changed_source``: still no stale vocabulary anywhere in the payload,
+      and (W10-1) the withdrawn channel withdraws its causal text with it, so
+      ``industrial_views == []`` beside ``native_blocks == []``;
+    * POPULATED — ``copper_complete``, OBSERVEDly one native block and one view: the same
+      asserts now have content to search, which is what kills the mutant.
+
+    Synthetic cases only. No network, no fixture edit.
+    """
     case = synthetic_case("changed_source")
     with pytest.raises(MiningResearchRefusal) as raised:
         composition.select_mining_evidence(case.query, case.bundle, "assertion:synthetic")
     assert raised.value.code == "generation_changed"
     assert _STALE not in MiningResearchRefusal.CODES
 
-    result = composition.compose_mining_research(case.query, case.bundle)
-    assert _STALE not in result["limitations"]
-    assert not any(_contains(code, _STALE) for code in result["limitations"])
-    assert not _contains(result["economics"]["native_blocks"], _STALE)
-    assert not _contains(result["industrial_views"], _STALE)
+    withdrawn = composition.compose_mining_research(
+        case.query, replace(case.bundle, interpretation_blocks=(_VIEW,))
+    )
+    assert withdrawn["limitations"] == ["changed_source"], withdrawn["limitations"]
+    assert _STALE not in withdrawn["limitations"]
+    assert not any(_contains(code, _STALE) for code in withdrawn["limitations"])
+    assert not _contains(withdrawn["economics"]["native_blocks"], _STALE)
+    # W10-1: an emptied economics panel must not be paired with stale causal text.
+    assert withdrawn["industrial_views"] == [], withdrawn["industrial_views"]
+    assert not _contains(withdrawn, _STALE)
+
+    copper = synthetic_case("copper_complete")
+    published = composition.compose_mining_research(
+        copper.query, replace(copper.bundle, interpretation_blocks=(_VIEW,))
+    )
+    # The mutant needs a non-empty payload to hide in; pin that it is not empty first.
+    assert len(published["economics"]["native_blocks"]) == 1, published["economics"]["native_blocks"]
+    assert len(published["industrial_views"]) == 1, published["industrial_views"]
+    assert _STALE not in published["limitations"]
+    assert not any(_contains(code, _STALE) for code in published["limitations"])
+    assert not _contains(published["economics"]["native_blocks"], _STALE)
+    assert not _contains(published["industrial_views"], _STALE)
+    assert not _contains(published, _STALE)
 
 
 def test_t07_date_only_recorded_cutoff_is_not_rewritten() -> None:

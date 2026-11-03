@@ -1,0 +1,43 @@
+{
+  "schema": "tiingo.qa05.exact_settled_success_disposition_source_review/v1",
+  "recorded_at_utc": "2026-10-13T21:24:58.335100+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "candidate": "tiingo-wave15-continuation05-disposition-bound03.py",
+  "candidate_sha256": "7e734c3bfb9c6b4f79468eb1516a8d86d39361e427cb0dfa8227833acb4e93af",
+  "verdict": "PASS_EXACT_SOURCE_WITH_SEPARATE_ACTUAL_STAGE_GATES",
+  "capture05_result_sha256": "af1e066495b3d920bbfb3f50994e4eed10815e4fafa41a8b4c5c7bb5796b6a37",
+  "capture05_parent_sha256": "c1c0467f4bc8b60c6260b824aed3ac3720d0cb002220dd691751f251b6d03ee3",
+  "accepted_qa04_census_sha256": "5daddcfc2e520a04d6660c6326c7d539ae53df29d1d952e7921ba19b64c83c83",
+  "accepted_qa04_parent_sha256": "1352560a573fae5a285d6a98d05523702fce565789a139d6e904607c1ef8fe55",
+  "readonly_context_diagnostic_sha256": "4868fb0ddc8c19eb69d3ad94546b79cdcda74fefadaa068a20b4fe26d13e8033",
+  "source_checks": [
+    "scalar_check and artifacts functions are AST-identical to accepted original49; whole negative JSON-int volume quarantine policy and foreign-content owner validation preserved",
+    "Actual capture validator binds original24428 consumed0, exact result/scope, settled121 attempted/ok/new, zero failures and121 distinct successful request identities",
+    "Context requires plan121 equals actual successes,35 held symbols excluded, exact recoveredQA04 method4931/preflight49/q173/census5dadd/root135; all128 accepted predecessor qualification hashes checked and current successful identities excluded from prior dispositions",
+    "Preflight requires exact121 observed within own start/settled time; no materializer call; snapshots and proof published exclusively to E",
+    "Qualification requires actual accepted exact preflight; strict selector and directory state before effects; existing current projections rejected; materializer accepts WRITTEN or EMPTY only; newly materialized full-reader rows equal original research_rows",
+    "Final qualification audit conserves all original present and absent selector slots with new output paths restricted to initially absent slots; protected foreign bytes, raw digests, receipts and source hashes checked",
+    "Coverage preserves exact predecessor/current qualification and candidate conservation; stage-specific mutable proof inputs must be frozen by separately reviewed future packets"
+  ],
+  "verification_performed": [
+    "Exact candidate SHA and in-memory AST/compile without executing candidate",
+    "Compared scalar/artifacts ASTs with pinned49 source",
+    "Verified all28 preflight packet pins and all128 accepted predecessor E qualification hashes, without raw/Parquet reader rescans",
+    "Read actualQA04 root acceptance and verified referenced coverage childwait0/validationtrue/output hash chain",
+    "Isolated actual05 capture validator accepted exact121 and rejected wrong root, unconsumed return, wrong scope, unsettled capture, reported failure, and missing successful identity"
+  ],
+  "runtime_status": "No QA05 preflight/qualify/coverage execution claimed by this review",
+  "required_stage_contracts": [
+    "Preflight actual native return, durable child wait, validation, snapshot and preflight hashes must be consumed before qualifier binding",
+    "Qualifier packet must pin exact accepted preflight/snapshot, original-root preflight-consumption receipt, source and all relevant stage inputs before and after child; source review alone grants no writer launch",
+    "Coverage packet must pin exact accepted q, preflight, qualifier parent/wait/validation, predecessor and source; runtime hashes and semantic census acceptance required",
+    "Any partial output, occupied current selector, changed protected state or lost return requires same-carrier reconciliation rather than retry/new prefix",
+    "Original22925 and91287 terminal returns remain unknown; recovered artifact and new actual returns stay distinct"
+  ],
+  "archive_writes": 0,
+  "provider_requests": 0,
+  "credentials_read": false,
+  "candidate_module_executed": false,
+  "accepted_reader_rows_rescanned": false,
+  "delegation": false
+}

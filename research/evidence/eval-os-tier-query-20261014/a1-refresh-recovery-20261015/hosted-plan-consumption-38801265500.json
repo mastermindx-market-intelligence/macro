@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-15T20:29:00.610145+00:00",
+  "run_id": 38801265500,
+  "attempt": 1,
+  "artifact_id": 12003744279,
+  "zip_sha256": "c7e0a5dcae8ab6cc46f1ef1d70f7bed86e95ab832a2040344207dc9982cda009",
+  "canonical_plan_sha256": "c36592b22778e006aa1449de94ebf7a31260b13f5dfe2bfb87d1a27ed7308378",
+  "subject_head_sha": "b4ff0d721ab8f40cd7aa50d469167537f43ca3cd",
+  "base_sha": "eb46b820042f27d1f4a517af2df8b158be83d063",
+  "tested_commit": "248037474cd2cd1ad3d45efcfbd7a9f1f3cf52ad",
+  "tested_tree": "3271d9ab08bb818eb09033c050a9827bff4a025b",
+  "matches_admitted_preview": true,
+  "production_17_files_unchanged": true,
+  "eligible_jobs": 127,
+  "a1": {
+    "logical_job_id": "eval-os-a1",
+    "pack_index": 6,
+    "job_exec_sha256": "327d3bd6155badf59a0a1a79b90d18e854b92f3d93df5e0b62cb8df929f75d45",
+    "steps": [
+      {
+        "proof_id": "require Node for actual renderer contracts",
+        "step_spec_sha256": "53a07747af8395a5e5380b0de2586455646118d16872110e4232eb218672da06"
+      },
+      {
+        "proof_id": "Intelligence OS API renderer source and finite measurement contracts",
+        "step_spec_sha256": "c0189cf9b9a90c2ee9cbcf2be642ec455b621864614e2df7060a53ce8ce59fbb"
+      }
+    ]
+  },
+  "scope": "Original hosted plan identity only; terminal semantic evidence and all binding checks remain pending. No final source binding or production acceptance."
+}

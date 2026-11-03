@@ -65,6 +65,8 @@ waves:
 decisions:
   - DEC:RIC-CANONICAL-COMPOSITION-BOUNDARIES
   - DEC:RIC-BASIS-CONTRACT-V1-QUALIFIED-COMPARISON
+  - DEC:RIC-F1-EVALUATION-TARGET-IS-PUBLISHED-FIRST-PRINT
+  - DEC:RIC-E0-RETROSPECTIVE-FALSIFIES-PROSPECTIVE-PROMOTES
 discoveries:
   - DSC:RIC-RECOVERY-FOUND-STATUS-DRIFT-AND-W3-W4-DISCONNECT
 landmines:
@@ -84,12 +86,14 @@ artifacts:
   - research/TRANSMISSION_INTELLIGENCE_MASTERPLAN_BY_FABLE.md
   - research/rates_inflation_command/seat_20261014/R0_CUSTODY_LEDGER.md
   - research/rates_inflation_command/seat_20261014/B0_BASIS_CONTRACT_FREEZE.md
+  - research/rates_inflation_command/seat_20261014/F0_COVERAGE.md
 next_action: >
-  E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b): R0 custody
-  ledger and B0 basis-contract freeze recorded under research/rates_inflation_command/seat_20261014/.
-  B0 (pure engine/rates_command_basis.py + schema) and T0 (A03-A05 board qualification repair) are
-  in flight, then D0/Y0 provenance, then D1/Y1/I0 and C0 composition. F0 merged in #6543 is reused,
-  never redone; held #7909 and the GRI programme (#8317) are preserved.
+  E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b). Wave 1 is
+  merged: R0/B0 records #9206, E0+P0 #9212, F0 gap #9222, F1 #9232, B0 #9233, D0 #9252, T0 #9253,
+  Y0 #9254. Next: merge M0/X0 #9282 (never re-run M0/X0), one main ci.yml baseline, then ship
+  D1/Y1/I0, then C0 composition, then P1, X1, V0, A0, E1, P2, G0, S0, E2, B1, A1, Z0 per masterplan
+  section 13. Latest handoff: agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-14-e2e-seat-wave1.md.
+  F0 (#6543, #9222) is reused, never redone; held #7909 and the GRI programme (#8317) are preserved.
 ---
 
 ## Why this workstream exists

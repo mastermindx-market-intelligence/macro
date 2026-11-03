@@ -16,7 +16,7 @@ from ..earnings_release.filing_key import (
     FilingKey as ReleaseFilingKey,
     filing_key_from_8k_row,
 )
-from ..earnings_release.receipts import replay_receipt
+from ..earnings_release.receipts import ReceiptError, replay_receipt, validate_sec_acquisition_receipt
 from .documents import text_span
 from .event_id_adapter import aliases_for
 from .qa_exchange import accepted_qa_exchanges_for_transcript
@@ -28,9 +28,11 @@ from .event_workspace import (
     WORKSPACE_WARNINGS,
     WorkspaceError,
     _absence,
+    _ceil_second,
     _iso,
     _lifecycle_payload,
     _utc,
+    apple_issuer,
     validate_event_workspace,
 )
 from .events import CompanyEvent, FiscalPeriod
@@ -122,6 +124,7 @@ def build_event_workspace(
     prior_source_sha256: str | None = None,
     prior_lifecycle_state: str | None = None,
     prior_observed_at: object | None = None,
+    prior_acquisition_receipt: object | None = None,
     profile: IssuerProfile | None = None,
 ) -> dict[str, Any]:
     """Bind one issuer event from identity + 8-K exhibit + (if held) transcript.
@@ -175,6 +178,21 @@ def build_event_workspace(
     requested_clock = _utc(observed_at, field_name="observed_at")
     available = _utc(source_available_at, field_name="source_available_at")
 
+    # T05a guard: the pre-A5A ``active_profile = profile or apple_profile()``
+    # default was safe ONLY because every pre-A5A call site passed
+    # ticker=AAPL — the homebuilder wave passed an explicit profile.  A
+    # non-AAPL issuer built without ``profile=`` would otherwise run Apple's
+    # transcript-claims / release-fact extractors on the wrong filing and
+    # silently mint Apple-shaped facts under a non-Apple issuer identity.
+    # Apple's own default path (no profile passed) is preserved: identified
+    # by the resolved company_id matching the Apple issuer's company_id, NOT
+    # by a hardcoded ticker literal (E3C prior-art law forbids that).
+    if profile is None and resolved.company_id != apple_issuer().company_id:
+        raise WorkspaceError(
+            "profile_required: caller passed profile=None for a non-Apple "
+            "issuer; the Apple default cannot be applied here"
+        )
+
     accession = str(filing.get("accession") or "")
     cik = str(filing.get("cik") or issuer.cik)
     bound = bind_release_document(
@@ -188,6 +206,35 @@ def build_event_workspace(
         exhibit_url=str(filing.get("exhibit_url") or "") or None,
     )
 
+    acquisition_receipt = None
+    if "acquisition_receipt" in filing:
+        try:
+            acquisition_receipt = validate_sec_acquisition_receipt(
+                filing["acquisition_receipt"], cik=cik, accession=accession,
+                source_url=filing.get("exhibit_url"), source_text=exhibit_body,
+            )
+        except ReceiptError as exc:
+            raise WorkspaceError(f"issuer release acquisition receipt is invalid: {exc}") from exc
+        if acquisition_receipt["source_sha256"] != bound.revision.source_sha256:
+            raise WorkspaceError("issuer release acquisition receipt does not bind the source body")
+        # A repeated acquisition is not a new source revision. Keep the first
+        # genuine, replayable acquisition fact when only its attempt clock changed.
+        # This never manufactures a receipt for an offline/missing-current input.
+        if prior_acquisition_receipt is not None:
+            try:
+                prior_acquisition = validate_sec_acquisition_receipt(
+                    prior_acquisition_receipt, cik=cik, accession=accession,
+                    source_url=filing.get("exhibit_url"), source_text=exhibit_body,
+                )
+            except ReceiptError:
+                prior_acquisition = None  # the valid fresh acquisition stands on its own
+            if (prior_acquisition is not None
+                    and {k: v for k, v in prior_acquisition.items() if k != "acquired_at"}
+                    == {k: v for k, v in acquisition_receipt.items() if k != "acquired_at"}
+                    and _utc(prior_acquisition["acquired_at"], field_name="prior acquired_at")
+                    <= _utc(acquisition_receipt["acquired_at"], field_name="acquired_at")):
+                acquisition_receipt = prior_acquisition
+
     if (
         prior_source_sha256
         and prior_observed_at is not None
@@ -200,6 +247,13 @@ def build_event_workspace(
         clock = requested_clock
     if clock < available:
         raise WorkspaceError("observed_at precedes source_available_at")
+    # Provisional cutoff mirrors the immutable writer. It is the conservative
+    # whole-second observation maximum, not measured wall-clock emission time.
+    generation_cutoff = clock
+    if acquisition_receipt is not None:
+        generation_cutoff = _ceil_second(max(
+            clock, _utc(acquisition_receipt["acquired_at"], field_name="acquired_at")
+        ))
 
     aliases = aliases_for(issuer.company_id, fiscal_period, issuer.tickers_at(asof))
     event_id = aliases.canonical_event_id
@@ -384,9 +438,13 @@ def build_event_workspace(
     # segment index, literal, and 9.0/11.0 bounds below were Apple-only
     # constructions sitting in generic code.  apple_profile() reproduces this
     # exact block unchanged; a homebuilder profile returns [].
+    # T05a: ``bound`` and ``release_document_id`` are passed so a release-body
+    # guidance extractor (TSM/ON) can receipt the literal guidance span out
+    # of the SAME bound source it just receipted a revenue span out of.
     guidance: list[dict[str, Any]] = list(
         active_profile.extract_guidance(
             segments=segments, document_id=tx_doc_id, body_sha256=transcript_sha256 or "", event_id=event_id,
+            bound=bound, release_document_id=release_doc_id, fiscal_period=fiscal_period,
         )
     )
 
@@ -435,6 +493,7 @@ def build_event_workspace(
             "form": (str(filing.get("form")) if filing.get("form") else None),
             "url": filing.get("exhibit_url"),
             "receipt_state": "byte_replayed",
+            **({"acquisition_receipt": acquisition_receipt} if acquisition_receipt is not None else {}),
         },
         {
             "kind": "transcript",
@@ -549,7 +608,7 @@ def build_event_workspace(
         "sources": sources,
         "warnings": warnings,
         "generation_id": "",
-        "generated_at": _iso(clock),
+        "generated_at": _iso(generation_cutoff),
         "authority": AUTHORITY,
         "prophet_flags": dict(PROPHET_FLAGS),
         "claim_citations_pending": claim_pending,

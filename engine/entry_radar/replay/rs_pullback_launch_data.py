@@ -12,14 +12,18 @@ import copy
 import hashlib
 import json
 import math
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 from zoneinfo import ZoneInfo
 
 from engine.entry_radar.contracts import AUTHORITY_BLOCK
 
 INPUT_SCHEMA = "mastermind.rs_pullback_launch.phase1_input.v1"
 PANEL_SCHEMA = "mastermind.rs_pullback_launch.phase1_panel.v1"
+# Explicit opt-in only. The original v1 window selection and frame shape remain.
+INPUT_V2_SCHEMA = "mastermind.rs_pullback_launch.phase1_input.v2"
+PANEL_V2_SCHEMA = "mastermind.rs_pullback_launch.phase1_panel.v2"
 CENSUS_SCHEMA = "mastermind.rs_pullback_launch.phase1_census.v1"
 ADMISSION_SCHEMA = "mastermind.rs_pullback_launch.phase1_admission.v1"
 ROLES = ("stock", "spy", "qqq", "sector")
@@ -35,6 +39,16 @@ UNKNOWN = {"", "unknown", "not_recorded", "unavailable", None}
 
 class InputContractError(ValueError):
     """Malformed research input, distinct from an honestly missing observation."""
+
+
+@dataclass(frozen=True, slots=True)
+class _NativeRoleInput:
+    """Private result of the owner-read entry point, not an authenticity token."""
+
+    minutes_json: str
+    binding_json: str
+    security_id: str | None
+    identity_refusals: tuple[str, ...]
 
 
 def canonical(value: Any) -> str:
@@ -312,15 +326,21 @@ def _latest_context(records: list[dict[str, Any]], kind: str, security_id: str,
     return chosen, None
 
 
-def _metadata_errors(meta: Mapping[str, Any], cutoff: datetime, session: str) -> list[str]:
+def _metadata_errors(meta: Mapping[str, Any], cutoff: datetime, session: str, *,
+                     native_identity_refusals: tuple[str, ...] | None = None) -> list[str]:
     errors = []
-    identity = meta.get("identity", {})
-    if not meta.get("security_id") or identity.get("security_id") != meta.get("security_id") \
-            or not _has_receipt(identity) \
-            or not identity.get("known_at") or _clock(identity["known_at"]) > cutoff \
-            or identity.get("valid_from", "9999") > session \
-            or (identity.get("valid_until") and session >= identity["valid_until"]):
-        errors.append("IDENTITY_NOT_BOUND_AT_DECISION")
+    if native_identity_refusals is None:
+        identity = meta.get("identity", {})
+        if not meta.get("security_id") or identity.get("security_id") != meta.get("security_id") \
+                or not _has_receipt(identity) \
+                or not identity.get("known_at") or _clock(identity["known_at"]) > cutoff \
+                or identity.get("valid_from", "9999") > session \
+                or (identity.get("valid_until") and session >= identity["valid_until"]):
+            errors.append("IDENTITY_NOT_BOUND_AT_DECISION")
+    else:
+        # Only the explicit owner-read entry point can supply this private path.
+        # Native validity stays with R12; do not invent a legacy validity interval.
+        errors.extend(native_identity_refusals)
     basis = meta.get("basis", {})
     if not _has_receipt(basis) or not basis.get("known_at") \
             or _clock(basis["known_at"]) > cutoff or not basis.get("basis_id") \
@@ -334,7 +354,8 @@ def _metadata_errors(meta: Mapping[str, Any], cutoff: datetime, session: str) ->
 
 
 def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
-               start: datetime, end: datetime, cutoff: datetime) -> dict[str, Any]:
+               start: datetime, end: datetime, cutoff: datetime, *,
+               native_identity: Mapping[str, str] | None = None) -> dict[str, Any]:
     """Complete [start,end) from exact 1m rows visible at cutoff, without fills."""
     groups: dict[datetime, list[dict[str, Any]]] = {}
     for row in rows:
@@ -365,7 +386,10 @@ def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
         row = newest[0]
         if _clock(row["end"]) != instant + timedelta(minutes=1) or known < _clock(row["end"]):
             errors.append("MINUTE_CLOCK_VIOLATION")
-        if row.get("security_id") != meta.get("security_id"):
+        row_identity = (row.get("security_id") if native_identity is None
+                        else native_identity.get(row.get("receipt_sha256")))
+        if row_identity != meta.get("security_id") \
+                or (native_identity is not None and not row_identity):
             errors.append("MINUTE_IDENTITY_MISMATCH")
         if row.get("basis_id") != meta.get("basis", {}).get("basis_id"):
             errors.append("MINUTE_BASIS_MISMATCH")
@@ -411,15 +435,52 @@ def _aggregate(rows: list[dict[str, Any]], stream: str, meta: Mapping[str, Any],
     return result
 
 
-def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
+def _event_window_anchor(candidate: Mapping[str, Any], opening: datetime,
+                         closing: datetime, cutoff: datetime) -> tuple[datetime | None, str | None]:
+    """Validate one caller-declared endpoint; never search for a favorable bar.
+
+    This selects feature geometry only. Observation/revision/metadata/context
+    visibility must continue to use the actual cutoff, not this older endpoint.
+    Missing or invalid per-candidate policy retains an unavailable frame.
+    """
+    try:
+        anchor = _clock(candidate.get("event_anchor_at"))
+    except InputContractError:
+        return None, "EVENT_ANCHOR_INVALID"
+    age_limit = candidate.get("max_feature_age_seconds")
+    if type(age_limit) is not int or age_limit < 0:
+        return anchor, "EVENT_ANCHOR_AGE_LIMIT_INVALID"
+    if not opening < anchor <= closing:
+        return anchor, "EVENT_ANCHOR_OUTSIDE_SESSION"
+    if anchor > cutoff:
+        return anchor, "EVENT_ANCHOR_AFTER_DECISION"
+    delta = anchor - opening
+    elapsed_us = ((delta.days * 86400 + delta.seconds) * 1000000
+                  + delta.microseconds)
+    if elapsed_us < 1800000000 or elapsed_us % 1800000000:
+        return anchor, "EVENT_ANCHOR_NOT_30M_BOUNDARY"
+    if (cutoff - anchor).total_seconds() > age_limit:
+        return anchor, "EVENT_ANCHOR_TOO_OLD"
+    return anchor, None
+
+
+def _build_input_panel(bundle: Mapping[str, Any], *,
+                       native_role_provider: Callable[..., _NativeRoleInput] | None = None
+                       ) -> dict[str, Any]:
     """Preserve every predeclared candidate, including unavailable/nonfire rows.
 
     Calendar sessions are supplied by the existing calendar owner with a receipt;
     this adapter does not invent another exchange calendar. Calendar timestamps
     and all bars are true UTC instants, never Terminal's ET display epochs.
+
+    V2 requires an explicit event_anchor_at and max_feature_age_seconds on each
+    candidate. Both feature windows end at that completed 30m boundary, while
+    all input visibility and current context still use actual decision_at. V1
+    continues to use the newest completed windows and its original frame shape.
     """
-    if bundle.get("schema") != INPUT_SCHEMA:
+    if bundle.get("schema") not in (INPUT_SCHEMA, INPUT_V2_SCHEMA):
         raise InputContractError("unsupported input schema")
+    event_anchored = bundle["schema"] == INPUT_V2_SCHEMA
     if bundle.get("input_kind") not in {"SYNTHETIC_CONFORMANCE", "OBSERVED_MARKET"}:
         raise InputContractError("input_kind must distinguish fixtures from market evidence")
     candidates = bundle.get("candidates", [])
@@ -456,6 +517,9 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             "calendar_receipt_sha256": (visible_calendar or {}).get("receipt_sha256"),
             "label_endpoint": None, "label_status": "NOT_COMPUTED_PHASE1",
         }
+        if event_anchored:
+            frame.update(event_anchor_at=None, feature_age_seconds=None,
+                         max_feature_age_seconds=None)
         errors = frame["refusals"]
         if visible_calendar is None:
             errors.append("CALENDAR_INPUT_INVALID" if calendar_invalid
@@ -487,6 +551,20 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             errors.append("CALENDAR_NOT_KNOWN_AT_DECISION")
             result.append(frame)
             continue
+        window_cutoff = cutoff
+        if event_anchored:
+            anchor, anchor_error = _event_window_anchor(candidate, opening, closing, cutoff)
+            limit = candidate.get("max_feature_age_seconds")
+            frame.update(
+                event_anchor_at=_iso(anchor) if anchor is not None else None,
+                feature_age_seconds=(cutoff - anchor).total_seconds() if anchor is not None else None,
+                max_feature_age_seconds=limit if type(limit) is int and limit >= 0 else None,
+            )
+            if anchor_error:
+                errors.append(anchor_error)
+                result.append(frame)
+                continue
+            window_cutoff = anchor
         # Diagnostic coverage endpoint only; no outcome/policy is computed.
         # A later policy study must bind a common episode-origin endpoint.
         endpoint = cutoff + timedelta(minutes=120)
@@ -495,7 +573,17 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             frame["label_status"] = "CENSORED_SESSION_END"
         for role, stream in roles.items():
             meta = bundle.get("streams", {}).get(stream, {})
-            meta_errors = _metadata_errors(meta, cutoff, session)
+            native = (native_role_provider(candidate, role, stream, opening, closing, cutoff)
+                      if native_role_provider is not None else None)
+            rows = bundle.get("minutes", []) if native is None else json.loads(native.minutes_json)
+            native_identity = None
+            if native is not None:
+                meta = {**meta, "security_id": native.security_id}
+                native_identity = ({row["receipt_sha256"]: native.security_id for row in rows}
+                                   if native.security_id is not None else {})
+            meta_errors = _metadata_errors(
+                meta, cutoff, session,
+                native_identity_refusals=None if native is None else native.identity_refusals)
             errors.extend(f"{role}:{x}" for x in meta_errors)
             frame["stream_bindings"][role] = {
                 "stream": stream, "security_id": meta.get("security_id"),
@@ -503,9 +591,15 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
                 "basis_id": meta.get("basis", {}).get("basis_id"),
                 "basis_receipt_sha256": meta.get("basis", {}).get("receipt_sha256"),
             }
+            if native is not None:
+                binding = json.loads(native.binding_json)
+                frame["stream_bindings"][role].update(
+                    identity_receipt_sha256=binding.get("identity_read_receipt", {}).get("receipt_sha256"),
+                    native_identity_binding=binding,
+                )
             frame["bars"][role] = {}
             for minutes in (15, 30):
-                elapsed = (min(cutoff, closing) - opening).total_seconds()
+                elapsed = (min(window_cutoff, closing) - opening).total_seconds()
                 completed = int(elapsed // (minutes*60))
                 if not completed:
                     frame["bars"][role][str(minutes)] = None
@@ -513,15 +607,20 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
                     continue
                 end = opening + timedelta(minutes=minutes*completed)
                 start = end - timedelta(minutes=minutes)
-                aggregate = _aggregate(bundle.get("minutes", []), stream, meta, start, end, cutoff)
+                aggregate = _aggregate(rows, stream, meta, start, end, cutoff,
+                                       native_identity=native_identity)
                 if meta_errors:
                     aggregate.update(availability="unavailable", ohlcv=None,
                                      known_at=None, input_revision_sha256=None)
                     aggregate["refusals"] = sorted(set(aggregate["refusals"] + meta_errors))
                 frame["bars"][role][str(minutes)] = aggregate
                 errors.extend(f"{role}:{minutes}m:{x}" for x in aggregate["refusals"])
-        stock = bundle.get("streams", {}).get(roles["stock"], {}).get("security_id", "")
-        daily, error = _latest_context(bundle.get("contexts", []), "daily", stock, cutoff, session)
+        stock = (bundle.get("streams", {}).get(roles["stock"], {}).get("security_id", "")
+                 if native_role_provider is None else frame["stream_bindings"]["stock"]["security_id"])
+        contexts = bundle.get("contexts", [])
+        if native_role_provider is not None and stock is None:
+            contexts = []
+        daily, error = _latest_context(contexts, "daily", stock, cutoff, session)
         if error:
             errors.append(error)
         elif daily.get("asof_session") != law.get("previous_session"):
@@ -540,7 +639,7 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
             else:
                 frame["daily_context"] = daily
                 frame["eligible"] = payload["is_leader"] and payload["controlled_pullback"]
-        incumbent, error = _latest_context(bundle.get("contexts", []), "incumbent", stock, cutoff, session)
+        incumbent, error = _latest_context(contexts, "incumbent", stock, cutoff, session)
         if error:
             errors.append(error)
         elif incumbent.get("asof_session") != session or not incumbent.get("valid_until") \
@@ -556,7 +655,7 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
                 errors.append("incumbent:FAITHFUL_OWNER_RECEIPT_MISSING")
             else:
                 frame["incumbent_assessment"] = incumbent
-        catalyst, error = _latest_context(bundle.get("contexts", []), "catalyst", stock, cutoff, session)
+        catalyst, error = _latest_context(contexts, "catalyst", stock, cutoff, session)
         if not error and catalyst.get("asof_session") == session \
                 and catalyst.get("valid_until") and _clock(catalyst["valid_until"]) >= cutoff:
             state = catalyst.get("payload", {}).get("coverage_state", "UNKNOWN")
@@ -576,7 +675,8 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
         frame["snapshot_sha256"] = digest(frame)
     return {
         **({"calendar_source_snapshot": copy.deepcopy(calendar)} if bound_calendar else {}),
-        "schema": PANEL_SCHEMA, "input_kind": bundle["input_kind"],
+        "schema": PANEL_V2_SCHEMA if event_anchored else PANEL_SCHEMA,
+        "input_kind": bundle["input_kind"],
         "input_bundle_sha256": digest(bundle), "population_count": len(candidates),
         "retained_count": len(result), "available_count": sum(r["availability"] == "available" for r in result),
         "status": "SYNTHETIC_CONFORMANCE_ONLY" if bundle["input_kind"] == "SYNTHETIC_CONFORMANCE"
@@ -584,3 +684,14 @@ def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
         "frames": result, "authority": dict(AUTHORITY_BLOCK),
         "detector_registered": False, "outcomes_computed": False,
     }
+
+
+
+def build_input_panel(bundle: Mapping[str, Any]) -> dict[str, Any]:
+    """Build the unchanged legacy JSON v1/v2 research panel.
+
+    Native file-reader evidence enters only through the separate
+    build_input_panel_from_owner_reads API. This JSON entry point does not infer
+    native custody from a dictionary, a security identifier, or a checksum.
+    """
+    return _build_input_panel(bundle)

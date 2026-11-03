@@ -1,0 +1,57 @@
+{
+  "records": [
+    {
+      "file": "ci-semantic-plan.zip",
+      "sha256": "444cc9a30a0443faf0b13080c712dafdcfc6354fd78382f22716a70090631db4",
+      "bytes": 34431
+    },
+    {
+      "file": "first-hosted-observation.json",
+      "sha256": "41d0639fb5b1d2b4a97a431905b06cf5dc78703a08ce0b069a355cf97689f296",
+      "bytes": 11825
+    },
+    {
+      "file": "hosted-source-identity.json",
+      "sha256": "bd31348375a6932957551b7c7b354a85bd8c8da1fd9a68e349ff1f38b49a70f4",
+      "bytes": 4347
+    },
+    {
+      "file": "hosted-observation-1707.json.gz",
+      "sha256": "c7992660ae3ecda2ef1d9a35da19271a6f181587c4d406a58ff52b4d02316996",
+      "bytes": 12407,
+      "encoding": "gzip",
+      "decoded_sha256": "5853c0e276b8932e272f9fb9d7e3459e66e57f63eb8caf703718529c521fb5db",
+      "decoded_bytes": 268638
+    },
+    {
+      "file": "hosted-observation-1712.json.gz",
+      "sha256": "ed008a0279772fc63a75616ea116629f6e4af867a1888d6a6cd45c1a1052463e",
+      "bytes": 12605,
+      "encoding": "gzip",
+      "decoded_sha256": "a3da9c32cc18cd761f2397dea9002a65054cca349f1307d228137c73092809e3",
+      "decoded_bytes": 270509
+    },
+    {
+      "file": "ci-semantic-pack6.zip",
+      "sha256": "18e70c6477dcd82a7241b685a2428c10432815672c42fa51f303ee0adb5e3fbe",
+      "bytes": 4528
+    },
+    {
+      "file": "a1-pack6-consumption.json",
+      "sha256": "af182d818010346726c49c186ea8ff5c9440f301252b0e6bbc87ec20d9a31d6f",
+      "bytes": 2252
+    },
+    {
+      "file": "hosted-observation-1719.json.gz",
+      "sha256": "87506fffb029f4677015b568a643eb8e95cf3038728c1d18e023a9493436198c",
+      "bytes": 13759,
+      "encoding": "gzip",
+      "decoded_sha256": "00f68df9f8f08bdfccf2888081ec2c58e7045c8e5788a6b165b8b0a666d259ca",
+      "decoded_bytes": 279919
+    }
+  ],
+  "scope": "Original plan and hosted observations, source identity and canonical consumption of pack6; full-run gate, release and production unproved",
+  "zip_member": "ci-plan.json",
+  "member_sha256": "77cf47c5621907a0bbe997aae8848afcad56b36ae255b31e871d19a7f8925319",
+  "artifact_digest_verified": true
+}

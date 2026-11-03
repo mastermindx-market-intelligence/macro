@@ -98,6 +98,18 @@ S2_V1_TRIAL_LEDGER_PATH = (
 S2_V1_1_TRIAL_LEDGER_PATH = (
     "research/single_name_intelligence/runs/s2_event_response_v1_1/trial_ledger.jsonl"
 )
+# XREP-05 (2026-10-13 seat defect, X7-01 repair round): the committed S1 v1.1
+# LANE_MANIFEST.json seal_commit_sha is the PRE-squash branch commit that
+# carried the seal. After PR 9120 was squash-merged, run_s1.seal_commit_sha()
+# (git log -n 1 -- <runs_rel>/SEAL_AND_BUDGET.json) answers the squash commit,
+# so a regeneration differs in exactly that field while the seal blob is
+# byte-identical at both commits.
+S1_V1_1_SEAL_COMMIT_PRE_SQUASH = "5ebab11da1f80b754a4047fb87f06eadf37edfb6"
+# XREP-05 (XREP5 repair round, 2026-10-14): pin the seal blob at
+# research/single_name_intelligence/runs/s1_residual_v1_1/SEAL_AND_BUDGET.json
+# so the produced-side resolution is fail-closed on every clone (depth-1 CI
+# included). Same blob at the pre-squash and squash commits.
+S1_V1_1_SEAL_BLOB = "018cc8bdd9e102f976f0d6d31b13a1546565e72e"
 
 KIND_MISSING = "missing-in-produced"
 KIND_EXTRA = "extra-in-produced"
@@ -228,7 +240,7 @@ def walk_compare(
     produced_dir: Path,
     exceptions: dict[str, ExceptionFn] | None = None,
     *,
-    ulp_tolerant: bool = False,
+    ulp_tolerant: bool = False, _regenerated_study: bool = False,
 ) -> list[Diff]:
     """Pure recursive comparator. No git, no subprocess, no network.
 
@@ -245,7 +257,7 @@ def walk_compare(
     committed_dir = Path(committed_dir)
     produced_dir = Path(produced_dir)
     c_files = rel_files(committed_dir)
-    p_files = rel_files(produced_dir)
+    p_files = _regen_files(produced_dir) if _regenerated_study else rel_files(produced_dir)
     diffs: list[Diff] = []
     for rel in sorted(c_files - p_files):
         diffs.append(Diff(KIND_MISSING, rel))
@@ -381,6 +393,116 @@ def XREP04_S2_SEAL_V1_LEDGER_PATH(committed_dir: Path) -> list[Diff]:
     return diffs
 
 
+_HEX40 = re.compile(r"^[0-9a-f]{40}$")
+
+
+def XREP05_S1_MANIFEST_SEAL_COMMIT(committed: Path, produced: Path) -> list[Diff]:
+    """XREP-05: squash-tolerant S1 v1.1 LANE_MANIFEST.json seal_commit_sha.
+
+    Seat-diagnosed 2026-10-13 (X7-01 repair round): the committed manifest
+    carries seal_commit_sha = S1_V1_1_SEAL_COMMIT_PRE_SQUASH, the PRE-squash
+    branch commit of PR 9120. residual/run_s1.py seal_commit_sha() derives
+    the field from ``git log -n 1 -- <runs_rel>/SEAL_AND_BUDGET.json``,
+    which answers the squash commit on any post-merge clone, so a
+    regeneration differs in exactly that field while the seal blob is
+    byte-identical at both commits.
+
+    Passes ONLY when: both sides parse as JSON; every key other than
+    seal_commit_sha is equal (same key set, same values); the COMMITTED
+    seal_commit_sha equals S1_V1_1_SEAL_COMMIT_PRE_SQUASH exactly; the
+    PRODUCED value is a 40-char lowercase hex commit sha; and the
+    PRODUCED value resolves the run's SEAL_AND_BUDGET.json path to the
+    pinned seal blob S1_V1_1_SEAL_BLOB on every clone (never fetches);
+    and, when the pre-squash commit object is present locally, it ALSO
+    resolves the same blob (a missing pre-squash commit passes because
+    the produced-side pin is fail-closed on its own; the pass detail
+    says so). Any other difference is a KIND_DIFFER Diff naming the
+    changed keys.
+    """
+    refuse_nonfalse_authority(AUTHORITY_FLAGS)
+    rel = committed.name
+    try:
+        c_obj = json.loads(committed.read_text(encoding="utf-8"))
+        p_obj = json.loads(produced.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        return [Diff(KIND_DIFFER, rel, f"LANE_MANIFEST.json parse failed: {e}")]
+    diffs: list[Diff] = []
+    c_rest = {k: v for k, v in c_obj.items() if k != "seal_commit_sha"}
+    p_rest = {k: v for k, v in p_obj.items() if k != "seal_commit_sha"}
+    if c_rest != p_rest:
+        extra = sorted(set(c_rest) ^ set(p_rest))
+        changed = sorted(k for k in c_rest if k in p_rest and c_rest[k] != p_rest[k])
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            "LANE_MANIFEST.json differs in a key other than seal_commit_sha "
+            f"(XREP-05); extra_or_missing={extra} changed={changed}",
+        ))
+    c_sha = c_obj.get("seal_commit_sha")
+    p_sha = p_obj.get("seal_commit_sha")
+    if c_sha != S1_V1_1_SEAL_COMMIT_PRE_SQUASH:
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            f"committed seal_commit_sha {c_sha!r} != pinned pre-squash "
+            f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH!r} (XREP-05)",
+        ))
+    if not (isinstance(p_sha, str) and _HEX40.match(p_sha)):
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            f"produced seal_commit_sha {p_sha!r} is not a 40-char lowercase "
+            "hex commit sha (XREP-05)",
+        ))
+
+    # Produced-side seal blob resolution (fail-closed on every clone).
+    # Repo root from this module's location, never from the /tmp compare dirs.
+    repo_root = Path(__file__).resolve().parents[3]
+    seal_rel = f"{S1_V1_1_REL}/SEAL_AND_BUDGET.json"
+
+    def blob_at(rev: str) -> str | None:
+        r = subprocess.run(
+            ["git", "rev-parse", f"{rev}:{seal_rel}"],
+            cwd=repo_root, capture_output=True, text=True,
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+
+    p_blob = blob_at(p_sha) if (isinstance(p_sha, str) and _HEX40.match(p_sha)) else None
+    found = p_blob if p_blob is not None else "unresolvable"
+    if p_blob != S1_V1_1_SEAL_BLOB:
+        diffs.append(Diff(
+            KIND_DIFFER, rel,
+            f"produced seal_commit_sha {p_sha!r}:{seal_rel} -> {found!r}; "
+            f"expected pinned blob {S1_V1_1_SEAL_BLOB!r} (XREP-05)",
+        ))
+    if diffs:
+        return diffs
+
+    # Provenance: when the pre-squash commit object is present locally, also
+    # pin its seal blob to S1_V1_1_SEAL_BLOB. Never fetches. Absence of the
+    # pre-squash commit is acceptable ONLY because the produced-side pin
+    # above is fail-closed on its own (the pass detail says so).
+    present = subprocess.run(
+        ["git", "cat-file", "-e", f"{S1_V1_1_SEAL_COMMIT_PRE_SQUASH}^{{commit}}"],
+        cwd=repo_root, capture_output=True,
+    ).returncode == 0
+    if present:
+        c_blob = blob_at(S1_V1_1_SEAL_COMMIT_PRE_SQUASH)
+        if c_blob != S1_V1_1_SEAL_BLOB:
+            diffs.append(Diff(
+                KIND_DIFFER, rel,
+                f"pre-squash provenance {S1_V1_1_SEAL_COMMIT_PRE_SQUASH}:"
+                f"{seal_rel} -> {c_blob!r}; expected pinned blob "
+                f"{S1_V1_1_SEAL_BLOB!r} (XREP-05)",
+            ))
+            return diffs
+        print(
+            f"XREP-05 {rel}: pre-squash provenance commit present locally; "
+            f"seal blob pinned to {S1_V1_1_SEAL_BLOB} at both commits")
+        return diffs
+    print(
+        f"XREP-05 {rel}: pre-squash provenance commit not present locally; "
+        f"produced-side seal blob pin ({S1_V1_1_SEAL_BLOB}) is the gate")
+    return diffs
+
+
 def _s1_ledger_exception(committed: Path, produced: Path) -> list[Diff]:
     """S1 trial_ledger.jsonl: import run_s1._ledger_equal (drops wall-clock ts).
 
@@ -424,6 +546,7 @@ def s1_exceptions() -> dict[str, ExceptionFn]:
     return {
         "SEAL_AND_BUDGET.json": XREP03_S1_SEAL_LEDGER_PATH,
         "SEAL_AND_BUDGET.md": XREP03_S1_SEAL_LEDGER_PATH,
+        "LANE_MANIFEST.json": XREP05_S1_MANIFEST_SEAL_COMMIT,
         "trial_ledger.jsonl": _s1_ledger_exception,
     }
 
@@ -585,6 +708,34 @@ def regenerate_s2(repo_root: Path, input_ref: str, out_dir: Path) -> None:
         )
 
 
+# TrialLedger uses a permanent, zero-byte advisory-lock sidecar so its stable
+# inode can safely serialize concurrent writers. A seal regeneration runs in
+# an isolated scratch directory; that infrastructure sidecar is not one of its
+# sealed study artifacts. Never unlink it (which could split a live lock).
+_PRIVATE_TRIAL_LOCK = ".trial_ledger.jsonl.lock"
+
+
+def _regen_files(root: Path) -> set[str]:
+    """Full generated inventory, except a proven zero-byte trial lock sidecar.
+
+    Fail closed on a symlink, directory, or nonempty sidecar; any other extra
+    output remains visible to the full-coverage comparator. Only check_study
+    opts into this view after its private regeneration has returned.
+    """
+    import stat  # Standard-library mode check, limited to a scratch regeneration.
+    files = rel_files(root)
+    lock = Path(root) / _PRIVATE_TRIAL_LOCK
+    try:
+        metadata = lock.lstat()
+    except FileNotFoundError:
+        return files
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_size != 0:
+        raise ValueError("unexpected regenerated trial-ledger lock sidecar")
+    if "trial_ledger.jsonl" in files and _PRIVATE_TRIAL_LOCK in files:
+        files.remove(_PRIVATE_TRIAL_LOCK)
+    return files
+
+
 def check_study(
     name: str,
     repo_root: Path,
@@ -611,9 +762,10 @@ def check_study(
     else:
         raise ValueError(f"unknown study {name!r}")
 
-    diffs = walk_compare(committed, out_dir, exceptions, ulp_tolerant=not strict_bytes)
+    diffs = walk_compare(committed, out_dir, exceptions,
+                         ulp_tolerant=not strict_bytes, _regenerated_study=True)
     c_files = rel_files(committed)
-    p_files = rel_files(out_dir)
+    p_files = _regen_files(out_dir)
     compared = c_files | p_files
     exception_rels = set(exceptions)
     identical = 0

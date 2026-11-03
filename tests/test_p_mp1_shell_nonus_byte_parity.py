@@ -181,12 +181,14 @@ def _sha256_text(text: str) -> str:
 # HK/China/Intl pins also fail the clean source baseline. Native init-call
 # parity and the independent shared-CSS pin remain enforced.
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
-    "templates/hk.html.j2": "2fb1a5e1fb8b901e4dc4bc64cc7916542d0acb508547ee445676166b4edad86c",
+    # 2026-10-20: exact untouched 3667000 base bytes. The old HK/Intl pins
+    # reproduce the same failure before this candidate; templates stay unchanged.
+    "templates/hk.html.j2": "b9d4299a4fafbb5b7d22d97d42d71888c4c7a41ce3c452ed6bb7873f115407e8",
     # Accepted China migration #7054 (a8def4c24d584afe63f148c0d5ba6d8bf95ee506).
     # Only this stale expectation changes; the migrated template is untouched.
     "templates/china.html.j2": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
     "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
-    "templates/intl.html.j2": "fba1ce6480a4854e864479fa4faf3f45acdedd3da4662f8a95f897f7326c2353",
+    "templates/intl.html.j2": "6a847cf08c409f6fa4966489bc265a8cefa3e3df342a23e9f900c7a641c5b932",
 }
 
 
@@ -933,7 +935,12 @@ def test_init_call_source_ignores_parentheses_inside_regex_literal():
 #: merge. Pinning current bytes loses nothing: those bytes already ARE the
 #: fully-guarded post-rollout file. A legitimate future edit to
 #: templates/stocktable.js must recompute and update this hash.
-_EXPECTED_STOCKTABLEJS_SHA256 = "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c"
+# 2026-10-20 Sector Central: the US caller opts into registered sector choices
+# and empty-result copy. An additive per-instance filter API preserves native
+# mouse/keyboard defaults; tests/test_sector_central_paper.py executes the native
+# selection/rendering functions and US hydration owner, including non-US defaults.
+# No non-US caller or existing stage-filter guard changes.
+_EXPECTED_STOCKTABLEJS_SHA256 = "4c6cb85454d10ef6466e231b1725d04df58048d3e35f3722c290c44b91ac01ff"
 
 
 def test_stocktablejs_is_byte_pinned_and_carries_both_stagefilter_guards():

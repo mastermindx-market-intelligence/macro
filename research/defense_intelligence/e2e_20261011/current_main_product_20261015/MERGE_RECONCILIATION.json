@@ -1,0 +1,32 @@
+{
+  "candidate_before_merge": "fde8d6664950bbb96f8cf9b8ca2f2508405e7138",
+  "main_merged": "3cae8c860468a198f40ed7cc3047b0fed7266613",
+  "changed_sealed_dependencies": [
+    "config/unrun_test_baseline.json",
+    "lib/dataos/tiingo_reader.py",
+    "scripts/build_research_factory_review_queue.py",
+    "scripts/build_site.py",
+    "scripts/tiingo_research_query.py",
+    "site/basketdata/baskets.json",
+    "site/basketdata/pulse.json",
+    "templates/chat.html",
+    "tests/test_admin_server.py",
+    "tests/test_deploy_update_self_heal.py",
+    "tests/test_holdout_vault.py",
+    "tests/test_promotion_gate.py",
+    "tests/test_tiingo_research_query.py",
+    "tests/test_trial_ledger.py"
+  ],
+  "changed_sealed_outputs": [
+    "site/government_revenue.html"
+  ],
+  "resolution": "native build of generated page; recursive source merge preserves current CI union",
+  "first_merge_failure": "ort promisor prefetch loop; owned process interrupted; one uncommitted CSS deletion restored, no git reset/config changes",
+  "proof_reuse": "prior proof retained historical only; changed14sealed source dependencies require fresh proof",
+  "closure_first_attempt": {
+    "test_assertion": "PASS",
+    "overall_rc": 1,
+    "reason": "MM_DATA_GUARD observed deliberate simultaneous native builder writes",
+    "remedy": "repeat once after build frozen; retain guard, no cleanup or bypass"
+  }
+}

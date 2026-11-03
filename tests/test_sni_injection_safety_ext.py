@@ -792,7 +792,7 @@ def test_a20b_10_g3_nonpython_artifacts() -> None:
         path
         for path in SNI_ROOT.rglob("*")
         if path.is_file()
-        and "__pycache__" not in path.parts
+        and "__pycache__" not in path.relative_to(SNI_ROOT).parts
         and path.suffix.lower() in _DATA_SUFFIXES
     ]
     print(f"A20B G3 scanned file count: {len(files)}", flush=True)

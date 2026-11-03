@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-10-14T06:12:46.635843+00:00",
+  "application_commit": "8eb467112b832101385f7256b83036f45ae5d759",
+  "review_run": "mmx-press-radar-receipt-review-20261014-001",
+  "root": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "parent": "01a12a2a-d7e1-77b1-9262-ab593179dd13",
+  "reviewer_pool": "minimax",
+  "reviewer_host": "ubuntu1",
+  "review_verdict": "PASS",
+  "review_kind": "Exact supplied runtime/diff/producer sample inspection; reviewer did not execute tests",
+  "runtime_sha256": {
+    "engine/press/desk_planner.py": "852a8889adb59d490f8ddd3de813ceb5de7776885cdb336ff44532be4d6ef8eb"
+  },
+  "test_sha256": {
+    "tests/test_press_planner.py": "c1d892c0a89347b468a399a73d3f1b29760795ed558f657fd3572cb2d052f40b",
+    "tests/test_press_external_candidate.py": "d77ee338cacad2d4f1e04b18ade9388eb06023ce6e08e031108b4b887bd261ca"
+  },
+  "packet_sha256": "eae630cb57687bd528266a46dd842ea7ebbf17c43620a07d8138ce3af12702b2",
+  "result_sha256": "3cc7049c35d12a651c3632f7412bf6ea6e242228418d4324fb8634796bf12921",
+  "parent_adjudication": [
+    "Runtime bytes exactly equal reviewed packet SHA.",
+    "Root independently ran 429 affected tests with one existing sparse-site skip; one real-data hygiene test passed separately, unedited, against unchanged original inputs.",
+    "One post-review test expectation was tightened: a legacy JSONL row without calibration now has state/score only, with an explicit probability-absence assertion. JSONL corruption refusals remain unchanged.",
+    "Review is consumer fidelity, not independent validation of probabilities or calibration quality.",
+    "The loss target is a supported descriptive quantity, not another observation; no article earns D14 credit from this probe.",
+    "Earlier Research pool review remains valid for its unchanged function. Refused optional issuer-context review is not retried or replaced.",
+    "Only desk_planner changes in the existing 24-source manifest; three reviewed page hashes are unchanged."
+  ]
+}

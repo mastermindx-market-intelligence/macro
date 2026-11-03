@@ -2522,6 +2522,7 @@ html[data-lang="zh"] .band h2{letter-spacing:0}
  box-shadow:0 16px 36px -16px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 6%,transparent)}
 .card:hover.acc::before,.card:focus-within.acc::before{transform:scaleX(1)} .card:hover.acc::after{opacity:1}
 .card-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;margin-bottom:9px}
+.card-status{margin:-2px 0 10px;font-size:12px;line-height:1.35;color:var(--muted)}
 .ico{width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;border-radius:9px;
  background:color-mix(in srgb,var(--accent) 15%,var(--panel2));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));
  transition:transform .18s cubic-bezier(.2,.7,.3,1)}
@@ -3145,13 +3146,15 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
     """Direction (improving/stable/deteriorating) + phase (fresh/stable/aging/turning) +
     drift-target quad, from the growth/inflation TRAJECTORY. Empty (null) when we have no
     history for a market — honest, not guessed."""
-    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None}
+    empty = {"rdir": None, "rphase": None, "rtoward_en": None, "rtoward_zh": None, "rflip": None,
+             "rdir_asof": None}
     fn = _RTL.get(cc)
     if not fn:
         return empty
     try:
         tl = json.loads((config.site_dir() / fn).read_text())
         g, i, tr = tl.get("g") or [], tl.get("i") or [], tl.get("trans") or []
+        dates = tl.get("dates") or []
     except Exception:  # noqa: BLE001
         return empty
     # A null TIP is not a gap to compact — it is a MISSING CURRENT READING, and the two
@@ -3203,7 +3206,17 @@ def _regime_dynamics(cc: str, d: dict) -> dict:
     flip = d.get("flip_condition") or {}
     m = flip.get("margin")
     rflip = round(m, 2) if isinstance(m, (int, float)) else None
-    return {"rdir": rdir, "rphase": rphase, "rtoward_en": rtoward_en, "rtoward_zh": rtoward_zh, "rflip": rflip}
+    return {
+        "rdir": rdir,
+        "rphase": rphase,
+        "rtoward_en": rtoward_en,
+        "rtoward_zh": rtoward_zh,
+        "rflip": rflip,
+        "flip_axis": flip.get("axis") or "",
+        "flip_component": flip.get("component") or "",
+        # The guard above makes the last index the last paired reading, so this is its date.
+        "rdir_asof": str(dates[-1]) if len(dates) == len(g) else None,
+    }
 
 
 def _globe_markets() -> list:
@@ -3291,6 +3304,51 @@ def _g_legend(blob):
     return "".join(out)
 
 
+def _market_card_status(m):
+    """Turn, its date, the regime date, and the closest check. No element when nothing is known."""
+    en_bits = []
+    zh_bits = []
+    phase = m.get("rphase") or ""
+    toward_en = m.get("rtoward_en") or ""
+    toward_zh = m.get("rtoward_zh") or ""
+    rdir = m.get("rdir") or ""
+    if phase == "turning" and toward_en:
+        en_bits.append("Turning toward " + toward_en)
+        zh_bits.append("正转向" + toward_zh)
+    elif toward_en:
+        en_bits.append("Heading toward " + toward_en)
+        zh_bits.append("正朝" + toward_zh + "移动")
+    elif rdir == "deteriorating":
+        en_bits.append("Worsening")
+        zh_bits.append("正在转差")
+    elif rdir == "improving":
+        en_bits.append("Improving")
+        zh_bits.append("正在改善")
+    elif rdir == "stable":
+        en_bits.append("Holding")
+        zh_bits.append("维持")
+    # The direction reads the timeline file, the label the regime record. Each date goes with its own reading.
+    asof = str(m.get("macro_asof") or "")
+    dir_asof = str(m.get("rdir_asof") or "")
+    apart = bool(en_bits) and dir_asof != asof
+    if apart and dir_asof:
+        en_bits[0] += " as of " + dir_asof
+        zh_bits[0] += "（截至 " + dir_asof + "）"
+    if asof:
+        en_bits.append(("regime as of " if apart else "as of ") + asof)
+        zh_bits.append(("周期截至 " if apart else "截至 ") + asof)
+    axis = m.get("flip_axis") or ""
+    comp = m.get("flip_component") or ""
+    if axis == "growth" and comp == "copper_gold":
+        en_bits.append("closest growth check: copper versus gold")
+        zh_bits.append("最接近的增长检验：铜对黄金")
+    if not en_bits:
+        return ""
+    en = " · ".join(en_bits)
+    zh = " · ".join(zh_bits)
+    return '<p class="card-status">' + _bi(en, zh) + "</p>"
+
+
 def _g_markets(blob, us_n, cn_n, hk_n,
                standout_tickers: "dict[str, list] | None" = None):
     by = {m["cc"]: m for m in blob}
@@ -3350,7 +3408,8 @@ def _g_markets(blob, us_n, cn_n, hk_n,
                      '<div class="card-top"><span class="ico" aria-hidden="true">' + m["flag"] + '</span>'
                      '<h3 class="card-h">' + _bi(*nm[cc]) + '</h3>'
                      '<span class="pill ' + m["quad"] + ' hd">' + _bi(m["quad_name_en"], m["quad_name_zh"]) + '</span></div>'
-                     '<div class="split">' + "".join(btns) + '</div></div>')
+                     + _market_card_status(m)
+                     + '<div class="split">' + "".join(btns) + '</div></div>')
     return ('<div class="band"><h2>' + _bi("Markets", "市场") + '</h2><span class="ln"></span></div>'
             '<div class="nav mk reveal">' + "".join(cards) + '</div>')
 
@@ -3921,9 +3980,9 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
             '<link rel="stylesheet" href="theme.css">\n'
             + _GLOBE_HUB_CSS + _HUB_CRITICAL_CSS + '</head><body class="hub-page">')
 
-    # Snapshot as-of is a civil date from the bake (vm.built, else macro.date).
+    # The page clock is the civil date of the bake (vm.built), never a data date.
     # Never tick the viewer's clock — that would relabel a snapshot as live.
-    _asof_raw = str((vm or {}).get("built") or (macro or {}).get("date") or "").strip()
+    _asof_raw = str((vm or {}).get("built") or "").strip()
     _asof = _asof_raw[:10] if len(_asof_raw) >= 10 else ""
     _MONTH = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -3979,11 +4038,11 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
         '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot"></span>'
         '<span class="hub-clock-wrap"' + _asof_attr + '>'
-        '<span class="hub-clock-static">' + _bi("Latest market snapshot", "最新市场快照") + '</span>'
+        '<span class="hub-clock-static">' + _bi("Page built", "页面生成于") + '</span>'
         '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
         '<span class="hub-clock-live">'
-        + _bi('Latest market snapshot · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
-              '最新市场快照 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
+        + _bi('Page built · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
+              '页面生成于 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
         + '</span></span></span></div></header>'
         + globe_deck
         + '<div class="hub-views" id="hub-views" data-view="mk">'

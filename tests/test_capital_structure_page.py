@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 import yaml
+import pytest
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from scripts.build_capital_structure_page import render
@@ -17,6 +18,12 @@ from scripts import build_public_pages
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 SITE = ROOT / "site"
+
+
+@pytest.fixture(autouse=True)
+def isolated_page_data(tmp_path, monkeypatch):
+    # render(tmp_path) must not let the policy sidecar append to real data/.
+    monkeypatch.setattr("lib.config.data_dir", lambda: tmp_path / "data")
 
 
 def _render_template() -> str:
@@ -66,6 +73,7 @@ def test_static_builder_writes_shell_and_exact_companion_assets(tmp_path: Path) 
     isolated_templates.mkdir()
     for name in (
         "capital_structure.html.j2",
+        "_ma_agreement_context.html.j2",
         "capital_structure_boot.js",
         "capital_structure.css",
         "capital_structure.js",
@@ -318,7 +326,106 @@ def test_full_site_builder_has_a_canonical_desk_render_hook() -> None:
     assert "_cs_page = _render_capital_structure(config.ROOT)" in source
 
 
+def _capital_structure_hook():
+    """The full-site builder's capital_structure try block, compiled on its own."""
+    import ast
+
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    hook = next(
+        node for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.Try) and any(
+            isinstance(stmt, ast.ImportFrom)
+            and stmt.module == "scripts.build_capital_structure_page"
+            for stmt in node.body
+        )
+    )
+    return compile(ast.Module(body=[hook], type_ignores=[]), "build_site.py", "exec")
+
+
+def _run_hook(tmp_path, monkeypatch, render_fn) -> Path:
+    import logging
+    import os
+    import types
+
+    monkeypatch.setattr("scripts.build_capital_structure_page.render", render_fn)
+    summary = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    exec(_capital_structure_hook(), {  # noqa: S102 — the hook's own source, nothing else
+        "config": types.SimpleNamespace(ROOT=tmp_path),
+        "log": logging.getLogger("build_site.capital_structure_hook"),
+        "os": os,
+    })
+    return summary
+
+
+def test_full_site_builder_annotates_a_withheld_desk(tmp_path, monkeypatch, capsys) -> None:
+    """A withheld page is an ::error line and a step-summary entry, not a log WARNING.
+
+    A WARNING never reaches the run's annotations, so the page sat stale behind
+    a green run from 2026-10-24. The build itself still continues.
+    """
+    def over_budget(root):
+        raise RuntimeError("policy-projection section over budget: 8218 > 8192")
+
+    summary = _run_hook(tmp_path, monkeypatch, over_budget)
+    lines = capsys.readouterr().out.splitlines()
+    errors = [line for line in lines if line.startswith("::error title=capital_structure::")]
+    assert len(errors) == 1, lines
+    assert "NOT rebuilt" in errors[0]
+    assert "RuntimeError: policy-projection section over budget: 8218 > 8192" in errors[0]
+    assert "8218 > 8192" in summary.read_text(encoding="utf-8")
+
+
+def test_full_site_builder_hook_is_quiet_when_the_desk_renders(tmp_path, monkeypatch, capsys) -> None:
+    summary = _run_hook(tmp_path, monkeypatch, lambda root: root / "site" / "capital_structure.html")
+    assert "::error" not in capsys.readouterr().out
+    assert not summary.exists()
+
+
 def test_research_navigation_exposes_the_premium_desk() -> None:
     nav = (TEMPLATES / "_navlinks.html.j2").read_text(encoding="utf-8")
     assert 'href="{{ NP }}capital_structure.html"' in nav
     assert "Capital Structure" in nav
+
+
+def _render_featured(premium: dict) -> str:
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES)),
+        autoescape=True,
+        undefined=StrictUndefined,
+    )
+    return env.get_template("capital_structure.html.j2").render(
+        active_section="research",
+        active_page="capital_structure",
+        premium=premium,
+    )
+
+
+def test_featured_ticker_links_to_stock_page() -> None:
+    """The featured ticker opens that company's stock page."""
+    premium = {
+        "status": "computed",
+        "ticker": "ACME",
+        "currency": "USD",
+        "offer_price": 10.0,
+        "premium_pct": 1.0,
+        "offer_form_type": "S-4",
+        "offer_accession": "0000000000-00-000000",
+        "offer_filing_date": "2020-01-02",
+        "announcement_filing_date": "2020-01-01",
+        "unaffected_price": 9.0,
+        "unaffected_price_date": "2019-12-31",
+        "amendment_vintage": {"filings_in_deal": 1, "n_amendments": 0},
+        "offer_price_provenance": "filing_text_confirmed",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/example",
+    }
+    html = _render_featured(premium)
+    assert 'href="stock.html#ACME"' in html
+    assert "stock.html#BWMN" not in html
+
+
+def test_scope_note_does_not_say_forecast() -> None:
+    """The scope sentence names financing paths, not forecasts."""
+    html = _render_template()
+    assert "forecast" not in html
+    assert "融资路径仍不可用" in html

@@ -1164,3 +1164,179 @@ def test_scoping_does_not_mask_an_in_scope_sibling():
     assert pc["state"] == "dormant"
     assert pc["arm_veto"]["index"] == 1, "the in-scope falsifier must be the one reported"
     assert ledger == []
+
+
+# Prospective receipts describe synthetic native reads; they confer no PIT eligibility.
+def _captured_synthetic_run(root):
+    _seed_min_artifacts(root, oil_ret=40.0)
+    for path in (root / "knowledge/transmission").glob("*.yaml"):
+        if path.name != "oil_inflation_duration_derate.yaml":
+            path.unlink()
+    (root / "data/transmission/chain_episodes.jsonl").write_bytes(b"")
+    producer = root / "engine/transmission_chains.py"
+    producer.parent.mkdir()
+    producer.write_bytes(Path(tc.__file__).read_bytes())
+    return tc.run(root=root, write=True, resolve_blast_radius=False)
+
+
+def test_prospective_receipt_binds_actual_reads_and_keeps_native_observation_date(tmp_path):
+    import hashlib
+    state = _captured_synthetic_run(tmp_path)
+    receipt = state["input_capture"]
+    assert receipt["status"] == "observed_input_bytes"
+    assert receipt["observation_asof"] == state["asof"] == "2026-03-01"
+    assert receipt["capture_completed_at"] > state["asof"]
+    assert receipt["source_available_at"] is None and receipt["first_ingested_at"] is None
+    assert receipt["historical_knowledge"] == "unavailable"
+    assert receipt["scientific_acceptance"] is False
+    assert receipt["publication_receipt"] is None
+    row = next(r for r in receipt["reads"] if r["path"] == "data/yahoo/CL_F.parquet")
+    raw = (tmp_path / row["path"]).read_bytes()
+    assert row["sha256"] == hashlib.sha256(raw).hexdigest() and row["bytes"] == len(raw)
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "listed_input_bytes_match"
+    # The append remains the incumbent transition vocabulary/key and has no invented clock.
+    ledger = tc._read_ledger(tmp_path / "data/transmission/chain_episodes.jsonl")
+    assert ledger and all("input_capture" not in r and "known_at" not in r for r in ledger)
+    assert all(r["asof"] == state["asof"] for r in ledger)
+    assert not (tmp_path / "data/transmission/chain_input_capture.json").exists()
+
+
+def test_prospective_receipt_refuses_stale_inputs_output_and_definition_population(tmp_path):
+    import copy
+    state = _captured_synthetic_run(tmp_path)
+    changed = copy.deepcopy(state)
+    changed["chains"][0]["hop"] = 999
+    assert tc.verify_prospective_input_capture(tmp_path, changed)["status"] == "unavailable"
+    path = tmp_path / "data/yahoo/CL_F.parquet"
+    original = path.read_bytes()
+    path.write_bytes(original + b"changed")
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "unavailable"
+    path.write_bytes(original)
+    (tmp_path / "knowledge/transmission/new.yaml").write_text("chain: new")
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "unavailable"
+    assert tc.verify_prospective_input_capture(tmp_path, {"asof": state["asof"]})["status"] == "unavailable"
+
+
+def test_prospective_capture_fails_closed_on_file_change_during_native_evaluation(tmp_path, monkeypatch):
+    _seed_min_artifacts(tmp_path, oil_ret=40.0)
+    build = tc.build_chain_state
+    def changed(*args, **kwargs):
+        output = build(*args, **kwargs)
+        path = tmp_path / "data/forex/latest.json"
+        path.write_text(path.read_text() + "\n")
+        return output
+    monkeypatch.setattr(tc, "build_chain_state", changed)
+    state = tc.run(root=tmp_path, write=False, resolve_blast_radius=False)
+    assert state["input_capture"]["status"] == "unavailable"
+    assert state["input_capture"]["reason"] == "input_changed_before_generation"
+    assert not (tmp_path / "data/transmission/chain_state.json").exists()
+    assert not (tmp_path / "data/transmission/chain_episodes.jsonl").exists()
+
+
+def test_prospective_capture_bounds_do_not_change_native_detector_or_ledger(tmp_path, monkeypatch):
+    state = _captured_synthetic_run(tmp_path)
+    ledger = tmp_path / "data/transmission/chain_episodes.jsonl"
+    before = ledger.read_bytes()
+    monkeypatch.setattr(tc, "_CAPTURE_MAX_BYTES", 1)
+    again = tc.run(root=tmp_path, write=True, resolve_blast_radius=False)
+    assert again["input_capture"]["status"] == "unavailable"
+    assert again["input_capture"]["reason"] == "input_bytes_exceed_bound"
+    assert ledger.read_bytes() == before
+    assert [(c["chain"], c["state"], c["hop"]) for c in again["chains"]] == [
+        (c["chain"], c["state"], c["hop"]) for c in state["chains"]]
+
+
+def test_prospective_receipt_does_not_qualify_mutable_display_enrichments(tmp_path):
+    import copy
+    state = _captured_synthetic_run(tmp_path)
+    changed = copy.deepcopy(state)
+    for row in changed["chains"]:
+        row.update(blast={"changed": True}, base_rates={"changed": True}, tier="calibrated_context")
+        for hop in row["hops"]:
+            hop["base_rate"] = {"changed": True}
+    assert tc.verify_prospective_input_capture(tmp_path, changed)["status"] == "listed_input_bytes_match"
+    assert state["input_capture"]["excluded"] == ["company_substrate", "weekly_calibration", "provider_release_history"]
+
+
+def test_prospective_receipt_verifies_existing_ledger_prefix_after_append(tmp_path):
+    first = _captured_synthetic_run(tmp_path)
+    second = tc.run(root=tmp_path, write=True, resolve_blast_radius=False)
+    assert first["input_capture"]["generation_id"] != second["input_capture"]["generation_id"]
+    assert tc.verify_prospective_input_capture(tmp_path, second)["status"] == "listed_input_bytes_match"
+    ledger = tmp_path / "data/transmission/chain_episodes.jsonl"
+    ledger.write_text("{}\n" + ledger.read_text())
+    assert tc.verify_prospective_input_capture(tmp_path, second)["status"] == "unavailable"
+
+
+def test_prospective_capture_rejects_repeated_read_change(tmp_path):
+    capture = tc._InputReadCapture(tmp_path)
+    path = tmp_path / "data/x.json"
+    path.parent.mkdir()
+    path.write_text("first")
+    assert capture.read(path) == b"first"
+    path.write_text("second")
+    assert capture.read(path) == b"second"
+    assert capture.reason == "input_changed_during_evaluation"
+
+
+@pytest.mark.parametrize("receipt", [None, {}, [], {"status": "observed_input_bytes"}])
+def test_prospective_capture_malformed_receipt_is_unavailable(tmp_path, receipt):
+    assert tc.verify_prospective_input_capture(tmp_path, {"input_capture": receipt})["status"] == "unavailable"
+
+
+def test_prospective_capture_missing_bytes_and_lfs_pointer_never_qualify(tmp_path):
+    state = _captured_synthetic_run(tmp_path)
+    path = tmp_path / "data/yahoo/CL_F.parquet"
+    path.unlink()
+    missing = tc.run(root=tmp_path, write=False, resolve_blast_radius=False)
+    assert missing["input_capture"]["status"] == "unavailable"
+    assert missing["input_capture"]["reason"] == "missing_input_bytes"
+    path.write_bytes(b"version https://git-lfs.github.com/spec/v1\noid sha256:" + b"0" * 64 + b"\nsize 123\n")
+    pointer = tc.run(root=tmp_path, write=False, resolve_blast_radius=False)
+    assert pointer["input_capture"]["status"] == "unavailable"
+    assert pointer["input_capture"]["reason"] == "unresolved_lfs_pointer"
+    assert tc.verify_prospective_input_capture(tmp_path, state)["status"] == "unavailable"
+
+
+def test_prospective_capture_retargeted_input_symlink_is_an_incompatible_read(tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    a, b, link = data / "a", data / "b", data / "input"
+    a.write_bytes(b"first")
+    b.write_bytes(b"second")
+    link.symlink_to(a)
+    capture = tc._InputReadCapture(tmp_path)
+    assert capture.read(link) == b"first"
+    link.unlink()
+    link.symlink_to(b)
+    assert capture.read(link) == b"second"
+    assert capture.reason == "input_changed_during_evaluation"
+    assert set(capture.reads) == {"data/input"}
+
+
+def test_prospective_self_hash_cannot_authenticate_complete_causal_read_coverage(tmp_path):
+    import copy
+    import hashlib
+    state = _captured_synthetic_run(tmp_path)
+    changed = copy.deepcopy(state)
+    receipt = changed["input_capture"]
+    assert any(r["path"] == "data/yahoo/CL_F.parquet" for r in receipt["reads"])
+    receipt["reads"] = [r for r in receipt["reads"] if r["path"] != "data/yahoo/CL_F.parquet"]
+    # Deliberately omit a real causal read and recompute the public content checksum.
+    payload = {k: v for k, v in receipt.items() if k != "generation_id"}
+    receipt["generation_id"] = "sha256:" + hashlib.sha256(tc._capture_json(payload)).hexdigest()
+    result = tc.verify_prospective_input_capture(tmp_path, changed)
+    assert result["status"] == "listed_input_bytes_match"
+    assert result["verification_scope"] == "listed_bytes_and_declared_definition_population"
+    assert result["producer_execution_authenticity"] == "unqualified"
+    assert result["causal_read_completeness"] == "unqualified"
+    assert result["loaded_code_authentication"] == "unavailable"
+    assert result["causal_lineage_acceptance"] is False
+    assert result["scientific_acceptance"] is False and result["publication_receipt"] is None
+    # Even a recomputed receipt may not upgrade these unsupported claims.
+    receipt["causal_lineage_acceptance"] = True
+    payload = {k: v for k, v in receipt.items() if k != "generation_id"}
+    receipt["generation_id"] = "sha256:" + hashlib.sha256(tc._capture_json(payload)).hexdigest()
+    rejected = tc.verify_prospective_input_capture(tmp_path, changed)
+    assert rejected["status"] == "unavailable"
+    assert rejected["causal_lineage_acceptance"] is False

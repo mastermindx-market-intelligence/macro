@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import math
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -47,6 +48,7 @@ from engine.market_ontology.mining_dependency_binding import (
     MiningResearchRefusal,
     validate_query as _validate_query_kernel,
 )
+from engine.market_ontology.mining_company_card import company_card_absences
 
 
 __all__ = [
@@ -174,16 +176,23 @@ def _order_rows_by_stable_source_identity(rows: Iterable[Mapping[str, Any]]) -> 
 
 
 def _iso_date_in(text: str) -> str | None:
-    """First YYYY-MM-DD in ``text``, or None. ISO dates compare as strings."""
+    """First real calendar date (YYYY-MM-DD) in ``text``, or None; ISO dates compare as strings."""
     for index in range(0, max(0, len(text) - 9)):
         chunk = text[index:index + 10]
         if (
             chunk[4:5] == "-"
             and chunk[7:8] == "-"
+            and chunk[0:4].isascii()
             and chunk[0:4].isdigit()
+            and chunk[5:7].isascii()
             and chunk[5:7].isdigit()
+            and chunk[8:10].isascii()
             and chunk[8:10].isdigit()
         ):
+            try:
+                date.fromisoformat(chunk)
+            except ValueError:
+                continue
             return chunk
     return None
 
@@ -692,28 +701,45 @@ def compose_mining_research(
             if "missing_issuer" not in limitations:
                 limitations.append("missing_issuer")
             continue
-        companies.append(
-            {
-                "stable_subject_id": sid,
-                "name": str(ident.get("name", "")),
-                "cik": cik,
-                "role": "issuer",
-            }
-        )
+        company = {
+            "stable_subject_id": sid,
+            "name": str(ident.get("name", "")),
+            "cik": cik,
+            "role": "issuer",
+        }
+        # W10-3 — print the row's typed absences on the card. Opt-in: an
+        # identity row without ``typed_absences`` keeps today's four-key
+        # company object byte-for-byte (the T07 copper limitations pin
+        # is untouched; the card mints no limitation and no IssuerIdentity).
+        absences = company_card_absences(ident)
+        if absences:
+            company["absences"] = absences
+        companies.append(company)
 
     # Industrial views are pulled from interpretation_blocks verbatim and ordered by
     # stable_subject_id (PLAN:203). Duplicate local asset labels stay visible but are
     # never additional supply (MGD-12).
+    #
+    # W10-1 — the withdrawal that suppresses native_blocks suppresses this channel too.
+    # Every closed T04 limitation mapped from an omission (``changed_source`` included,
+    # see ``_suppress_native_blocks`` above) collapses the reported-economics list to [];
+    # publishing ``interpretation_blocks`` beside that empty panel paired stale causal text
+    # with withdrawn quantities — the exact pairing ``select_mining_evidence`` refuses with
+    # ``generation_changed`` for the evidence drawer, and the reason that refusal is the
+    # review gate for this panel. The contract explanation survives as the limitation; it
+    # never survives as causal text. A non-withdrawn bundle is untouched by this guard, so
+    # a present view still publishes.
     industrial_views: list[dict[str, Any]] = []
-    for view in bundle.interpretation_blocks:
-        industrial_views.append(
-            {
-                "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
-                "view_kind": str(view.get("view_kind", "industrial")),
-                "description": str(view.get("description", "")),
-                "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
-            }
-        )
+    if not _suppress_native_blocks:
+        for view in bundle.interpretation_blocks:
+            industrial_views.append(
+                {
+                    "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
+                    "view_kind": str(view.get("view_kind", "industrial")),
+                    "description": str(view.get("description", "")),
+                    "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
+                }
+            )
     industrial_views = _order_rows_by_stable_source_identity(industrial_views)
 
     # Evidence refs are derived from native_refs; authority is echoed on every object.

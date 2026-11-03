@@ -11,14 +11,22 @@ the pre-existing importer suite (file:line, original -> mutated).
 from __future__ import annotations
 
 import sys
+from datetime import date, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
+import pandas as pd
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "research/single_name_intelligence/residual"))
 sys.path.insert(0, str(REPO / "research/single_name_intelligence/event_response"))
 
+import lib.nyse_calendar as nyse_calendar  # noqa: E402
+import run_s2 as run_s2_mod  # noqa: E402
+import s2_outcomes as s2_outcomes  # noqa: E402
+from run_s2 import episode_identity, pooled_prior  # noqa: E402
+from s2_outcomes import BABA_PATH, OutcomeEngine  # noqa: E402
 from s1_prereg import POWER_FLOOR_N  # noqa: E402
 from s1_report import (  # noqa: E402
     _below_floor_receipt,
@@ -36,8 +44,10 @@ from s1_report import (  # noqa: E402
     version_record_obj,
 )
 from s2_seal import (  # noqa: E402
+    GRADE_HORIZONS,
     INFO_LEAK_STEP_TOLERANCE,
     MIN_TRAIN_CLUSTERS_POOLED_PRIOR,
+    PROTOCOLS,
     TRAILING63_SESSIONS,
     refuse_nonfalse_authority,
 )
@@ -257,20 +267,174 @@ def test_mut4f_s1_report_version_record_obj_1():
 # s2_seal survivors
 # ---------------------------------------------------------------------------
 
+_SYNTH_ISSUER = "synthetic-issuer-mut4f"
+
+
+class _SynthLoader:
+    """Caller-supplied synthetic price frames; parquet paths are opaque keys."""
+
+    def __init__(self, baba, spy):
+        self.baba = baba
+        self.spy = spy
+
+    def read_parquet(self, path, columns=None):
+        df = self.baba if path == BABA_PATH else self.spy
+        return df if columns is None else df[[c for c in columns if c in df.columns]]
+
+
+def _price_frame(sess, closes, raw=None):
+    return pd.DataFrame({
+        "Date": pd.to_datetime(sess),
+        "close": list(closes),
+        "close_price": list(closes) if raw is None else list(raw),
+    })
+
+
+def _price_engine(sess, baba_closes, spy_closes, baba_raw=None, spy_raw=None):
+    return OutcomeEngine(_SynthLoader(
+        _price_frame(sess, baba_closes, baba_raw),
+        _price_frame(sess, spy_closes, spy_raw),
+    ))
+
+
+def _sessions_ending_at(last: date, n: int) -> list:
+    """The n NYSE sessions ending at `last`, oldest first (last is a session)."""
+    out, cur = [last], last
+    while len(out) < n:
+        cur -= timedelta(days=1)
+        if nyse_calendar.is_session(cur):
+            out.append(cur)
+    return list(reversed(out))
+
+
+def _prior_episode(s_us: str, n: int) -> SimpleNamespace:
+    opener = SimpleNamespace(
+        issuer_key=_SYNTH_ISSUER,
+        family="results",
+        t_avail_utc=f"{s_us}T20:00:00Z",
+        evidence_pointer=f"synthetic#ep={n}",
+        s_us=s_us,
+        s_hk=s_us,
+        member_ids=[f"synthetic-{n}"],
+    )
+    return SimpleNamespace(opener=opener, confounded=False, absorbed_count=0)
+
+
+def _prior_state() -> dict:
+    return {
+        "membership": {
+            pid: {"counted": {h: [] for h in GRADE_HORIZONS}} for pid in PROTOCOLS
+        },
+        "collapse": {"counts": {"literal_row_count_pre_step0": 0,
+                                "excluded_and_listed": []}},
+        "prereg_digest_sha256": "aa" * 32,
+    }
+
+
+def _graded(excess: float) -> dict:
+    return {"state": "OK", "excess": excess, "window": None}
+
 
 def test_mut4f_s2_seal_module_1():
-    """s2_seal.py:216, INFO_LEAK_STEP_TOLERANCE `1e-6` -> `1e-6*1.001`."""
-    assert INFO_LEAK_STEP_TOLERANCE == 1e-6
+    """s2_seal.py:216, INFO_LEAK_STEP_TOLERANCE `1e-6` -> `1e-6*1.001`.
+
+    Behavioural (X7-05): the consumer is OutcomeEngine.info_leak_scan, whose
+    use-site global is s2_outcomes.INFO_LEAK_STEP_TOLERANCE. A vintage step
+    at the nominal tolerance stays clean; a step strictly between the
+    tolerance and the mutant tolerance*1.001 raises the leak bit. Inputs are
+    pinned to the nominal tolerance so a use-site mutation flips the
+    observable; the trailing equality line catches a declaration-only
+    mutation of the seal copy (behaviour is driven by the use-site copy).
+    """
+    tol = 1e-6  # nominal INFO_LEAK_STEP_TOLERANCE (seal and s2_outcomes agree)
+    # float-exact boundary facts for q = close/close_price with raw = 1.0
+    assert (1.0 + tol) / 1.0 - 1.0 <= tol
+    assert tol < (1.0 + tol * 1.0005) / 1.0 - 1.0 <= tol * 1.001
+    sess = [date(2024, 6, 3), date(2024, 6, 4), date(2024, 6, 5),
+            date(2024, 6, 6), date(2024, 6, 7)]
+    assert all(nyse_calendar.is_session(d) for d in sess)
+
+    def _scan(vintage_step: float) -> dict:
+        eng = _price_engine(
+            sess, [1.0, 1.0, vintage_step, vintage_step, vintage_step],
+            [200.0] * len(sess), baba_raw=[1.0] * len(sess),
+            spy_raw=[200.0] * len(sess))
+        return eng.info_leak_scan(sess[0])
+
+    at_tolerance = _scan(1.0 + tol)
+    inside_mutant = _scan(1.0 + tol * 1.0005)
+    assert at_tolerance["series"]["BABA"]["steps_above_tolerance"] == 0
+    assert at_tolerance["leak"] is False
+    assert inside_mutant["series"]["BABA"]["steps_above_tolerance"] == 1
+    assert inside_mutant["leak"] is True
+    assert s2_outcomes.INFO_LEAK_STEP_TOLERANCE == INFO_LEAK_STEP_TOLERANCE
 
 
 def test_mut4f_s2_seal_module_2():
-    """s2_seal.py:197, TRAILING63_SESSIONS `63` -> `64`."""
-    assert TRAILING63_SESSIONS == 63
+    """s2_seal.py:197, TRAILING63_SESSIONS `63` -> `64`.
+
+    Behavioural (X7-05): the consumer is OutcomeEngine.trailing63_direction,
+    whose use-site global is s2_outcomes.TRAILING63_SESSIONS. With
+    TRAILING63_SESSIONS-1 sessions of history before D(s) the D63 bar is
+    absent and the direction abstains (0); with TRAILING63_SESSIONS sessions
+    of history the D63 bar is present and the designed +1 sign is returned.
+    History lengths are pinned to the nominal 63 so a use-site mutation
+    flips the observable; the trailing equality line catches a
+    declaration-only mutation of the seal copy.
+    """
+    t63 = 63  # nominal TRAILING63_SESSIONS (seal and s2_outcomes agree)
+    s_us = date(2024, 6, 3)
+    d = s_us - timedelta(days=1)
+    while not nyse_calendar.is_session(d):
+        d -= timedelta(days=1)
+
+    short = _sessions_ending_at(d, t63)      # d + t63-1 earlier sessions
+    eng_short = _price_engine(short, [100.0] * len(short), [100.0] * len(short))
+    assert eng_short.trailing63_direction(s_us) == 0  # D63 bar absent
+
+    full = _sessions_ending_at(d, t63 + 1)   # d + t63 earlier sessions
+    baba = [100.0] * len(full)
+    baba[full.index(d)] = 110.0              # +10% subject excess over D63..D
+    eng_full = _price_engine(full, baba, [100.0] * len(full))
+    assert eng_full.trailing63_direction(s_us) == 1  # D63 bar present
+    assert s2_outcomes.TRAILING63_SESSIONS == TRAILING63_SESSIONS
 
 
 def test_mut4f_s2_seal_module_3():
-    """s2_seal.py:194, MIN_TRAIN_CLUSTERS_POOLED_PRIOR `2` -> `3`."""
-    assert MIN_TRAIN_CLUSTERS_POOLED_PRIOR == 2
+    """s2_seal.py:194, MIN_TRAIN_CLUSTERS_POOLED_PRIOR `2` -> `3`.
+
+    Behavioural (X7-05): the consumer is run_s2.pooled_prior, which imports
+    the constant from s2_seal (use-site global
+    run_s2.MIN_TRAIN_CLUSTERS_POOLED_PRIOR). With one fewer than
+    MIN_TRAIN_CLUSTERS_POOLED_PRIOR distinct TRAIN clusters (cluster_key =
+    s_us) the prior abstains NOT ESTIMABLE; with exactly that many clusters
+    it estimates the sign. Cluster counts are pinned to the nominal 2 so a
+    use-site mutation flips the observable; the trailing equality line
+    catches a declaration-only mutation of the seal copy.
+    """
+    one = _prior_episode("2019-03-01", 1)
+    two = _prior_episode("2019-06-03", 2)
+    k1, k2 = episode_identity(one), episode_identity(two)
+    assert one.opener.s_us != two.opener.s_us  # distinct cluster_keys
+
+    state_one = _prior_state()
+    state_one["membership"]["P04"]["counted"][5] = [one]
+    direction, token = pooled_prior(
+        state_one, {"outcomes": {(k1, 5): _graded(0.10)}, "trailing": {}}, 5)
+    assert direction is None
+    assert "NOT ESTIMABLE" in token
+
+    state_two = _prior_state()
+    state_two["membership"]["P04"]["counted"][5] = [one, two]
+    direction_two, token_two = pooled_prior(
+        state_two,
+        {"outcomes": {(k1, 5): _graded(0.10), (k2, 5): _graded(0.30)},
+         "trailing": {}},
+        5)
+    assert direction_two == 1
+    assert "+0.200000" in token_two
+    assert (run_s2_mod.MIN_TRAIN_CLUSTERS_POOLED_PRIOR
+            == MIN_TRAIN_CLUSTERS_POOLED_PRIOR)
 
 
 def test_mut4f_s2_seal_refuse_nonfalse_authority_1():

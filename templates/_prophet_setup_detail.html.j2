@@ -20,7 +20,7 @@
 {%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
 {%- else -%}{{ value(none) }}{%- endif -%}
 {%- endmacro %}
-{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}, why_copy=none) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
 {% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
@@ -53,7 +53,18 @@
     </div>
     <div>
       <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
+        {#- A candidate row's headline_reason is an engine decision code. When the
+            pool's shared plain-language copy for that code is supplied, the detail
+            shows the SAME words the row shows (never the raw code); the code itself
+            stays machine-readable in data-reason ('unknown' mirrors the row's own
+          fallback for a missing code). Without supplied copy the R22 rule
+            holds: the untranslated original is labelled, never promoted or invented. -#}
+        {%- set _why_known = kind != 'board' and why_copy is sequence and why_copy is not string and why_copy|length >= 2 and why_copy[0] is string and why_copy[1] is string %}
+        {%- if _why_known %}
+        <p data-reason="{{ (row.get('headline_reason') or 'unknown')|e }}">{{ t(why_copy[0], why_copy[1]) }}</p>
+        {%- else %}
         <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
+        {%- endif %}
       </section>
       {% if kind == 'board' %}
       <section class="pvs-section"><h3>{{ t('Technical context','技术背景') }}</h3><dl class="pvs-facts">
@@ -73,20 +84,41 @@
         </dl><p class="pvs-note">{{ t('Selection is not entry permission. Setup type is not an assigned strategy.','精选不等于入场许可，形态类别不是已分配的策略。') }}</p></section>
         <section class="pvs-section pvs-plan-relation" data-plan-relation="{{ ((plan_rel.get('state') if plan_rel is mapping else none) or 'none')|e }}" data-plan-exact="unavailable">
           {% set _plan_state = (plan_rel.get('state') if plan_rel is mapping else none) or 'none' %}
-          {% if _plan_state == 'related_security' %}
+          {% set _plan_rows = (plan_rel.get('plans') or []) if plan_rel is mapping else [] %}
+          {% set _one = _plan_rows[0] if _plan_rows|length == 1 else none %}
+          {% set _plan_gated = _plan_state == 'related_security' and _one is mapping
+             and _one.get('shell_state') == 'gated' and not _one.get('id') %}
+          {% if _plan_state == 'related_security' and not _plan_gated %}
           <h3>{{ t('Related model record','相关模型记录') }}</h3>
           {% for plan in (plan_rel.get('plans') or []) %}
           <div class="pvs-plan-rec" data-plan-id="{{ (plan.get('id') or '')|e }}" data-plan-lifecycle="{{ (plan.get('lifecycle_state') or '')|e }}">
             <p><code>{{ (plan.get('id') or '')|e }}</code></p>
             <p>{{ t('Status','状态') }} {{ t(life_label_en(plan.get('lifecycle_state')),life_label_zh(plan.get('lifecycle_state'))) }}</p>
-            <p>{{ t('Formed','形成于') }} {{ value(plan.get('formation_date')) }}</p>
-            <p>{{ t('Signal date','信号日期') }} {{ value(plan.get('signal_date')) }}</p>
+            <p>{{ t('Formation anchor','形成锚点') }} {{ value(plan.get('formation_date')) }}</p>
+            {% if plan.get('signal_date_basis') == 'tier_event_date' %}
+            <p>{{ t('Signal event session','信号事件交易日') }} {{ value(plan.get('signal_date')) }}</p>
+            {% elif plan.get('signal_date_basis') == 'legacy_formation_alias' %}
+            <p>{{ t('Formation alias · signal event unverified','形成日期别名 · 信号事件未核实') }} {{ value(plan.get('signal_date')) }}</p>
+            {% elif plan.get('signal_date_basis') == 'tier_observation' %}
+            <p>{{ t('Observation only · no signal event recorded','仅有观测 · 未记录信号事件') }}</p>
+            {% else %}
+            <p>{{ t('Source signal date · basis unavailable','来源信号日期 · 日期依据不可用') }} {{ value(plan.get('signal_date')) }}</p>
+            {% endif %}
+            <p>{{ t('Price observations through','价格观测截至') }} {{ value(plan.get('observed_date')) }}</p>
+            <p>{{ t('Plan price basis','计划价格基准日') }} {{ value(plan.get('price_basis_date')) }}</p>
+            <p>{{ t('Recorded date','记录日期') }} {{ value(plan.get('recorded_at')) }}</p>
             <p>{{ t('Plan as of','计划截至') }} {{ value(plan.get('plan_asof')) }}</p>
             <button type="button" class="pvs-plan-link" data-pvs-plan-target="pv-{{ (plan.get('id') or '')|e }}"><span class="l-en">View in Plans</span><span class="l-zh">在计划中查看</span></button>
           </div>
           {% endfor %}
+          <p class="pvs-note">{{ t('Dates describe sessions or calendar days. Publication / first-visible time not supplied. A historical signal or record status does not establish current entry availability.','日期表示交易日或日历日。未提供发布／首次可见时间。历史信号或记录状态不代表当前可入场。') }}</p>
           <p class="pvs-note">{{ t("A model record for the same security. It is not this candidate's plan and not a position you hold.",'这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。') }}</p>
           <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
+          {% elif _plan_gated %}
+          <h3>{{ t('Related model record','相关模型记录') }}</h3>
+          <p class="pvs-note">{{ t(
+            'A related model record is available with full access.',
+            '完整访问权限可查看相关模型记录。') }}</p>
           {% elif _plan_state == 'unknown' %}
           <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('Plan records could not be read for this candidate.','无法读取此候选的计划记录。') }}</p>
           {% else %}
@@ -97,7 +129,7 @@
         <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
           {{ field('Source as-of','来源日期',as_of,'envelope.as_of') }}
           {{ field('Signal as-of','信号日期',row.get('signal_asof') if kind == 'board' else none,'signal_asof') }}
-          {{ field('Observed date','观察日期',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
+          {{ field('Price observations through','价格观测截至',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
           {{ field('Quote timestamp','报价时间',row.get('price_as_of') if kind == 'board' else none,'price_as_of') }}
         </dl><p class="pvs-note">{{ t('Source date is not a quote timestamp. Missing clocks remain missing.','来源日期不是报价时间，缺失时间保持缺失。') }}</p></section>
       </details>

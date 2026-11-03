@@ -1,0 +1,161 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+______ test_malformed_extractor_payload_rejects_as_value_error[payload0] _______
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1526/.../qualification.json'), 'qualification_sha256': '4a312d909bdab2d4bd0bcfca95ef824ce728570cab42ea1e85f7204d7ff1fca0', ...}
+payload = {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': {'trend': 70}}
+
+    @pytest.mark.parametrize('payload', [
+        {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': {'trend': 70}},
+        {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': ['bad']},
+    ])
+    def test_malformed_extractor_payload_rejects_as_value_error(inputs, payload):
+        path, row = qualify_context(inputs)
+        row['sha256'] = dump(path, payload)
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+        with pytest.raises(ValueError, match='artifact is malformed'):
+>           P.plan_external_candidate(**inputs)
+
+tests/test_press_external_candidate.py:413: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+engine/press/desk_planner.py:1411: in plan_external_candidate
+    return plan_whitehouse_candidate(**inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+engine/press/external_candidate.py:261: in plan_whitehouse_candidate
+    context_facts, context_revisions = _reviewed_context(
+engine/press/external_candidate.py:110: in _reviewed_context
+    snapshots[rel] = (digest, extractors[rel](payload, rel))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+obj = {'asof': '2026-10-10', 'components': {'trend': 70}, 'score': 53, 'verdict': 'MIXED'}
+rel = 'data/market_state/latest.json'
+
+    def _market_state_facts(obj: dict, rel: str) -> list[dict]:
+        if not isinstance(obj, dict):
+            return []
+        facts: list[dict] = []
+        asof = obj.get("asof") or ""
+        score = obj.get("score")
+        verdict = obj.get("verdict")
+        if score is not None and verdict:
+            facts.append(_fact(
+                "market_state_score",
+                f"Mastermind's market-state composite reads {score} of 100 "
+                f"({verdict}) as of {asof}.",
+                ref=f"artifact:{rel}", tier="first_party", dated=asof,
+                values=[score], source_name="Mastermind market-state engine",
+            ))
+>       for comp in (obj.get("components") or [])[:4]:
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: slice(None, 4, None)
+
+engine/press/desk_planner.py:528: KeyError
+______ test_malformed_extractor_payload_rejects_as_value_error[payload1] _______
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1526/.../qualification.json'), 'qualification_sha256': 'f6978db0bc5076833a340923c2937bb707adab9dac4a029e50673334777080e1', ...}
+payload = {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': ['bad']}
+
+    @pytest.mark.parametrize('payload', [
+        {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': {'trend': 70}},
+        {'asof': '2026-10-10', 'score': 53, 'verdict': 'MIXED', 'components': ['bad']},
+    ])
+    def test_malformed_extractor_payload_rejects_as_value_error(inputs, payload):
+        path, row = qualify_context(inputs)
+        row['sha256'] = dump(path, payload)
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+>       with pytest.raises(ValueError, match='artifact is malformed'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_press_external_candidate.py:412: Failed
+_________ test_reviewed_risk_history_requires_complete_object_jsonl[] __________
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1526/.../qualification.json'), 'qualification_sha256': '727d3ca1756a591f42a30ee853c2f788f8b38257db788228f614ac4f446d52dc', ...}
+suffix = ''
+
+    @pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+    def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+        artifact = 'data/risk_radar/forward_log.jsonl'
+        path = inputs['root'] / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                        drawdown_prob={'h21': 0.12}),
+                   dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                        drawdown_prob={'h21': 0.19})]
+        path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+        row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                   relevance='Dated risk backdrop, not evidence of the event effect.')
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+        if suffix:
+            with pytest.raises(ValueError, match='artifact is malformed'):
+                P.plan_external_candidate(**inputs)
+        else:
+            fact = P.plan_external_candidate(**inputs)['validation_context']['facts'][-1]
+            assert fact['id'] == 'risk_radar' and fact['dated'] == '2026-10-10'
+>           assert fact['values'] == ['70', '0.19']
+E           AssertionError: assert ['70', '0.19', 'None', 'None'] == ['70', '0.19']
+E             
+E             Left contains 2 more items, first extra item: 'None'
+E             Use -v to get more diff
+
+tests/test_press_external_candidate.py:475: AssertionError
+____ test_reviewed_risk_history_requires_complete_object_jsonl[\nnot-json] _____
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1526/.../qualification.json'), 'qualification_sha256': 'a05815fa9c13fd503d7e757d3369590d14b59c26ea16e3c0b4a49652035c32cd', ...}
+suffix = '\nnot-json'
+
+    @pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+    def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+        artifact = 'data/risk_radar/forward_log.jsonl'
+        path = inputs['root'] / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                        drawdown_prob={'h21': 0.12}),
+                   dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                        drawdown_prob={'h21': 0.19})]
+        path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+        row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                   relevance='Dated risk backdrop, not evidence of the event effect.')
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+        if suffix:
+>           with pytest.raises(ValueError, match='artifact is malformed'):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: Regex pattern did not match.
+E             Expected regex: 'artifact is malformed'
+E             Actual message: 'Expecting value: line 1 column 1 (char 0)'
+
+tests/test_press_external_candidate.py:470: AssertionError
+_______ test_reviewed_risk_history_requires_complete_object_jsonl[\n[]] ________
+
+inputs = {'document_path': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1526/.../qualification.json'), 'qualification_sha256': '2beacb0ed1fc4e8b10d8b1c6cc543385b50ab47534d1943723c9ac5ff1e0f5dd', ...}
+suffix = '\n[]'
+
+    @pytest.mark.parametrize('suffix', ['', '\nnot-json', '\n[]'])
+    def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
+        artifact = 'data/risk_radar/forward_log.jsonl'
+        path = inputs['root'] / artifact
+        path.parent.mkdir(parents=True, exist_ok=True)
+        history = [dict(asof='2026-10-09', state='watch', dominant_scare='rates', top_score=45,
+                        drawdown_prob={'h21': 0.12}),
+                   dict(asof='2026-10-10', state='caution', dominant_scare='rates', top_score=70,
+                        drawdown_prob={'h21': 0.19})]
+        path.write_text('\n'.join(json.dumps(row) for row in history) + suffix + '\n')
+        row = dict(id='risk_radar', artifact=artifact, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                   relevance='Dated risk backdrop, not evidence of the event effect.')
+        mutate(inputs, 'qualification', lambda q: q['external_planning'].update(first_party_context=[row]))
+        if suffix:
+>           with pytest.raises(ValueError, match='artifact is malformed'):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValueError
+
+tests/test_press_external_candidate.py:470: Failed
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_external_candidate.py::test_malformed_extractor_payload_rejects_as_value_error[payload0]
+FAILED tests/test_press_external_candidate.py::test_malformed_extractor_payload_rejects_as_value_error[payload1]
+FAILED tests/test_press_external_candidate.py::test_reviewed_risk_history_requires_complete_object_jsonl[]
+FAILED tests/test_press_external_candidate.py::test_reviewed_risk_history_requires_complete_object_jsonl[\nnot-json]
+FAILED tests/test_press_external_candidate.py::test_reviewed_risk_history_requires_complete_object_jsonl[\n[]]
+5 failed, 90 deselected in 2.39s

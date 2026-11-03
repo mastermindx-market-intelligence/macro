@@ -1,0 +1,39 @@
+{
+  "schema": "defense.v14_integrated_generation_adjudication.v1",
+  "source_head": "3d715806076f71dcac406678fa238026640ffc45",
+  "main_integrated": "be8a29c43973a2140056275a08769020b209ff68",
+  "candidate_proof": {
+    "receipt_sha256": "81244ed007d6b16893b04d76d68a600af4fc349e6fac88b4246d0298d21aa0a7",
+    "identity": "bfaabb6843d8b8666f7e0a23c91107f33cc758ef67663d20dff61df10ff36604",
+    "summary": "104 passed, 1 skipped, 15 warnings in 879.83s (0:14:39)",
+    "dependencies": 7639,
+    "outputs": 109,
+    "generation": {
+      "ledger_line_count": 642,
+      "projection_generated_at": "2026-10-14T03:12:45.197758+00:00",
+      "queue_content_id": "grcq1-8f1cc489fdf1e14384e038c9",
+      "state_sha256": "2c889096175c738bb09c791f414b5acd08594735848ea0b822a7a7c01e58c9de"
+    },
+    "committed_witness": true
+  },
+  "p0b": "128 fresh browser cases and136affected tests pass;16screenshots identical; historical baseline preserved",
+  "ci_scope": "4 full curated closure, route coverage, fallback and absolute packing checks pass327.98s; no ceilings changed by Defense",
+  "browser": "24/24 actual-source local ASGI states pass; both themes/languages,1440/820/390 normal/focus, six themes, no overflow/errors; explicit local test principal",
+  "timing": {
+    "samples": 10,
+    "under_target": 9,
+    "target_ms": 3000,
+    "median_ms": 2796.2499999925494,
+    "p95_ms": 3686.5,
+    "max_ms": 3686.5,
+    "complete": true,
+    "all_pass": false,
+    "miss_sample": 4,
+    "cause": "unestablished; warm-readers sample, initial resource fetch delay, no long task; not discarded"
+  },
+  "runtime_reuse": "V13 cached-reader benchmark remains qualified by identical actual API modules and all data inputs; not a fresh installed measurement",
+  "cost": "Retained root-scoped counter observations only;4of36Fabric runs have usage observations; native/Fabric counters may overlap and must not be added. No complete billed-cost or efficiency claim.",
+  "preparation": "Separate oversight consumer5c53fcf2be2d has228tests after repairing a reproduced publication-known_at gap. Not part of this source/proof or canonical facts.",
+  "effects": "No protected merge, financial CAS, publication or installed acceptance yet. Original7175, Terminal778, source access holds and unsettled Fabric operations preserved.",
+  "next": "Push originalPR9066, qualify exact-head hosted gates/review; preserve first-natural-publisher then fresh preservation/CAS order and resolve performance/research/customer acceptance obligations."
+}

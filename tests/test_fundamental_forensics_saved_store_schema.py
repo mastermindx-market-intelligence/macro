@@ -222,6 +222,8 @@ def test_node_roundtrip_and_url_state_suites() -> None:
     for suite in (
         "fundamental_forensics_saved_research_roundtrip.test.mjs",
         "fundamental_forensics_saved_url_state.test.mjs",
+        "fundamental_forensics_investigation_manifest_mapping.test.mjs",
+        "fundamental_forensics_investigation_manifest_emitter.test.mjs",
     ):
         result = subprocess.run(
             [node, "--test", str(ROOT / "tests" / suite)],

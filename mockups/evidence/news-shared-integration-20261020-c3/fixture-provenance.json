@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-20T15:47:06.210339+00:00",
+  "scope": "Anonymous static component preview, frozen from the shipped consumer rendering existing fictional API fixtures in English and Chinese. No production data, authenticated deployment, provider delivery, or full stock-page claim. Capture page has no auth client, credentials, API requests, or news runtime; native hover/focus/details remain available. Separate UI and real-SSE fixture tests prove dynamic behavior.",
+  "source_head": "c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8",
+  "source_sha256": {
+    "templates/theme.css": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+    "templates/ticker_news.css": "0183d5f23e0c92507f420b904188114d07e7347842df6adba494957a5d6b5d59",
+    "templates/ticker_news.js": "fe8322cda6e282e08633bee34185200a26905a01fd068aec8b80b6001359fa56",
+    "templates/ticker_news_panel.html.j2": "f9f8401d3ad4a2ff5eef095cc8abce692883e17d1a7d9748e7c355db0b377dea",
+    "scripts/verify_ticker_news_ui.py": "5d3bc715294201107b9c7c343133932ca1a94feea5e4763ee8c33ee158493af7"
+  },
+  "fixture_sha256": "0b033583a3690e0b3bccefdbb431846d010a12dfa651e18d32576b488af03ab8",
+  "page_errors": []
+}

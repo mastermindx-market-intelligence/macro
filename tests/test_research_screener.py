@@ -667,3 +667,1223 @@ def test_fresh_bake_matches_committed_site_html():
     # tag before comparing). Compare the bake, not the injection.
     assert _WHB_TAG_RE.sub("", baked) == _WHB_TAG_RE.sub("", committed)
     assert _STAMP_RE.search(baked)
+
+
+
+
+
+
+# ---------------------------------------------------------------------------
+# B-F06-4 Exposure-integrity regressions — executable template-script tests.
+#
+# The exposure behavior lives in the page's INLINE script, so these tests
+# execute the real thing: the inline <script> block is extracted from
+# templates/research_screener.html.j2 and run under Node's vm against a
+# minimal DOM shim (embedded below as _EXPOSURE_HARNESS_JS). Node stdlib
+# only; each scenario prints one JSON observation line which the assertions
+# below read. Visible state is asserted (hidden flags, data-state, hold
+# marks, reader call counts) rather than implementation text. No network, no
+# real account, no browser required; skips honestly when node is absent.
+
+_EXPOSURE_HARNESS_JS = r"""'use strict';
+/* Exposure-integrity harness for templates/research_screener.html.j2.
+   Node stdlib only (vm/fs/path). Extracts the page's inline screener script,
+   runs it against a minimal DOM shim, and prints one JSON observation line
+   per scenario. Python asserts on the observations. */
+
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+
+// ---------------------------------------------------------------- errors ---
+const ERRORS = [];
+process.on('unhandledRejection', (e) => {
+  ERRORS.push('unhandledRejection: ' + String((e && e.message) || e));
+});
+
+// ------------------------------------------------------------------- DOM ---
+class El {
+  constructor(tag, attrs) {
+    this.tagName = String(tag).toUpperCase();
+    this.attrs = Object.assign({}, attrs || {});
+    this.children = [];
+    this.parent = null;
+    this.hidden = false;
+    this.disabled = false;
+    this.leaf = null;
+    this.style = {};
+    this.listeners = {};
+    this.classSet = new Set(
+      String((attrs && attrs['class']) || '').split(/\s+/).filter(Boolean)
+    );
+  }
+  get className() { return Array.from(this.classSet).join(' '); }
+  get textContent() {
+    if (this.leaf !== null) return this.leaf;
+    return this.children.map((c) => c.textContent).join('');
+  }
+  set textContent(v) { this.children = []; this.leaf = String(v); }
+  get classList() {
+    const self = this;
+    return {
+      toggle(name, force) {
+        const on = force === undefined ? !self.classSet.has(name) : !!force;
+        if (on) self.classSet.add(name); else self.classSet.delete(name);
+        return on;
+      },
+      add(n) { self.classSet.add(n); },
+      remove(n) { self.classSet.delete(n); },
+      contains(n) { return self.classSet.has(n); },
+    };
+  }
+  setAttribute(k, v) {
+    if (k === 'class') {
+      this.classSet = new Set(String(v).split(/\s+/).filter(Boolean));
+    }
+    this.attrs[k] = String(v);
+  }
+  getAttribute(k) {
+    return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null;
+  }
+  appendChild(child) {
+    if (child.parent) child.parent.removeChild(child);
+    child.parent = this;
+    this.children.push(child);
+    return child;
+  }
+  removeChild(child) {
+    const i = this.children.indexOf(child);
+    if (i >= 0) this.children.splice(i, 1);
+    child.parent = null;
+    return child;
+  }
+  matchesSelector(sel) {
+    const tokens = String(sel).match(/(?:\[[^\]]+\])|(?:\.[\w-]+)|(?:[A-Za-z][\w-]*)/g) || [];
+    for (const tok of tokens) {
+      if (tok[0] === '.') {
+        if (!this.classSet.has(tok.slice(1))) return false;
+      } else if (tok[0] === '[') {
+        const m = tok.slice(1, -1).match(/^([A-Za-z_][\w-]*)(?:="([^"]*)")?$/);
+        if (!m) return false;
+        if (!(m[1] in this.attrs)) return false;
+        if (m[2] !== undefined && this.attrs[m[1]] !== m[2]) return false;
+      } else if (this.tagName !== tok.toUpperCase()) {
+        return false;
+      }
+    }
+    return true;
+  }
+  walk(visit) {
+    visit(this);
+    this.children.forEach((c) => c.walk(visit));
+  }
+  querySelector(sel) {
+    let found = null;
+    this.walk((el) => { if (!found && el.matchesSelector(sel)) found = el; });
+    return found;
+  }
+  querySelectorAll(sel) {
+    const out = [];
+    this.walk((el) => { if (el.matchesSelector(sel)) out.push(el); });
+    return out;
+  }
+  addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); }
+  dispatch(type) {
+    const arr = (this.listeners[type] || []).slice();
+    arr.forEach((fn) => {
+      try { fn({ type, preventDefault() {}, target: this }); }
+      catch (e) { ERRORS.push(String((e && e.message) || e)); }
+    });
+    return arr.length;
+  }
+  click() { return this.disabled ? 0 : this.dispatch('click'); }
+}
+
+function makeStorage() {
+  const m = new Map();
+  return {
+    getItem: (k) => (m.has(String(k)) ? m.get(String(k)) : null),
+    setItem: (k, v) => { m.set(String(k), String(v)); },
+    removeItem: (k) => { m.delete(String(k)); },
+    key: (i) => (Array.from(m.keys())[i] !== undefined ? Array.from(m.keys())[i] : null),
+    get length() { return m.size; },
+  };
+}
+
+class CustomEventShim {
+  constructor(type, opts) { this.type = type; Object.assign(this, opts || {}); }
+}
+
+function makeDocument(readyState) {
+  const html = new El('html');
+  const body = new El('body', { class: 'page-research-screener' });
+  html.appendChild(body);
+  const doc = {
+    readyState: readyState || 'complete',
+    documentElement: html,
+    body,
+    listeners: {},
+    getElementById(id) {
+      let found = null;
+      body.walk((el) => { if (!found && el.attrs.id === id) found = el; });
+      return found;
+    },
+    querySelector(sel) { return body.querySelector(sel); },
+    querySelectorAll(sel) { return body.querySelectorAll(sel); },
+    addEventListener(type, fn) { (this.listeners[type] = this.listeners[type] || []).push(fn); },
+    dispatchEvent(ev) {
+      const arr = (this.listeners[ev.type] || []).slice();
+      arr.forEach((fn) => {
+        try { fn(ev); } catch (e) { ERRORS.push(String((e && e.message) || e)); }
+      });
+      return arr.length;
+    },
+    createElement(tag) { return new El(tag); },
+  };
+  return doc;
+}
+
+// -------------------------------------------------------------- fixtures ---
+const ROWS = [
+  { key: 'US-XNAS-AAPL', ticker: 'AAPL', name: 'Apple', catalystDate: '2026-09-12', hasCatalyst: true },
+  { key: 'US-XNAS-MSFT', ticker: 'MSFT', name: 'Microsoft', catalystDate: '', hasCatalyst: false },
+  { key: 'US-XNAS-TSLA', ticker: 'TSLA', name: 'Tesla', catalystDate: '2026-09-20', hasCatalyst: true },
+];
+
+function buildPage(doc) {
+  const main = new El('main', { class: 'rs', id: 'rs-main' });
+  doc.body.appendChild(main);
+  const chips = new El('div', { class: 'rs-chips', role: 'group' });
+  [['theme', true], ['catalyst', false], ['exposure', false], ['valuation', false]].forEach((pair) => {
+    const b = new El('button', {
+      type: 'button',
+      class: 'rs-chip' + (pair[1] ? ' is-disabled' : ''),
+      'data-lens': pair[0],
+      'aria-pressed': 'false',
+    });
+    if (pair[1]) { b.disabled = true; b.setAttribute('disabled', ''); b.setAttribute('aria-disabled', 'true'); }
+    chips.appendChild(b);
+  });
+  main.appendChild(chips);
+  const orderWrap = new El('div', { class: 'rs-order', role: 'group' });
+  [['name', true], ['next_catalyst_date', false]].forEach((pair) => {
+    orderWrap.appendChild(new El('button', {
+      type: 'button',
+      class: 'rs-order-btn' + (pair[1] ? ' is-on' : ''),
+      'data-order': pair[0],
+      'aria-pressed': pair[1] ? 'true' : 'false',
+    }));
+  });
+  main.appendChild(orderWrap);
+  main.appendChild(new El('p', { class: 'rs-theme-null', id: 'rs-theme-hint', 'data-rs-theme-null': '' }));
+
+  const notice = new El('p', { class: 'rs-exposure-null', 'data-rs-exposure-null': '', 'data-state': 'signedout' });
+  notice.hidden = true;
+  const en = new El('span', { class: 'l-en' });
+  en.textContent = 'Sign in to see which of these you hold.';
+  const zh = new El('span', { class: 'l-zh' });
+  zh.textContent = '登录后即可看到你持有其中哪些。';
+  const link = new El('a', { class: 'rs-portfolio-link', 'data-rs-portfolio-link': '', href: 'watchlist.html' });
+  link.hidden = true;
+  const len = new El('span', { class: 'l-en' });
+  len.textContent = 'Open Portfolio';
+  const lzh = new El('span', { class: 'l-zh' });
+  lzh.textContent = '打开投资组合';
+  link.appendChild(len);
+  link.appendChild(lzh);
+  notice.appendChild(en);
+  notice.appendChild(zh);
+  notice.appendChild(link);
+  main.appendChild(notice);
+
+  const empty = new El('p', { class: 'rs-empty', 'data-rs-empty': '' });
+  empty.hidden = true;
+  main.appendChild(empty);
+
+  const list = new El('ol', { class: 'rs-list', 'data-rs-list': '' });
+  main.appendChild(list);
+  ROWS.forEach((r) => {
+    const li = new El('li', {
+      class: 'rs-row',
+      'data-listing-key': r.key,
+      'data-ticker': r.ticker,
+      'data-name': r.name,
+      'data-catalyst-date': r.catalystDate,
+      'data-has-catalyst': r.hasCatalyst ? '1' : '0',
+      'data-has-valuation': '0',
+      'data-has-exposure': '0',
+    });
+    const hold = new El('li', { class: 'rs-hold-line', 'data-rs-hold': '' });
+    hold.hidden = true;
+    li.appendChild(hold);
+    list.appendChild(li);
+  });
+  return { notice, empty, list, link };
+}
+
+function makeAuth(opts) {
+  opts = opts || {};
+  const subs = [];
+  const auth = {
+    hasSession: () => !!opts.session,
+    onChange: (fn) => { subs.push(fn); },
+    open() {},
+  };
+  auth.__fire = () => { subs.slice().forEach((fn) => fn({ id: opts.uid || null })); };
+  return auth;
+}
+
+function makeStore(opts) {
+  opts = opts || {};
+  let calls = 0;
+  const readStateFn = opts.readState || (() => ({
+    authority: 'cloud', state: 'ready', last_good_at: '2026-10-13T00:00:00Z', warning: null,
+  }));
+  const store = {
+    user: () => (opts.user === undefined ? { id: 'u-1', email: 'u1@example.com' } : opts.user),
+    portfolio: {
+      list: () => {
+        calls += 1;
+        if (opts.list) return opts.list();
+        return Promise.resolve(opts.items !== undefined ? opts.items : []);
+      },
+      readState: readStateFn,
+    },
+  };
+  store.__calls = () => calls;
+  return store;
+}
+
+// -------------------------------------------------------------- sandbox ----
+function makeSandbox(opts) {
+  opts = opts || {};
+  const doc = makeDocument(opts.readyState || 'complete');
+  const timers = [];
+  const sandbox = {
+    document: doc,
+    CustomEvent: CustomEventShim,
+    localStorage: opts.localStorage || makeStorage(),
+    sessionStorage: makeStorage(),
+    location: { reload() { sandbox.__reloads = (sandbox.__reloads || 0) + 1; } },
+    navigator: { languages: ['en-US'], language: 'en-US' },
+    setTimeout(fn) { const t = { fn }; timers.push(t); return t; },
+    clearTimeout(t) { const i = timers.indexOf(t); if (i >= 0) timers.splice(i, 1); },
+    console: { warn() {}, error() {}, log() {} },
+    Promise, Array, Object, String, JSON, Date, Number, Boolean, RegExp, Error, TypeError,
+    isNaN,
+  };
+  const winListeners = {};
+  sandbox.addEventListener = (type, fn) => {
+    (winListeners[type] = winListeners[type] || []).push(fn);
+  };
+  sandbox.removeEventListener = (type, fn) => {
+    const arr = winListeners[type] || [];
+    const i = arr.indexOf(fn);
+    if (i >= 0) arr.splice(i, 1);
+  };
+  sandbox.window = sandbox;
+  const ctx = { sandbox, doc, timers, errors: ERRORS };
+  return ctx;
+}
+
+async function settle(ctx, rounds) {
+  const n = rounds || 8;
+  for (let i = 0; i < n; i++) {
+    await new Promise((r) => setImmediate(r));
+    const pending = ctx.timers.splice(0, ctx.timers.length);
+    pending.forEach((t) => {
+      try { t.fn(); } catch (e) { ERRORS.push(String((e && e.message) || e)); }
+    });
+  }
+}
+
+function extractInlineScript(templateSource) {
+  const blocks = [];
+  const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+  let m;
+  while ((m = re.exec(templateSource)) !== null) {
+    if (/\bsrc\s*=/.test(m[1])) continue;
+    blocks.push(m[2]);
+  }
+  const main = blocks.find((b) => b.indexOf('data-rs-list') !== -1);
+  if (!main) throw new Error('screener inline script not found in template');
+  return main;
+}
+
+function snapshot(ctx, page, storeRef) {
+  const rows = page.list.querySelectorAll('.rs-row');
+  return {
+    order: rows.map((r) => r.getAttribute('data-ticker')),
+    rows: rows.map((r) => {
+      const hold = r.querySelector('[data-rs-hold]');
+      return {
+        ticker: r.getAttribute('data-ticker'),
+        hidden: !!r.hidden,
+        hasExposure: r.getAttribute('data-has-exposure'),
+        holdHidden: hold ? !!hold.hidden : null,
+      };
+    }),
+    emptyHidden: !!page.empty.hidden,
+    notice: {
+      hidden: !!page.notice.hidden,
+      state: page.notice.getAttribute('data-state'),
+      en: page.notice.querySelector('.l-en').textContent,
+      zh: page.notice.querySelector('.l-zh').textContent,
+      linkHidden: !!page.link.hidden,
+      linkHref: page.link.getAttribute('href'),
+    },
+    readerCalls: storeRef ? storeRef.__calls() : null,
+    errors: ERRORS.slice(),
+  };
+}
+
+// ------------------------------------------------------------ scenarios ----
+function chip(doc, lens) { return doc.querySelector('.rs-chip[data-lens="' + lens + '"]'); }
+function orderBtn(doc, order) { return doc.querySelector('.rs-order-btn[data-order="' + order + '"]'); }
+
+const SCENARIOS = {
+  async closed_only(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const store = makeStore({ items: [{ ticker: 'AAPL', status: 'closed' }] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  // Real WatchStore returns resolved null while its shared client initializes.
+  async loading_resolved_null(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const store = makeStore({ items: null,
+      readState: () => ({ authority: 'cloud', state: 'loading' }) });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async missing_read_state(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const store = makeStore({ items: [] });
+    delete store.portfolio.readState;
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  // A new readiness/auth event must invalidate even an already-published book.
+  async refresh_published(ctx) {
+    const page = buildPage(ctx.doc);
+    const auth = makeAuth({ session: true });
+    ctx.sandbox.MDXAuth = auth;
+    let refresh = false, resolveRefresh;
+    const store = makeStore({ list: () => refresh
+      ? new Promise((resolve) => { resolveRefresh = resolve; })
+      : Promise.resolve([{ ticker: 'AAPL' }]) });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    const before = snapshot(ctx, page, store);
+    refresh = true;
+    ctx.doc.dispatchEvent({ type: 'wl-auth' });
+    const during = snapshot(ctx, page, store);
+    if (resolveRefresh) resolveRefresh([{ ticker: 'TSLA' }]);
+    await settle(ctx);
+    const after = snapshot(ctx, page, store);
+    auth.__fire();
+    const authRefresh = snapshot(ctx, page, store);
+    if (resolveRefresh) resolveRefresh([]);
+    await settle(ctx);
+    return { before, during, after, authRefresh, final: snapshot(ctx, page, store) };
+  },
+
+  async replaced_store_published(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const storeA = makeStore({ items: [{ ticker: 'AAPL' }] });
+    ctx.sandbox.WatchStore = storeA;
+    runInline(ctx);
+    await settle(ctx);
+    let resolveB;
+    const storeB = makeStore({ list: () => new Promise((r) => { resolveB = r; }) });
+    ctx.sandbox.WatchStore = storeB;
+    chip(ctx.doc, 'exposure').click();
+    const during = snapshot(ctx, page, storeB);
+    if (resolveB) resolveB([{ ticker: 'MSFT' }]);
+    await settle(ctx);
+    return { during, after: snapshot(ctx, page, storeB) };
+  },
+
+  // Signed out: notice copy, no reader call, rows stay visible.
+  async signed_out(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: false });
+    const store = makeStore({ items: [{ ticker: 'AAPL' }] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  // Real watchstore.js, no sync host (dormant init), MDXAuth signed in,
+  // benign seeded local AAPL book. Reader must never be called.
+  async no_host_actual_watchstore(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    ctx.sandbox.localStorage.setItem('mdash.pf.v1', JSON.stringify({
+      v: 1,
+      rows: [{ id: 'loc-1', ticker: 'AAPL', shares: 10, entry_price: 1, entry_date: null, notes: null, status: 'open' }],
+    }));
+    // Exercise the original unsafe reader after the real dormant API exists.
+    // Boot-before-later-scripts has a separate scenario; starting the old inline
+    // script before WatchStore here would pass merely because no reader exists.
+    runSource(ctx, ctx.files.watchstore);
+    const store = ctx.sandbox.WatchStore;
+    const realList = store.portfolio.list;
+    let calls = 0;
+    store.portfolio.list = function () { calls += 1; return realList.apply(this, arguments); };
+    store.__calls = () => calls;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    const out = snapshot(ctx, page, store);
+    out.watchstorePresent = !!ctx.sandbox.WatchStore && typeof ctx.sandbox.WatchStore.user === 'function';
+    out.storeUserIsNull = ctx.sandbox.WatchStore.user() === null;
+    return out;
+  },
+
+  async missing_store(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
+  async missing_user(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ user: null, items: [{ ticker: 'AAPL' }] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async missing_api(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    ctx.sandbox.WatchStore = { user: () => ({ id: 'u-1' }) };
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
+  async loading_pending(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      list: () => new Promise(() => {}),
+      readState: () => ({ authority: 'cloud', state: 'loading', last_good_at: null, warning: null }),
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async error_null(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      items: null,
+      readState: () => ({ authority: 'cloud', state: 'error', last_good_at: null, warning: 'cloud-unavailable' }),
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async rejection(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ list: () => Promise.reject(new Error('rls denied')) });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async sync_throw(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ list() { throw new Error('boom'); } });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async malformed_items(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ items: { length: 2 } });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async malformed_rows_mixed(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      items: [null, 42, {}, { ticker: 'aapl' }, { ticker: 'MSFT', status: 'closed' }, { ticker: '' }],
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async malformed_rows_all(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ items: [null, 'junk', 5] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async malformed_rows_closed(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true });
+    const store = makeStore({ items: [{ ticker: 'AAPL', status: 'closed' }, null] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async local_ready(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      items: [{ ticker: 'AAPL', status: 'open' }],
+      readState: () => ({ authority: 'local', state: 'ready', last_good_at: null, warning: null }),
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async degraded_cloud_with_rows(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      items: [{ ticker: 'AAPL' }],
+      readState: () => ({ authority: 'cloud', state: 'degraded', last_good_at: '2026-10-01T00:00:00Z', warning: 'cloud-unavailable' }),
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async verified_cloud_empty(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ items: [] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  async ready_open_closed(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({
+      items: [{ ticker: 'aapl' }, { ticker: 'MSFT', status: 'closed' }, { ticker: 'TSLA' }],
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    return snapshot(ctx, page, store);
+  },
+
+  // Account switch while read A pending: read B (new owner) must win; A must
+  // never publish. Hold marks must clear at the switch.
+  async account_switch_pending(ctx) {
+    const page = buildPage(ctx.doc);
+    const auth = makeAuth({ session: true, uid: 'u-1' });
+    ctx.sandbox.MDXAuth = auth;
+    let resolveA;
+    const storeA = makeStore({ user: { id: 'u-1' }, list: () => new Promise((res) => { resolveA = res; }) });
+    ctx.sandbox.WatchStore = storeA;
+    runInline(ctx);
+    await settle(ctx, 2);
+    const midMarks = snapshot(ctx, page, storeA);
+
+    let resolveB;
+    const storeB = makeStore({ user: { id: 'u-2' }, list: () => new Promise((res) => { resolveB = res; }) });
+    ctx.sandbox.WatchStore = storeB;
+    auth.__fire();
+    ctx.doc.dispatchEvent({ type: 'wl-auth' });
+    await settle(ctx, 2);
+    const midSwitch = snapshot(ctx, page, storeB);
+
+    resolveB([{ ticker: 'TSLA' }]);
+    await settle(ctx);
+    const afterB = snapshot(ctx, page, storeB);
+
+    resolveA([{ ticker: 'AAPL' }]);
+    await settle(ctx);
+    const afterALate = snapshot(ctx, page, storeB);
+
+    return { midMarks, midSwitch, afterB, afterALate };
+  },
+
+  async signout_during_pending(ctx) {
+    const page = buildPage(ctx.doc);
+    const auth = makeAuth({ session: true, uid: 'u-1' });
+    ctx.sandbox.MDXAuth = auth;
+    let resolveA;
+    const store = makeStore({ list: () => new Promise((res) => { resolveA = res; }) });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    await settle(ctx, 2);
+    auth.hasSession = () => false;
+    auth.__fire();
+    ctx.doc.dispatchEvent({ type: 'wl-auth' });
+    await settle(ctx, 2);
+    const mid = snapshot(ctx, page, store);
+    resolveA([{ ticker: 'AAPL' }]);
+    await settle(ctx);
+    const after = snapshot(ctx, page, store);
+    return { mid, after };
+  },
+
+  // Same owner re-fires wl-auth while a read is pending: the fresh read must
+  // supersede the old completion.
+  async superseded_completion(ctx) {
+    const page = buildPage(ctx.doc);
+    const auth = makeAuth({ session: true, uid: 'u-1' });
+    ctx.sandbox.MDXAuth = auth;
+    const resolvers = [];
+    const store = makeStore({
+      list: () => new Promise((res) => { resolvers.push(res); }),
+    });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    await settle(ctx, 2);
+    ctx.doc.dispatchEvent({ type: 'wl-auth' });
+    await settle(ctx, 2);
+    resolvers[0]([{ ticker: 'AAPL' }]);
+    await settle(ctx);
+    const afterOld = snapshot(ctx, page, store);
+    resolvers[1]([{ ticker: 'TSLA' }]);
+    await settle(ctx);
+    const afterNew = snapshot(ctx, page, store);
+    return { reads: resolvers.length, afterOld, afterNew };
+  },
+
+  async wl_auth_readiness_recovery(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    let ready = false;
+    const store = makeStore({
+      items: [],
+      readState: () => (ready
+        ? { authority: 'cloud', state: 'ready', last_good_at: 't', warning: null }
+        : { authority: 'cloud', state: 'loading', last_good_at: null, warning: null }),
+    });
+    const realList = store.portfolio.list;
+    store.portfolio.list = function () {
+      return ready ? Promise.resolve([{ ticker: 'MSFT' }]) : realList.call(this);
+    };
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    const before = snapshot(ctx, page, store);
+    ready = true;
+    ctx.doc.dispatchEvent({ type: 'wl-auth' });
+    await settle(ctx);
+    const after = snapshot(ctx, page, store);
+    return { before, after };
+  },
+
+  async boot_before_later_scripts(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.doc.readyState = 'loading';
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    runInline(ctx);                       // scripts later in the page have NOT run yet
+    const store = makeStore({ items: [{ ticker: 'AAPL' }] });
+    ctx.sandbox.WatchStore = store;       // the later <script src> defines the store
+    const callsAtEval = store.__calls();
+    (ctx.doc.listeners['DOMContentLoaded'] || []).slice().forEach((fn) => fn({ type: 'DOMContentLoaded' }));
+    await settle(ctx);
+    const out = snapshot(ctx, page, store);
+    out.callsAtEval = callsAtEval;
+    return out;
+  },
+
+  async exposure_off_recovery(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ items: [{ ticker: 'AAPL' }] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx);
+    const on = snapshot(ctx, page, store);
+    chip(ctx.doc, 'exposure').click();    // off
+    await settle(ctx, 2);
+    const off = snapshot(ctx, page, store);
+    chip(ctx.doc, 'exposure').click();    // on again
+    await settle(ctx, 2);
+    const onAgain = snapshot(ctx, page, store);
+    return { on, off, onAgain };
+  },
+
+  async lens_and_order_regression(ctx) {
+    const page = buildPage(ctx.doc);
+    ctx.sandbox.MDXAuth = makeAuth({ session: true, uid: 'u-1' });
+    const store = makeStore({ items: [{ ticker: 'TSLA' }] });
+    ctx.sandbox.WatchStore = store;
+    runInline(ctx);
+    await settle(ctx);
+    const base = snapshot(ctx, page, store);
+    chip(ctx.doc, 'catalyst').click();
+    await settle(ctx, 2);
+    const catalystOn = snapshot(ctx, page, store);
+    orderBtn(ctx.doc, 'next_catalyst_date').click();
+    await settle(ctx, 2);
+    const dateOrder = snapshot(ctx, page, store);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx, 2);
+    const exposureOn = snapshot(ctx, page, store);
+    chip(ctx.doc, 'exposure').click();
+    await settle(ctx, 2);
+    const exposureOff = snapshot(ctx, page, store);
+    return { base, catalystOn, dateOrder, exposureOn, exposureOff };
+  },
+};
+
+// ---------------------------------------------------------------- runner ---
+let TPL_SOURCE = '';
+let WATCHSTORE_SOURCE = '';
+
+function runInline(ctx) {
+  vm.runInNewContext(TPL_SOURCE, ctx.sandbox, { filename: 'research_screener.inline.js' });
+}
+function runSource(ctx, src, name) {
+  vm.runInNewContext(src, ctx.sandbox, { filename: name || 'watchstore.js' });
+}
+
+async function main() {
+  const dir = process.argv[2];
+  const ids = process.argv.slice(3);
+  TPL_SOURCE = fs.readFileSync(path.join(dir, 'research_screener_inline.html.js'), 'utf8');
+  const wsPath = path.join(dir, 'watchstore.js');
+  WATCHSTORE_SOURCE = fs.existsSync(wsPath) ? fs.readFileSync(wsPath, 'utf8') : '';
+
+  for (const id of ids) {
+    ERRORS.length = 0;
+    const fn = SCENARIOS[id];
+    if (!fn) {
+      process.stdout.write(JSON.stringify({ scenario: id, error: 'unknown scenario' }) + '\n');
+      continue;
+    }
+    const ctx = makeSandbox({ readyState: 'complete' });
+    ctx.files = { watchstore: WATCHSTORE_SOURCE };
+    let out;
+    try {
+      const res = await fn(ctx);
+      out = Object.assign({ scenario: id, errors: ERRORS.slice() }, res);
+    } catch (e) {
+      out = { scenario: id, harnessError: String((e && e.stack) || e) };
+    }
+    process.stdout.write(JSON.stringify(out) + '\n');
+  }
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });"""
+
+
+def _exposure_node_available() -> bool:
+    import shutil
+
+    return shutil.which("node") is not None
+
+
+def _extract_screener_inline_script(source: str) -> str:
+    blocks = []
+    for m in re.finditer(r"<script\b([^>]*)>([\s\S]*?)</script>", source):
+        if re.search(r"\bsrc\s*=", m.group(1)):
+            continue
+        blocks.append(m.group(2))
+    mains = [b for b in blocks if "data-rs-list" in b]
+    assert len(mains) == 1, "expected exactly one inline screener script"
+    return mains[0]
+
+
+def _run_exposure_scenarios(tmp_path: Path, scenario_ids: list[str]) -> dict:
+    """Extract + execute the template's inline script under Node, return the
+    per-scenario JSON observations."""
+    import subprocess
+
+    assert _exposure_node_available() or pytest.skip("node is not installed")
+    harness = tmp_path / "research_screener_exposure_harness.js"
+    harness.write_text(_EXPOSURE_HARNESS_JS, encoding="utf-8")
+    inline = tmp_path / "research_screener_inline.html.js"
+    inline.write_text(
+        _extract_screener_inline_script(TEMPLATE_PATH.read_text(encoding="utf-8")),
+        encoding="utf-8",
+    )
+    watchstore = tmp_path / "watchstore.js"
+    ws_src = TEMPLATE_PATH.parent / "watchstore.js"
+    if ws_src.is_file():
+        watchstore.write_bytes(ws_src.read_bytes())
+    else:
+        watchstore.write_text("", encoding="utf-8")
+    proc = subprocess.run(
+        ["node", str(harness), str(tmp_path), *scenario_ids],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert proc.returncode == 0, f"harness failed: {proc.stderr[-2000:]}"
+    out: dict[str, dict] = {}
+    for line in proc.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        rec = json.loads(line)
+        out[rec["scenario"]] = rec
+    missing = [s for s in scenario_ids if s not in out]
+    assert not missing, f"harness did not report: {missing}"
+    broken = {s: r["harnessError"] for s, r in out.items() if "harnessError" in r}
+    assert not broken, f"harness errors: {broken}"
+    for rec in out.values():
+        assert rec.get("errors") == [], f"uncaught page errors: {rec.get('errors')}"
+    return out
+
+
+def _held(scen: dict) -> list[str]:
+    return [r["ticker"] for r in scen["rows"] if r["hasExposure"] == "1"]
+
+
+def _visible(scen: dict) -> list[str]:
+    return [r["ticker"] for r in scen["rows"] if not r["hidden"]]
+
+
+def test_exposure_notice_variants_and_portfolio_destination():
+    """COPY/DOM: same rs-exposure-null container/class, four honest EN/ZH
+    states, existing watchlist.html destination, no new CSS or inline styles."""
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert '<p class="rs-exposure-null" data-rs-exposure-null' in source
+    # Signed-out keeps the canonical engine copy verbatim.
+    assert source.count(EXPOSURE_NULL_EN) >= 2  # static and post-boot copy agree
+    assert source.count(EXPOSURE_NULL_ZH) >= 2
+    for en, zh in (
+        ("Loading your holdings…", "正在读取你的持仓…"),
+        (
+            "Holdings are unavailable here.",
+            "此处暂时无法读取持仓。",
+        ),
+        (
+            "Current holdings could not be verified.",
+            "暂时无法确认当前持仓。",
+        ),
+    ):
+        assert en in source, en
+        assert zh in source, zh
+    assert 'href="watchlist.html"' in source
+    assert "<span class=\"l-en\">Open Portfolio</span><span class=\"l-zh\">打开投资组合</span>" in source
+    # No new styling mechanism: no inline styles, no style block, canonical CSS.
+    assert "style=" not in source
+    assert "<style" not in source
+
+
+def test_exposure_signed_out_shows_notice_and_keeps_rows_visible(tmp_path: Path):
+    """Signed out: the notice says so, rows are NOT hidden (never a claimed
+    zero), and the reader is never called."""
+    (out,) = [_run_exposure_scenarios(tmp_path, ["signed_out"])[k] for k in ["signed_out"]]
+    notice = out["notice"]
+    assert notice["hidden"] is False
+    assert notice["state"] == "signedout"
+    assert notice["en"] == EXPOSURE_NULL_EN
+    assert notice["zh"] == EXPOSURE_NULL_ZH
+    assert notice["linkHidden"] is True
+    assert _visible(out) == ["AAPL", "MSFT", "TSLA"]
+    assert out["emptyHidden"] is True  # no false "No names match"
+    assert out["readerCalls"] == 0
+
+
+def test_exposure_dormant_watchstore_local_book_is_never_read(tmp_path: Path):
+    """The real watchstore.js with NO sync host stays dormant; a signed-in
+    MDXAuth session must not read (or display) the anonymous local book."""
+    rec = _run_exposure_scenarios(tmp_path, ["no_host_actual_watchstore"])[
+        "no_host_actual_watchstore"
+    ]
+    assert rec["watchstorePresent"] is True
+    assert rec["storeUserIsNull"] is True
+    assert rec["readerCalls"] == 0
+    assert _held(rec) == []
+    assert _visible(rec) == ["AAPL", "MSFT", "TSLA"]
+    assert rec["notice"]["hidden"] is False
+    assert rec["notice"]["state"] == "unavailable"
+    assert rec["notice"]["linkHidden"] is False
+    assert rec["notice"]["linkHref"] == "watchlist.html"
+
+
+def test_exposure_missing_store_user_or_api_never_claims_zero(tmp_path: Path):
+    """Missing WatchStore, missing owner id, or missing portfolio API: rows
+    keep their ordinary visibility, no hold marks, reader untouched."""
+    out = _run_exposure_scenarios(
+        tmp_path, ["missing_store", "missing_user", "missing_api"]
+    )
+    for name in ("missing_store", "missing_user", "missing_api"):
+        rec = out[name]
+        assert rec["notice"]["state"] == "unavailable", name
+        assert rec["notice"]["hidden"] is False
+        assert _held(rec) == [], name
+        assert _visible(rec) == ["AAPL", "MSFT", "TSLA"], name
+        assert rec["readerCalls"] in (0, None), name
+        assert rec["emptyHidden"] is True, name
+
+
+def test_exposure_unverified_reads_never_become_no_names_match(tmp_path: Path):
+    """Loading, null/error, rejection, synchronous throw, a non-array answer
+    and an all-malformed array: every row stays visible, nothing is marked,
+    and the honest degraded/loading copy shows instead of the empty state."""
+    out = _run_exposure_scenarios(
+        tmp_path,
+        [
+            "loading_pending",
+            "error_null",
+            "rejection",
+            "sync_throw",
+            "malformed_items",
+            "malformed_rows_all",
+        ],
+    )
+    loading = out["loading_pending"]
+    assert loading["notice"]["state"] == "loading"
+    assert loading["notice"]["en"] == "Loading your holdings…"
+    assert loading["notice"]["zh"] == "正在读取你的持仓…"
+    for name in (
+        "error_null",
+        "rejection",
+        "sync_throw",
+        "malformed_items",
+        "malformed_rows_all",
+    ):
+        rec = out[name]
+        assert rec["notice"]["state"] == "degraded", name
+        assert rec["notice"]["hidden"] is False
+        assert rec["notice"]["linkHidden"] is False, name  # Open Portfolio link
+        assert rec["notice"]["linkHref"] == "watchlist.html"
+        assert _held(rec) == [], name
+        assert _visible(rec) == ["AAPL", "MSFT", "TSLA"], name
+        assert rec["emptyHidden"] is True, name
+
+
+def test_exposure_ready_read_marks_open_rows_only(tmp_path: Path):
+    """A verified cloud-ready read excludes closed lots and filters held names."""
+    ready = _run_exposure_scenarios(tmp_path, ["ready_open_closed"])["ready_open_closed"]
+    assert _held(ready) == ["AAPL", "TSLA"]
+    assert _visible(ready) == ["AAPL", "TSLA"]
+    by_ticker = {r["ticker"]: r for r in ready["rows"]}
+    assert by_ticker["MSFT"]["hidden"] is True
+    assert by_ticker["MSFT"]["holdHidden"] is True
+    assert ready["notice"]["hidden"] is True
+    assert ready["emptyHidden"] is True
+
+
+def test_exposure_partial_malformed_book_does_not_claim_completeness(tmp_path: Path):
+    """Discarding bad rows would falsely claim the partial book is complete,
+    including a known zero when its only valid positions are closed."""
+    out = _run_exposure_scenarios(tmp_path, ["malformed_rows_mixed", "malformed_rows_closed"])
+    for rec in out.values():
+        assert rec["notice"]["state"] == "degraded"
+        assert _held(rec) == []
+        assert rec["emptyHidden"] is True
+
+
+def test_exposure_local_and_degraded_answers_are_never_published(tmp_path: Path):
+    """An authority:'local' ready answer and a degraded last-good cloud answer
+    are both refused: no marks, degraded copy, no false zero."""
+    out = _run_exposure_scenarios(
+        tmp_path, ["local_ready", "degraded_cloud_with_rows"]
+    )
+    for name in ("local_ready", "degraded_cloud_with_rows"):
+        rec = out[name]
+        assert rec["notice"]["state"] == "degraded", name
+        assert _held(rec) == [], name
+        assert _visible(rec) == ["AAPL", "MSFT", "TSLA"], name
+        assert rec["emptyHidden"] is True, name
+        assert rec["readerCalls"] >= 1, name  # the read happened, the answer was refused
+
+
+def test_exposure_verified_cloud_empty_is_the_only_lens_empty(tmp_path: Path):
+    """A verified cloud-ready EMPTY answer is the only thing that may produce
+    the lens's empty state under Exposure."""
+    rec = _run_exposure_scenarios(tmp_path, ["verified_cloud_empty"])[
+        "verified_cloud_empty"
+    ]
+    assert rec["notice"]["hidden"] is True
+    assert _visible(rec) == []
+    assert rec["emptyHidden"] is False
+    assert _held(rec) == []
+
+
+def test_exposure_auth_transitions_invalidate_pending_reads(tmp_path: Path):
+    """Account switch, sign-out and a same-owner readiness re-fire while a
+    read is pending: marks clear at once, the old completion never publishes,
+    and the new owner's read wins."""
+    out = _run_exposure_scenarios(
+        tmp_path,
+        ["account_switch_pending", "signout_during_pending", "superseded_completion"],
+    )
+    sw = out["account_switch_pending"]
+    assert _held(sw["midMarks"]) == []
+    assert all(r["hasExposure"] == "0" for r in sw["midSwitch"]["rows"])  # cleared at switch
+    assert _held(sw["afterB"]) == ["TSLA"]  # owner B's read published
+    assert _held(sw["afterALate"]) == ["TSLA"]  # owner A's late completion ignored
+    so = out["signout_during_pending"]
+    assert all(r["hasExposure"] == "0" for r in so["mid"]["rows"])  # cleared at sign-out
+    assert _held(so["after"]) == []  # post-signout completion ignored
+    assert so["after"]["notice"]["hidden"] is True  # lens off in this scenario
+    sup = out["superseded_completion"]
+    assert sup["reads"] == 2
+    assert _held(sup["afterOld"]) == []  # superseded completion ignored
+    assert _held(sup["afterNew"]) == ["TSLA"]
+
+
+def test_exposure_wl_auth_readiness_recovery(tmp_path: Path):
+    """A loading first read (cloud not ready) recovers via the existing
+    wl-auth readiness event without any polling."""
+    rec = _run_exposure_scenarios(tmp_path, ["wl_auth_readiness_recovery"])[
+        "wl_auth_readiness_recovery"
+    ]
+    assert rec["before"]["notice"]["state"] == "loading"
+    assert _held(rec["before"]) == []
+    assert _visible(rec["before"]) == ["AAPL", "MSFT", "TSLA"]
+    assert rec["after"]["notice"]["hidden"] is True
+    assert _held(rec["after"]) == ["MSFT"]
+    assert _visible(rec["after"]) == ["MSFT"]
+    assert rec["after"]["emptyHidden"] is True
+
+
+def test_exposure_boot_waits_for_later_page_scripts(tmp_path: Path):
+    """While document.readyState === 'loading' the screener must not read:
+    scripts later in the page (watchstore.js) land first, and the boot read
+    happens once, after them."""
+    rec = _run_exposure_scenarios(tmp_path, ["boot_before_later_scripts"])[
+        "boot_before_later_scripts"
+    ]
+    assert rec["callsAtEval"] == 0
+    assert rec["readerCalls"] == 1
+    assert _held(rec) == ["AAPL"]
+    assert rec["notice"]["hidden"] is True
+
+
+def test_exposure_off_restores_ordinary_research(tmp_path: Path):
+    """Switching Exposure off hides the notice and restores ordinary
+    visibility; on again reuses the verified answer without re-reading."""
+    rec = _run_exposure_scenarios(tmp_path, ["exposure_off_recovery"])[
+        "exposure_off_recovery"
+    ]
+    assert _visible(rec["on"]) == ["AAPL"]
+    assert _held(rec["on"]) == ["AAPL"]
+    assert _visible(rec["off"]) == ["AAPL", "MSFT", "TSLA"]
+    assert rec["off"]["notice"]["hidden"] is True
+    assert _visible(rec["onAgain"]) == ["AAPL"]
+    assert rec["onAgain"]["readerCalls"] == rec["on"]["readerCalls"]
+
+
+def test_exposure_preserves_other_lenses_and_order(tmp_path: Path):
+    """Catalyst lens, date ordering and their combination with Exposure keep
+    the pre-repair semantics."""
+    rec = _run_exposure_scenarios(tmp_path, ["lens_and_order_regression"])[
+        "lens_and_order_regression"
+    ]
+    assert _visible(rec["base"]) == ["AAPL", "MSFT", "TSLA"]
+    assert rec["base"]["order"] == ["AAPL", "MSFT", "TSLA"]
+    assert _visible(rec["catalystOn"]) == ["AAPL", "TSLA"]
+    assert rec["dateOrder"]["order"] == ["AAPL", "TSLA", "MSFT"]
+    assert _visible(rec["dateOrder"]) == ["AAPL", "TSLA"]
+    assert _visible(rec["exposureOn"]) == ["TSLA"]  # catalyst ∧ held
+    assert _visible(rec["exposureOff"]) == ["AAPL", "TSLA"]
+    assert rec["exposureOff"]["notice"]["hidden"] is True
+
+
+def test_exposure_closed_only_is_verified_empty(tmp_path: Path):
+    rec = _run_exposure_scenarios(tmp_path, ["closed_only"])["closed_only"]
+    assert rec["notice"]["hidden"] is True
+    assert _visible(rec) == []
+    assert _held(rec) == []
+    assert rec["emptyHidden"] is False
+
+
+def test_exposure_resolved_loading_is_not_a_failure(tmp_path: Path):
+    rec = _run_exposure_scenarios(tmp_path, ["loading_resolved_null"])["loading_resolved_null"]
+    assert rec["notice"]["state"] == "loading"
+    assert rec["notice"]["linkHidden"] is True
+    assert _held(rec) == []
+    assert rec["emptyHidden"] is True
+
+
+def test_exposure_requires_both_public_read_methods(tmp_path: Path):
+    rec = _run_exposure_scenarios(tmp_path, ["missing_read_state"])["missing_read_state"]
+    assert rec["notice"]["state"] == "unavailable"
+    assert rec["readerCalls"] == 0
+    assert _held(rec) == []
+
+
+def test_exposure_refresh_invalidates_published_holdings(tmp_path: Path):
+    rec = _run_exposure_scenarios(tmp_path, ["refresh_published"])["refresh_published"]
+    assert _held(rec["before"]) == ["AAPL"]
+    assert _held(rec["during"]) == []
+    assert rec["during"]["notice"]["state"] == "loading"
+    assert _held(rec["after"]) == ["TSLA"]
+    assert _held(rec["authRefresh"]) == []
+    assert _held(rec["final"]) == []
+    assert rec["final"]["emptyHidden"] is False
+
+
+def test_exposure_cache_belongs_to_the_same_store(tmp_path: Path):
+    rec = _run_exposure_scenarios(tmp_path, ["replaced_store_published"])["replaced_store_published"]
+    assert _held(rec["during"]) == []
+    assert rec["during"]["notice"]["state"] == "loading"
+    assert _held(rec["after"]) == ["MSFT"]

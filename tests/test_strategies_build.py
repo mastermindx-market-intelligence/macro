@@ -136,3 +136,372 @@ def test_strategy_registry_structure():
     for k in ("nasdaq_trend", "btc_trend", "credit_gate_equity", "ig_carry"):
         assert S.by_key(k).experimental is True
         assert S.by_key(k).own_page is None
+
+# --------------------------------------------------------------------------- #
+# W20-L5 render-guards: the detail page prints its backtest window, the
+# Credit/Duration caveats carry no frozen Phase-0 digits, the after-tax +
+# cash-sleeve tiles render (NaN-safe), hub cards print as-of + composite
+# score, and the hub intro reads "current stance". Display-only.
+# --------------------------------------------------------------------------- #
+import copy
+import math
+
+from engine import strategies as S  # noqa: E402  (block-scoped import per commission)
+
+
+def _w20e_detail_html(vm: dict) -> str:
+    return _env().get_template("strategy_detail.html.j2").render(**vm, C=_C)
+
+
+def _w20e_hub_html(cards: list) -> str:
+    return _env().get_template("strategies.html.j2").render(
+        cards=cards, built="2026-10-13 03:00 UTC", C=_C)
+
+
+def _w20e_scard(html: str, needle: str) -> str:
+    """The <a class="scard"> block containing `needle` (scopes card assertions)."""
+    for raw in html.split('<a class="scard"')[1:]:
+        block_html = raw.split("</a>")[0]
+        if needle in block_html:
+            return block_html
+    raise AssertionError(f"no scard block containing {needle!r}")
+
+
+def _w20e_ev() -> dict:
+    """Synthetic _evaluate result for the REAL builder (small series, no data)."""
+    idx = pd.date_range("2023-06-19", periods=4, freq="D")
+    bench = pd.Series([100.0, 101.0, 102.0, 103.0], index=idx)
+    sc = {"years": 3.3, "cagr": 4.3, "hodl_cagr": 4.95, "sharpe": 0.75,
+          "hodl_sharpe": 0.5, "maxdd": -2.4, "hodl_maxdd": -34.2,
+          "time_in_market": 99.3, "turnover_annual": 2.55, "sortino": 1.1,
+          "hodl_sortino": 0.7}
+    at = {"after_tax_cagr": 3.1, "hodl_cagr": 4.0, "cumulative_tax_paid_x": 0.3}
+    return {"spec": S.by_key("credit_carry"), "bench": bench, "alloc": bench / 100,
+            "cash": bench * 0.004, "sc": sc, "at": at,
+            "dsr": {"dsr": 0.91, "n_trials": 8}, "eq": bench, "hodl": bench,
+            "episodes": [], "risk_w": 66, "cash_w": 34, "income": 6.0,
+            "score": 38, "score_series": None, "legs_raw": {}, "last_switch": None,
+            "asof": bench.index[-1].strftime("%b %d, %Y")}
+
+
+def _w20e_detail_vm(monkeypatch) -> dict:
+    import scripts.build_strategies as bs
+    for name in ("_chart_strategy", "_chart_growth", "_chart_dd"):
+        monkeypatch.setattr(bs, name, lambda *a, **k: "")
+    return bs._detail_vm(_w20e_ev(), "2026-10-13 03:00 UTC")
+
+
+def test_w20e_detail_prints_backtest_window():
+    vm = copy.deepcopy(_detail_vm())
+    vm["bench_start"], vm["as_of"] = "Jun 19, 2023", "Oct 13, 2026"
+    vm["sc"]["years"] = 3.3
+    html = _w20e_detail_html(vm)
+    assert "Backtest window" in html and "回测窗口" in html
+    assert "Jun 19, 2023" in html and "Oct 13, 2026" in html and "3.3y" in html
+    assert "Backtest window" not in _w20e_detail_html(_detail_vm())
+
+
+def test_w20e_detail_vm_passes_bench_start(monkeypatch):
+    vm = _w20e_detail_vm(monkeypatch)
+    assert vm["bench_start"] == "Jun 19, 2023"   # the FIRST bench date, not the last
+    assert vm["as_of"] == "Jun 22, 2023"         # as_of stays the last bench date
+
+
+def test_w20e_credit_caveat_has_no_phase0_digits():
+    spec = S.by_key("credit_carry")
+    banned = ["−15%", "-15%", "−34%", "-34%", "0.75 vs 0.83", "0.75 对 0.83"]
+    for text in (spec.caveat_en, spec.caveat_zh):
+        for needle in banned:
+            assert needle not in text, f"stale Phase-0 digit {needle!r} in the caveat"
+    vm = copy.deepcopy(_detail_vm())
+    vm["s"]["caveat_en"], vm["s"]["caveat_zh"] = spec.caveat_en, spec.caveat_zh
+    vm["sc"]["maxdd"] = -2.4
+    html = _w20e_detail_html(vm)
+    assert "-2.4%" in html
+    assert "−15%" not in html and "-15%" not in html
+
+
+def test_w20e_duration_caveat_drops_dsr_digits():
+    spec = S.by_key("duration_timing")
+    assert "0.83 <" not in spec.caveat_en and "0.83 <" not in spec.caveat_zh
+    assert "（0.83" not in spec.caveat_zh and "0.90）" not in spec.caveat_zh
+    assert "−18%" in spec.caveat_en and "−18%" in spec.caveat_zh  # clause stays
+
+
+def test_w20e_detail_after_tax_and_cash_tiles():
+    vm = copy.deepcopy(_detail_vm())
+    vm["sc"]["cagr_nocarry"], vm["sc"]["carry_pp"] = 12.16, 0.43
+    html = _w20e_detail_html(vm)
+    assert "After-tax CAGR" in html and "3.1%" in html and "0.3×" in html
+    assert "Cash-sleeve contribution" in html
+    assert "+0.43pp" in html and "12.16%" in html
+
+    nan_vm = copy.deepcopy(vm)
+    nan_vm["sc"]["carry_pp"] = float("nan")
+    assert math.isnan(nan_vm["sc"]["carry_pp"])
+    tile = _w20e_detail_html(nan_vm).split("Cash-sleeve contribution")[1][:400]
+    assert "nanpp" not in tile.lower() and "+0.43pp" not in tile and "—" in tile
+
+    neg = copy.deepcopy(vm)
+    neg["sc"]["carry_pp"] = -0.2
+    assert "-0.20pp" in _w20e_detail_html(neg)
+
+    no_at = copy.deepcopy(_detail_vm())
+    no_at["at"] = None
+    assert "After-tax CAGR" not in _w20e_detail_html(no_at)
+    assert "Cash-sleeve" not in _w20e_detail_html(no_at)
+
+
+def test_w20e_hub_shows_asof_and_score():
+    cards = copy.deepcopy(_cards())
+    cards[1]["as_of"], cards[1]["score"] = "Oct 13, 2026", 46
+    block = _w20e_scard(_w20e_hub_html(cards), "Credit Carry")
+    assert "Oct 13, 2026" in block and "As of" in block and "截至" in block
+    tail = block.split("Composite score")[1]
+    assert "综合分数" in block and "46" in tail[:60]
+
+    cards = copy.deepcopy(_cards())
+    cards[1]["as_of"], cards[1]["score"] = "Oct 13, 2026", None
+    block = _w20e_scard(_w20e_hub_html(cards), "Credit Carry")
+    assert "Oct 13, 2026" in block and "Composite score" not in block
+
+    block = _w20e_scard(_w20e_hub_html(_cards()), "Credit Carry")
+    assert "Oct 13, 2026" not in block and "Composite score" not in block
+
+
+# --------------------------------------------------------------------------- #
+# W38-B8R: say why the book weight can differ from the score's band. The
+# 5-day debounce is the only mechanism named. Display-only.
+# --------------------------------------------------------------------------- #
+_W38_GAP_EN = "until a new band holds 5 trading days"
+_W38_GAP_ZH = "在新区间持续满 5 个交易日之前"
+
+
+def _w38_detail_vm(monkeypatch, score: int, risk_w: int) -> dict:
+    import scripts.build_strategies as bs
+    for name in ("_chart_strategy", "_chart_growth", "_chart_dd"):
+        monkeypatch.setattr(bs, name, lambda *a, **k: "")
+    ev = _w20e_ev()
+    ev["score"] = score
+    ev["risk_w"] = risk_w
+    ev["cash_w"] = 100 - risk_w
+    return bs._detail_vm(ev, "2026-10-31 00:00 UTC")
+
+
+def _w38_gap_sentences(vm: dict) -> tuple[str, str]:
+    band, spec = vm["score_band"], vm["s"]
+    en = (f"The score {vm['score']} sits in {band['label']} ({band['rng']}), "
+          f"which maps to {band['weight']}% {spec['bench_en']}. "
+          f"The book is still {vm['risk_w']}% {_W38_GAP_EN}.")
+    zh = (f"{vm['score']} 分落在「{band['label_zh']}」区间（{band['rng']}），"
+          f"对应 {band['weight']}% {spec['bench_zh']}。"
+          f"{_W38_GAP_ZH}，持仓仍为 {vm['risk_w']}%。")
+    return en, zh
+
+
+def test_w38_score_47_book_100_names_the_band(monkeypatch):
+    vm = _w38_detail_vm(monkeypatch, 47, 100)
+    band = vm["score_band"]
+    assert band["label"] == "Watch — trim" and band["label_zh"] == "关注 — 减仓"
+    assert band["weight"] == 66 and band["rng"] == "25–50"
+    assert vm["risk_w"] == 100 and vm["score"] == 47
+    en, zh = _w38_gap_sentences(vm)
+    html = _w20e_detail_html(vm)
+    assert en in html and zh in html
+    assert "High-yield credit (TR)" in en and "高收益信用债（总回报）" in zh
+
+
+def test_w38_same_band_prints_no_sentence(monkeypatch):
+    """The weight guard. Removing it prints the sentence while the book matches."""
+    vm = _w38_detail_vm(monkeypatch, 47, 66)
+    assert vm["score_band"]["weight"] == vm["risk_w"] == 66
+    assert vm["score_band"]["label"] == "Watch — trim"
+    html = _w20e_detail_html(vm)
+    assert _W38_GAP_EN not in html and _W38_GAP_ZH not in html
+    bare = _w20e_detail_html(_detail_vm())
+    assert "score_band" not in _detail_vm()
+    assert _W38_GAP_EN not in bare and _W38_GAP_ZH not in bare
+
+
+def test_w38_band_edges_follow_bands(monkeypatch):
+    watch = _w38_detail_vm(monkeypatch, 25, 100)["score_band"]
+    assert watch["label"] == "Watch — trim" and watch["weight"] == 66
+    assert watch["rng"] == "25–50"
+    below = _w38_detail_vm(monkeypatch, 24, 100)["score_band"]
+    assert below["label"] == "Calm — fully invested" and below["weight"] == 100
+    stress = _w38_detail_vm(monkeypatch, 50, 100)["score_band"]
+    assert stress["label"] == "Stress — de-risk" and stress["weight"] == 33
+    assert stress["rng"] == "50–75"
+    assert _w38_detail_vm(monkeypatch, 49, 100)["score_band"]["label"] == "Watch — trim"
+    top = _w38_detail_vm(monkeypatch, 75, 100)["score_band"]
+    assert top["label"] == "Defensive — all cash" and top["label_zh"] == "防守 — 全现金"
+    assert top["weight"] == 0 and top["rng"] == "≥ 75"
+    held = _w38_detail_vm(monkeypatch, 100, 66)["score_band"]
+    assert held["weight"] == 0 and held["label"] == "Defensive — all cash"
+    assert _w38_detail_vm(monkeypatch, 101, 0)["score_band"] is None
+
+
+def test_w20e_card_passes_asof_and_score():
+    import scripts.build_strategies as bs
+    from types import SimpleNamespace
+    ev = _w20e_ev()
+    stub = SimpleNamespace(key="w20e_stub", icon="🧪", own_page=None, name_en="Stub",
+                           name_zh="桩", thesis_en="t", thesis_zh="t", bench_en="B",
+                           bench_zh="B", cash_en="C", cash_zh="C", experimental=True,
+                           score=lambda ctx, eq: {})
+    vm = bs._card(dict(ev, spec=stub))
+    assert vm["as_of"] == "Jun 22, 2023" and vm["score"] == ev["score"]
+    plain = SimpleNamespace(**{**vars(stub), "score": None})
+    assert bs._card(dict(ev, spec=plain))["score"] is None
+
+
+def test_w20e_hub_intro_is_current_not_live():
+    src = (config.ROOT / "templates" / "strategies.html.j2").read_text(encoding="utf-8")
+    assert "实时" not in src and "live stance" not in src
+    html = _w20e_hub_html(_cards())
+    assert "current stance" in html and "当前仓位" in html
+
+
+# --------------------------------------------------------------------------- #
+# W38-B4: the note under the charts must agree with the scorecard tiles.
+# Same numbers as the tiles: engine/equity_alloc.py rounds them before the
+# template compares, so an equal pair is equal on the page and the note calls
+# it level (a shallower drawdown is the greater number, drawdowns are negative).
+# Removing a branch puts the CAGR-behind sentence (_W38_TRAILED) on a page whose
+# tiles say otherwise.
+# --------------------------------------------------------------------------- #
+_W38_TRAILED = "trailed buy-and-hold on CAGR"
+# The CAGR-behind sentence until 2026-11-02, printed on every strategy page of that
+# shape. No branch may print it again: see test_w38_framing_cagr_behind_names_the_trade.
+_W38_OLD_EN = (
+    "Honest framing: this does NOT reliably beat buy-and-hold on CAGR — sitting in the cash leg "
+    "through stress gives up some carry. The edge is the higher Sharpe and the much shallower max "
+    "drawdown: it times the LEFT TAIL that destroys the yield (the recession/credit/rate shock), "
+    "not the yield itself."
+)
+_W38_OLD_ZH = (
+    "诚实说明：本策略在年化收益上并不稳定跑赢买入持有 —— 压力期退守现金腿会让出部分套息。"
+    "优势在于更高的夏普与明显更浅的最大回撤：它择时的是吞噬收益的左尾（衰退/信用/利率冲击），而非收益本身。"
+)
+
+
+def _w38_detail(sc_over: dict) -> str:
+    vm = copy.deepcopy(_detail_vm())
+    vm["sc"].update(sc_over)
+    return _w20e_detail_html(vm)
+
+
+def test_w38_framing_all_three_ahead():
+    """Oil-macro shape: CAGR, Sharpe and a shallower max drawdown all beat buy-and-hold."""
+    en = ("Over this 19.3-year backtest it beat buy-and-hold on CAGR, Sharpe and max drawdown "
+          "(tiles below). That is one backtest, not a promise of the same lead.")
+    zh = ("在这 19.3 年回测中，本策略的年化收益、夏普和最大回撤均优于买入持有（见下方数据）。"
+          "这只是一段回测，不代表未来仍有同样的领先。")
+    html = _w38_detail({"years": 19.3, "cagr": 6.49, "hodl_cagr": 2.07, "sharpe": 0.43,
+                        "hodl_sharpe": 0.25, "maxdd": -43.5, "hodl_maxdd": -86.8})
+    assert en in html and zh in html
+    assert _W38_TRAILED not in html
+    assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html
+
+
+def test_w38_framing_tie_on_every_leg_says_level():
+    """Equal printed pairs are not a lead, so a page tied on all three leaves the all-ahead form."""
+    tied = _w38_detail({"years": 19.3, "cagr": 2.07, "hodl_cagr": 2.07, "sharpe": 0.25,
+                        "hodl_sharpe": 0.25, "maxdd": -43.5, "hodl_maxdd": -43.5})
+    assert ("Over this 19.3-year backtest, against buy-and-hold: CAGR level, Sharpe level, "
+            "max drawdown level (tiles below).") in tied
+    assert "在这 19.3 年回测中，对比买入持有：年化收益持平，夏普持平，最大回撤持平（见下方数据）。" in tied
+    assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in tied
+    assert "均优于买入持有" not in tied
+    assert _W38_TRAILED not in tied
+
+
+def test_w38_framing_net_liquidity_shape_drawdown_level():
+    """strategy_net_liquidity.html prints -55.2% against -55.2%; the note must not call that shallower."""
+    html = _w38_detail({"years": 33.7, "cagr": 8.45, "hodl_cagr": 10.75, "sharpe": 0.57,
+                        "hodl_sharpe": 0.64, "maxdd": -55.2, "hodl_maxdd": -55.2})
+    assert ("Over this 33.7-year backtest, against buy-and-hold: CAGR behind, Sharpe behind, "
+            "max drawdown level (tiles below).") in html
+    assert "在这 33.7 年回测中，对比买入持有：年化收益落后，夏普落后，最大回撤持平（见下方数据）。" in html
+    assert "max drawdown shallower" not in html and "最大回撤更浅" not in html
+
+
+def test_w38_framing_one_tied_leg_leaves_the_two_fixed_sentences():
+    """The two fixed sentences claim strict leads, so one equal pair sends the page to the mixed form."""
+    # CAGR behind and Sharpe tied: the CAGR-behind sentence would claim "the higher Sharpe".
+    sharpe_tied = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.66,
+                               "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
+    assert ("against buy-and-hold: CAGR behind, Sharpe level, max drawdown shallower "
+            "(tiles below).") in sharpe_tied
+    assert _W38_TRAILED not in sharpe_tied
+    # CAGR tied, the rest ahead: "trailed on CAGR" and "beat on CAGR" would both misread it.
+    cagr_tied = _w38_detail({"years": 26.2, "cagr": 7.0, "hodl_cagr": 7.0, "sharpe": 0.8,
+                             "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
+    assert ("against buy-and-hold: CAGR level, Sharpe ahead, max drawdown shallower "
+            "(tiles below).") in cagr_tied
+    assert "年化收益持平，夏普领先，最大回撤更浅" in cagr_tied
+    assert _W38_TRAILED not in cagr_tied
+    assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in cagr_tied
+    # CAGR and Sharpe ahead, drawdown tied: "beat on ... max drawdown" would claim a lead the tiles do not show.
+    dd_tied_ahead = _w38_detail({"years": 26.2, "cagr": 8.0, "hodl_cagr": 7.0, "sharpe": 0.8,
+                                 "hodl_sharpe": 0.66, "maxdd": -44.4, "hodl_maxdd": -44.4})
+    assert ("against buy-and-hold: CAGR ahead, Sharpe ahead, max drawdown level "
+            "(tiles below).") in dd_tied_ahead
+    assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in dd_tied_ahead
+    assert "均优于买入持有" not in dd_tied_ahead
+    # CAGR behind, Sharpe ahead, drawdown tied: the CAGR-behind sentence would claim "the shallower max drawdown".
+    dd_tied_behind = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.8,
+                                  "hodl_sharpe": 0.66, "maxdd": -44.4, "hodl_maxdd": -44.4})
+    assert ("against buy-and-hold: CAGR behind, Sharpe ahead, max drawdown level "
+            "(tiles below).") in dd_tied_behind
+    assert "年化收益落后，夏普领先，最大回撤持平" in dd_tied_behind
+    assert _W38_TRAILED not in dd_tied_behind
+
+
+def _w38_note(html: str) -> str:
+    start = html.index('<div class="note b" style="margin-top:14px">')
+    return html[start:html.index("</div>", start)]
+
+
+def test_w38_framing_cagr_behind_names_the_trade():
+    """CAGR behind, Sharpe and drawdown ahead: the three comparisons the tiles show, nothing more.
+
+    Until 2026-11-02 this branch printed one fixed sentence on every page of this shape, the
+    gold and copper swaps and dual momentum among them: a cash leg giving up carry, a
+    strategy that times "the LEFT TAIL that destroys the yield", a "much shallower" drawdown.
+    The tiles show none of that.
+    """
+    en = ("Over this 26.2-year backtest it trailed buy-and-hold on CAGR but had the higher "
+          "Sharpe and the shallower max drawdown (tiles below): it gave up some return for a "
+          "shallower worst fall. That is one backtest, not a promise.")
+    zh = ("在这 26.2 年回测中，本策略的年化收益落后于买入持有，但夏普更高、最大回撤更浅（见下方数据）："
+          "以部分收益换取了更浅的最大跌幅。这只是一段回测，不代表未来。")
+    html = _w38_detail({"years": 26.2, "cagr": 6.55, "hodl_cagr": 10.67, "sharpe": 0.68,
+                        "hodl_sharpe": 0.66, "maxdd": -25.5, "hodl_maxdd": -44.4})
+    assert en in html and zh in html
+    assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html
+    assert "beat buy-and-hold on CAGR, Sharpe and max drawdown" not in html
+    assert "against buy-and-hold:" not in html and "对比买入持有：" not in html
+    assert _W38_OLD_EN not in html and _W38_OLD_ZH not in html
+    note = _w38_note(html)
+    for gone in ("Honest framing", "reliably", "cash leg", "carry", "LEFT TAIL", "yield",
+                 "much shallower", "诚实说明", "现金腿", "套息", "左尾", "明显更浅"):
+        assert gone not in note, (gone, note)
+    # The shared detail fixture is this same shape (4.3 < 4.95, 0.75 > 0.5, -14.7 > -34.2).
+    default = _w20e_detail_html(_detail_vm())
+    assert "Over this 19.2-year backtest it trailed buy-and-hold on CAGR" in default
+    assert "在这 19.2 年回测中，本策略的年化收益落后于买入持有" in default
+    assert _W38_OLD_EN not in default and _W38_OLD_ZH not in default
+
+
+def test_w38_framing_mixed_names_each_leg():
+    """Any other mix names each leg. Here CAGR is ahead, Sharpe behind, drawdown deeper."""
+    en = ("Over this 11.5-year backtest, against buy-and-hold: CAGR ahead, Sharpe behind, "
+          "max drawdown deeper (tiles below).")
+    zh = "在这 11.5 年回测中，对比买入持有：年化收益领先，夏普落后，最大回撤更深（见下方数据）。"
+    html = _w38_detail({"years": 11.5, "cagr": 8.0, "hodl_cagr": 5.0, "sharpe": 0.2,
+                        "hodl_sharpe": 0.9, "maxdd": -50.0, "hodl_maxdd": -20.0})
+    assert en in html and zh in html
+    assert _W38_TRAILED not in html
+    assert "均优于买入持有" not in html
+    assert '<div class="note b" style="margin-top:14px"><span class="l-en">' + en in html

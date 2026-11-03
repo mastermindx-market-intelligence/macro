@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-30T10:21:06Z",
+ "accession": "0001213900-26-049667",
+ "cik": "0001992243",
+ "doc_byte_length": 340215,
+ "doc_sha256": "97e62563e7f10868d877c04a0484cb5331455e36dfa3ac6bb522f31442b2fe5c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-30",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "ea0288125-10ka1_t1energy.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 26843,
+  "byte_start": 26286,
+  "normalized": "This Amendment No. 1 (the “Amendment”) on Form 10-K/A is being filed with respect to the Registrant’s Annual Report on Form 10-K for the fiscal year ended December 31, 2025, filed with the Securities and Exchange Commission (the “SEC”) on March 31, 2026 (the “Original Filing”). The Company is filing this Amendment to present the information required by Part III (Items 10, 11, 12, 13 and 14) of Form 10-K, which was previously omitted from the Original Filing in reliance on General Instruction G(3) to Form 10-K.",
+  "normalized_sha256": "d7b62f51bab4235c99265621a6df714003e9375f079c8377559e7d8b39630068",
+  "raw": "This Amendment No. 1 (the &#8220;Amendment&#8221;) on Form 10-K/A is\nbeing filed with respect to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December 31, 2025, filed with\nthe Securities and Exchange Commission (the &#8220;SEC&#8221;) on March 31, 2026 (the &#8220;Original Filing&#8221;). The Company is filing\nthis Amendment to present the information required by Part III (Items 10, 11, 12, 13 and 14) of Form 10-K, which was previously omitted\nfrom the Original Filing in reliance on General Instruction G(3) to Form 10-K.",
+  "raw_sha256": "7d032a0a23b7b6a53b4aa9989a5cbd1909634e289aed8c0df3125745dfdc9b89"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1992243/000121390026049667/ea0288125-10ka1_t1energy.htm",
+ "xbrl_contexts": []
+}

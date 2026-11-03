@@ -125,6 +125,32 @@ class ViewTransitionVerdict:
         return AUTHORITY_FLAGS
 
 
+def _text_present(value: object) -> bool:
+    """An opaque-text id / ref / label is present iff it is a non-empty
+    string that is not whitespace-only and that does not begin or end with
+    whitespace. None, ``""``, ``"  "``, ``1``, ``True``, ``1.0``,
+    ``b"id"``, ``["id"]`` and any other object are ABSENT and never match
+    each other. The seat ruling applies this check to every field the
+    module documents as an id / ref / label / owner reference; numbers,
+    timestamps parsed by a dedicated parser, enums checked against a
+    closed set (LANGS, VIEWPORTS), and containers keep their existing
+    checks and are NOT routed through this helper.
+
+    FAMILY TEXT RULE v2 (seat ruling): a string that begins or ends with
+    whitespace is ABSENT, exactly like a whitespace-only string, so a
+    padded id can never pass as a different valid id. The check uses no
+    normalisation method (``.strip()`` / ``.lower()`` / ``.upper()`` /
+    ``.casefold()`` / ``.replace()``), which keeps the family's
+    no-normalisation static scans green.
+    """
+    return (
+        isinstance(value, str)
+        and value != ""
+        and not value[0].isspace()
+        and not value[-1].isspace()
+    )
+
+
 def _blank(value: object) -> bool:
     if value is None:
         return True
@@ -143,14 +169,33 @@ def _freeze_reasons(items: list[str] | tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _changed_axes(before: Mapping, after: Mapping) -> tuple[str, ...]:
-    return tuple(axis for axis in AXES if before.get(axis) != after.get(axis))
+    """Per-axis comparison for identity / id-style axes (issuer_id,
+    counter_id, lens, as_of): only text-present values are compared for
+    sameness; a non-text side is ABSENT, never equal to anything, so a
+    numeric ``1`` on one side and ``True`` on the other is reported as
+    changed (the FIELD_MISSING reason then refuses the verdict). Lang and
+    viewport are checked against their closed sets elsewhere, not here.
+    """
+    out: list[str] = []
+    for axis in AXES:
+        b = before.get(axis)
+        a = after.get(axis)
+        if not (_text_present(b) and _text_present(a)):
+            # Either side is non-text. The axis is ABSENT; FIELD_MISSING
+            # will refuse the verdict via _field_missing. We do NOT add
+            # the axis to changed_axes here (per the existing tests that
+            # pin changed_axes == () for an omitted axis).
+            continue
+        if b != a:
+            out.append(axis)
+    return tuple(out)
 
 
 def _field_missing(before: Mapping, after: Mapping) -> bool:
     for axis in AXES:
         if axis not in before or axis not in after:
             return True
-        if _blank(before.get(axis)) or _blank(after.get(axis)):
+        if not _text_present(before.get(axis)) or not _text_present(after.get(axis)):
             return True
     return False
 
@@ -177,8 +222,10 @@ def check_view_transition(
     counter, lens, or as-of.
 
     `change` is the one AXES name the user action declared, or None.
-    Reports every applicable reason, de-duplicated, in REASONS order.
-    as_of is compared as an exact string.
+    `change` names a PERMITTED axis, not an exclusive intent marker;
+    declaring an axis that did not change is ALLOWED. Reports every
+    applicable reason, de-duplicated, in REASONS order. as_of is compared
+    as an exact string.
     """
     refuse_nonfalse_authority()
     if not isinstance(before, Mapping):

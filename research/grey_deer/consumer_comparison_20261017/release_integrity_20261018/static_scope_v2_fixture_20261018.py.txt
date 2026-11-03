@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""One-shot, standard-library synthetic controls for the two reviewed defects.
+
+Creates only a fresh private /tmp Git fixture and a new sibling JSON receipt.
+The catalogues parse fixture source; neither fixture nor first-party modules are
+imported. This is not pytest or permission to run on a real repository.
+"""
+
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+
+HERE = Path(__file__).resolve().parent
+RECEIPT = HERE / "STATIC_SCOPE_V2_FIXTURE_RECEIPT_2026-10-18.json"
+ORIGINAL = HERE / "candidate_scope_static.py"
+SUCCESSOR = HERE / "candidate_scope_static_v2.py"
+
+
+def identity(path):
+    data = path.read_bytes()
+    return {"path": str(path), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+
+
+def main():
+    if RECEIPT.exists():
+        raise RuntimeError("receipt already exists; preserve prior evidence")
+    assert identity(ORIGINAL)["sha256"] == "1ccb858a4f41ee62e909cc651c64d4ecc5aa525051432b45883854f6d0216c17"
+    identities = {"original": identity(ORIGINAL), "successor": identity(SUCCESSOR),
+                  "runner": identity(Path(__file__).resolve())}
+    started = datetime.now(timezone.utc).isoformat()
+    fixture = Path(tempfile.mkdtemp(prefix="rr-static-scope-v2-", dir="/tmp"))
+    repo, metadata, hooks = fixture / "worktree", fixture / "object-store", fixture / "empty-hooks"
+    hooks.mkdir()
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
+               GIT_CONFIG_SYSTEM=os.devnull, GIT_ALLOW_PROTOCOL="", GIT_TERMINAL_PROMPT="0")
+    commands, results = [], []
+
+    def run(label, argv):
+        completed = subprocess.run(argv, cwd=fixture, env=env, capture_output=True,
+                                   text=True, timeout=60, check=False)
+        commands.append({"label": label, "argv": [str(a) for a in argv], "cwd": str(fixture),
+                         "returncode": completed.returncode, "stdout": completed.stdout,
+                         "stderr": completed.stderr})
+        return completed
+
+    def git(*args):
+        argv = ["git", "-c", "core.hooksPath=" + str(hooks), "-c", "commit.gpgsign=false",
+                "-c", "user.name=Static scope fixture", "-c", "user.email=fixture@example.invalid",
+                "-C", str(repo), *args]
+        completed = run("fixture git " + args[0], argv)
+        assert completed.returncode == 0, completed.stderr
+        return completed.stdout.strip()
+
+    init = run("fixture git init", ["git", "init", "--separate-git-dir", str(metadata), str(repo)])
+    assert init.returncode == 0, init.stderr
+    base_files = {"app/__init__.py": "", "app/main.py": "pass\n", "pkg/__init__.py": "",
+                  "pkg/child.py": "VALUE = 'previous'\n", "nested/README.md": "Synthetic fixture.\n"}
+    target_files = {
+        "app/main.py": (
+            "raise RuntimeError('Synthetic fixture must never execute')\n"
+            "from builtins import __import__ as load\n\n"
+            "def unused():\n"
+            "    from importlib import import_module as load\n\n"
+            "load('pkg', fromlist=['child'])\n"
+        ),
+        "pkg/child.py": "VALUE = 'candidate child'\n",
+    }
+    for path, content in base_files.items():
+        target = repo / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content)
+    git("add", "--all")
+    git("commit", "-m", "Synthetic predecessor")
+    previous = git("rev-parse", "HEAD")
+    for path, content in target_files.items():
+        (repo / path).write_text(content)
+    git("add", "--all")
+    git("commit", "-m", "Synthetic alias collision")
+    revision = git("rev-parse", "HEAD")
+
+    def catalogue(label, script, supplied_repo, output):
+        completed = run(label, [sys.executable, str(script), "--repo", str(supplied_repo),
+                               "--revision", revision, "--compare", previous,
+                               "--root", "app.main", "--output", str(output)])
+        payload = json.loads(output.read_text()) if output.exists() else None
+        observation = {"case": label, "returncode": completed.returncode,
+                       "output_exists": output.exists()}
+        if payload is not None:
+            observation.update(output=identity(output), source=payload["source"],
+                               reached_paths=sorted(payload["reached_sources"]),
+                               reached_changed_paths=sorted(payload["statically_reached_changed_source"]),
+                               dynamic_sites=payload["unresolved_dynamic_import_sites"],
+                               parser_or_object_errors=payload["parser_or_object_errors"])
+        results.append(observation)
+        return completed, payload, observation
+
+    completed, report, observed = catalogue("original F1 counterexample", ORIGINAL, repo,
+                                           fixture / "original-alias.json")
+    assert completed.returncode == 0 and report["parser_or_object_errors"] == []
+    assert "pkg/child.py" not in report["reached_sources"]
+    assert report["unresolved_dynamic_import_sites"] == []
+    observed["outcome"] = "original undercount reproduced; not an acceptance pass"
+
+    completed, report, observed = catalogue("v2 F1 union and explicit ambiguity", SUCCESSOR, repo,
+                                           fixture / "v2-alias.json")
+    assert completed.returncode == 0 and report["parser_or_object_errors"] == []
+    assert "pkg/child.py" in report["statically_reached_changed_source"]
+    assert any(site.get("reason") == "recognized_loader_alias_ambiguous"
+               and site.get("loader_alias") == "load"
+               and site.get("possible_loaders") == ["__import__", "import_module"]
+               for site in report["unresolved_dynamic_import_sites"])
+    assert report["source"]["repository_context"] == {
+        "worktree_root": str(repo), "git_directory": str(metadata), "git_common_directory": str(metadata)}
+    observed["outcome"] = "pass"
+
+    completed, report, observed = catalogue("original F2 nested-root counterexample", ORIGINAL,
+                                           repo / "nested", repo / "original-inside-worktree.json")
+    assert completed.returncode == 0 and report is not None
+    observed["outcome"] = "original inside-worktree output reproduced; not an acceptance pass"
+
+    completed, report, observed = catalogue("v2 F2 nested repo refused", SUCCESSOR,
+                                           repo / "nested", repo / "v2-inside-worktree.json")
+    assert completed.returncode == 2 and report is None
+    assert "--repo must equal Git's actual worktree root" in completed.stderr
+    observed["outcome"] = "pass"
+
+    completed, report, observed = catalogue("v2 F2 external metadata refused", SUCCESSOR, repo,
+                                           metadata / "v2-report.json")
+    assert ".git" not in (metadata / "v2-report.json").parts
+    assert completed.returncode == 2 and report is None
+    assert "--output must be outside the actual worktree and its Git metadata" in completed.stderr
+    observed["outcome"] = "pass"
+
+    linked = fixture / "linked-worktree"
+    git("worktree", "add", "--detach", str(linked), revision)
+    completed, report, observed = catalogue("v2 F2 linked worktree positive control", SUCCESSOR,
+                                           linked, fixture / "v2-linked.json")
+    assert completed.returncode == 0 and report["parser_or_object_errors"] == []
+    context = report["source"]["repository_context"]
+    assert context["worktree_root"] == str(linked)
+    assert context["git_common_directory"] == str(metadata)
+    assert context["git_directory"] == str(metadata / "worktrees" / linked.name)
+    observed["outcome"] = "pass"
+
+    completed, report, observed = catalogue("v2 F2 linked common metadata refused", SUCCESSOR,
+                                           linked, metadata / "v2-linked-report.json")
+    assert not (metadata / "v2-linked-report.json").is_relative_to(Path(context["git_directory"]))
+    assert completed.returncode == 2 and report is None
+    assert "--output must be outside the actual worktree and its Git metadata" in completed.stderr
+    observed["outcome"] = "pass"
+
+    assert identities == {"original": identity(ORIGINAL), "successor": identity(SUCCESSOR),
+                          "runner": identity(Path(__file__).resolve())}
+    receipt = {
+        "started_at": started, "finished_at": datetime.now(timezone.utc).isoformat(),
+        "execution_mode": "standard-library synthetic fixture assertions; not pytest",
+        "scope": "Private synthetic Git fixture only; no native repository, first-party imports or production action",
+        "identities": identities, "fixture_root": str(fixture), "fixture_base_files": base_files,
+        "fixture_target_files": target_files, "fixture_commits": {"revision": revision, "compare": previous},
+        "python": sys.version, "environment_overrides": {key: value for key, value in env.items() if key.startswith("GIT_")},
+        "original_counterexamples_reproduced": 2, "v2_controls_passed": 5,
+        "commands": commands, "results": results,
+    }
+    with RECEIPT.open("x") as stream:
+        json.dump(receipt, stream, indent=2, sort_keys=True)
+        stream.write("\n")
+    print(json.dumps({"receipt": identity(RECEIPT), "original_counterexamples_reproduced": 2,
+                      "v2_controls_passed": 5, "fixture_root": str(fixture)}))
+
+
+if __name__ == "__main__":
+    main()

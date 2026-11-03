@@ -65,17 +65,21 @@ R_NO_LAWFUL_CONTROL_MAPPING = "no_lawful_control_mapping"
 R_REPORTED_RESULT_NOT_AN_ASSUMPTION = "reported_result_not_an_assumption"
 R_EVENT_NOT_YET_OBSERVABLE = "event_not_yet_observable"
 R_MODEL_VERSION_MISMATCH = "model_version_mismatch"
+R_ISSUER_MISMATCH = "issuer_mismatch"
+R_GUIDANCE_METRIC_UNQUALIFIED = "guidance_metric_unqualified"
 
 _REASON_ORDER = (
     R_READER_UNAVAILABLE,
     R_NO_EVENT,
     R_EVENT_NOT_YET_OBSERVABLE,
     R_MODEL_VERSION_MISMATCH,
+    R_ISSUER_MISMATCH,
     R_ALREADY_IN_REPORTED_BASE,
     R_SUPERSEDED_BY_BASE,
     R_REPORTED_RESULT_NOT_AN_ASSUMPTION,
     R_PAYLOAD_NOT_LICENSED,
     R_NO_SOURCE_REF,
+    R_GUIDANCE_METRIC_UNQUALIFIED,
     R_EVENT_CLASS_UNMAPPED,
     R_NO_LAWFUL_CONTROL_MAPPING,
 )
@@ -250,6 +254,14 @@ def _base_facts(controls_blob: dict) -> tuple[str | None, str | None, dict]:
     return ticker, period_end, default if isinstance(default, dict) else {}
 
 
+def _issuer_matches(selected: object, candidates: object) -> bool:
+    """Require a known issuer on both sides; missing identity is not a match."""
+    selected = str(selected or "").strip().upper()
+    if not selected or not isinstance(candidates, (list, tuple)):
+        return False
+    return selected in {str(item or "").strip().upper() for item in candidates}
+
+
 def _build(
     *,
     ticker,
@@ -411,6 +423,9 @@ def propose_from_chronicle_event(
     observed_at = _as_date(event.get("ts") or event.get("date"))
     reasons = _point_in_time_reasons(observed_at, base_period_end, as_of)
 
+    if not _issuer_matches(ticker, event.get("tickers")):
+        reasons.add(R_ISSUER_MISMATCH)
+
     if carries_unlicensed_payload(event):
         reasons.add(R_PAYLOAD_NOT_LICENSED)
 
@@ -450,6 +465,11 @@ def propose_from_chronicle_event(
             "stated by the source."
         )
 
+    if R_ISSUER_MISMATCH in reasons:
+        rationale_en = "This event does not identify the selected company, so no input moves."
+        rationale_zh = "此事件未确认属于当前公司，因此不调整任何输入。"
+        uncertainty = "An issuer mismatch cannot support this company's scenario."
+
     return _build(
         ticker=ticker, base_period_end=base_period_end,
         server_default=server_default,
@@ -476,6 +496,23 @@ def propose_from_chronicle_event(
 
 _GUIDANCE_DIRECTION = {"raise": "up", "cut": "down"}
 
+# A general outlook / EPS / EBITDA increase does not identify sales growth.
+# Accept only a phrase that directly names the model's revenue/sales input.
+# This is still a directional phrase match, never a management-supplied delta.
+_SALES_GUIDANCE_RE = _re.compile(
+    r"^(?P<verb>raising|increasing|lowering|reducing) (?:our )?"
+    r"(?:full[- ]year )?(?:revenue|sales) (?:guidance|outlook)$",
+    _re.IGNORECASE,
+)
+
+
+def _sales_guidance_direction(phrase: str) -> str | None:
+    match = _SALES_GUIDANCE_RE.fullmatch(" ".join(phrase.split()))
+    if match is None:
+        return None
+    return "up" if match.group("verb").lower() in {"raising", "increasing"} else "down"
+
+
 
 def propose_from_guidance_hit(
     hit: object, controls_blob: object, as_of: object = None
@@ -500,7 +537,82 @@ def propose_from_guidance_hit(
         reasons.add(R_EVENT_CLASS_UNMAPPED)
 
     phrase = str(hit.get("phrase") or "").strip()
+    if not _issuer_matches(ticker, [hit.get("ticker")]):
+        reasons.add(R_ISSUER_MISMATCH)
+    from engine.guidance_source_evidence import QualifiedGuidanceContext, _instant
+    context = hit.get("source_context")
+    context_qualified = False
+    if isinstance(context, QualifiedGuidanceContext):
+        try:
+            context_qualified = (
+                context.get("status") == "QUALIFIED"
+                and context.get("metric") == "total_revenue"
+                and context.get("ticker") == hit.get("ticker")
+                and context.get("hit_id") == hit.get("id")
+                and context.get("direction") == hit.get("direction")
+                and context.get("source_url") == _edgar_document_url(hit.get("cik"), hit.get("id"))
+                and context.get("fiscal_year") == int(base_period_end[:4]) + 1
+                and _instant(context.get("retrieved_at")) <= _instant(as_of)
+                and _instant(context.get("decision_cutoff")) == _instant(as_of)
+            )
+        except (TypeError, ValueError):
+            context_qualified = False
+    metric_qualified = context_qualified or (_sales_guidance_direction(phrase) == direction and direction is not None)
+    if not metric_qualified:
+        reasons.add(R_GUIDANCE_METRIC_UNQUALIFIED)
     horizon = "full year" if "full-year" in phrase or "full year" in phrase else "the period management guided"
+    source_refs = _source_refs_from_guidance(hit)
+    if not source_refs:
+        reasons.add(R_NO_SOURCE_REF)
+    elif context_qualified:
+        source_refs[0].update({key: context[key] for key in (
+            "quote", "receipt_id", "content_sha256", "retrieved_at", "decision_cutoff"
+        )})
+        horizon = f"fiscal year {context['fiscal_year']}"
+
+    if R_ISSUER_MISMATCH in reasons:
+        rationale_en = "This guidance record does not identify the selected company, so no input moves."
+        rationale_zh = "此指引记录未确认属于当前公司，因此不调整任何输入。"
+        change = "A source-linked sales-guidance record for the selected company."
+    elif context_qualified and not reasons:
+        rationale_en = "Management changed total-revenue guidance in the linked filing. Only its direction selects the model's sales-growth scenario."
+        rationale_zh = "管理层在所链接的文件中变更了总收入指引。仅将其方向用于选择模型的销售增长情景。"
+        change = "A later filing withdrawing this change, or a new reported base absorbing the guidance period."
+    elif not metric_qualified:
+        rationale_en = (
+            "The extracted phrase does not establish a change in sales guidance. "
+            "EPS, EBITDA and a general outlook cannot be substituted for sales "
+            "growth, so no input moves."
+        )
+        rationale_zh = "提取的原文短语未确认销售指引的变动。每股收益、EBITDA 或一般展望不能替代销售增长，因此不调整任何输入。"
+        change = "A source-qualified phrase explicitly naming a sales-guidance change and its direction."
+    elif reasons:
+        rationale_en = (
+            "The phrase names sales guidance, but this record does not pass the "
+            "source, timing or permitted-input checks, so no input moves."
+        )
+        rationale_zh = "短语提到了销售指引，但此记录未通过来源、时点或可用输入检查，因此不调整任何输入。"
+        change = "A source-linked, timely sales-guidance record using permitted inputs."
+    else:
+        rationale_en = (
+            f"The source phrase “{phrase}” names a sales-guidance change. "
+            "It selects a direction for the model's sales-growth scenario."
+        )
+        rationale_zh = "原文短语明确提到销售指引的变动，仅用于选择模型销售增长情景的方向。"
+        change = "Source context reversing the phrase's direction, or a later filing withdrawing the change."
+    uncertainty = (
+        "No scenario figure is proposed. The extracted phrase does not include "
+        "the full source context."
+        if reasons else
+        "The figure shown is the model's own published scenario, not a number "
+        "the company gave. The extracted phrase does not include the full source context."
+    )
+
+    if context_qualified and not reasons:
+        uncertainty = (
+            "Management's forecast ranges remain source evidence. The proposed figure "
+            "comes only from this model's published preset; it is not company guidance."
+        )
 
     return _build(
         ticker=ticker, base_period_end=base_period_end,
@@ -509,28 +621,15 @@ def propose_from_guidance_hit(
         event_class="guidance_change",
         event_class_en="Guidance change", event_class_zh="业绩指引变动",
         observed_at=observed_at,
-        source_refs=_source_refs_from_guidance(hit),
+        source_refs=source_refs,
         evidence_class=EV_MANAGEMENT_FORECAST_CHANGE,
         assumption_name="sales_growth_pct",
         direction=direction,
         horizon=horizon,
-        rationale_en=(
-            f"Management told the SEC “{phrase}”. That is a change to the "
-            "company's own outlook, so the growth input is the one it argues about."
-            if phrase else
-            "Management filed a change to its own outlook, so the growth input is "
-            "the one it argues about."
-        ),
-        rationale_zh="管理层已向 SEC 提交了自身业绩展望的变动，因此涉及的是增长假设。",
-        uncertainty=(
-            "The filing states a direction, not a size. The figure shown is this "
-            "model's own published scenario in that direction — not a number the "
-            "company gave. Phrase matching also has no negation handling."
-        ),
-        what_would_change_this=(
-            "The same phrase read in context reversing its direction, or a later "
-            "filing withdrawing the change."
-        ),
+        rationale_en=rationale_en,
+        rationale_zh=rationale_zh,
+        uncertainty=uncertainty,
+        what_would_change_this=change,
         reasons=reasons,
     )
 
@@ -577,6 +676,8 @@ def evaluate_proposal(controls_blob: object, proposal: object) -> dict | None:
     prop_period_end = _as_date(proposal.get("base_period_end"))
     if proposal.get("model_version") != MODEL_VERSION:
         binding_reason = R_MODEL_VERSION_MISMATCH
+    elif not _issuer_matches(controls_blob.get("ticker"), [proposal.get("ticker")]):
+        binding_reason = R_ISSUER_MISMATCH
     elif prop_period_end and blob_period_end and prop_period_end != blob_period_end:
         binding_reason = R_SUPERSEDED_BY_BASE
     if binding_reason:

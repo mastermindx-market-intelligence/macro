@@ -866,11 +866,12 @@ def test_fast_macro_visibility_preserves_entitlement_narrowing(caller):
     assert check.call_count == (0 if caller == "guest" else 1)
     full_names = {schema["name"] for schema in full}
     assert ("get_retained_market_context" in full_names) is allowed
+    assert ("get_retained_market_catalog" in full_names) is allowed
     visible = gw._fast_visible_tool_schemas(
         full, "Why is the yield curve steepening today?", None,
         lane="fast", mode="chat", page="", internals_allowed=False,
     )
-    expected = _MACRO_VISIBLE | ({"get_retained_market_context"} if allowed else set())
+    expected = _MACRO_VISIBLE | ({"get_retained_market_context", "get_retained_market_catalog"} if allowed else set())
     assert {schema["name"] for schema in visible} == expected
     assert all(schema in full for schema in visible)
 

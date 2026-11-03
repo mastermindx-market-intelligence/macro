@@ -1,0 +1,65 @@
+{
+  "started_at": "2026-10-20T18:33:30.689573+00:00",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "state": "HISTORICAL_INPUT_PREPARED",
+  "operation": "Preserve H ten unchanged entries and both complete current extensions; exact H mobile receipts only as historical input to original fresh producer",
+  "final_candidate_accepted": false,
+  "fresh_browser_run": false,
+  "history_entries": 12,
+  "incoming_history_indices_in_H": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    7
+  ],
+  "parent_receipts": {
+    "da4df7d1e1ac709055c6fa1d482304a875e81824": {
+      "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+        "bytes": 75805,
+        "sha256": "14f79d2a743a267eca2f20e6f6029339b3fccdd7957eabed65898528482a84c0"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+        "bytes": 489480,
+        "sha256": "d8c5ae26d3b2d733dc5a2bc55664152cbc7f091707c115fb09ccfd57991c138c"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+        "bytes": 497059,
+        "sha256": "34b07d01d0a5333485fce08023cfaae451844725e3f18b4ba5fe180272435b70"
+      }
+    },
+    "9875169102cc6f36a64d465fe7c06f6bb8fb0220": {
+      "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+        "bytes": 59860,
+        "sha256": "330c620d173928a9d7772fe07e179404c08ec2f5f3ba9e2ba37bbe0a6fc81fb9"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+        "bytes": 489480,
+        "sha256": "72db88ebeed2874ea2177deae1795ad19d07198b57692370ccee9ab553b72892"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+        "bytes": 497059,
+        "sha256": "fc993e8734a7f5b60c49ccc6619bd7ead4d6ec63458f773b414f02f78415083a"
+      }
+    }
+  },
+  "intermediate_files": {
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "bytes": 86435,
+      "sha256": "5a2e245aede01ec1420df1d468befc64873076dff248df8cc5e6176e3da91967"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "bytes": 489480,
+      "sha256": "d8c5ae26d3b2d733dc5a2bc55664152cbc7f091707c115fb09ccfd57991c138c"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "bytes": 497059,
+      "sha256": "34b07d01d0a5333485fce08023cfaae451844725e3f18b4ba5fe180272435b70"
+    }
+  },
+  "index_staged": false,
+  "finished_at": "2026-10-20T18:33:30.695073+00:00"
+}

@@ -149,19 +149,99 @@ else:
 PYEOF
 }
 
+# Bounded freshness read. Sets status to the first stdout line (fresh/stale),
+# "timeout", or "error". The first 20 stderr lines are copied to the job log.
+# A child in uninterruptible sleep cannot be killed; the marker still lets the
+# retry budget move on, and that child may outlive the job.
+_read_freshness_bounded() {
+    _gate_dir=$(mktemp -d "${TMPDIR:-/tmp}/options_matrix_gate.XXXXXX")
+    (
+        _check_freshness
+    ) > "$_gate_dir/out" 2> "$_gate_dir/err" &
+    _gate_reader_pid=$!
+
+    (
+        _gate_elapsed=0
+        while [ "$_gate_elapsed" -lt "$GATE_READ_TIMEOUT_SECS" ]; do
+            if ! kill -0 "$_gate_reader_pid" 2>/dev/null; then
+                exit 0
+            fi
+            sleep 1
+            _gate_elapsed=$((_gate_elapsed + 1))
+        done
+        if ! kill -0 "$_gate_reader_pid" 2>/dev/null; then
+            exit 0
+        fi
+        touch "$_gate_dir/timeout"
+        # Snapshot children before TERM. Killing the reader reparents them, so a
+        # later pkill -P cannot see a child that ignored TERM.
+        _gate_kids=$(pgrep -P "$_gate_reader_pid" 2>/dev/null || true)
+        pkill -TERM -P "$_gate_reader_pid" 2>/dev/null || true
+        for _gate_kid in $_gate_kids; do
+            kill -TERM "$_gate_kid" 2>/dev/null || true
+        done
+        kill -TERM "$_gate_reader_pid" 2>/dev/null || true
+        sleep 10
+        pkill -KILL -P "$_gate_reader_pid" 2>/dev/null || true
+        for _gate_kid in $_gate_kids; do
+            kill -KILL "$_gate_kid" 2>/dev/null || true
+        done
+        kill -KILL "$_gate_reader_pid" 2>/dev/null || true
+        exit 0
+    ) >/dev/null 2>&1 &
+    _gate_watch_pid=$!
+
+    _gate_rc=0
+    wait "$_gate_reader_pid" 2>/dev/null || _gate_rc=$?
+    if [ -f "$_gate_dir/timeout" ]; then
+        wait "$_gate_watch_pid" 2>/dev/null || true
+    else
+        kill -TERM "$_gate_watch_pid" 2>/dev/null || true
+        wait "$_gate_watch_pid" 2>/dev/null || true
+    fi
+
+    if [ -f "$_gate_dir/timeout" ]; then
+        status=timeout
+    elif [ "$_gate_rc" -eq 0 ]; then
+        status=""
+        IFS= read -r status < "$_gate_dir/out" || true
+    else
+        status=error
+    fi
+
+    _gate_n=0
+    _gate_line=""
+    if [ -f "$_gate_dir/err" ]; then
+        while IFS= read -r _gate_line; do
+            _gate_n=$((_gate_n + 1))
+            if [ "$_gate_n" -gt 20 ]; then
+                break
+            fi
+            printf '%s\n' "[options_matrix] gate stderr: ${_gate_line}"
+        done < "$_gate_dir/err"
+    fi
+
+    rm -rf "$_gate_dir"
+    return 0
+}
+
 # ── freshness gate ────────────────────────────────────────────────────────────
 if [ "${MATRIX_FRESHNESS_BYPASS:-0}" = "1" ]; then
     echo "[options_matrix] MATRIX_FRESHNESS_BYPASS=1 — skipping freshness gate"
 else
     MAX_ATTEMPTS=6
     SLEEP_SECS=1200   # 20 min
+    GATE_READ_TIMEOUT_SECS=600
 
     attempt=1
     while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
-        status=$(_check_freshness 2>/dev/null || echo "error")
+        _read_freshness_bounded
         if [ "$status" = "fresh" ]; then
             echo "[options_matrix] store fresh (attempt $attempt/$MAX_ATTEMPTS) — proceeding"
             break
+        fi
+        if [ "$status" = "timeout" ]; then
+            echo "[options_matrix] freshness read timed out after ${GATE_READ_TIMEOUT_SECS}s (attempt $attempt/$MAX_ATTEMPTS)"
         fi
         echo "[options_matrix] store not fresh yet (attempt $attempt/$MAX_ATTEMPTS) — sleeping ${SLEEP_SECS}s"
         if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then

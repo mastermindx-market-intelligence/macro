@@ -1,0 +1,39 @@
+{
+  "source_base": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+  "source_head": "b2528af9766ba0b1b608ba8d79631de73c2093d0",
+  "integration_base": "ab5156a4b2c336181f3c5256e7c0766f04f99598",
+  "trial_merge_tree": "9f5fc345bffcbb5cd3c12b5ae016c1d6f1e5e876",
+  "trial_merge_exit": 0,
+  "owned_intersection": [],
+  "non_generated_changed_paths": [],
+  "semantic_reuse": "REVIEW_REUSE_ALLOWED for unchanged runner/census; current generated-source observations separately added",
+  "authority_check": {
+    "active_main": "SUCCESS",
+    "inactive_pilot": {
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "conclusion": "failure",
+      "reason": "inactive_base_context",
+      "context_active": false,
+      "allowed": true,
+      "head": "b2528af9766ba0b1b608ba8d79631de73c2093d0",
+      "check_id": 117335165205
+    }
+  },
+  "hosted_ci": "in progress at this receipt; not a pass",
+  "mission_complete": false,
+  "consumer_addendum_base_inspection": {
+    "recorded_at": "2026-10-17T07:55:18.927809+00:00",
+    "main": "e057aba94712e909d40d124a66add61d2e4a9a52",
+    "previous_main": "ab5156a4b2c336181f3c5256e7c0766f04f99598",
+    "paths_changed": 510,
+    "non_generated": [
+      "scripts/collect.py",
+      "tests/test_collect_lane_gate.py",
+      "tests/test_collect_staging_globs.py"
+    ],
+    "source_change": "PR #9509 fences shared QLedger registrar/grader from targeted --only collection; full/region collection unchanged.",
+    "owned_path_overlap": [],
+    "trial_merge_tree": "88065dd41cbf61c6a868d1ef9b1e71166929fd84",
+    "scope": "Precommit compatibility read, not final-head CI, runtime proof or W5 issuance. Pinned census and consumer inputs remain unchanged."
+  }
+}

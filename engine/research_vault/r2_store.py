@@ -29,6 +29,7 @@ absent object: it returns ``None`` only for an authoritative not-found result.
 """
 from __future__ import annotations
 
+import contextvars
 import errno
 import fcntl
 import logging
@@ -46,6 +47,15 @@ log = logging.getLogger("research_vault.r2_store")
 
 _MAX_STRICT_STREAM_READ_CALLS = 8_192
 HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES = 16 * 1024
+
+# The one canonical catalog key is committed by the producer at up to the
+# producer's own catalog allocation (engine.research_vault.producer_generation
+# .CATALOG_MAX_BYTES = 16 MiB), so its local conditional predecessor read
+# may use that same bound. Every other key keeps the unconditional 16 KiB
+# ceiling above. The bound is fixed by this exact key test alone; no
+# caller-supplied override can widen either limit.
+_CONDITIONAL_CATALOG_OBJECT_KEY = "research_vault/catalog.json"
+_CONDITIONAL_CATALOG_MAX_BYTES = 16 * 1024 * 1024
 
 
 @runtime_checkable
@@ -182,8 +192,8 @@ def _validate_bounded_lengths(*, expected_byte_length: int, max_byte_length: int
 # boto3 client (mirrors scripts/publish_r2._client, private bucket)
 # ---------------------------------------------------------------------------
 
-def _r2_client():
-    """S3 client for the private Research Vault plane, or None when unavailable.
+def _research_credentials() -> tuple[str, str, str] | None:
+    """The complete dedicated ``R2_RESEARCH_*`` family, or None when unusable.
 
     The private research store has its own explicit credential namespace.
     ``R2_RESEARCH_*`` never inherits generic ``R2_*`` delivery-plane values.
@@ -204,18 +214,150 @@ def _r2_client():
             "refusing private Research Vault client"
         )
         return None
-    import boto3
+    return configured
+
+
+def _research_s3_config(retries: dict):
+    """One botocore Config for the private plane; only the retry policy varies."""
     from botocore.config import Config
     kw = dict(region_name="auto", signature_version="s3v4",
-              max_pool_connections=32, retries={"max_attempts": 5, "mode": "adaptive"},
+              max_pool_connections=32, retries=dict(retries),
               connect_timeout=15, read_timeout=60)
     try:  # newer botocore: R2 rejects the default CRC32 trailer
-        cfg = Config(**kw, request_checksum_calculation="when_required",
-                     response_checksum_validation="when_required")
+        return Config(**kw, request_checksum_calculation="when_required",
+                      response_checksum_validation="when_required")
     except TypeError:
-        cfg = Config(**kw)
-    return boto3.client("s3", endpoint_url=ep, aws_access_key_id=ak,
-                        aws_secret_access_key=sk, config=cfg)
+        return Config(**kw)
+
+
+def _r2_client():
+    """S3 client for the private Research Vault plane, or None when unavailable."""
+    configured = _research_credentials()
+    if configured is None:
+        return None
+    import boto3
+    ep, ak, sk = configured
+    return boto3.client(
+        "s3", endpoint_url=ep, aws_access_key_id=ak, aws_secret_access_key=sk,
+        config=_research_s3_config({"max_attempts": 5, "mode": "adaptive"}))
+
+
+def _r2_write_client():
+    """Single-attempt S3 client for the private write plane, or None.
+
+    Identical to :func:`_r2_client` — same dedicated ``R2_RESEARCH_*``
+    endpoint/credential family, timeouts and pool — except the SDK's own hidden
+    retry layer is disabled with ``total_max_attempts=1`` and a per-call send
+    guard enforces at most one outbound HTTP request. The ordinary client's adaptive retries silently
+    repeat non-idempotent writes behind the caller's back (measured live: one
+    ``put_bytes`` returned True after two real PUTs), so a caller that must own
+    its retry decisions needs a transport it can trust. Read clients keep the
+    existing adaptive behaviour and thread-safety semantics unchanged.
+
+    The retry configuration alone does NOT enforce that boundary: botocore's S3
+    regional redirector issues extra sends OUTSIDE the retry budget even with
+    ``total_max_attempts=1`` (measured live: one redirected ``put_bytes``
+    produced two real PUTs, and a redirect without ``x-amz-bucket-region``
+    produced two PUTs plus a HeadBucket region probe). The returned client is
+    therefore additionally guarded by :func:`_refuse_unauthorized_write_send`
+    on its own event system, and its resolved retry policy is validated — a
+    client whose policy does not resolve to one standard attempt is refused
+    rather than shipped with an unenforceable guarantee.
+    """
+    configured = _research_credentials()
+    if configured is None:
+        return None
+    import boto3
+    ep, ak, sk = configured
+    client = boto3.client(
+        "s3", endpoint_url=ep, aws_access_key_id=ak, aws_secret_access_key=sk,
+        config=_research_s3_config({"total_max_attempts": 1, "mode": "standard"}))
+    _validate_single_attempt_retry_policy(client)
+    client.meta.events.register("before-send.s3", _refuse_unauthorized_write_send)
+    return client
+
+
+def _validate_single_attempt_retry_policy(client) -> None:
+    """Fail closed unless the built write client resolved a one-attempt policy.
+
+    Checked on the client's public ``meta.config`` AFTER botocore has resolved
+    it (environment overrides only fill values the explicit config omits, so a
+    resolved drift here means the transport contract was already lost).
+    """
+    config = getattr(getattr(client, "meta", None), "config", None)
+    retries = getattr(config, "retries", None)
+    attempts = retries.get("total_max_attempts") if isinstance(retries, dict) else None
+    if (
+        not isinstance(retries, dict)
+        or retries.get("mode") != "standard"
+        or type(attempts) is not int  # exact int: no bool, no "truthy" coercion
+        or attempts != 1
+    ):
+        raise RuntimeError(
+            "single-attempt write client resolved an unusable retry policy "
+            f"(want standard mode with total_max_attempts=1, got {retries!r})"
+        )
+
+
+class SingleAttemptTransportViolation(RuntimeError):
+    """The dedicated single-attempt write transport refused an outbound request.
+
+    Raised BEFORE any extra HTTP request leaves the process: either the one
+    transport attempt of the authorized store write call is already consumed
+    (for example botocore's S3 regional redirector issuing an immediate second
+    request outside the retry budget), or no authorized store write call is
+    active in this context at all. A write whose outcome was unknown because
+    its single response was lost is reported as a failure, never retried.
+    """
+
+
+class _WriteAttemptBudget:
+    """Exactly one authorized outbound transport send per write invocation."""
+
+    __slots__ = ("_consumed",)
+
+    def __init__(self) -> None:
+        self._consumed = False
+
+    def authorize(self) -> bool:
+        if self._consumed:
+            return False
+        self._consumed = True
+        return True
+
+
+# Per-invocation transport budget, keyed by context: a ContextVar keeps
+# concurrent store write calls (threads or asyncio tasks) isolated from each
+# other, and ``reset`` in the caller's ``finally`` guarantees no state leaks
+# into later calls.
+_SINGLE_ATTEMPT_WRITE_BUDGET: contextvars.ContextVar = contextvars.ContextVar(
+    "research_vault_single_attempt_write_budget", default=None)
+
+
+def _refuse_unauthorized_write_send(request, **kwargs):
+    """``before-send.s3`` guard, installed ONLY on the dedicated write client.
+
+    botocore emits ``before-send.<service>.<operation>`` immediately before
+    every HTTP attempt of this client, which makes it the last public
+    chokepoint before the wire: the one-attempt boundary is enforced on actual
+    sends, not on retry configuration. Service-level (not PutObject-specific)
+    so the regional redirector's HeadBucket fallback is refused too. The
+    ordinary read client never gets this handler and keeps its adaptive,
+    thread-safe behaviour unchanged.
+    """
+    budget = _SINGLE_ATTEMPT_WRITE_BUDGET.get()
+    if budget is None:
+        raise SingleAttemptTransportViolation(
+            "single-attempt write client has no authorized store write "
+            "invocation in this context; refusing an outbound request"
+        )
+    if not budget.authorize():
+        raise SingleAttemptTransportViolation(
+            "single-attempt write transport refused a second outbound request "
+            "within one store write call (S3 regional redirect or hidden SDK "
+            "retry)"
+        )
+    return None
 
 
 def _is_authoritative_r2_not_found(error: Exception) -> bool:
@@ -307,16 +449,64 @@ def _is_authoritative_r2_conditional_conflict(error: Exception) -> bool:
 
 
 class R2Store:
-    """boto3-backed store for the private research bucket."""
+    """boto3-backed store for the private research bucket.
 
-    def __init__(self, bucket: str, client=None):
+    ``single_attempt_writes=True`` (explicit producer generation only) selects a
+    DISTINCT write client built by :func:`_r2_write_client` whose SDK retry layer
+    is disabled AND whose ``before-send`` transport guard refuses any second
+    outbound request within one write call (regional redirects and hidden SDK
+    retries included), so every write call is at most one HTTP request. Reads
+    keep the ordinary adaptive client. The default store keeps using the
+    ordinary client for everything, exactly as before.
+    """
+
+    def __init__(self, bucket: str, client=None, *, single_attempt_writes: bool = False):
+        # Strictly bool: no env string, no int, no "truthy" coercion. A flag
+        # that silently accepts surprises is how retry policy drifts unnoticed.
+        if type(single_attempt_writes) is not bool:
+            raise ValueError("single_attempt_writes must be an exact bool")
+        if single_attempt_writes and client is not None:
+            # An injected client cannot prove one-attempt transport; refusing is
+            # the honest answer, not asserting an unverified property about it.
+            raise ValueError(
+                "single_attempt_writes requires the store's own R2 write client; "
+                "an injected client cannot prove single-attempt transport"
+            )
         self.bucket = bucket
+        # Only our prebuilt ordinary client is qualified for receipt read threads.
+        # Injected clients retain the original serial caller semantics.
+        self._receipt_reads_thread_safe = client is None
         self._s3 = client if client is not None else _r2_client()
+        self._single_attempt_writes = single_attempt_writes
+        self._dedicated_write_client = None
+        if single_attempt_writes and self._s3 is not None:
+            self._dedicated_write_client = _r2_write_client()
+            if self._dedicated_write_client is None:
+                # Never fall back to the adaptive read client: that would
+                # reintroduce exactly the hidden retries this flag refuses.
+                raise RuntimeError(
+                    "single_attempt_writes could not build the dedicated "
+                    "R2_RESEARCH single-attempt write client"
+                )
         self.last_put_error: BaseException | None = None
 
     @property
+    def _write_s3(self):
+        """The client every write is issued on.
+
+        A single-attempt store always uses its dedicated guarded write client.
+        A legacy store uses the CURRENT ``_s3`` at write time — injection
+        selection is preserved, and a later replacement of ``_s3`` is what
+        writes (and capability validation) actually inspect.
+        """
+        if self._single_attempt_writes:
+            return self._dedicated_write_client
+        return self._s3
+
+    @property
     def available(self) -> bool:
-        return self._s3 is not None and bool(self.bucket)
+        return (self._s3 is not None and self._write_s3 is not None
+                and bool(self.bucket))
 
     def get_bytes(self, key: str) -> bytes | None:
         if not self.available:
@@ -685,9 +875,13 @@ class R2Store:
         return VersionedBytes(data=content, version=etag)
 
     def _require_conditional_put_capability(self) -> None:
-        """Fail before I/O when the active botocore model cannot sign CAS headers."""
+        """Fail before I/O when the active botocore model cannot sign CAS headers.
+
+        Checked against the client the write will actually use, so a
+        single-attempt store validates its own write client's model.
+        """
         try:
-            operation = self._s3.meta.service_model.operation_model("PutObject")
+            operation = self._write_s3.meta.service_model.operation_model("PutObject")
             members = operation.input_shape.members
             supported = "IfMatch" in members and "IfNoneMatch" in members
         except Exception as exc:
@@ -699,6 +893,28 @@ class R2Store:
         """Validate CAS support from the local SDK model without remote I/O."""
         self._require_conditional_put_capability()
 
+    def _put_object_on_write_client(self, arguments: dict):
+        """Issue one ``put_object`` on the currently selected write client.
+
+        For a single-attempt store this brackets the call with a one-attempt
+        transport budget in the calling context, so the ``before-send`` guard
+        installed on the dedicated client refuses any SECOND outbound request
+        of the same invocation — including botocore's S3 regional redirect
+        retry and its HeadBucket region probe — before it reaches the wire.
+        The budget is reset in ``finally``, so sequential and concurrent write
+        calls each get their own attempt and nothing leaks between them.
+        Legacy stores pass straight through to the selected client unchanged.
+        """
+        dedicated = self._dedicated_write_client
+        if dedicated is None:
+            return self._write_s3.put_object(**arguments)
+        budget = _WriteAttemptBudget()
+        token = _SINGLE_ATTEMPT_WRITE_BUDGET.set(budget)
+        try:
+            return dedicated.put_object(**arguments)
+        finally:
+            _SINGLE_ATTEMPT_WRITE_BUDGET.reset(token)
+
     def put_bytes_strict_conditional(
         self,
         key: str,
@@ -707,7 +923,12 @@ class R2Store:
         expected_version: str | None,
         content_type: str = "application/octet-stream",
     ) -> bool:
-        """Atomically create or replace an R2 object at one exact predecessor."""
+        """Atomically create or replace an R2 object at one exact predecessor.
+
+        Always issued on the selected write client: a single-attempt store's CAS
+        PUT sends at most one HTTP request, a 503 raises to the caller (no hidden SDK
+        retry), and a 409/412 predecessor conflict still returns False.
+        """
         if type(data) is not bytes:
             raise TypeError("conditional object data must be exact bytes")
         if expected_version is not None and (
@@ -730,7 +951,7 @@ class R2Store:
         else:
             arguments["IfMatch"] = expected_version
         try:
-            self._s3.put_object(**arguments)
+            self._put_object_on_write_client(arguments)
         except Exception as error:
             if _is_authoritative_r2_conditional_conflict(error):
                 return False
@@ -739,12 +960,21 @@ class R2Store:
 
     def put_bytes(self, key: str, data: bytes,
                   content_type: str = "application/octet-stream") -> bool:
+        # Writes go through the selected write client only: for a single-attempt
+        # store that is at most one HTTP PUT per call — hidden SDK retries and
+        # regional redirects refused at the transport guard — and a lost
+        # response stays an unknown outcome reported as failure; ordinary
+        # stores keep their existing client and behaviour unchanged.
         self.last_put_error = None
         if not self.available:
             return False
         try:
-            self._s3.put_object(Bucket=self.bucket, Key=key, Body=data,
-                                ContentType=content_type)
+            self._put_object_on_write_client({
+                "Bucket": self.bucket,
+                "Key": key,
+                "Body": data,
+                "ContentType": content_type,
+            })
             return True
         except Exception as e:  # noqa: BLE001
             self.last_put_error = e
@@ -1010,7 +1240,22 @@ class LocalStore:
         return parts
 
     @staticmethod
-    def _version_at(parent_fd: int, name: str) -> str | None:
+    def _conditional_predecessor_limit(key: str) -> int:
+        """Byte ceiling for reading one conditional write's predecessor.
+
+        Every key keeps :data:`HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES`.
+        Only the exact canonical catalog key may use the producer's catalog
+        allocation (``engine.research_vault.producer_generation.CATALOG_MAX_BYTES``,
+        16 MiB): the committed catalog is megabytes, so the old
+        unconditional 16 KiB cap aborted every real local conditional write
+        while computing the predecessor, before the CAS comparison.
+        """
+        if key == _CONDITIONAL_CATALOG_OBJECT_KEY:
+            return _CONDITIONAL_CATALOG_MAX_BYTES
+        return HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES
+
+    @staticmethod
+    def _version_at(parent_fd: int, name: str, limit: int) -> str | None:
         try:
             descriptor = os.open(
                 name, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0), dir_fd=parent_fd,
@@ -1021,14 +1266,14 @@ class LocalStore:
             metadata = os.fstat(descriptor)
             if not stat.S_ISREG(metadata.st_mode):
                 raise BoundedReadProtocolError("local conditional object is not a regular file")
-            if metadata.st_size > HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
+            if metadata.st_size > limit:
                 raise BoundedReadTooLarge(
                     "local conditional predecessor exceeds its byte safety limit"
                 )
             digest = sha256(b"research-vault-local-version-v1\0")
             observed = 0
-            while observed <= HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
-                requested = HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES + 1 - observed
+            while observed <= limit:
+                requested = limit + 1 - observed
                 chunk = os.read(descriptor, min(1024 * 1024, requested))
                 if not chunk:
                     break
@@ -1038,7 +1283,7 @@ class LocalStore:
                     )
                 observed += len(chunk)
                 digest.update(chunk)
-            if observed > HARD_MAX_STRICT_CONDITIONAL_OBJECT_BYTES:
+            if observed > limit:
                 raise BoundedReadTooLarge(
                     "local conditional predecessor exceeds its byte safety limit"
                 )
@@ -1127,7 +1372,11 @@ class LocalStore:
                     )
                 os.close(parent_fd)
                 parent_fd = opened
-            current_version = self._version_at(parent_fd, parts[-1])
+            # Predecessor read keeps a hard byte ceiling; only the canonical
+            # catalog key is granted the producer's larger catalog allocation.
+            current_version = self._version_at(
+                parent_fd, parts[-1], self._conditional_predecessor_limit(key),
+            )
             if current_version != expected_version:
                 return False
             temporary = f".{parts[-1]}.cas.{os.getpid()}.{time.time_ns()}"
@@ -1219,7 +1468,8 @@ class LocalStore:
 # factory
 # ---------------------------------------------------------------------------
 
-def build_store(local_dir: str | Path | None = None) -> Store | None:
+def build_store(local_dir: str | Path | None = None, *,
+                single_attempt_writes: bool = False) -> Store | None:
     """Build the active store without crossing the private/public R2 boundary.
 
     Precedence:
@@ -1229,9 +1479,17 @@ def build_store(local_dir: str | Path | None = None) -> Store | None:
          ``R2_RESEARCH_*`` endpoint/credential family → :class:`R2Store`.
       4. otherwise → ``None`` (no private research store available).
 
+    ``single_attempt_writes`` is an explicit code-level request (the identified
+    producer generation CLI) that the R2 store select its dedicated
+    single-attempt write client; there is deliberately NO environment variable
+    or user-facing retry-policy switch. Local stores are unaffected — they stay
+    the existing local test path.
+
     Generic ``R2_*`` credentials are intentionally not a fallback. If the shared
     delivery bucket is configured, the research bucket must also differ from it.
     """
+    if type(single_attempt_writes) is not bool:
+        raise ValueError("single_attempt_writes must be an exact bool")
     if local_dir:
         return LocalStore(local_dir)
     env_local = os.environ.get("RESEARCH_LOCAL_STORE")
@@ -1247,7 +1505,7 @@ def build_store(local_dir: str | Path | None = None) -> Store | None:
                 "refusing private Research Vault store"
             )
             return None
-        store = R2Store(bucket)
+        store = R2Store(bucket, single_attempt_writes=single_attempt_writes)
         if store.available:
             return store
         log.info(

@@ -1,0 +1,23 @@
+{
+  "html_delta": 266,
+  "page_js_delta": 2525,
+  "budget": 8192,
+  "controls": [
+    {
+      "case": "missing_page_slot",
+      "refused": true,
+      "assertion": "expected FMS shell fragment not found in the page controller script (test is stale): ',fms:[]'"
+    },
+    {
+      "case": "missing_html_tab",
+      "refused": true,
+      "assertion": "expected FMS shell fragment not found in the HTML template (test is stale): '\\n      <button class=\"mode-tab\" type=\"button\" role=\"tab\" aria-selected=\"false\" t'"
+    },
+    {
+      "case": "unmeasured_added_wiring",
+      "refused": true,
+      "assertion": "unmeasured FMS wiring remains: fmsUI"
+    }
+  ],
+  "total_delta": 2791
+}
