@@ -4605,9 +4605,7 @@ def _promisor_remote(root: Path, *, deadline: float) -> str | None:
     return None
 
 
-def _missing_tree_objects(
-    root: Path, sha: str, *, deadline: float, strict: bool = False
-) -> list[str]:
+def _missing_tree_objects(root: Path, sha: str, *, deadline: float) -> list[str]:
     """Blob OIDs at ``sha`` that are absent from the local object store.
 
     ``git rev-list --missing=print`` cannot answer this. A blob a partial clone
@@ -4618,53 +4616,6 @@ def _missing_tree_objects(
     network round trip at a time, which is both the accurate detector and the
     cheap one.
     """
-    if strict:
-        # Inventory and probes must never obtain implicit objects. Preserve
-        # caller credentials/configuration, but prohibit transport for reads.
-        offline = {**os.environ, "GIT_NO_LAZY_FETCH": "1", "GIT_ALLOW_PROTOCOL": ""}
-        listing = _git_run_bounded(
-            ["git", "ls-tree", "-r", "-z", sha], cwd=root, deadline=deadline,
-            env=offline,
-        ).stdout
-        entries = listing.split("\0")
-        if entries == [""]:
-            entries = []
-        elif entries[-1] == "":
-            entries.pop()
-        else:
-            raise RuntimeError("exact-base tree inventory is incomplete")
-        oids: set[str] = set()
-        for entry in entries:
-            meta, separator, path = entry.partition("\t")
-            fields = meta.split()
-            if (not separator or not path or len(fields) != 3
-                    or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
-                raise RuntimeError("exact-base tree inventory is malformed")
-            mode, kind, oid = fields
-            if mode == "160000" and kind == "commit":
-                continue
-            if mode not in {"100644", "100755", "120000"} or kind != "blob":
-                raise RuntimeError("exact-base tree inventory contains an unsupported entry")
-            oids.add(oid)
-        ordered = sorted(oids)
-        if not ordered:
-            return []
-        probe = _git_run_bounded(
-            ["git", "cat-file", "--batch-check=%(objectname) %(objecttype)"],
-            cwd=root, deadline=deadline, env=offline,
-            stdin_text="".join(oid + "\n" for oid in ordered),
-        )
-        rows = probe.stdout.splitlines()
-        if len(rows) != len(ordered):
-            raise RuntimeError("exact-base blob inventory is incomplete")
-        missing = []
-        for oid, row in zip(ordered, rows):
-            if row == oid + " missing":
-                missing.append(oid)
-            elif row != oid + " blob":
-                raise RuntimeError("exact-base blob inventory identity/type mismatch")
-        return missing
-
     listing = _git_run_bounded(
         ["git", "ls-tree", "-r", "-z", sha],
         cwd=root,
@@ -4698,10 +4649,7 @@ def _missing_tree_objects(
     ]
 
 
-def _hydrate_exact_base_objects(
-    root: Path, sha: str, *, deadline: float,
-    acquisition_env: Mapping[str, str] | None = None,
-) -> None:
+def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> None:
     """Materialise every blob at ``sha`` before the replay borrows this odb.
 
     The replay checkout runs in a private repository that borrows only this
@@ -4716,22 +4664,6 @@ def _hydrate_exact_base_objects(
     checkout that DOES hold the promisor remote and its credentials, is what
     keeps the replay repository's isolation free of network configuration.
     """
-    if acquisition_env is not None:
-        # Explicit filtered acquisition must qualify the COMPLETE exact tree,
-        # even when the caller has no persistent promisor configuration.
-        missing = _missing_tree_objects(root, sha, deadline=deadline, strict=True)
-        if not missing:
-            return
-        _git_run_bounded(
-            ["git", "fetch", "--no-tags", "--no-write-fetch-head",
-             "--no-recurse-submodules", "--filter=blob:none", "origin", "--stdin"],
-            cwd=root, deadline=deadline, env=acquisition_env,
-            stdin_text="".join(oid + "\n" for oid in missing),
-        )
-        if _missing_tree_objects(root, sha, deadline=deadline, strict=True):
-            raise RuntimeError("exact-base filtered acquisition left required blobs unavailable")
-        return
-
     remote = _promisor_remote(root, deadline=deadline)
     if remote is None:
         return
@@ -4788,65 +4720,32 @@ def _hydrate_exact_base_objects(
 
 
 def _ensure_exact_commit(root: Path, sha: str, *, deadline: float) -> str:
-    """Acquire exact commit/trees, then only missing full-base blobs, once."""
+    """Acquire only the exact replay commit; never widen to full history."""
     if not re.fullmatch(r"[0-9a-fA-F]{40}", sha):
         raise RuntimeError(f"base replay requires a full 40-hex SHA, got {sha!r}")
-    # Preserve caller protocol restrictions and credential configuration. Do
-    # not use the runner's environment scrubber, which drops those GIT_* keys.
-    acquisition_env = dict(os.environ)
-    count_text = acquisition_env.get("GIT_CONFIG_COUNT", "0")
-    if not re.fullmatch(r"[0-9]+", count_text):
-        raise RuntimeError("exact-base acquisition has malformed Git configuration")
-    count = int(count_text)
-    acquisition_env.update({
-        "GIT_CONFIG_COUNT": str(count + 2),
-        f"GIT_CONFIG_KEY_{count}": "remote.origin.promisor",
-        f"GIT_CONFIG_VALUE_{count}": "true",
-        f"GIT_CONFIG_KEY_{count + 1}": "remote.origin.partialclonefilter",
-        f"GIT_CONFIG_VALUE_{count + 1}": "blob:none",
-    })
-    offline = {**os.environ, "GIT_NO_LAZY_FETCH": "1", "GIT_ALLOW_PROTOCOL": ""}
-    def bindings() -> tuple[str, str, str, bytes | None]:
-        head = _git_run_bounded(["git", "rev-parse", "--verify", "HEAD"],
-                                cwd=root, deadline=deadline, env=offline).stdout
-        refs = _git_run_bounded(
-            ["git", "for-each-ref", "--format=%(refname)%00%(objectname)",
-             "refs/heads", "refs/remotes"], cwd=root, deadline=deadline, env=offline,
-        ).stdout
-        config = _git_run_bounded(["git", "config", "--local", "--null", "--list"],
-                                  cwd=root, deadline=deadline, env=offline).stdout
-        fetch_path = _git_run_bounded(["git", "rev-parse", "--git-path", "FETCH_HEAD"],
-                                      cwd=root, deadline=deadline, env=offline).stdout.strip()
-        path = root / fetch_path
-        return head, refs, config, path.read_bytes() if path.is_file() else None
-
-    original_bindings = bindings()
     probe = _git_run_bounded(
         ["git", "cat-file", "-e", f"{sha}^{{commit}}"],
-        cwd=root, deadline=deadline, check=False, env=offline,
+        cwd=root,
+        deadline=deadline,
+        check=False,
     )
     if probe.returncode:
         _git_run_bounded(
-            ["git", "fetch", "--no-tags", "--no-recurse-submodules",
-             "--no-write-fetch-head", "--filter=blob:none", "--depth=1", "origin", sha],
-            cwd=root, deadline=deadline, env=acquisition_env,
+            ["git", "fetch", "--no-tags", "--depth=1", "origin", sha],
+            cwd=root,
+            deadline=deadline,
         )
     resolved = _git_run_bounded(
-        ["git", "rev-parse", "--verify", f"{sha}^{{commit}}"],
-        cwd=root, deadline=deadline, env=offline,
+        ["git", "rev-parse", f"{sha}^{{commit}}"],
+        cwd=root,
+        deadline=deadline,
     ).stdout.strip()
     if resolved.lower() != sha.lower():
         raise RuntimeError(
             f"exact-base acquisition resolved {resolved!r}, expected {sha!r}"
         )
     exact = resolved.lower()
-    if bindings() != original_bindings:
-        raise RuntimeError("exact-base commit acquisition changed caller HEAD/refs/config/FETCH_HEAD")
-    _hydrate_exact_base_objects(
-        root, exact, deadline=deadline, acquisition_env=acquisition_env,
-    )
-    if bindings() != original_bindings:
-        raise RuntimeError("exact-base acquisition changed caller HEAD/refs/config/FETCH_HEAD")
+    _hydrate_exact_base_objects(root, exact, deadline=deadline)
     return exact
 
 
