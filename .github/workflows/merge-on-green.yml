@@ -158,7 +158,7 @@ jobs:
     # cutover. Rollback is route-only to
     # `[self-hosted, macOS, ARM64, merge-control]`; no state migration exists.
     #
-    # The job needs only Python, network, a sparse checkout, and PyYAML; no
+    # The job needs only Python, network, two sparse checkouts, and PyYAML; no
     # setup-python step or persistent workspace is load-bearing.
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -185,6 +185,43 @@ jobs:
             scripts/gh_path_filter.py
             scripts/run_ci_pack.py
             .github/workflows
+          sparse-checkout-cone-mode: false
+
+      # The planner's manifest validator, in its own directory. A main commit that
+      # edits only `.github/ci/legacy-jobs.yml` can leave a green current only when
+      # BOTH manifests pass the planner's own `run_ci_pack.load_legacy_jobs`, so the
+      # sweeper runs that loader here in a child process (`PlannerManifestValidator`).
+      # This list is the loader's import closure and nothing else; a test pins it to
+      # the closure. The loader's one existence question is answered by the sweeper
+      # from each judged commit's own root tree, so this checkout needs none of the
+      # paths a manifest names.
+      #
+      # A SEPARATE directory, not more entries above: the sweeper's own checkout must
+      # not gain `ci_scope_dependencies.py`, because importing `run_ci_pack` there is
+      # what keeps the live-inherited waiver fail-closed. Anything missing here fails
+      # the validator, and a failed validator only re-proves.
+      - name: planner checkout (the manifest validator's import closure)
+        uses: actions/checkout@v4
+        with:
+          path: .ci-planner
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/__init__.py
+            scripts/audit_unrun_tests.py
+            scripts/ci_apt_cold_acquisition.py
+            scripts/ci_apt_native_plan.py
+            scripts/ci_apt_native_stage.py
+            scripts/ci_apt_transaction_contract.py
+            scripts/ci_authority_paths.py
+            scripts/ci_browser_dependency_capture.py
+            scripts/ci_browser_dependency_inputs.py
+            scripts/ci_browser_native_setup.py
+            scripts/ci_scope_dependencies.py
+            scripts/ci_semantic_proof.py
+            scripts/run_ci_pack.py
+            scripts/workflow_run_source.py
+            scripts/worktree_sparse.py
           sparse-checkout-cone-mode: false
 
       # PyYAML parses those path filters. Installed EXPLICITLY rather than assumed:
@@ -251,4 +288,7 @@ jobs:
           # current: with scoping off every pull request runs every job, so any
           # changed job is one its next proof would run.
           MERGE_ON_GREEN_CI_SCOPE_MODE: ${{ vars.CI_SCOPE_MODE == 'off' && 'off' || 'active' }}
+          # Where the planner checkout above lives. The validator runs the planner's
+          # loader there; if it cannot, every job-local manifest edit re-proves.
+          MERGE_ON_GREEN_PLANNER_ROOT: ${{ github.workspace }}/.ci-planner
         run: python3 scripts/merge_on_green.py

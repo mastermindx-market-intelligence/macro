@@ -49,7 +49,7 @@ import threading
 import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Mapping, NamedTuple, Sequence
+from typing import Any, Callable, Iterable, Iterator, Mapping, NamedTuple, Sequence
 
 import yaml
 
@@ -1038,7 +1038,8 @@ def scope_pattern_is_startable(pattern: str, triggers: Iterable[str]) -> bool:
 
 
 def _scope_coverage_findings(job_id: str, definition: dict[str, Any],
-                             scope: tuple[str, ...]) -> list[str]:
+                             scope: tuple[str, ...],
+                             path_exists: Callable[[str], bool] | None = None) -> list[str]:
     """A declared scope must cover every repo path its own commands name.
 
     This is what makes scoping reviewable rather than trusted. A job that runs
@@ -1047,6 +1048,12 @@ def _scope_coverage_findings(job_id: str, definition: dict[str, Any],
     is a hard manifest error instead, and the fix (widen the scope) is the safe
     direction. Paths that no longer exist are ignored: stale references in a
     comment must not be able to fail the build.
+
+    ``path_exists`` answers existence for a caller whose checkout is not the
+    tree being judged (the merge sweeper validates historical manifests against
+    each commit's own tree). It is asked only about references that a global
+    invalidator or the scope does not already settle; the default is the
+    planner's own existence oracle.
     """
     if not scope:
         return []
@@ -1058,11 +1065,15 @@ def _scope_coverage_findings(job_id: str, definition: dict[str, Any],
     findings: list[str] = []
     for reference in sorted(set(SCOPE_REFERENCE_RE.findall(commands))):
         referenced = reference.split("::", 1)[0].rstrip(".,;:'\")")
-        if not planner_path_exists(Path(referenced)):
-            continue
         if _matches_any(GLOBAL_INVALIDATORS, referenced):
             continue
-        if not _matches_any(scope, referenced):
+        if _matches_any(scope, referenced):
+            continue
+        if path_exists is None:
+            exists = planner_path_exists(Path(referenced))
+        else:
+            exists = path_exists(referenced)
+        if exists:
             findings.append(
                 f"job {job_id!r} declares paths that do not cover {referenced!r}, "
                 "which its own commands read — widen the scope or drop it"
@@ -1544,14 +1555,17 @@ def select_jobs(
     return selected, reason
 
 
-def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
+def _workflow_document(path: Path) -> object:
     try:
-        payload = yaml.safe_load(path.read_text())
+        return yaml.safe_load(path.read_text())
     except (OSError, yaml.YAMLError) as exc:
         raise ManifestError(f"cannot load workflow {path}: {exc}") from exc
-    if not isinstance(payload, dict) or not isinstance(payload.get("jobs"), dict):
-        raise ManifestError(f"{path} must contain a jobs mapping")
-    return payload["jobs"]
+
+
+def _document_jobs(document: object, origin: str) -> dict[str, dict[str, Any]]:
+    if not isinstance(document, dict) or not isinstance(document.get("jobs"), dict):
+        raise ManifestError(f"{origin} must contain a jobs mapping")
+    return document["jobs"]
 
 
 def _classify_bounded_manifest_job_delta(
@@ -1684,7 +1698,12 @@ def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     return max(1, len(commands) + text.count("tests/test_") * 2 + len(text) // 800)
 
 
-def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
+def load_legacy_jobs(
+    path: Path,
+    *,
+    gate: str | None = None,
+    path_exists: Callable[[str], bool] | None = None,
+) -> list[LegacyJob]:
     """Load and fail-closed validate every job in the legacy manifest.
 
     PACK_JOB_ID is still ignored when present so small historical test fixtures
@@ -1696,8 +1715,31 @@ def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
     unpinned fallback) sees an identically filtered manifest before any
     partition/weight arithmetic runs. ``None`` (the default) returns every
     job, unchanged from before this parameter existed.
+
+    The file is parsed here and judged by ``load_legacy_jobs_document``, the
+    one validation body; ``path_exists`` is passed through to it.
     """
-    jobs = _workflow_jobs(path)
+    return load_legacy_jobs_document(
+        _workflow_document(path), gate=gate, path_exists=path_exists, origin=str(path)
+    )
+
+
+def load_legacy_jobs_document(
+    document: object,
+    *,
+    gate: str | None = None,
+    path_exists: Callable[[str], bool] | None = None,
+    origin: str = "manifest document",
+) -> list[LegacyJob]:
+    """``load_legacy_jobs`` for an already parsed manifest document.
+
+    This is the validation body itself, not a second policy: the file loader
+    delegates here. ``origin`` names the document in the jobs-mapping finding.
+    ``path_exists`` replaces the scope-coverage audit's existence oracle (see
+    ``_scope_coverage_findings``) for a caller judging a tree other than its
+    own checkout; ``None`` keeps the planner's oracle.
+    """
+    jobs = _document_jobs(document, origin)
 
     legacy: list[LegacyJob] = []
     findings: list[str] = []
@@ -1789,7 +1831,7 @@ def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:
         findings.extend(scope_findings)
         if scope and not scope_findings:
             findings.extend(
-                _scope_coverage_findings(str(job_id), raw_definition, scope)
+                _scope_coverage_findings(str(job_id), raw_definition, scope, path_exists)
             )
 
         # `scope: exclusive` is the CURATED tier: the declared `paths:` above

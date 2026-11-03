@@ -7176,6 +7176,106 @@ jobs:
         PACK.load_legacy_jobs(empty)
 
 
+# The merge sweeper validates historical manifests with the document entry point
+# (scripts/merge_on_green.py, PlannerManifestValidator): it must stay the one
+# validation body, and its existence oracle must only answer what scope leaves open.
+_DOCUMENT_JOB = {
+    "if": "${{ false }}",
+    "runs-on": "ubuntu-latest",
+    "scope": "exclusive",
+    "paths": ["engine/example/**"],
+    "steps": [
+        {
+            "name": "scoped semantic proof",
+            "run": (
+                "python engine/example/run.py && python scripts/run_ci_pack.py --plan-only"  # ci-trigger-closure: data — a fake manifest's command, never run
+                " && python -m pytest tests/test_example_scope.py -q"  # ci-trigger-closure: data — a fake manifest's command, never run
+            ),
+        }
+    ],
+}
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"jobs": {"scoped": _DOCUMENT_JOB}},
+        {"jobs": {"scoped": {k: v for k, v in _DOCUMENT_JOB.items() if k != "if"}}},
+        {"jobs": {"scoped": {**_DOCUMENT_JOB, "env": {"A": "1"}}}},
+        {"jobs": {"scoped": {**_DOCUMENT_JOB, "steps": []}}},
+        {"jobs": []},
+        ["jobs"],
+    ],
+    ids=["valid", "no-if", "env", "no-steps", "jobs-list", "not-a-mapping"],
+)
+def test_the_document_loader_is_the_file_loaders_one_validation_body(
+    tmp_path: Path, document: object
+) -> None:
+    path = tmp_path / "legacy.yml"
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+
+    def outcome(load):
+        try:
+            return "valid", load()
+        except PACK.ManifestError as exc:
+            return "rejected", str(exc)
+
+    from_file = outcome(lambda: PACK.load_legacy_jobs(path, path_exists=lambda _ref: False))
+    from_document = outcome(
+        lambda: PACK.load_legacy_jobs_document(
+            document, path_exists=lambda _ref: False, origin=str(path)
+        )
+    )
+    assert from_file == from_document
+
+
+def test_the_document_loader_matches_the_file_loader_on_the_real_manifest() -> None:
+    document = _yaml(MANIFEST)
+    for gate in (None, "code", "data"):
+        assert PACK.load_legacy_jobs_document(document, gate=gate) == PACK.load_legacy_jobs(
+            MANIFEST, gate=gate
+        ), gate
+
+
+def test_the_jobs_mapping_finding_names_the_documents_origin() -> None:
+    with pytest.raises(PACK.ManifestError, match="^manifest document must contain a jobs mapping$"):
+        PACK.load_legacy_jobs_document(["jobs"])
+    with pytest.raises(PACK.ManifestError, match="^blob 0123 must contain a jobs mapping$"):
+        PACK.load_legacy_jobs_document({"jobs": None}, origin="blob 0123")
+
+
+@pytest.mark.parametrize("present, findings", [(False, 0), (True, 1)])
+def test_an_injected_existence_oracle_is_asked_only_what_the_scope_leaves_open(
+    monkeypatch: pytest.MonkeyPatch, present: bool, findings: int
+) -> None:
+    """A covered reference and a global invalidator are settled before any
+    existence question; the planner's own oracle is never consulted."""
+
+    def planner_oracle(*_args, **_kwargs):
+        raise AssertionError("the planner's own existence oracle was consulted")
+
+    monkeypatch.setattr(PACK, "planner_path_exists", planner_oracle)
+    asked: list[str] = []
+
+    def exists(reference: str) -> bool:
+        asked.append(reference)
+        return present
+
+    document = {"jobs": {"scoped": _DOCUMENT_JOB}}
+    if findings:
+        with pytest.raises(PACK.ManifestError) as raised:
+            PACK.load_legacy_jobs_document(document, path_exists=exists)
+        assert str(raised.value).splitlines() == [
+            "job 'scoped' declares paths that do not cover 'tests/test_example_scope.py', "
+            "which its own commands read — widen the scope or drop it"
+        ]
+    else:
+        assert [job.job_id for job in PACK.load_legacy_jobs_document(document, path_exists=exists)] == [
+            "scoped"
+        ]
+    assert asked == ["tests/test_example_scope.py"]
+
+
 def _released_cpython_versions() -> set[tuple[int, int, int]]:
     """Patch releases `document_terms` will accept, read without importing it.
 
