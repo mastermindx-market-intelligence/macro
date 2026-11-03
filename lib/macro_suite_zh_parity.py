@@ -163,6 +163,10 @@ ZH_PARITY: dict[str, str] = {
     "Consecutive months in state": "连续处于该状态的月数",
     "Business cycle phase": "商业周期阶段",
     "Recovery": "复苏",
+    # The other three phases of engine.business_cycle._phase; same ZH it emits.
+    "Expansion": "扩张",
+    "Slowdown": "放缓",
+    "Contraction": "收缩",
     "Leading x coincident momentum sign": "领先与同步动能方向",
     "Recession signal oos catch rate": "衰退信号样本外捕捉率",
     "Higher more reliable": "数值越高＝越可靠",
