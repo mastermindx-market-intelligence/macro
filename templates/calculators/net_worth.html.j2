@@ -121,7 +121,7 @@
   // ── pure compute (net worth = assets − liabilities) ────────────────────────
   // inputs: {assets:[...], liabs:[...]} — arrays of numbers (NaN for blank).
   // Returns an outputs object, or {ok:false, msg} when nothing is filled in.
-  // Blank/invalid lines count as zero; never returns NaN/Infinity.
+  // Blank lines count as zero. The DOM rejects invalid nonblank amounts before compute.
   function compute(inp){
     function sum(arr, any){
       var t=0;
@@ -134,9 +134,12 @@
     var any={filled:false};
     var totalAssets = sum(inp.assets, any);
     var totalLiabilities = sum(inp.liabs, any);
-    if(!any.filled) return {ok:false, msg:"Fill in any of the lines above to see your net worth."};
+    if(!any.filled) return {ok:false, msg:"Fill in any of the lines above to see your net worth.", msgZh:"填入上方任意项目即可查看净资产。"};
     var netWorth = totalAssets - totalLiabilities;
-    var dta = totalAssets > 0 ? (100 * totalLiabilities / totalAssets) : null; // null = no assets to ratio against
+    var dta = totalAssets > 0 ? (totalLiabilities / totalAssets * 100) : null; // null = no assets to ratio against
+    if(!isFinite(totalAssets) || !isFinite(totalLiabilities) || !isFinite(netWorth) || (dta !== null && !isFinite(dta))) {
+      return {ok:false, msg:"The amounts are too large to calculate a finite result.", msgZh:"金额过大，无法计算有限结果。"};
+    }
     return {
       ok:true,
       totalAssets: totalAssets,
@@ -168,6 +171,13 @@
     var $ = function(id){ return document.getElementById(id); };
     var ASSET_IDS = ["cash","invest","retire","realestate","vehicles","otherassets"];
     var LIAB_IDS  = ["mortgage","loans","creditcard","otherdebts"];
+    var FIELD_NAMES = {
+      cash:["Cash & savings","现金与存款"], invest:["Investments","投资"],
+      retire:["Retirement accounts","退休账户"], realestate:["Real estate","房地产"],
+      vehicles:["Vehicles","车辆"], otherassets:["Other assets","其他资产"],
+      mortgage:["Mortgage","房贷"], loans:["Student & other loans","学生贷款及其他"],
+      creditcard:["Credit card debt","信用卡欠款"], otherdebts:["Other debts","其他债务"]
+    };
     var els = {};
     ASSET_IDS.concat(LIAB_IDS).forEach(function(id){ els[id]=$(id); });
     var outMain=$("out-main"), outPlain=$("out-plain"),
@@ -190,8 +200,28 @@
         assets: ASSET_IDS.map(function(id){ return numFrom(els[id]); }),
         liabs:  LIAB_IDS.map(function(id){ return numFrom(els[id]); })
       };
-      var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      // Missing optional amounts are zero; an invalid supplied amount is unknown, never zero.
+      var invalid=[];
+      ASSET_IDS.concat(LIAB_IDS).forEach(function(id){
+        var el=els[id], bad=el.value.trim() !== "" && !isFinite(numFrom(el));
+        if(bad){
+          invalid.push(id); el.setAttribute("aria-invalid","true");
+          el.setAttribute("aria-describedby","out-plain");
+        } else {
+          el.removeAttribute("aria-invalid"); el.removeAttribute("aria-describedby");
+        }
+      });
+      var field=invalid.length ? FIELD_NAMES[invalid[0]] : null;
+      var res=field ? {ok:false,
+        msg:"Enter a valid amount for " + field[0] + " before calculating net worth.",
+        msgZh:"请为“" + field[1] + "”输入有效金额后再计算净资产。"} : compute(inp);
+      last=res;
+      copied.classList.remove("show"); // a prior result receipt does not describe edited inputs
+      if(!res.ok){
+        dash();
+        outPlain.textContent=document.documentElement.getAttribute("data-lang") === "zh" && res.msgZh ? res.msgZh : res.msg;
+        outPlain.className="co-plain"; return;
+      }
       outMain.textContent = money(res.netWorth);
       outAssets.textContent = money(res.totalAssets);
       outLiab.textContent = money(res.totalLiabilities);
@@ -223,7 +253,8 @@
     }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
+      var receipt=last;
+      var done=function(){ if(last !== receipt) return; copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
       if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
       else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
         try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
@@ -232,6 +263,7 @@
     ASSET_IDS.concat(LIAB_IDS).forEach(function(id){
       els[id].addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();
