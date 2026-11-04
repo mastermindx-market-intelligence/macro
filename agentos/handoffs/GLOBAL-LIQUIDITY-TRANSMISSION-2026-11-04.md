@@ -2,8 +2,8 @@
 workstream: WS:GLOBAL-LIQUIDITY-TRANSMISSION
 session: claude/ssd-global-liquidity-transmission-fable-4c8b4f-1ca3ba921a8a75db
 model: fable
-ended_because: ci_handoff
-prs: [10516, 10681]
+ended_because: blocked
+prs: [10516, 10681, 10693, 10694]
 decisions:
   - DEC:GLT-SCOPE-CUSTODY-2026-10-13
 mission: >
@@ -56,11 +56,18 @@ verified:
   - claim: The T25 integrator's section 16 (2026-11-04 02:58Z) re-ruled independence on the four returns. Macro exact head stays REJECT 3bd363b6 (A1, CI-wiring only, no product defect, repaired at 796ffbf1) and now meets independence; the forward advisory for main at or after 796ffbf1 narrows to the T27 release identity (served theme.js and ?v= stamps against the render head) plus one independent closure-completeness check of the eight-template set; Mastermind 6b5081a1 moves to ACCEPT-EXACT-HEAD as a T25 review verdict only (not reserved acceptance, promotion or production proof); rule a passes on behaviour.
     command: ORCH_N_RECORD_2026-10-13.md section 16 (143 lines, sha16 c53ee98b9b25b197) and seat consumption section 17
     result: adopted as written; the seat upheld the integrator's reclassification of the G5a trace as a non-gating obligation (no reader found a grant path; any path into advisory/validated fails closed and needs its own review plus protected scientific acceptance).
+  - claim: O3 and O4 cleared independently. Non-claude lane O34b (grok, ubuntu3, run glt-n2-O34b-20261104, 03:09-03:15Z) computed the Jinja closure of the eight-template set at 796ffbf1 with MISSING == [] (O3 PASS) and found zero GRANT hits in the producer; its literal O4 FAIL was the seat's over-strict packet rule (the sole non-display literal is research_only_no_promotion on the BTC-missing factor-comparison stub; display_only is set by the views composer). The integrator (section 19) agreed and narrowed the forward advisory to O7 only.
+    command: remote_sub.sh lane glt-n2-O34b-20261104 (packet n/packets/O34.pkt, grok/ubuntu3); sentinel grep of n/out/O34b.out
+    result: sentinel O34 PASS|FAIL 796ffbf1581dbce1fa7af7b14e20620ed28cc680 with MISSING == [] and GRANT == 0; the O4 literal FAIL is the research_only_no_promotion stub literal, judged substantive PASS in integrator sections 18.1/19.
+  - claim: The closure Agent OS records landed on main (macro PR 10693, merge 4a2291747fd2d8d364a3838e1ed2263636bc64a6, 03:49Z). The first CI red was main's own TIINGO-DATA-OS handoff enum (fixed on main by c53915f6), cleared by one update-branch.
+    command: watch_merge.sh macro 10693 95767c90 (log t28_watch_10693b.log); git rev-parse origin/main; git ls-tree 4a229174 agentos/handoffs/GLOBAL-LIQUIDITY-TRANSMISSION-2026-11-04.md agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md
+    result: VERDICT MERGED_BY_WATCHER merge 4a2291747fd2d8d364a3838e1ed2263636bc64a6; origin/main == 4a229174; both records listed.
+  - claim: O1 (forecast section disposition vocabulary plus composer-test status assertion) and O2 (discriminating rule-c refused-key test) implemented in macro PR 10694 at 464cab19 (+48/-1 in engine/global_liquidity_views.py and tests/test_global_liquidity_views.py; 167 passed, 1 skipped). Independent non-claude review R1 (grok, ubuntu3, run glt-o1o2-R1-20261104) returned ACCEPT-WITH-NITS at that head; the nits (comment overclaims, test-name depth, mixed-cell and empty-cells cases, no plant on unit/scenario_bounds) are carried with O8 to a later tidy-up PR. The update-branch head 6e2fe119 carries a byte-identical diff against main (sha256_16 816d0bc7be5477fb). State - MERGED 460760a9dde15b9e41e1bb02d8ab353e28b1a089 on 2026-11-04 04:44Z by the seat watcher after 26 green checks.
+    command: pytest tests/test_global_liquidity_views.py tests/test_global_liquidity_forecast.py tests/test_macro_workspace_liquidity_central_banks.py ; remote_sub.sh lane glt-o1o2-R1-20261104 (n/packets/R1.pkt); git diff 4a229174..6e2fe119 | sha256 vs git diff bc7cd03d..464cab19 | sha256
+    result: 167 passed 1 skipped; sentinel R1 ACCEPT-WITH-NITS 464cab194280029b78fb0f84f98ea384ea24db28; both diff digests 816d0bc7be5477fb.
 unverified:
-  - claim: The remaining forward-advisory items (independent closure completeness at 796ffbf1, producer authority grep by a non-claude lane) clear.
-    what_would_verify: One non-claude C0 lane return under the seat kit n/out/ consumed into the integrator record.
-  - claim: Production www.mastermind-x.com/macro_liquidity_central_banks.html serves the five T22 view rows (EN/ZH), views.view_version glt_views_v1, authority display_only, no forward-performance claim, after a render that follows the ~03:30-04:00Z producer.
-    what_would_verify: Authenticated browser load after the 05:30Z receipt (seat kit t27/postlaunch_2026-11-04T0530Z.txt); at 01:30Z the site returned 502/503 and at 02:33Z the contract endpoint returned 524 (publication outage owned by sibling #9556, not this workstream).
+  - claim: T27 production proof of the five glt_view rows - release identity PROVEN at the render head (served theme.js stamp 3c193891 equals the asset emitted from main 460760a9, 8/8 shell stamps match), view rows NOT YET PUBLISHED because the member workspace latest.json is still the 2026-11-03T17:25Z pre-T22 build while both post-T22 nightlies sit queued in the sibling pipeline (PR 9556)
+    what_would_verify: Authenticated browser load after the next completed nightly render once publication is restored (sibling PR 9556).
 unresolved:
   - "T17 identification needs a rights-proven point-in-time policy-surprise tape; the real cell stays NOT_IDENTIFIED (human-gated)."
   - "Yahoo SPY/peer-ETF bars and EURUSD=X/USDJPY=X legs: commercial rights covered by the Chairman attestation DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023; point-in-time/vintage facts still unproven. HY OAS licence BLANK_RIGHTS. Nothing may mark them LICENSED or OPEN."
@@ -69,12 +76,13 @@ unresolved:
   - "Fleet DNS outage 2026-11-03 ~13:30Z to 2026-11-04 ~02:30Z (LAN gateway 192.168.8.1 blocked port 53): infra-owned, restored without seat action; it delayed only the T25 independence lanes."
   - "Obligations carried (integrator section 16, O1-O8): O1 rule-a section-status vocabulary plus a status assertion in the composer test; O2 a discriminating test for rule c; O3 independent closure completeness of the eight-template set at 796ffbf1 (gates the forward advisory only); O4 producer authority grep by a non-claude lane; O5 G5a trace (non-gating); O6 the N7c usage receipt is missing; O7 T27 must match served theme.js and ?v= stamps to the render head (gates release identity); O8 unused-path wording; plus B1 (re-run T24 before any T09 re-issue) and the E1/(c)/(g)/(b-literal) minor test-claim gaps."
 next_actions:
-  - "Clear O3/O4 with one non-claude C0 lane (closure completeness at 796ffbf1; producer authority grep) and hand the return to the integrator record; open the O1/O2/O8 follow-up PR on a fresh claude/* branch with its own review."
+  - "O3/O4 cleared and O1/O2 shipped (PR 10694); the remaining code follow-up is one tidy-up PR for O8 (unused-path wording in lib/macro_suite_labels.py) plus the R1 nits, with its own fresh review."
   - "T27: after the 05:30Z receipt, authenticated browser load of the production page; record render run id, ?v= stamps vs the pre-launch baseline (071ef720/3c193891/432f6a45), served bytes vs the templates at the render head; if production is still down, record the outage and stop (sibling-owned)."
   - "T28: report SCOPED_COMMISSION_COMPLETE with the T25 qualification (macro REJECT-at-exact-head CI-only repaired 796ffbf1, forward INSUFFICIENT; Mastermind INSUFFICIENT) separately from ORIGINAL_W_LIQ_COMPLETE=false (legacy #124 lab body and prospective accrual remain open)."
   - "T26 stays a durable wait: issue only through an owned Mastermind liquidity_lab job; never retrofit history or promise daemon-less accrual."
 do_not_redo:
   - "Every carrier in the Current result (2026-11-04) table is merged; do not rebuild or re-specify those tasks."
+  - "PR 10693 (closure records) and PR 10694 (O1/O2) are landed carriers; O34b and R1 lane returns are consumed; do not relaunch those lanes or re-review the unchanged O1/O2 diff."
   - "The A1 repair (#10681, 796ffbf1) is CI wiring only and verified locally and on main; do not re-repair without a new finding."
   - "The T20/T24 dispositions and the T25 section 14 verdicts are consumed; do not re-run those audits without a material invalidator (new contradicting evidence, changed contract, authority reversal)."
   - "The T17 card was frozen before the first fit; never amend card v1 to change a result."

@@ -182,6 +182,14 @@ acceptance, not promotion, not production proof, no advisory/validated
 authority granted. Macro is never ACCEPT. Obligations O1-O8 (section 16.4) plus
 B1 and the minor test-claim gaps carry to the follow-up PR.
 
+**Follow-up (2026-11-04, 03:00-04:00Z):** O3 and O4 cleared by the non-claude lane
+O34b (closure MISSING == [], zero producer GRANT hits; integrator section 19
+narrows the forward advisory to the T27 release identity, O7, alone). O1 and O2
+shipped in macro #10694 (head 464cab19; independent non-claude review R1
+ACCEPT-WITH-NITS; nits and O8 carried to a tidy-up PR) - MERGED 460760a9dde15b9e41e1bb02d8ab353e28b1a089 on 2026-11-04 04:44Z by the seat watcher after 26 green checks.
+The closure records landed in #10693 (4a229174). Both PRs saw one first red from
+main's own TIINGO-DATA-OS handoff enum, cleared by a single update-branch each.
+
 **T26:** QUALIFIED ABSTAIN / durable wait. No owned issuer exists; Mastermind
 master carries no GLT drift since `6b5081a1` (checked 2026-11-03 15:51Z). Any
 future issuance belongs to the Mastermind liquidity_lab job owner.
@@ -192,6 +200,8 @@ unauthenticated contract endpoint is member-gated (401), so the view facts need 
 authenticated browser load after a render that follows the ~03:30-04:00Z producer.
 Pre-launch baseline 2026-11-02: page 200, `?v=` 071ef720/3c193891/432f6a45, no
 view labels, no forward-performance claim.
+
+**T27 outcome (2026-11-04, 05:30Z-09:0xZ):** release identity PROVEN at the render head - the served `theme.js` (280,236 B, stamp 3c193891) is byte-identical to what main 460760a9 emits via `lib/site_assets.emit_theme_js`, and all eight comparable shell asset stamps match main (O7 closed; the earlier size comparison against the raw 400,176 B template was a category error). View rows NOT YET PUBLISHED: the authenticated member workspace `macrodata/workspaces/liquidity_central_banks/US/latest.json` is still the 2026-11-03T17:25:24Z build (generation liquidity_central_banks-US-fdc93f840316e69b, pre-T22) with 0/5 `glt_view_*` rows, no `glt_views_v1`, and 0/5 EN/ZH labels in JSON or DOM, after two HTML-only republishes (03:42Z, 08:33Z). The workspace is produced in the nightly `engine` shell downstream of `collect`; both post-T22 daily.yml runs (41759097130, 41764920295) have sat queued/in collect since 02:11Z/03:05Z. That pipeline is sibling-owned (#9556) and this seat never dispatches it. A durable nightly waiter is armed; PRODUCTION_PROOF of the rows is recorded only after an authenticated browser load shows them.
 
 Scientific state (unchanged): T09 issues zero forecast cells. T17 is
 NOT_IDENTIFIED. T18 abstains. No GLT surface makes a positive forward-performance
