@@ -54,6 +54,19 @@ const publishedCompanyLinks = d.querySelectorAll('a[data-cw-company-href]');
 if (ownerLinked) assert.ok(publishedCompanyLinks.length > 0, "owner-backed company links omitted");
 else assert.equal(publishedCompanyLinks.length, 0, "unqualified company link was published");
 
+// Compare the Gold source and rendered Gold anchors before any fallback can
+// supply a journey link. Other chains cannot stand in for an omitted Gold link.
+function assertPublishedGoldLinks(source, document) {
+  // Match the canonical template's chain.id-to-asset mapping.
+  const expected = source.chains.filter(chain => chain.id.includes("gold")).flatMap(
+    chain => (chain.cohorts || []).flatMap(
+      cohort => (cohort.companies?.linked || []).slice(0,6).map(company => company.href)));
+  const actual = Array.from(document.querySelectorAll(
+    '[data-cw-chain-asset="gold"] a[data-cw-company-href]'), link => link.dataset.cwCompanyHref);
+  assert.deepEqual(actual.sort(), expected.sort(), "published Gold company links differ from source");
+}
+assertPublishedGoldLinks(data, d);
+
 // Exercise the same runtime return-link binder in the absence of source-backed
 // links, with a separate test-only fixture. It is never emitted to the page.
 const syntheticCompanyReturn = !d.querySelector('[data-cw-chain-asset="gold"] a[data-cw-company-href]');
@@ -76,6 +89,14 @@ if (syntheticCompanyReturn) {
 }
 
 (async()=>{
+  check("another chain cannot conceal omitted authorized Gold links",()=>{
+    const mixed = d.createElement("div");
+    const other = d.createElement("section");other.dataset.cwChainAsset="oil";
+    const link = d.createElement("a");link.dataset.cwCompanyHref="https://app.mastermind-x.com/analysis?symbol=A";
+    other.appendChild(link);mixed.appendChild(other);
+    const source = {chains:[{id:"real_rate_peak_gold_rerate",cohorts:[{companies:{linked:[{href:link.dataset.cwCompanyHref}]}}]}]};
+    assert.throws(()=>assertPublishedGoldLinks(source,mixed),/published Gold company links differ from source/);
+  });
   check("source-backed company links obey the publisher's honest absence",()=>{
     assert.equal(publishedCompanyLinks.length > 0, ownerLinked);
     assert.equal(d.querySelectorAll('[data-cw-test-fixture]').length, syntheticCompanyReturn ? 1 : 0);
