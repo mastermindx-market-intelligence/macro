@@ -1633,15 +1633,21 @@ def _free_us_html(bs, vm):
     """The free page through the calls build_site's stocks-mode render makes, in order."""
     cfg = bs._us_board_gate_cfg()
     shell_su, gate, _board_locked = bs._split_us_board(vm["us_standouts"], cfg["preview_rows"], gated=True)
-    life_shell, life_gate, _plans = bs._split_us_prophet_board(
+    life_shell, life_gate, plans_locked = bs._split_us_prophet_board(
         vm.get("us_prophet_book"), cfg["preview_rows"], gated=True,
         withheld=bs._us_withheld_names(vm, cfg["panel_preview_rows"]))
     repair = bs._us_life_repair_context(vm, life_shell, life_gate, cfg["preview_rows"])
     pov, pgate, locked = bs._split_us_panels(vm, cfg["panel_preview_rows"], gated=True)
     shell_su, repair = bs._us_apply_panel_withholding(vm, shell_su, repair, pov, cfg["preview_rows"])
+    rel_state, rel_by_ticker = bs._plan_relations_for(
+        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+    shell_rel = bs._plan_relations_for_shell(
+        (rel_state, rel_by_ticker), plans_locked)
     html = _env().get_template("dashboard.html.j2").render(
         **{**vm, **pov, "us_standouts": shell_su, "gate": gate, "pgate": pgate,
-           "us_prophet_book": life_shell, "life_gate": life_gate, **repair}, mode="stocks")
+           "us_prophet_book": life_shell, "life_gate": life_gate, **repair,
+           "plan_rel": {"state": rel_state, "plans": []},
+           "plan_rel_by_ticker": shell_rel}, mode="stocks")
     return html, pgate, locked
 
 
@@ -1962,3 +1968,221 @@ def test_hydration_targets_the_new_payload_blocks():
     assert "full.open = current.open;" in template
     source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
     assert '"what_changed", "passed")}' in source
+
+
+# ── a locked open plan stays off the free board card (the paying reader keeps it)
+
+
+def _open_plan(plan_id, asset):
+    """One open plan row. Dates are on the record so a leak would print them."""
+    return {
+        "id": plan_id, "asset": asset, "closed": False,
+        "lifecycle_state": "entered", "formation_date": "2026-10-29",
+        "signal_date": "2026-10-29", "signal_date_basis": "tier_event_date",
+        "observed_date": "2026-10-30", "price_basis_date": "2026-10-30",
+        "recorded_at": "2026-10-30", "plan_asof": "2026-10-30",
+    }
+
+
+def _arm_full_plan_map(us_cfg, vm, pairs):
+    """The full relation map, as the builder stores it before the shell filter."""
+    vm["us_prophet_book"] = {
+        "asof": "2026-09-18",
+        "plans": [_open_plan(plan_id, asset) for plan_id, asset in pairs],
+    }
+    state, by_ticker = us_cfg._plan_relations_for(vm["us_prophet_book"], False)
+    vm["plan_rel_by_ticker"] = by_ticker
+    vm["plan_rel"] = {"state": state, "plans": []}
+    return state, by_ticker
+
+
+def test_free_board_card_never_prints_a_locked_open_plan(us_cfg):
+    """BRD0 is on the free board. Its only open plan sits past the plan preview."""
+    vm = _overlap_vm()
+    _arm_full_plan_map(us_cfg, vm, (
+        ("PV0-1", "PV0"), ("PV1-1", "PV1"), ("PV2-1", "PV2"), ("BRD0-1", "BRD0"),
+    ))
+    html, _pgate, _locked = _free_us_html(us_cfg, vm)
+    assert 'data-plan-id="BRD0-1"' not in html
+    assert "BRD0-1" not in html
+    assert "A related model record is available with full access." in html
+    assert "完整访问权限可查看相关模型记录。" in html
+    assert 'data-ticker="BRD0"' in html
+
+
+def test_free_board_keeps_the_preview_plan_and_drops_the_locked_id(us_cfg):
+    """One unlocked open plan stays. The locked id is absent from the whole shell."""
+    vm = _overlap_vm()
+    _arm_full_plan_map(us_cfg, vm, (
+        ("PV0-1", "PV0"), ("PV1-1", "PV1"),
+        ("BRD0-KEEP", "BRD0"), ("BRD0-LOCK", "BRD0"),
+    ))
+    html, _pgate, _locked = _free_us_html(us_cfg, vm)
+    assert 'data-plan-id="BRD0-KEEP"' in html
+    assert "BRD0-LOCK" not in html
+    assert 'data-ticker="BRD0"' in html
+
+
+def test_preview_cards_html_keeps_the_locked_plan_for_a_paying_reader(us_cfg, tmp_path):
+    """The payload card for the free-board name still carries the locked plan id."""
+    vm = _overlap_vm()
+    _arm_full_plan_map(us_cfg, vm, (
+        ("PV0-1", "PV0"), ("PV1-1", "PV1"), ("PV2-1", "PV2"), ("BRD0-1", "BRD0"),
+    ))
+    cfg = us_cfg._us_board_gate_cfg()
+    _shell, gate, locked_rows = us_cfg._split_us_board(
+        vm["us_standouts"], cfg["preview_rows"], gated=True)
+    _life, life_gate, locked_plans = us_cfg._split_us_prophet_board(
+        vm["us_prophet_book"], cfg["preview_rows"], gated=True,
+        withheld=us_cfg._us_withheld_names(vm, cfg["panel_preview_rows"]))
+    relations = us_cfg._plan_relations_for(vm["us_prophet_book"], False)
+    us_cfg._write_us_payload(
+        _env(), tmp_path, gate, locked_rows=locked_rows,
+        us_standouts=vm["us_standouts"], top_setups=vm.get("top_setups"),
+        built="2026-09-18", life_gate=life_gate, locked_plans=locked_plans,
+        plan_relations=relations)
+    payload_path = tmp_path / us_cfg.US_PAYLOAD_DIR / us_cfg.US_PAYLOAD_NAME
+    payload = json.loads(payload_path.read_text(encoding="utf-8"))
+    preview = payload["preview_cards_html"]
+    assert 'data-plan-id="BRD0-1"' in preview
+    assert 'data-ticker="BRD0"' in preview
+    assert "BRD0-1" not in payload["cards_html"]
+
+
+def _replace_preview_cards_source() -> str:
+    """The named hydrate helper, sliced from the template so the test cannot drift."""
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    marker = "function replacePreviewCards("
+    start = template.find(marker)
+    assert start >= 0, "replacePreviewCards is missing from dashboard.html.j2"
+    brace = template.find("{", start)
+    depth = 0
+    for index in range(brace, len(template)):
+        char = template[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return template[start:index + 1]
+    raise AssertionError("replacePreviewCards has no closing brace")
+
+
+def test_replace_preview_cards_swaps_the_same_ticker_in_place():
+    """Same ticker is replaced in place. Order holds. Unknown and empty add nothing."""
+    import shutil
+    import subprocess
+    if shutil.which("node") is None:
+        pytest.skip("node is not on PATH")
+    helper = _replace_preview_cards_source()
+    harness = helper + r"""
+function El() {
+  this.attrs = {};
+  this.children = [];
+  this.parentNode = null;
+}
+El.prototype.getAttribute = function(name) {
+  if (Object.prototype.hasOwnProperty.call(this.attrs, name)) return this.attrs[name];
+  return null;
+};
+El.prototype.querySelectorAll = function(sel) {
+  var out = [];
+  function walk(node) {
+    (node.children || []).forEach(function(child) {
+      if (sel === "[data-ticker]" && child.getAttribute("data-ticker")) out.push(child);
+      walk(child);
+    });
+  }
+  walk(this);
+  return out;
+};
+El.prototype.replaceChild = function(next, prev) {
+  if (next.parentNode) {
+    var oldKids = next.parentNode.children;
+    var oldAt = oldKids.indexOf(next);
+    if (oldAt >= 0) oldKids.splice(oldAt, 1);
+  }
+  var at = this.children.indexOf(prev);
+  if (at < 0) throw new Error("missing child");
+  this.children[at] = next;
+  next.parentNode = this;
+  prev.parentNode = null;
+};
+function parseHtml(html) {
+  var out = [], re = /<([a-zA-Z0-9]+)([^>]*)>/g, match;
+  while ((match = re.exec(html))) {
+    var el = new El(), attrRe = /([A-Za-z_:][-A-Za-z0-9_:.]*)="([^"]*)"/g, attr;
+    while ((attr = attrRe.exec(match[2]))) el.attrs[attr[1]] = attr[2];
+    out.push(el);
+  }
+  return out;
+}
+var document = { createElement: function() { return new El(); } };
+Object.defineProperty(El.prototype, "innerHTML", {
+  set: function(html) {
+    this.children = parseHtml(String(html || ""));
+    this.children.forEach(function(child) { child.parentNode = this; }, this);
+  }
+});
+function marks(grid) {
+  return grid.querySelectorAll("[data-ticker]").map(function(el) {
+    return el.getAttribute("data-ticker") + "=" + el.getAttribute("data-mark");
+  });
+}
+var grid = document.createElement("div");
+grid.innerHTML = '<article data-ticker="BRD0" data-mark="shell"></article>'
+  + '<article data-ticker="BRD1" data-mark="shell"></article>'
+  + '<article data-ticker="BRD2" data-mark="shell"></article>';
+var shell = marks(grid);
+replacePreviewCards(grid,
+  '<article data-ticker="ZZZ" data-mark="extra"></article>'
+  + '<article data-ticker="BRD0" data-mark="paid"></article>');
+var swapped = marks(grid);
+replacePreviewCards(grid, "");
+var afterEmpty = marks(grid);
+replacePreviewCards(grid);
+var afterMissing = marks(grid);
+process.stdout.write(JSON.stringify({
+  shell: shell, swapped: swapped, afterEmpty: afterEmpty, afterMissing: afterMissing
+}));
+"""
+    proc = subprocess.run(
+        ["node", "-e", harness], cwd=ROOT, capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+    result = json.loads(proc.stdout)
+    assert result["shell"] == ["BRD0=shell", "BRD1=shell", "BRD2=shell"]
+    assert result["swapped"] == ["BRD0=paid", "BRD1=shell", "BRD2=shell"]
+    assert result["afterEmpty"] == result["swapped"]
+    assert result["afterMissing"] == result["swapped"]
+
+
+def test_hydrate_replaces_shell_cards_from_preview_cards_html():
+    """hydrate() must pass the new payload key into the named replace helper."""
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    needle = "replacePreviewCards(freshCand, payload.preview_cards_html)"
+    start = template.find("function hydrate(payload)")
+    end = template.find("function recountStageChips", start)
+    assert start >= 0 and end > start
+    assert needle in template[start:end]
+
+
+def test_both_stocks_passes_hand_the_shell_the_filtered_plan_map():
+    """main() builds the page in two passes. Neither may hand the shell the full map."""
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert source.count('vm["plan_rel_by_ticker"] = _plan_relations_for_shell(') == 2
+    assert "(_us_plan_state, _us_plan_by_ticker), _us_life_locked)" in source
+    assert "(_us_plan_state2, _us_plan_by_ticker2), _us_life_locked2)" in source
+    assert 'vm["plan_rel_by_ticker"] = _us_plan_by_ticker' not in source
+
+
+def test_shell_plan_map_is_empty_when_the_book_could_not_be_read(us_cfg):
+    """An unreadable book keeps its own copy. It never reads as a gated record."""
+    plans = {"AAA": [{"id": "AAA-1"}]}
+    assert us_cfg._plan_relations_for_shell(("unknown", plans), [{"id": "AAA-1"}]) == {}
+    assert us_cfg._plan_relations_for_shell(None, []) == {}
+    full = ("related_security", plans)
+    assert us_cfg._plan_relations_for_shell(full, []) == plans
+    assert us_cfg._plan_relations_for_shell(full, [{"id": "AAA-1"}]) == {
+        "AAA": [{"shell_state": "gated"}]
+    }
+    assert plans == {"AAA": [{"id": "AAA-1"}]}

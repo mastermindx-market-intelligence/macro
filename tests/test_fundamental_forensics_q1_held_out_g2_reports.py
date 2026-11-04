@@ -182,7 +182,15 @@ def test_admitted_accessions_bind_sic_from_the_held_out_contract() -> None:
         (HELD_OUT_ROOT / "held_out_contract.json").read_text(encoding="utf-8")
     )
     contract_sics = {row["cik"]: row["sic"] for row in contract["issuers"]}
-    assert len(contract_sics) == 5, sorted(contract_sics)
+    # This generation measured the five protocol issuers. Issuers admitted
+    # later by a pack-scoped split decision carry pack_scope rows and are not
+    # part of this generation's cohort.
+    protocol_ciks = {
+        row["cik"]
+        for row in contract["issuers"]
+        if not any(acc.get("pack_scope") for acc in row["accessions"])
+    }
+    assert len(protocol_ciks) == 5, sorted(protocol_ciks)
     for pack_id in PACK_IDS:
         trials = _trials(pack_id)
         if trials["labels_status"] != "labelled":
@@ -196,7 +204,7 @@ def test_admitted_accessions_bind_sic_from_the_held_out_contract() -> None:
         # generation one measured none of these (unbound SIC, refused packs).
         assert admitted, f"{pack_id}: zero admitted accessions"
         for note in admitted:
-            assert note["cik"] in contract_sics, (pack_id, note["accession"])
+            assert note["cik"] in protocol_ciks, (pack_id, note["accession"])
             assert note["sic_binding"] == "held_out_contract", (
                 pack_id,
                 note["accession"],

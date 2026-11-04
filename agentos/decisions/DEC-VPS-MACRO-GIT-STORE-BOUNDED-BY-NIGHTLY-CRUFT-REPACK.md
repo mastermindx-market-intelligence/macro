@@ -83,6 +83,7 @@ confidence: high
 reversibility: easy
 decided_by: claude-opus (session 2036a7c3, chairman-assigned 2026-10-19 VPS root-disk remediation)
 decided_at: 2026-10-19
+superseded_by: DEC:VPS-MACRO-GIT-STORE-KEPT-TIER-NIGHTLY-REPACK-AND-PULL-GUARD
 ---
 
 The Macro droplet's pull clone grows by about a gigabyte a day because every full-site render

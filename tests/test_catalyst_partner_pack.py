@@ -157,6 +157,20 @@ class CatalystPartnerPackTests(unittest.TestCase):
                      route_receipt="approved-route-01")
         self.assertEqual(p["publication_status"], "DRAFT_HOLD")
 
+    def test_g5_apex_scan_route_is_refused(self):
+        """Catches: a partner link naming the apex host, which only 301-redirects and serves no route."""
+        self.refused("INVALID_SCAN_ROUTE",
+                     scan_url="https://mastermind-x.com/api/catalyst",
+                     route_receipt="approved-route-01")
+
+    def test_g5_www_scan_route_still_live(self):
+        """Catches: the apex refusal also refusing the canonical www scan route."""
+        p = self.make(scan_url="https://www.mastermind-x.com/api/catalyst",
+                      route_receipt="approved-route-01")
+        self.assertFalse(p["link_is_placeholder"])
+        self.assertEqual(urlsplit(p["scan_link"]).hostname, "www.mastermind-x.com")
+        self.assertEqual(urlsplit(p["scan_link"]).path, "/api/catalyst")
+
     def test_duplicate_utm_or_unregistered_placeholder_with_receipt_blocked(self):
         self.refused("DUPLICATE_OR_INVALID_UTM",
                      scan_url="https://www.mastermind-x.com/scan/?utm_source=x",
@@ -1075,6 +1089,83 @@ class CatalystNativePackTests(unittest.TestCase):
             self.assertIsNone(
                 re.search(r"bull|bear|positive|negative|score|gain|loss",
                           value))
+
+    def _g2_native_read_model(self):
+        """Capture the read model the native adapter hands build_partner_pack."""
+        from unittest import mock
+        import engine.marketing.catalyst_partner_pack as pp
+        packet, scan = self._native()
+        captured = {}
+        real = pp.build_partner_pack
+
+        def spy(read_model, *args, **kwargs):
+            captured["read_model"] = copy.deepcopy(read_model)
+            captured["basis"] = kwargs.get("event_time_basis")
+            return real(read_model, *args, **kwargs)
+
+        with mock.patch.object(pp, "build_partner_pack", spy):
+            self._pack(packet, scan)
+        return captured
+
+    def test_g2_native_earnings_pack_names_the_sec_acceptance_clock(self):
+        """Catches: a native earnings pack showing its SEC acceptance clock under a generic, unnamed label."""
+        packet, scan = self._native()
+        pack = self._pack(packet, scan)
+        self.assertEqual(pack["event"]["event_time_basis"], "SEC_ACCEPTANCE")
+        self.assertEqual(pack["event"]["event_time_utc"],
+                         self._source_event()["acceptance_datetime"])
+        with tempfile.TemporaryDirectory() as temp:
+            write_partner_pack(pack, temp)
+            page = (Path(temp) / "index.html").read_text()
+        self.assertIn("SEC acceptance / UTC", page)
+        self.assertIn("2026-10-30T09:30:00Z", page)
+        self.assertNotIn("Event time / UTC", page)
+
+    def test_g2_hand_pack_keeps_the_generic_event_time_label(self):
+        """Catches: a hand-authored pack claiming an SEC acceptance clock it never carried."""
+        pack = build_partner_pack(
+            copy.deepcopy(DEMO_EVENT), copy.deepcopy(DEMO_PROFILES[0][0]),
+            ["EXA"], now_utc=DEMO_NOW)
+        self.assertNotIn("event_time_basis", pack["event"])
+        with tempfile.TemporaryDirectory() as temp:
+            write_partner_pack(pack, temp)
+            page = (Path(temp) / "index.html").read_text()
+        self.assertIn("Event time / UTC", page)
+        self.assertNotIn("SEC acceptance", page)
+
+    def test_g2_unnamed_or_unsupported_clock_basis_refused(self):
+        """Catches: an invented clock basis, or SEC acceptance asserted without an SEC earnings headline source."""
+        for basis in ("FILED_AT", "sec_acceptance", ""):
+            with self.assertRaises(PackRejected) as caught:
+                build_partner_pack(
+                    copy.deepcopy(DEMO_EVENT),
+                    copy.deepcopy(DEMO_PROFILES[0][0]), ["EXA"],
+                    now_utc=DEMO_NOW, event_time_basis=basis)
+            self.assertEqual(caught.exception.code, "INVALID_EVENT_TIME_BASIS")
+        # Earnings kind, but the only headline source is not an SEC filing.
+        with self.assertRaises(PackRejected) as caught:
+            build_partner_pack(
+                copy.deepcopy(DEMO_EVENT), copy.deepcopy(DEMO_PROFILES[0][0]),
+                ["EXA"], now_utc=DEMO_NOW, event_time_basis="SEC_ACCEPTANCE")
+        self.assertEqual(caught.exception.code, "INVALID_EVENT_TIME_BASIS")
+
+    def test_g2_sec_acceptance_refused_on_a_non_earnings_event(self):
+        """Catches: the SEC acceptance label attached to a non-earnings event that carries an SEC source id."""
+        captured = self._g2_native_read_model()
+        self.assertEqual(captured["basis"], "SEC_ACCEPTANCE")
+        read_model = captured["read_model"]
+        self.assertTrue(any(ref.startswith("sec:")
+                            for ref in read_model["headline_evidence_ids"]))
+        read_model["event_kind"] = "ai_capex"
+        with self.assertRaises(PackRejected) as caught:
+            build_partner_pack(
+                read_model, self._partner_profile(), ["EXA"],
+                now_utc=self.AS_OF, event_time_basis="SEC_ACCEPTANCE")
+        self.assertEqual(caught.exception.code, "INVALID_EVENT_TIME_BASIS")
+        # Negative: the same read model with no basis still compiles.
+        pack = build_partner_pack(read_model, self._partner_profile(), ["EXA"],
+                                  now_utc=self.AS_OF)
+        self.assertNotIn("event_time_basis", pack["event"])
 
 
 if __name__ == "__main__":

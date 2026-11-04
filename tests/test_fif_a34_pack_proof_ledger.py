@@ -4,9 +4,10 @@ Z0 closure-matrix row A34 requires per-pack schema/gold/held-out/review/live
 proofs where a group summary cannot hide a gap. These hermetic guards keep
 ``FIF_A34_PACK_PROOF_LEDGER.json`` honest: every registered pack appears once,
 the committed document matches a fresh regeneration, every missing proof is a
-listed gap, no aggregate field can mask a per-pack gap, and the generator
-measures the held-out split by existence checks only — never by reading bytes
-under the sealed root.
+listed gap, no aggregate field can mask a per-pack gap, a sealed held-out
+split counts as a proof only when the current Q1 generation measured it, and
+the generator measures the held-out split by existence checks only — never by
+reading bytes under the sealed root.
 """
 from __future__ import annotations
 
@@ -166,3 +167,79 @@ def test_a34_ledger_reads_no_held_out_contents(monkeypatch) -> None:
     ):
         with pytest.raises(AssertionError):
             route()
+
+
+def test_a34_held_out_is_a_proof_only_when_q1_measured_it() -> None:
+    doc = _committed()
+    generator = _generator()
+    for pack in doc["packs"]:
+        held_out = pack["proofs"]["held_out"]
+        measured = held_out["quality_label"] == generator.Q1_MEASURED_LABEL
+        expected = "present" if held_out["sealed"] and measured else "missing"
+        assert held_out["state"] == expected, pack["pack_id"]
+        report_rel = held_out["quality_report"]
+        if report_rel is None:
+            assert held_out["quality_label"] is None, pack["pack_id"]
+            assert held_out["failed_families"] == [], pack["pack_id"]
+            continue
+        assert report_rel.startswith(generator.Q1_REPORTS_REL + "/"), pack["pack_id"]
+        report = json.loads((ROOT / report_rel).read_text(encoding="utf-8"))
+        assert report["pack_id"] == pack["pack_id"]
+        assert held_out["quality_label"] == report["quality_label"], pack["pack_id"]
+        assert held_out["failed_families"] == [
+            {"section_family": family["section_family"], "disposition": family["disposition"]}
+            for family in report["failed_families"]
+        ], pack["pack_id"]
+
+
+def test_a34_sealed_but_underpowered_split_is_a_gap(tmp_path) -> None:
+    generator = _generator()
+    pack_id = "PK01"
+    (tmp_path / generator.HELD_OUT_ROOT_REL / "packs" / pack_id / "labels").mkdir(parents=True)
+    (tmp_path / generator.HELD_OUT_ROOT_REL / "packs" / pack_id / "labels" / "_SEALED").write_text("")
+    reports = tmp_path / generator.Q1_REPORTS_REL
+    reports.mkdir(parents=True)
+    report_path = reports / f"{pack_id}_pack_quality_report.json"
+    q0_pack = {"pack_id": pack_id, "name": "probe"}
+    (tmp_path / generator.PRODUCER_TESTS_REL).parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / generator.PRODUCER_TESTS_REL).write_text("", encoding="utf-8")
+
+    for label, state in (
+        ("underpowered", "missing"),
+        ("unavailable_research_only", "missing"),
+        (generator.Q1_MEASURED_LABEL, "present"),
+    ):
+        report_path.write_text(
+            json.dumps({"pack_id": pack_id, "quality_label": label, "failed_families": []}),
+            encoding="utf-8",
+        )
+        entry = generator._pack_entry(tmp_path, q0_pack, [], [])
+        assert entry["proofs"]["held_out"]["state"] == state, label
+        assert ("held_out" in entry["gaps"]) is (state == "missing"), label
+
+    report_path.write_text(
+        json.dumps({"pack_id": "PK02", "quality_label": generator.Q1_MEASURED_LABEL, "failed_families": []}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError):
+        generator._pack_entry(tmp_path, q0_pack, [], [])
+
+
+def test_a34_ledger_reads_the_newest_q1_generation() -> None:
+    generator = _generator()
+    current = ROOT / generator.Q1_REPORTS_REL
+    reports_root = current.parent
+    prefix = current.name.split("_g")[0]
+
+    def evaluated_at(generation: Path) -> str:
+        stamps = {
+            json.loads(path.read_text(encoding="utf-8"))["evaluated_at"]
+            for path in generation.glob("PK*_pack_quality_report.json")
+        }
+        assert len(stamps) == 1, generation.name
+        return stamps.pop()
+
+    generations = [path for path in reports_root.glob(prefix + "*") if path.is_dir()]
+    assert current in generations
+    newest = max(generations, key=evaluated_at)
+    assert newest == current, f"newer Q1 generation {newest.name}; move Q1_REPORTS_REL and regenerate"

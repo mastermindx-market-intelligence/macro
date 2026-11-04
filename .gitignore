@@ -60,6 +60,16 @@ site/feeds/
 # live intraday overlay — runtime artifact written by scripts/build_live_overlay (intraday
 # cron) and by the offline test path; never committed (the cron force-pushes / re-emits it).
 site/live/
+# Atomic-publish staging siblings of the sector holdings coverage feed
+# (scripts/build_sector_holdings_coverage.py writes .<name>.<suffix> next to
+# the destination and replaces it in one step). A hard crash (SIGKILL) can
+# leave such a sibling behind, and render.yml stages a broad `git add site/`
+# that would sweep it into the commit. No trailing slash, so the pattern
+# matches the sibling FILE (or a symlink at that path) and never the
+# published feed itself — site/sectordata/sector_holdings_coverage.json stays
+# tracked. No writer-side sweep: another writer may legitimately hold that
+# name right now.
+site/sectordata/.sector_holdings_coverage.json.*
 # NOTE: site/research/ is deliberately NOT ignored. #3507 ignored it as "a runtime
 # plane like site/live/", but the estate is 87 TRACKED files (#3501/#3512) that reach
 # the edge by being committed. Ignoring a tracked tree is the worst of both: `git add

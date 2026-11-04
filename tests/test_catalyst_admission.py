@@ -133,7 +133,7 @@ def test_qualified_owner_to_anonymous_scan_and_rights_revocation(monkeypatch):
     called = []
     def qualify(family):
         called.append(family)
-        assert family == "sec_edgar"
+        assert family == catalyst_admission.RIGHTS_FAMILY
 
     monkeypatch.setattr(rights, "assert_public_emission_allowed", qualify)
     control = {"issuer_reads": 0, "event_reads": 0,
@@ -198,7 +198,7 @@ def test_existing_registry_can_mark_other_names_unsupported_without_hiding_publi
     now = datetime.now(timezone.utc)
     from engine.theme_graph import rights
     monkeypatch.setattr(rights, "assert_public_emission_allowed",
-                        lambda family: None if family == "sec_edgar" else 1 / 0)
+                        lambda family: None if family == catalyst_admission.RIGHTS_FAMILY else 1 / 0)
     control = {"issuer_reads": 0, "event_reads": 0,
                "rights_reads": 0, "granted": True}
     provider = _source(now, control)

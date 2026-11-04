@@ -53,5 +53,10 @@
       "denominator_return_pct": -3.0,
       "ratio_return_pct": 2.0618556701030855
     }
+  },
+  "recorded": {
+    "source": "macro.rotation_events.ledger",
+    "ledger": "rotation_events/events.jsonl",
+    "receipt_sha256": "4c887fe58ce89be6c7f6fee48993bd7a1e38758cd78201bdbba59bf175f43928"
   }
 }

@@ -613,7 +613,7 @@ def compose(glt: Mapping[str, Any], cb_desk: Mapping[str, Any],
         },
         "headline": headline,
         "axes": {"items": []},
-        "metrics": {"items": metrics},
+        "metrics": {"items": metrics + _glt_view_rows(g, glt_asof, glt_repr_fresh)},
         "series": {
             "items": [],
             "status": "ABSENT",
@@ -1414,3 +1414,578 @@ def _corrections(current_metrics_by_id: dict, effective_date, prior_snapshot: Ma
         "correction_state": "none",
         "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
     }
+
+
+# --------------------------------------------------------------------------- #
+# GLT T22 M2: display-only views projection.
+#
+# The M1 ``views`` block on the glt envelope becomes workspace metric rows.
+# Every row only COPIES a number the views block already carries, together
+# with its declared estimate type; a disposition that is not cleared shows a
+# WORD and no number. Nothing is computed, summed, ranked, sized or given a
+# probability reading, the projection never raises, and anything outside the
+# display whitelists collapses that family to one refusal row.
+# --------------------------------------------------------------------------- #
+
+_GLT_VIEW_OWNER_REF = "engine.global_liquidity_transmission"
+_GLT_VIEW_FAMILIES = (
+    ("glt_view_outlook", "conditional_outlook"),
+    ("glt_view_forecast", "statistical_forecast"),
+    ("glt_view_transmission", "transmission"),
+    ("glt_view_repricing", "repricing_evidence"),
+    ("glt_view_replay", "replay"),
+)
+_GLT_VIEW_COMPONENT_ORDER = (
+    "total_assets", "treasury_general_account", "reverse_repo_others",
+    "reverse_repo_foreign_official", "federal_reserve_notes",
+    "other_nonreserve_and_capital",
+)
+_GLT_VIEW_HORIZON_ORDER = (4, 8, 13)
+_GLT_VIEW_REGION_ORDER = ("us", "euro_area", "japan", "china", "hong_kong")
+_GLT_VIEW_FUND_ORDER = ("efa", "eem", "gld", "slv", "dbc", "uso", "cper")
+_GLT_VIEW_REPLAY_COMPONENTS = ("reserves", "tga", "rrp")
+_GLT_VIEW_OUTLOOK_ESTIMATE_TYPES = (
+    "announced_scenario", "conditional_accounting", "unavailable",
+)
+_GLT_VIEW_FORECAST_TARGET_ORDER = ("reserves", "tga", "rrp")
+_GLT_VIEW_FORECAST_DISPOSITIONS = (
+    "supported", "rejected", "insufficient", "unavailable",
+)
+_GLT_VIEW_FORECAST_WORD = {
+    "supported": "not_cleared",
+    "rejected": "rejected",
+    "insufficient": "insufficient",
+    "unavailable": "unavailable",
+}
+_GLT_VIEW_REPLAY_ESTIMATE_TYPES = (
+    "observed", "announced_scenario", "conditional_accounting", "unavailable",
+)
+_GLT_VIEW_CONDITIONING_NOTES = {
+    "glt_cond_announced_schedule": "announced_schedule",
+    "glt_cond_hold_level": "hold_level",
+    "glt_cond_weekly_change": "weekly_change",
+}
+_GLT_VIEW_NULL_BY_REASON = {
+    "science_results_not_published_to_product_plane": "NOT_YET_RELEASED",
+    "outlook_inputs_not_supplied": "NOT_YET_RELEASED",
+    "outlook_unit_not_declared": "SOURCE_FAILED",
+    "outlook_anchor_after_as_of": "NOT_YET_RELEASED",
+    "h41_table5_owner_loader_missing": "SOURCE_FAILED",
+    "component_unavailable": "NOT_COVERED",
+    "forecast_package_missing": "NOT_YET_RELEASED",
+    "forecast_package_unreadable": "SOURCE_FAILED",
+    "forecast_package_after_as_of": "NOT_YET_RELEASED",
+    "issue_history_not_recorded": "INSUFFICIENT_HISTORY",
+    "issue_history_warming_up": "WARMUP",
+    "views_compose_failed": "SOURCE_FAILED",
+    "views_contract_refused": "SOURCE_FAILED",
+    "as_of_mismatch": "DISAGREEMENT",
+}
+_GLT_VIEW_FRESHNESS_BY_NULL = {
+    "NOT_YET_RELEASED": "NOT_YET_RELEASED",
+    "SOURCE_FAILED": "SOURCE_FAILED",
+    "DISAGREEMENT": "SOURCE_FAILED",
+    "NOT_COVERED": "NOT_COVERED",
+    "INSUFFICIENT_HISTORY": "NOT_COVERED",
+    "WARMUP": "NOT_YET_RELEASED",
+}
+# The composer vocabulary each family may lawfully carry; anything else is a
+# display-contract refusal for that family.
+_GLT_VIEW_OUTLOOK_REASONS = {
+    "unavailable": (
+        "outlook_inputs_not_supplied", "outlook_unit_not_declared",
+        "outlook_anchor_after_as_of", "component_unavailable",
+    ),
+    "data_degraded": ("h41_table5_owner_loader_missing",),
+}
+_GLT_VIEW_FORECAST_REASONS = (
+    "forecast_package_missing", "forecast_package_unreadable",
+    "forecast_package_after_as_of",
+)
+_GLT_VIEW_REPLAY_REASONS = {
+    "no_history": "issue_history_not_recorded",
+    "warmup": "issue_history_warming_up",
+}
+_GLT_VIEW_KEEP = object()
+
+
+class _GltViewRefused(Exception):
+    """Control flow: this family collapses to one refusal row."""
+
+
+def _glt_view_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _glt_view_row(metric_id, value, *, basis, note, freshness,
+                  reference_period, definition, value_type="number", unit=None,
+                  null_reason=None, status=None, calculation_as_of=None,
+                  observed_at=_GLT_VIEW_KEEP, released_at=None, revised_at=None):
+    """One projected metric row: ``note`` is the reviewed note token stored in
+    ``transformation`` (never rendered); ``definition`` is the logical views
+    path stored as ``definition_id``."""
+    row = _metric(
+        metric_id, value, value_type, unit, basis, None,
+        _GLT_VIEW_OWNER_REF, definition, reference_period, freshness,
+        transformation=note, status=status, null_reason=null_reason,
+        calculation_as_of=calculation_as_of,
+    )
+    if observed_at is not _GLT_VIEW_KEEP:
+        row["observed_at"] = observed_at
+    if isinstance(released_at, str):
+        row["released_at"] = released_at
+    if isinstance(revised_at, str):
+        row["revised_at"] = revised_at
+    return row
+
+
+def _glt_view_reason_row(reason_key, metric_id, view_name, reference_period):
+    null = _GLT_VIEW_NULL_BY_REASON[reason_key]
+    return _glt_view_row(
+        metric_id, None, basis=None,
+        note="glt_view_note.reason." + reason_key,
+        freshness=_GLT_VIEW_FRESHNESS_BY_NULL[null], null_reason=null,
+        reference_period=reference_period, definition="views." + view_name)
+
+
+def _glt_view_points_by_horizon(points):
+    if not isinstance(points, list):
+        raise _GltViewRefused
+    by_horizon = {}
+    for point in points:
+        if not isinstance(point, Mapping):
+            raise _GltViewRefused
+        horizon = point.get("horizon_weeks")
+        if (not isinstance(horizon, int) or isinstance(horizon, bool)
+                or horizon not in _GLT_VIEW_HORIZON_ORDER):
+            raise _GltViewRefused
+        if horizon in by_horizon:
+            raise _GltViewRefused
+        by_horizon[horizon] = point
+    return by_horizon
+
+
+def _glt_view_outlook_point_row(metric_id, value, basis, note, point, status,
+                                freshness, views_as_of, definition):
+    published = point.get("published_at")
+    reference = point.get("target_date") if isinstance(
+        point.get("target_date"), str) else None
+    return _glt_view_row(
+        metric_id, value, value_type="currency_bn", unit="USD billions",
+        basis=basis, note=note, freshness=freshness, reference_period=reference,
+        status=status, calculation_as_of=views_as_of, observed_at=None,
+        released_at=published, definition=definition)
+
+
+def _glt_view_reserves_rows(block, views_as_of, glt_asof, present_status,
+                            scenario_freshness):
+    reserves = block.get("reserves")
+    if not isinstance(reserves, Mapping):
+        raise _GltViewRefused
+    estimate_type = reserves.get("estimate_type")
+    if estimate_type not in _GLT_VIEW_OUTLOOK_ESTIMATE_TYPES:
+        raise _GltViewRefused
+    if estimate_type == "unavailable":
+        return [_glt_view_row(
+            "glt_view_outlook_reserves", None, basis="glt_est_unavailable",
+            note="glt_view_note.outlook.reserves_unavailable",
+            freshness="NOT_COVERED", null_reason="NOT_COVERED",
+            reference_period=glt_asof,
+            definition="views.conditional_outlook.reserves")]
+    rows = []
+    by_horizon = _glt_view_points_by_horizon(reserves.get("points"))
+    for horizon in _GLT_VIEW_HORIZON_ORDER:
+        point = by_horizon.get(horizon)
+        if point is None:
+            continue
+        level = point.get("level")
+        if not _glt_view_number(level):
+            raise _GltViewRefused
+        rows.append(_glt_view_outlook_point_row(
+            f"glt_view_outlook_reserves_h{horizon}", level,
+            f"glt_est_{estimate_type}", "glt_view_note.outlook.reserves",
+            point, present_status, scenario_freshness, views_as_of,
+            f"views.conditional_outlook.reserves.points[h={horizon}].level"))
+    return rows
+
+
+def _glt_view_outlook_rows(views, glt_asof, glt_repr_fresh):
+    block = views.get("conditional_outlook")
+    status = block.get("status")
+    if status in ("unavailable", "data_degraded"):
+        reason = block.get("reason_key")
+        if reason not in _GLT_VIEW_OUTLOOK_REASONS.get(status, ()):
+            raise _GltViewRefused
+        return [_glt_view_reason_row(reason, "glt_view_outlook",
+                                     "conditional_outlook", glt_asof)]
+    if status not in ("available", "partial"):
+        raise _GltViewRefused
+    if block.get("unit") != "USD_bn":
+        raise _GltViewRefused
+    components = block.get("components")
+    if not isinstance(components, Mapping):
+        raise _GltViewRefused
+    for name in components:
+        if name not in _GLT_VIEW_COMPONENT_ORDER:
+            raise _GltViewRefused
+    partial = status == "partial"
+    present_status = "PARTIAL" if partial else "PRESENT"
+    scenario_freshness = (
+        "SIMULATED" if glt_repr_fresh in ("CURRENT", "LATE_WITHIN_TOLERANCE")
+        else glt_repr_fresh)
+    suffix = ".partial" if partial else ""
+    views_as_of = views.get("as_of")
+    rows = []
+    for name in _GLT_VIEW_COMPONENT_ORDER:
+        component = components.get(name)
+        if component is None:
+            continue
+        if not isinstance(component, Mapping):
+            raise _GltViewRefused
+        estimate_type = component.get("estimate_type")
+        if estimate_type not in _GLT_VIEW_OUTLOOK_ESTIMATE_TYPES:
+            raise _GltViewRefused
+        if estimate_type == "unavailable":
+            rows.append(_glt_view_row(
+                f"glt_view_outlook_{name}", None, basis="glt_est_unavailable",
+                note="glt_view_note.outlook.component_unavailable",
+                freshness="NOT_COVERED", null_reason="NOT_COVERED",
+                reference_period=glt_asof,
+                definition=f"views.conditional_outlook.components.{name}"))
+            continue
+        by_horizon = _glt_view_points_by_horizon(component.get("points"))
+        for horizon in _GLT_VIEW_HORIZON_ORDER:
+            point = by_horizon.get(horizon)
+            if point is None:
+                continue
+            level = point.get("level")
+            if not _glt_view_number(level):
+                raise _GltViewRefused
+            conditioning = point.get("conditioning_assumption_key")
+            if conditioning not in _GLT_VIEW_CONDITIONING_NOTES:
+                raise _GltViewRefused
+            note = ("glt_view_note.outlook."
+                    + _GLT_VIEW_CONDITIONING_NOTES[conditioning] + suffix)
+            rows.append(_glt_view_outlook_point_row(
+                f"glt_view_outlook_{name}_h{horizon}", level,
+                f"glt_est_{estimate_type}", note, point, present_status,
+                scenario_freshness, views_as_of,
+                f"views.conditional_outlook.components.{name}"
+                f".points[h={horizon}].level"))
+            bounds = point.get("scenario_bounds")
+            if bounds is None:
+                continue
+            if not isinstance(bounds, Mapping):
+                raise _GltViewRefused
+            for edge in ("low", "high"):
+                bound = bounds.get(edge)
+                if not _glt_view_number(bound):
+                    raise _GltViewRefused
+                rows.append(_glt_view_outlook_point_row(
+                    f"glt_view_outlook_{name}_h{horizon}_{edge}", bound,
+                    "glt_est_scenario_bounds", "glt_view_note.outlook.bounds",
+                    point, present_status, scenario_freshness, views_as_of,
+                    f"views.conditional_outlook.components.{name}"
+                    f".points[h={horizon}].scenario_bounds.{edge}"))
+    rows.extend(_glt_view_reserves_rows(block, views_as_of, glt_asof,
+                                        present_status, scenario_freshness))
+    rows.append(_glt_view_row(
+        "glt_view_outlook_residual", None, basis="glt_est_unavailable",
+        note="glt_view_note.outlook.residual", freshness="NOT_COVERED",
+        null_reason="NOT_COVERED", reference_period=glt_asof,
+        definition="views.conditional_outlook.statistical_residual"))
+    return rows
+
+
+def _glt_view_forecast_rows(views, glt_asof, glt_repr_fresh):
+    block = views.get("statistical_forecast")
+    status = block.get("status")
+    if status == "unavailable":
+        reason = block.get("reason_key")
+        if reason not in _GLT_VIEW_FORECAST_REASONS:
+            raise _GltViewRefused
+        return [_glt_view_reason_row(reason, "glt_view_forecast",
+                                     "statistical_forecast", glt_asof)]
+    if status != "available":
+        raise _GltViewRefused
+    cells = block.get("cells")
+    if not isinstance(cells, list):
+        raise _GltViewRefused
+    checked = []
+    seen = set()
+    for cell in cells:
+        if not isinstance(cell, Mapping):
+            raise _GltViewRefused
+        name = cell.get("target")
+        if name not in _GLT_VIEW_FORECAST_TARGET_ORDER:
+            raise _GltViewRefused
+        horizon = cell.get("horizon_weeks")
+        if (not isinstance(horizon, int) or isinstance(horizon, bool)
+                or horizon not in _GLT_VIEW_HORIZON_ORDER):
+            raise _GltViewRefused
+        disposition = cell.get("disposition")
+        if disposition not in _GLT_VIEW_FORECAST_DISPOSITIONS:
+            raise _GltViewRefused
+        if (name, horizon) in seen:
+            raise _GltViewRefused
+        seen.add((name, horizon))
+        checked.append((name, horizon, disposition))
+
+    def forecast_row(metric_id, word, note, definition):
+        return _glt_view_row(
+            metric_id, None, basis=f"glt_forecast_{word}", note=note,
+            freshness="NOT_COVERED", null_reason="NOT_COVERED",
+            reference_period=glt_asof, definition=definition)
+
+    words = {_GLT_VIEW_FORECAST_WORD[disposition]
+             for _name, _horizon, disposition in checked}
+    if len(words) == 1:
+        word = next(iter(words))
+        return [forecast_row("glt_view_forecast", word,
+                             f"glt_view_note.forecast.all.{word}",
+                             "views.statistical_forecast.cells")]
+    rows = []
+    for name, horizon, disposition in sorted(
+            checked,
+            key=lambda cell: (_GLT_VIEW_FORECAST_TARGET_ORDER.index(cell[0]),
+                              cell[1])):
+        word = _GLT_VIEW_FORECAST_WORD[disposition]
+        rows.append(forecast_row(
+            f"glt_view_forecast_{name}_h{horizon}", word,
+            f"glt_view_note.forecast.{word}",
+            f"views.statistical_forecast.cells"
+            f"[target={name},h={horizon}].disposition"))
+    return rows
+
+
+def _glt_view_evidence_rows(views, view_name, metric_id, glt_asof):
+    from engine import global_liquidity_views as glv
+
+    block = views.get(view_name)
+    status = block.get("status")
+    if status == "unavailable":
+        reason = block.get("reason_key")
+        if reason != "science_results_not_published_to_product_plane":
+            raise _GltViewRefused
+        null = _GLT_VIEW_NULL_BY_REASON[reason]
+        suffix = "transmission" if view_name == "transmission" else "repricing"
+        return [_glt_view_row(
+            metric_id, None, basis=None,
+            note=f"glt_view_note.reason.{reason}.{suffix}",
+            freshness=_GLT_VIEW_FRESHNESS_BY_NULL[null], null_reason=null,
+            reference_period=glt_asof, definition=f"views.{view_name}")]
+    if status != "available":
+        raise _GltViewRefused
+    disposition = block.get("disposition")
+    label = block.get("label")
+    if disposition not in glv.PRODUCT_DISPOSITIONS:
+        raise _GltViewRefused
+    if label not in glv.EVIDENCE_LABELS:
+        raise _GltViewRefused
+    if label == "identified_effect" and disposition != "supported":
+        raise _GltViewRefused
+    baseline = block.get("baseline_comparison")
+    if isinstance(baseline, Mapping) and baseline.get("comparator") == "announced_only":
+        # audit (f): announced_only is never an independent comparator, and
+        # validate_view does not check it — the projection must.
+        raise _GltViewRefused
+    rows = [_glt_view_row(
+        metric_id, None, basis=f"glt_evidence_{disposition}",
+        note=f"glt_view_note.evidence.{label}.{disposition}",
+        freshness="NOT_COVERED", null_reason="NOT_COVERED",
+        reference_period=glt_asof, definition=f"views.{view_name}")]
+    regions = block.get("regions")
+    if regions is None:
+        regions = []
+    if not isinstance(regions, list):
+        raise _GltViewRefused
+    seen = set()
+    for region in regions:
+        if not isinstance(region, Mapping):
+            raise _GltViewRefused
+        name = region.get("region")
+        if name not in _GLT_VIEW_REGION_ORDER or name in seen:
+            raise _GltViewRefused
+        if region.get("state") not in ("available", "missing_input"):
+            raise _GltViewRefused
+        seen.add(name)
+    for name in _GLT_VIEW_REGION_ORDER:
+        if name not in seen:
+            continue
+        region = next(r for r in regions if r.get("region") == name)
+        if region.get("state") == "missing_input":
+            basis = "glt_region_missing_input"
+            note = ("glt_view_note.region.missing_input_lab"
+                    if region.get("owner") == glv.CROSS_REPO_OWNER
+                    else "glt_view_note.region.missing_input_named")
+        else:
+            basis = "glt_region_available"
+            note = "glt_view_note.region.available"
+        rows.append(_glt_view_row(
+            f"{metric_id}_region_{name}", None, basis=basis, note=note,
+            freshness="NOT_COVERED", null_reason="NOT_COVERED",
+            reference_period=glt_asof,
+            definition=f"views.{view_name}.regions[region={name}].state"))
+    entries = block.get("targets")
+    if entries is None:
+        entries = []
+    if not isinstance(entries, list):
+        raise _GltViewRefused
+    missing = []
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            raise _GltViewRefused
+        state = entry.get("state")
+        if state == "missing":
+            fund = entry.get("target")
+            if fund not in _GLT_VIEW_FUND_ORDER or fund in missing:
+                raise _GltViewRefused
+            missing.append(fund)
+        elif state != "available":
+            raise _GltViewRefused
+    for fund in _GLT_VIEW_FUND_ORDER:
+        if fund not in missing:
+            continue
+        rows.append(_glt_view_row(
+            f"{metric_id}_fund_{fund}", None, basis="glt_fund_missing",
+            note="glt_view_note.fund.missing", freshness="NOT_COVERED",
+            null_reason="NOT_COVERED", reference_period=glt_asof,
+            definition=f"views.{view_name}.targets[target={fund}].state"))
+    return rows
+
+
+def _glt_view_transmission_rows(views, glt_asof, glt_repr_fresh):
+    return _glt_view_evidence_rows(views, "transmission",
+                                   "glt_view_transmission", glt_asof)
+
+
+def _glt_view_repricing_rows(views, glt_asof, glt_repr_fresh):
+    return _glt_view_evidence_rows(views, "repricing_evidence",
+                                   "glt_view_repricing", glt_asof)
+
+
+def _glt_view_replay_rows(views, glt_asof, glt_repr_fresh):
+    block = views.get("replay")
+    status = block.get("status")
+    if status in ("no_history", "warmup"):
+        reason = _GLT_VIEW_REPLAY_REASONS.get(status)
+        if reason is None or block.get("reason_key") != reason:
+            raise _GltViewRefused
+        return [_glt_view_reason_row(reason, "glt_view_replay", "replay",
+                                     glt_asof)]
+    if status != "available":
+        raise _GltViewRefused
+    records = block.get("rows")
+    if not isinstance(records, list):
+        raise _GltViewRefused
+    rows = []
+    for index, record in enumerate(records, start=1):
+        if not isinstance(record, Mapping):
+            raise _GltViewRefused
+        known_at = record.get("known_at")
+        components = record.get("components_as_known")
+        types = record.get("estimate_types_as_known")
+        corrections = record.get("corrections")
+        if (not isinstance(known_at, str) or not isinstance(components, Mapping)
+                or not isinstance(types, Mapping)
+                or not isinstance(corrections, list)):
+            raise _GltViewRefused
+        corrected_days = {}
+        for correction in corrections:
+            if not isinstance(correction, Mapping):
+                raise _GltViewRefused
+            field = correction.get("field")
+            corrected_at = correction.get("corrected_at")
+            if not isinstance(field, str) or not isinstance(corrected_at, str):
+                raise _GltViewRefused
+            if field not in _GLT_VIEW_REPLAY_COMPONENTS:
+                raise _GltViewRefused
+            day = corrected_days.get(field)
+            if day is None or corrected_at > day:
+                corrected_days[field] = corrected_at
+        for component in _GLT_VIEW_REPLAY_COMPONENTS:
+            definition = (f"views.replay.rows[known_at={known_at}]"
+                          f".components_as_known.{component}")
+            value = components.get(component)
+            if component in components and component not in types:
+                raise _GltViewRefused
+            estimate_type = types.get(component)
+            if estimate_type is not None and \
+                    estimate_type not in _GLT_VIEW_REPLAY_ESTIMATE_TYPES:
+                raise _GltViewRefused
+            corrected_at = corrected_days.get(component)
+            note = ("glt_view_note.replay.corrected" if corrected_at
+                    else "glt_view_note.replay.as_known")
+            if value is None:
+                if estimate_type not in (None, "unavailable"):
+                    raise _GltViewRefused
+                rows.append(_glt_view_row(
+                    f"glt_view_replay_{index}_{component}", None,
+                    basis="glt_est_unavailable", note=note,
+                    freshness="HISTORICAL_AS_KNOWN", null_reason="NOT_COVERED",
+                    reference_period=known_at, calculation_as_of=known_at,
+                    revised_at=corrected_at, definition=definition))
+                continue
+            if not _glt_view_number(value) or estimate_type == "unavailable":
+                raise _GltViewRefused
+            rows.append(_glt_view_row(
+                f"glt_view_replay_{index}_{component}", value,
+                basis=f"glt_est_{estimate_type}", note=note,
+                freshness="HISTORICAL_AS_KNOWN", reference_period=known_at,
+                calculation_as_of=known_at, revised_at=corrected_at,
+                definition=definition))
+    return rows
+
+
+def _glt_view_rows(g, glt_asof, glt_repr_fresh):
+    """Project the display-only ``views`` block into workspace metric rows.
+
+    Pure and total: reads only the given envelope, the page as-of and the
+    precomputed glt freshness; formats; never raises; never recomputes a
+    number the views block already carries.
+    """
+    from engine import global_liquidity_views as glv
+
+    if not isinstance(g, Mapping):
+        return []
+    views = g.get("views")
+    if views is None:
+        return []
+    views_as_of = views.get("as_of") if isinstance(views, Mapping) else None
+    reference_period = glt_asof if glt_asof is not None else views_as_of
+
+    def family_rows(reason_key):
+        return [_glt_view_reason_row(reason_key, metric_id, view_name,
+                                     reference_period)
+                for metric_id, view_name in _GLT_VIEW_FAMILIES]
+
+    admissible = isinstance(views, Mapping)
+    if admissible:
+        try:
+            glv.validate_views(views)
+        except (glv.ViewsContractError, ValueError, TypeError, KeyError):
+            admissible = False
+    if not admissible:
+        return family_rows("views_contract_refused")
+
+    if all(isinstance(views.get(view_name), Mapping)
+           and views[view_name].get("reason_key") == "views_compose_failed"
+           for view_name in
+           ("conditional_outlook", "statistical_forecast", "transmission",
+            "repricing_evidence", "replay")):
+        return family_rows("views_compose_failed")
+
+    if views.get("as_of") != glt_asof:
+        return family_rows("as_of_mismatch")
+
+    rows = []
+    for (metric_id, view_name), projector in zip(_GLT_VIEW_FAMILIES, (
+            _glt_view_outlook_rows, _glt_view_forecast_rows,
+            _glt_view_transmission_rows, _glt_view_repricing_rows,
+            _glt_view_replay_rows)):
+        try:
+            rows.extend(projector(views, glt_asof, glt_repr_fresh))
+        except _GltViewRefused:
+            rows.append(_glt_view_reason_row(
+                "views_contract_refused", metric_id, view_name, glt_asof))
+    return rows

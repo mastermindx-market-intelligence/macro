@@ -78,6 +78,8 @@ CAPITAL_STRUCTURE_MODULES = {
         "candidate terms — best-effort nightly: a refusal is recorded, never fatal",
     "scripts.build_capital_structure_capacity_inputs":
         "capacity inputs — one generation or nothing, binds the served state (SPEC_U1B §3)",
+    "scripts.build_capital_structure_state_changes":
+        "change ledger — one changeset or nothing, binds the previous and served generations (SPEC_U2 U2-3)",
 }
 
 # The compilers that must stay fatal for their OWN checkpoint.  The two
@@ -93,6 +95,7 @@ FATAL_COMPILERS = (
     "scripts.check_capital_structure_health",
     "scripts.build_capital_structure_state",
     "scripts.build_capital_structure_capacity_inputs",
+    "scripts.build_capital_structure_state_changes",
 )
 
 # Staged path -> the step ids in THIS job that produce it.
@@ -106,7 +109,7 @@ FATAL_COMPILERS = (
 CS_STAGED_PATH_PRODUCERS = {
     "data/capital_structure": (
         "cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health", "cs_state",
-        "cs_candidates", "cs_inputs",
+        "cs_candidates", "cs_inputs", "cs_changes",
     ),
     "site/capital-structure-data": ("cs_handoff", "cs_spine", "cs_terms", "cs_projection", "cs_health"),
 }
@@ -229,11 +232,16 @@ def test_the_job_does_not_run_without_a_collect_that_succeeded(job):
 @pytest.mark.parametrize("module,cost", sorted(CAPITAL_STRUCTURE_MODULES.items()))
 def test_every_capital_structure_module_lives_in_this_job(daily, module, cost):
     """The chain moved WHOLE. A straggler left behind still reds the nightly."""
+    # Match the INVOCATION, not a loose substring: SPEC_U2 U2-3 added
+    # scripts.build_capital_structure_state_changes, whose name EXTENDS the
+    # state bundle producer's — a raw `module in run` would count the ledger
+    # step as a second home of scripts.build_capital_structure_state.
+    invocation = re.compile(rf"python -m {re.escape(module)}\b")
     home = sorted(
         name
         for name, spec in daily["jobs"].items()
         for step in (spec.get("steps") or [])
-        if module in str(step.get("run") or "")
+        if invocation.search(str(step.get("run") or ""))
     )
     assert home == [JOB], (
         f"{module} ({cost}) runs in {home!r}, not exactly [{JOB!r}]. Every step of "
@@ -678,6 +686,154 @@ def test_u1b_daily_job_runs_compiler_then_inputs_producer_after_state(steps):
     )
 
 
+def test_candidate_compiler_gets_the_same_source_store_env_as_the_terms_compiler(steps):
+    """cs_candidates resolves sources through build_source_stores(), like cs_terms.
+
+    Without the step-local R2 env no store is admissible, so the compiler refused
+    every night and the instruments family stayed unavailable for every issuer.
+    The env must name exactly the stores cs_terms names, each bound to its own
+    secret, and nothing else (no flag, mode or authority variable rides along).
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    candidates = next(s for s in steps if s.get("id") == "cs_candidates")
+    terms_env = dict(terms.get("env") or {})
+    candidates_env = dict(candidates.get("env") or {})
+    store_keys = {k for k in terms_env if k.startswith("R2_")}
+    assert {"R2_BUCKET", "R2_CAPITAL_STRUCTURE_BUCKET", "R2_RESEARCH_BUCKET"} <= store_keys
+    assert candidates_env == {k: terms_env[k] for k in store_keys}, candidates_env
+    for key, value in candidates_env.items():
+        assert value == "${{ secrets.%s }}" % key, (key, value)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# SPEC_U2 §2 gate 38: the U2-3 nightly steps — the previous-generation capture
+# BEFORE the state step overwrites it, the fatal change-ledger derivation
+# after the inputs producer, the fail-soft saved-scenario monitor after the
+# ledger, and a summary line naming all three outcomes.
+# ──────────────────────────────────────────────────────────────────────────────
+
+_CS_PREVIOUS_STEP = "cs_previous_state"
+_CS_CHANGES_STEP = "cs_changes"
+_CS_MONITOR_STEP = "cs_saved_monitor"
+_CS_STATE_MODULE = "scripts.build_capital_structure_state"
+_CS_INPUTS_MODULE = "scripts.build_capital_structure_capacity_inputs"
+_CS_CHANGES_MODULE = "scripts.build_capital_structure_state_changes"
+
+
+def _step_by_id(steps: list[dict], step_id: str) -> dict:
+    step = next((s for s in steps if s.get("id") == step_id), None)
+    assert step is not None, f"no step with id {step_id!r} in the {JOB!r} job"
+    return step
+
+
+def _index_of_id(steps: list[dict], step_id: str) -> int:
+    step_id_of = [s.get("id") for s in steps]
+    assert step_id in step_id_of, f"no step with id {step_id!r} in the {JOB!r} job"
+    return step_id_of.index(step_id)
+
+
+def test_u2_daily_job_previous_capture_changes_and_monitor_steps_are_ordered_and_scoped(steps):
+    state_at = _index_of_run(steps, _CS_STATE_MODULE)
+    inputs_at = _index_of_run(steps, _CS_INPUTS_MODULE)
+    changes_at = _index_of_run(steps, _CS_CHANGES_MODULE)
+    previous_at = _index_of_id(steps, _CS_PREVIOUS_STEP)
+    monitor_at = _index_of_id(steps, _CS_MONITOR_STEP)
+    commit_at = _index_of(steps, CS_COMMIT_STEP)
+    assert previous_at < state_at, (
+        f"cs_previous_state (at {previous_at}) must run BEFORE the state step "
+        f"(at {state_at}) overwrites the previous generation it captures"
+    )
+    assert state_at < inputs_at < changes_at < monitor_at < commit_at, (
+        f"order is state={state_at}, inputs={inputs_at}, changes={changes_at}, "
+        f"monitor={monitor_at}, commit={commit_at}. The change ledger derives "
+        "from tonight's published generation pair, the monitor reads it, and "
+        "the checkpoint stages what they wrote."
+    )
+
+    previous = _step_by_id(steps, _CS_PREVIOUS_STEP)
+    assert not previous.get("continue-on-error"), (
+        "cs_previous_state carries continue-on-error; the capture is ||-guarded "
+        "line by line instead, so it can never red the lane"
+    )
+    previous_run = str(previous.get("run") or "")
+    for artifact, destination in (
+        ("state_bundle.json", "previous_state_bundle.json"),
+        ("capacity_inputs.json", "previous_capacity_inputs.json"),
+    ):
+        assert (
+            f'cp data/capital_structure/{artifact} "$RUNNER_TEMP/{destination}"'
+            in previous_run
+        ), previous_run
+    assert previous_run.count("2>/dev/null || true") == 2, (
+        "both captures are || true: a first night without a previous "
+        "generation is the stated baseline, never a failed lane"
+    )
+
+    changes = _step_by_id(steps, _CS_CHANGES_STEP)
+    assert "continue-on-error" not in changes, (
+        "the change-ledger producer is fatal — one changeset or nothing; "
+        "continue-on-error would let a night without a ledger ride the "
+        "checkpoint"
+    )
+    changes_run = str(changes.get("run") or "")
+    assert (
+        "python -m scripts.build_capital_structure_state_changes"
+        " --root data/capital_structure" in changes_run
+    ), changes_run
+    assert '--previous "$RUNNER_TEMP/previous_state_bundle.json"' in changes_run, changes_run
+    assert "--previous-inputs" in changes_run and (
+        '"$RUNNER_TEMP/previous_capacity_inputs.json"' in changes_run
+    ), changes_run
+
+    monitor_step = _step_by_id(steps, _CS_MONITOR_STEP)
+    # Step-level gate: the monitor attributes moved rows against tonight's
+    # change ledger, so it runs only when cs_changes produced one.
+    assert monitor_step.get("if") == (
+        "always() && steps.cs_changes.outcome == 'success'"
+    ), monitor_step.get("if")
+    assert monitor_step.get("continue-on-error") is True, (
+        "the monitor is fail-soft: a missing table or an unapplied DDL is a "
+        "typed unavailable night, never a failed lane"
+    )
+    assert monitor_step.get("timeout-minutes") == 3, monitor_step.get("timeout-minutes")
+    monitor_run = str(monitor_step.get("run") or "")
+    assert "job.status" in monitor_run and "cancelled" in monitor_run, monitor_run
+    assert "|| echo \"::warning::" in monitor_run, monitor_run
+    monitor_env = dict(monitor_step.get("env") or {})
+    assert (
+        monitor_env.get("SUPABASE_SERVICE_ROLE_KEY") == "${{ secrets.SUPABASE_SERVICE_KEY }}"
+    ), monitor_env
+    assert monitor_env.get("CS_SAVED_SCENARIO_ENABLE") == (
+        "${{ secrets.CS_SAVED_SCENARIO_ENABLE }}"
+    ), monitor_env
+    assert monitor_env.get("ALERT_DRAIN_ENABLE") == "${{ secrets.ALERT_DRAIN_ENABLE }}", monitor_env
+
+    # The monitor writes nothing into the tree: never a staged-path producer,
+    # never a term of the checkpoint gate.
+    assert _CS_CHANGES_MODULE in CAPITAL_STRUCTURE_MODULES
+    assert _CS_CHANGES_MODULE in FATAL_COMPILERS
+    assert "cs_changes" in CS_STAGED_PATH_PRODUCERS["data/capital_structure"]
+    assert "cs_saved_monitor" not in CS_GATING_PRODUCERS
+    assert all(
+        "cs_saved_monitor" not in ids for ids in CS_STAGED_PATH_PRODUCERS.values()
+    ), "the monitor writes nothing into the tree, so it stages nothing"
+
+    # The checkpoint gate names the ledger producer exactly like the others.
+    cond = str(steps[commit_at].get("if") or "")
+    assert "steps.cs_changes.outcome == 'success'" in cond, f"if: {cond}"
+
+    # One summary line names all three outcomes.
+    summary_steps = [
+        step
+        for step in steps
+        if f"steps.{_CS_PREVIOUS_STEP}.outcome" in str(step.get("run") or "")
+        and f"steps.{_CS_CHANGES_STEP}.outcome" in str(step.get("run") or "")
+        and f"steps.{_CS_MONITOR_STEP}.outcome" in str(step.get("run") or "")
+    ]
+    assert summary_steps, "no step summarizes the three U2-3 outcomes"
+    assert str(summary_steps[0].get("if") or "") == "always()"
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # CS push-loop fence: append-only fence call is after fetch and before rebase
 # ──────────────────────────────────────────────────────────────────────────────
@@ -801,3 +957,48 @@ def test_the_handoff_carries_every_part_and_no_staged_write(daily):
         "continuation parts must ride the handoff under data/capital_structure, "
         "never be excluded by name"
     )
+
+
+def test_inputs_producer_selects_the_published_fif_store_and_nothing_else(steps):
+    """cs_inputs binds financials from FIF's published production datasets (F0).
+
+    Without an explicit per-step selection the binder never builds a FIF store, so
+    every issuer's financials family is ``fif_production_store_not_selected``. The
+    step selects production mode and the dedicated R2_RESEARCH store family the FIF
+    publisher writes with, each bound to its own secret; no generic R2_* value,
+    flag or authority variable rides along, and the mode is never a default.
+    """
+    terms = next(s for s in steps if s.get("id") == "cs_terms")
+    inputs = next(s for s in steps if s.get("id") == "cs_inputs")
+    terms_env = dict(terms.get("env") or {})
+    inputs_env = dict(inputs.get("env") or {})
+    research_keys = {
+        "R2_RESEARCH_ENDPOINT",
+        "R2_RESEARCH_ACCESS_KEY_ID",
+        "R2_RESEARCH_SECRET_ACCESS_KEY",
+        "R2_RESEARCH_BUCKET",
+    }
+    assert set(inputs_env) == research_keys | {"FIF_FINANCIAL_DATASET_MODE"}, inputs_env
+    assert inputs_env["FIF_FINANCIAL_DATASET_MODE"] == "production"
+    for key in research_keys:
+        assert inputs_env[key] == "${{ secrets.%s }}" % key, (key, inputs_env[key])
+        assert terms_env.get(key) == inputs_env[key], key
+
+
+def test_fif_production_mode_reaches_only_the_inputs_producer(daily):
+    """No other step, job or workflow-level env selects FIF production mode.
+
+    The selection is a per-step choice for cs_inputs, never a default
+    (DEC-FIF-D3): it must not widen to the workflow, a job, another step, or a
+    ``$GITHUB_ENV`` write that would leak it into later steps.
+    """
+    mode = "FIF_FINANCIAL_DATASET_MODE"
+    assert mode not in (daily.get("env") or {})
+    holders = []
+    for job_id, job_def in daily["jobs"].items():
+        assert mode not in (job_def.get("env") or {}), job_id
+        for step in job_def.get("steps") or []:
+            if mode in (step.get("env") or {}):
+                holders.append((job_id, step.get("id")))
+            assert mode not in str(step.get("run") or ""), (job_id, step.get("id"))
+    assert holders == [(JOB, "cs_inputs")], holders

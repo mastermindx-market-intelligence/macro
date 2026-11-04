@@ -70,6 +70,7 @@ PREF_VALUES: dict[str, tuple[str, ...]] = {
 #: trade advice. Opt-in only: adding it here grants no one the category (the account
 #: page writes a subset the reader already ticked), it only makes the value LEGAL for
 #: a user who has ticked it.
+#: "cs_saved_scenario" — saved-scenario monitor notifications (SPEC_U2 U2-3), same enqueue-only chain.
 ALERT_CATEGORIES: tuple[str, ...] = (
     "holdings_material_change",
     "thesis_window",
@@ -77,6 +78,7 @@ ALERT_CATEGORIES: tuple[str, ...] = (
     # Explicit delivery preference only; not source/action or enrollment authority.
     "options_exposure_node",
     "sector_rotation_relative",
+    "cs_saved_scenario",
 )
 
 #: Every stored preference and its KIND. PREF_VALUES stays the enum sub-table.

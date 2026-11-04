@@ -2529,6 +2529,17 @@ app.include_router(macro_command_router)
 from app.earnings import router as earnings_router  # noqa: E402
 app.include_router(earnings_router)
 
+# GMI semiconductor theme research is a paid read-only product contract: the
+# router enforces the same site_full entitlement as Earnings before reading a
+# private bundle, every response carries the four private headers, and the
+# private native readers are unbound (503) until the R4 ruling lands. A
+# swallowed ImportError here would delete both entitled routes (/query,
+# /evidence) plus the private remainder catch-all at once and present only as
+# a 404 on a paid endpoint with no startup error and no log line — the same
+# failure mode the Earnings block above documents.
+from app.theme_research import router as theme_research_router  # noqa: E402
+app.include_router(theme_research_router)
+
 # Public per-ticker event context for the static dossier layer.  The router
 # delegates retrieval and immutable-receipt verification to the existing
 # context-only Company Intelligence reader; it is deliberately not a signal or
@@ -2879,6 +2890,21 @@ except Exception as _catalyst_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").error(
         "catalyst public bridge not mounted (fail closed): %r", _catalyst_exc)
+
+
+# ---------------------------------------------------------------------------
+# Catalyst SEC source reader wiring (A3-R). DEFAULT OFF: the admitted source
+# is configured only when CATALYST_PUBLIC_ENABLED=1 over the production R2
+# store; every refusal or failure leaves admission unconfigured (fail closed).
+# ---------------------------------------------------------------------------
+try:
+    from app.catalyst_source_wiring import configure_from_environment  # noqa: E402
+    configure_from_environment()
+except Exception as _catalyst_source_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "catalyst source reader not configured: %s",
+        type(_catalyst_source_exc).__name__)
 
 
 # Session 02 secure Catalyst opt-in router (DRAFT/HOLD sibling source).

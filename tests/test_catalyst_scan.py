@@ -122,6 +122,7 @@ def test_supported_direct_unsupported_and_unknown_relationship_are_distinct():
     assert result["schema"] == "catalyst.scan/v1" and result["schema_version"] == 1
     direct = result["results"][0]
     assert direct["relationship"] == "DIRECT"
+    assert direct["headline"].startswith("PFE filed an earnings result: ")
     assert direct["dossier_path"] == "/stocks/PFE/"
     assert len(direct["sources"]) == 1
     assert direct["sources"][0]["url"].startswith("https://www.sec.gov/")

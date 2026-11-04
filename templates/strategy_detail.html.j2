@@ -149,6 +149,18 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
         <div>
           <span class="pill" style="background:{{ band_color }}">{{ t(band_label, band_label_zh) }}</span>
           <div class="sub" style="margin-top:8px">{{ t('Higher = more risk-off. The score sets the risk-asset weight via graded bands (below), with a 5-day debounce to cut whipsaw.','分数越高越偏避险。该分数通过分级区间（见下）设定风险资产权重，并有 5 日缓冲以抑制频繁换仓。') }}</div>
+          {% if score_band and score_band.weight != risk_w %}
+          {% set gap_en = 'The score ' ~ score ~ ' sits in ' %}
+          {% set gap_en = gap_en ~ score_band.label ~ ' (' ~ score_band.rng %}
+          {% set gap_en = gap_en ~ '), which maps to ' ~ score_band.weight %}
+          {% set gap_en = gap_en ~ '% ' ~ s.bench_en ~ '. The book is still ' %}
+          {% set gap_en = gap_en ~ risk_w ~ '% until a new band holds 5 trading days.' %}
+          {% set gap_zh = score ~ ' 分落在「' ~ score_band.label_zh %}
+          {% set gap_zh = gap_zh ~ '」区间（' ~ score_band.rng ~ '），对应 ' %}
+          {% set gap_zh = gap_zh ~ score_band.weight ~ '% ' ~ s.bench_zh %}
+          {% set gap_zh = gap_zh ~ '。在新区间持续满 5 个交易日之前，持仓仍为 ' ~ risk_w ~ '%。' %}
+          <div class="sub">{{ t(gap_en, gap_zh) }}</div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -188,7 +200,20 @@ html[data-theme="dark"] .tag.exp{background:#3a1d2b;color:#f08bb4}
     <div class="card"><h3>{{ t('Growth of $1 (log) — vs buy & hold','1美元增长（对数）— 对比买入持有') }}</h3>{{ charts.growth|safe }}</div>
     <div class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</div>
   </div>
-  <div class="note b" style="margin-top:14px">{{ t('Honest framing: this does NOT reliably beat buy-and-hold on CAGR — sitting in the cash leg through stress gives up some carry. The edge is the higher Sharpe and the much shallower max drawdown: it times the LEFT TAIL that destroys the yield (the recession/credit/rate shock), not the yield itself.','诚实说明：本策略在年化收益上并不稳定跑赢买入持有 —— 压力期退守现金腿会让出部分套息。优势在于更高的夏普与明显更浅的最大回撤：它择时的是吞噬收益的左尾（衰退/信用/利率冲击），而非收益本身。') }}</div>
+  <div class="note b" style="margin-top:14px">{%- set cagr_ahead = sc.cagr > sc.hodl_cagr -%}
+{%- set sharpe_ahead = sc.sharpe > sc.hodl_sharpe -%}
+{%- set dd_ahead = sc.maxdd > sc.hodl_maxdd -%}
+{%- set cagr_level = sc.cagr == sc.hodl_cagr -%}
+{%- set sharpe_level = sc.sharpe == sc.hodl_sharpe -%}
+{%- set dd_level = sc.maxdd == sc.hodl_maxdd -%}
+{%- set y = sc.years|string -%}
+{%- if sc.cagr < sc.hodl_cagr and sharpe_ahead and dd_ahead -%}
+{{ t('Over this ' ~ y ~ '-year backtest it trailed buy-and-hold on CAGR but had the higher Sharpe and the shallower max drawdown (tiles below): it gave up some return for a shallower worst fall. That is one backtest, not a promise.', '在这 ' ~ y ~ ' 年回测中，本策略的年化收益落后于买入持有，但夏普更高、最大回撤更浅（见下方数据）：以部分收益换取了更浅的最大跌幅。这只是一段回测，不代表未来。') }}
+{%- elif cagr_ahead and sharpe_ahead and dd_ahead -%}
+{{ t('Over this ' ~ y ~ '-year backtest it beat buy-and-hold on CAGR, Sharpe and max drawdown (tiles below). That is one backtest, not a promise of the same lead.', '在这 ' ~ y ~ ' 年回测中，本策略的年化收益、夏普和最大回撤均优于买入持有（见下方数据）。这只是一段回测，不代表未来仍有同样的领先。') }}
+{%- else -%}
+{{ t('Over this ' ~ y ~ '-year backtest, against buy-and-hold: CAGR ' ~ ('level' if cagr_level else ('ahead' if cagr_ahead else 'behind')) ~ ', Sharpe ' ~ ('level' if sharpe_level else ('ahead' if sharpe_ahead else 'behind')) ~ ', max drawdown ' ~ ('level' if dd_level else ('shallower' if dd_ahead else 'deeper')) ~ ' (tiles below).', '在这 ' ~ y ~ ' 年回测中，对比买入持有：年化收益' ~ ('持平' if cagr_level else ('领先' if cagr_ahead else '落后')) ~ '，夏普' ~ ('持平' if sharpe_level else ('领先' if sharpe_ahead else '落后')) ~ '，最大回撤' ~ ('持平' if dd_level else ('更浅' if dd_ahead else '更深')) ~ '（见下方数据）。') }}
+{%- endif -%}</div>
 
   <!-- ===== scorecard tiles ===== -->
   <div class="section-title">{{ t('Backtest scorecard · {y} years vs buy & hold'|replace('{y}', sc.years|string), '回测记分卡 · {y} 年对比买入持有'|replace('{y}', sc.years|string)) }}</div>

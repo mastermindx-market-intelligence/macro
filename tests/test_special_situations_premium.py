@@ -298,7 +298,7 @@ def test_computed_premium_zh_sentence_closes_with_ideographic_full_stop():
     ticker = premium["ticker"]
     assert f"<strong>{ticker}</strong>." not in block
     assert re.search(
-        rf"<strong>{re.escape(ticker)}</strong>"
+        rf"<strong>{re.escape(ticker)}</strong></a>"
         r'<span class="l-en">\.</span><span class="l-zh">。</span>',
         block,
     )

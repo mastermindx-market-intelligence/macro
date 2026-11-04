@@ -362,6 +362,21 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
         changed = _claims(item.get("what_changed", []), "text", ids)
         if not changed:
             raise ValueError("unsupported empty coverage")
+        # G2-scan: the SEC acceptance clock passes only as a named, valid pair.
+        event_clock: dict = {}
+        if "event_time_basis" in item or "event_time_utc" in item:
+            if item.get("event_time_basis") != "SEC_ACCEPTANCE":
+                raise ValueError("unnamed event clock")
+            accepted_dt = datetime.fromisoformat(
+                _utc(item.get("event_time_utc"), now, fresh=False).replace("Z", "+00:00"))
+            # An acceptance has happened: no skew allowance, and whole seconds so
+            # every renderer shows the same instant.
+            if accepted_dt > now:
+                raise ValueError("future event clock")
+            if accepted_dt > datetime.fromisoformat(item_as_of.replace("Z", "+00:00")):
+                raise ValueError("event clock after evidence clock")
+            accepted = accepted_dt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+            event_clock = {"event_time_utc": accepted, "event_time_basis": "SEC_ACCEPTANCE"}
         public_results.append({"ticker": ticker, "status": "SUPPORTED", "headline": headline.strip(),
                                "relationship": relation, "relationship_evidence_ids": relation_ids,
                                "headline_evidence_ids": list(dict.fromkeys(headline_ids)),
@@ -369,7 +384,8 @@ def sanitize_public_scan(raw: Any, tickers: list[str], now_utc: datetime | None 
                                "what_changed": changed,
                                "scenarios": _claims(item.get("scenarios", []), "trigger", ids, True),
                                "invalidators": _claims(item.get("invalidators", []), "text", ids),
-                               "sources": sources, "dossier_path": dossier, "coverage_note": coverage})
+                               "sources": sources, "dossier_path": dossier, "coverage_note": coverage,
+                               **event_clock})
     if publication == "COMPLETE_EMPTY":
         if not any(row["status"] == "NO_QUALIFIED_EVENT" for row in public_results):
             raise ValueError("empty window without covered issuer")
@@ -501,6 +517,10 @@ def render_first_value(data: dict | None, value: str = "", error: str = "") -> s
                     f'Relationship: {e(item["relationship"])}. '
                     f'Correction state: {e(item["correction_state"])}.</p>'
                 )
+                if item.get("event_time_basis") == "SEC_ACCEPTANCE":
+                    accepted = item["event_time_utc"]
+                    content += (f'<p>SEC acceptance (UTC): <time datetime="{e(accepted, quote=True)}">'
+                                f'{e(accepted)}</time></p>')
                 content += '<h4>What changed</h4><ul>'
                 for claim in item["what_changed"]:
                     content += f'<li>{e(claim["text"])}</li>'

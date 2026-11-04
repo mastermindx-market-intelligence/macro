@@ -37,25 +37,25 @@ def ledes(payload):
 
 
 @pytest.mark.parametrize("n,d",[(-3,-1),(-9,-2),(-99,-50)])
-def test_defensive_leg_falling_more_is_not_relative_shelter(n,d):
+def test_defensive_leg_falling_more_is_not_a_smaller_loss(n,d):
     en,zh=ledes(notice(n,d))
     assert "fell more" in en and "absolute and relative returns were negative" in en
-    assert "relative shelter" not in en and "relatively stronger" not in en
-    assert "跌幅更大" in zh and "相对抗跌" not in zh
+    assert "shelter" not in en and "relatively stronger" not in en
+    assert "跌幅更大" in zh and "抗跌" not in zh
 
 
 @pytest.mark.parametrize("n,d",[(-1,-3),(-2,-9),(-50,-99)])
-def test_less_negative_is_only_relative_shelter_not_an_absolute_gain(n,d):
+def test_less_negative_is_only_a_smaller_loss_not_an_absolute_gain(n,d):
     en,zh=ledes(notice(n,d))
-    assert "relative shelter only, not an absolute gain" in en
-    assert "仅相对抗跌" in zh and "不代表绝对收益为正" in zh
+    assert "a smaller loss is still a loss, not a gain" in en and "shelter" not in en
+    assert "较小的跌幅仍是亏损，不是收益" in zh and "抗跌" not in zh
 
 
 @pytest.mark.parametrize("n,d",[(-1,-1),(-2,-2),(-50,-50)])
-def test_equal_losses_are_not_labelled_more_less_or_shelter(n,d):
+def test_equal_losses_are_not_labelled_more_or_less(n,d):
     en,zh=ledes(notice(n,d))
     assert "Both fell equally" in en
-    assert "fell more" not in en and "fell less" not in en and "relative shelter" not in en
+    assert "fell more" not in en and "fell less" not in en and "shelter" not in en
     assert "两者跌幅相同" in zh
 
 
@@ -80,7 +80,7 @@ def test_tolerance_does_not_turn_equal_absolute_legs_into_relative_advantage():
     payload=notice(-1,-1);payload["values"]["ratio_return_pct"]=1e-7
     contract.validate(payload)
     en,_=ledes(payload)
-    assert "Both fell equally" in en and "relative shelter" not in en
+    assert "Both fell equally" in en and "shelter" not in en
 
 
 @pytest.mark.parametrize("field",["numerator_return_pct","denominator_return_pct","ratio_return_pct"])
@@ -208,4 +208,13 @@ process.stdout.write(JSON.stringify(saved));
     assert sorted(saved[0]["value"])==sorted(expected)
     # Selecting a topic cannot implicitly enable email delivery.
     assert all(entry["key"]!="alert_email_optin" for entry in saved)
+
+
+@pytest.mark.needs_full_checkout("site")
+def test_account_js_site_copy_is_byte_identical_to_the_template_under_test():
+    # The executable contract above reads templates/account.js; the page serves
+    # site/account.js. Parity is its own verdict so a sparse tree (policy R8) skips
+    # exactly this read instead of failing the behavioural cases with it.
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1]
     assert (root/"templates/account.js").read_bytes()==(root/"site/account.js").read_bytes()

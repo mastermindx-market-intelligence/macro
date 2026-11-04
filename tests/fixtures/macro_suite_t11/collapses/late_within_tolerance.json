@@ -1,0 +1,21 @@
+{
+  "why": "A required source marked LATE_WITHIN_TOLERANCE used to share one note with a source that broke. The note now names it apart. A page holding both kinds renders two notes where its golden has one, and that still fails T11.",
+  "pairs": [
+    [
+      ">Required source late, within tolerance<",
+      ">Required source not current<"
+    ],
+    [
+      ">必需数据源延迟，仍在容差内<",
+      ">必需数据源并非最新<"
+    ],
+    [
+      ">Late within tolerance: ",
+      ">Degraded required components: "
+    ],
+    [
+      ">延迟但仍在容差内：",
+      ">降级的必需分项："
+    ]
+  ]
+}
