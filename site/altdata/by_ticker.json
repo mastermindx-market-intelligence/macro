@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-04",
-  "generated_utc": "2026-11-04T10:27:45.600570+00:00",
-  "n_tickers": 2872,
+  "generated_utc": "2026-11-04T12:00:31.652314+00:00",
+  "n_tickers": 2871,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -2952,17 +2952,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "FIVE": {
-      "ticker": "FIVE",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "VEEV": {
       "ticker": "VEEV",
       "channels": [
@@ -2974,6 +2963,17 @@
       "next_earnings": "2026-11-19",
       "earnings_surprise_pct": 3.7,
       "congress_position_usd": 94328000.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "FIVE": {
+      "ticker": "FIVE",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -3047,22 +3047,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "EOG": {
-      "ticker": "EOG",
-      "channels": [
-        "analyst_upgrade_cluster",
-        "news_sentiment"
-      ],
-      "weighted_score": 0.55,
-      "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 1,
-      "next_earnings": "2026-11-05",
-      "earnings_surprise_pct": 1.2,
-      "news_bull_ratio": 0.86,
-      "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "CVLT": {
       "ticker": "CVLT",
       "channels": [
@@ -3084,6 +3068,45 @@
       "analyst_bull_ratio": 0.9,
       "congress_position_usd": 100464000.0,
       "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EOG": {
+      "ticker": "EOG",
+      "channels": [
+        "analyst_upgrade_cluster",
+        "news_sentiment"
+      ],
+      "weighted_score": 0.55,
+      "analyst_bull_ratio": 0.86,
+      "days_to_earnings": 1,
+      "next_earnings": "2026-11-05",
+      "earnings_surprise_pct": 1.2,
+      "news_bull_ratio": 0.86,
+      "convergence_score": 2,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "FANG": {
+      "ticker": "FANG",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.83,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "ELV": {
+      "ticker": "ELV",
+      "channels": [
+        "analyst_upgrade_cluster",
+        "special_situation"
+      ],
+      "weighted_score": 0.55,
+      "analyst_bull_ratio": 0.94,
+      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -3113,20 +3136,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "GNRC": {
-      "ticker": "GNRC",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 0,
-      "next_earnings": "2026-11-04",
-      "earnings_surprise_pct": 49.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "WSM": {
       "ticker": "WSM",
       "channels": [
@@ -3148,20 +3157,6 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "GAP": {
-      "ticker": "GAP",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.94,
-      "days_to_earnings": 15,
-      "next_earnings": "2026-11-19",
-      "earnings_surprise_pct": 4.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -10739,16 +10734,6 @@
     },
     "DRE": {
       "ticker": "DRE",
-      "channels": [
-        "special_situation"
-      ],
-      "weighted_score": 0.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "ELV": {
-      "ticker": "ELV",
       "channels": [
         "special_situation"
       ],

@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-04T10:27:33.639647+00:00",
+  "generated_utc": "2026-11-04T12:00:18.808319+00:00",
   "as_of": "2026-11-04",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26961,10 +26961,10 @@
         "hot": true
       },
       {
-        "ticker": "FIVE",
+        "ticker": "VEEV",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": -0.03,
+        "est_chg_30d": 0.0,
         "n_analysts": 24,
         "bull_ratio": 1.0,
         "rising": true,
@@ -26972,10 +26972,10 @@
         "hot": true
       },
       {
-        "ticker": "VEEV",
+        "ticker": "FIVE",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": 0.0,
+        "est_chg_30d": -0.03,
         "n_analysts": 24,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27082,17 +27082,6 @@
         "hot": true
       },
       {
-        "ticker": "EOG",
-        "net_up_30d": 16,
-        "breadth": 1.0,
-        "est_chg_30d": 7.48,
-        "n_analysts": 16,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 16,
-        "hot": true
-      },
-      {
         "ticker": "CVLT",
         "net_up_30d": 16,
         "breadth": 0.89,
@@ -27115,10 +27104,43 @@
         "hot": true
       },
       {
+        "ticker": "EOG",
+        "net_up_30d": 16,
+        "breadth": 0.73,
+        "est_chg_30d": 8.71,
+        "n_analysts": 22,
+        "bull_ratio": 0.86,
+        "rising": true,
+        "revision_delta": 16,
+        "hot": true
+      },
+      {
+        "ticker": "FANG",
+        "net_up_30d": 16,
+        "breadth": 0.67,
+        "est_chg_30d": 14.2,
+        "n_analysts": 24,
+        "bull_ratio": 0.83,
+        "rising": true,
+        "revision_delta": 16,
+        "hot": true
+      },
+      {
+        "ticker": "ELV",
+        "net_up_30d": 15,
+        "breadth": 0.88,
+        "est_chg_30d": 2.53,
+        "n_analysts": 17,
+        "bull_ratio": 0.94,
+        "rising": true,
+        "revision_delta": 15,
+        "hot": true
+      },
+      {
         "ticker": "DOCU",
         "net_up_30d": 15,
         "breadth": 0.79,
-        "est_chg_30d": 2.22,
+        "est_chg_30d": 0.0,
         "n_analysts": 19,
         "bull_ratio": 0.89,
         "rising": true,
@@ -27130,17 +27152,6 @@
         "net_up_30d": 14,
         "breadth": 1.0,
         "est_chg_30d": 0.37,
-        "n_analysts": 14,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
-        "hot": true
-      },
-      {
-        "ticker": "GNRC",
-        "net_up_30d": 14,
-        "breadth": 1.0,
-        "est_chg_30d": 9.93,
         "n_analysts": 14,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27165,17 +27176,6 @@
         "est_chg_30d": 6.03,
         "n_analysts": 14,
         "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
-        "hot": true
-      },
-      {
-        "ticker": "GAP",
-        "net_up_30d": 14,
-        "breadth": 0.88,
-        "est_chg_30d": -0.15,
-        "n_analysts": 16,
-        "bull_ratio": 0.94,
         "rising": true,
         "revision_delta": 14,
         "hot": true
@@ -29477,14 +29477,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -31286,13 +31286,6 @@
         "last_surprise_pct": 27.3
       },
       {
-        "ticker": "GNRC",
-        "next_date": "2026-11-04",
-        "days_to": 0,
-        "eps_forecast": 2.38,
-        "last_surprise_pct": 49.2
-      },
-      {
         "ticker": "GOOG",
         "next_date": "2026-11-04",
         "days_to": 0,
@@ -32117,13 +32110,6 @@
         "days_to": 15,
         "eps_forecast": 0.14,
         "last_surprise_pct": 140.0
-      },
-      {
-        "ticker": "GAP",
-        "next_date": "2026-11-19",
-        "days_to": 15,
-        "eps_forecast": 0.73,
-        "last_surprise_pct": 4.0
       },
       {
         "ticker": "KEYS",
