@@ -1121,3 +1121,6 @@
 {"date": "2026-11-03", "pair_id": "smh_vs_rsp", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.008974, "leg_den_ret_1w": 0.008141, "state": "NO_ANCHOR", "kind": "etf"}
 {"date": "2026-11-03", "pair_id": "ailogic_vs_legacy", "event": "state_transition", "state_from": "TRENDING", "state": "EXTENDED", "z252": -2.073, "z63": -3.128, "pct_3y": 44.6, "kind": "basket"}
 {"date": "2026-11-03", "pair_id": "power_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.021643, "leg_den_ret_1w": -0.092857, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-11-03", "pair_id": "dia_vs_qqq", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.006965, "leg_den_ret_1w": -0.044664, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-11-03", "pair_id": "smh_vs_qqq", "event": "state_transition", "state_from": "BASING", "state": "NO_ANCHOR", "z252": 0.282, "z63": -1.99, "pct_3y": 82.5, "kind": "etf"}
+{"date": "2026-11-03", "pair_id": "sox_vs_qqq", "event": "state_transition", "state_from": "BASING", "state": "NO_ANCHOR", "z252": 0.183, "z63": -2.248, "pct_3y": 82.3, "kind": "etf"}
