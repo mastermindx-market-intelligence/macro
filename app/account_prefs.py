@@ -29,11 +29,12 @@ from __future__ import annotations
 import logging
 import os
 from uuid import UUID
+from urllib.error import HTTPError
 from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
-from pydantic import BaseModel, ConfigDict, Field, StrictBool
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 
 from lib import user_prefs
 
@@ -225,6 +226,9 @@ def read_prefs(user: dict = Depends(_current_user)) -> dict:
 # settings and alert mail. The current schema may lack the specific field.
 class PortfolioDigestChoice(BaseModel):
     enabled: StrictBool
+    # Explicit null means the client observed no email_prefs row. Omission cannot
+    # authorize an enable; a server-side refresh would rebase an older intent.
+    expected_revision: StrictStr | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -244,20 +248,28 @@ def _digest_pref_store(*args, **kwargs):
     return billing._pg(*args, **kwargs)
 
 
+def _digest_revision(value: object) -> str:
+    if not isinstance(value, str) or str(UUID(value)) != value:
+        raise ValueError("invalid digest revision")
+    return value
+
+
 def _digest_pref_state(uid: str, rows: object) -> dict:
     if rows == []:
-        return {"enabled": False, "marketing_opt_out": None}
+        return {"enabled": False, "marketing_opt_out": None, "revision": None}
     if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
         raise ValueError("invalid preference response")
     row = rows[0]
     if (row.get("user_id") != uid or type(row.get("portfolio_digest_opt_in")) is not bool
             or type(row.get("marketing_opt_out")) is not bool):
         raise ValueError("unqualified preference row")
-    enabled = row["portfolio_digest_opt_in"]
-    return {"enabled": enabled, "marketing_opt_out": row["marketing_opt_out"]}
+    revision = _digest_revision(row.get("portfolio_digest_revision"))
+    return {"enabled": row["portfolio_digest_opt_in"],
+            "marketing_opt_out": row["marketing_opt_out"], "revision": revision}
 
 
-_DIGEST_PREF_FIELDS = "user_id,portfolio_digest_opt_in,marketing_opt_out"
+_DIGEST_PREF_FIELDS = "user_id,portfolio_digest_opt_in,marketing_opt_out,portfolio_digest_revision"
+_DIGEST_PRIVATE = {"Cache-Control": "private, no-store"}
 
 
 @router.get("/api/account/prefs/portfolio-digest")
@@ -268,7 +280,7 @@ def get_portfolio_digest_choice(response: Response, user: dict = Depends(_curren
         rows = _digest_pref_store("GET", f"email_prefs?user_id=eq.{uid}&select={_DIGEST_PREF_FIELDS}")
         return _digest_pref_state(uid, rows)
     except Exception:
-        raise HTTPException(503, "Digest preference unavailable") from None
+        raise HTTPException(503, "Digest preference unavailable", headers=_DIGEST_PRIVATE) from None
 
 
 @router.put("/api/account/prefs/portfolio-digest")
@@ -276,23 +288,50 @@ def set_portfolio_digest_choice(body: PortfolioDigestChoice, response: Response,
                                 user: dict = Depends(_current_user)) -> dict:
     response.headers["Cache-Control"] = "private, no-store"
     uid = _digest_actor(user)
-    if body.enabled and os.environ.get("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED") != "1":
-        raise HTTPException(503, "Portfolio digest enrollment is off")
+    expected = None
+    if body.enabled:
+        if os.environ.get("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED") != "1":
+            raise HTTPException(503, "Portfolio digest enrollment is off", headers=_DIGEST_PRIVATE)
+        if "expected_revision" not in body.model_fields_set:
+            raise HTTPException(409, "Refresh digest preference before enabling",
+                                headers=_DIGEST_PRIVATE)
+        if body.expected_revision is not None:
+            try:
+                expected = _digest_revision(body.expected_revision)
+            except (ValueError, TypeError, AttributeError):
+                raise HTTPException(422, "Invalid digest preference revision",
+                                    headers=_DIGEST_PRIVATE) from None
+
+    # One existing-owner atomic operation, without a fresh GET or any automatic
+    # replay. Every negative request writes a new fence, even if already disabled.
     try:
-        current = _digest_pref_state(uid, _digest_pref_store(
-            "GET", f"email_prefs?user_id=eq.{uid}&select={_DIGEST_PREF_FIELDS}"))
-        if current["enabled"] is body.enabled:
-            return current
-        # Only touch this account's digest choice. A marketing opt-out remains
-        # authoritative. Require the row actually returned by the upsert.
-        rows = _digest_pref_store(
-            "POST", f"email_prefs?on_conflict=user_id&select={_DIGEST_PREF_FIELDS}",
-            body=[{"user_id": uid, "portfolio_digest_opt_in": body.enabled}],
-            prefer="resolution=merge-duplicates,return=representation")
-        state = _digest_pref_state(uid, rows)
-        if not rows or state["enabled"] is not body.enabled:
-            raise ValueError("unconfirmed digest preference write")
-        return state
+        result = _digest_pref_store(
+            "POST", "rpc/portfolio_digest_consent_set_v1",
+            body={"p_user_id": uid, "p_enabled": body.enabled, "p_expected_revision": expected})
+    except HTTPError as exc:
+        detail = ("Digest preference change not applied" if exc.code in (401, 403)
+                  else "Digest preference change unconfirmed")
+        raise HTTPException(503, detail, headers=_DIGEST_PRIVATE) from None
     except Exception:
-        # The mutation may have committed. Never retry it here.
-        raise HTTPException(503, "Digest preference change unconfirmed") from None
+        # The mutation may have committed. A new GET cannot identify this attempt.
+        raise HTTPException(503, "Digest preference change unconfirmed",
+                            headers=_DIGEST_PRIVATE) from None
+
+    try:
+        if not isinstance(result, dict) or result.get("status") not in {"applied", "stale_revision"}:
+            raise ValueError("unqualified mutation response")
+        row = result.get("state")
+        rows = [] if row is None and result["status"] == "stale_revision" else [row]
+        state = _digest_pref_state(uid, rows)
+        if result["status"] == "applied" and (
+                state["enabled"] is not body.enabled or state["revision"] is None
+                or (body.enabled and state["revision"] == expected)):
+            raise ValueError("unconfirmed digest preference write")
+    except Exception:
+        raise HTTPException(503, "Digest preference change unconfirmed",
+                            headers=_DIGEST_PRIVATE) from None
+
+    if result["status"] == "stale_revision":
+        raise HTTPException(409, {"message": "Digest preference changed. Refresh before enabling.",
+                                  "state": state}, headers=_DIGEST_PRIVATE)
+    return state

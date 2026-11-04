@@ -192,23 +192,29 @@ def test_authenticated_choice_and_two_account_nights_feed_the_digest(estate, mon
 
     pref, ledger, smtp = estate
     pref["portfolio_digest_opt_in"] = False
+    pref["portfolio_digest_revision"] = "00000000-0000-4000-8000-000000000201"
     writes = []
     def store(method, path, body=None, prefer=None):
         if method == "POST":
-            assert prefer == "resolution=merge-duplicates,return=representation"
-            assert body == [{"user_id": UID, "portfolio_digest_opt_in": body[0]["portfolio_digest_opt_in"]}]
-            pref.update(body[0])
-            writes.append(body[0]["portfolio_digest_opt_in"])
-        else:
-            assert method == "GET" and f"user_id=eq.{UID}" in path
+            assert path == "rpc/portfolio_digest_consent_set_v1" and prefer is None
+            assert body == {"p_user_id": UID, "p_enabled": body["p_enabled"],
+                            "p_expected_revision": pref["portfolio_digest_revision"] if body["p_enabled"] else None}
+            pref["portfolio_digest_opt_in"] = body["p_enabled"]
+            pref["portfolio_digest_revision"] = "00000000-0000-4000-8000-" + f"{202+len(writes):012d}"
+            writes.append(body["p_enabled"])
+            return {"status": "applied", "state": dict(pref)}
+        assert method == "GET" and f"user_id=eq.{UID}" in path
         return [dict(pref)]
     monkeypatch.setattr(account_prefs, "_digest_pref_store", store)
     monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", "1")
     response = Response()
     def save(value):
         return account_prefs.set_portfolio_digest_choice(
-            account_prefs.PortfolioDigestChoice(enabled=value), response, {"id": UID})
-    assert save(True) == {"enabled": True, "marketing_opt_out": False}
+            account_prefs.PortfolioDigestChoice(enabled=value,
+                expected_revision=pref["portfolio_digest_revision"] if value else None),
+            response, {"id": UID})
+    assert save(True) == {"enabled": True, "marketing_opt_out": False,
+                          "revision": pref["portfolio_digest_revision"]}
     assert response.headers["Cache-Control"] == "private, no-store"
     assert account_prefs.get_portfolio_digest_choice(response, {"id": UID})["enabled"]
 
@@ -285,10 +291,12 @@ def test_choice_fails_closed_on_unauthorized_input_and_unconfirmed_write(monkeyp
         calls.append(method)
         if method == "GET":
             return []
-        return [{"user_id": "wrong-user", "portfolio_digest_opt_in": True, "marketing_opt_out": False}]
+        return {"status": "applied", "state": {"user_id": "wrong-user",
+            "portfolio_digest_opt_in": True, "marketing_opt_out": False,
+            "portfolio_digest_revision": "00000000-0000-4000-8000-000000000202"}}
     monkeypatch.setattr(prefs, "_digest_pref_store", store)
     monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
-    body = prefs.PortfolioDigestChoice(enabled=True)
+    body = prefs.PortfolioDigestChoice(enabled=True, expected_revision=None)
     for user, expected in [({}, 401), ({"id": UID}, 503)]:
         with pytest.raises(HTTPException) as err:
             prefs.set_portfolio_digest_choice(body, Response(), user)
@@ -297,7 +305,7 @@ def test_choice_fails_closed_on_unauthorized_input_and_unconfirmed_write(monkeyp
     monkeypatch.setenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", "1")
     with pytest.raises(HTTPException) as err:
         prefs.set_portfolio_digest_choice(body, Response(), {"id": UID})
-    assert err.value.status_code == 503 and calls == ["GET", "POST"]
+    assert err.value.status_code == 503 and calls == ["POST"]
 
 
 def test_consent_readback_is_per_account_and_preserves_global_opt_out(monkeypatch):
@@ -305,21 +313,26 @@ def test_consent_readback_is_per_account_and_preserves_global_opt_out(monkeypatc
     from app import account_prefs as prefs
 
     other = "00000000-0000-4000-8000-000000000102"
-    rows = {uid: {"user_id": uid, "portfolio_digest_opt_in": True, "marketing_opt_out": uid == other}
+    revision = "00000000-0000-4000-8000-000000000201"
+    rows = {uid: {"user_id": uid, "portfolio_digest_opt_in": True,
+                  "portfolio_digest_revision": revision, "marketing_opt_out": uid == other}
             for uid in (UID, other)}
     def store(method, path, body=None, **kwargs):
         if method == "GET":
             uid = path.split("user_id=eq.", 1)[1].split("&", 1)[0]
             return [rows[uid].copy()]
-        assert method == "POST" and set(body[0]) == {"user_id", "portfolio_digest_opt_in"}
-        rows[body[0]["user_id"]].update(body[0])
-        return [rows[body[0]["user_id"]].copy()]
+        assert method == "POST" and path == "rpc/portfolio_digest_consent_set_v1"
+        assert set(body) == {"p_user_id", "p_enabled", "p_expected_revision"}
+        selected = rows[body["p_user_id"]]
+        selected["portfolio_digest_opt_in"] = body["p_enabled"]
+        selected["portfolio_digest_revision"] = "00000000-0000-4000-8000-000000000202"
+        return {"status": "applied", "state": selected.copy()}
     monkeypatch.setattr(prefs, "_digest_pref_store", store)
     monkeypatch.delenv("PORTFOLIO_DIGEST_ENROLLMENT_ENABLED", raising=False)
     assert prefs.set_portfolio_digest_choice(prefs.PortfolioDigestChoice(enabled=False),
                                              Response(), {"id": UID})["enabled"] is False
     assert prefs.get_portfolio_digest_choice(Response(), {"id": other}) == {
-        "enabled": True, "marketing_opt_out": True}
+        "enabled": True, "marketing_opt_out": True, "revision": revision}
     def schema_missing(*args, **kwargs):
         raise RuntimeError("column unavailable")
     monkeypatch.setattr(prefs, "_digest_pref_store", schema_missing)

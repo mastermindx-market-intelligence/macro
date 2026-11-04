@@ -24742,7 +24742,7 @@ jobs:
       - name: install deps
         run: pip install pytest fastapi pydantic pandas numpy pyarrow pyyaml requests "stripe>=11,<13" rjsmin==1.2.5
       - name: billing + lifecycle email tests (app/billing_emails.py)
-        run: python -m pytest tests/test_billing_emails.py tests/test_deliver_portfolio_digest.py -v
+        run: python -m pytest tests/test_billing_emails.py tests/test_deliver_portfolio_digest.py tests/test_portfolio_digest_consent.py tests/test_portfolio_digest_consent_postgres.py -v
       - name: account preference tests (app/account_prefs.py)
         run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py tests/test_frozen_options_account.py -v
       - name: account team-membership tests (lib/team_membership.py)

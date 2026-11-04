@@ -1,0 +1,7 @@
+{
+  "purpose": "read-only existing-owner API schema; no account rows or mutations",
+  "project_binding": "fsldfzlxyavsuwqbceod",
+  "credential_value_exposed": false,
+  "status": "existing_owner_credential_unavailable",
+  "request_sent": false
+}
