@@ -10613,6 +10613,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -10969,6 +10971,16 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/fixtures/intl_workspace/eurostat_tipsbp20_ea21.json"
+      - "tests/test_intl_eod_component_scope.py"
+      - "tests/test_intl_eurostat_annual_pressure.py"
+      - "tests/test_intl_eurostat_annual_publication.py"
+      - "tests/test_intl_eurostat_annual_source.py"
+      - "tests/test_intl_investigation_publication.py"
+      - "tests/test_intl_investigation_projection.py"
+      - "tests/test_intl_investigation_owner.py"
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "collectors/imf_weo.py"
@@ -11308,7 +11320,7 @@ jobs:
       - name: install numerical test dependencies
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2 requests openpyxl
       - name: International return identity, windows and observation provenance
-        run: python -m pytest tests/test_intl_eurostat_source.py tests/test_intl_eurostat_publication.py tests/test_intl_real_field_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
+        run: python -m pytest tests/test_intl_investigation_owner.py tests/test_intl_investigation_projection.py tests/test_intl_investigation_publication.py tests/test_intl_eurostat_annual_source.py tests/test_intl_eurostat_annual_publication.py tests/test_intl_eurostat_annual_pressure.py tests/test_intl_eod_component_scope.py tests/test_intl_eurostat_source.py tests/test_intl_eurostat_publication.py tests/test_intl_real_field_publication.py tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py tests/test_intl_global_dislocation.py -q
 
   international-global-watch:
     # IM18: GS-local watch-condition lifecycle contract — the pure evaluator
@@ -11348,6 +11360,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -14882,6 +14896,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -19075,6 +19091,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -23127,6 +23145,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -23570,6 +23590,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -23909,6 +23931,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -35165,6 +35189,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
@@ -50111,6 +50137,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/intl_investigation_projection.py"
+      - "lib/intl_investigation_owner.py"
       - "lib/intl_eurostat_source.py"
       - "lib/intl_eurostat_publication.py"
       - "lib/intl_annual_publication.py"
