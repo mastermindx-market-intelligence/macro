@@ -740,3 +740,184 @@ class TestLayerLabels:
         r = _get(env.client)
         assert r.status_code == 503
         assert r.json()["error"] == "research text unavailable"
+
+
+# ===========================================================================
+# outline metadata — the page map composed from the already-built segments
+# ===========================================================================
+
+
+def _multipage_text(label: str, pages: int = 6) -> str:
+    """Multi-page canonical text: real form-feed separators, one page per window."""
+    unit = f"Outline fixture sentence for {label} page text. "
+    return "\f".join((unit * 60) + f"Page {n} of {label}." for n in range(1, pages + 1))
+
+
+class TestOutlineMetadata:
+    """``outline`` is the page map of the WHOLE canonical document.
+
+    It is composed from the segments the read path ALREADY built, so it may
+    describe every canonical segment while ``segments`` stays the bounded
+    ``max_segments`` window. It carries page numbers only: no text, no excerpt,
+    no inferred heading, no title and no document link.
+    """
+
+    def test_outline_covers_every_canonical_segment_exactly(self, env):
+        rec = _seed_revision(env.store, _DOC_ID, text=_multipage_text("outline"))
+        body = _get(env.client).json()
+
+        canonical = fulltext.build_segments(
+            rec,
+            segmenter_version=body["selection"]["segmenter_version"],
+            max_bytes=body["selection"]["segment_max_bytes"],
+        )
+        assert len(canonical) > 4                       # more windows than one fetch
+        assert len(body["segments"]) == 2               # the served body stays bounded
+        assert body["segment_count_total"] == len(canonical)
+
+        outline = body["outline"]
+        assert len(outline) == len(canonical)
+        assert [entry["segment_index"] for entry in outline] == list(range(len(canonical)))
+        for entry, segment in zip(outline, canonical):
+            assert set(entry) == {"segment_index", "page_start", "page_end"}
+            assert entry["segment_index"] == segment["segment_index"]
+            assert entry["page_start"] == segment["page_start"]
+            assert entry["page_end"] == segment["page_end"]
+            assert isinstance(entry["page_start"], int)
+            assert isinstance(entry["page_end"], int)
+            assert 1 <= entry["page_start"] <= entry["page_end"]
+        # source order: the first segment opens page 1 and the last one closes
+        # the last page of the document.
+        assert outline[0]["page_start"] == 1
+        assert outline[-1]["page_end"] == canonical[-1]["page_end"] > 1
+
+    def test_outline_carries_no_text_or_inferred_metadata(self, env):
+        text = _multipage_text("outline")
+        _seed_revision(env.store, _DOC_ID, text=text)
+        body = _get(env.client).json()
+
+        blob = json.dumps(body["outline"], ensure_ascii=False)
+        assert "Outline fixture sentence" not in blob
+        assert "Page 1 of outline" not in blob
+        assert text[:40] not in blob
+        for entry in body["outline"]:
+            assert set(entry) == {"segment_index", "page_start", "page_end"}
+            for forbidden in ("text", "title", "heading", "section", "excerpt", "url", "href"):
+                assert forbidden not in entry
+
+    def test_outline_costs_no_extra_source_read_or_rate_call(self, env):
+        rec = _seed_revision(env.store, _DOC_ID, text=_multipage_text("outline"))
+        body = _get(env.client).json()
+        assert body["outline"]
+
+        receipt = fulltext_store.receipt_key(_DOC_ID)
+        derivative = fulltext_store.derivative_key(_DOC_ID, rec["source_pdf_sha256"])
+        # the map is composed from the segments already in hand: the store saw
+        # only the incumbent receipt + derivative keys, and the derivative was
+        # read exactly once.
+        assert set(env.store.read_keys) == {receipt, derivative}
+        assert env.store.read_keys.count(derivative) == 1
+        assert len(env.allow_calls) == 1
+
+        # a pinned read of the same revision costs exactly the same again: the
+        # map is never a separate fetch, and the limiter is consulted once per
+        # request as before.
+        cost = env.store.read_count
+        again = _get(env.client, **_pinned_params(body["selection"]))
+        assert again.status_code == 200
+        assert env.store.read_count - cost == cost
+        assert len(env.allow_calls) == 2
+
+    def test_pinned_page_jump_returns_the_exact_addressed_source(self, env):
+        rec = _seed_revision(env.store, _DOC_ID, text=_multipage_text("jump"))
+        first = _get(env.client).json()
+        canonical = fulltext.build_segments(
+            rec,
+            segmenter_version=first["selection"]["segmenter_version"],
+            max_bytes=first["selection"]["segment_max_bytes"],
+        )
+
+        target = next(
+            segment for segment in canonical
+            if segment["page_start"] <= 3 <= segment["page_end"]
+        )
+        index = target["segment_index"]
+        jumped = _get(
+            env.client,
+            segment_start=index,
+            max_segments=1,
+            **_pinned_params(first["selection"]),
+        ).json()
+
+        assert len(jumped["segments"]) == 1
+        served = jumped["segments"][0]
+        assert served["segment_index"] == index
+        assert served["start_byte"] == target["start_byte"]
+        assert served["end_byte"] == target["end_byte"]
+        assert served["text"] == target["text"]
+        assert "Page 3 of jump." in served["text"]
+        # the map still describes the whole document, and the jumped segment's
+        # page span is exactly the one the canonical build reports.
+        assert jumped["outline"] == first["outline"]
+        assert jumped["outline"][index] == {
+            "segment_index": index,
+            "page_start": target["page_start"],
+            "page_end": target["page_end"],
+        }
+
+    def test_outline_is_absent_from_every_refusal(self, env):
+        _seed_revision(env.store, _DOC_ID, text=_multipage_text("outline"))
+        selection = _get(env.client).json()["selection"]
+
+        # 401 — no bearer at all
+        unauthorized = env.client.get(f"/api/research/read/{_DOC_ID}")
+        assert unauthorized.status_code == 401
+        assert "outline" not in unauthorized.json()
+        assert "segments" not in unauthorized.json()
+
+        # 402 — the entitlement was withdrawn
+        env.ctl["tier"] = "free"
+        paid = _get(env.client)
+        assert paid.status_code == 402
+        assert "outline" not in paid.json()
+        assert "segments" not in paid.json()
+        env.ctl["tier"] = "pro"
+
+        # 409 — a stale pin on a corrected revision
+        _seed_revision(
+            env.store, _DOC_ID, text=_multipage_text("outline two"), pdf=_PDF_V2,
+        )
+        stale = _get(env.client, **_pinned_params(selection))
+        assert stale.status_code == 409
+        assert "outline" not in stale.json()
+        assert "segments" not in stale.json()
+
+        # 429 — the incumbent limiter refused
+        env.ctl["rate_limited"] = True
+        limited = _get(env.client)
+        assert limited.status_code == 429
+        assert "outline" not in limited.json()
+        assert "segments" not in limited.json()
+        env.ctl["rate_limited"] = False
+
+        # 503 — the vault holds nothing for this catalogued document
+        missing = _get(env.client, _DOC_ID_OTHER)
+        assert missing.status_code == 503
+        assert "outline" not in missing.json()
+        assert "segments" not in missing.json()
+
+    def test_thin_layer_outline_is_truthful(self, env):
+        thin_text = "Short thin-layer teaser text for the vault."
+        _seed_revision(env.store, _DOC_ID, text=thin_text, layer="thin")
+        body = _get(env.client).json()
+        assert body["text_layer_state"] == "thin"
+        assert body["segment_count_total"] == 1
+        assert body["outline"] == [{"segment_index": 0, "page_start": 1, "page_end": 1}]
+
+    def test_none_layer_outline_is_empty(self, env):
+        _seed_revision(env.store, _DOC_ID, text="", layer="none")
+        body = _get(env.client).json()
+        assert body["text_layer_state"] == "none"
+        assert body["segment_count_total"] == 0
+        assert body["segments"] == []
+        assert body["outline"] == []
