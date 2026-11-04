@@ -46,7 +46,40 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
   return current.href;
 }
 
+// The page's company links are source-gated: a missing authorized cohort must
+// never be filled with a fabricated public link merely to satisfy a DOM test.
+const ownerLinked = data.chains.some(chain => (chain.cohorts || []).some(
+  cohort => (cohort.companies?.linked || []).length > 0));
+const publishedCompanyLinks = d.querySelectorAll('a[data-cw-company-href]');
+if (ownerLinked) assert.ok(publishedCompanyLinks.length > 0, "owner-backed company links omitted");
+else assert.equal(publishedCompanyLinks.length, 0, "unqualified company link was published");
+
+// Exercise the same runtime return-link binder in the absence of source-backed
+// links, with a separate test-only fixture. It is never emitted to the page.
+const syntheticCompanyReturn = !d.querySelector('[data-cw-chain-asset="gold"] a[data-cw-company-href]');
+if (syntheticCompanyReturn) {
+  const goldChain = q('#cw-panel-relationships [data-cw-chain-asset="gold"]');
+  const fixture = d.createElement("a");
+  const original = new URL("https://app.mastermind-x.com/analysis");
+  original.search = new URLSearchParams({
+    symbol:"A",page:"intelligence",mo_from:"transmission",
+    mo_chain:"real_rate_peak_gold_rerate",
+    mo_channel:"real_rate_beneficiary",
+    mo_asof:"2026-10-30",mo_security:"SEC:US-XNYS-A"
+  }).toString();
+  fixture.dataset.cwCompanyHref = original.href;
+  fixture.href = original.href;
+  fixture.target = "_blank";
+  fixture.rel = "noopener";
+  fixture.dataset.cwTestFixture = "return-link-only";
+  goldChain.appendChild(fixture);
+}
+
 (async()=>{
+  check("source-backed company links obey the publisher's honest absence",()=>{
+    assert.equal(publishedCompanyLinks.length > 0, ownerLinked);
+    assert.equal(d.querySelectorAll('[data-cw-test-fixture]').length, syntheticCompanyReturn ? 1 : 0);
+  });
   check("default overview and dated evidence",()=>{
     assert.equal(q('#cw-panel-overview').hidden,false);
     assert.equal(q('#cw-panel-explore').hidden,true);
@@ -250,8 +283,7 @@ function checkCompanyReturn(selector='[data-cw-company-href]') {
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
     assert.deepEqual(consoleErrors,[]);
   });
-  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
+  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,export_bytes:output[0].size,source_company_links:publishedCompanyLinks.length,fixture_added:syntheticCompanyReturn,visual_layout_verified:false},null,2)+'\n');
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();
 })().catch(error=>{console.error(error);dom.window.close();process.exitCode=1;});
-
