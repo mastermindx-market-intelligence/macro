@@ -7,8 +7,8 @@
  "may_size": false,
  "may_gate": false,
  "may_alert": false,
- "as_of": "2026-11-03",
- "generated_utc": "2026-11-03T17:18:19.963438+00:00",
+ "as_of": "2026-11-04",
+ "generated_utc": "2026-11-04T08:09:44.209669+00:00",
  "gate_open": true,
  "artifact_ok": true,
  "train_end": "2022-12-31",
@@ -19,13 +19,13 @@
   "incumbent_events": 1702,
   "selected": 523,
   "not_selected": 1179,
-  "appended_today": 36,
-  "advanced_today": 143,
+  "appended_today": 0,
+  "advanced_today": 3,
   "score_failures_today": 0,
   "statuses": {
    "expired": 201,
-   "rejection_observed": 253,
-   "watching": 69
+   "rejection_observed": 254,
+   "watching": 68
   }
  },
  "per_ticker": {
@@ -459,7 +459,7 @@
    "prospective_from": "2026-10-20",
    "score": 0.6956164566,
    "threshold": 0.6642405954734382,
-   "remaining_sessions": 6,
+   "remaining_sessions": 5,
    "action_date": null,
    "action_delay_sessions": null,
    "copy": "Research prioritization only. Waits for an observable fresh-low rejection; never changes entry, rank, or size."
@@ -1224,7 +1224,7 @@
    "prospective_from": "2026-10-20",
    "score": 0.6660456714,
    "threshold": 0.6642405954734382,
-   "remaining_sessions": 6,
+   "remaining_sessions": 5,
    "action_date": null,
    "action_delay_sessions": null,
    "copy": "Research prioritization only. Waits for an observable fresh-low rejection; never changes entry, rank, or size."
@@ -1249,14 +1249,14 @@
    "model_id": "pss_f4h_orthogonal_dev2022_v1",
    "authority": "shadow_only",
    "display_only": true,
-   "status": "watching",
+   "status": "rejection_observed",
    "event_date": "2026-10-23",
    "prospective_from": "2026-10-30",
    "score": 0.7275098747,
    "threshold": 0.6642405954734382,
-   "remaining_sessions": 8,
-   "action_date": null,
-   "action_delay_sessions": null,
+   "remaining_sessions": 0,
+   "action_date": "2026-11-03",
+   "action_delay_sessions": 7,
    "copy": "Research prioritization only. Waits for an observable fresh-low rejection; never changes entry, rank, or size."
   },
   "NPO": {
