@@ -95,6 +95,7 @@
 <link rel="preload" as="style" href="assets/css/983df2de.css?v=983df2de">
 <link rel="preload" as="style" href="assets/css/e44dd63f.css?v=e44dd63f">
 <link rel="preload" as="style" href="assets/css/65aef5e4.css?v=65aef5e4">
+<link rel="preload" as="style" href="assets/css/1da8062c.css?v=1da8062c">
 <link rel="preload" as="style" href="assets/css/2fa86f96.css?v=2fa86f96">
 <link rel="preload" as="style" href="assets/css/1546f0cb.css?v=1546f0cb">
 <link rel="preload" as="style" href="assets/css/9bd20c72.css?v=9bd20c72">
@@ -102,7 +103,6 @@
 <link rel="preload" as="style" href="assets/css/7331c259.css?v=7331c259">
 <link rel="preload" as="style" href="assets/css/97280b63.css?v=97280b63">
 <link rel="preload" as="style" href="assets/css/73403668.css?v=73403668">
-<link rel="preload" as="style" href="assets/css/1da8062c.css?v=1da8062c">
 <link rel="preload" as="style" href="assets/css/307c6f26.css?v=307c6f26">
 <link rel="preload" as="style" href="assets/css/4546f775.css?v=4546f775">
 <link rel="preload" as="style" href="assets/css/e9537370.css?v=e9537370">
@@ -459,6 +459,199 @@
   </div>
   
   
+  
+  
+<link rel="stylesheet" href="assets/css/1da8062c.css?v=1da8062c">
+<section class="si-prophet-context span12" id="sector-prophet-context" aria-labelledby="si-prophet-subject" hidden>
+  <div class="si-prophet-context-copy">
+    <p class="si-prophet-context-label"><span class="l-en">From Sector Central</span><span class="l-zh">来自板块情报</span></p>
+    <h2 id="si-prophet-subject"></h2>
+    <p class="si-prophet-context-note" id="si-prophet-note" aria-live="polite"></p>
+  </div>
+  <div class="si-prophet-context-actions">
+    <button type="button" id="si-prophet-screener" aria-controls="us-stocktable-wrap" disabled><span class="l-en">View sector in Screener →</span><span class="l-zh">在筛选器中查看该板块 →</span></button>
+    <a id="si-prophet-return" href="sector_central.html#map"><span class="l-en">Return to sector evidence →</span><span class="l-zh">返回板块证据 →</span></a>
+    <a id="si-prophet-clear" href="us_stocks.html"><span class="l-en">Clear context</span><span class="l-zh">清除板块背景</span></a>
+  </div>
+</section>
+
+<span id="si-prophet-t-asof" hidden><span class="l-en">members as observed</span><span class="l-zh">成分股观察日期</span></span>
+<span id="si-prophet-t-gen" hidden><span class="l-en">generation</span><span class="l-zh">世代</span></span>
+<span id="si-prophet-t-members" hidden><span class="l-en">{n} members loaded</span><span class="l-zh">已加载 {n} 只成分股</span></span>
+<script>/* Sector Central -> Prophet identity contract. Canonical sector ETF identities
+   follow engine.spotlight.GICS_TO_ETF. URL context supplies identity only;
+   the native Screener owner applies its filter after an explicit click. */
+function sectorProphetIdentity(id) {
+  var sectors = {
+    XLB:['Materials','原材料'], XLC:['Communication Services','通信服务'],
+    XLE:['Energy','能源'], XLF:['Financials','金融'], XLI:['Industrials','工业'],
+    XLK:['Information Technology','信息技术'], XLP:['Consumer Staples','必需消费'],
+    XLRE:['Real Estate','房地产'], XLU:['Utilities','公用事业'],
+    XLV:['Health Care','医疗保健'], XLY:['Consumer Discretionary','可选消费']
+  };
+  if (typeof id !== 'string' || !Object.prototype.hasOwnProperty.call(sectors, id)) return null;
+  return {id:id, name_en:sectors[id][0], name_zh:sectors[id][1]};
+}
+function sectorProphetHref(group, context) {
+  if (!group || group.group_kind !== 'sector') return null;
+  var sector = sectorProphetIdentity(group.group_id);
+  if (!sector) return null;
+  var href = 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id);
+  /* SIC-I06R: dated context rides as explicit params only. The ladder
+     filter's own query param is never emitted here — arrival must not
+     filter (masterplan §8.3). */
+  if (context) {
+    if (context.asof) href += '&si_asof=' + encodeURIComponent(context.asof);
+    if (context.gen) href += '&si_gen=' + encodeURIComponent(context.gen);
+    if (context.origin) href += '&si_origin=' + encodeURIComponent(context.origin);
+  }
+  return href + '#sector-prophet-context';
+}
+/* SIC-I06R optional context readers. Same parse style as si_sector
+   (params.getAll), but these are display context, not identity: exactly one
+   strictly-shaped value is read, and anything missing, duplicated or
+   malformed is omitted — never invented. */
+function sectorProphetAsof(params) {
+  var values = params.getAll('si_asof');
+  if (values.length !== 1) return null;
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(values[0]);
+  if (!m) return null;
+  /* Strict calendar round-trip (engine-stable): a fabricated date such as
+     2026-02-30 rolls over and fails the component comparison. */
+  var dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return dt.getFullYear() === Number(m[1]) && dt.getMonth() === Number(m[2]) - 1 &&
+    dt.getDate() === Number(m[3]) ? values[0] : null;
+}
+function sectorProphetGen(params) {
+  var values = params.getAll('si_gen');
+  // RI06 MINOR 2: printable ASCII, 1-64 chars, no leading/trailing space (space-only is not a generation)
+  if (values.length !== 1 || !/^[\x21-\x7E](?:[\x20-\x7E]{0,62}[\x21-\x7E])?$/.test(values[0])) return null;
+  return values[0];
+}
+/* Return destinations are an allowlist of relative Sector Intelligence pages
+   (Sector Central, Sector Cycles, per-ETF Dossier) with an optional fragment.
+   Everything else — absolute URLs, other pages, query strings — is dropped
+   and the fixed fallback return applies. */
+function sectorProphetOrigin(params) {
+  var values = params.getAll('si_origin');
+  if (values.length !== 1) return null;
+  var v = values[0];
+  if (!/^(sector_central\.html|sector_cycles\.html|sectors\/[A-Z]+\.html)(#[A-Za-z0-9_-]*)?$/.test(v)) return null;
+  var etf = /^sectors\/([A-Z]+)\.html/.exec(v);
+  if (etf && !sectorProphetIdentity(etf[1])) return null;
+  return v;
+}
+function sectorProphetSelection(search) {
+  var params = new URLSearchParams(search);
+  var values = params.getAll('si_sector');
+  if (!values.length) return {status:'absent'};
+  var sector = values.length === 1 ? sectorProphetIdentity(values[0]) : null;
+  if (!sector) return {status:'invalid'};
+  var read = {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
+    return_href:'sector_central.html?g=' + encodeURIComponent(sector.id) + '#map'};
+  var asof = sectorProphetAsof(params);
+  if (asof) read.asof = asof;
+  var gen = sectorProphetGen(params);
+  if (gen) read.gen = gen;
+  var origin = sectorProphetOrigin(params);
+  if (origin) read.origin = origin;
+  return read;
+}
+(function () {
+  'use strict';
+  var root = document.getElementById('sector-prophet-context');
+  if (!root) return;
+  var subject = document.getElementById('si-prophet-subject');
+  var note = document.getElementById('si-prophet-note');
+  var back = document.getElementById('si-prophet-return');
+  var clear = document.getElementById('si-prophet-clear');
+  var screener = document.getElementById('si-prophet-screener');
+  if (!subject || !note || !back || !clear || !screener) return;
+  /* Readback legs authored in the partial (t() carriers, hidden). Falls
+     back to '' when a carrier is absent, so that segment is simply omitted. */
+  function legText(id, zh) {
+    var el = document.getElementById(id);
+    if (!el) return '';
+    var leg = el.querySelector ? el.querySelector(zh ? '.l-zh' : '.l-en') : null;
+    var text = leg ? leg.textContent : el.textContent;
+    return (text || '').trim();
+  }
+  /* Honest population: count the rows the stocks table ACTUALLY carries for
+     the selected sector. The page has no sector membership roster, so this is
+     a loaded-count, not a coverage claim. Null when the table has not loaded
+     (or is unparseable) — then no count is shown at all. */
+  function membersLoaded(nameEn) {
+    var el = document.getElementById('us-stocktable-data');
+    if (!el || typeof nameEn !== 'string') return null;
+    try {
+      var data = JSON.parse(el.textContent || el.innerText || '{}');
+      var rows = data && Array.isArray(data.rows) ? data.rows : [];
+      var n = 0;
+      for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].sector === nameEn) n += 1;
+      return n;
+    } catch (err) { return null; }
+  }
+  function screenerReady() {
+    return window.USStockTable && typeof window.USStockTable._selectSector === 'function' &&
+      window.USProphetSource && typeof window.USProphetSource.set === 'function';
+  }
+  function render() {
+    var read = sectorProphetSelection(window.location.search);
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    root.hidden = read.status === 'absent';
+    root.setAttribute('data-status', read.status);
+    screener.hidden = read.status !== 'selected';
+    screener.disabled = read.status !== 'selected' || !screenerReady();
+    if (read.status === 'absent') return;
+    var rest = new URLSearchParams(window.location.search);
+    // RI06 MINOR 1: clearing the context drops EVERY si_* carrier param, not just the sector
+    var siKeys = [];
+    rest.forEach(function (_v, k) { if (k.indexOf('si_') === 0) siKeys.push(k); });
+    siKeys.forEach(function (k) { rest.delete(k); });
+    var qs = rest.toString();
+    var hash = window.location.hash === '#sector-prophet-context' ? '#us-standouts' : window.location.hash;
+    clear.setAttribute('href', 'us_stocks.html' + (qs ? '?' + qs : '') + hash);
+    if (read.status === 'invalid') {
+      subject.textContent = zh ? '无法识别所选板块' : 'Selected sector unavailable';
+      note.textContent = zh ? '请返回板块证据，选择一个板块。Prophet 选股仍可查看。'
+        : 'Return to sector evidence to choose a sector. Prophet Stock Signals remains available.';
+      back.setAttribute('href', 'sector_central.html#map');
+      return;
+    }
+    subject.textContent = (zh ? read.name_zh : read.name_en) + ' · ' + read.id;
+    screener.textContent = zh ? '在筛选器中查看该板块 →' : 'View sector in Screener →';
+    screener.setAttribute('aria-label', zh ? '在筛选器中查看' + read.name_zh : 'View ' + read.name_en + ' in Screener');
+    /* Dated readback: "<sector> · members as observed <si_asof> · generation
+       <si_gen>", missing fields omitted; then the honest loaded count. */
+    var parts = [zh ? read.name_zh : read.name_en];
+    var asofLabel = legText('si-prophet-t-asof', zh);
+    if (read.asof && asofLabel) parts.push(asofLabel + ' ' + read.asof);
+    var genLabel = legText('si-prophet-t-gen', zh);
+    if (read.gen && genLabel) parts.push(genLabel + ' ' + read.gen);
+    var guidance = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
+      : 'View this sector among the stocks loaded on this page; other filters still apply. Review each stock’s setup and entry conditions, and return to sector evidence for its dated readings.';
+    var loaded = membersLoaded(read.name_en);
+    var membersLabel = legText('si-prophet-t-members', zh);
+    var loadedText = loaded !== null && membersLabel ? membersLabel.replace('{n}', String(loaded)) : '';
+    var prefix = [parts.join(' · '), loadedText].filter(Boolean).join(' · ');
+    note.textContent = prefix ? prefix + (zh ? '。' : '.') + ' ' + guidance : guidance;
+    back.setAttribute('href', read.origin || read.return_href);
+  }
+  screener.addEventListener('click', function () {
+    var read = sectorProphetSelection(window.location.search);
+    if (read.status !== 'selected') return;
+    if (!screenerReady() || !window.USStockTable._selectSector(read.name_en)) {
+      var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+      note.textContent = zh ? '本页筛选器暂不可用。您仍可返回所选板块的证据。'
+        : 'The Screener is unavailable on this page. You can still return to the selected sector’s evidence.';
+    }
+  });
+  document.addEventListener('langchange', render);
+  window.addEventListener('popstate', render);
+  window.addEventListener('mmx:shell-location', render);
+  window.addEventListener('us-screener:availability', render);
+  render();
+})();</script>
   
   
   
@@ -1043,7 +1236,7 @@
           
           
           "ticker":        "TDS",
-          "setup_detail":  "\n\n\n\n\u003cdetails class=\"pv-setup-inline pv-setup-table\" data-setup-ticker=\"TDS\" data-setup-asof=\"2026-11-02\"\u003e\n\u003csummary\u003e\u003cspan class=\"l-en\"\u003eSetup detail\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f62\u6001\u8be6\u60c5\u003c/span\u003e\u003c/summary\u003e\n\u003ctemplate class=\"pvs-body-source\"\u003e\n\n\n\n\u003cdiv class=\"pv-setup-body\" data-setup-kind=\"board\" data-native-id=\"TDS\" data-opportunity-detail\u003e\n  \n  \u003cheader class=\"pvs-opportunity-identity\"\u003e\n    \u003cdiv\u003e\u003cp class=\"pvs-company\"\u003e\u003cspan class=\"l-en\"\u003eTelephone and Data Systems, Inc.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003eTelephone and Data Systems, Inc.\u003c/span\u003e\u003c/p\u003e\n    \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eCommunication Services\u003c/span\u003e\u003cspan class=\"l-zh\"\u003eCommunication Services\u003c/span\u003e\u003c/p\u003e\u003c/div\u003e\n    \u003cdiv class=\"pvs-snapshot\"\u003e\u003cspan\u003e\u003cspan class=\"l-en\"\u003eSnapshot price\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5feb\u7167\u4ef7\u683c\u003c/span\u003e\u003c/span\u003e\u003cstrong\u003e$36.10\u003c/strong\u003e\u003cspan\u003e2026-11-02\u003c/span\u003e\u003c/div\u003e\n  \u003c/header\u003e\n  \n  \u003cp class=\"pvs-note pvs-summary-clock\"\u003e\u003cspan class=\"l-en\"\u003eSource as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u003c/span\u003e 2026-11-02 \u00b7 \u003cspan class=\"l-en\"\u003eQuote time\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e 2026-11-02\u003c/p\u003e\n  \u003cdiv class=\"pvs-grid\"\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"structure\"\u003e\n      \u003csection class=\"pvs-section\"\u003e\n        \u003ch3\u003e\u003cspan class=\"l-en\"\u003eEntry conditions\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u6761\u4ef6\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp class=\"pvs-read\" data-entry-status=\"buy_soon\"\u003e\u003cspan class=\"l-en\"\u003eBuy soon \u2014 on confirmation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5373\u5c06\u4e70\u5165 \u2014 \u5f85\u786e\u8ba4\u003c/span\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-assessment-clock\" data-assessment-asof=\"\"\u003e\u003cspan class=\"l-en\"\u003eEntry read date not supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u5224\u8bfb\u65e5\u671f\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eQuote time\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e 2026-11-02\u003c/p\u003e\n        \u003cp class=\"pvs-signal-clock\" data-signal-asof=\"2026-10-29\"\u003e\u003cspan class=\"l-en\"\u003eSignal session\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u4ea4\u6613\u65e5\u003c/span\u003e 2026-10-29\u003c/p\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eThe signal session is not the date of the entry assessment. A later quote inside the zone does not renew the entry read.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u4ea4\u6613\u65e5\u4e0d\u662f\u5165\u573a\u8bc4\u4f30\u65e5\u671f\u3002\u4e4b\u540e\u62a5\u4ef7\u5904\u4e8e\u533a\u95f4\u5185\u5e76\u4e0d\u4f1a\u66f4\u65b0\u5165\u573a\u5224\u8bfb\u3002\u003c/span\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-chart-clock\"\u003e\u003cspan class=\"l-en\"\u003eDaily closes\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6bcf\u65e5\u6536\u76d8\u003c/span\u003e \u00b7 2026-11-02\u003c/p\u003e\n        \u003cdiv class=\"pvs-chart-slot\" data-pvs-chart\u003e\u003cp\u003e\u003cspan class=\"l-en\"\u003eChart available on the setup card.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u53ef\u5728\u5f62\u6001\u5361\u7247\u4e0a\u67e5\u770b\u56fe\u8868\u3002\u003c/span\u003e\u003c/p\u003e\u003c/div\u003e\n        \n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003ePrice levels\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5173\u952e\u4ef7\u4f4d\u003c/span\u003e\u003c/h3\u003e\n      \u003cdl class=\"pvs-levels\"\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"price\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSnapshot price\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5feb\u7167\u4ef7\u683c\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.10\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.buy_zone.low\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry zone \u00b7 low\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u533a\u95f4\u4e0b\u6cbf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$34.99\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.buy_zone.high\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry zone \u00b7 high\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u533a\u95f4\u4e0a\u6cbf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.10\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.stop\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry-method stop\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u65b9\u6cd5\u6b62\u635f\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$33.17\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"hold.invalidation\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eBase invalidation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7b51\u5e95\u5931\u6548\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$31.99\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.chase_above\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eChase boundary\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8ffd\u9ad8\u8fb9\u754c\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.54\u003c/dd\u003e\u003c/div\u003e\n      \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eEntry stop and base invalidation are different. Chase boundary is not a target.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u6b62\u635f\u4e0e\u7b51\u5e95\u5931\u6548\u4e0d\u540c\uff1b\u8ffd\u9ad8\u8fb9\u754c\u4e0d\u662f\u76ee\u6807\u4ef7\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n      \n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"evidence\"\u003e\n      \n      \u003csection class=\"pvs-section pvs-opportunity-cautions\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eRisks to review\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f85\u5ba1\u9605\u98ce\u9669\u003c/span\u003e\u003c/h3\u003e\n        \u003cul\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eAccounting quality looks weak.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8d22\u52a1\u8d28\u91cf\u504f\u5f31\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eEarnings in 3 days. The result can override the setup, so size down.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e3 \u5929\u540e\u516c\u5e03\u8d22\u62a5\u3002\u4e1a\u7ee9\u7ed3\u679c\u53ef\u80fd\u538b\u8fc7\u6280\u672f\u5f62\u6001\uff0c\u5b9c\u51cf\u5c0f\u4ed3\u4f4d\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eAlready moving. Don\u0026#39;t chase above the buy zone.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5df2\u5728\u5f02\u52a8\u3002\u4e0d\u8981\u5728\u4e70\u533a\u4e0a\u65b9\u8ffd\u9ad8\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eReports in 4 d\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e4\u65e5\u540e\u516c\u5e03\u4e1a\u7ee9\u003c/span\u003e\u003c/li\u003e\u003c/ul\u003e\n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eWhy it is here\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u9009\u7406\u7531\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp class=\"pvs-assessment-detail\"\u003e\u003cspan class=\"l-en\"\u003eThe daily turn is in off a real pullback, but the cycle count is stretched well past its usual window \u2014 so this is an UNCONFIRMED new cycle, not a fresh low yet. Buy on confirmation (a higher low + the weekly turning up), not here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u65e5\u7ebf\u5df2\u5728\u4e00\u6b21\u771f\u5b9e\u56de\u8c03\u540e\u8f6c\u5411\uff0c\u4f46\u5468\u671f\u5929\u6570\u5df2\u8fdc\u8d85\u901a\u5e38\u7a97\u53e3\u2014\u2014\u56e0\u6b64\u8fd9\u662f\u672a\u786e\u8ba4\u7684\u65b0\u5468\u671f\uff0c\u5c1a\u975e\u5168\u65b0\u4f4e\u70b9\u3002\u8bf7\u5728\u786e\u8ba4\u540e\u4e70\u5165\uff08\u66f4\u9ad8\u7684\u4f4e\u70b9 + \u5468\u7ebf\u8f6c\u5411\uff09\uff0c\u800c\u975e\u6b64\u5904\u3002\u003c/span\u003e\u003c/p\u003e\n        \n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section pvs-evidence-profile\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eEvidence profile\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8bc1\u636e\u6982\u89c8\u003c/span\u003e\u003c/h3\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003ePublished relative family scores \u00b7 0\u2013100. Present families receive equal weight. These are not probabilities or entry permission.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5df2\u53d1\u5e03\u7684\u7c7b\u522b\u76f8\u5bf9\u8bc4\u5206 \u00b7 0\u2013100\u3002\u5df2\u6709\u8bc4\u5206\u7684\u7c7b\u522b\u7b49\u6743\u8ba1\u5165\uff1b\u8fd9\u4e9b\u6570\u503c\u5e76\u975e\u6982\u7387\u6216\u5165\u573a\u8bb8\u53ef\u3002\u003c/span\u003e\u003c/p\u003e\n        \u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F1_TECHNICAL_CONFLUENCE\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eTechnical agreement\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6280\u672f\u5171\u632f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e82.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F2_MOMENTUM_EXTENSION\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eMomentum \u0026amp; extension\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u52a8\u91cf\u4e0e\u5ef6\u4f38\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e34.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F4_CATALYST_EVENT\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eCatalysts \u0026amp; events\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u50ac\u5316\u4e0e\u4e8b\u4ef6\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e46.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F5_FLOW_POSITIONING\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eFlows \u0026amp; positioning\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8d44\u91d1\u6d41\u4e0e\u4ed3\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e72.3\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\n        \u003cp class=\"pvs-note pvs-evidence-absent\"\u003e\u003cspan class=\"l-en\"\u003eNot scored\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u672a\u8ba1\u5206\u003c/span\u003e: \u003cspan class=\"l-en\"\u003eTheme structure\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4e3b\u9898\u7ed3\u6784\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eMacro conditions\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5b8f\u89c2\u73af\u5883\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eBusiness quality\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u57fa\u672c\u9762\u8d28\u91cf\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eAttention \u0026amp; crowding\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5173\u6ce8\u5ea6\u4e0e\u62e5\u6324\u5ea6\u003c/span\u003e\u003c/p\u003e\n      \u003c/section\u003e\n      \n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eTechnical context\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6280\u672f\u80cc\u666f\u003c/span\u003e\u003c/h3\u003e\u003cdl class=\"pvs-facts\"\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.above200\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eAbove 200-day trend\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u9ad8\u4e8e 200 \u65e5\u8d8b\u52bf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNo\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5426\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.weekly_bull\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eWeekly confirmation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5468\u7ebf\u786e\u8ba4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eYes\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u662f\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.provisional\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eProvisional observation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6682\u5b9a\u89c2\u5bdf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNo\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5426\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n      \u003c/dl\u003e\u003c/section\u003e\n      \u003cp class=\"pvs-availability\"\u003e\u003cspan class=\"l-en\"\u003eTarget and holding period unavailable in this view. Reward/risk and win probability are not calculated.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6b64\u89c6\u56fe\u6682\u65e0\u76ee\u6807\u4ef7\u4e0e\u6301\u6709\u5468\u671f\uff0c\u4e0d\u8ba1\u7b97\u6536\u76ca\u98ce\u9669\u6bd4\u6216\u6210\u529f\u6982\u7387\u3002\u003c/span\u003e\u003c/p\u003e\n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"research\"\u003e\n      \u003csection class=\"pvs-section pvs-research-links\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eExplore the context\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u63a2\u7d22\u80cc\u666f\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp\u003e\u003ca class=\"pvs-memory-link l-en\" href=\"/market_memory.html?mm_issuer_input=TDS\u0026amp;view=memory\u0026amp;mm_lang=en\" target=\"_blank\" rel=\"noopener\"\u003eMarket Memory \u00b7 recomputed history \u00b7 new tab \u2197\u003c/a\u003e\u003ca class=\"pvs-memory-link l-zh\" href=\"/market_memory.html?mm_issuer_input=TDS\u0026amp;view=memory\u0026amp;mm_lang=zh\" target=\"_blank\" rel=\"noopener\"\u003e\u5e02\u573a\u8bb0\u5fc6 \u00b7 \u91cd\u7b97\u5386\u53f2 \u00b7 \u65b0\u6807\u7b7e\u9875 \u2197\u003c/a\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eExplore this security using currently available history. This is separate research, not evidence matched to this setup. Your setup stays open here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4f7f\u7528\u5f53\u524d\u53ef\u5f97\u5386\u53f2\u63a2\u7d22\u8fd9\u53ea\u8bc1\u5238\u3002\u8fd9\u662f\u72ec\u7acb\u7814\u7a76\uff0c\u5e76\u975e\u4e0e\u672c\u5f62\u6001\u5339\u914d\u7684\u8bc1\u636e\uff1b\u6b64\u5904\u4fdd\u7559\u5f53\u524d\u5f62\u6001\u3002\u003c/span\u003e\u003c/p\u003e\n      \u003c/section\u003e\n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"sources\"\u003e\n      \u003cdetails class=\"pvs-audit\"\u003e\u003csummary\u003e\u003cspan class=\"l-en\"\u003eEvidence \u0026amp; source details\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8bc1\u636e\u4e0e\u6765\u6e90\u8be6\u60c5\u003c/span\u003e\u003c/summary\u003e\n        \u003cdiv class=\"pvs-source-panels\"\u003e\n        \u003csection class=\"pvs-section pvs-source-setup\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eSetup information\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f62\u6001\u4fe1\u606f\u003c/span\u003e\u003c/h3\u003e\n        \u003cp class=\"pvs-status-read\"\u003e\u003cspan class=\"l-en\"\u003eActive setups\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6d3b\u8dc3\u5f62\u6001\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eContinuation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5ef6\u7eed\u003c/span\u003e\u003c/p\u003e\n        \u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"lane\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource setup type\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u5f62\u6001\u7c7b\u522b\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003econtinuation\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"stage\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource stage\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u9636\u6bb5\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003elive\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"canonical strategy binding not supplied\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eStrategy sleeve\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7b56\u7565\u5206\u7ec4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNot supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"holding duration not supplied\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eHolding horizon\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6301\u6709\u5468\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNot supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eSelection is not entry permission. Setup type is not an assigned strategy.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7cbe\u9009\u4e0d\u7b49\u4e8e\u5165\u573a\u8bb8\u53ef\uff0c\u5f62\u6001\u7c7b\u522b\u4e0d\u662f\u5df2\u5206\u914d\u7684\u7b56\u7565\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n        \u003csection class=\"pvs-section pvs-plan-relation\" data-plan-relation=\"none\" data-plan-exact=\"unavailable\"\u003e\n          \n          \n          \n          \n          \n          \u003ch3\u003e\u003cspan class=\"l-en\"\u003ePlan connection\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8ba1\u5212\u5173\u8054\u003c/span\u003e\u003c/h3\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eNo open same-security model record found. No plan or position is created here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u672a\u627e\u5230\u540c\u4e00\u8bc1\u5238\u7684\u672a\u5e73\u4ed3\u6a21\u578b\u8bb0\u5f55\uff0c\u4e0d\u5728\u6b64\u521b\u5efa\u8ba1\u5212\u6216\u6301\u4ed3\u3002\u003c/span\u003e\u003c/p\u003e\n          \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eExact plan relation: not available from the source.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7cbe\u786e\u8ba1\u5212\u5173\u8054\uff1a\u6765\u6e90\u672a\u63d0\u4f9b\u3002\u003c/span\u003e\u003c/p\u003e\n          \n        \u003c/section\u003e\n        \u003csection class=\"pvs-section pvs-source-dates\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eSource dates\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65f6\u95f4\u003c/span\u003e\u003c/h3\u003e\u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"envelope.as_of\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"signal_asof\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSignal as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u65e5\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-10-29\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"signal.tier_observed_date\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003ePrice observations through\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4ef7\u683c\u89c2\u6d4b\u622a\u81f3\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"price_as_of\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eQuote timestamp\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eSource date is not a quote timestamp. Missing clocks remain missing.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u4e0d\u662f\u62a5\u4ef7\u65f6\u95f4\uff0c\u7f3a\u5931\u65f6\u95f4\u4fdd\u6301\u7f3a\u5931\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n        \u003c/div\u003e\n      \u003c/details\u003e\n    \u003c/div\u003e\n  \u003c/div\u003e\n\u003c/div\u003e\u003c/template\u003e\n\u003cp class=\"pvs-fallback-note\"\u003e\u003cspan class=\"l-en\"\u003eIf detail is unavailable, use the stock link in this row.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u82e5\u8be6\u60c5\u4e0d\u53ef\u7528\uff0c\u8bf7\u4f7f\u7528\u672c\u884c\u7684\u4e2a\u80a1\u94fe\u63a5\u3002\u003c/span\u003e\u003c/p\u003e\n\u003ctemplate class=\"pvs-chart-source\"\u003e\u0026lt;svg class=\u0026#34;nch\u0026#34; viewBox=\u0026#34;0 0 240 42\u0026#34; preserveAspectRatio=\u0026#34;none\u0026#34; width=\u0026#34;100%\u0026#34; height=\u0026#34;42\u0026#34;\u0026gt;\u0026lt;rect x=\u0026#34;144.0\u0026#34; y=\u0026#34;21.7\u0026#34; width=\u0026#34;96.0\u0026#34; height=\u0026#34;7.2\u0026#34; fill=\u0026#34;var(--up)\u0026#34; fill-opacity=\u0026#34;0.09\u0026#34; stroke=\u0026#34;none\u0026#34;/\u0026gt;\u0026lt;line x1=\u0026#34;144.0\u0026#34; y1=\u0026#34;21.7\u0026#34; x2=\u0026#34;240\u0026#34; y2=\u0026#34;21.7\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1\u0026#34; stroke-dasharray=\u0026#34;4 3\u0026#34; stroke-opacity=\u0026#34;0.65\u0026#34;/\u0026gt;\u0026lt;line x1=\u0026#34;144.0\u0026#34; y1=\u0026#34;28.9\u0026#34; x2=\u0026#34;240\u0026#34; y2=\u0026#34;28.9\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1\u0026#34; stroke-dasharray=\u0026#34;4 3\u0026#34; stroke-opacity=\u0026#34;0.65\u0026#34;/\u0026gt;\u0026lt;polyline points=\u0026#34;0,42 0.0,24.1 3.8,26.3 7.6,22.4 11.4,42.0 15.2,37.3 19.0,39.7 22.9,40.8 26.7,28.6 30.5,27.5 34.3,32.2 38.1,34.5 41.9,31.3 45.7,31.0 49.5,38.2 53.3,41.5 57.1,36.8 61.0,40.3 64.8,41.1 68.6,37.9 72.4,37.7 76.2,38.1 80.0,23.5 83.8,10.8 87.6,10.7 91.4,10.1 95.2,10.3 99.0,13.3 102.9,13.1 106.7,11.5 110.5,10.5 114.3,15.4 118.1,21.9 121.9,23.0 125.7,17.6 129.5,17.9 133.3,19.6 137.1,20.2 141.0,23.3 144.8,30.5 148.6,34.3 152.4,35.9 156.2,27.6 160.0,26.3 163.8,28.2 167.6,27.9 171.4,26.6 175.2,34.5 179.0,38.4 182.9,30.2 186.7,30.6 190.5,35.8 194.3,35.2 198.1,36.0 201.9,40.2 205.7,34.9 209.5,40.8 213.3,30.3 217.1,26.7 221.0,24.5 224.8,24.4 228.6,32.2 232.4,35.9 236.2,33.4 240.0,21.7 240,42\u0026#34; fill=\u0026#34;var(--up)\u0026#34; opacity=\u0026#34;0.12\u0026#34; stroke=\u0026#34;none\u0026#34;/\u0026gt;\u0026lt;polyline points=\u0026#34;0.0,24.1 3.8,26.3 7.6,22.4 11.4,42.0 15.2,37.3 19.0,39.7 22.9,40.8 26.7,28.6 30.5,27.5 34.3,32.2 38.1,34.5 41.9,31.3 45.7,31.0 49.5,38.2 53.3,41.5 57.1,36.8 61.0,40.3 64.8,41.1 68.6,37.9 72.4,37.7 76.2,38.1 80.0,23.5 83.8,10.8 87.6,10.7 91.4,10.1 95.2,10.3 99.0,13.3 102.9,13.1 106.7,11.5 110.5,10.5 114.3,15.4 118.1,21.9 121.9,23.0 125.7,17.6 129.5,17.9 133.3,19.6 137.1,20.2 141.0,23.3 144.8,30.5 148.6,34.3 152.4,35.9 156.2,27.6 160.0,26.3 163.8,28.2 167.6,27.9 171.4,26.6 175.2,34.5 179.0,38.4 182.9,30.2 186.7,30.6 190.5,35.8 194.3,35.2 198.1,36.0 201.9,40.2 205.7,34.9 209.5,40.8 213.3,30.3 217.1,26.7 221.0,24.5 224.8,24.4 228.6,32.2 232.4,35.9 236.2,33.4 240.0,21.7\u0026#34; fill=\u0026#34;none\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1.7\u0026#34; stroke-linejoin=\u0026#34;round\u0026#34; stroke-linecap=\u0026#34;round\u0026#34;/\u0026gt;\u0026lt;circle cx=\u0026#34;240.0\u0026#34; cy=\u0026#34;21.7\u0026#34; r=\u0026#34;2.6\u0026#34; fill=\u0026#34;var(--up)\u0026#34;/\u0026gt;\u0026lt;/svg\u0026gt;\u003c/template\u003e\n\u003c/details\u003e",
+          "setup_detail":  "\n\n\n\n\u003cdetails class=\"pv-setup-inline pv-setup-table\" data-setup-ticker=\"TDS\" data-setup-asof=\"2026-11-02\"\u003e\n\u003csummary\u003e\u003cspan class=\"l-en\"\u003eSetup detail\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f62\u6001\u8be6\u60c5\u003c/span\u003e\u003c/summary\u003e\n\u003ctemplate class=\"pvs-body-source\"\u003e\n\n\n\n\u003cdiv class=\"pv-setup-body\" data-setup-kind=\"board\" data-native-id=\"TDS\" data-opportunity-detail\u003e\n  \n  \u003cheader class=\"pvs-opportunity-identity\"\u003e\n    \u003cdiv\u003e\u003cp class=\"pvs-company\"\u003e\u003cspan class=\"l-en\"\u003eTelephone and Data Systems, Inc.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003eTelephone and Data Systems, Inc.\u003c/span\u003e\u003c/p\u003e\n    \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eCommunication Services\u003c/span\u003e\u003cspan class=\"l-zh\"\u003eCommunication Services\u003c/span\u003e\u003c/p\u003e\u003c/div\u003e\n    \u003cdiv class=\"pvs-snapshot\"\u003e\u003cspan\u003e\u003cspan class=\"l-en\"\u003eSnapshot price\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5feb\u7167\u4ef7\u683c\u003c/span\u003e\u003c/span\u003e\u003cstrong\u003e$36.10\u003c/strong\u003e\u003cspan\u003e2026-11-02\u003c/span\u003e\u003c/div\u003e\n  \u003c/header\u003e\n  \n  \u003cp class=\"pvs-note pvs-summary-clock\"\u003e\u003cspan class=\"l-en\"\u003eSource as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u003c/span\u003e 2026-11-02 \u00b7 \u003cspan class=\"l-en\"\u003eQuote time\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e 2026-11-02\u003c/p\u003e\n  \u003cdiv class=\"pvs-grid\"\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"structure\"\u003e\n      \u003csection class=\"pvs-section\"\u003e\n        \u003ch3\u003e\u003cspan class=\"l-en\"\u003eEntry conditions\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u6761\u4ef6\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp class=\"pvs-read\" data-entry-status=\"buy_soon\"\u003e\u003cspan class=\"l-en\"\u003eBuy soon \u2014 on confirmation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5373\u5c06\u4e70\u5165 \u2014 \u5f85\u786e\u8ba4\u003c/span\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-assessment-clock\" data-assessment-asof=\"\"\u003e\u003cspan class=\"l-en\"\u003eEntry read date not supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u5224\u8bfb\u65e5\u671f\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eQuote time\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e 2026-11-02\u003c/p\u003e\n        \u003cp class=\"pvs-signal-clock\" data-signal-asof=\"2026-10-29\"\u003e\u003cspan class=\"l-en\"\u003eSignal session\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u4ea4\u6613\u65e5\u003c/span\u003e 2026-10-29\u003c/p\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eThe signal session is not the date of the entry assessment. A later quote inside the zone does not renew the entry read.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u4ea4\u6613\u65e5\u4e0d\u662f\u5165\u573a\u8bc4\u4f30\u65e5\u671f\u3002\u4e4b\u540e\u62a5\u4ef7\u5904\u4e8e\u533a\u95f4\u5185\u5e76\u4e0d\u4f1a\u66f4\u65b0\u5165\u573a\u5224\u8bfb\u3002\u003c/span\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-chart-clock\"\u003e\u003cspan class=\"l-en\"\u003eDaily closes\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6bcf\u65e5\u6536\u76d8\u003c/span\u003e \u00b7 2026-11-02\u003c/p\u003e\n        \u003cdiv class=\"pvs-chart-slot\" data-pvs-chart\u003e\u003cp\u003e\u003cspan class=\"l-en\"\u003eChart available on the setup card.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u53ef\u5728\u5f62\u6001\u5361\u7247\u4e0a\u67e5\u770b\u56fe\u8868\u3002\u003c/span\u003e\u003c/p\u003e\u003c/div\u003e\n        \n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003ePrice levels\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5173\u952e\u4ef7\u4f4d\u003c/span\u003e\u003c/h3\u003e\n      \u003cdl class=\"pvs-levels\"\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"price\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSnapshot price\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5feb\u7167\u4ef7\u683c\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.10\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.buy_zone.low\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry zone \u00b7 low\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u533a\u95f4\u4e0b\u6cbf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$34.99\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.buy_zone.high\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry zone \u00b7 high\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u533a\u95f4\u4e0a\u6cbf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.10\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.stop\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eEntry-method stop\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u65b9\u6cd5\u6b62\u635f\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$33.17\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"hold.invalidation\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eBase invalidation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7b51\u5e95\u5931\u6548\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$31.99\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"entry_signal.chase_above\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eChase boundary\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8ffd\u9ad8\u8fb9\u754c\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e$36.54\u003c/dd\u003e\u003c/div\u003e\n      \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eEntry stop and base invalidation are different. Chase boundary is not a target.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u573a\u6b62\u635f\u4e0e\u7b51\u5e95\u5931\u6548\u4e0d\u540c\uff1b\u8ffd\u9ad8\u8fb9\u754c\u4e0d\u662f\u76ee\u6807\u4ef7\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n      \n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"evidence\"\u003e\n      \n      \u003csection class=\"pvs-section pvs-opportunity-cautions\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eRisks to review\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f85\u5ba1\u9605\u98ce\u9669\u003c/span\u003e\u003c/h3\u003e\n        \u003cul\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eAccounting quality looks weak.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8d22\u52a1\u8d28\u91cf\u504f\u5f31\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eEarnings in 2 days. The result can override the setup, so size down.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e2 \u5929\u540e\u516c\u5e03\u8d22\u62a5\u3002\u4e1a\u7ee9\u7ed3\u679c\u53ef\u80fd\u538b\u8fc7\u6280\u672f\u5f62\u6001\uff0c\u5b9c\u51cf\u5c0f\u4ed3\u4f4d\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eAlready moving. Don\u0026#39;t chase above the buy zone.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5df2\u5728\u5f02\u52a8\u3002\u4e0d\u8981\u5728\u4e70\u533a\u4e0a\u65b9\u8ffd\u9ad8\u3002\u003c/span\u003e\u003c/li\u003e\u003cli\u003e\u003cspan class=\"l-en\"\u003eReports in 4 d\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e4\u65e5\u540e\u516c\u5e03\u4e1a\u7ee9\u003c/span\u003e\u003c/li\u003e\u003c/ul\u003e\n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eWhy it is here\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5165\u9009\u7406\u7531\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp class=\"pvs-assessment-detail\"\u003e\u003cspan class=\"l-en\"\u003eThe daily turn is in off a real pullback, but the cycle count is stretched well past its usual window \u2014 so this is an UNCONFIRMED new cycle, not a fresh low yet. Buy on confirmation (a higher low + the weekly turning up), not here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u65e5\u7ebf\u5df2\u5728\u4e00\u6b21\u771f\u5b9e\u56de\u8c03\u540e\u8f6c\u5411\uff0c\u4f46\u5468\u671f\u5929\u6570\u5df2\u8fdc\u8d85\u901a\u5e38\u7a97\u53e3\u2014\u2014\u56e0\u6b64\u8fd9\u662f\u672a\u786e\u8ba4\u7684\u65b0\u5468\u671f\uff0c\u5c1a\u975e\u5168\u65b0\u4f4e\u70b9\u3002\u8bf7\u5728\u786e\u8ba4\u540e\u4e70\u5165\uff08\u66f4\u9ad8\u7684\u4f4e\u70b9 + \u5468\u7ebf\u8f6c\u5411\uff09\uff0c\u800c\u975e\u6b64\u5904\u3002\u003c/span\u003e\u003c/p\u003e\n        \n      \u003c/section\u003e\n      \n      \u003csection class=\"pvs-section pvs-evidence-profile\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eEvidence profile\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8bc1\u636e\u6982\u89c8\u003c/span\u003e\u003c/h3\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003ePublished relative family scores \u00b7 0\u2013100. Present families receive equal weight. These are not probabilities or entry permission.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5df2\u53d1\u5e03\u7684\u7c7b\u522b\u76f8\u5bf9\u8bc4\u5206 \u00b7 0\u2013100\u3002\u5df2\u6709\u8bc4\u5206\u7684\u7c7b\u522b\u7b49\u6743\u8ba1\u5165\uff1b\u8fd9\u4e9b\u6570\u503c\u5e76\u975e\u6982\u7387\u6216\u5165\u573a\u8bb8\u53ef\u3002\u003c/span\u003e\u003c/p\u003e\n        \u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F1_TECHNICAL_CONFLUENCE\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eTechnical agreement\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6280\u672f\u5171\u632f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e82.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F2_MOMENTUM_EXTENSION\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eMomentum \u0026amp; extension\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u52a8\u91cf\u4e0e\u5ef6\u4f38\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e34.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F4_CATALYST_EVENT\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eCatalysts \u0026amp; events\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u50ac\u5316\u4e0e\u4e8b\u4ef6\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e46.4\u003c/dd\u003e\u003c/div\u003e\n        \n          \u003cdiv class=\"pvs-field\" data-evidence-family=\"F5_FLOW_POSITIONING\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eFlows \u0026amp; positioning\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8d44\u91d1\u6d41\u4e0e\u4ed3\u4f4d\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e72.3\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\n        \u003cp class=\"pvs-note pvs-evidence-absent\"\u003e\u003cspan class=\"l-en\"\u003eNot scored\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u672a\u8ba1\u5206\u003c/span\u003e: \u003cspan class=\"l-en\"\u003eTheme structure\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4e3b\u9898\u7ed3\u6784\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eMacro conditions\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5b8f\u89c2\u73af\u5883\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eBusiness quality\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u57fa\u672c\u9762\u8d28\u91cf\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eAttention \u0026amp; crowding\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5173\u6ce8\u5ea6\u4e0e\u62e5\u6324\u5ea6\u003c/span\u003e\u003c/p\u003e\n      \u003c/section\u003e\n      \n      \n      \u003csection class=\"pvs-section\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eTechnical context\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6280\u672f\u80cc\u666f\u003c/span\u003e\u003c/h3\u003e\u003cdl class=\"pvs-facts\"\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.above200\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eAbove 200-day trend\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u9ad8\u4e8e 200 \u65e5\u8d8b\u52bf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNo\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5426\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.weekly_bull\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eWeekly confirmation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5468\u7ebf\u786e\u8ba4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eYes\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u662f\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003cdiv class=\"pvs-field\" data-source-field=\"signal.provisional\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eProvisional observation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6682\u5b9a\u89c2\u5bdf\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNo\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5426\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n      \u003c/dl\u003e\u003c/section\u003e\n      \u003cp class=\"pvs-availability\"\u003e\u003cspan class=\"l-en\"\u003eTarget and holding period unavailable in this view. Reward/risk and win probability are not calculated.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6b64\u89c6\u56fe\u6682\u65e0\u76ee\u6807\u4ef7\u4e0e\u6301\u6709\u5468\u671f\uff0c\u4e0d\u8ba1\u7b97\u6536\u76ca\u98ce\u9669\u6bd4\u6216\u6210\u529f\u6982\u7387\u3002\u003c/span\u003e\u003c/p\u003e\n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"research\"\u003e\n      \u003csection class=\"pvs-section pvs-research-links\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eExplore the context\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u63a2\u7d22\u80cc\u666f\u003c/span\u003e\u003c/h3\u003e\n        \n        \u003cp\u003e\u003ca class=\"pvs-memory-link l-en\" href=\"/market_memory.html?mm_issuer_input=TDS\u0026amp;view=memory\u0026amp;mm_lang=en\" target=\"_blank\" rel=\"noopener\"\u003eMarket Memory \u00b7 recomputed history \u00b7 new tab \u2197\u003c/a\u003e\u003ca class=\"pvs-memory-link l-zh\" href=\"/market_memory.html?mm_issuer_input=TDS\u0026amp;view=memory\u0026amp;mm_lang=zh\" target=\"_blank\" rel=\"noopener\"\u003e\u5e02\u573a\u8bb0\u5fc6 \u00b7 \u91cd\u7b97\u5386\u53f2 \u00b7 \u65b0\u6807\u7b7e\u9875 \u2197\u003c/a\u003e\u003c/p\u003e\n        \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eExplore this security using currently available history. This is separate research, not evidence matched to this setup. Your setup stays open here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4f7f\u7528\u5f53\u524d\u53ef\u5f97\u5386\u53f2\u63a2\u7d22\u8fd9\u53ea\u8bc1\u5238\u3002\u8fd9\u662f\u72ec\u7acb\u7814\u7a76\uff0c\u5e76\u975e\u4e0e\u672c\u5f62\u6001\u5339\u914d\u7684\u8bc1\u636e\uff1b\u6b64\u5904\u4fdd\u7559\u5f53\u524d\u5f62\u6001\u3002\u003c/span\u003e\u003c/p\u003e\n      \u003c/section\u003e\n    \u003c/div\u003e\n    \u003cdiv class=\"pvs-group\" data-pvs-section=\"sources\"\u003e\n      \u003cdetails class=\"pvs-audit\"\u003e\u003csummary\u003e\u003cspan class=\"l-en\"\u003eEvidence \u0026amp; source details\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8bc1\u636e\u4e0e\u6765\u6e90\u8be6\u60c5\u003c/span\u003e\u003c/summary\u003e\n        \u003cdiv class=\"pvs-source-panels\"\u003e\n        \u003csection class=\"pvs-section pvs-source-setup\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eSetup information\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5f62\u6001\u4fe1\u606f\u003c/span\u003e\u003c/h3\u003e\n        \u003cp class=\"pvs-status-read\"\u003e\u003cspan class=\"l-en\"\u003eActive setups\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6d3b\u8dc3\u5f62\u6001\u003c/span\u003e \u00b7 \u003cspan class=\"l-en\"\u003eContinuation\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u5ef6\u7eed\u003c/span\u003e\u003c/p\u003e\n        \u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"lane\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource setup type\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u5f62\u6001\u7c7b\u522b\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003econtinuation\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"stage\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource stage\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u9636\u6bb5\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003elive\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"canonical strategy binding not supplied\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eStrategy sleeve\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7b56\u7565\u5206\u7ec4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNot supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"holding duration not supplied\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eHolding horizon\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6301\u6709\u5468\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e\u003cspan class=\"l-en\"\u003eNot supplied\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u672a\u63d0\u4f9b\u003c/span\u003e\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eSelection is not entry permission. Setup type is not an assigned strategy.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7cbe\u9009\u4e0d\u7b49\u4e8e\u5165\u573a\u8bb8\u53ef\uff0c\u5f62\u6001\u7c7b\u522b\u4e0d\u662f\u5df2\u5206\u914d\u7684\u7b56\u7565\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n        \u003csection class=\"pvs-section pvs-plan-relation\" data-plan-relation=\"none\" data-plan-exact=\"unavailable\"\u003e\n          \n          \n          \n          \n          \n          \u003ch3\u003e\u003cspan class=\"l-en\"\u003ePlan connection\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u8ba1\u5212\u5173\u8054\u003c/span\u003e\u003c/h3\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eNo open same-security model record found. No plan or position is created here.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u672a\u627e\u5230\u540c\u4e00\u8bc1\u5238\u7684\u672a\u5e73\u4ed3\u6a21\u578b\u8bb0\u5f55\uff0c\u4e0d\u5728\u6b64\u521b\u5efa\u8ba1\u5212\u6216\u6301\u4ed3\u3002\u003c/span\u003e\u003c/p\u003e\n          \u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eExact plan relation: not available from the source.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u7cbe\u786e\u8ba1\u5212\u5173\u8054\uff1a\u6765\u6e90\u672a\u63d0\u4f9b\u3002\u003c/span\u003e\u003c/p\u003e\n          \n        \u003c/section\u003e\n        \u003csection class=\"pvs-section pvs-source-dates\"\u003e\u003ch3\u003e\u003cspan class=\"l-en\"\u003eSource dates\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65f6\u95f4\u003c/span\u003e\u003c/h3\u003e\u003cdl class=\"pvs-facts\"\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"envelope.as_of\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSource as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"signal_asof\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eSignal as-of\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4fe1\u53f7\u65e5\u671f\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-10-29\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"signal.tier_observed_date\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003ePrice observations through\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u4ef7\u683c\u89c2\u6d4b\u622a\u81f3\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n          \u003cdiv class=\"pvs-field\" data-source-field=\"price_as_of\"\u003e\u003cdt\u003e\u003cspan class=\"l-en\"\u003eQuote timestamp\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u62a5\u4ef7\u65f6\u95f4\u003c/span\u003e\u003c/dt\u003e\u003cdd\u003e2026-11-02\u003c/dd\u003e\u003c/div\u003e\n        \u003c/dl\u003e\u003cp class=\"pvs-note\"\u003e\u003cspan class=\"l-en\"\u003eSource date is not a quote timestamp. Missing clocks remain missing.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u6765\u6e90\u65e5\u671f\u4e0d\u662f\u62a5\u4ef7\u65f6\u95f4\uff0c\u7f3a\u5931\u65f6\u95f4\u4fdd\u6301\u7f3a\u5931\u3002\u003c/span\u003e\u003c/p\u003e\u003c/section\u003e\n        \u003c/div\u003e\n      \u003c/details\u003e\n    \u003c/div\u003e\n  \u003c/div\u003e\n\u003c/div\u003e\u003c/template\u003e\n\u003cp class=\"pvs-fallback-note\"\u003e\u003cspan class=\"l-en\"\u003eIf detail is unavailable, use the stock link in this row.\u003c/span\u003e\u003cspan class=\"l-zh\"\u003e\u82e5\u8be6\u60c5\u4e0d\u53ef\u7528\uff0c\u8bf7\u4f7f\u7528\u672c\u884c\u7684\u4e2a\u80a1\u94fe\u63a5\u3002\u003c/span\u003e\u003c/p\u003e\n\u003ctemplate class=\"pvs-chart-source\"\u003e\u0026lt;svg class=\u0026#34;nch\u0026#34; viewBox=\u0026#34;0 0 240 42\u0026#34; preserveAspectRatio=\u0026#34;none\u0026#34; width=\u0026#34;100%\u0026#34; height=\u0026#34;42\u0026#34;\u0026gt;\u0026lt;rect x=\u0026#34;144.0\u0026#34; y=\u0026#34;21.7\u0026#34; width=\u0026#34;96.0\u0026#34; height=\u0026#34;7.2\u0026#34; fill=\u0026#34;var(--up)\u0026#34; fill-opacity=\u0026#34;0.09\u0026#34; stroke=\u0026#34;none\u0026#34;/\u0026gt;\u0026lt;line x1=\u0026#34;144.0\u0026#34; y1=\u0026#34;21.7\u0026#34; x2=\u0026#34;240\u0026#34; y2=\u0026#34;21.7\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1\u0026#34; stroke-dasharray=\u0026#34;4 3\u0026#34; stroke-opacity=\u0026#34;0.65\u0026#34;/\u0026gt;\u0026lt;line x1=\u0026#34;144.0\u0026#34; y1=\u0026#34;28.9\u0026#34; x2=\u0026#34;240\u0026#34; y2=\u0026#34;28.9\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1\u0026#34; stroke-dasharray=\u0026#34;4 3\u0026#34; stroke-opacity=\u0026#34;0.65\u0026#34;/\u0026gt;\u0026lt;polyline points=\u0026#34;0,42 0.0,24.1 3.8,26.3 7.6,22.4 11.4,42.0 15.2,37.3 19.0,39.7 22.9,40.8 26.7,28.6 30.5,27.5 34.3,32.2 38.1,34.5 41.9,31.3 45.7,31.0 49.5,38.2 53.3,41.5 57.1,36.8 61.0,40.3 64.8,41.1 68.6,37.9 72.4,37.7 76.2,38.1 80.0,23.5 83.8,10.8 87.6,10.7 91.4,10.1 95.2,10.3 99.0,13.3 102.9,13.1 106.7,11.5 110.5,10.5 114.3,15.4 118.1,21.9 121.9,23.0 125.7,17.6 129.5,17.9 133.3,19.6 137.1,20.2 141.0,23.3 144.8,30.5 148.6,34.3 152.4,35.9 156.2,27.6 160.0,26.3 163.8,28.2 167.6,27.9 171.4,26.6 175.2,34.5 179.0,38.4 182.9,30.2 186.7,30.6 190.5,35.8 194.3,35.2 198.1,36.0 201.9,40.2 205.7,34.9 209.5,40.8 213.3,30.3 217.1,26.7 221.0,24.5 224.8,24.4 228.6,32.2 232.4,35.9 236.2,33.4 240.0,21.7 240,42\u0026#34; fill=\u0026#34;var(--up)\u0026#34; opacity=\u0026#34;0.12\u0026#34; stroke=\u0026#34;none\u0026#34;/\u0026gt;\u0026lt;polyline points=\u0026#34;0.0,24.1 3.8,26.3 7.6,22.4 11.4,42.0 15.2,37.3 19.0,39.7 22.9,40.8 26.7,28.6 30.5,27.5 34.3,32.2 38.1,34.5 41.9,31.3 45.7,31.0 49.5,38.2 53.3,41.5 57.1,36.8 61.0,40.3 64.8,41.1 68.6,37.9 72.4,37.7 76.2,38.1 80.0,23.5 83.8,10.8 87.6,10.7 91.4,10.1 95.2,10.3 99.0,13.3 102.9,13.1 106.7,11.5 110.5,10.5 114.3,15.4 118.1,21.9 121.9,23.0 125.7,17.6 129.5,17.9 133.3,19.6 137.1,20.2 141.0,23.3 144.8,30.5 148.6,34.3 152.4,35.9 156.2,27.6 160.0,26.3 163.8,28.2 167.6,27.9 171.4,26.6 175.2,34.5 179.0,38.4 182.9,30.2 186.7,30.6 190.5,35.8 194.3,35.2 198.1,36.0 201.9,40.2 205.7,34.9 209.5,40.8 213.3,30.3 217.1,26.7 221.0,24.5 224.8,24.4 228.6,32.2 232.4,35.9 236.2,33.4 240.0,21.7\u0026#34; fill=\u0026#34;none\u0026#34; stroke=\u0026#34;var(--up)\u0026#34; stroke-width=\u0026#34;1.7\u0026#34; stroke-linejoin=\u0026#34;round\u0026#34; stroke-linecap=\u0026#34;round\u0026#34;/\u0026gt;\u0026lt;circle cx=\u0026#34;240.0\u0026#34; cy=\u0026#34;21.7\u0026#34; r=\u0026#34;2.6\u0026#34; fill=\u0026#34;var(--up)\u0026#34;/\u0026gt;\u0026lt;/svg\u0026gt;\u003c/template\u003e\n\u003c/details\u003e",
           "name":          "Telephone and Data Systems, Inc.",
           "sector":        "Communication Services",
           "lane":          "continuation",
@@ -1074,7 +1267,7 @@
       
       
       
-      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:dfb34687cdbf32ea6faff946d00a56fb997a89892d2a51a9d4e15f8882fd70c5" data-today-pair-id="9647d136e5e240b6b3ed05f2394550f9" data-today-selection-receipt="sha256:decc568cc99c97b0d98e0dee119fcb440ebe210cd2bb0116f535bc363b8e9d41" data-today-roster-size="56" data-today-served="0~sha256:6077f6be7cbc266aba75881dd4676bf60ef3727647ee77cef4f87a03c27f22da">
+      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:bc0c02f86b4c3223aa65c0e68e787804376609524a45478bf21a8acd4e9f77fc" data-today-pair-id="87b4097a82f849b9807c0e099ab10cc7" data-today-selection-receipt="sha256:c804eebdf574eb4994995ce6cf3b5110941319d3fdc06a946cee1781992e7dfb" data-today-roster-size="56" data-today-served="0~sha256:f05e33a6a2f805d63d38edf43c774b0fd11b222fa5043520806cfc42b65f4eec">
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2"><span class="l-en">Today</span><span class="l-zh">今日</span></h2>
           <span class="mx-sec-total"><span class="l-en"><b>1</b> of <b>12</b> Featured</span><span class="l-zh">精选 <b>1</b> / <b>12</b></span></span>
@@ -2011,7 +2204,7 @@
         <span class="po-caution-top"><span class="l-en">Accounting quality looks weak.</span><span class="l-zh">财务质量偏弱。</span></span>
         <span class="po-caution-more fig"><span class="l-en">+3 more</span><span class="l-zh">+3 条</span></span>
       </summary>
-      <ul class="po-caution-list"><li><span class="l-en">Earnings in 3 days. The result can override the setup, so size down.</span><span class="l-zh">3 天后公布财报。业绩结果可能压过技术形态，宜减小仓位。</span></li><li><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></li><li><span class="l-en">Reports in 4 d</span><span class="l-zh">4日后公布业绩</span></li></ul>
+      <ul class="po-caution-list"><li><span class="l-en">Earnings in 2 days. The result can override the setup, so size down.</span><span class="l-zh">2 天后公布财报。业绩结果可能压过技术形态，宜减小仓位。</span></li><li><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></li><li><span class="l-en">Reports in 4 d</span><span class="l-zh">4日后公布业绩</span></li></ul>
     </details><ol class="po-stages" data-po-field="stages"><li class="po-stage">
       <span class="po-stage-dot" aria-hidden="true"></span>
       <span class="po-stage-label"><span class="l-en">Bottoming</span><span class="l-zh">筑底</span></span>
@@ -2075,7 +2268,7 @@
     <div class="pvs-group" data-pvs-section="evidence">
       
       <section class="pvs-section pvs-opportunity-cautions"><h3><span class="l-en">Risks to review</span><span class="l-zh">待审阅风险</span></h3>
-        <ul><li><span class="l-en">Accounting quality looks weak.</span><span class="l-zh">财务质量偏弱。</span></li><li><span class="l-en">Earnings in 3 days. The result can override the setup, so size down.</span><span class="l-zh">3 天后公布财报。业绩结果可能压过技术形态，宜减小仓位。</span></li><li><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></li><li><span class="l-en">Reports in 4 d</span><span class="l-zh">4日后公布业绩</span></li></ul>
+        <ul><li><span class="l-en">Accounting quality looks weak.</span><span class="l-zh">财务质量偏弱。</span></li><li><span class="l-en">Earnings in 2 days. The result can override the setup, so size down.</span><span class="l-zh">2 天后公布财报。业绩结果可能压过技术形态，宜减小仓位。</span></li><li><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></li><li><span class="l-en">Reports in 4 d</span><span class="l-zh">4日后公布业绩</span></li></ul>
       </section>
       
       <section class="pvs-section"><h3><span class="l-en">Why it is here</span><span class="l-zh">入选理由</span></h3>
@@ -3977,198 +4170,6 @@
 
 </div>
 
-  
-<link rel="stylesheet" href="assets/css/1da8062c.css?v=1da8062c">
-<section class="si-prophet-context span12" id="sector-prophet-context" aria-labelledby="si-prophet-subject" hidden>
-  <div class="si-prophet-context-copy">
-    <p class="si-prophet-context-label"><span class="l-en">From Sector Central</span><span class="l-zh">来自板块情报</span></p>
-    <h2 id="si-prophet-subject"></h2>
-    <p class="si-prophet-context-note" id="si-prophet-note" aria-live="polite"></p>
-  </div>
-  <div class="si-prophet-context-actions">
-    <button type="button" id="si-prophet-screener" aria-controls="us-stocktable-wrap" disabled><span class="l-en">View sector in Screener →</span><span class="l-zh">在筛选器中查看该板块 →</span></button>
-    <a id="si-prophet-return" href="sector_central.html#map"><span class="l-en">Return to sector evidence →</span><span class="l-zh">返回板块证据 →</span></a>
-    <a id="si-prophet-clear" href="us_stocks.html"><span class="l-en">Clear context</span><span class="l-zh">清除板块背景</span></a>
-  </div>
-</section>
-
-<span id="si-prophet-t-asof" hidden><span class="l-en">members as observed</span><span class="l-zh">成分股观察日期</span></span>
-<span id="si-prophet-t-gen" hidden><span class="l-en">generation</span><span class="l-zh">世代</span></span>
-<span id="si-prophet-t-members" hidden><span class="l-en">{n} members loaded</span><span class="l-zh">已加载 {n} 只成分股</span></span>
-<script>/* Sector Central -> Prophet identity contract. Canonical sector ETF identities
-   follow engine.spotlight.GICS_TO_ETF. URL context supplies identity only;
-   the native Screener owner applies its filter after an explicit click. */
-function sectorProphetIdentity(id) {
-  var sectors = {
-    XLB:['Materials','原材料'], XLC:['Communication Services','通信服务'],
-    XLE:['Energy','能源'], XLF:['Financials','金融'], XLI:['Industrials','工业'],
-    XLK:['Information Technology','信息技术'], XLP:['Consumer Staples','必需消费'],
-    XLRE:['Real Estate','房地产'], XLU:['Utilities','公用事业'],
-    XLV:['Health Care','医疗保健'], XLY:['Consumer Discretionary','可选消费']
-  };
-  if (typeof id !== 'string' || !Object.prototype.hasOwnProperty.call(sectors, id)) return null;
-  return {id:id, name_en:sectors[id][0], name_zh:sectors[id][1]};
-}
-function sectorProphetHref(group, context) {
-  if (!group || group.group_kind !== 'sector') return null;
-  var sector = sectorProphetIdentity(group.group_id);
-  if (!sector) return null;
-  var href = 'us_stocks.html?si_sector=' + encodeURIComponent(sector.id);
-  /* SIC-I06R: dated context rides as explicit params only. The ladder
-     filter's own query param is never emitted here — arrival must not
-     filter (masterplan §8.3). */
-  if (context) {
-    if (context.asof) href += '&si_asof=' + encodeURIComponent(context.asof);
-    if (context.gen) href += '&si_gen=' + encodeURIComponent(context.gen);
-    if (context.origin) href += '&si_origin=' + encodeURIComponent(context.origin);
-  }
-  return href + '#sector-prophet-context';
-}
-/* SIC-I06R optional context readers. Same parse style as si_sector
-   (params.getAll), but these are display context, not identity: exactly one
-   strictly-shaped value is read, and anything missing, duplicated or
-   malformed is omitted — never invented. */
-function sectorProphetAsof(params) {
-  var values = params.getAll('si_asof');
-  if (values.length !== 1) return null;
-  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(values[0]);
-  if (!m) return null;
-  /* Strict calendar round-trip (engine-stable): a fabricated date such as
-     2026-02-30 rolls over and fails the component comparison. */
-  var dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  return dt.getFullYear() === Number(m[1]) && dt.getMonth() === Number(m[2]) - 1 &&
-    dt.getDate() === Number(m[3]) ? values[0] : null;
-}
-function sectorProphetGen(params) {
-  var values = params.getAll('si_gen');
-  // RI06 MINOR 2: printable ASCII, 1-64 chars, no leading/trailing space (space-only is not a generation)
-  if (values.length !== 1 || !/^[\x21-\x7E](?:[\x20-\x7E]{0,62}[\x21-\x7E])?$/.test(values[0])) return null;
-  return values[0];
-}
-/* Return destinations are an allowlist of relative Sector Intelligence pages
-   (Sector Central, Sector Cycles, per-ETF Dossier) with an optional fragment.
-   Everything else — absolute URLs, other pages, query strings — is dropped
-   and the fixed fallback return applies. */
-function sectorProphetOrigin(params) {
-  var values = params.getAll('si_origin');
-  if (values.length !== 1) return null;
-  var v = values[0];
-  if (!/^(sector_central\.html|sector_cycles\.html|sectors\/[A-Z]+\.html)(#[A-Za-z0-9_-]*)?$/.test(v)) return null;
-  var etf = /^sectors\/([A-Z]+)\.html/.exec(v);
-  if (etf && !sectorProphetIdentity(etf[1])) return null;
-  return v;
-}
-function sectorProphetSelection(search) {
-  var params = new URLSearchParams(search);
-  var values = params.getAll('si_sector');
-  if (!values.length) return {status:'absent'};
-  var sector = values.length === 1 ? sectorProphetIdentity(values[0]) : null;
-  if (!sector) return {status:'invalid'};
-  var read = {status:'selected', id:sector.id, name_en:sector.name_en, name_zh:sector.name_zh,
-    return_href:'sector_central.html?g=' + encodeURIComponent(sector.id) + '#map'};
-  var asof = sectorProphetAsof(params);
-  if (asof) read.asof = asof;
-  var gen = sectorProphetGen(params);
-  if (gen) read.gen = gen;
-  var origin = sectorProphetOrigin(params);
-  if (origin) read.origin = origin;
-  return read;
-}
-(function () {
-  'use strict';
-  var root = document.getElementById('sector-prophet-context');
-  if (!root) return;
-  var subject = document.getElementById('si-prophet-subject');
-  var note = document.getElementById('si-prophet-note');
-  var back = document.getElementById('si-prophet-return');
-  var clear = document.getElementById('si-prophet-clear');
-  var screener = document.getElementById('si-prophet-screener');
-  if (!subject || !note || !back || !clear || !screener) return;
-  /* Readback legs authored in the partial (t() carriers, hidden). Falls
-     back to '' when a carrier is absent, so that segment is simply omitted. */
-  function legText(id, zh) {
-    var el = document.getElementById(id);
-    if (!el) return '';
-    var leg = el.querySelector ? el.querySelector(zh ? '.l-zh' : '.l-en') : null;
-    var text = leg ? leg.textContent : el.textContent;
-    return (text || '').trim();
-  }
-  /* Honest population: count the rows the stocks table ACTUALLY carries for
-     the selected sector. The page has no sector membership roster, so this is
-     a loaded-count, not a coverage claim. Null when the table has not loaded
-     (or is unparseable) — then no count is shown at all. */
-  function membersLoaded(nameEn) {
-    var el = document.getElementById('us-stocktable-data');
-    if (!el || typeof nameEn !== 'string') return null;
-    try {
-      var data = JSON.parse(el.textContent || el.innerText || '{}');
-      var rows = data && Array.isArray(data.rows) ? data.rows : [];
-      var n = 0;
-      for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].sector === nameEn) n += 1;
-      return n;
-    } catch (err) { return null; }
-  }
-  function screenerReady() {
-    return window.USStockTable && typeof window.USStockTable._selectSector === 'function' &&
-      window.USProphetSource && typeof window.USProphetSource.set === 'function';
-  }
-  function render() {
-    var read = sectorProphetSelection(window.location.search);
-    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
-    root.hidden = read.status === 'absent';
-    root.setAttribute('data-status', read.status);
-    screener.hidden = read.status !== 'selected';
-    screener.disabled = read.status !== 'selected' || !screenerReady();
-    if (read.status === 'absent') return;
-    var rest = new URLSearchParams(window.location.search);
-    // RI06 MINOR 1: clearing the context drops EVERY si_* carrier param, not just the sector
-    var siKeys = [];
-    rest.forEach(function (_v, k) { if (k.indexOf('si_') === 0) siKeys.push(k); });
-    siKeys.forEach(function (k) { rest.delete(k); });
-    var qs = rest.toString();
-    var hash = window.location.hash === '#sector-prophet-context' ? '#us-standouts' : window.location.hash;
-    clear.setAttribute('href', 'us_stocks.html' + (qs ? '?' + qs : '') + hash);
-    if (read.status === 'invalid') {
-      subject.textContent = zh ? '无法识别所选板块' : 'Selected sector unavailable';
-      note.textContent = zh ? '请返回板块证据，选择一个板块。Prophet 选股仍可查看。'
-        : 'Return to sector evidence to choose a sector. Prophet Stock Signals remains available.';
-      back.setAttribute('href', 'sector_central.html#map');
-      return;
-    }
-    subject.textContent = (zh ? read.name_zh : read.name_en) + ' · ' + read.id;
-    screener.textContent = zh ? '在筛选器中查看该板块 →' : 'View sector in Screener →';
-    screener.setAttribute('aria-label', zh ? '在筛选器中查看' + read.name_zh : 'View ' + read.name_en + ' in Screener');
-    /* Dated readback: "<sector> · members as observed <si_asof> · generation
-       <si_gen>", missing fields omitted; then the honest loaded count. */
-    var parts = [zh ? read.name_zh : read.name_en];
-    var asofLabel = legText('si-prophet-t-asof', zh);
-    if (read.asof && asofLabel) parts.push(asofLabel + ' ' + read.asof);
-    var genLabel = legText('si-prophet-t-gen', zh);
-    if (read.gen && genLabel) parts.push(genLabel + ' ' + read.gen);
-    var guidance = zh ? '在当前已加载的股票中筛选该板块；其他筛选条件仍然适用。请结合各股的形态与入场条件，并返回板块证据查看其日期。'
-      : 'View this sector among the stocks loaded on this page; other filters still apply. Review each stock’s setup and entry conditions, and return to sector evidence for its dated readings.';
-    var loaded = membersLoaded(read.name_en);
-    var membersLabel = legText('si-prophet-t-members', zh);
-    var loadedText = loaded !== null && membersLabel ? membersLabel.replace('{n}', String(loaded)) : '';
-    var prefix = [parts.join(' · '), loadedText].filter(Boolean).join(' · ');
-    note.textContent = prefix ? prefix + (zh ? '。' : '.') + ' ' + guidance : guidance;
-    back.setAttribute('href', read.origin || read.return_href);
-  }
-  screener.addEventListener('click', function () {
-    var read = sectorProphetSelection(window.location.search);
-    if (read.status !== 'selected') return;
-    if (!screenerReady() || !window.USStockTable._selectSector(read.name_en)) {
-      var zh = document.documentElement.getAttribute('data-lang') === 'zh';
-      note.textContent = zh ? '本页筛选器暂不可用。您仍可返回所选板块的证据。'
-        : 'The Screener is unavailable on this page. You can still return to the selected sector’s evidence.';
-    }
-  });
-  document.addEventListener('langchange', render);
-  window.addEventListener('popstate', render);
-  window.addEventListener('mmx:shell-location', render);
-  window.addEventListener('us-screener:availability', render);
-  render();
-})();</script>
   
 
 
