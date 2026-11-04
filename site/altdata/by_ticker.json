@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-04",
-  "generated_utc": "2026-11-04T13:51:58.157877+00:00",
+  "generated_utc": "2026-11-04T15:44:59.386500+00:00",
   "n_tickers": 2865,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -3162,13 +3162,13 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "TER": {
-      "ticker": "TER",
+    "EWBC": {
+      "ticker": "EWBC",
       "channels": [
         "analyst_upgrade_cluster"
       ],
       "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.94,
+      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
