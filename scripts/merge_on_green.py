@@ -277,6 +277,7 @@ except ImportError:  # run as `python3 scripts/merge_on_green.py` (the workflow 
 
 GITHUB_API = "https://api.github.com"
 MERGE_ON_GREEN_LABEL = "merge-on-green"
+MAX_WAKE_EVENT_BYTES = 1_048_576
 MERGE_BLOCKED_LABEL = "merge-blocked"
 MAIN_RED_REPAIR_LABEL = "main-red-repair"
 REFRESH_LEASE_LABEL = "merge-refresh-in-flight"
@@ -4474,7 +4475,7 @@ def serialized_refresh_authority(
         and str(payload.get("head_branch") or "") == "main"
         and str((repository or {}).get("full_name") or "") == repo
         and str(payload.get("event") or "")
-        in {"workflow_run", "schedule", "workflow_dispatch", "pull_request_target"}
+        in {"workflow_run", "schedule", "workflow_dispatch", "pull_request_target", "issue_comment"}
     )
 
 
@@ -5399,6 +5400,7 @@ def sweep_order(
     pulls: list[dict[str, Any]],
     *,
     trigger_head_sha: str = "",
+    trigger_pull_number: int | None = None,
     refresh_lease_number: Any = None,
     now: float | None = None,
     cap: int = FALLBACK_PULL_CAP,
@@ -5413,7 +5415,8 @@ def sweep_order(
          deferred to the next sweep is the whole repo deferred with it.
       1. the durable refresh-lease owner. It must stay inside the evaluation cap
          until its proof settles, even when it is older than the first pull page.
-      2. the head the TRIGGERING workflow run just concluded on. The sweeper wakes
+      2. the PR named by a qualified event hint, or the head the triggering
+         workflow run just concluded on. The sweeper wakes
          because some run went green; that run's own pull request is the single
          most likely merge in the backlog, and putting it first is what keeps the
          cap from adding latency to the case the trigger exists to serve.
@@ -5461,6 +5464,8 @@ def sweep_order(
     offset = (bucket * step + phase) % span
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
+    hinted_number = (trigger_pull_number if type(trigger_pull_number) is int
+                     and trigger_pull_number > 0 else None)
 
     def rank(entry: tuple[int, dict[str, Any]]) -> tuple[int, int, int]:
         index, pull = entry
@@ -5468,7 +5473,8 @@ def sweep_order(
             tier = 0
         elif lease_number and str(pull.get("number") or "") == lease_number:
             tier = 1
-        elif wanted and str((pull.get("head") or {}).get("sha") or "").lower() == wanted:
+        elif ((hinted_number is not None and pull.get("number") == hinted_number)
+              or (wanted and str((pull.get("head") or {}).get("sha") or "").lower() == wanted)):
             tier = 2
         else:
             tier = 3
@@ -9412,6 +9418,97 @@ def mark_only_pass(
     return 0
 
 
+def wake_pull_number(event_name: str, payload: Any, repo: str) -> int | None:
+    """Return an attention hint, never merge/hold/admission authority.
+
+    The trusted read-only workflow job calls this before joining the incumbent
+    sweep concurrency group. No API request, PR code, or external effect occurs.
+    """
+    if type(payload) is not dict or not repo:
+        return None
+    repository = payload.get("repository")
+    if type(repository) is not dict or repository.get("full_name") != repo:
+        return None
+    action = payload.get("action")
+    if event_name == "pull_request_target":
+        if action not in {"labeled", "ready_for_review"}:
+            return None
+        subject = payload.get("pull_request")
+    elif event_name == "issue_comment":
+        if action not in {"created", "edited"}:
+            return None
+        subject = payload.get("issue")
+    else:
+        return None
+    if type(subject) is not dict:
+        return None
+    number, labels = subject.get("number"), subject.get("labels")
+    if (type(number) is not int or number <= 0
+            or subject.get("state") != "open"
+            or type(labels) is not list
+            or any(type(label) is not dict for label in labels)
+            or MERGE_ON_GREEN_LABEL not in label_names(subject)):
+        return None
+    if event_name == "pull_request_target":
+        base = subject.get("base")
+        if subject.get("draft") is not False or type(base) is not dict:
+            return None
+        base_repo = base.get("repo")
+        if (base.get("ref") != "main" or type(base_repo) is not dict
+                or base_repo.get("full_name") != repo):
+            return None
+        label = payload.get("label")
+        if action == "labeled" and (
+                type(label) is not dict or label.get("name") != MERGE_ON_GREEN_LABEL):
+            return None
+        return number
+    if type(subject.get("pull_request")) is not dict:
+        return None  # An ordinary issue cannot select a PR route.
+    comment = payload.get("comment")
+    if type(comment) is not dict or type(comment.get("user")) is not dict:
+        return None
+    if comment["user"].get("type") != "User" or _is_bot_comment(comment):
+        return None
+    body = comment.get("body")
+    if type(body) is not str:
+        return None
+    classification = _classify_comment(body)
+    if classification is None or classification[0] != "release":
+        return None
+    changes = payload.get("changes")
+    previous = changes.get("body") if type(changes) is dict else None
+    old_body = previous.get("from") if type(previous) is dict else None
+    if action == "edited" and type(old_body) is str:
+        old = _classify_comment(old_body)
+        if old is not None and old[0] == "release":
+            return None
+    # created_at/updated_at never grant release here. recorded_hold still reads
+    # the complete current comment inventory at the existing effect boundary.
+    return number
+
+
+def wake_event_main() -> int:
+    """Bounded event-data predicate for the read-only workflow job."""
+    number = None
+    try:
+        with open(os.environ["GITHUB_EVENT_PATH"], "rb") as stream:
+            raw = stream.read(MAX_WAKE_EVENT_BYTES + 1)
+        if len(raw) <= MAX_WAKE_EVENT_BYTES:
+            number = wake_pull_number(
+                os.environ.get("GITHUB_EVENT_NAME", ""),
+                json.loads(raw), os.environ.get("GH_REPO", ""),
+            )
+    except (OSError, ValueError, UnicodeError, KeyError):
+        pass  # No qualified hint; the modifying job must not enter its queue.
+    output = os.environ.get("GITHUB_OUTPUT")
+    if not output:
+        return 1
+    with open(output, "a", encoding="utf-8") as stream:
+        stream.write(f"wake={'true' if number is not None else 'false'}\n")
+        stream.write(f"pull_number={number if number is not None else ''}\n")
+    return 0
+
+
 def main() -> int:
     repo = os.environ.get("GH_REPO", "").strip()
     read_token = os.environ.get("READ_TOKEN", "").strip()
@@ -9422,6 +9519,8 @@ def main() -> int:
     # one. Empty for the cron and for workflow_dispatch, which is harmless — it only
     # promotes a pull request within the per-sweep cap, never past a gate.
     trigger_head_sha = os.environ.get("TRIGGER_HEAD_SHA", "").strip()
+    raw_hint = os.environ.get("TRIGGER_PULL_NUMBER", "").strip()
+    trigger_pull_number = int(raw_hint) if re.fullmatch(r"[1-9][0-9]{0,9}", raw_hint) else None
     # …and HOW it concluded. `failure` selects `mark_only_pass` below; every other
     # value (including the empty string the cron and workflow_dispatch supply) runs
     # the full sweep exactly as before.
@@ -9673,6 +9772,7 @@ def main() -> int:
     ordered = sweep_order(
         pulls,
         trigger_head_sha=trigger_head_sha,
+        trigger_pull_number=trigger_pull_number,
         refresh_lease_number=refresh_lease.owner_number,
         cap=pull_cap,
     )
@@ -9980,4 +10080,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--wake-event"]:
+        raise SystemExit(wake_event_main())
+    if sys.argv[1:]:
+        raise SystemExit("unsupported merge-on-green arguments")
     raise SystemExit(main())

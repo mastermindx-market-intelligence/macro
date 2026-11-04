@@ -352,3 +352,16 @@ def test_checkpoint_keeps_unserved_identity_until_actual_admission(change):
     admitted=replace(record(generation=d.demand_id,run_id=None),head_sha=d.head_sha)
     served=replace(new,demands=(),admissions=(admitted,))
     assert admission.select_checkpoint([old,served],123)==served
+
+
+@pytest.mark.parametrize("event_name", ["pull_request_target", "issue_comment"])
+def test_event_wake_receipts_preserve_exact_protected_controller_binding(event_name):
+    args = anchor_fixture()
+    args["controller"]["event"] = event_name
+    assert admission.authenticate_receipt(**args) == record()
+    for key, bad in [("head_branch", "candidate"), ("head_sha", "d" * 40),
+                     ("path", ".github/workflows/other.yml"), ("repository", {"id": 18})]:
+        changed = dict(args, controller=dict(args["controller"]))
+        changed["controller"][key] = bad
+        with pytest.raises(ValueError):
+            admission.authenticate_receipt(**changed)

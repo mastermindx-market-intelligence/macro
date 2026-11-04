@@ -130,7 +130,7 @@ def test_admitted_bundle_binds_control_root_before_candidate_checkout(tmp_path):
         assert (expected / 'scripts' / 'control.py').read_text() == '# protected bytes'
 
 
-def test_foundation_preserves_zero_input_executor_and_no_pr_target():
+def test_foundation_preserves_zero_input_executor_and_trusted_event_filter():
     doc = workflow()
     assert 'pull_request' in doc.get('on', doc.get(True))
     caller = doc['jobs']['trusted-ci']
@@ -142,7 +142,13 @@ def test_foundation_preserves_zero_input_executor_and_no_pr_target():
     callee = yaml.safe_load((ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
     assert callee.get('on', callee.get(True))['workflow_call'].get('inputs', {}) == {}
     sweep = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
-    assert 'pull_request_target' not in sweep.get('on', sweep.get(True))
+    event_filter = sweep['jobs']['wake-event']
+    assert event_filter['permissions'] == {'contents': 'read'}
+    assert 'concurrency' not in event_filter
+    for job in (event_filter, sweep['jobs']['sweep']):
+        checkout = next(s for s in job['steps'] if 'checkout@' in s.get('uses', ''))
+        assert checkout['with']['ref'] == '${{ github.workflow_sha }}'
+        assert checkout['with']['persist-credentials'] is False
     controller = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
     steps = controller['jobs']['sweep']['steps']
     reserve = next(s for s in steps if s.get('id') == 'admission_reserve')
@@ -221,12 +227,14 @@ def test_hosted_cutover_natural_fences_wake_source_contract(event,name,branch,co
     assert fences.get('on',fences.get(True))['pull_request']=={'branches':['main']}
     sweep=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
     events=sweep.get('on',sweep.get(True))
-    assert 'pull_request_target' not in events
+    assert events['pull_request_target'] == {'branches': ['main'], 'types': ['labeled', 'ready_for_review']}
+    assert sweep['jobs']['wake-event']['permissions'] == {'contents': 'read'}
     assert events['workflow_run']=={'workflows':['ci','fences','integration-baseline'],'types':['completed']}
     job=sweep['jobs']['sweep']
     values={'github.event_name':event,'github.event.workflow_run.name':name,
             'github.event.workflow_run.head_branch':branch,
-            'github.event.workflow_run.conclusion':conclusion,'cancelled()':False}
+            'github.event.workflow_run.conclusion':conclusion,'cancelled()':False,
+            'needs.wake-event.result':'skipped','needs.wake-event.outputs.wake':''}
     def source_bool(expression):
         for key in sorted(values,key=len,reverse=True):expression=expression.replace(key,repr(values[key]))
         expression=re.sub(r'!(?!=)',' not ',expression).replace('&&',' and ').replace('||',' or ').strip()

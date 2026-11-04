@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import ast
 import base64
+import copy
 import datetime as dt
 import json
 from pathlib import Path
@@ -86,6 +87,7 @@ def _no_unstubbed_http(monkeypatch):
     )
     monkeypatch.setattr(MOG, "ensure_self_wake", lambda *_a, **_k: "stubbed")
     monkeypatch.delenv("CURRENT_RUN_ID", raising=False)
+    monkeypatch.delenv("TRIGGER_PULL_NUMBER", raising=False)
 
 
 def _workflow() -> dict:
@@ -10088,3 +10090,291 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# Last-gate events supply attention to the incumbent controller, never authority.
+_WAKE_TEST_REPO = "example/macro"
+
+
+def _wake_test_event(name="pull_request_target", action="labeled"):
+    payload = {
+        "action": action,
+        "repository": {"full_name": _WAKE_TEST_REPO},
+        "pull_request": {
+            "number": 42, "state": "open", "draft": False,
+            "labels": [{"name": "merge-on-green"}],
+            "base": {"ref": "main", "repo": {"full_name": _WAKE_TEST_REPO}},
+        },
+        "label": {"name": "merge-on-green"},
+        "issue": {
+            "number": 42, "state": "open", "pull_request": {},
+            "labels": [{"name": "merge-on-green"}],
+        },
+        "comment": {
+            "body": "HOLD-RELEASED — current authority releases the hold.",
+            "user": {"type": "User"},
+            "created_at": "2026-11-03T10:00:00Z",
+        },
+    }
+    return name, payload
+
+
+@pytest.mark.parametrize("name,action", [
+    ("pull_request_target", "labeled"),
+    ("pull_request_target", "ready_for_review"),
+    ("issue_comment", "created"),
+    ("issue_comment", "edited"),
+])
+def test_last_gate_transition_produces_only_a_pull_identity_hint(name, action):
+    kind, payload = _wake_test_event(name, action)
+    before = copy.deepcopy(payload)
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) == 42
+    assert payload == before
+
+
+@pytest.mark.parametrize("path,value", [
+    (("repository", "full_name"), "elsewhere/repo"),
+    (("label", "name"), "unrelated"),
+    (("pull_request", "number"), True),
+    (("pull_request", "number"), 0),
+    (("pull_request", "number"), "42"),
+    (("pull_request", "state"), "closed"),
+    (("pull_request", "draft"), True),
+    (("pull_request", "draft"), "false"),
+    (("pull_request", "labels"), []),
+    (("pull_request", "base", "ref"), "release"),
+    (("pull_request", "base", "repo", "full_name"), "elsewhere/repo"),
+])
+def test_unrelated_or_unqualified_pr_event_is_not_a_wake(path, value):
+    kind, payload = _wake_test_event()
+    target = payload
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = value
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) is None
+
+
+@pytest.mark.parametrize("body", [
+    "Ordinary discussion of HOLD-RELEASED without declaring a release.",
+    "> HOLD-RELEASED",
+    "```text\nHOLD-RELEASED\n```",
+    "`HOLD-RELEASED` is the marker.",
+    "HOLD-FOR-SOL",
+    "",
+])
+def test_comment_hints_reuse_the_existing_markdown_release_grammar(body):
+    kind, payload = _wake_test_event("issue_comment", "created")
+    payload["comment"]["body"] = body
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) is None
+
+
+@pytest.mark.parametrize("body", [
+    "**HOLD-RELEASED** by current authority.",
+    "## HOLD-RELEASED",
+    "hold-released — current hold is lifted.",
+])
+def test_decorated_release_forms_are_not_missed(body):
+    kind, payload = _wake_test_event("issue_comment", "created")
+    payload["comment"]["body"] = body
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) == 42
+
+
+@pytest.mark.parametrize("change", ["bot", "issue", "closed", "unarmed", "bad_number", "duplicate_edit"])
+def test_non_actionable_comment_never_enters_the_shared_queue(change):
+    kind, payload = _wake_test_event("issue_comment", "edited")
+    if change == "bot":
+        payload["comment"]["user"]["type"] = "Bot"
+    elif change == "issue":
+        payload["issue"].pop("pull_request")
+    elif change == "closed":
+        payload["issue"]["state"] = "closed"
+    elif change == "unarmed":
+        payload["issue"]["labels"] = []
+    elif change == "bad_number":
+        payload["issue"]["number"] = "../42"
+    else:
+        payload["changes"] = {"body": {"from": "**HOLD-RELEASED** already recorded"}}
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) is None
+
+
+@pytest.mark.parametrize("name,action", [
+    ("pull_request_target", "synchronize"),
+    ("pull_request_target", "unlabeled"),
+    ("pull_request_review", "submitted"),
+    ("issues", "labeled"),
+    ("issue_comment", "deleted"),
+])
+def test_other_event_families_cannot_select_the_new_route(name, action):
+    kind, payload = _wake_test_event(name, action)
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) is None
+
+
+def test_a_release_hint_does_not_clear_a_newer_recorded_hold():
+    kind, payload = _wake_test_event("issue_comment", "edited")
+    assert MOG.wake_pull_number(kind, payload, _WAKE_TEST_REPO) == 42
+    later_hold = {
+        "body": "HOLD-FOR-SOL: unresolved release gate.",
+        "user": {"type": "User"}, "created_at": "2026-11-03T11:00:00Z",
+    }
+    assert MOG.recorded_hold("", [payload["comment"], later_hold]) is not None
+
+
+def test_readonly_entrypoint_has_no_network_or_effect_and_bounded_input(tmp_path, monkeypatch):
+    kind, payload = _wake_test_event()
+    path, output = tmp_path / "event.json", tmp_path / "output"
+    path.write_text(json.dumps(payload))
+    monkeypatch.setenv("GH_REPO", _WAKE_TEST_REPO)
+    monkeypatch.setenv("GITHUB_EVENT_NAME", kind)
+    monkeypatch.setenv("GITHUB_EVENT_PATH", str(path))
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output))
+    def no_network(*args, **kwargs):
+        pytest.fail("event predicate must not call the GitHub API")
+    monkeypatch.setattr(MOG, "_request", no_network)
+    assert MOG.wake_event_main() == 0
+    assert output.read_text() == "wake=true\npull_number=42\n"
+    output.write_text("")
+    path.write_text(" " * (MOG.MAX_WAKE_EVENT_BYTES + 1))
+    assert MOG.wake_event_main() == 0
+    assert output.read_text() == "wake=false\npull_number=\n"
+
+
+@pytest.mark.parametrize("content", ["{", "null", "[]", '"text"'])
+def test_malformed_event_refuses_before_queue_admission(content, tmp_path, monkeypatch):
+    path, output = tmp_path / "event.json", tmp_path / "output"
+    path.write_text(content)
+    for key, value in {
+        "GH_REPO": _WAKE_TEST_REPO, "GITHUB_EVENT_NAME": "issue_comment",
+        "GITHUB_EVENT_PATH": str(path), "GITHUB_OUTPUT": str(output),
+    }.items():
+        monkeypatch.setenv(key, value)
+    assert MOG.wake_event_main() == 0
+    assert output.read_text() == "wake=false\npull_number=\n"
+
+
+def _wake_test_pull(number, *labels):
+    return {"number": number, "head": {"sha": f"{number:040x}"},
+            "labels": [{"name": label} for label in ("merge-on-green", *labels)]}
+
+
+def test_woken_pr_is_inside_existing_cap_after_repair_and_lease():
+    pulls = [_wake_test_pull(number) for number in range(1, 876)]
+    pulls.extend([_wake_test_pull(900, "main-red-repair"), _wake_test_pull(901)])
+    ordered = MOG.sweep_order(pulls, trigger_pull_number=875,
+                              refresh_lease_number=901, cap=25, now=0)
+    assert [p["number"] for p in ordered[:3]] == [900, 901, 875]
+    assert len(ordered[:25]) == 25
+    assert {p["number"] for p in ordered} == {p["number"] for p in pulls}
+    assert len(ordered) == len(pulls)
+
+
+def test_workflow_filters_before_the_existing_modifying_concurrency_group():
+    doc = yaml.safe_load((ROOT / ".github/workflows/merge-on-green.yml").read_text())
+    events = doc.get("on", doc.get(True))
+    assert events["pull_request_target"] == {
+        "branches": ["main"], "types": ["labeled", "ready_for_review"],
+    }
+    assert events["issue_comment"] == {"types": ["created", "edited"]}
+    gate, sweep = doc["jobs"]["wake-event"], doc["jobs"]["sweep"]
+    assert gate["permissions"] == {"contents": "read"}
+    assert "concurrency" not in gate
+    assert "secrets.ADMIN" not in str(gate)
+    assert "github.event.comment.body" not in str([s.get("run") for s in gate["steps"]])
+    checkout = next(s for s in gate["steps"] if "checkout@" in s.get("uses", ""))
+    assert checkout["with"]["ref"] == "${{ github.workflow_sha }}"
+    assert checkout["with"]["persist-credentials"] is False
+    classify = next(s for s in gate["steps"] if s.get("id") == "classify")
+    assert classify["run"] == "python3 -I scripts/merge_on_green.py --wake-event"
+    assert sweep["needs"] == ["wake-event"]
+    assert sweep["if"].startswith("!cancelled()")
+    assert "needs.wake-event.result == 'success'" in sweep["if"]
+    assert "needs.wake-event.outputs.wake == 'true'" in sweep["if"]
+    assert sweep["concurrency"]["cancel-in-progress"] is False
+    assert "github.event_name != 'workflow_run'" in sweep["concurrency"]["group"]
+    step = next(s for s in sweep["steps"] if s.get("run") == "python3 scripts/merge_on_green.py")
+    assert step["env"]["TRIGGER_PULL_NUMBER"] == "${{ needs.wake-event.outputs.pull_number }}"
+
+
+def test_event_predicate_runs_from_its_exact_sparse_bundle_without_site_packages(tmp_path):
+    import os
+    import subprocess
+    import sys
+    doc = _workflow()
+    gate = doc["jobs"]["wake-event"]
+    checkout = next(s for s in gate["steps"] if "checkout@" in s.get("uses", ""))
+    bundle = tmp_path / "protected"
+    for relative in checkout["with"]["sparse-checkout"].split():
+        target = bundle / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / relative).read_bytes())
+    kind, payload = _wake_test_event()
+    event_path, output = tmp_path / "event.json", tmp_path / "output"
+    event_path.write_text(json.dumps(payload))
+    completed = subprocess.run(
+        [sys.executable, "-I", "-S", "-B", str(bundle / "scripts/merge_on_green.py"), "--wake-event"],
+        cwd=bundle, env={
+            "PATH": os.environ.get("PATH", ""), "GH_REPO": _WAKE_TEST_REPO,
+            "GITHUB_EVENT_NAME": kind, "GITHUB_EVENT_PATH": str(event_path),
+            "GITHUB_OUTPUT": str(output),
+        }, text=True, capture_output=True, timeout=15,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert output.read_text() == "wake=true\npull_number=42\n"
+    assert not [s for s in gate["steps"] if "pip install" in s.get("run", "")]
+
+
+def test_event_hint_reaches_main_ordering_without_widening_the_budget(monkeypatch):
+    pulls = [_pull(n) for n in range(1, 876)]
+    seen = _main_harness(monkeypatch, pulls)
+    monkeypatch.setenv("TRIGGER_PULL_NUMBER", "875")
+    assert MOG.main() == 0
+    assert seen[0] == 875
+    assert len(seen) <= MOG.FALLBACK_PULL_CAP
+
+
+@pytest.mark.parametrize("event_name", ["pull_request_target", "issue_comment"])
+def test_event_wake_still_requires_the_real_serialized_main_run(event_name, monkeypatch):
+    payload = {
+        "id": 123, "status": "in_progress",
+        "path": ".github/workflows/merge-on-green.yml", "head_branch": "main",
+        "repository": {"full_name": _WAKE_TEST_REPO}, "event": event_name,
+    }
+    def read(method, url, token, *args, **kwargs):
+        assert method == "GET" and url.endswith("/actions/runs/123")
+        return 200, payload
+    monkeypatch.setattr(MOG, "_request", read)
+    assert REAL_SERIALIZED_REFRESH_AUTHORITY(_WAKE_TEST_REPO, "read", "123", "")
+    payload["head_branch"] = "candidate"
+    assert not REAL_SERIALIZED_REFRESH_AUTHORITY(_WAKE_TEST_REPO, "read", "123", "")
+
+
+@pytest.mark.parametrize("event_name,result,wake,expected", [
+    ("pull_request_target", "success", "true", True),
+    ("issue_comment", "success", "true", True),
+    ("pull_request_target", "skipped", "", False),
+    ("issue_comment", "failure", "true", False),
+    ("issue_comment", "success", "false", False),
+    ("issue_comment", "cancelled", "true", False),
+    ("workflow_dispatch", "skipped", "", True),
+    ("schedule", "skipped", "", True),
+])
+def test_modifying_job_only_accepts_qualified_new_event_hints(event_name, result, wake, expected):
+    # Source-expression evaluation only; actual GitHub delivery/queueing remains
+    # a rollout proof. The status function avoids implicit skipped-needs blocking.
+    expression = _workflow()["jobs"]["sweep"]["if"]
+    values = {
+        "cancelled()": False, "github.event_name": event_name,
+        "github.event.workflow_run.name": "", "github.event.workflow_run.head_branch": "",
+        "github.event.workflow_run.conclusion": "",
+        "needs.wake-event.result": result, "needs.wake-event.outputs.wake": wake,
+    }
+    for key in sorted(values, key=len, reverse=True):
+        expression = expression.replace(key, repr(values[key]))
+    import re
+    expression = re.sub(r"!(?!=)", " not ", expression)
+    expression = expression.replace("&&", " and ").replace("||", " or ").strip()
+    tree = ast.parse(expression, mode="eval")
+    allowed = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp,
+               ast.Not, ast.Compare, ast.Eq, ast.NotEq, ast.Constant)
+    assert all(isinstance(node, allowed) for node in ast.walk(tree))
+    assert bool(eval(compile(tree, "<event-wake-source>", "eval"),
+                     {"__builtins__": {}}, {})) is expected

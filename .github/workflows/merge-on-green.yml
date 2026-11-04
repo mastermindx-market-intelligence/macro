@@ -27,6 +27,12 @@ name: merge-on-green
 # 100 sweep runs was a `schedule` event across a 117-minute window (~0.5/hr
 # against a nominal 6/hr). Nothing in this lane may lean on the cron alone.
 on:
+  # Attention only: the trusted controller still re-reads every existing gate.
+  pull_request_target:
+    branches: [main]
+    types: [labeled, ready_for_review]
+  issue_comment:
+    types: [created, edited]
   workflow_run:
     workflows: [ci, fences, integration-baseline]
     types: [completed]
@@ -77,14 +83,64 @@ permissions:
 # depth for pre-deploy runs and out-of-band callers.
 
 jobs:
+  # Filter before joining the modifying concurrency group: even with
+  # cancel-in-progress:false, unrelated pending runs can replace useful wakes.
+  # This job consumes event JSON as data and has no GitHub write permission.
+  wake-event:
+    if: >-
+      (
+        github.event_name == 'pull_request_target'
+        && github.event.pull_request.state == 'open'
+        && github.event.pull_request.draft == false
+        && contains(github.event.pull_request.labels.*.name, 'merge-on-green')
+        && (
+          (github.event.action == 'labeled' && github.event.label.name == 'merge-on-green')
+          || github.event.action == 'ready_for_review'
+        )
+      ) || (
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && github.event.issue.state == 'open'
+        && contains(github.event.issue.labels.*.name, 'merge-on-green')
+        && github.event.comment.user.type != 'Bot'
+        && contains(github.event.comment.body, 'HOLD-RELEASED')
+      )
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      wake: ${{ steps.classify.outputs.wake }}
+      pull_number: ${{ steps.classify.outputs.pull_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            scripts/merge_on_green.py
+            scripts/ci_proof_admission.py
+            scripts/ci_semantic_proof.py
+            scripts/ci_authority_paths.py
+            scripts/gh_path_filter.py
+            scripts/run_ci_pack.py
+          sparse-checkout-cone-mode: false
+      - name: classify the event without admitting work
+        id: classify
+        env:
+          GH_REPO: ${{ github.repository }}
+        run: python3 -I scripts/merge_on_green.py --wake-event
+
   sweep:
+    needs: [wake-event]
     name: sweep
     # Runner-minute control now lives HERE rather than in a concurrency group,
     # because a skipped job costs no runner, no queue slot, and no minutes, while
     # a cancelled one cost us the sweep itself.
     #
-    # A merge becomes possible only when a check goes GREEN, so only `success` pays
-    # for a full backlog sweep. The other conclusions are admitted only to bounded
+    # Proof success and a qualified change to an existing PR gate can make a
+    # merge possible. Other proof conclusions are admitted only to bounded
     # special passes: `failure` marks one exact red head, while cancelled/skipped/
     # neutral/etc. check whether a durable lease exists and only then request one
     # serialized full reconciliation. Their shared special
@@ -117,12 +173,23 @@ jobs:
     # cannot recreate the sweep storm. Only the resulting serialized full sweep may
     # add or remove the lease label.
     if: >-
-      github.event_name != 'workflow_run'
-      || (
-        github.event.workflow_run.conclusion != ''
-        && (
-          github.event.workflow_run.name != 'fences'
-          || github.event.workflow_run.head_branch != 'main'
+      !cancelled() && (
+        (
+          github.event_name != 'pull_request_target'
+          && github.event_name != 'issue_comment'
+          && (
+            github.event_name != 'workflow_run'
+            || (
+              github.event.workflow_run.conclusion != ''
+              && (
+                github.event.workflow_run.name != 'fences'
+                || github.event.workflow_run.head_branch != 'main'
+              )
+            )
+          )
+        ) || (
+          needs.wake-event.result == 'success'
+          && needs.wake-event.outputs.wake == 'true'
         )
       )
 
@@ -357,6 +424,8 @@ jobs:
           # Empty for schedule/workflow_dispatch, which is harmless — it only reorders
           # within the cap and never passes a gate.
           TRIGGER_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          # A validated identity hint only reorders the incumbent bounded census.
+          TRIGGER_PULL_NUMBER: ${{ needs.wake-event.outputs.pull_number }}
           # HOW that run concluded. `failure` selects the bounded mark-only pass (see
           # the `if:` essay above and `mark_only_pass` in the script); another
           # non-success conclusion only self-wakes a serialized sweep. The empty

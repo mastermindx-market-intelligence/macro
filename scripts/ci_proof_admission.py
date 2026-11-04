@@ -268,7 +268,7 @@ def _controller_receipt_data(*, archive, payload_sha256, repository_id,
             or controller.get('head_branch') != 'main'
             or controller.get('head_sha') != controller_sha
             or controller.get('event') not in {
-                'workflow_run', 'schedule', 'workflow_dispatch', 'pull_request_target'}):
+                'workflow_run', 'schedule', 'workflow_dispatch', 'pull_request_target', 'issue_comment'}):
         raise ValueError('receipt was not produced by the exact protected controller')
     try:
         with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
