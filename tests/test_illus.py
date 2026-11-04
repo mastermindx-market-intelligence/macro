@@ -80,6 +80,15 @@ def test_line_gap_zero_is_real_and_nonfinite_values_are_missing():
     assert ">3.0<" in out  # last observed value, not a fabricated replacement
 
 
+def test_line_giant_number_does_not_crash_or_fabricate_connectivity():
+    vals = [0, 1, 2, 3, 10 ** 10000, 4, 5, 6]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line")
+    assert 'data-gap-count="1"' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count("M") == 2
+    assert "inf" not in path.lower() and "nan" not in path.lower()
+
+
 def test_line_complete_series_retains_legacy_geometry():
     out = I.illus({"dates": _dates(8), "vals": list(range(8))}, kind="line")
     path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
