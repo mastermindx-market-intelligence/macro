@@ -1,3 +1,5 @@
+> **Current continuation:** [4 November native recovery](NATIVE_CONTINUATION_20261104.md) supersedes the old counts and blanket pause in this historical list. Do not replay the held Chinese request.
+
 # Native completion record at the paused checkpoint
 
 **Delivery: PARTIAL. Native writes are paused; one original request has an unresolved transport outcome.** This is an exact continuation list for the existing F02 assignment, not a new programme or a permission to retry. The current [writer checkpoint](writer-continuation-progress.json), [board index](NATIVE_BOARD_INDEX.md), [retention receipt](native-final-retention.json) and [source reconciliation](repairs/zh390-timeout-source-reconciliation.md) govern the observed state.

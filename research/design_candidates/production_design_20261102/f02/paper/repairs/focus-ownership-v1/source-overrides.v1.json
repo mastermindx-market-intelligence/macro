@@ -1,0 +1,572 @@
+{
+  "schema": "f02.paper.focus-ownership-source-overrides.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "source_paths_relative_to": "f02/paper",
+  "policy": "F02 source concurrence with F01-F02-SHELL/1.0.0-candidate.4 at8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+  "input_sha256": {
+    "repairs/fixture-coherence-v1/effective-spaced/foundation-boards.json": "0317a5e6191cde338ab5677342bec8d7eb80bae02358fef5c5cce41eb6efba71",
+    "repairs/observation-identity-clocks-v1/effective/consumer-boards.json": "50238ddb0555f819820d3ee5eeb8e4d78dd33040a02883f4d93c3eb83119510c",
+    "repairs/fixture-coherence-v1/effective-spaced/core-supplement-inputs.json": "319604bdcc34be7ba21dfdb7812b16f81266fc451adc9d2ec10c528c08b95c40",
+    "repairs/responsive-effective-v2/effective/mobile-state-boards.json": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+    "repairs/responsive-effective-v2/effective/supplemental-boards.json": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+    "repairs/responsive-effective-v2/pending-responsive-boards.v2.json": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+    "repairs/consumer-companions-v1/consumer-companion-inputs.v1.json": "0e14cb644787ab055f9cb089e40d6f57d4d74735abc6c77a71ed778ee46c294b"
+  },
+  "rules": [
+    {
+      "id": "controls-dock",
+      "before": "The dock does not trap focus. Escape closes it and returns to the current row trigger. If that row disappeared, focus the named table fallback.",
+      "after": "Dock: no focus trap. Only the active owner handles Escape. If this closing dock owns focus, return to the current row trigger; if absent, use the named table heading. Preserve later focus elsewhere."
+    },
+    {
+      "id": "controls-keyboard",
+      "before": "Modal: named dialog, initial focus, focus trap, Escape and close return. Dock: no trap. Preserve the existing URL-addressable tab, sort/filter state and scroll on return. Important phone actions are 44px. A 400% zoom view requires actual browser verification; Paper drawings specify expected reflow only.",
+      "after": "Modal: named dialog, initial focus, trap and active-owner Escape. Dock: no trap. Close or placement change restores focus only when the retiring surface owns it; preserve later focus elsewhere. Retain URL/tab, sort/filter and scroll. Important phone actions are 44px. Paper specifies reflow; browser/400% proof remains open."
+    },
+    {
+      "id": "shared-dock",
+      "before": "Docked: no focus trap. Close returns to the stable row trigger and restores table context.",
+      "after": "Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere."
+    },
+    {
+      "id": "company-modal",
+      "before": "One named modal; background inert. Tab stays inside; Escape closes. Restore the source trigger by stable entity/field/period identity after sort. If removed, focus the named table heading and announce the change.",
+      "after": "One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere."
+    },
+    {
+      "id": "options-modal",
+      "before": "Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.",
+      "after": "Modal: initial focus on Close, Tab contained, active-owner Escape, background inert, internal scroll. If this closing surface owns focus, restore the visible options-0 trigger by print identity; if absent, use the named tape heading. Preserve later focus elsewhere."
+    },
+    {
+      "id": "phone-en",
+      "before": "Build contract: important controls are 44px. Full-row evidence requires no hover. Selection and focus stay independent. Close/Escape restores the same entity, source and scroll context. Canvas geometry does not prove keyboard, touch or 400% zoom behavior.",
+      "after": "Build contract: important controls are 44px; full-row evidence needs no hover. Selection and focus are independent. Close preserves entity, source and scroll; restore focus only if the retiring surface owns it. Preserve later focus elsewhere. Keyboard, touch and 400% proof remain open."
+    },
+    {
+      "id": "phone-zh",
+      "before": "构建说明：44px重要触控目标；完整行业证据无需悬停。选中状态与焦点独立。按Escape关闭覆盖层后返回相同实体、来源和滚动位置。此画布不证明键盘、触控或400%缩放行为。",
+      "after": "构建说明：重要触控目标44px；完整行业证据无需悬停。选中状态与焦点独立。关闭保留实体、来源和滚动；仅当退出的覆盖层拥有焦点时才恢复焦点，不夺走用户之后主动移走的焦点。键盘、触控与400%缩放仍需验证。"
+    },
+    {
+      "id": "width-dock",
+      "before": "Complementary region; no focus trap. Escape/Close returns to the same source trigger and scroll. If that row disappears, focus the named comparison heading.",
+      "after": "Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere."
+    },
+    {
+      "id": "width-modal",
+      "before": "Background inert; Tab stays inside; Escape/Close returns to the same row source trigger and table scroll. If filtering removes that row, focus the named comparison heading and explain why.",
+      "after": "Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll."
+    },
+    {
+      "id": "zh-evidence-modal",
+      "before": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作；Esc或关闭后返回同一来源按钮，并保留排序、筛选与横向滚动。若该行已不在视图中，焦点返回“行业对比”标题并宣布原因。",
+      "after": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作。仅当前拥有焦点的层处理Esc；关闭时若模态拥有焦点，返回同一来源按钮；若该行已移除，返回“行业对比”标题并说明原因。保留排序、筛选、横向滚动，以及用户之后主动移走的焦点。"
+    },
+    {
+      "id": "zh-owned-return-example",
+      "before": "选中填色与键盘焦点独立；仍是原来的650px行。",
+      "after": "此例从模态内关闭，焦点回到同一来源按钮。选中填色与焦点独立；仍为原来的650px行。"
+    },
+    {
+      "id": "company-historical-return",
+      "before": "The source record retains the existing five-year identity; selection adds FY 2025 context without inventing a producer ID. Restore the same field/period cell after closing, by stable identity, and make it visible. The normal row replacement must supply its new native IDs first; old Company descendant IDs are stale.",
+      "after": "Keep the existing five-year record plus FY 2025 context; invent no producer ID. If the closing modal owns focus, return to the visible current field/period cell by stable identity. Preserve later focus elsewhere. Bind the replacement row’s actual IDs first; old Company descendants are stale."
+    },
+    {
+      "id": "editorial-return",
+      "before": "Keep the article route, #arithmetic anchor and scroll. Close/Escape restores its calculation trigger; the public reading surface keeps its own shell. Modal trap, inert background, accessible name and actual focus return remain browser requirements.",
+      "after": "Keep the article route, #arithmetic anchor and scroll. If the closing modal owns focus, restore its calculation trigger; preserve later focus elsewhere. Public reading keeps its own shell. Modal name, trap, inertness and focus return still need browser proof."
+    }
+  ],
+  "overrides": [
+    {
+      "source_packet": "repairs/fixture-coherence-v1/effective-spaced/foundation-boards.json",
+      "source_packet_sha256": "0317a5e6191cde338ab5677342bec8d7eb80bae02358fef5c5cce41eb6efba71",
+      "board_key": "controls",
+      "step_key": "evidence-shell",
+      "parent_key": "board",
+      "source_step_html_sha256": "9a255656758d3bd12d2c32b38f19f4b895cc2d1bed24df2e9d94c698b5f1bd08",
+      "replacement_html_sha256": "f17273cfcf9ce29d55b4fe0167cb1c88d869f361adb9f05608e6508d2502a564",
+      "replacement_html": "<div style=\"display:flex;flex-direction:row;gap:24px;\"><div style=\"display:flex;flex-direction:column;gap:20px;width:872px;padding:24px;background-color:var(--noir-panel);\"><div style=\"font-family:Inter;font-size:24px;font-weight:600;line-height:36px;color:var(--noir-text-primary);\">Primary table remains readable</div><div style=\"font-family:Inter;font-size:16px;font-weight:400;line-height:24px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">At 1440px: content 1168px. Inspector 320px + gap 24px leaves 824px for the analytical region.</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">Dock only when at least 640px remains for the primary task. Otherwise use a modal overlay. F01 owns the final shell release.</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-secondary);width:840px;flex-shrink:0;\">Dock: no focus trap. Only the active owner handles Escape. If this closing dock owns focus, return to the current row trigger; if absent, use the named table heading. Preserve later focus elsewhere.</div></div><div style=\"display:flex;flex-direction:column;gap:14px;width:320px;padding:24px;background-color:var(--noir-raised);\"><div style=\"font-family:Inter;font-size:22px;font-weight:600;line-height:33px;color:var(--noir-text-primary);\">Evidence</div><div style=\"font-family:Inter;font-size:15px;font-weight:600;line-height:22px;color:var(--noir-text-primary);\">Information technology</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);\">Participation · 30 Oct 2026</div><div style=\"font-family:Inter;font-size:36px;font-weight:600;line-height:54px;color:var(--noir-text-primary);\">74.20%</div><div style=\"font-family:Inter;font-size:14px;font-weight:400;line-height:21px;color:var(--noir-text-primary);\">1000 / 1006 covered</div><div style=\"font-family:Inter;font-size:14px;font-weight:600;line-height:21px;color:#e9be6a;\">Partial coverage</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);width:272px;flex-shrink:0;\">Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples.</div><div layer-name=\"Close evidence\" style=\"display:flex;flex-direction:column;justify-content:center;align-items:center;height:44px;padding:0px 16px;border:1px solid #6f6f6f;border-radius:6px;\"><div style=\"font-family:Inter;font-size:13px;font-weight:600;line-height:20px;color:var(--noir-text-primary);\">Close evidence</div></div></div></div>",
+      "changes": [
+        {
+          "rule": "controls-dock",
+          "before_text": "The dock does not trap focus. Escape closes it and returns to the current row trigger. If that row disappeared, focus the named table fallback.",
+          "after_text": "Dock: no focus trap. Only the active owner handles Escape. If this closing dock owns focus, return to the current row trigger; if absent, use the named table heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "4JP-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/fixture-coherence-v1/effective-spaced/foundation-boards.json",
+      "source_packet_sha256": "0317a5e6191cde338ab5677342bec8d7eb80bae02358fef5c5cce41eb6efba71",
+      "board_key": "controls",
+      "step_key": "keyboard",
+      "parent_key": "board",
+      "source_step_html_sha256": "d214b9c9a9d26edcc4c2d97bc6cf3b28e58791721420d412d77dde4e10f66a79",
+      "replacement_html_sha256": "f50590e1ac9d6722405d0853717468fb23cb451119c20973e9db3da3d8bfe54f",
+      "replacement_html": "<div layer-name=\"Keyboard, touch and route continuity\" style=\"display:flex;flex-direction:column;gap:8px;padding:20px 24px;background-color:var(--noir-panel);width:1344px;\"><div style=\"font-family:Inter;font-size:14px;font-weight:600;line-height:21px;color:var(--noir-text-primary);\">Keyboard, touch and route continuity</div><div style=\"font-family:Inter;font-size:13px;font-weight:400;line-height:20px;color:var(--noir-text-secondary);width:1296px;flex-shrink:0;\">Modal: named dialog, initial focus, trap and active-owner Escape. Dock: no trap. Close or placement change restores focus only when the retiring surface owns it; preserve later focus elsewhere. Retain URL/tab, sort/filter and scroll. Important phone actions are 44px. Paper specifies reflow; browser/400% proof remains open.</div></div>",
+      "changes": [
+        {
+          "rule": "controls-keyboard",
+          "before_text": "Modal: named dialog, initial focus, focus trap, Escape and close return. Dock: no trap. Preserve the existing URL-addressable tab, sort/filter state and scroll on return. Important phone actions are 44px. A 400% zoom view requires actual browser verification; Paper drawings specify expected reflow only.",
+          "after_text": "Modal: named dialog, initial focus, trap and active-owner Escape. Dock: no trap. Close or placement change restores focus only when the retiring surface owns it; preserve later focus elsewhere. Retain URL/tab, sort/filter and scroll. Important phone actions are 44px. Paper specifies reflow; browser/400% proof remains open."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "4JP-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/observation-identity-clocks-v1/effective/consumer-boards.json",
+      "source_packet_sha256": "50238ddb0555f819820d3ee5eeb8e4d78dd33040a02883f4d93c3eb83119510c",
+      "board_key": "macro-dark",
+      "step_key": "evidence-focus",
+      "parent_key": "evidence",
+      "source_step_html_sha256": "7bb1c229362be13e4d4155c4adfad32fd05acca5fdb20a3f22b608f4678e2c25",
+      "replacement_html_sha256": "5d9fa081d758d6c85dc8f6dca95a62497b09c01227dbb2fbb605b69bee618bbd",
+      "replacement_html": "<div layer-name=\"Docked: no focus trap. Close returns to the stable row trigger and restores table context.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:var(--noir-text-secondary);padding:12px 0 0;white-space:normal;\">Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere.</div>",
+      "changes": [
+        {
+          "rule": "shared-dock",
+          "before_text": "Docked: no focus trap. Close returns to the stable row trigger and restores table context.",
+          "after_text": "Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "4PO-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/observation-identity-clocks-v1/effective/consumer-boards.json",
+      "source_packet_sha256": "50238ddb0555f819820d3ee5eeb8e4d78dd33040a02883f4d93c3eb83119510c",
+      "board_key": "macro-light",
+      "step_key": "evidence-focus",
+      "parent_key": "evidence",
+      "source_step_html_sha256": "d9d5870ac373afcc543f32aff39153ce585f0c4a7bd906af2fb9e23b8358944e",
+      "replacement_html_sha256": "c2d597a8d411e0eaf141db81ae89328d5ffe459fe01ad63c82e3ba36f49136fe",
+      "replacement_html": "<div layer-name=\"Docked: no focus trap. Close returns to the stable row trigger and restores table context.\" style=\"flex-shrink:0;font-family:Inter,Noto Sans SC,sans-serif;font-size:11px;line-height:16px;font-weight:400;color:#51555b;padding:12px 0 0;white-space:normal;\">Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere.</div>",
+      "changes": [
+        {
+          "rule": "shared-dock",
+          "before_text": "Docked: no focus trap. Close returns to the stable row trigger and restores table context.",
+          "after_text": "Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "4YD-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/fixture-coherence-v1/effective-spaced/core-supplement-inputs.json",
+      "source_packet_sha256": "319604bdcc34be7ba21dfdb7812b16f81266fc451adc9d2ec10c528c08b95c40",
+      "board_key": "options-full-row-evidence-320",
+      "step_key": "build-contract",
+      "parent_key": "board",
+      "source_step_html_sha256": "2a7f1da6b2298a3f1e95b15e20cafb42265f9640729cccc3aa3ca0407cdaed20",
+      "replacement_html_sha256": "d52e65e401ce17cf12976538e13dda4628583f5638624f4c76396c542b3f0ae8",
+      "replacement_html": "<div layer-name=\"Options evidence implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;width:320px;padding:16px;gap:8px;background-color:#f0f0ed;\"><div layer-name=\"BUILD CONTRACT · OUTSIDE THE PRODUCT\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#5f6368;\">BUILD CONTRACT · OUTSIDE THE PRODUCT</div><div layer-name=\"Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:288px;\">Modal: initial focus on Close, Tab contained, active-owner Escape, background inert, internal scroll. If this closing surface owns focus, restore the visible options-0 trigger by print identity; if absent, use the named tape heading. Preserve later focus elsewhere.</div><div layer-name=\"All 12 tape fields are preserved. Source key and row match the candidate-2 fixture; no live API, access check, focus test or completed browser path is claimed.\" style=\"display:flex;flex-direction:column;flex-shrink:0;font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:288px;\">All 12 tape fields are preserved. Source key and row match the candidate-2 fixture; no live API, access check, focus test or completed browser path is claimed.</div></div>",
+      "changes": [
+        {
+          "rule": "options-modal",
+          "before_text": "Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.",
+          "after_text": "Modal: initial focus on Close, Tab contained, active-owner Escape, background inert, internal scroll. If this closing surface owns focus, restore the visible options-0 trigger by print identity; if absent, use the named tape heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "74P-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/mobile-state-boards.json",
+      "source_packet_sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+      "board_key": "macro-dark-en-390",
+      "step_key": "build-note",
+      "parent_key": "body",
+      "source_step_html_sha256": "4e8e2a6fd1d9d4736e7149ace916ce99958054d389ebabf7d99d1777f87caf31",
+      "replacement_html_sha256": "2b74863ac98ff3d09a1cd0e453764c7a26fc1bbc0bc89d37cdae5b9016c684ef",
+      "replacement_html": "<div layer-name=\"Adjacent mobile build contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;padding-top: 24px;padding-bottom: 24px;gap: 8px;border-top: 1px solid #343434;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);\">Build contract / F02 candidate 2</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Build contract: important controls are 44px; full-row evidence needs no hover. Selection and focus are independent. Close preserves entity, source and scroll; restore focus only if the retiring surface owns it. Preserve later focus elsewhere. Keyboard, touch and 400% proof remain open.</div><div style=\"font-family: Inter;font-size: 11px;line-height: 17px;font-weight: 400;color: var(--noir-text-tertiary);\">F01 joint shell freeze remains open · all values illustrative</div></div>",
+      "changes": [
+        {
+          "rule": "phone-en",
+          "before_text": "Build contract: important controls are 44px. Full-row evidence requires no hover. Selection and focus stay independent. Close/Escape restores the same entity, source and scroll context. Canvas geometry does not prove keyboard, touch or 400% zoom behavior.",
+          "after_text": "Build contract: important controls are 44px; full-row evidence needs no hover. Selection and focus are independent. Close preserves entity, source and scroll; restore focus only if the retiring surface owns it. Preserve later focus elsewhere. Keyboard, touch and 400% proof remain open."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "7CM-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/mobile-state-boards.json",
+      "source_packet_sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+      "board_key": "macro-light-zh-390",
+      "step_key": "build-note",
+      "parent_key": "body",
+      "source_step_html_sha256": "0fe801cebc4556a530fe3c733defcc3c8d744a2b8901b73228193043bb0dcbac",
+      "replacement_html_sha256": "118bf52f8233480f9a8996dd003db03a1fa3f6e3fbe0475c454523286d4bede2",
+      "replacement_html": "<div layer-name=\"Adjacent mobile build contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 358px;padding-top: 24px;padding-bottom: 24px;gap: 8px;border-top: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 600;color: #1a1c20;\">构建说明 / F02 candidate 2</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">构建说明：重要触控目标44px；完整行业证据无需悬停。选中状态与焦点独立。关闭保留实体、来源和滚动；仅当退出的覆盖层拥有焦点时才恢复焦点，不夺走用户之后主动移走的焦点。键盘、触控与400%缩放仍需验证。</div><div style=\"font-family: Noto Sans SC;font-size: 11px;line-height: 17px;font-weight: 400;color: #5f6368;\">F01外壳联合冻结待完成 · 数据均为示例</div></div>",
+      "changes": [
+        {
+          "rule": "phone-zh",
+          "before_text": "构建说明：44px重要触控目标；完整行业证据无需悬停。选中状态与焦点独立。按Escape关闭覆盖层后返回相同实体、来源和滚动位置。此画布不证明键盘、触控或400%缩放行为。",
+          "after_text": "构建说明：重要触控目标44px；完整行业证据无需悬停。选中状态与焦点独立。关闭保留实体、来源和滚动；仅当退出的覆盖层拥有焦点时才恢复焦点，不夺走用户之后主动移走的焦点。键盘、触控与400%缩放仍需验证。"
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": "7IS-0",
+      "held_target": true,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/mobile-state-boards.json",
+      "source_packet_sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+      "board_key": "company-eps-overlay-320",
+      "step_key": "contract",
+      "parent_key": "body",
+      "source_step_html_sha256": "c35f2f63b71cb31d9d57430cbbd43ca2c4f40a57de8db61e9807f899ef8988dd",
+      "replacement_html_sha256": "4fde329e0d5ef639a6434fdf845af872c51aad11a0165f5be0ed7988fa039da3",
+      "replacement_html": "<div layer-name=\"Adjacent overlay interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 280px;padding-top: 16px;border-top: 1px solid #cbccc7;gap: 8px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: #1a1c20;\">Build contract</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">Retain table scroll and draft state. No save is caused by open, close, navigation or language. Browser/keyboard/400% qualification remains open.</div></div>",
+      "changes": [
+        {
+          "rule": "company-modal",
+          "before_text": "One named modal; background inert. Tab stays inside; Escape closes. Restore the source trigger by stable entity/field/period identity after sort. If removed, focus the named table heading and announce the change.",
+          "after_text": "One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "70C-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/mobile-state-boards.json",
+      "source_packet_sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+      "board_key": "company-dividend-overlay-320",
+      "step_key": "contract",
+      "parent_key": "body",
+      "source_step_html_sha256": "c35f2f63b71cb31d9d57430cbbd43ca2c4f40a57de8db61e9807f899ef8988dd",
+      "replacement_html_sha256": "4fde329e0d5ef639a6434fdf845af872c51aad11a0165f5be0ed7988fa039da3",
+      "replacement_html": "<div layer-name=\"Adjacent overlay interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 280px;padding-top: 16px;border-top: 1px solid #cbccc7;gap: 8px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: #1a1c20;\">Build contract</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">Retain table scroll and draft state. No save is caused by open, close, navigation or language. Browser/keyboard/400% qualification remains open.</div></div>",
+      "changes": [
+        {
+          "rule": "company-modal",
+          "before_text": "One named modal; background inert. Tab stays inside; Escape closes. Restore the source trigger by stable entity/field/period identity after sort. If removed, focus the named table heading and announce the change.",
+          "after_text": "One named modal; background inert, Tab contained. Active-owner Escape closes it. If the closing surface owns focus, restore the current source trigger by entity/field/period; if absent, use the named table heading and explain. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "STEP_EXISTS_USE_NATIVE_TEXT_PATCH",
+      "actual_board_id": "72T-0",
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/mobile-state-boards.json",
+      "source_packet_sha256": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+      "board_key": "macro-docked-1280",
+      "step_key": "dock-contract",
+      "parent_key": "dock",
+      "source_step_html_sha256": "f106287f530bb7f5660e86237213c96510ba48ba893c9aa6dafbb5f762003ce8",
+      "replacement_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+      "replacement_html": "<div layer-name=\"Adjacent dock interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;padding-top: 12px;border-top: 1px solid #343434;gap: 6px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);\">Dock behavior</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere.</div></div>",
+      "changes": [
+        {
+          "rule": "width-dock",
+          "before_text": "Complementary region; no focus trap. Escape/Close returns to the same source trigger and scroll. If that row disappears, focus the named comparison heading.",
+          "after_text": "Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/supplemental-boards.json",
+      "source_packet_sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "modal-contract",
+      "parent_key": "body",
+      "source_step_html_sha256": "2f9662286ce23f1d31e1d802aca1f4220ded6f4b8b761ad6e45ed896c2ed1dd1",
+      "replacement_html_sha256": "1d48a3647df7594b2ff06e27ca7283700c276adbae4e0f13591b3090a06f239a",
+      "replacement_html": "<div layer-name=\"相邻交互说明\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 350px;padding-top: 16px;border-top: 1px solid #cbccc7;gap: 8px;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 600;color: #1a1c20;\">构建说明 · 不是已执行的交互测试</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作。仅当前拥有焦点的层处理Esc；关闭时若模态拥有焦点，返回同一来源按钮；若该行已移除，返回“行业对比”标题并说明原因。保留排序、筛选、横向滚动，以及用户之后主动移走的焦点。</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">打开、关闭或切换语言均不保存，也不创建新的URL。保留现有路由、实体键和历史行为。</div></div>",
+      "changes": [
+        {
+          "rule": "zh-evidence-modal",
+          "before_text": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作；Esc或关闭后返回同一来源按钮，并保留排序、筛选与横向滚动。若该行已不在视图中，焦点返回“行业对比”标题并宣布原因。",
+          "after_text": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作。仅当前拥有焦点的层处理Esc；关闭时若模态拥有焦点，返回同一来源按钮；若该行已移除，返回“行业对比”标题并说明原因。保留排序、筛选、横向滚动，以及用户之后主动移走的焦点。"
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/supplemental-boards.json",
+      "source_packet_sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "return-state",
+      "parent_key": "board",
+      "source_step_html_sha256": "2553b8f2dd5b02bf9587ec5e5bf520dade3b692a282a02295da0199a123895e3",
+      "replacement_html_sha256": "70bce78518a4e8a8c164aee56983d67ae0ec4a0e89d952a1e889d8624a113566",
+      "replacement_html": "<div layer-name=\"关闭后的返回状态示例\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 390px;padding: 20px 16px 12px;background-color: #f0f0ed;gap: 6px;\"><div style=\"font-family: Noto Sans SC;font-size: 14px;line-height: 22px;font-weight: 600;color: #1a1c20;\">关闭后：回到同一“通信服务”来源按钮</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;\">此例从模态内关闭，焦点回到同一来源按钮。选中填色与焦点独立；仍为原来的650px行。</div></div>",
+      "changes": [
+        {
+          "rule": "zh-owned-return-example",
+          "before_text": "选中填色与键盘焦点独立；仍是原来的650px行。",
+          "after_text": "此例从模态内关闭，焦点回到同一来源按钮。选中填色与焦点独立；仍为原来的650px行。"
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/supplemental-boards.json",
+      "source_packet_sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+      "board_key": "width-768-overlay",
+      "step_key": "overlay-contract",
+      "parent_key": "overlay-body",
+      "source_step_html_sha256": "b8eaed7133f5b6392d17dc8af832e42acbee120febd789830f859cb953832d44",
+      "replacement_html_sha256": "2109a0f36340a38f0118223ca243cc56fe429a3719b668d560f193aef7cf607d",
+      "replacement_html": "<div layer-name=\"Modal behavior contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;padding-top: 14px;border-top: 1px solid #343434;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 600;color: var(--noir-text-primary);\">Modal · not a dock</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Opening or closing is read-only. Existing route/query/hash and source identity remain owned by the current consumer.</div></div>",
+      "changes": [
+        {
+          "rule": "width-modal",
+          "before_text": "Background inert; Tab stays inside; Escape/Close returns to the same row source trigger and table scroll. If filtering removes that row, focus the named comparison heading and explain why.",
+          "after_text": "Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/supplemental-boards.json",
+      "source_packet_sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+      "board_key": "width-1024-overlay",
+      "step_key": "overlay-contract",
+      "parent_key": "overlay-body",
+      "source_step_html_sha256": "b8eaed7133f5b6392d17dc8af832e42acbee120febd789830f859cb953832d44",
+      "replacement_html_sha256": "2109a0f36340a38f0118223ca243cc56fe429a3719b668d560f193aef7cf607d",
+      "replacement_html": "<div layer-name=\"Modal behavior contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;padding-top: 14px;border-top: 1px solid #343434;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 600;color: var(--noir-text-primary);\">Modal · not a dock</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Opening or closing is read-only. Existing route/query/hash and source identity remain owned by the current consumer.</div></div>",
+      "changes": [
+        {
+          "rule": "width-modal",
+          "before_text": "Background inert; Tab stays inside; Escape/Close returns to the same row source trigger and table scroll. If filtering removes that row, focus the named comparison heading and explain why.",
+          "after_text": "Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/effective/supplemental-boards.json",
+      "source_packet_sha256": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+      "board_key": "width-1600-docked",
+      "step_key": "dock-contract",
+      "parent_key": "dock",
+      "source_step_html_sha256": "f106287f530bb7f5660e86237213c96510ba48ba893c9aa6dafbb5f762003ce8",
+      "replacement_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+      "replacement_html": "<div layer-name=\"Adjacent dock interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;padding-top: 12px;border-top: 1px solid #343434;gap: 6px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);\">Dock behavior</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere.</div></div>",
+      "changes": [
+        {
+          "rule": "width-dock",
+          "before_text": "Complementary region; no focus trap. Escape/Close returns to the same source trigger and scroll. If that row disappears, focus the named comparison heading.",
+          "after_text": "Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "macro-docked-1280",
+      "step_key": "dock-contract",
+      "parent_key": "dock",
+      "source_step_html_sha256": "f106287f530bb7f5660e86237213c96510ba48ba893c9aa6dafbb5f762003ce8",
+      "replacement_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+      "replacement_html": "<div layer-name=\"Adjacent dock interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;padding-top: 12px;border-top: 1px solid #343434;gap: 6px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);\">Dock behavior</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere.</div></div>",
+      "changes": [
+        {
+          "rule": "width-dock",
+          "before_text": "Complementary region; no focus trap. Escape/Close returns to the same source trigger and scroll. If that row disappears, focus the named comparison heading.",
+          "after_text": "Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "modal-contract",
+      "parent_key": "body",
+      "source_step_html_sha256": "2f9662286ce23f1d31e1d802aca1f4220ded6f4b8b761ad6e45ed896c2ed1dd1",
+      "replacement_html_sha256": "1d48a3647df7594b2ff06e27ca7283700c276adbae4e0f13591b3090a06f239a",
+      "replacement_html": "<div layer-name=\"相邻交互说明\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 350px;padding-top: 16px;border-top: 1px solid #cbccc7;gap: 8px;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 600;color: #1a1c20;\">构建说明 · 不是已执行的交互测试</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作。仅当前拥有焦点的层处理Esc；关闭时若模态拥有焦点，返回同一来源按钮；若该行已移除，返回“行业对比”标题并说明原因。保留排序、筛选、横向滚动，以及用户之后主动移走的焦点。</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 19px;font-weight: 400;color: #51555b;\">打开、关闭或切换语言均不保存，也不创建新的URL。保留现有路由、实体键和历史行为。</div></div>",
+      "changes": [
+        {
+          "rule": "zh-evidence-modal",
+          "before_text": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作；Esc或关闭后返回同一来源按钮，并保留排序、筛选与横向滚动。若该行已不在视图中，焦点返回“行业对比”标题并宣布原因。",
+          "after_text": "单一命名模态：初始焦点在“关闭”，Tab / Shift+Tab留在对话框内，背景不可操作。仅当前拥有焦点的层处理Esc；关闭时若模态拥有焦点，返回同一来源按钮；若该行已移除，返回“行业对比”标题并说明原因。保留排序、筛选、横向滚动，以及用户之后主动移走的焦点。"
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "macro-zh-evidence-return-390",
+      "step_key": "return-state",
+      "parent_key": "board",
+      "source_step_html_sha256": "2553b8f2dd5b02bf9587ec5e5bf520dade3b692a282a02295da0199a123895e3",
+      "replacement_html_sha256": "70bce78518a4e8a8c164aee56983d67ae0ec4a0e89d952a1e889d8624a113566",
+      "replacement_html": "<div layer-name=\"关闭后的返回状态示例\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 390px;padding: 20px 16px 12px;background-color: #f0f0ed;gap: 6px;\"><div style=\"font-family: Noto Sans SC;font-size: 14px;line-height: 22px;font-weight: 600;color: #1a1c20;\">关闭后：回到同一“通信服务”来源按钮</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;\">此例从模态内关闭，焦点回到同一来源按钮。选中填色与焦点独立；仍为原来的650px行。</div></div>",
+      "changes": [
+        {
+          "rule": "zh-owned-return-example",
+          "before_text": "选中填色与键盘焦点独立；仍是原来的650px行。",
+          "after_text": "此例从模态内关闭，焦点回到同一来源按钮。选中填色与焦点独立；仍为原来的650px行。"
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "width-768-overlay",
+      "step_key": "overlay-contract",
+      "parent_key": "overlay-body",
+      "source_step_html_sha256": "b8eaed7133f5b6392d17dc8af832e42acbee120febd789830f859cb953832d44",
+      "replacement_html_sha256": "2109a0f36340a38f0118223ca243cc56fe429a3719b668d560f193aef7cf607d",
+      "replacement_html": "<div layer-name=\"Modal behavior contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;padding-top: 14px;border-top: 1px solid #343434;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 600;color: var(--noir-text-primary);\">Modal · not a dock</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Opening or closing is read-only. Existing route/query/hash and source identity remain owned by the current consumer.</div></div>",
+      "changes": [
+        {
+          "rule": "width-modal",
+          "before_text": "Background inert; Tab stays inside; Escape/Close returns to the same row source trigger and table scroll. If filtering removes that row, focus the named comparison heading and explain why.",
+          "after_text": "Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "width-1024-overlay",
+      "step_key": "overlay-contract",
+      "parent_key": "overlay-body",
+      "source_step_html_sha256": "b8eaed7133f5b6392d17dc8af832e42acbee120febd789830f859cb953832d44",
+      "replacement_html_sha256": "2109a0f36340a38f0118223ca243cc56fe429a3719b668d560f193aef7cf607d",
+      "replacement_html": "<div layer-name=\"Modal behavior contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 399px;padding-top: 14px;border-top: 1px solid #343434;gap: 8px;\"><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 600;color: var(--noir-text-primary);\">Modal · not a dock</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll.</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Opening or closing is read-only. Existing route/query/hash and source identity remain owned by the current consumer.</div></div>",
+      "changes": [
+        {
+          "rule": "width-modal",
+          "before_text": "Background inert; Tab stays inside; Escape/Close returns to the same row source trigger and table scroll. If filtering removes that row, focus the named comparison heading and explain why.",
+          "after_text": "Background inert; Tab contained; active-owner Escape/Close. If the retiring modal owns focus, return to the current row source trigger; if absent, use the comparison heading and explain. Preserve later focus elsewhere and table scroll."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/responsive-effective-v2/pending-responsive-boards.v2.json",
+      "source_packet_sha256": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8",
+      "board_key": "width-1600-docked",
+      "step_key": "dock-contract",
+      "parent_key": "dock",
+      "source_step_html_sha256": "f106287f530bb7f5660e86237213c96510ba48ba893c9aa6dafbb5f762003ce8",
+      "replacement_html_sha256": "87555dd3724743ced1cbe83777753857fd5beddfe02e8acc26907977fa7d9697",
+      "replacement_html": "<div layer-name=\"Adjacent dock interaction contract\" style=\"display: flex;flex-direction: column;flex-shrink: 0;width: 278px;padding-top: 12px;border-top: 1px solid #343434;gap: 6px;\"><div style=\"font-family: Inter;font-size: 12px;line-height: 18px;font-weight: 600;color: var(--noir-text-primary);\">Dock behavior</div><div style=\"font-family: Inter;font-size: 12px;line-height: 19px;font-weight: 400;color: var(--noir-text-secondary);\">Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere.</div></div>",
+      "changes": [
+        {
+          "rule": "width-dock",
+          "before_text": "Complementary region; no focus trap. Escape/Close returns to the same source trigger and scroll. If that row disappears, focus the named comparison heading.",
+          "after_text": "Complementary region; no trap. Active-owner Escape/Close preserves context. If this dock owns focus, return to the same source trigger; if absent, use the comparison heading. Preserve later focus elsewhere."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/consumer-companions-v1/consumer-companion-inputs.v1.json",
+      "source_packet_sha256": "0e14cb644787ab055f9cb089e40d6f57d4d74735abc6c77a71ed778ee46c294b",
+      "board_key": "company-fy2025-eps-evidence-390",
+      "step_key": "build-contract",
+      "parent_key": "board",
+      "source_step_html_sha256": "326b9ccc26b61b6ca801b02eb9f84989af53a1ce4cc9e10e8c87aafc8cd55c0c",
+      "replacement_html_sha256": "67cf47aa0bf27a15ce4304cc890a439ced94b820e94b21135e185e13dbf983c1",
+      "replacement_html": "<div layer-name=\"Historical inspector source and interaction contract\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:8px;border-top:1px solid #343434;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · NOT A COMPLETED INTERACTION</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Keep the existing five-year record plus FY 2025 context; invent no producer ID. If the closing modal owns focus, return to the visible current field/period cell by stable identity. Preserve later focus elsewhere. Bind the replacement row’s actual IDs first; old Company descendants are stale.</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:var(--noir-text-secondary);width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Modal focus containment, Escape, touch, scroll preservation, real caller/receipt mapping and keyboard activation of a historical cell still need browser and D07 integration proof.</div></div>",
+      "changes": [
+        {
+          "rule": "company-historical-return",
+          "before_text": "The source record retains the existing five-year identity; selection adds FY 2025 context without inventing a producer ID. Restore the same field/period cell after closing, by stable identity, and make it visible. The normal row replacement must supply its new native IDs first; old Company descendant IDs are stale.",
+          "after_text": "Keep the existing five-year record plus FY 2025 context; invent no producer ID. If the closing modal owns focus, return to the visible current field/period cell by stable identity. Preserve later focus elsewhere. Bind the replacement row’s actual IDs first; old Company descendants are stale."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    },
+    {
+      "source_packet": "repairs/consumer-companions-v1/consumer-companion-inputs.v1.json",
+      "source_packet_sha256": "0e14cb644787ab055f9cb089e40d6f57d4d74735abc6c77a71ed778ee46c294b",
+      "board_key": "editorial-calculation-evidence-390",
+      "step_key": "build-contract",
+      "parent_key": "board",
+      "source_step_html_sha256": "510166e48816708c5c507e6ca9b8a3aa5e2873a120e02edfb3ed5a8ce3f849be",
+      "replacement_html_sha256": "d867370145ca3d14393d3f9a9b887077a6abf869246654418887533a42c65047",
+      "replacement_html": "<div layer-name=\"Public evidence implementation boundary\" style=\"display:flex;flex-direction:column;flex-shrink:0;box-sizing:border-box;width:390px;padding:20px;gap:8px;\"><div style=\"font-family:Inter;font-size:10px;line-height:15px;font-weight:600;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">BUILD CONTRACT · PUBLIC READING CONTEXT</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:400;color:#51555b;width:350px;flex-shrink:0;overflow-wrap:anywhere;\">Keep the article route, #arithmetic anchor and scroll. If the closing modal owns focus, restore its calculation trigger; preserve later focus elsewhere. Public reading keeps its own shell. Modal name, trap, inertness and focus return still need browser proof.</div></div>",
+      "changes": [
+        {
+          "rule": "editorial-return",
+          "before_text": "Keep the article route, #arithmetic anchor and scroll. Close/Escape restores its calculation trigger; the public reading surface keeps its own shell. Modal trap, inert background, accessible name and actual focus return remain browser requirements.",
+          "after_text": "Keep the article route, #arithmetic anchor and scroll. If the closing modal owns focus, restore its calculation trigger; preserve later focus elsewhere. Public reading keeps its own shell. Modal name, trap, inertness and focus return still need browser proof."
+        }
+      ],
+      "construction_status_at_observed_checkpoint": "UNBUILT_SOURCE_ONLY",
+      "actual_board_id": null,
+      "held_target": false,
+      "guard": "Fresh exact target and operation reconciliation required; no replay. Apply at most one source variant per board/step."
+    }
+  ],
+  "unique_board_steps": 17,
+  "selection_rule": "Source variants overlap. For the five pending responsive boards prefer this folder’s pending-responsive-boards.v1.json; do not construct them again from an effective packet. Other replacements are text-only overlays on their named current source. Existing native steps use actual Text nodes below, not step reinsertion.",
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "unknown_effect": "macro-light-zh-390 remains held on original operationf02-c2-macro-light-zh-390-chart-footer-20261103-01; its absent build-note receives source preparation only."
+}

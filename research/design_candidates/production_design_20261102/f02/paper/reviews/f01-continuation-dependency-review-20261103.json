@@ -1,0 +1,235 @@
+{
+  "schema": "f02.f01-continuation-dependency-review.v1",
+  "recorded_at_utc": "2026-11-03 23:48:49 UTC",
+  "status": "ADVISORY_SOURCE_DEPENDENCY_REVIEW_COMPLETE",
+  "actor": "/root/f01_dependency_review",
+  "scope": "Read-only F01/F02 dependency review. Root retains F02 adjudication, source custody, Paper operation and GitHub persistence. This is not formal RIG, visual approval, browser proof or production acceptance.",
+  "source_law_pin": "mastermindx-market-intelligence/Mastermind@910803421beca53ca25145392725ab2d84c7a8e9",
+  "assignment_pin": "mastermindx-market-intelligence/macro@6e1862867193ec6486a22001a0e4fb515da20448",
+  "inspected_identities": {
+    "f02_head": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "f02_pr": 10630,
+    "f01_pr": 10645,
+    "f01_branch": "design/f01-shared-shell-v1-20261103-c4",
+    "f01_head": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+    "f01_semantic_candidate_commit": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "f01_contract_version": "F01-F02-SHELL/1.0.0-candidate.4",
+    "f01_draft": true,
+    "f01_merged": false,
+    "f01_contract_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+    "semantic_commit_and_current_head_contract_blob_equal": true,
+    "f01_return_blob": "7b0023b6ab9f3aab3d2b610b53969bfadb751c6e",
+    "f01_product_ux_blob": "0da0883de6c59b5ab850679ddacf66ac08d64547",
+    "f01_consumer_notes_blob": "f267c40d1ef847386099d2e1ec1b3bc3e0a4c209"
+  },
+  "material_deltas": [
+    {
+      "id": "DEP-01",
+      "finding": "Bilateral geometry acceptance is already received.",
+      "evidence": [
+        "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6598159141",
+        "https://github.com/mastermindx-market-intelligence/macro/blob/245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md",
+        "https://github.com/mastermindx-market-intelligence/macro/pull/10630#issuecomment-6617496947"
+      ],
+      "accepted_candidate_scope": "F01 accepted F02's 600px content-gutter boundary, 440px represented tablet overlay, continuous600/860/1200 inequalities, measured-content docking, explicit compact choice and transition clarifications. Candidate.3 and candidate.4 retain those dimensions and token roles.",
+      "consequence": "F02's current handshake opening and final qualification bullet still say F01 acceptance of these clarifications is pending; that statement is stale. Correct only the source concurrence status. Native effects, changed semantics and final joint qualification remain open.",
+      "not_superseded": "D02/D08 older400/768 discrepancy reports remain valid historical findings for candidate.1 at b2d00ddc; do not treat them as current unresolved geometry or erase the reports."
+    },
+    {
+      "id": "DEP-02",
+      "finding": "Candidate.4 has a new actual non-author source-only approval.",
+      "review_id": 5760649569,
+      "review_author": "mastermindxryan",
+      "source_author": "mastermidx4",
+      "state": "APPROVED",
+      "reviewed_head": "3e334bd3eabf1d6ecc7980845fbd7a813dd023e1",
+      "submitted_at": "2026-11-03T22:55:10Z",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10645#pullrequestreview-5760649569",
+      "inspection": "Read actual GitHub reviews endpoint, rather than relying only on the PR body. The review binds current head and unchanged semantic contract blob.",
+      "limit": "SOURCE-CONTRACT/HANDOFF only. It does not approve native Paper boards, formal RIG, final joint v1, implementation, production, CI or release. Prior5760292764 remains separately bound to be157007.",
+      "consequence": "Do not repeat the stale claim that only the earlier be157007 source has review. F02 still owes its own changed-clause response."
+    },
+    {
+      "id": "DEP-03",
+      "finding": "Current F02 head has completed successful hosted workflows.",
+      "evidence": "One bounded read of workflow runs for exact f7c25c4 head; separate combined statuses returned an empty list.",
+      "workflow_runs": [
+        {
+          "id": 41593679290,
+          "name": "fences",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41593679290"
+        },
+        {
+          "id": 41593679519,
+          "name": "ci",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41593679519"
+        }
+      ],
+      "concrete_failures_found": [],
+      "limit": "No failed workflow was reported for that head, so no failure-job/log archaeology was needed. This does not establish user journeys, full design acceptance, mergeability, or checks for a later F02 commit."
+    }
+  ],
+  "geometry_reconciliation": {
+    "status": "UNCHANGED_BILATERAL_CANDIDATE_GEOMETRY",
+    "token_map_blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461",
+    "expanded_rail": "0 at W<=860;196 at860<W<1200;224 atW>=1200",
+    "compact_rail": "72px only by explicit user choice; not automatic space recovery",
+    "header": "56px atW<=860;64px above860",
+    "content_gutters": "16px each atW<=600;20px each at600<W<1200;24px each atW>=1200",
+    "modal": "440px at represented768/1024, constrained to available viewport; full viewport with internal padding atW<=600",
+    "dock": "Actual usable contentC>=984 before any larger domain minimum;320px pane+24px gap leaves>=640px primary. Additional local chrome is subtracted.",
+    "discriminating_examples": [
+      {
+        "viewport": 600.5,
+        "rail": 0,
+        "both_gutters": 40,
+        "usable_content": 560.5
+      },
+      {
+        "viewport": 640,
+        "rail": 0,
+        "both_gutters": 40,
+        "usable_content": 600
+      },
+      {
+        "viewport": 700,
+        "rail": 0,
+        "both_gutters": 40,
+        "usable_content": 660
+      },
+      {
+        "viewport": 860.5,
+        "rail": 196,
+        "both_gutters": 40,
+        "usable_content": 624.5
+      },
+      {
+        "viewport": 1199.5,
+        "rail": 196,
+        "both_gutters": 40,
+        "usable_content": 963.5
+      },
+      {
+        "viewport": 1200,
+        "rail": 224,
+        "both_gutters": 48,
+        "usable_content": 928
+      }
+    ],
+    "limit": "Source arithmetic and version agreement, not browser reflow or native measurement reproduced here."
+  },
+  "recommended_clause_dispositions": [
+    {
+      "clause": "Ownership/change table; candidate.3 compact/navigation/Tape/history repairs",
+      "recommended_f02_response": "Concur with the owner partition and preservation requirements as design/specification policy. F01 owns global shell and layer policy; F02 shared anatomy and accessibility primitives; D06 focused composition; Brain/D14 widget lifecycle/requests/context; domain and host owners retain actual data, routes and state.",
+      "rationale": "No new component API, package, storage, source owner, assistant or production action is required by these clauses. Compact is already user-owned. Complete table/history scope remains domain-owned and is not established by a specimen.",
+      "remains_open": "Native reference qualification and affected-owner product acceptance; F02 cannot approve all later F01 pixels or domain capabilities from source coherence."
+    },
+    {
+      "clause": "4.1 Shared-layer interaction and lifecycle",
+      "recommended_f02_response": "Concur as proposed shared interaction policy with explicit qualification conditions: suspend evidence presentation when the existing Brain is legitimately invoked, retain exact evidence identity/return anchor, release width/trap only through qualified ownership, and leave evidence reachable but closed until explicit reopen. Failure must preserve a truthful recovery. No queued surprise surface or automatic forced reopening.",
+      "rationale": "It preserves the singleton and separates presentation, request lifecycle and visibility. The typed opener's true result only proves invocation; mounted/readiness are not visibility acknowledgments. Close is distinct from Stop and from save completion.",
+      "required_f02_source_change": "Qualify current unconditional close-to-trigger wording. Restore focus only when the retiring surface owns focus or the explicit close interaction requires a connected logical return; preserve deliberate later focus. Nested Escape must be handled by the active owner without also firing chart/background shortcuts.",
+      "conditions": [
+        "Existing Brain/D14 and Terminal/host owners must bind the served asset and supported lifecycle. No invented event, private-DOM polling, new coordinator or store.",
+        "Conditional MM_BRAIN_CFG.onClose is a focus-return hook, not an all-close event.",
+        "Behavior remains NOT_RUN: rapid open/close, late readiness, nested Escape, streaming Stop versus panel hide, stale callbacks, focus moved outside and evidence reopen after context/access change."
+      ]
+    },
+    {
+      "clause": "4.2 Focused Terminal exception",
+      "recommended_f02_response": "Concur with retaining the separate focused-reader contract and applicable shared primitives. The shared320+24 inspector must not replace Terminal's360px initial /300–520 requested reader or overwrite incumbent mm.railW while adapting effective fit.",
+      "rationale": "F02 already preserves focused chrome and domain controls; making the geometry exception explicit prevents accidental universalization of its evidence slot. D06's proposed640px active price-plot requirement measures a different object from shared640px primary content.",
+      "required_f02_source_change": "Add an explicit focused-Terminal exception to the F02 handshake/system width text. Scope the shared EvidenceInspector captured-record rules so they do not create a second committed-versus-hover reader cursor.",
+      "conditions": [
+        "D06/Terminal/Options owners qualify actual plot minimum, axes/tools/gaps/scrollbar subtraction and inline/focused fallback.",
+        "Crosshair and bar stepping retain one visual inspection cursor; AI lockedVLine and Intelligence event selection remain separate owners.",
+        "Exact historical Ask attachment validates listing/market, interval, selected time/time basis and source/context generation before dispatch. Prepared attachment revalidates after change; a dispatched request retains its original object and is not retargeted or canceled by later reader movement.",
+        "No current quote/calendar fallback substitutes for missing historical evidence."
+      ]
+    },
+    {
+      "clause": "4.3 Exact listing, return and restoration",
+      "recommended_f02_response": "Concur with preserving the inspected company-query/history and accepted-origin boundaries as source contracts; do not infer full restoration or invent new navigation fields.",
+      "rationale": "Directly inspected ShellSearch uses validated selection, exact-origin history annotation and a real company_query parameter. Directly inspected companySearchContext rejects malformed/duplicate/noncanonical input. originNav retains distinct safe-origin/return and browser-history behavior.",
+      "required_f02_source_change": "Link the current source subset and distinguish accepted exact URL return, existing picker history restoration and full workspace selection/scroll/focus restoration. Do not let generic Open Terminal or an invalid explicit listing silently use a stale shared company.",
+      "conditions": [
+        "D07/Search/Terminal own listing preview/commit and accepted navigation; F02 supplies controls/labels/focus anatomy only.",
+        "No invented generic interval/bar URL parameters, new persistence key, expanded origin trust or new route.",
+        "Full cross-product roundtrip, non-search entry, invalid query, stale history and focus/scroll restoration remain unqualified."
+      ]
+    }
+  ],
+  "direct_underlying_source_reads": [
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/mastermindBrain.ts",
+      "git_blob": "8bad1568a715d3603331db492eced30fe33f98de",
+      "finding": "MMBrain type exposes open/mounted/setPrincipal only. openMastermindBrainForSymbol invokes open then returns true; it does not await visible presentation."
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/components/chrome/shared-shell/ShellSearch.tsx",
+      "git_blob": "e4e50d27ba25328812233bb90c1f3b536f87219a",
+      "finding": "Validated company selection, existing mmxCompanySearch history marker, exact-current-href match on restoration, preview/commit via SymbolPicker and router.push of owner-generated href."
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "2ded360882b9c721e690907ff363b553781fb920",
+      "path": "terminal/lib/companySearchContext.ts",
+      "git_blob": "2166bbbccb4d85667acc218ece36b75133c17b14",
+      "finding": "Canonical symbol plus trimmed query;160-character/control-character validation; exactly one company_query parameter; duplicate/malformed query stays null; no separate persistent registry."
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "ref": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+      "path": "terminal/lib/originNav.ts",
+      "git_blob": "7484e1894b9282045a5bfec8e3d24846e40c0a61",
+      "finding": "Existing origin validation, fresh signal versus cached origin, embedded-parent return or location.assign. Named return is not equivalent to history.back."
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "ref": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+      "path": "research/design_candidates/production_design_20261102/d06/BRAIN_SHELL_HANDSHAKE.md",
+      "git_blob": "3a9e25b59d17f3980eea1b9faedf00a467c9f92b",
+      "finding": "D06 attributes widget close/conditional onClose, unresolved visible lifecycle, separate focused-reader width, one-cursor correction and historical Ask limits. Widget/served-asset and D06 live observations were not reproduced by this child."
+    }
+  ],
+  "remaining_compatibility_gaps": [
+    {
+      "owner": "F02 root",
+      "action": "Record exact candidate.4 clause response in existing F01_HANDSHAKE_CANDIDATE and align conditional focus/reader exception text in F02 component and interaction contracts. This advisory is a recommendation, not the actual owner concurrence."
+    },
+    {
+      "owner": "Existing Brain/D14 + host; D06 for focused variant",
+      "action": "Qualify served lifecycle, conditional callbacks, exact historical attachment and focus/escape behavior without adding a second control plane."
+    },
+    {
+      "owner": "F01/F02",
+      "action": "Complete native repairs and reconcile original held effects, freeze final exact artifacts and obtain independent product/taste qualification. Current source approvals do not close native blocks."
+    },
+    {
+      "owner": "D02/D08 existing authors",
+      "action": "Consume current600/440/continuous geometry in their provisional source mappings. Their older discrepancy reports are superseded only on those values; domain evidence and original holds survive."
+    },
+    {
+      "owner": "QA01 / existing review authority",
+      "action": "Execute and record owed real-path accessibility/consumer cases and formal review gates. F01's86 specifications are NOT_RUN and are not test passes."
+    }
+  ],
+  "root_next_action": "Adjudicate recommended dispositions, persist a scoped F02 candidate.4 response and minimal F02 text repairs in the existing package, then continue qualified native work. No outbound comment or messaging was sent by this child; root must respect its own communication authorization.",
+  "no_effects": [
+    "No Paper calls",
+    "No browser actions",
+    "No GitHub mutations",
+    "No external messages",
+    "No modifications to shared authority/index/progress files"
+  ],
+  "actual_output": "f02/paper/reviews/f01-continuation-dependency-review-20261103.json"
+}

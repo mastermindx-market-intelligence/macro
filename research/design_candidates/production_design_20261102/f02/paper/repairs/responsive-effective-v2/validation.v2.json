@@ -1,0 +1,289 @@
+{
+  "schema": "f02.paper.responsive-effective-validation.v2",
+  "status": "SOURCE_CHECKS_PASS_NOT_NATIVE_OR_INDEPENDENT_REVIEW",
+  "method": "Separate HTML traversal, strict non-style byte comparison, Decimal arithmetic, parent/capture ordering and complete actual-delta/clone-hash comparison; no generator imported.",
+  "composition_sha256": "2434f4c947b40fcfb903629e3c6ba32bb054845a98ee71e27d25004a6f2785b8",
+  "outputs": {
+    "effective/mobile-state-boards.json": "2c4d9cd6c0e153d3157601cfd50d0d61459bf9a7fc7ecfad626f1a3d7d6a451a",
+    "effective/supplemental-boards.json": "9cdf37fa6af6807e5adece8a1e095733875054383542b39be78c5f675036fb2f",
+    "effective/supplemental-wide-clone.json": "1e2c04eaeec47360da8fefa292c72decb2a94ae6ee184ae4e87f7c6b191dfc2b",
+    "return-row-alignment.v2.json": "3ff5f71912924221d5aeffb74d830e076b2c0dc7f530b376656b5a260192864a",
+    "subtree-reuse.v2.json": "c8a524b677e975a169cdf1ee5635c22bc7e8094ab87107fa7d3cdc3900af7ef6",
+    "pending-responsive-boards.v2.json": "f8aa703777f1d8816b9b84ae866d108af026979bdb3ae812fd9c7cfb0373a6b8"
+  },
+  "checks": {
+    "all_pinned_inputs_unchanged": true,
+    "297_step_keys_parents_and_board_geometry_preserved": true,
+    "67_HTML_deltas_only_201_numeric_cell_style_attributes": true,
+    "all_rendered_text_data_controls_charts_source_ids_and_clocks_byte_preserved": true,
+    "230_other_step_HTML_strings_unchanged": true,
+    "states_and_both_Company320_boards_unchanged": true,
+    "five_existing_append_steps_unchanged": true,
+    "both_closed_capture_markers_follow_actual_tenth_Energy_row": true,
+    "all_43_clone_step_pairs_match_composed_HTML_hashes_and_exact_deltas": true,
+    "22_historical_clone_step_side_hashes_correctly_invalidated": true,
+    "three_return_row_numeric_cells_match_aligned_Chinese_source": true,
+    "440px_overlay_subtrees_remain_identical": true,
+    "responsive_exact_identity_and_market_clocks_verified_no_Company_clock_overlay_misapplied": true,
+    "all_local_provenance_paths_resolve_to_expected_bytes": true
+  },
+  "counts": {
+    "boards": 10,
+    "steps": 297,
+    "parsed_elements": 1499,
+    "HTML_changed_steps": 67,
+    "numeric_cells": 201,
+    "unchanged_HTML_steps": 230,
+    "pending_boards": 5,
+    "pending_steps": 169,
+    "capture_marker_relocations": 2
+  },
+  "parent_checks": [
+    {
+      "board_key": "states-matrix",
+      "steps": 40,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "macro-dark-en-390",
+      "steps": 23,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "steps": 23,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "company-eps-overlay-320",
+      "steps": 21,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "company-dividend-overlay-320",
+      "steps": 21,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "macro-docked-1280",
+      "steps": 43,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "macro-zh-evidence-return-390",
+      "steps": 20,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "width-768-overlay",
+      "steps": 31,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "steps": 32,
+      "single_roots_and_prior_parent_bindings": true
+    },
+    {
+      "board_key": "width-1600-docked",
+      "steps": 43,
+      "single_roots_and_prior_parent_bindings": true
+    }
+  ],
+  "tables": [
+    {
+      "board_key": "macro-dark-en-390",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    },
+    {
+      "board_key": "macro-docked-1280",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    },
+    {
+      "board_key": "width-768-overlay",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    },
+    {
+      "board_key": "width-1600-docked",
+      "rows": 10,
+      "raw_count_values_and_delta_pp": true,
+      "descending_rate_energy_last": true,
+      "unknown_not_zero_and_health_zero_retained": true,
+      "numeric_cells": 33
+    }
+  ],
+  "geometry": [
+    {
+      "board_key": "macro-dark-en-390",
+      "comparison_viewport": 358,
+      "row_intrinsic": 650,
+      "row_height": 56
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "comparison_viewport": 358,
+      "row_intrinsic": 650,
+      "row_height": 56
+    },
+    {
+      "board_key": "macro-docked-1280",
+      "content": 1008,
+      "primary": 664,
+      "dock": 320,
+      "gap": 24
+    },
+    {
+      "board_key": "width-768-overlay",
+      "content": 728,
+      "hypothetical_docked_primary": 384,
+      "overlay": 440,
+      "closed_capture_after_tenth_row": "sector-7"
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "content": 788,
+      "hypothetical_docked_primary": 444,
+      "overlay": 440,
+      "closed_capture_after_tenth_row": "sector-7"
+    },
+    {
+      "board_key": "width-1600-docked",
+      "content": 1328,
+      "primary": 984,
+      "dock": 320,
+      "gap": 24
+    }
+  ],
+  "charts": [
+    {
+      "board_key": "macro-dark-en-390",
+      "points": 7,
+      "data_segments": 5,
+      "missing_session": "23 Oct",
+      "raw_count_coordinates_and_no_interpolation": true
+    },
+    {
+      "board_key": "macro-light-zh-390",
+      "points": 7,
+      "data_segments": 5,
+      "missing_session": "23 Oct",
+      "raw_count_coordinates_and_no_interpolation": true
+    },
+    {
+      "board_key": "macro-docked-1280",
+      "points": 7,
+      "data_segments": 5,
+      "missing_session": "23 Oct",
+      "raw_count_coordinates_and_no_interpolation": true
+    },
+    {
+      "board_key": "width-1600-docked",
+      "points": 7,
+      "data_segments": 5,
+      "missing_session": "23 Oct",
+      "raw_count_coordinates_and_no_interpolation": true
+    }
+  ],
+  "identity_and_clocks": [
+    {
+      "board_key": "macro-docked-1280",
+      "exact_observation_key": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "distinct_observation_publication_retrieval": true,
+      "communication_and_universe_cohorts_distinct": true
+    },
+    {
+      "board_key": "width-1600-docked",
+      "exact_observation_key": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "distinct_observation_publication_retrieval": true,
+      "communication_and_universe_cohorts_distinct": true
+    },
+    {
+      "board_key": "width-768-overlay",
+      "exact_observation_key": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "distinct_observation_publication_retrieval": true,
+      "communication_and_universe_cohorts_distinct": true
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "exact_observation_key": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "distinct_observation_publication_retrieval": true,
+      "communication_and_universe_cohorts_distinct": true
+    },
+    {
+      "board_key": "macro-zh-evidence-return-390",
+      "exact_observation_key": "f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30",
+      "distinct_observation_publication_retrieval": true,
+      "communication_and_universe_cohorts_distinct": true
+    }
+  ],
+  "clone": {
+    "step_pairs": 43,
+    "totals": {
+      "text_changes": 4,
+      "style_targets": 71,
+      "style_properties": 71,
+      "svg_attribute_targets": 15,
+      "svg_attribute_changes": 20,
+      "vector_subtrees": 1
+    },
+    "historical_step_side_hashes_invalidated": 22,
+    "artboard_width_delta": 320
+  },
+  "capture_marker_relocations": [
+    {
+      "board_key": "width-768-overlay",
+      "from_step": "sector-9",
+      "to_step": "sector-7",
+      "capture_state_unchanged": "CLOSED_BEFORE_OVERLAY: capture native table/main now; every field and all ten rows are visible.",
+      "reason": "Energy sorts after Materials in v3; capture the closed state only after all ten rows exist.",
+      "rendered_html_changed_by_this_relocation": false
+    },
+    {
+      "board_key": "width-1024-overlay",
+      "from_step": "sector-9",
+      "to_step": "sector-7",
+      "capture_state_unchanged": "CLOSED_BEFORE_OVERLAY: capture native table/main now; every field and all ten rows are visible.",
+      "reason": "Energy sorts after Materials in v3; capture the closed state only after all ten rows exist.",
+      "rendered_html_changed_by_this_relocation": false
+    }
+  ],
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "native_mutations": 0,
+  "native_mapping_or_visual_acceptance": false,
+  "independent_reviewer_verdict": false,
+  "unresolved_native_effect_unchanged": {
+    "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+    "file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "target_node_id": "7J4-0",
+    "disposition": "Not reconciled by this source work. Root retains same-carrier target-scoped recovery and all current source-law gates."
+  }
+}

@@ -1,3 +1,5 @@
+> **Current continuation:** See [4 November native recovery](paper/NATIVE_CONTINUATION_20261104.md). Numerical counts and blanket write-pause language below describe the historical published checkpoint; disjoint F02 work has since resumed under target-scoped law.
+
 # F02 ownership return
 
 **Delivery: PARTIAL — native writes paused on one unresolved request.**  

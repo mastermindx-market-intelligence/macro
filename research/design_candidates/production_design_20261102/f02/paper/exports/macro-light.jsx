@@ -95,7 +95,7 @@
               <div id="54A-0" style={{ borderBottomColor: '#CBCCC7', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderTopColor: '#CBCCC7', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', paddingBlock: '10px', width: '824px' }}>
                 <div id="54L-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '4px', width: '360px' }}>
                   <div id="54P-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-                    Universe share above 50D
+                    Independent universe above 50D
                   </div>
                   <div id="54M-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '12px' }}>
                     <div id="54O-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '28px', fontWeight: 500, lineHeight: '34px', width: 'max-content' }}>
@@ -156,17 +156,17 @@
                     Sector
                   </div>
                 </div>
-                <div id="53Z-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="53Z-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="540-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', textAlign: 'right', width: 'max-content' }}>
-                    Above 50D
+                    Above 50D ↓
                   </div>
                 </div>
-                <div id="53X-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="53X-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="53Y-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', textAlign: 'right', width: 'max-content' }}>
                     Change · pp
                   </div>
                 </div>
-                <div id="53V-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="53V-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="53W-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '11px', fontWeight: 600, lineHeight: '16px', textAlign: 'right', width: 'max-content' }}>
                     Covered / eligible
                   </div>
@@ -183,19 +183,19 @@
                     Technology
                   </div>
                 </div>
-                <div id="53O-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="53O-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="53P-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     72.4%
                   </div>
                 </div>
-                <div id="53M-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="53M-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="53N-0" style={{ boxSizing: 'border-box', color: '#256341', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     +2.10
                   </div>
                 </div>
-                <div id="53K-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="53K-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="53L-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    42 / 42
+                    286 / 286
                   </div>
                 </div>
                 <div id="53I-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -210,19 +210,19 @@
                     Industrials
                   </div>
                 </div>
-                <div id="53D-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="53D-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="53E-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     70.8%
                   </div>
                 </div>
-                <div id="53B-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="53B-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="53C-0" style={{ boxSizing: 'border-box', color: '#256341', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     +1.50
                   </div>
                 </div>
-                <div id="539-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="539-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="53A-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    65 / 65
+                    267 / 267
                   </div>
                 </div>
                 <div id="537-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -237,19 +237,19 @@
                     Financials
                   </div>
                 </div>
-                <div id="532-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="532-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="533-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     69.2%
                   </div>
                 </div>
-                <div id="530-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="530-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="531-0" style={{ boxSizing: 'border-box', color: '#256341', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     +0.60
                   </div>
                 </div>
-                <div id="52Y-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="52Y-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="52Z-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    52 / 52
+                    500 / 500
                   </div>
                 </div>
                 <div id="52W-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -264,19 +264,19 @@
                     Communication services
                   </div>
                 </div>
-                <div id="52R-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="52R-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="52S-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     66.7%
                   </div>
                 </div>
-                <div id="52P-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="52P-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="52Q-0" style={{ boxSizing: 'border-box', color: '#256341', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     +1.13
                   </div>
                 </div>
-                <div id="52N-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="52N-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="52O-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    21 / 21
+                    177 / 177
                   </div>
                 </div>
                 <div id="52L-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -291,19 +291,19 @@
                     Consumer discretionary
                   </div>
                 </div>
-                <div id="52G-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="52G-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="52H-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     63.5%
                   </div>
                 </div>
-                <div id="52E-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="52E-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="52F-0" style={{ boxSizing: 'border-box', color: '#A62D43', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     -0.80
                   </div>
                 </div>
-                <div id="52C-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="52C-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="52D-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    47 / 47
+                    375 / 375
                   </div>
                 </div>
                 <div id="52A-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -318,17 +318,17 @@
                     Health care
                   </div>
                 </div>
-                <div id="525-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="525-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="526-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     61.1%
                   </div>
                 </div>
-                <div id="523-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="523-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="524-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     0.00
                   </div>
                 </div>
-                <div id="521-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="521-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="522-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     54 / 54
                   </div>
@@ -345,50 +345,23 @@
                     Utilities
                   </div>
                 </div>
-                <div id="51U-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="51U-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="51V-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     58.3%
                   </div>
                 </div>
-                <div id="51S-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="51S-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="51T-0" style={{ boxSizing: 'border-box', color: '#A62D43', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     -1.20
                   </div>
                 </div>
-                <div id="51Q-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="51Q-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="51R-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    28 / 28
+                    333 / 333
                   </div>
                 </div>
                 <div id="51O-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
                   <div id="51P-0" style={{ boxSizing: 'border-box', color: '#235B8E', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', width: 'max-content' }}>
-                    Evidence
-                  </div>
-                </div>
-              </div>
-              <div id="51C-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderBottomColor: '#CBCCC7', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '40px', width: '824px' }}>
-                <div id="51L-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '254px' }}>
-                  <div id="51M-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', width: 'max-content' }}>
-                    Energy
-                  </div>
-                </div>
-                <div id="51J-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
-                  <div id="51K-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    —
-                  </div>
-                </div>
-                <div id="51H-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
-                  <div id="51I-0" style={{ boxSizing: 'border-box', color: '#5F6368', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    —
-                  </div>
-                </div>
-                <div id="51F-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
-                  <div id="51G-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    —
-                  </div>
-                </div>
-                <div id="51D-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
-                  <div id="51E-0" style={{ boxSizing: 'border-box', color: '#235B8E', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', width: 'max-content' }}>
                     Evidence
                   </div>
                 </div>
@@ -399,19 +372,19 @@
                     Consumer staples
                   </div>
                 </div>
-                <div id="518-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="518-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="519-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     55.6%
                   </div>
                 </div>
-                <div id="516-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="516-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="517-0" style={{ boxSizing: 'border-box', color: '#256341', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     +0.40
                   </div>
                 </div>
-                <div id="514-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="514-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="515-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    36 / 36
+                    250 / 250
                   </div>
                 </div>
                 <div id="512-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -426,19 +399,19 @@
                     Materials
                   </div>
                 </div>
-                <div id="50X-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                <div id="50X-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
                   <div id="50Y-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     52.2%
                   </div>
                 </div>
-                <div id="50V-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                <div id="50V-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
                   <div id="50W-0" style={{ boxSizing: 'border-box', color: '#A62D43', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
                     -0.60
                   </div>
                 </div>
-                <div id="50T-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                <div id="50T-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
                   <div id="50U-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
-                    23 / 23
+                    500 / 500
                   </div>
                 </div>
                 <div id="50R-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
@@ -447,9 +420,36 @@
                   </div>
                 </div>
               </div>
+              <div id="51C-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderBottomColor: '#CBCCC7', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '40px', width: '824px' }}>
+                <div id="51L-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '254px' }}>
+                  <div id="51M-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', width: 'max-content' }}>
+                    Energy
+                  </div>
+                </div>
+                <div id="51J-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '126px' }}>
+                  <div id="51K-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
+                    —
+                  </div>
+                </div>
+                <div id="51H-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '130px' }}>
+                  <div id="51I-0" style={{ boxSizing: 'border-box', color: '#5F6368', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
+                    —
+                  </div>
+                </div>
+                <div id="51F-0" style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', justifyContent: 'center', paddingInline: '10px', textAlign: 'right', width: '164px' }}>
+                  <div id="51G-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', textAlign: 'right', width: 'max-content' }}>
+                    0 / 82
+                  </div>
+                </div>
+                <div id="51D-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingInline: '10px', width: '150px' }}>
+                  <div id="51E-0" style={{ boxSizing: 'border-box', color: '#235B8E', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontFeatureSettings: '"tnum"', fontSize: '13px', lineHeight: '20px', width: 'max-content' }}>
+                    Evidence
+                  </div>
+                </div>
+              </div>
               <div id="50O-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingBlock: '12px' }}>
                 <div id="50P-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '16px' }}>
-                  10 / 10 sector fixtures · selected: Communication services. Raw numeric sorting; missing values last.
+                  10 / 10 sector fixtures · selected: Communication services. Above 50D ↓; raw-rate descending; Energy unavailable last.
                 </div>
               </div>
               <div id="50L-0" style={{ alignItems: 'baseline', boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'space-between', paddingBottom: '6px', paddingTop: '20px', width: '824px' }}>
@@ -465,65 +465,41 @@
                   Share above 50-day average · % · categorical session axis · scale 40–80
                 </div>
               </div>
-              <div id="55P-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', width: '824px' }}>
-                <svg width="824" height="190" viewBox="0 0 824 190" xmlns="http://www.w3.org/2000/svg" id="55Q-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <div id="7PJ-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', width: '824px' }}>
+                <svg width="824" height="190" viewBox="0 0 824 190" xmlns="http://www.w3.org/2000/svg" id="7PK-0" style={{ display: 'inline-block', flexShrink: 0 }}>
                   <line x1="44" y1="148.0" x2="802" y2="148.0" stroke="#CBCCC7" />
-                  <text x="31" y="152.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">
-                    40
-                  </text>
+                  <text x="31" y="152.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">{"40"}</text>
                   <line x1="44" y1="82.0" x2="802" y2="82.0" stroke="#CBCCC7" />
-                  <text x="31" y="86.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">
-                    60
-                  </text>
+                  <text x="31" y="86.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">{"60"}</text>
                   <line x1="44" y1="16.0" x2="802" y2="16.0" stroke="#CBCCC7" />
-                  <text x="31" y="20.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">
-                    80
-                  </text>
-                  <circle cx="44.0" cy="76.06" r="3.5" fill="#66543B" />
-                  <line x1="44.0" y1="76.06" x2="152.286" y2="74.08" stroke="#66543B" strokeWidth="2.5" />
-                  <circle cx="152.286" cy="74.08" r="3.5" fill="#66543B" />
-                  <text x="260.571" y="106" fontFamily="Inter" fontSize="12" textAnchor="middle" fill="#5F6368">
-                    unavailable
-                  </text>
-                  <circle cx="368.857" cy="69.13" r="3.5" fill="#66543B" />
-                  <line x1="368.857" y1="69.13" x2="477.143" y2="71.11" stroke="#66543B" strokeWidth="2.5" />
-                  <circle cx="477.143" cy="71.11" r="3.5" fill="#66543B" />
-                  <line x1="477.143" y1="71.11" x2="585.429" y2="66.82" stroke="#66543B" strokeWidth="2.5" />
-                  <circle cx="585.429" cy="66.82" r="3.5" fill="#66543B" />
-                  <line x1="585.429" y1="66.82" x2="693.714" y2="63.619" stroke="#66543B" strokeWidth="2.5" />
-                  <circle cx="693.714" cy="63.619" r="3.5" fill="#66543B" />
-                  <line x1="693.714" y1="63.619" x2="802.0" y2="59.89" stroke="#66543B" strokeWidth="2.5" />
-                  <circle cx="802.0" cy="59.89" r="3.5" fill="#66543B" />
-                  <text x="44.0" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    21 Oct
-                  </text>
-                  <text x="152.286" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    22
-                  </text>
-                  <text x="260.571" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    23
-                  </text>
-                  <text x="368.857" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    26
-                  </text>
-                  <text x="477.143" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    27
-                  </text>
-                  <text x="585.429" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    28
-                  </text>
-                  <text x="693.714" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    29
-                  </text>
-                  <text x="802.0" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">
-                    30 Oct
-                  </text>
+                  <text x="31" y="20.0" fontFamily="Inter" fontSize="12" textAnchor="end" fill="#5F6368">{"80"}</text>
+                  <text x="260.571" y="106" fontFamily="Inter" fontSize="12" textAnchor="middle" fill="#5F6368">{"unavailable"}</text>
+                  <text x="44.0" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"21 Oct"}</text>
+                  <text x="152.286" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"22"}</text>
+                  <text x="260.571" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"23"}</text>
+                  <text x="368.857" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"26"}</text>
+                  <text x="477.143" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"27"}</text>
+                  <text x="585.429" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"28"}</text>
+                  <text x="693.714" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"29"}</text>
+                  <text x="802.0" y="175" textAnchor="middle" fontFamily="Inter" fontSize="12" fill="#5F6368">{"30 Oct"}</text>
+                  <circle cx="44" cy="76.04" r="3.5" fill="#66543B" />
+                  <line x1="44" y1="76.04" x2="152.286" y2="74.177" stroke="#66543B" strokeWidth="2.5" />
+                  <circle cx="152.286" cy="74.177" r="3.5" fill="#66543B" />
+                  <circle cx="368.857" cy="69.21" r="3.5" fill="#66543B" />
+                  <line x1="368.857" y1="69.21" x2="477.143" y2="71.072" stroke="#66543B" strokeWidth="2.5" />
+                  <circle cx="477.143" cy="71.072" r="3.5" fill="#66543B" />
+                  <line x1="477.143" y1="71.072" x2="585.429" y2="66.726" stroke="#66543B" strokeWidth="2.5" />
+                  <circle cx="585.429" cy="66.726" r="3.5" fill="#66543B" />
+                  <line x1="585.429" y1="66.726" x2="693.714" y2="63.622" stroke="#66543B" strokeWidth="2.5" />
+                  <circle cx="693.714" cy="63.622" r="3.5" fill="#66543B" />
+                  <line x1="693.714" y1="63.622" x2="802" y2="59.897" stroke="#66543B" strokeWidth="2.5" />
+                  <circle cx="802" cy="59.897" r="3.5" fill="#66543B" />
                 </svg>
-                <div id="56I-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-                  Exact %: 61.8 · 62.4 · unavailable · 63.9 · 63.3 · 64.6 · 65.57 · 66.7
+                <div id="7QC-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+                  Rounded %:61.8 ·62.4 ·— ·63.9 ·63.3 ·64.6 ·65.57 ·66.70
                 </div>
-                <div id="56J-0" style={{ boxSizing: 'border-box', color: '#5F6368', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '16px' }}>
-                  7 of 8 observations. This universe is independent of the sector fixtures.
+                <div id="7QD-0" style={{ boxSizing: 'border-box', color: '#5F6368', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '16px' }}>
+                  Counts 657, 663, —, 679, 673, 687, 697, 709 / 1063. Seven of eight sessions; 23 Oct is missing. Independent universe cohort; no interpolation.
                 </div>
               </div>
             </div>
@@ -551,7 +527,7 @@
                   Above 50D
                 </div>
                 <div id="4ZE-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px', width: 'max-content' }}>
-                  66.7%
+                  66.67%
                 </div>
               </div>
               <div id="4ZA-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', justifyContent: 'space-between', paddingBlock: '7px' }}>
@@ -567,7 +543,7 @@
                   Covered / eligible
                 </div>
                 <div id="4Z8-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px', width: 'max-content' }}>
-                  21 / 21
+                  177 / 177
                 </div>
               </div>
               <div id="4Z4-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '3px', paddingBlock: '10px' }}>
@@ -575,7 +551,7 @@
                   Source identity
                 </div>
                 <div id="4Z5-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-                  macro / communication-services
+                  f02.fixture.v3/macro/sector/communication_services/share_above_50d/2026-10-30
                 </div>
               </div>
               <div id="4Z1-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '3px', paddingBlock: '10px' }}>
@@ -612,7 +588,7 @@
               </div>
               <div id="4YQ-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingBlock: '12px' }}>
                 <div id="4YR-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
-                  A successful refresh does not establish source freshness. Observation, publication and retrieval retain separate clocks.
+                  Communication sample: 118/177 × 100 = 66.67%; prior 116/177 = 65.54%; raw-count change +1.13 pp. Coverage 177/177; independent of universe history 7/8.
                 </div>
               </div>
               <div id="4YO-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#85877F', borderRadius: '7px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '36px', justifyContent: 'center', paddingInline: '10px', width: '286px' }}>
@@ -622,7 +598,7 @@
               </div>
               <div id="4YM-0" style={{ boxSizing: 'border-box', flexShrink: '0', paddingTop: '12px' }}>
                 <div id="4YN-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '16px' }}>
-                  Docked: no focus trap. Close returns to the stable row trigger and restores table context.
+                  Dock: no focus trap. Preserve table context. Restore the stable row trigger only when this closing dock owns focus; keep later focus elsewhere.
                 </div>
               </div>
             </div>

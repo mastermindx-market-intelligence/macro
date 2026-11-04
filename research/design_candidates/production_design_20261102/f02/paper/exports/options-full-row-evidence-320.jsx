@@ -180,7 +180,7 @@
           BUILD CONTRACT · OUTSIDE THE PRODUCT
         </div>
         <div id="76Y-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', width: '288px' }}>
-          Modal: close starts focus; trap Tab, allow Escape, make the background inert and keep scrolling inside this inspector. Restore the visible options-0 evidence trigger by stable print identity. If filtered away, use the named tape heading fallback.
+          Modal: initial focus on Close, Tab contained, active-owner Escape, background inert, internal scroll. If this closing surface owns focus, restore the visible options-0 trigger by print identity; if absent, use the named tape heading. Preserve later focus elsewhere.
         </div>
         <div id="76Z-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', width: '288px' }}>
           All 12 tape fields are preserved. Source key and row match the candidate-2 fixture; no live API, access check, focus test or completed browser path is claimed.

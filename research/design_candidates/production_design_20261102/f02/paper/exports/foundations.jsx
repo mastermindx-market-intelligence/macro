@@ -1,5 +1,5 @@
 (
-    <div id="48W-0" style={{ backgroundColor: 'var(--noir-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '24px', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', padding: '48px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
+    <div id="48W-0" style={{ backgroundColor: 'var(--noir-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSize: '12px', fontSynthesis: 'none', gap: '24px', height: 'fit-content', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', padding: '48px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
       <div id="48X-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '1344px' }}>
         <div id="48Y-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>
           F02-P02 / FOUNDATIONS
@@ -365,7 +365,7 @@
             DENSITY &amp; NUMBER ANATOMY
           </div>
           <div id="4DK-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 500, lineHeight: '26px' }}>
-            Dense 40px · Comfortable 48px · Mobile ≥52px
+            Dense 40px · Comfortable 52px · Phone rows ≥48px
           </div>
           <div id="4DL-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '16px', lineHeight: '24px' }}>
             Important phone controls: 44 × 44px
@@ -407,6 +407,204 @@
         </div>
         <div id="4E1-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
           Reuse the current --noir-* Paper tokens shown above. Light values and directional roles are candidate values from token-map.json, not a new global CSS namespace. Macro theme.css, Terminal globals/shared shell and public templates retain their separate owners. --sp-8 and radius-md have observed estate collisions. Read the migration contract before mapping aliases.
+        </div>
+      </div>
+      <div id="8AM-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', width: '1344px' }}>
+        <div id="8AN-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
+          Use the existing icon anatomy.
+        </div>
+        <div id="8AO-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '21px', width: '1296px' }}>
+          24 × 24 viewBox · 1.8 stroke · currentColor · named controls. These are the existing search, arrow_up and swirl paths, not new brand assets.
+        </div>
+      </div>
+      <div id="8AQ-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '32px', width: '1344px' }}>
+        <div id="8AR-0" style={{ backgroundColor: 'var(--noir-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', padding: '20px', width: '656px' }}>
+          <div id="8AS-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Dark
+          </div>
+          <div id="8AT-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '10px', height: '44px', justifyContent: 'center', paddingInline: '14px', width: '220px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8AU-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8AX-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
+              Inspect source
+            </div>
+          </div>
+          <div id="8AY-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Evidence action: visible text names the action; the implementation accessible name also identifies its row.
+          </div>
+        </div>
+        <div id="8AZ-0" style={{ backgroundColor: '#F6F6F3', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', padding: '20px', width: '656px' }}>
+          <div id="8B0-0" style={{ boxSizing: 'border-box', color: '#5F6368', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Light
+          </div>
+          <div id="8B1-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#85877F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '10px', height: '44px', justifyContent: 'center', paddingInline: '14px', width: '220px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8B2-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#1A1C20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#1A1C20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8B5-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
+              Inspect source
+            </div>
+          </div>
+          <div id="8B6-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Evidence action: visible text names the action; the implementation accessible name also identifies its row.
+          </div>
+        </div>
+      </div>
+      <div id="8B8-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '32px', width: '1344px' }}>
+        <div id="8B9-0" style={{ backgroundColor: 'var(--noir-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', padding: '20px', width: '656px' }}>
+          <div id="8BA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Dark
+          </div>
+          <div id="8BB-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '10px', height: '44px', justifyContent: 'center', outline: '2px solid #C4D9F4', outlineOffset: '3px', paddingInline: '14px', width: '220px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8BC-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <path d="M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="17.1,8.9 20.4,12 23,8.7" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8BF-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
+              Retry refresh
+            </div>
+          </div>
+          <div id="8BG-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.
+          </div>
+        </div>
+        <div id="8BH-0" style={{ backgroundColor: '#F6F6F3', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', padding: '20px', width: '656px' }}>
+          <div id="8BI-0" style={{ boxSizing: 'border-box', color: '#5F6368', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Light
+          </div>
+          <div id="8BJ-0" style={{ alignItems: 'center', backgroundColor: '#FFFFFF', borderColor: '#85877F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '10px', height: '44px', justifyContent: 'center', outline: '2px solid #245C91', outlineOffset: '3px', paddingInline: '14px', width: '220px' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8BK-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <path d="M20.4 12a8.4 8.4 0 1 0-8.4 8.4 4.6 4.6 0 0 0 4.6-4.6" fill="none" stroke="#1A1C20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="17.1,8.9 20.4,12 23,8.7" fill="none" stroke="#1A1C20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8BN-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 500, lineHeight: '20px' }}>
+              Retry refresh
+            </div>
+          </div>
+          <div id="8BO-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Recovery action: a read retry belongs to the existing source owner. This mark never implies save confirmation.
+          </div>
+        </div>
+      </div>
+      <div id="8BQ-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '32px', width: '1344px' }}>
+        <div id="8BR-0" style={{ backgroundColor: 'var(--noir-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', padding: '20px', width: '656px' }}>
+          <div id="8BS-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Dark
+          </div>
+          <div id="8BT-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '12px', height: '44px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8BU-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <line x1="12" y1="19.5" x2="12" y2="5" stroke="#B0D4B9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="6,11 12,5 18,11" fill="none" stroke="#B0D4B9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8BX-0" style={{ boxSizing: 'border-box', color: '#B0D4B9', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '26px' }}>
+              Increase · +1.13 pp
+            </div>
+          </div>
+          <div id="8BY-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '12px', height: '44px' }}>
+            <div id="8BZ-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '24px', width: '24px' }} />
+            <div id="8C0-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 500, lineHeight: '26px' }}>
+              — Change unavailable
+            </div>
+          </div>
+          <div id="8C1-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.
+          </div>
+        </div>
+        <div id="8C2-0" style={{ backgroundColor: '#F6F6F3', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', padding: '20px', width: '656px' }}>
+          <div id="8C3-0" style={{ boxSizing: 'border-box', color: '#5F6368', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '11px', fontWeight: 600, lineHeight: '16px' }}>
+            Light
+          </div>
+          <div id="8C4-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '12px', height: '44px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8C5-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+              <line x1="12" y1="19.5" x2="12" y2="5" stroke="#256341" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="6,11 12,5 18,11" fill="none" stroke="#256341" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <div id="8C8-0" style={{ boxSizing: 'border-box', color: '#256341', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '26px' }}>
+              Increase · +1.13 pp
+            </div>
+          </div>
+          <div id="8C9-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '12px', height: '44px' }}>
+            <div id="8CA-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '24px', width: '24px' }} />
+            <div id="8CB-0" style={{ boxSizing: 'border-box', color: '#1A1C20', flexShrink: '0', fontFamily: '"Inter-Medium", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 500, lineHeight: '26px' }}>
+              — Change unavailable
+            </div>
+          </div>
+          <div id="8CC-0" style={{ boxSizing: 'border-box', color: '#51555B', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px', width: '596px' }}>
+            Noninteractive marker. Sign, unit and wording carry meaning; unknown has no invented arrow or trend.
+          </div>
+        </div>
+      </div>
+      <div id="8CE-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '24px', width: '1344px' }}>
+        <div id="8CF-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', width: '432px' }}>
+          <div id="8CG-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            16px rendered mark
+          </div>
+          <div id="8CH-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '8px' }}>
+            <div id="8CI-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '44px', justifyContent: 'center', width: '44px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8CJ-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+                <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div id="8CM-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Inspect source
+            </div>
+          </div>
+          <div id="8CN-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Same 24-unit path; inspect at actual scale.
+          </div>
+        </div>
+        <div id="8CO-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', width: '432px' }}>
+          <div id="8CP-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            20px rendered mark
+          </div>
+          <div id="8CQ-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '8px' }}>
+            <div id="8CR-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '44px', justifyContent: 'center', width: '44px' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8CS-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+                <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div id="8CV-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Inspect source
+            </div>
+          </div>
+          <div id="8CW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Same 24-unit path; inspect at actual scale.
+          </div>
+        </div>
+        <div id="8CX-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', width: '432px' }}>
+          <div id="8CY-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            24px rendered mark
+          </div>
+          <div id="8CZ-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '8px' }}>
+            <div id="8D0-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', height: '44px', justifyContent: 'center', width: '44px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="8D1-0" style={{ display: 'inline-block', flexShrink: 0 }}>
+                <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="15.4" y1="15.4" x2="21" y2="21" stroke="#F3F3F3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div id="8D4-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Inspect source
+            </div>
+          </div>
+          <div id="8D5-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-tertiary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Same 24-unit path; inspect at actual scale.
+          </div>
+        </div>
+      </div>
+      <div id="8D7-0" style={{ backgroundColor: 'var(--noir-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>
+        <div id="8D8-0" style={{ boxSizing: 'border-box', color: 'var(--noir-champagne)', flexShrink: '0', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '18px' }}>
+          REUSE THE ACTUAL SOURCE OWNER
+        </div>
+        <div id="8D9-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+          Macro: templates/_icons.html.j2 → icon(search), icon(arrow_up), icon(swirl). Existing Terminal inline SVG ownership remains separate.
+        </div>
+        <div id="8DA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '21px', width: '1296px' }}>
+          In the browser, decorative SVG is aria-hidden and not focusable; the named control owns its accessible label. Preserve currentColor and stroke, then qualify optical size, forced colors and real focus behavior. Paper does not prove those semantics.
         </div>
       </div>
     </div>

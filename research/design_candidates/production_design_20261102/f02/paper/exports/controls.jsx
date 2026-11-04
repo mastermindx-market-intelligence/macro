@@ -73,7 +73,7 @@
             Dock only when at least 640px remains for the primary task. Otherwise use a modal overlay. F01 owns the final shell release.
           </div>
           <div id="4KM-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px', width: '840px' }}>
-            The dock does not trap focus. Escape closes it and returns to the current row trigger. If that row disappeared, focus the named table fallback.
+            Dock: no focus trap. Only the active owner handles Escape. If this closing dock owns focus, return to the current row trigger; if absent, use the named table heading. Preserve later focus elsewhere.
           </div>
         </div>
         <div id="4KN-0" style={{ backgroundColor: 'var(--noir-raised)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '14px', padding: '24px', width: '320px' }}>
@@ -90,13 +90,13 @@
             74.20%
           </div>
           <div id="4KS-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
-            178 / 184 covered
+            1000 / 1006 covered
           </div>
           <div id="4KT-0" style={{ boxSizing: 'border-box', color: '#E9BE6A', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '21px' }}>
             Partial coverage
           </div>
           <div id="4KU-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '272px' }}>
-            Missing securities are not counted as below-average observations.
+            Core IT sample: 742/1000 × 100 = 74.20%; prior 721/1000 = 72.10%; +2.10 pp. Coverage 1000/1006, six missing. Separate from Macro sector samples.
           </div>
           <div id="4KV-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
             <div id="4KW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
@@ -123,7 +123,7 @@
           Keyboard, touch and route continuity
         </div>
         <div id="4L6-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
-          Modal: named dialog, initial focus, focus trap, Escape and close return. Dock: no trap. Preserve the existing URL-addressable tab, sort/filter state and scroll on return. Important phone actions are 44px. A 400% zoom view requires actual browser verification; Paper drawings specify expected reflow only.
+          Modal: named dialog, initial focus, trap and active-owner Escape. Dock: no trap. Close or placement change restores focus only when the retiring surface owns it; preserve later focus elsewhere. Retain URL/tab, sort/filter and scroll. Important phone actions are 44px. Paper specifies reflow; browser/400% proof remains open.
         </div>
       </div>
       <div id="4L8-0" style={{ backgroundColor: 'var(--noir-panel)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '20px', paddingInline: '24px', width: '1344px' }}>
@@ -132,6 +132,68 @@
         </div>
         <div id="4LA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', flexShrink: '0', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px', width: '1296px' }}>
           Idle → pending → saved only after owner confirmation/readback. Pending disables duplicate send. Failure retains the draft for recovery. An expired session after dispatch produces uncertain outcome and reconciliation, not “nothing was sent.” Theme, locale, region and navigation changes do not save.
+        </div>
+      </div>
+      <div id="8E8-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '8px', width: '1344px' }}>
+        <div id="8E9-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '30px' }}>
+          Pointer hover is a separate state.
+        </div>
+        <div id="8EA-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '21px' }}>
+          Hover alone does not activate a tab, persist selection, move keyboard focus, change access or save.
+        </div>
+      </div>
+      <div id="8EC-0" style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexShrink: '0', gap: '24px', width: '1344px' }}>
+        <div id="8ED-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', width: '318px' }}>
+          <div id="8EE-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+            Default
+          </div>
+          <div id="8EF-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', width: '180px' }}>
+            <div id="8EG-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Table
+            </div>
+          </div>
+          <div id="8EH-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Not selected; not focused.
+          </div>
+        </div>
+        <div id="8EI-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', width: '318px' }}>
+          <div id="8EJ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+            Hover
+          </div>
+          <div id="8EK-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-hover)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', width: '180px' }}>
+            <div id="8EL-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Table
+            </div>
+          </div>
+          <div id="8EM-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Pointer present; no activation.
+          </div>
+        </div>
+        <div id="8EN-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', width: '318px' }}>
+          <div id="8EO-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+            Selected
+          </div>
+          <div id="8EP-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-selected)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', width: '180px' }}>
+            <div id="8EQ-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '13px', fontWeight: 600, lineHeight: '20px' }}>
+              Table
+            </div>
+          </div>
+          <div id="8ER-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Current panel; quiet neutral fill.
+          </div>
+        </div>
+        <div id="8ES-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: '0', gap: '12px', width: '318px' }}>
+          <div id="8ET-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+            Keyboard focus
+          </div>
+          <div id="8EU-0" style={{ alignItems: 'center', backgroundColor: 'var(--noir-panel)', borderColor: '#6F6F6F', borderRadius: '6px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: '0', height: '44px', justifyContent: 'center', outline: '2px solid #C4D9F4', outlineOffset: '3px', width: '180px' }}>
+            <div id="8EV-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-primary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Table
+            </div>
+          </div>
+          <div id="8EW-0" style={{ boxSizing: 'border-box', color: 'var(--noir-text-secondary)', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>
+            Unselected tab; Enter / Space activates.
+          </div>
         </div>
       </div>
     </div>

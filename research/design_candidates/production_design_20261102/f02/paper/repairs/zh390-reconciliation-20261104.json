@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-11-04T00:30:04.784Z",
+  "file_id": "01M312VSDSZFVT45674GDVJVZN",
+  "board_id": "7IS-0",
+  "target_node_id": "7J4-0",
+  "operation_id": "f02-c2-macro-light-zh-390-chart-footer-20261103-01",
+  "carrier": "Mastermind Paper direct",
+  "source_pin": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "status": "EFFECT_UNKNOWN",
+  "same_carrier_readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"state\": \"OBSERVED\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\n  \\\"file\\\": {\\n    \\\"id\\\": \\\"01M312VSDSZFVT45674GDVJVZN\\\",\\n    \\\"name\\\": \\\"Mastermind Product Design System \\u2014 Canonical\\\"\\n  },\\n  \\\"contentHash\\\": {\\n    \\\"tokens\\\": \\\"356191c3\\\"\\n  }\\n}\"}, {\"type\": \"text\", \"text\": \"{\\n  \\\"children\\\": [\\n    {\\n      \\\"id\\\": \\\"7J6-0\\\",\\n      \\\"name\\\": \\\"Market breadth question and source\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 3,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -2189,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 0\\n    },\\n    {\\n      \\\"id\\\": \\\"7JE-0\\\",\\n      \\\"name\\\": \\\"Participation with coverage and comparator\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 3,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -2081,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 108\\n    },\\n    {\\n      \\\"id\\\": \\\"7JL-0\\\",\\n      \\\"name\\\": \\\"Sector comparison toolbar\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 2,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -2009,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 180\\n    },\\n    {\\n      \\\"id\\\": \\\"7JQ-0\\\",\\n      \\\"name\\\": \\\"Pre-table local overflow cue\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 1,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -1965,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 224\\n    },\\n    {\\n      \\\"id\\\": \\\"7JT-0\\\",\\n      \\\"name\\\": \\\"Named sector comparison scroll region\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 11,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -1946,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 243\\n    },\\n    {\\n      \\\"id\\\": \\\"7NQ-0\\\",\\n      \\\"name\\\": \\\"Table coverage reminder\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 1,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -1350,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 839\\n    },\\n    {\\n      \\\"id\\\": \\\"7NT-0\\\",\\n      \\\"name\\\": \\\"Supporting history heading\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 2,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -1310,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 879\\n    },\\n    {\\n      \\\"id\\\": \\\"7NX-0\\\",\\n      \\\"name\\\": \\\"Eight sessions with an explicit gap\\\",\\n      \\\"component\\\": \\\"Frame\\\",\\n      \\\"childCount\\\": 9,\\n      \\\"worldX\\\": 5306,\\n      \\\"worldY\\\": -1264,\\n      \\\"x\\\": 16,\\n      \\\"y\\\": 925\\n    }\\n  ],\\n  \\\"count\\\": 8\\n}\"}]}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "diagnosis": "No original terminal receipt or canonical operation-status endpoint is exposed. The footer remains absent; absence and connection readiness do not prove terminal failure. No replay, equivalent replacement or reroute was attempted.",
+  "next_action": "Current assigned F02 receiver requests original-carrier terminal request evidence or documented canonical reconciliation from the existing Paper integration owner. Continue disjoint board/spec work under the existing file and writer.",
+  "scope": "Held operation and macro-light-zh-390 board; unrelated F02 boards may proceed under target-scoped law."
+}

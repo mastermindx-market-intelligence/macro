@@ -1,0 +1,82 @@
+{
+  "schema": "f02.focus-ownership-artifacts.v1",
+  "status": "PREPARED_NOT_APPLIED",
+  "scope": "Three F02 source-policy Markdown edits plus this preparation packet. No historical review/freeze, original construction input, Paper state or root progress file changed by this child.",
+  "member_count": 10,
+  "aggregate_sha256": "53645351404a7e155d4f10b5d0ad734dd7fa0d606c3b1e9cc519335ae5e4aec8",
+  "aggregate_algorithm": "Sorted relative path + NUL + lowercase member SHA256 + LF, SHA256 of UTF-8 bytes. Manifest excludes itself.",
+  "members": [
+    {
+      "path": "README.md",
+      "bytes": 6137,
+      "sha256": "98050520c80224f78aab3f2e098a9c794e191f6742a99783eee66f60f3f60929"
+    },
+    {
+      "path": "effective/mobile-state-boards.json",
+      "bytes": 212687,
+      "sha256": "9dfeb781a0f7b579f3a7974def0a2fa8689fe3702a32462920c74a8fad93c4a9"
+    },
+    {
+      "path": "effective/supplemental-boards.json",
+      "bytes": 150551,
+      "sha256": "c9a77c382cb7bf6e4c8a7656483087e4a16c89d5d8fd0b7ecbca1d4e3fd25729"
+    },
+    {
+      "path": "effective/supplemental-wide-clone.json",
+      "bytes": 75755,
+      "sha256": "a790e1fe770240e937010c900545176684ff126c24bfa75abe6bde1152d74d2f"
+    },
+    {
+      "path": "native-text-patch.v1.json",
+      "bytes": 15979,
+      "sha256": "d4930215a3f25218de561389cf8574ef1c15c97377aefdde932cb05c6b98bf2c"
+    },
+    {
+      "path": "pending-responsive-boards.v1.json",
+      "bytes": 177040,
+      "sha256": "57cb780739b3b659bb28392aecf20f109ecfdf4c9248aa218827321008ac5a19"
+    },
+    {
+      "path": "source-edit-receipt.v1.json",
+      "bytes": 912,
+      "sha256": "75c207f12ec59c1ec308030d119240ce2208d5857b63821441fdb9e0b9ba9f3d"
+    },
+    {
+      "path": "source-overrides.v1.json",
+      "bytes": 62271,
+      "sha256": "402d79b590aa7dc914f8668ba18879ee91891fd779cd720f64bc95f232013b0d"
+    },
+    {
+      "path": "subtree-reuse.v1.json",
+      "bytes": 1910,
+      "sha256": "c1231f35a519f18a3c31914f4a77600471fa56710e4341c5ed3aa91c0a5ad43f"
+    },
+    {
+      "path": "validation.v1.json",
+      "bytes": 4324,
+      "sha256": "e9c3fbd8d1fc9c2090fe7b86ccfb8660da97f2bb26c610aeec2313057d6edfc2"
+    }
+  ],
+  "contract_source_edits": [
+    {
+      "path": "f02/F01_HANDSHAKE_CANDIDATE.md",
+      "before_sha256": "1f23238642b36d977255afd5c80a35a489c1855bfd37650d39e4cc5133b86573",
+      "after_sha256": "ed4db7383dca1e232383d45686808a39060a125b1a6bc160f7a354c64363e540",
+      "bytes": 20105
+    },
+    {
+      "path": "f02/INTERACTION_STATES.md",
+      "before_sha256": "7641bee4800d494669e732df8e53435682639e79934f7459890e36a4230cc7ad",
+      "after_sha256": "477bd861391c82d9b06f137d93c4126360d6707ed4584535b9345444a29af06c",
+      "bytes": 23500
+    },
+    {
+      "path": "f02/SYSTEM_CONTRACT.md",
+      "before_sha256": "f08870a7e9d7c631e60ae2e26302dd4dfb27c62d7083d85275908df1c2752330",
+      "after_sha256": "96398d5a4530170eb38e38a2e12dca53825a42cdf3259bd87550edac5ea4bf53",
+      "bytes": 33205
+    }
+  ],
+  "paper_calls": 0,
+  "browser_calls": 0
+}

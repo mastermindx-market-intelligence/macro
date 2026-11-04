@@ -1,0 +1,24 @@
+{
+  "schema": "f02.focus-ownership.contract-source-edits.v1",
+  "status": "SOURCE_EDITS_ONLY_NOT_NATIVE_APPLICATION",
+  "files": [
+    {
+      "path": "f02/F01_HANDSHAKE_CANDIDATE.md",
+      "before_sha256": "1f23238642b36d977255afd5c80a35a489c1855bfd37650d39e4cc5133b86573",
+      "after_sha256": "ed4db7383dca1e232383d45686808a39060a125b1a6bc160f7a354c64363e540",
+      "bytes": 20105
+    },
+    {
+      "path": "f02/INTERACTION_STATES.md",
+      "before_sha256": "7641bee4800d494669e732df8e53435682639e79934f7459890e36a4230cc7ad",
+      "after_sha256": "477bd861391c82d9b06f137d93c4126360d6707ed4584535b9345444a29af06c",
+      "bytes": 23500
+    },
+    {
+      "path": "f02/SYSTEM_CONTRACT.md",
+      "before_sha256": "f08870a7e9d7c631e60ae2e26302dd4dfb27c62d7083d85275908df1c2752330",
+      "after_sha256": "96398d5a4530170eb38e38a2e12dca53825a42cdf3259bd87550edac5ea4bf53",
+      "bytes": 33205
+    }
+  ]
+}

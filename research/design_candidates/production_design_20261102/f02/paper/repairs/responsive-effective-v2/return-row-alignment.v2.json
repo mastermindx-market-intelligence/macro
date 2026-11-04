@@ -1,0 +1,91 @@
+{
+  "schema": "f02.paper.return-row-source-alignment.v2",
+  "status": "PREPARED_NOT_APPLIED",
+  "correction": {
+    "board_key": "macro-zh-evidence-return-390",
+    "step_key": "returned-selected-row",
+    "source_packet": "repairs/fixture-coherence-v1/effective-spaced/supplemental-boards.json",
+    "source_packet_sha256": "e65ecfcec783c752651634541d6f9917857e2da42e4686bdae0535cd089aaa2e",
+    "overlay": "derived from exact source-equal Chinese sector-3 overlay",
+    "overlay_sha256": "dc1c1c7a3b7bc148642a74908c0791ace9b8482b228ab96718481de96872ff67",
+    "before_html_sha256": "660d23a91f04bf9ff94524acd4e49b2c5e86be82157deafe3d238ed0e53e1583",
+    "after_html_sha256": "e86bfa9adb90804bebab0bc05cd430c549c16d196fff0e2deae0e85e13556022",
+    "cells": [
+      {
+        "input_element_path": "0.2",
+        "column_role": "rate",
+        "expected_visible_text": "66.7%",
+        "expected_current_style": {
+          "font-family": "Inter",
+          "font-size": "13px",
+          "line-height": "20px",
+          "font-weight": "400",
+          "color": "#1a1c20",
+          "width": "88px",
+          "flex-shrink": "0",
+          "text-align": "right",
+          "padding-right": "12px",
+          "font-variant-numeric": "tabular-nums"
+        },
+        "style_delta": {
+          "display": "flex",
+          "flex-direction": "column",
+          "align-items": "end",
+          "justify-content": "center"
+        }
+      },
+      {
+        "input_element_path": "0.3",
+        "column_role": "delta_pp",
+        "expected_visible_text": "+1.13",
+        "expected_current_style": {
+          "font-family": "Inter",
+          "font-size": "13px",
+          "line-height": "20px",
+          "font-weight": "400",
+          "color": "#256341",
+          "width": "96px",
+          "flex-shrink": "0",
+          "text-align": "right",
+          "padding-right": "12px",
+          "font-variant-numeric": "tabular-nums"
+        },
+        "style_delta": {
+          "display": "flex",
+          "flex-direction": "column",
+          "align-items": "end",
+          "justify-content": "center"
+        }
+      },
+      {
+        "input_element_path": "0.4",
+        "column_role": "coverage",
+        "expected_visible_text": "177 / 177",
+        "expected_current_style": {
+          "font-family": "Noto Sans SC",
+          "font-size": "13px",
+          "line-height": "20px",
+          "font-weight": "400",
+          "color": "#51555b",
+          "width": "130px",
+          "flex-shrink": "0",
+          "padding-left": "12px"
+        },
+        "style_delta": {
+          "display": "flex",
+          "flex-direction": "column",
+          "align-items": "end",
+          "justify-content": "center",
+          "text-align": "right"
+        }
+      }
+    ],
+    "source_board_key": "macro-light-zh-390",
+    "source_step_key": "sector-3",
+    "native_ids": "NOT_ASSIGNED; source paths are HTML anchors only"
+  },
+  "replacement_html": "<div layer-name=\"Sector Communication services\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;width: 650px;height: 56px;padding-left: 12px;background-color: #e2e2dc;border-bottom: 1px solid #cbccc7;\"><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 18px;font-weight: 600;color: #1a1c20;width: 120px;flex-shrink: 0;padding-right: 8px;\">通信服务</div><div layer-name=\"证据 control\" style=\"display: flex;flex-direction: column;flex-shrink: 0;flex-direction: row;align-items: center;justify-content: center;width: 44px;height: 44px;border: 1px solid #85877f;border-radius: 6px;background-color: #fff;outline: 2px solid #245c91;outline-offset: 2px;\"><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 500;color: #1a1c20;\">证据</div></div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #1a1c20;width: 88px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">66.7%</div><div style=\"font-family: Inter;font-size: 13px;line-height: 20px;font-weight: 400;color: #256341;width: 96px;flex-shrink: 0;text-align: right;padding-right: 12px;font-variant-numeric: tabular-nums;display: flex;flex-direction: column;align-items: end;justify-content: center;\">+1.13</div><div style=\"font-family: Noto Sans SC;font-size: 13px;line-height: 20px;font-weight: 400;color: #51555b;width: 130px;flex-shrink: 0;padding-left: 12px;display: flex;flex-direction: column;align-items: end;justify-content: center;text-align: right;\">177 / 177</div><div style=\"font-family: Noto Sans SC;font-size: 12px;line-height: 18px;font-weight: 400;color: #51555b;width: 160px;flex-shrink: 0;\">高于50日均线</div></div>",
+  "paper_calls": 0,
+  "browser_calls": 0,
+  "execution_boundary": "Independent source authoring only. This does not clear the existing Chinese-board footer effect or grant any native clone/replay authority."
+}
