@@ -312,3 +312,63 @@ html:not([data-theme="light"]) .ox-hero--answer .ox-answer-summary{
 .ox-exposure-members strong{overflow-wrap:anywhere}
 .ox-exposure-members .ox-cta{min-height:44px;white-space:normal;text-align:center}
 @media(max-width:600px){.ox-exposure-members .ox-cta{width:100%}}
+
+/* T007.S11 · R23/R24: selected evidence, then research actions.
+   Instrument-analyzer composition. Dark: inset instruments on graphite.
+   Light: white reading sheets, cool canvas and controlled material shadow.
+   Geometry and source semantics are shared; no decorative colored edges. */
+.ox-wrap{max-width:1312px;padding-inline:var(--sp-6,24px)}
+.ox-path-heading{font-size:var(--fs-h2);margin:var(--sp-8,32px) 0 var(--sp-4,16px)}
+.rail{gap:var(--sp-3,12px);margin-top:var(--sp-4,16px)}
+.station{gap:var(--sp-2,8px)}
+.ox-step-select{display:flex;flex:1;flex-direction:column;align-items:flex-start;
+  text-align:left;gap:var(--sp-2,8px);padding:var(--sp-5,20px);min-height:180px;
+  font:inherit;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-card,12px);color:var(--text);cursor:pointer}
+.ox-step-select:hover{background:var(--panel-2)}
+.ox-step-select[aria-pressed="true"]{background:var(--panel-2);box-shadow:var(--card-shadow)}
+.ox-step-select[aria-pressed="true"] .st-name{text-decoration:underline;text-underline-offset:.2em}
+.st-mechanism{font-size:var(--fs-sm);color:var(--muted);line-height:1.5}
+.st-window{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--muted);margin-top:auto}
+#ox-steps{margin-top:var(--sp-5,20px)}
+#ox-steps>summary{font-size:var(--fs-h3);font-weight:600;color:var(--text)}
+.ox-leg[data-inspector-step]{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);
+  gap:var(--sp-5,20px);padding-block:var(--sp-4,16px);border:0;scroll-margin-top:var(--sp-8,32px)}
+.ox-leg[data-inspector-step][hidden]{display:none}
+.ox-step-evidence,.ox-step-context{min-width:0;padding:var(--sp-6,24px);
+  border:1px solid var(--line);border-radius:var(--r-card,12px)}
+.ox-step-evidence{background:var(--panel)}
+.ox-step-context{background:var(--panel-2);display:flex;flex-direction:column;align-items:flex-start}
+.ox-step-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3,12px);margin-top:var(--sp-5,20px)}
+.ox-step-metric{min-width:0;padding:var(--sp-4,16px);border:1px solid var(--line);
+  border-radius:var(--r-ctl,8px);background:var(--panel-2)}
+.ox-step-value{display:block;font-family:var(--font-mono);font-size:var(--fs-num-xl);line-height:1.4;margin-top:var(--sp-2,8px);overflow-wrap:anywhere}
+.ox-step-verdict{font-size:var(--fs-label);font-weight:700;color:var(--muted);margin:0 0 var(--sp-4,16px)}
+.ox-step-identity{font-family:var(--font-mono);font-size:var(--fs-micro);color:var(--muted);margin-top:var(--sp-5,20px);overflow-wrap:anywhere}
+.ox-step-context .ox-brain-action{margin-top:auto;padding-block:var(--sp-3,12px)}
+.ox-step-exact{margin-top:var(--sp-4,16px)}
+html[data-theme="light"] .ox-step-evidence,
+html[data-theme="light"] .ox-step-select{box-shadow:var(--card-shadow)}
+html[data-theme="light"] .ox-step-context{background:var(--panel);box-shadow:var(--card-shadow)}
+html:not([data-theme="light"]) .ox-step-metric{background:var(--bg);box-shadow:none}
+html[data-lang="zh"] .st-window,html[data-lang="zh"] .ox-step-verdict{letter-spacing:normal}
+@media(max-width:900px){
+  .rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ox-leg[data-inspector-step]{grid-template-columns:minmax(0,1fr)}
+  .ox-step-context .ox-brain-action{margin-top:var(--sp-4,16px)}
+}
+@media(max-width:600px){
+  .ox-wrap{padding-inline:var(--sp-4,16px)}
+  .rail{display:flex;flex-direction:column;gap:var(--sp-3,12px)}
+  .station{display:block;padding:0}
+  .st-top{display:none}
+  .ox-step-select{width:100%;min-height:44px;padding:var(--sp-4,16px);display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;align-items:center}
+  .ox-step-select .st-name{font-size:var(--fs-body);margin:0}
+  .ox-step-select .st-mechanism,.ox-step-select .st-window{grid-column:2/-1}
+  .ox-step-select:not([aria-pressed="true"]) .st-mechanism,
+  .ox-step-select:not([aria-pressed="true"]) .st-window{display:none}
+  .ox-step-evidence,.ox-step-context{padding:var(--sp-4,16px)}
+  .ox-step-metrics{grid-template-columns:minmax(0,1fr)}
+  .ox-step-context .ox-brain-action{width:100%;box-sizing:border-box;justify-content:space-between}
+}

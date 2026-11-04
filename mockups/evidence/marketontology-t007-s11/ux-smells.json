@@ -1,0 +1,90 @@
+{
+  "schema": "mastermind.ux_smell_report.v1",
+  "generated_at": "2026-11-04T04:36:04.429290+00:00",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.4.0"
+  },
+  "target": {
+    "kind": "rendered_fixture",
+    "production_proof": "none",
+    "fixture": "fixture.json",
+    "fixture_sha256": "32e2639ecb19556c211c08d8672458f8e94d912ac8537eaee2569049454eab68",
+    "fixture_recipe": "tests/ontology_explorer_fixtures.py",
+    "network": "loopback static files and synthetic ontology API only; no credentials",
+    "construction_inputs": {
+      "templates/ontology.html.j2": "f64b8c40d14e6957552af9669e02a541d990bf92d0364c65be6a3bc00711095d",
+      "templates/ontology.js": "7693cc87d2ee36038168a4e97d180280f1eff9138e674b46b28d50b3b63d793e",
+      "templates/ontology.css": "30a267e6fcbd732727dfc97f07140f5dc08ad5f6f2df1cde35697eafe6b204a1",
+      "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+      "templates/mm_brain.js": "49017d0dc5cb4bfa0e66a6c2f332b01060d54bb667b2fbd18911bf3c95e47c8a"
+    },
+    "adapter_sha256": "03fcd6078765ac05c33d3148026b3f6fdad036b98c627960d50a4526646291b0"
+  },
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "metric_notes": {
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps"
+  },
+  "pages": [
+    {
+      "page_id": "ontology.html",
+      "route": "/ontology.html",
+      "metrics": {
+        "document_height_px": 3753,
+        "section_count": 10,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 11,
+          "h3": 7,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "duplicate_heading_texts": [],
+        "panel_count": 6,
+        "visible_word_count": 667,
+        "long_paragraph_count": 0,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": false,
+        "elements_wider_than_viewport": 0,
+        "console_error_count": 0,
+        "request_count": 33,
+        "payload_bytes_total": 287203,
+        "asof_present": false,
+        "source_present": false,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3753,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          },
+          "mobile": {
+            "document_height_px": 5595,
+            "horizontal_overflow": false,
+            "elements_wider_than_viewport": 0
+          }
+        }
+      }
+    }
+  ]
+}
