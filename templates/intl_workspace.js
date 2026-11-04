@@ -1431,18 +1431,10 @@
   }
 
   function paintInvestigationActions(controller, state) {
-    var serialized = controller.reducer.serializeQuery(state);
-    var returnUrl = null;
-    if (serialized.ok) {
-      returnUrl = 'https://www.mastermind-x.com/intl.html?' + serialized.query;
-      var hash = controller.environment.window.location.hash;
-      if (typeof hash === 'string' && hash.charAt(0) === '#') {
-        try {
-          var anchor = decodeURIComponent(hash.slice(1));
-          if (controller.config.anchor_ids.includes(anchor)) returnUrl += hash;
-        } catch (_) { /* An unadmitted fragment supplies no return context. */ }
-      }
-    }
+    var returnState = Object.assign({}, state, {library_group: null});
+    var serialized = controller.reducer.serializeQuery(returnState);
+    var returnUrl = serialized.ok && ['macro','risk'].includes(state.view)
+      ? 'https://www.mastermind-x.com/intl.html?' + serialized.query : null;
     owned(controller.root, 'a[data-im-investigate]').forEach(function (link) {
       var panel = link.closest('[data-im-panel]');
       if (!panel || panel.hidden) return;
@@ -1469,7 +1461,7 @@
         if (enabled) {
           url.searchParams.set('intl_return', returnUrl);
           var href = url.pathname + url.search;
-          enabled = new TextEncoder().encode(href).length <= 8192;
+          enabled = new TextEncoder().encode(href).length <= 2048;
           if (enabled) { link.setAttribute('href', href); link.removeAttribute('aria-disabled'); }
         }
       } catch (_) { enabled = false; }

@@ -59,8 +59,8 @@ from lib.intl_investigation_projection import (
 #: The only origin a fallback return may name.
 RETURN_ORIGIN = "https://www.mastermind-x.com"
 
-#: The only product pages a fallback return may name.
-RETURN_PATHS = ("/intl.html", "/intl_stocks.html")
+#: The existing native ingress accepts this one product return route.
+RETURN_PATHS = ("/intl.html",)
 
 #: The canonical International application query vocabulary.
 APP_QUERY_FIELDS = (
@@ -74,10 +74,10 @@ APP_RETURN_BASIS = "price"
 MAX_SELECTED_MEASURE_IDS = 128
 
 #: An upper bound on the native action URL, in bytes.
-MAX_ACTION_URL_BYTES = 8192
+MAX_ACTION_URL_BYTES = 2048
 
 #: An upper bound on the fallback return URL, in bytes.
-MAX_RETURN_URL_BYTES = 4096
+MAX_RETURN_URL_BYTES = 2048
 
 #: An upper bound on the application query of a fallback return, in units.
 MAX_APP_QUERY_UNITS = 2048
@@ -91,13 +91,9 @@ MAX_APP_PINS = 4
 #: An upper bound on a scalar application value, in units.
 MAX_APP_SCALAR_UNITS = 128
 
-#: An upper bound on the fragment of a fallback return, in units.
-MAX_FRAGMENT_UNITS = 1024
-
 _IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}$")
 _FIELD_RE = re.compile(r"^[A-Z]{2}\.[a-z][a-z0-9_]{0,63}$")
 _APP_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,2047}$")
-_FRAGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,1023}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _HEX_DIGITS = frozenset("0123456789abcdefABCDEF")
 
@@ -262,7 +258,7 @@ def _return_url_ok(return_url, contract):
     for char in return_url:
         if not ("!" <= char <= "~"):
             return False
-    if "\\" in return_url:
+    if "\\" in return_url or "%" in return_url:
         return False
     parts = urlsplit(return_url)
     if parts.scheme != "https":
@@ -290,10 +286,9 @@ def _return_url_ok(return_url, contract):
             "dislocations", "transmission", "dossier", "scenario", "replay", "coverage"}:
         return False
     if parts.fragment:
-        if len(parts.fragment) > MAX_FRAGMENT_UNITS:
-            return False
-        if not _FRAGMENT_RE.match(parts.fragment):
-            return False
+        return False
+    if set(query) != set(APP_QUERY_FIELDS) or query.get("view") not in {"macro", "risk"} or query.get("group") != "":
+        return False
     return True
 
 
@@ -462,6 +457,11 @@ def build_intl_investigation_action(*, contract, descriptor, context_id,
             return None
 
     if not _return_url_ok(return_url, contract):
+        return None
+    from urllib.parse import parse_qsl
+    navigation = dict(parse_qsl(urlsplit(return_url).query, keep_blank_values=True))
+    if (navigation["horizon"] != context["horizon"] or navigation["basis"] != context["currency_basis"]
+            or navigation["return_basis"] != context["return_basis"]):
         return None
 
     fingerprint = hashlib.sha256(_payload).hexdigest()

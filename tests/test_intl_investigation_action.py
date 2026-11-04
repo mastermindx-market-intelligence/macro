@@ -319,28 +319,19 @@ class ActionShapeTests(ActionFixture):
                           "intl_return"])
 
     def test_the_return_url_survives_byte_for_byte(self):
-        for return_url in (CANONICAL_RETURN, HASHED_RETURN, STOCKS_RETURN):
+        for return_url in (CANONICAL_RETURN, CANONICAL_RETURN.replace("view=macro","view=risk")):
             with self.subTest(return_url=return_url):
                 action = self._action(return_url=return_url)
                 self.assertIsNotNone(action)
                 pairs = _query(action["href"])
                 self.assertEqual(pairs[-1], ("intl_return", return_url))
 
-    def test_a_canonical_return_with_a_hash_is_accepted(self):
-        action = self._action(return_url=HASHED_RETURN)
-        self.assertIsNotNone(action)
-        # The fragment is carried inside the encoded return, not as a fragment
-        # of the action URL itself.
-        self.assertNotIn("#", action["href"])
-        self.assertEqual(_query(action["href"])[-1],
-                         ("intl_return", HASHED_RETURN))
+    def test_a_canonical_return_with_a_hash_is_refused(self):
+        self.assertIsNone(self._action(return_url=HASHED_RETURN))
 
-    def test_the_stocks_page_is_an_accepted_return(self):
-        action = self._action(context_id=_context_id(self.contract, "GB"),
-                              selected=[GB_YIELD],
-                              return_url=STOCKS_RETURN)
-        self.assertIsNotNone(action)
-        self.assertEqual(action["field_ids"], [GB_YIELD])
+    def test_the_stocks_page_is_not_a_native_return(self):
+        self.assertIsNone(self._action(context_id=_context_id(self.contract, "GB"),
+                                      selected=[GB_YIELD], return_url=STOCKS_RETURN))
 
     def test_a_second_market_field_is_admitted(self):
         action = self._action(context_id=_context_id(self.contract, "GB"),
@@ -350,7 +341,7 @@ class ActionShapeTests(ActionFixture):
 
     def test_the_fingerprint_does_not_depend_on_the_return_url(self):
         first = self._action(return_url=CANONICAL_RETURN)
-        second = self._action(return_url=HASHED_RETURN)
+        second = self._action(return_url=CANONICAL_RETURN.replace("view=macro", "view=risk"))
         self.assertEqual(first["fingerprint"], second["fingerprint"])
         self.assertEqual(first["context_id"], second["context_id"])
         self.assertEqual(first["generation"], second["generation"])
@@ -363,7 +354,7 @@ class ActionShapeTests(ActionFixture):
         second = self._action(selected=[ECB, EZ_GDP])
         third = self._action(context_id=_context_id(self.contract, "EZ",
                                                      horizon="3m"),
-                             selected=[ECB])
+                             selected=[ECB], return_url=CANONICAL_RETURN.replace("horizon=1m", "horizon=3m"))
         self.assertEqual(first["fingerprint"], second["fingerprint"])
         self.assertNotEqual(first["field_ids"], second["field_ids"])
         self.assertEqual(first["fingerprint"], third["fingerprint"])
@@ -628,3 +619,10 @@ def test_native_fingerprint_is_exact_generation_artifact_sha256(tmp_path):
     action=build_intl_investigation_action(contract=contract,descriptor=descriptor,
         context_id=_context_id(contract,'EZ'),selected_measure_ids=[ECB],return_url=CANONICAL_RETURN)
     assert action['fingerprint']==descriptor['artifact_sha256']
+
+
+def test_native_canonical_return_rejects_fragment_and_nonempty_group(tmp_path):
+    contract=_build();descriptor=publish_generation(data_root=tmp_path,contract=contract)
+    for ret in [CANONICAL_RETURN+'#intl-legacy-research',CANONICAL_RETURN+'rates',CANONICAL_RETURN.replace('pins=&','pins=JP%2CGB&')]:
+        assert build_intl_investigation_action(contract=contract,descriptor=descriptor,
+            context_id=_context_id(contract,'EZ'),selected_measure_ids=[ECB],return_url=ret)is None

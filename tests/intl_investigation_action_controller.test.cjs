@@ -26,13 +26,13 @@ async function fixture(run,mutate){const page=await browser.newPage();try{
  await page.evaluate(()=>{window.handle=IntlWorkspace.mountIntlWorkspace(root,cfg);});await run(page);
 }finally{await page.close();}}
 
-test('permitted reference action preserves typed current return context and admitted hash',async()=>{
+test('permitted reference action keeps financial context with native canonical no-fragment return',async()=>{
  await fixture(async page=>{
   const state=await page.evaluate(()=>({state:handle.getState(),href:document.querySelector('#macro a').getAttribute('href')}));
   const url=new URL(state.href,'https://www.mastermind-x.com');assert.equal(url.pathname,'/analysis');
   assert.equal(url.searchParams.get('intl_context'),context);assert.equal(url.searchParams.get('intl_generation'),gen);
   const ret=new URL(url.searchParams.get('intl_return'));assert.equal(ret.origin,'https://www.mastermind-x.com');assert.equal(ret.pathname,'/intl.html');
-  assert.equal(ret.searchParams.get('market'),'JP');assert.equal(ret.searchParams.get('pins'),'JP,GB');assert.equal(ret.searchParams.get('horizon'),'3m');assert.equal(ret.searchParams.get('basis'),'local');assert.equal(ret.hash,'#intl-legacy-research');
+  assert.equal(ret.searchParams.get('market'),'JP');assert.equal(ret.searchParams.get('pins'),'JP,GB');assert.equal(ret.searchParams.get('horizon'),'3m');assert.equal(ret.searchParams.get('basis'),'local');assert.equal(ret.hash,'');assert.equal(ret.searchParams.get('group'),'');assert.equal(ret.href.includes('%2C'),false);assert.ok(state.href.length<=2048);
   assert.equal(ret.searchParams.get('mmx_shell'),null);
   const before=state.state;await page.evaluate(()=>handle.dispatch({type:'set_view',view:'risk'}));
   const risk=await page.evaluate(()=>document.querySelector('#risk a').getAttribute('href'));
@@ -61,4 +61,14 @@ test('destroy restores original authored href and no action changes reducer stat
   const result=await page.evaluate(()=>{const link=document.querySelector('#macro a'),original=link.getAttribute('data-im-investigate-href'),before=JSON.stringify(handle.getState());handle.destroy();return{original,href:link.getAttribute('href'),before};});
   assert.equal(result.href,result.original);
  });
+});
+
+test('native return clears navigation-only group and fragment without changing current state',async()=>{
+ await fixture(async page=>{
+  const result=await page.evaluate(()=>({state:handle.getState(),href:document.querySelector('#macro a').getAttribute('href')}));
+  const target=new URL(result.href,'https://www.mastermind-x.com');const ret=new URL(target.searchParams.get('intl_return'));
+  assert.equal(result.state.library_group,'rates');assert.equal(ret.searchParams.get('group'),'');assert.equal(ret.hash,'');
+  assert.equal(ret.searchParams.get('market'),'JP');assert.equal(target.searchParams.get('intl_field'),'EZ.policy_rate');
+  assert.equal(ret.searchParams.get('pins'),'JP,GB');assert.equal(ret.href.includes('%2C'),false);assert.ok(result.href.length<=2048);
+ },()=>{cfg.library_group_ids=['rates'];history.replaceState(null,'',location.href.replace('group=','group=rates'));});
 });
