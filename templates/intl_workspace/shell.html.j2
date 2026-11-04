@@ -79,9 +79,10 @@
           {% if panel.payload is defined and panel.payload.markets is defined and panel.payload.markets %}
             {% for entry in panel.payload.markets %}{% if entry is mapping and entry.id is defined and entry.id not in deferred_markets %}{% set _ = deferred_markets.append(entry.id) %}{% endif %}{% endfor %}
           {% endif %}
-          {% call gs.gs_panel_root(view=panel.view, panel=panel, extra_attrs=' hidden data-im-deferred="v1" data-im-deferred-markets="' ~ (deferred_markets|join(',')|e) ~ '"') %}
+          {% set carrier_markup %}{% call gs.gs_panel_root(view=panel.view, panel=panel, extra_attrs=' hidden data-im-deferred="v1" data-im-deferred-markets="' ~ (deferred_markets|join(',')|e) ~ '"') %}
             <script type="application/json" data-im-deferred-payload>{{ {'schema': 'intl-gs-deferred.v1', 'view': panel.view, 'context_id': panel.context_id, 'horizon': panel.context.horizon, 'basis': panel.context.currency_basis, 'generation': panel.generation, 'markets': deferred_markets, 'markup': panel_markup}|intl_inert_json if 'intl_inert_json' is filter else {'schema': 'intl-gs-deferred.v1', 'view': panel.view, 'context_id': panel.context_id, 'horizon': panel.context.horizon, 'basis': panel.context.currency_basis, 'generation': panel.generation, 'markets': deferred_markets, 'markup': panel_markup}|tojson }}</script>
-          {% endcall %}
+          {% endcall %}{% endset %}
+          {{ carrier_markup|replace(' id="' ~ panel.context_id ~ '-' ~ panel.view ~ '"', ' id="' ~ panel.context_id ~ '-' ~ panel.view ~ '-carrier"', 1)|safe }}
         {% else %}
           {{ panel_markup|safe }}
         {% endif %}

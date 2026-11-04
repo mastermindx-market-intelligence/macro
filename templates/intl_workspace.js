@@ -1816,7 +1816,7 @@
   function deferredEntry(node) {
     return {
       placeholder: node,
-      id: node.id,
+      id: node.id.endsWith('-carrier') ? node.id.slice(0, -8) : null,
       view: node.getAttribute('data-view'),
       horizon: node.getAttribute('data-horizon'),
       basis: node.getAttribute('data-basis'),
@@ -1836,7 +1836,7 @@
       for (var index = 0; index < entries.length; index += 1) {
         if (entries[index].placeholder === node) { entry = entries[index]; break; }
       }
-      if (!node.matches('[data-im-panel][data-im-deferred="v1"]') ||
+      if (!node.id.endsWith('-carrier') || !node.matches('[data-im-panel][data-im-deferred="v1"]') ||
           !['dossier', 'coverage'].includes(node.getAttribute('data-view')) ||
           !controller.config.horizons.includes(node.getAttribute('data-horizon')) ||
           !controller.config.bases.includes(node.getAttribute('data-basis'))) throw deferredFailure('carrier binding');

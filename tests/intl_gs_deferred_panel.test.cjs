@@ -88,7 +88,7 @@ function contextCarrier(view, contextId, markup, markets) {
     markets: markets || [],
     markup: markup
   };
-  return `<section class="intl-gs__panel intl-gs__view intl-gs__view--${view}" data-im-panel data-gs-panel data-view="${view}" data-horizon="1m" data-basis="usd_unhedged" data-return-basis="price" data-source="fixture:v1" hidden id="${contextId}-${view}" data-im-deferred="v1" data-im-deferred-markets="${(markets || []).join(',')}"><script type="application/json" data-im-deferred-payload>${safeJson(payload)}</script></section>`;
+  return `<section class="intl-gs__panel intl-gs__view intl-gs__view--${view}" data-im-panel data-gs-panel data-view="${view}" data-horizon="1m" data-basis="usd_unhedged" data-return-basis="price" data-source="fixture:v1" hidden id="${contextId}-${view}-carrier" data-im-deferred="v1" data-im-deferred-markets="${(markets || []).join(',')}"><script type="application/json" data-im-deferred-payload>${safeJson(payload)}</script></section>`;
 }
 
 function workspaceMarkup(options) {
@@ -409,4 +409,18 @@ test('configured markets remain authoritative over a broader inert domain', asyn
     const result=await page.evaluate(()=>handle.dispatch({type:'select_market',market_id:'CN'}));
     assert.equal(result.ok,false);assert.deepEqual(await liveArticles(page),['JP']);
   },{jurisdictions:['JP','GB','US','CN']});
+});
+
+
+test('canonical panel IDs are unique before, during and after materialization',async()=>{
+  await fixture(async(page)=>{
+    for(const view of ['overview','dossier','coverage','dossier','overview']){
+      assert.equal((await page.evaluate(v=>handle.dispatch({type:'set_view',view:v}),view)).ok,true);
+      const duplicates=await page.evaluate(()=>{const ids=Array.from(document.querySelectorAll('[id]')).map(n=>n.id);return ids.filter((id,i)=>ids.indexOf(id)!==i);});
+      assert.deepEqual(duplicates,[]);
+    }
+    await page.evaluate(()=>handle.destroy());
+    const duplicates=await page.evaluate(()=>{const ids=Array.from(document.querySelectorAll('[id]')).map(n=>n.id);return ids.filter((id,i)=>ids.indexOf(id)!==i);});
+    assert.deepEqual(duplicates,[]);
+  });
 });
