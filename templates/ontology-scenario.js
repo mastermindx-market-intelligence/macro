@@ -355,7 +355,7 @@ export function mountScenario(root) {
   window.addEventListener('mdx-auth', auth); window.addEventListener('pagehide', invalidate); document.addEventListener('visibilitychange', hidden); document.addEventListener('langchange', language);
   form.addEventListener('submit', evaluate); form.addEventListener('input', input); form.addEventListener('change', input); clearButton.addEventListener('click', clearClick);
   node.disabled = magnitude.disabled = origin.disabled = clearButton.disabled = false;
-  changedNode(); status('no_reading'); root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));
+  language(); changedNode(); status('no_reading'); root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));
   return { clear: clearClick, dispose() { disposed = true; invalidate(); output.replaceChildren(); subscription?.unsubscribe();
     root.removeEventListener('ontology-reading', receive); root.removeEventListener('ontology-source-changed', invalidate);
     window.removeEventListener('mdx-auth', auth); window.removeEventListener('pagehide', invalidate); document.removeEventListener('visibilitychange', hidden); document.removeEventListener('langchange', language);

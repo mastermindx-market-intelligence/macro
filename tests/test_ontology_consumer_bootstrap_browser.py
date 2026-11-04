@@ -11,9 +11,10 @@ import pytest
 from tests.test_ontology_explorer_brain_browser import browser, synthetic_snapshot
 
 ROOT = Path(__file__).resolve().parents[1]
+ONTOLOGY_JS = ROOT / 'templates' / 'ontology.js'
 
 
-def _open(browser, snapshot, *, blocked=(), late=False):
+def _open(browser, snapshot, *, blocked=(), late=False, language='en'):
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=True)
     shell = env.get_template("ontology.html.j2").render(nav_prefix="")
     if late:
@@ -27,6 +28,7 @@ def _open(browser, snapshot, *, blocked=(), late=False):
         getSession:async()=>({data:{session:{user:{id:owner},access_token:'fixture-token'}}}),
         onAuthStateChange:fn=>{callbacks.push(fn);return {data:{subscription:{unsubscribe(){}}}};}
       }})};""")
+    page.add_init_script(f"localStorage.setItem('lang', {json.dumps(language)});")
 
     def route(r):
         path = urlsplit(r.request.url).path
@@ -39,7 +41,8 @@ def _open(browser, snapshot, *, blocked=(), late=False):
             if path in blocked:
                 r.fulfill(status=503, content_type='text/javascript', body='// fixture asset unavailable')
             else:
-                r.fulfill(status=200, content_type='text/javascript', body=(ROOT / 'templates' / path[1:]).read_text())
+                asset = ONTOLOGY_JS if path == '/ontology.js' else ROOT / 'templates' / path[1:]
+                r.fulfill(status=200, content_type='text/javascript', body=asset.read_text())
         else:
             r.fulfill(status=200, content_type='text/javascript', body='')
 
@@ -77,6 +80,7 @@ def test_unavailable_or_late_modules_keep_visible_disabled_shell_without_private
     try:
         assert page.locator('[data-scenario-form] select').count() == 3
         assert page.locator('[data-scenario-form] input').count() == 1
+        assert page.locator('[name=node] option').first.text_content() == 'WTI oil / WTI 原油'
         assert page.locator('[data-scenario-form] :enabled').count() == 0
         assert page.locator('[data-scenario-result]').get_attribute('data-state') == 'module_unavailable'
         assert 'controls have not initialized' in page.locator('[data-scenario-result]').inner_text()
@@ -93,6 +97,21 @@ def test_unavailable_or_late_modules_keep_visible_disabled_shell_without_private
             assert page.locator('[data-portfolio-read]').is_enabled()
         assert requests.count('/api/ontology/explorer/v1') == 1
         assert not any('scenario/v1' in p or 'portfolio/v1' in p for p in requests)
+        assert not errors
+    finally:
+        context.close()
+
+
+def test_server_options_are_plain_text_and_module_initializes_chinese_locale(browser, synthetic_snapshot):
+    import re
+    env = Environment(loader=FileSystemLoader(str(ROOT / 'templates')), autoescape=True)
+    shell = env.get_template('ontology.html.j2').render(nav_prefix='')
+    options = re.findall(r'<option\b[^>]*>(.*?)</option>', shell, re.S)
+    assert options and all('<' not in text for text in options)
+    context, page, errors, _ = _open(browser, synthetic_snapshot, language='zh')
+    try:
+        assert page.locator('[name=node] option').first.text_content() == 'WTI 原油'
+        assert page.locator('[name=shape] option').first.text_content() == '仅指定期末值'
         assert not errors
     finally:
         context.close()
