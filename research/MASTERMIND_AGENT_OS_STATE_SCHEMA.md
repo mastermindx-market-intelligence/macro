@@ -702,3 +702,16 @@ distinct `ACCEPT_DIRECTION` grant, original operation fingerprint and source CAS
 A source-only Root decision may be prepared and published through the existing
 protected Git workflow under its actual commission. Publication grants no app,
 Runtime, placement, admission or execution power. No history is reconstructed.
+
+### Optional explicit project archive declaration
+
+A WS may declare `archive` with exactly `schema: agentos.workstream_archive.v1`,
+`state: ARCHIVED`, an authored `archived_on` calendar day (`YYYY-MM-DD`),
+`archived_by` (nonempty, at most256 UTF-8 bytes), and `reason` (nonempty,
+at most2000 UTF-8 bytes). The original declaration clock has day precision;
+Git commit time is separate source provenance. Absence means no declaration.
+Workstream status (`done`, `parked`, `killed` included), retained history,
+source freshness and archived chats never imply this fact. This additive read
+semantics does not implement Archive/Restore, reopen work or grant sending.
+A bounded qualified catalogue read describes its observed coverage; an empty
+sample is never a company-wide claim that no archived projects exist.

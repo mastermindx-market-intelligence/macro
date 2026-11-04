@@ -1051,9 +1051,29 @@ def _direction_record_problems(rec: dict[str, Any], path: Path, *, decision: boo
     return [] if valid else [Problem(path, "bad-direction", "INVALID_DIRECTION", hard=True)]
 
 
+def _archive_record_problems(rec: dict[str, Any], path: Path) -> list[Problem]:
+    """Explicit optional canonical archive declaration; no status inference."""
+    if "archive" not in rec:
+        return []
+    value = rec["archive"]
+    valid = type(value) is dict and set(value) == {"schema", "state", "archived_on", "archived_by", "reason"}
+    if valid:
+        valid = value["schema"] == "agentos.workstream_archive.v1" and value["state"] == "ARCHIVED"
+        day = value["archived_on"]
+        try:
+            valid = valid and ((type(day) is _dt.date) or (type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None and _dt.date.fromisoformat(day).isoformat() == day))
+            for field, maximum in (("archived_by", 256), ("reason", 2000)):
+                text = value[field]
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-archive", "INVALID_ARCHIVE_DECLARATION", hard=True)]
+
+
 def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
     out: list[Problem] = _acceptance_contract_problems(rec, path)
     out.extend(_direction_record_problems(rec, path, decision=False))
+    out.extend(_archive_record_problems(rec, path))
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",

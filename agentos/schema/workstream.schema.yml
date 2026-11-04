@@ -24,6 +24,7 @@ derived:
   created:      {type: date, source: "git log --diff-filter=A --format=%as -- <path>"}
   updated:      {type: date, source: "git log -1 --format=%as -- <path>"}
 optional:
+  archive: {type: object, closed_fields: [schema, state, archived_on, archived_by, reason], schema: agentos.workstream_archive.v1, state: ARCHIVED, archived_on: "YYYY-MM-DD day precision", note: "Explicit declaration only. Absence is no archive declaration; done/parked/killed/history/chat state never implies archive. No action or send authority."}
   p0:           {type: string, note: id from Mastermind config/strategic_state.yml}
   owns_paths:   {type: list, items: glob}
   depends_on:   {type: list, items: "WS:<KEY>",
