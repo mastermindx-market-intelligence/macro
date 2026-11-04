@@ -1,0 +1,122 @@
+{
+  "schema": "prophet.pivot_implementation_frontier/v1",
+  "operation_id": "prophet-us-intraday-pivot-checklist-20261104-c3",
+  "mission_complete": false,
+  "production_activated": false,
+  "pr_url": "https://github.com/mastermindx-market-intelligence/macro/pull/10715",
+  "published_head_at_observation": "e890c78990705d76cfdd942506aa6c9c0211706c",
+  "protected_law_sha": "75a6540519cf519edfef7633e74f57b68aef9329",
+  "status_basis": "Read-only original installed Fabric adapter status --follow; no request or acceptance replay",
+  "observations": [
+    {
+      "run_id": "prophet-us-pivot-engine-20261104-c3",
+      "read_returncode": 0,
+      "status": {
+        "controller_reason": null,
+        "controller_return": "UNCONFIRMED",
+        "effective_run_id": "prophet-us-pivot-engine-20261104-c3",
+        "effective_status": {
+          "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+          "acceptance_state": "UNVERIFIED",
+          "accepted": null,
+          "accepted_by": null,
+          "controller_lineage": {
+            "state": "UNVERIFIED"
+          },
+          "controller_observation": {
+            "configured_controller_wait_seconds": 7188,
+            "last_poll_at": "2026-11-04T07:40Z",
+            "last_poll_elapsed_seconds": 5712,
+            "retry_authorized": false,
+            "silence_lower_bound_seconds": 1375,
+            "source": "local_retained_controller_log",
+            "state": "LOCAL_POLL_EVIDENCE_ONLY",
+            "worker_state": "UNKNOWN"
+          },
+          "parent_run_id": null,
+          "rc": null,
+          "result_available": false,
+          "result_bytes": null,
+          "root_id": null,
+          "run_id": "prophet-us-pivot-engine-20261104-c3",
+          "schema": "mastermind.fabric_task_status.v1",
+          "signal": null,
+          "state": "ACTIVE_OR_WAITING"
+        },
+        "prior_attempts": [],
+        "requested_run_id": "prophet-us-pivot-engine-20261104-c3",
+        "schema": "mastermind.fabric_continuation.v1"
+      }
+    },
+    {
+      "run_id": "prophet-us-pivot-health-20261104-c3",
+      "read_returncode": 0,
+      "status": {
+        "controller_reason": "continuation_evidence_unqualified",
+        "controller_return": "RECORDED",
+        "effective_run_id": "prophet-us-pivot-health-20261104-c3",
+        "effective_status": {
+          "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+          "acceptance_state": "UNVERIFIED",
+          "accepted": null,
+          "accepted_by": null,
+          "parent_run_id": null,
+          "rc": null,
+          "result_available": true,
+          "result_bytes": 699,
+          "root_id": null,
+          "run_id": "prophet-us-pivot-health-20261104-c3",
+          "schema": "mastermind.fabric_task_status.v1",
+          "signal": null,
+          "state": "EFFECT_UNKNOWN"
+        },
+        "prior_attempts": [],
+        "requested_run_id": "prophet-us-pivot-health-20261104-c3",
+        "schema": "mastermind.fabric_continuation.v1"
+      }
+    }
+  ],
+  "controller_facts": {
+    "engine": {
+      "original_pid": 97323,
+      "os_observation": "PID absent; external worker state not established"
+    },
+    "health": {
+      "original_pid": 82408,
+      "os_observation": "PID absent; facade original controller binding unavailable"
+    }
+  },
+  "reserved_worker_paths": {
+    "engine": [
+      "engine/prophet_live/pivot_checklist.py"
+    ],
+    "health": [
+      "app/live_status_projection.py",
+      "scripts/check_vps_live_health.py",
+      "tests/test_prophet_pivot_health.py",
+      "tests/test_prophet_pivot_status_wiring.py"
+    ]
+  },
+  "remaining_proof": [
+    "Recover and reconcile the exact original causal-core result and effects",
+    "Integrate actual causal core and verify combined knowledge clocks, correction-linked invalidation, prefix replay and semantic deduplication",
+    "Supply owner-qualified production bars, calendar, identity/basis and native parent/level evidence",
+    "Complete required source CI/release and prove deployed publication, ongoing freshness and entitled browser behavior"
+  ],
+  "recovery_constraints": {
+    "retry_authorized": false,
+    "redispatch_authorized": false,
+    "worker_result_consumption_authorized": false,
+    "replacement_implementation_authorized": false
+  },
+  "runtime_access": {
+    "state": "SSH_PUBLICKEY_REFUSED",
+    "action_ended": true,
+    "runtime_facts_obtained": false,
+    "production_writes": false
+  },
+  "next_action": "Reconcile the original runs at their existing authoritative owner after a relevant recovery; do not duplicate or replace unknown execution. Continue independent CI/source evidence closure on the same branch.",
+  "reserved_worker_scope": {
+    "engine": "Pure causal core and its associated tests from the original commission; no replacement work authorized while effects remain unknown."
+  }
+}

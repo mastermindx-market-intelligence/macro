@@ -5,7 +5,7 @@ context, observation history and source clocks beside the existing US Stocks
 turn-setup roster. It is an observation surface. Its authority is always
 `may_rank=false, may_gate=false, may_size=false, may_trade=false`.
 
-## Delivery status at the first implementation checkpoint
+## Draft delivery status — unfinished
 
 The collector extension, publication integration and actual dashboard surface are
 implemented. Their conformance tests use synthetic inputs and stubbed network
@@ -17,6 +17,10 @@ envelope if that evaluator is absent or fails.
 No production timer, collector invocation, service, R2 object, source qualification,
 entry-availability owner or deployment has been changed. A new source file or a
 passing test does not establish live coverage or entry efficacy.
+
+Draft [PR #10715](https://github.com/mastermindx-market-intelligence/macro/pull/10715)
+contains this partial implementation. The separate health projection return also
+remains unverified; it is not included or active.
 
 The governing outcome and current frontier are in
 [the source plan](../research/prophet_v4/INTRADAY_PIVOT_CHECKLIST_2026-11-03.md).
@@ -151,10 +155,12 @@ into invented 30m coverage.
 
 ## Observation history and publication failures
 
-Stable semantic event IDs deduplicate repeated observations. The latest 64 events
-are a projection for the UI, which displays up to six per stock. Events retain
-source clocks and pivot identities; later evidence can retract or supersede earlier
-observations without pretending the old observation never occurred.
+The required causal-engine contract uses stable semantic event IDs and preserves
+source clocks, pivot identities and correction links. Its implementation and
+acceptance remain outstanding. The implemented wrapper deduplicates received IDs
+and projects the latest 64 events; the UI displays up to six per stock and labels
+corrections and earlier pivots. This projection does not prove that the missing
+producer has generated causal, correction-safe observations.
 
 The nightly incumbent reconciler reads only the spool's `events` array.
 `pivot_events` are deliberately outside that array: timing observations must not
@@ -176,9 +182,11 @@ the page is not proof that its spool write succeeded.
    as a live input source.
 3. Finish the exact existing causal-evaluator return and its adversarial verification.
    Do not duplicate that uncertain execution.
-4. Complete source review/CI and the authorized release path. The assigned session
+4. Reconcile the original health-projection return and prove freshness through the
+   existing health owner before claiming continuous monitoring.
+5. Complete source review/CI and the authorized release path. The assigned session
    does not self-approve or self-merge.
-5. Verify the deployed commit, actual monitor cadence, receipt freshness, correction
+6. Verify the deployed commit, actual monitor cadence, receipt freshness, correction
    behavior and entitled browser path. The attempted read-only runtime inspection
    was refused by SSH public-key authentication; no runtime facts were obtained.
 

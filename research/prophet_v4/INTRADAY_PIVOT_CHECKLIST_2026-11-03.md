@@ -102,7 +102,8 @@ or a handback. Source-owned changes are in the original managed branch and opera
 | Incumbent collector extension | New cadence/destination guards and immutable observation capture; parent adversarial checks | implemented and tested |
 | Live pass integration | Real evaluator pass under stubbed R2/vendor boundaries; same artifact, sibling spool and isolated failure | implemented and tested |
 | US Stocks UI | Actual Jinja template, 1440/390 widths, EN/ZH, light/dark; expiry, focus, Escape, access changes, history and folding | implemented and tested with synthetic fixtures |
-| Causal core | Original paid run listed below; no terminal return established yet | return pending |
+| Causal core | Original paid run listed below; no verified result or current worker state | unresolved effect |
+| Health projection | Independent original paid run; unqualified return and lost controller binding | not incorporated |
 | Production data and release | Native owners/coverage and deployed-path proof remain required | not activated |
 
 Focused source regression receipt: 291 passed, 1 deselected. The deselected existing
@@ -121,11 +122,20 @@ from the task's source base. The task therefore retains its compatible pin.
 |---|---|
 | `prophet-us-pivot-input-audit-20261104-c3` | Terminal; reviewed and accepted, with reservations above |
 | `prophet-us-pivot-source-capture-20261104-c3` | Terminal rc=0; accepted response SHA-256 `f618018dfdea970806554d23e5af59b625bf4fa96de981375fc5efa14aca4fa7`; parent repairs and tests are authoritative source |
-| `prophet-us-pivot-engine-20261104-c3` | Original controller 97323; controller return UNCONFIRMED, worker UNKNOWN, no result, no verified START, no retry/redispatch authority |
+| `prophet-us-pivot-engine-20261104-c3` | Original controller 97323; native same-run status still UNCONFIRMED, root null/unverified and worker UNKNOWN; last retained poll 07:40Z; no result/START/retry proof |
+| `prophet-us-pivot-health-20261104-c3` | Original controller 82408; native status EFFECT_UNKNOWN, root null/unverified, 699-byte unqualified return; no result-consumption or retry authority |
 | Native architecture principal | Bounded judgment only; accepted/STOP after each question; no delegated implementation |
 
-Do not duplicate, re-home or silently replace the uncertain engine run. A local
-controller poll is not proof of provider START or durable monitoring.
+Do not duplicate, re-home or silently replace either uncertain run. Both original
+controller PIDs were absent in the later OS observation; that does not establish
+external worker absence, cancellation or completion. A local controller poll is
+not proof of provider START or durable monitoring.
+
+The original installed Fabric owner was identified through its actual service
+binding and read with `status --follow`, without replaying a request or acceptance.
+It returned the same unverified states. Exact normalized observations, reserved
+worker paths and recovery constraints are retained in
+[recovery.json](../../docs/evidence/prophet-intraday-pivot-20261104/recovery.json).
 
 The attempted read-only SSH inspection of the source-documented production host
 was refused with `Permission denied (publickey)`. That action ended. No alternate
@@ -138,8 +148,12 @@ key/account/transport attempt was made, and no runtime facts or writes were obta
    Acceptance must include cross-session baseline receipts, combined knowledge
    clocks, correction-linked invalidation, replay prefixes and semantic event
    deduplication despite repeated observations.
-2. Finish current-head source verification and preserve browser/source evidence;
-   publish a concrete draft PR through the original branch.
+2. Complete the narrowly selected CI registration and verify its differential gate
+   against base `51c35090a624de1e977920e98def2c64488751b3`. Draft
+   [PR #10715](https://github.com/mastermindx-market-intelligence/macro/pull/10715)
+   already exists at published head `e890c78990705d76cfdd942506aa6c9c0211706c`;
+   keep that same branch and PR. Reconcile the independent health result before
+   editing its reserved paths or claiming an active freshness check.
 3. Native source qualification must supply complete admitted intraday evidence.
    The current hourly source is insufficient for a real 30m checklist. Capture
    retention itself does not establish qualification.
@@ -154,3 +168,24 @@ DO_NOT_REDO: accepted source-owner census, workspace acquisition, reconciled pla
 push, collector return, compatible-blob check, and passing browser configurations
 unless the relevant source or contracts change. Continue integration on the same
 branch; do not create another collector, scheduler, artifact or event ledger.
+
+
+### CI and fallback closure
+
+The first local CI registration put the three new suites in a broad existing job.
+The differential contract gate rejected that expansion: the three protected probe
+selections each increased by seven estimated weight-seconds. No ceiling or test
+was weakened. Registration was moved to an exclusive-path job inside the existing
+CI pack owner, with an explicit Node prerequisite. The revised gate is being
+checked against the same base; exact-head hosted CI remains separate.
+
+A focused additional integration run passed 18 tests. It includes the actual lazy
+import failure through `run()`, using supplied inputs and stubbed external writes:
+the unavailable, false-authority pivot envelope is serialized and the incumbent
+artifact/served-copy publication continues with zero new pivot observations. This
+is failure-isolation proof, not proof of the missing causal engine.
+
+The partial delivery must keep four gaps separate: original result/effect recovery,
+actual integrated-engine verification, qualified production inputs, and deployed
+ongoing-monitor/browser proof. Neither a draft PR nor its synthetic browser receipt
+closes those gaps. No durable background execution is claimed.

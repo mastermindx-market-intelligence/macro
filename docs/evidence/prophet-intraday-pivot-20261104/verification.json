@@ -34,8 +34,7 @@
     "passed": 14,
     "reason": "Executed after the final combined-evidence copy change; other tested source is unchanged."
   },
-  "test_command": "python3 -m pytest -q tests/test_polygon_intraday_pivot_capture.py tests/test_polygon_intraday.py tests/test_prophet_pivot_integration.py tests/test_prophet_pivot_surface.py tests/test_prophet_live_evaluator.py tests/test_prophet_live_vps_lane.py tests/test_prophet_live_reconcile.py -k not_test_universe_is_curated_us_set",
-  "test_selection_note": "Actual pytest -k expression was: not test_universe_is_curated_us_set",
+  "test_command": "python3 -m pytest -q tests/test_polygon_intraday_pivot_capture.py tests/test_polygon_intraday.py tests/test_prophet_pivot_integration.py tests/test_prophet_pivot_surface.py tests/test_prophet_live_evaluator.py tests/test_prophet_live_vps_lane.py tests/test_prophet_live_reconcile.py -k \"not test_universe_is_curated_us_set\"",
   "screenshot_sha256": {
     "1440-dark-zh.png": "6d9456ea4e0469e25209612cb08c2e362c43e0ee5fbcd33d8792c76bb10b3b9a",
     "1440-light-zh.png": "1c5ab849176b6726c7ae329c8bc3b4ec53a41ef081eb55bf88b538f915b1ba2c",
@@ -45,5 +44,23 @@
     "390-dark-zh.png": "75c774a54b1cb82b1b608195bd085287946c00ff3d9b515756e4561a2fa353b7",
     "390-light-en.png": "ddde3e1ac12019a6e790b5acfb51181e7b861dcba1ae4bbaf8c927f823856d12",
     "390-dark-en.png": "902e02ba19571cbbb3b0e92dfb16599dd00818f11bd1f6a43afe46d983b146ac"
-  }
+  },
+  "fallback_verification": {
+    "suite": "tests/test_prophet_pivot_integration.py",
+    "receipt": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "18",
+      "time": "4.547",
+      "timestamp": "2026-11-04T01:06:32.350488-07:00",
+      "hostname": "m2studio"
+    },
+    "source_sha256": "c3bef748b24275c9cfbf0bb32773486bb8998ec40d27c62f6ecec0d8a4d858de",
+    "scope": "Actual missing-module import through incumbent run and publication with synthetic inputs; original 291-test receipt remains unchanged.",
+    "post_test_change": "Blank-line formatting only; no executable statements changed."
+  },
+  "recovery_receipt": "recovery.json",
+  "health_projection": "Original paid run root unverified and EFFECT_UNKNOWN; no returned health implementation incorporated."
 }

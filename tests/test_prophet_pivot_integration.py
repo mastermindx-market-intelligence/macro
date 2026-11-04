@@ -1,12 +1,14 @@
 """Optional timing observations use the incumbent pass, artifact and event spool.
 
 All inputs are synthetic. Tests stub R2/vendor boundaries; no production data or
-publication proof is implied. Engine causality is tested in its own suite.
+publication proof is implied. These tests cover integration boundaries, not the
+pure engine's causal correctness; that separate acceptance remains required.
 """
 from __future__ import annotations
 
 import copy
 import json
+import sys
 from datetime import datetime, timezone
 
 import pytest
@@ -150,6 +152,27 @@ def test_real_pass_publishes_same_artifact_and_sibling_observations(tmp_path, mo
     assert len(spools) == 1
     assert spools[0]["pivot_events"] == [event("e1")]
     assert all(e["kind"] != "pivot_checklist" for e in spools[0]["events"])
+
+
+def test_missing_optional_core_preserves_real_pass_publication(tmp_path, monkeypatch):
+    from engine import prophet_live
+
+    actual_assess = E._assess_pivot
+    conf, writes, served = lane(tmp_path, monkeypatch)
+    monkeypatch.setattr(E, "_assess_pivot", actual_assess)
+    monkeypatch.delattr(prophet_live, "pivot_checklist", raising=False)
+    monkeypatch.setitem(sys.modules, "engine.prophet_live.pivot_checklist", None)
+    assert E.run(tmp_path, now=NOW, cfg=conf, require_publish=True) == 0
+    live = writes[E.r2io.LIVE_KEY]
+    pivot = live["pivot_checklist"]
+    assert (pivot["status"], pivot["reason"]) == ("unavailable", "pivot_evaluation_failed")
+    assert pivot["tickers"] == {}
+    assert all(value is False for value in pivot["authority"].values())
+    assert live["meta"]["pivot_events_n"] == 0
+    assert live["states"]
+    assert json.loads(served.read_text()) == live
+    assert all(not payload.get("pivot_events") for key, payload in writes.items()
+               if key != E.r2io.LIVE_KEY)
 
 
 def test_dry_run_writes_neither_existing_publication_plane(tmp_path, monkeypatch):

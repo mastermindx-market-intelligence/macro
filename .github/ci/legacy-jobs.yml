@@ -51634,3 +51634,39 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+
+  # Research-only pivot capture, evaluator isolation and dashboard contracts.
+  # Exact paths prevent adding these suites to unrelated broad code packs.
+  prophet-pivot-checklist:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - scripts/build_polygon_intraday.py
+      - scripts/prophet_live_evaluator.py
+      - scripts/capture_prophet_pivot_checklist.py
+      - templates/dashboard.html.j2
+      - templates/_prophet_pivot_checklist.js.j2
+      - templates/_prophet_pivot_checklist.css.j2
+      - tests/test_prophet_pivot_integration.py
+      - tests/test_prophet_pivot_surface.py
+      - tests/test_polygon_intraday_pivot_capture.py
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: install pivot contract dependencies
+        run: pip install pytest pandas pyarrow pyyaml requests jsonschema==4.26.0
+      - name: require Node for actual dashboard JavaScript contracts
+        run: node --version
+      - name: pivot capture, evaluator isolation and dashboard contracts
+        run: >-
+          python -m pytest
+          tests/test_prophet_pivot_integration.py
+          tests/test_prophet_pivot_surface.py
+          tests/test_polygon_intraday_pivot_capture.py
+          -q

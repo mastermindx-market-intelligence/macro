@@ -2279,6 +2279,11 @@ on:
       - ".github/workflows/prophet-live.yml"
       - "tests/test_prophet_live_pack.py"
       - "tests/test_prophet_live_evaluator.py"
+      # Intraday pivot conformance runs in its code-gated exclusive job,
+      # including test-only edits; no production data or vendor call is required.
+      - "tests/test_prophet_pivot_integration.py"
+      - "tests/test_prophet_pivot_surface.py"
+      - "tests/test_polygon_intraday_pivot_capture.py"
       - "tests/test_prophet_live_reconcile.py"
       # SILENT-FREEZE guard (2026-08 incident). The lane froze for 27 days because
       # the producer, the status surface and the external dead-man each reported
