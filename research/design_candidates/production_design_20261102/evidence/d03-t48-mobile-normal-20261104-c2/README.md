@@ -1,3 +1,5 @@
+> **Continuation update (2026-11-04 UTC):** The following README is the original two-state light/English checkpoint. The later six-board dark/Chinese extension, complete eight-state native Paper matrix and current #9495 native-publication/test status are in [MATRIX.md](MATRIX.md). Statements below about dark/ZH remaining or the original native-pair run being pending are historical, superseded by that addendum. All Draft/HOLD release restrictions remain.
+
 # D03 T48 — mobile normal-data scan and compare (Paper-native, provisional)
 
 Date: 2026-11-04 UTC. Mission: D03 US Equities & Prophet, 78-capability / 53-case design specification, existing Draft macro #10617. Protected Mastermind procedure pin: `700eef54bca4a2dc4e30d94a6b30dcfa733ad57c`. Immutable D03 commission: macro `6e1862867193ec6486a22001a0e4fb515da20448`.

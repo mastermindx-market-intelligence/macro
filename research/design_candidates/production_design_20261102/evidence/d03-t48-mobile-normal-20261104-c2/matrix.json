@@ -1,0 +1,105 @@
+{
+  "schema": "d03.paper_native_mobile_matrix/v1",
+  "date_utc": "2026-11-04",
+  "source_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "commission_sha": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "paper_file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+  "paper_page_id": "p-D-0",
+  "scope": "T48 compact rich-card scan and compare; illustrative and provisional",
+  "bindings": [
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "artboardId": "11OT-0",
+      "height": 1950,
+      "screenshot": "board-390-light-en.jpg",
+      "jsx": "board-390-light-en.paper.jsx",
+      "proofCommit": "df3c6b7b1fad0f19f68132d95513abbb2eb8b6ff"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "artboardId": "11Y9-0",
+      "height": 1950,
+      "screenshot": "board-390-dark-en.jpg",
+      "jsx": "board-390-dark-en.paper.jsx",
+      "proofCommit": null
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "artboardId": "127F-0",
+      "height": 1800,
+      "screenshot": "board-390-light-zh.jpg",
+      "jsx": "board-390-light-zh.paper.jsx",
+      "proofCommit": null
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "artboardId": "122U-0",
+      "height": 1800,
+      "screenshot": "board-390-dark-zh.jpg",
+      "jsx": "board-390-dark-zh.paper.jsx",
+      "proofCommit": null
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "artboardId": "11TO-0",
+      "height": 2110,
+      "screenshot": "board-320-light-en.jpg",
+      "jsx": "board-320-light-en.paper.jsx",
+      "proofCommit": "df3c6b7b1fad0f19f68132d95513abbb2eb8b6ff"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "en",
+      "artboardId": "12C0-0",
+      "height": 2110,
+      "screenshot": "board-320-dark-en.jpg",
+      "jsx": "board-320-dark-en.paper.jsx",
+      "proofCommit": null
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "zh",
+      "artboardId": "12L6-0",
+      "height": 1900,
+      "screenshot": "board-320-light-zh.jpg",
+      "jsx": "board-320-light-zh.paper.jsx",
+      "proofCommit": null
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "artboardId": "12GL-0",
+      "height": 1900,
+      "screenshot": "board-320-dark-zh.jpg",
+      "jsx": "board-320-dark-zh.paper.jsx",
+      "proofCommit": null
+    }
+  ],
+  "write_carrier": "Studio Direct C2 Personal guarded native Paper",
+  "observed_readback": "get_basic_info + actual get_screenshot + get_jsx",
+  "requires_after_matrix": [
+    "F01/F02 shared-shell v1 binding",
+    "live real-source/entitlement semantics",
+    "keyboard/touch/focus/reduced-motion and WCAG measurements",
+    "authenticated Save/list readback and signed-in Sources-to-Plan-to-same-card return",
+    "real served browser end-to-end proof",
+    "formal RIG and user acceptance"
+  ],
+  "known_held_effects": [
+    "T49 original row 11OR-0 operation EFFECT_UNKNOWN; untouched",
+    "T45/T51 original Fabric effects not replayed"
+  ]
+}
