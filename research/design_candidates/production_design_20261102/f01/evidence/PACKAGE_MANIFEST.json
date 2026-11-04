@@ -1,13 +1,13 @@
 {
   "schema": "F01.cumulative_package_manifest.v1",
   "status": "PARTIAL / REQUEST_CHANGES / RIG draft",
-  "kind": "Published scoped four-ID facet and focus correction; proposed candidate.5 guards; local metadata reconciled and live CI execution recorded",
+  "kind": "Published deliberate directory dismissal and deterministic thesis fixture repair; four scoped native composition references with post-QA JSX; exact code/CI/effect continuation",
   "containing_commit": "The enclosing immutable Git commit binds this manifest; a moving branch name is not the receipt",
-  "parent_before_package": "3c619de3a3339d205df0a1229503e1ca25e3bcce",
-  "files_excluding_self": 179,
-  "total_member_bytes": 6448862,
+  "parent_before_package": "ec99a1e6affe902efcdd79582ee72e15f90c87b9",
+  "files_excluding_self": 198,
+  "total_member_bytes": 7927671,
   "aggregate_definition": "SHA256 of UTF-8 sorted path + NUL + file SHA256 + newline for each member",
-  "aggregate_sha256": "e978d6176f87491ee988d170dfbcdf0a9524d0f5d3f81ea0d3135a26c83e78e5",
+  "aggregate_sha256": "0045aafe7cea477f64b4efb199b39589baba7698936308e79990afa26a1380c5",
   "historical_review_inputs": {
     "candidate2_capture": "245a7d2cd62d88fb6d2ee3863f9d26c63052d8e7",
     "candidate3_source_repair": "b55efe221d16ae5e64935af4c60572701b2a43a0",
@@ -25,7 +25,8 @@
     "directory_visual_first_pass_sha256": "e7eba1ad36df5abe14422ce210482d18c96e651a87f89e975994f72e743d6062",
     "directory_followup_capture_aggregate": "14a09641470f3bbad0cd6d4ed1d6a0335f4ce1299c03d97910ae97a18c5896d2",
     "directory_and_live_evidence_freeze": "0763afb2cb7e9916a720c879a8721d4dd487b5cd",
-    "facet_contract_source_freeze": "3c619de3a3339d205df0a1229503e1ca25e3bcce"
+    "facet_contract_source_freeze": "3c619de3a3339d205df0a1229503e1ca25e3bcce",
+    "facet_and_candidate5_source_parent": "ec99a1e6affe902efcdd79582ee72e15f90c87b9"
   },
   "source_review_scope": {
     "F01_review_id": 5760649569,
@@ -37,10 +38,38 @@
     "operative_sections_2_through_5_unchanged": true,
     "administrative_section_6_updated": true,
     "implementation_review": "SELF_QA_COMPLETED; optional independent review is not a Web-session gate; no new nonauthor approval claimed",
-    "implementation_commit": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "implementation_commit": "e3bb0e683236d9882eedc09719de201a26dd9498",
     "latest_consumed_F02_freeze": "6d1f6791408fbb317daf16b647c02465e8d81266",
     "historical_implementation_commit": "f9070aebf61ad88883dad441b195e1060c7671b5",
-    "candidate5": "PROPOSED_NOT_ADOPTED; additional editing-session/ownership/validation/fallback responses pending"
+    "candidate5": "PROPOSED_NOT_ADOPTED; additional editing-session/ownership/validation/fallback responses pending",
+    "previous_implementation_commit": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "current_procedure_pin": "7a52808e5761739a08b279dddba0d0c88e13224d",
+    "current_native_reference_scope": "J/K/L/M scoped self-QA; K/L/M provisional desktop references; complete design/native/programme acceptance remains open.",
+    "current_native_new_boards": [
+      {
+        "letter": "J",
+        "id": "72OR-0"
+      },
+      {
+        "letter": "K",
+        "id": "73G9-0"
+      },
+      {
+        "letter": "L",
+        "id": "73VO-0"
+      },
+      {
+        "letter": "M",
+        "id": "73YM-0"
+      }
+    ],
+    "current_native_operation_count": 22,
+    "original_held_paper_effects": "UNCHANGED; original atlas EFFECT_UNKNOWN and Readme DOCUMENT_CHANGED retry_allowed:false",
+    "candidate4_current_blob": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0",
+    "candidate5_current_blob": "7db3c0598bc22cfb47842406fdd6b28d587bc57f",
+    "current_continuation": "evidence/gesture_compositions_20261104/CONTINUATION.json",
+    "current_ci_observation": "evidence/gesture_compositions_20261104/CI_OBSERVATION.json",
+    "complete_programme_cases": "86 NOT_RUN"
   },
   "files": [
     {
@@ -51,9 +80,15 @@
     },
     {
       "path": "BUILDER_AND_MEASUREMENT_PLAN.md",
-      "bytes": 16483,
-      "sha256": "55cefb2794453a13061530062ed3b860c22b860c7db9d4f2ffc1cc5fda447c7f",
-      "git_blob_sha": "e5f7fb1f11af480f55d49df4d24c878e5a3b8e2e"
+      "bytes": 16408,
+      "sha256": "6971bf9a8373ce02961d0cfd30364d18c2e69769c3367dd296f552f4c2755022",
+      "git_blob_sha": "1ccbbf2efdd1f88e7e730e0014907fb115bfd3fe"
+    },
+    {
+      "path": "COMPOSITION_REFERENCES.md",
+      "bytes": 7873,
+      "sha256": "c9c9a9e5afc936779234232103381ef68e78c92f4bcce9638b8efb73054e99e7",
+      "git_blob_sha": "d1e6fe570a01d87283acf703ee7e235035cf6261"
     },
     {
       "path": "CONSUMER_INTEGRATION_NOTES.md",
@@ -75,27 +110,27 @@
     },
     {
       "path": "EVIDENCE_AND_REVIEW.md",
-      "bytes": 24355,
-      "sha256": "be05290e9fd47979a8b3a585fdfe1d827d03d6604beb649de155ea8ccddabd1b",
-      "git_blob_sha": "71d0ddc37a3112487e940e1d1771ce78ef0de478"
+      "bytes": 28103,
+      "sha256": "88c5d1a264a941b5d5461037356cf6e9b04a8b9a4e0ce4b9c494b5bfe9bce299",
+      "git_blob_sha": "e81fb109fd2f46c5537430aba31447c37f74fbd1"
     },
     {
       "path": "FEATURE_RETENTION_LEDGER.md",
-      "bytes": 12970,
-      "sha256": "3e3626c7cc2432ce8829d61827656216b3b44a793c4b5c10ea9563c0ac9eaf64",
-      "git_blob_sha": "b876ac6087bb7431d902d8f56224c0f4b618fa2a"
+      "bytes": 14054,
+      "sha256": "d666fca0dfbb4bb2a4ab86c27b1b1a6544fd0e19435915548a331b0a69e23dbb",
+      "git_blob_sha": "192b2c2ee28d194ec1a1bf11833fbf3e7d517b3d"
     },
     {
       "path": "IMPLEMENTATION_HANDOFF.md",
-      "bytes": 16668,
-      "sha256": "f9c8cbc4043793678b4dee9975e1b42d52474d13c8c724e15cabe6cc86521aa8",
-      "git_blob_sha": "1ac0e97010a3c974229e852247ccea26437ae2c1"
+      "bytes": 16996,
+      "sha256": "6be441bf33b1f2612c16ecb853e4b46a6233fd2d85fdae55dfebdbf47bdac9e4",
+      "git_blob_sha": "9a947bde5fa26f1a408192bce2ab8d595a1985fa"
     },
     {
       "path": "INTERACTION_CONFORMANCE.md",
-      "bytes": 24099,
-      "sha256": "d10bbc8d35f72f74610a11daacc8e03e2905160039af4344f4568d859b61b7b6",
-      "git_blob_sha": "c0540cd632735f5ddecb484fd53b4e7d2949ca4d"
+      "bytes": 26270,
+      "sha256": "7564e367e41ac3c1a955a871be7d3a0e68dc962888d05ab6ef252907fbd3d72d",
+      "git_blob_sha": "7382578243308c33fc802ed6d4014c549d2c3c0b"
     },
     {
       "path": "JOINT_SHELL_SYSTEM_CONTRACT.md",
@@ -117,9 +152,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 15064,
-      "sha256": "f52f892d82a7fab95a7e53d2738fa7fc0bc4b571c5de324537c2a3f5d9499fe2",
-      "git_blob_sha": "9d9891966afcdbe84334f4f5ea24bd4b46aec0c5"
+      "bytes": 17139,
+      "sha256": "a1d3cf8354e9b8cee2a96816d75af103fac31b77fcf12d93e2279d5184b302de",
+      "git_blob_sha": "3b341a50b7b9391d1bb57cb3d5c32b7f44fa3845"
     },
     {
       "path": "RESIZE_FOCUS_DECISION_PROPOSAL.md",
@@ -129,9 +164,9 @@
     },
     {
       "path": "RETURN_F01.md",
-      "bytes": 34344,
-      "sha256": "ae3a7f0ad2fb6b5690bc56d48b79212a5a972ec3765496aa277a3515c062109e",
-      "git_blob_sha": "14d9f018d35d4ea54cd53d45bc08238bea2e5bbb"
+      "bytes": 33912,
+      "sha256": "659b28c6daf16464e898f6dbd603162f921e938d14d375e51eaec24482e267e4",
+      "git_blob_sha": "4dc00e10c26bec993e7d29e92215682347eea1dd"
     },
     {
       "path": "SOURCE_AND_DATA_CONTRACT.md",
@@ -330,6 +365,114 @@
       "bytes": 14989,
       "sha256": "6aab8074220c3e0dc4ce2ee967df3a6b7cf328f2aad4459836d807f91870b5a9",
       "git_blob_sha": "8176c0a725ed581c0f2c0f28c0c65709d1dea225"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/CI_OBSERVATION.json",
+      "bytes": 9986,
+      "sha256": "d52bb317934b7b8664a4f3372cc574aabadbc4a2e441e55e04be140fbd524ddb",
+      "git_blob_sha": "339593fe433155e03155f43d74130cd58da9f4cb"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/CONTINUATION.json",
+      "bytes": 15917,
+      "sha256": "a830b1afe57486415268b3ef15242817c6952df7ded3880aeb6df99183e6a61f",
+      "git_blob_sha": "cbdb26369702d2725e3f48ca28e618ed8f19806d"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/IMPLEMENTATION_PUBLICATION.json",
+      "bytes": 8269,
+      "sha256": "1df9a191103723171c977e18b551a7f8aa4027c8ed816af3fd14fd14dcf00d79",
+      "git_blob_sha": "729a4a9d0f76b9966adaeef9d86e82fb4ec4f2e4"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/PAPER_BINDINGS.json",
+      "bytes": 5939,
+      "sha256": "7b3ee9c4af7a723be2710688a4780844330e828da9fff2c2f42a25f62eb9f0a8",
+      "git_blob_sha": "bd7c4abf614e0e309267894595d22b6f0e23888b"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/PAPER_OPERATIONS.json",
+      "bytes": 206126,
+      "sha256": "974fc9df6ed6fc6beda2b040725814b306290b5c7bb76f938855b405dbb8a9ad",
+      "git_blob_sha": "05c8cc595c91fc193a7aa14811eca9a9dd03920d"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/README.md",
+      "bytes": 2109,
+      "sha256": "4274bc15948e4e624bf10147154e71b951a461a7603527a6d12274dbe2edca7d",
+      "git_blob_sha": "cb2c2b48e75dc122d47e0cf02d15729563d94a90"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/SELF_QA.md",
+      "bytes": 3337,
+      "sha256": "ac447724a1763e9eb27c6beb68f30ea26c82f94b7730def2d4ba7d95ae255ed1",
+      "git_blob_sha": "4167deb9483c5ec9626484af22253109c65e5f4a"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/SOURCE_BINDINGS.json",
+      "bytes": 5678,
+      "sha256": "5227ac816df56121d12af44051bad6ce7b0cda067ee751ebf43d33e886dff36f",
+      "git_blob_sha": "c01efedbe7350f336d107adee6765cf4c2c15c1c"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/J-directory-gesture.jpg",
+      "bytes": 146224,
+      "sha256": "2e69a50a2fb73fb207a2716c468b980bb8f04aa6f8463629ddc43f90d8f16792",
+      "git_blob_sha": "860bf240cfa38e6bfa0738d0004404e3148d79ae"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/J-directory-gesture.jsx",
+      "bytes": 18739,
+      "sha256": "ee454d332c1a9c513fdb18868f6ebb1bf2661e08f5c153ef34c0e3aa1750512a",
+      "git_blob_sha": "414be5512a12af6746752cc0e94ba97d302d8f3a"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/K-focused-terminal.jpg",
+      "bytes": 263816,
+      "sha256": "322871501ed17cfff079012425a47138142a9a3c0d86a6d3303dfad0c0387859",
+      "git_blob_sha": "1eda35e41b52a733671b8aa2f3beb36edb54c985"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/K-focused-terminal.jsx",
+      "bytes": 79868,
+      "sha256": "c5b267f6df339aba9ed4e0af3d42685776e848ece7f2ec088791571ba454e7e8",
+      "git_blob_sha": "5b6a97b9b693a326b9e677c246cf99e004241aa1"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/L-public-reading.jpg",
+      "bytes": 232507,
+      "sha256": "31aca7d019d4365d080bb7d7cf4219564df79403ad56c282120c84594a0a6787",
+      "git_blob_sha": "b0a72e5ab2ea462d28a8e2bedda95dc6de29ff59"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/L-public-reading.jsx",
+      "bytes": 24744,
+      "sha256": "03eeb3db27a2121472e1576ee4e3d2b81ef13cca4045cfa750af54abf3e40ee1",
+      "git_blob_sha": "6dab471c979ba31fa508ef4aeedbc4e91c7fe745"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/M-internal-decision.jpg",
+      "bytes": 148239,
+      "sha256": "ae7cfd3f4e075b243e95447d4fdb1f6284ab1b322617e97befc14011f3d4d118",
+      "git_blob_sha": "6f1e452706b036dc863efd6a27aaa65e92a30293"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/paper/M-internal-decision.jsx",
+      "bytes": 23778,
+      "sha256": "87f00ab9c21425fec98c41bd246ab84d5f9bf37123c69c9d3d4c5480584e1047",
+      "git_blob_sha": "201f530f9a1acb586f84756457f09883a21e55a8"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/qa_before/J-before-contrast.jpg",
+      "bytes": 120079,
+      "sha256": "e6b7083a180b5d5fee498d0884637248e381e1ba8aea77d33ced7d640d898565",
+      "git_blob_sha": "a2d43645818cbcd5e995423496745277f55c3faa"
+    },
+    {
+      "path": "evidence/gesture_compositions_20261104/qa_before/M-before-icon-contrast.jpg",
+      "bytes": 146682,
+      "sha256": "a8388257b69900f9ece6fba43c94e7abc173178d69d8651a6c62a7c07f9bf70a",
+      "git_blob_sha": "7ab9aa46d31a6ce9e0843e1d7bde929d5cac7610"
     },
     {
       "path": "evidence/hardening_20261104/ADVISORY_AND_ADJUDICATION.md",

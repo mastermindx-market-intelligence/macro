@@ -71,13 +71,13 @@ All references remain in [MASTERMIND PAGES / p-23-0](https://app.paper.design/fi
 
 ## 3. Other predecessors and ownership
 
-The search/comparison page p-1S-0, All Tools/research launcher p-1R-0, investor-shell candidates p-18-0 and prior shell review p-D-0 remain discoverable in the same file. Their existence is not new acceptance. The focused Terminal source file01M3NSZGE8JWN2EZCSF0DT05RM/p-E-0 and internal OS file01M3NRCX55B452A12819WNE1RH/p-G-0 retain their respective owners. The moved notice on p-F-0 is not an invitation to restore an obsolete duplicate. F03 owns organizational changes; F01 did not move/archive/rename those resources.
+The search/comparison page p-1S-0, All Tools/research launcher p-1R-0, investor-shell candidates p-18-0 and prior shell review p-D-0 remain discoverable in the same file. Their existence is not new acceptance. The focused Terminal source file01M3NSZGE8JWN2EZCSF0DT05RM/p-E-0 retains its owner. In internal OS file01M3NRCX55B452A12819WNE1RH, p-G-0 is archived market-shell reference and p-F-0 is a moved investor notice. The genuine internal decision predecessor is p-I-0 / AT20 OU0-0, whose visible desktop anatomy was inspected read-only. D27 also retains Projects/Evidence p-H-0, supervision p-J-0 and Sessions/Access p-K-0. F03/D27 keep organization and route-specific access ownership; no source page/board was moved, renamed or archived.
 
 ## 4. Supersession and unresolved retention
 
 This candidate proposes a refined composition, selected-state policy and precise width/focus contracts. It does not supersede the source law, route registry, historical data, source-owned domain views, incumbent F02 review findings or retained predecessor evidence. A later accepted source must name the exact clauses it supersedes.
 
-Unqualified items remain explicit: route-family presentation mapping, final F01/F02 visual qualification, complete native return restoration, Options local-query reserialization, manifest freshness/failure behavior, full browser keyboard/zoom/locale proof, all Paper effects and independent review. The acceptance test specifications bind these gaps; no feature is marked proven solely because it appears in a mockup.
+Unqualified items remain explicit: route-family presentation mapping, final F01/F02 visual qualification, complete native return restoration, Options local-query reserialization, manifest freshness/failure behavior, full browser keyboard/zoom/locale proof, the original held Paper effects and applicable formal programme approvals. Optional independent review is not a Web-session gate. The acceptance test specifications bind these gaps; no feature is marked proven solely because it appears in a mockup.
 
 ## Candidate.3 review response
 
@@ -98,3 +98,7 @@ These are three unsupported specimen dependencies, not removal of existing produ
 No retention disposition changed:36 capabilities remain23 RETAIN/13 IMPROVE, with no removal, relocation or blocked existing feature. The six-board be157007 freeze supplies actual corrections to C/D/E local hierarchy, C selection/history anatomy, A/H compact/location treatment and E/F targets. Those are reviewed artifacts, not feature/runtime passes. B/G/Readme/I and historical reports remain unchanged.
 
 The current-source supplement preserves Company preview/commit and query/listing history through the existing owners, clarifies Brain/D14 versus D06 ownership, and retains the focused reader's real width/current-cursor semantics. It creates no route, preference/selection store, endpoint or request authority. Exact historical Ask, complete return restoration and native/QA01 qualification remain open.
+
+## Current composition reference addendum — 2026-11-04 UTC
+
+[COMPOSITION_REFERENCES.md](COMPOSITION_REFERENCES.md) binds J 72OR-0, K 73G9-0, L 73VO-0 and M 73YM-0. J clones existing F; K clones complete SS06 without replacing the chart or reader with summary-only content. L uses a real authored article/table and retained public destinations; the rail CTA is a proposal. M re-authors actual visible AT20 anatomy and preserves exact action scope. Four final JPEG/JSX pairs and twenty-two operation receipts are retained. The original seventeen p-23-0 boards, separate OS file, shared tokens and held I/Readme targets remain intact. These references do not change the 36 capability dispositions, 290-identity census, candidate.4 policy or complete-programme NOT_RUN status.

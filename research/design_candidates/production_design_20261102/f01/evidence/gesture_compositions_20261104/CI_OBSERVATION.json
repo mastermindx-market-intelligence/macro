@@ -1,0 +1,262 @@
+{
+  "schema": "F01.exact_head_ci_observation.v1",
+  "observed_at": "2026-11-04 08:58:30 UTC",
+  "observer": "/root/f01_ci_bound_failures; one bounded read-only update",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+  "pr": 1276,
+  "draft": true,
+  "open": true,
+  "merged": false,
+  "workflow_run": 41800996102,
+  "workflow_attempt": 1,
+  "workflow_status": "queued",
+  "workflow_conclusion": null,
+  "workflow_updated_at": "2026-11-04T08:39:54Z",
+  "job_progress_observed": true,
+  "all_check_records_match_head": true,
+  "summary": {
+    "total": 20,
+    "success": 6,
+    "in_progress": 3,
+    "queued": 11,
+    "failed": 0,
+    "other_terminal": 0
+  },
+  "successful_check_names": [
+    "Quote Hub tests",
+    "Investigation PostgreSQL invariants",
+    "CodeQL",
+    "Analyze (actions)",
+    "Analyze (python)",
+    "Analyze (javascript-typescript)"
+  ],
+  "in_progress": [
+    {
+      "id": 126477245755,
+      "name": "Terminal e2e mobile-2 (shard)",
+      "started_at": "2026-11-04T08:43:15Z"
+    },
+    {
+      "id": 126477245846,
+      "name": "Terminal unit + typecheck (shard)",
+      "started_at": "2026-11-04T08:55:37Z"
+    },
+    {
+      "id": 126477245911,
+      "name": "Terminal e2e desktop-4 (shard)",
+      "started_at": "2026-11-04T08:57:51Z"
+    }
+  ],
+  "sources": [
+    "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1276",
+    "https://api.github.com/repos/mastermindx-market-intelligence/mastermind-terminal/commits/e3bb0e683236d9882eedc09719de201a26dd9498/check-runs?per_page=100",
+    "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102",
+    "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800989584"
+  ],
+  "qualification": "Run metadata still reports queued while exact-head check records show three jobs in progress. Neither full completion nor a green required set is established.",
+  "complete_required_set": false,
+  "watcher_armed": false,
+  "rerun_requested": false,
+  "return_path": "Existing Draft PR #1276 and GitHub Actions run 41800996102",
+  "prior_observation": {
+    "schema": "F01.exact_head_ci_observation.v1",
+    "observed_at": "2026-11-04 08:48:51 UTC",
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+    "workflow_run": 41800996102,
+    "workflow_status": "queued",
+    "job_progress_observed": true,
+    "checks": [
+      {
+        "id": 126477711476,
+        "name": "CodeQL",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/runs/126477711476",
+        "started_at": "2026-11-04T08:40:59Z",
+        "completed_at": "2026-11-04T08:41:02Z"
+      },
+      {
+        "id": 126477246229,
+        "name": "Terminal e2e tablet-3 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477246229",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477246124,
+        "name": "Terminal e2e desktop-5 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477246124",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477246090,
+        "name": "Terminal e2e tablet-1 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477246090",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477246005,
+        "name": "Terminal e2e desktop-3 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477246005",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245980,
+        "name": "Terminal e2e mobile-3 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245980",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245955,
+        "name": "Terminal e2e desktop-2 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245955",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245911,
+        "name": "Terminal e2e desktop-4 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245911",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245857,
+        "name": "Terminal e2e tablet-2 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245857",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245846,
+        "name": "Terminal unit + typecheck (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245846",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245834,
+        "name": "Terminal e2e serial (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245834",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245831,
+        "name": "Terminal e2e mobile-1 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245831",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245825,
+        "name": "Terminal e2e desktop-1 (shard)",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245825",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245805,
+        "name": "Quote Hub tests",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245805",
+        "started_at": "2026-11-04T08:46:51Z",
+        "completed_at": "2026-11-04T08:47:33Z"
+      },
+      {
+        "id": 126477245755,
+        "name": "Terminal e2e mobile-2 (shard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245755",
+        "started_at": "2026-11-04T08:43:15Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245747,
+        "name": "Ingest + signal-layer tests",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245747",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126477245384,
+        "name": "Investigation PostgreSQL invariants",
+        "status": "queued",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800996102/job/126477245384",
+        "started_at": "2026-11-04T08:39:54Z",
+        "completed_at": null
+      },
+      {
+        "id": 126476403439,
+        "name": "Analyze (actions)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800989584/job/126476403439",
+        "started_at": "2026-11-04T08:40:32Z",
+        "completed_at": "2026-11-04T08:41:28Z"
+      },
+      {
+        "id": 126476403101,
+        "name": "Analyze (python)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800989584/job/126476403101",
+        "started_at": "2026-11-04T08:40:06Z",
+        "completed_at": "2026-11-04T08:41:09Z"
+      },
+      {
+        "id": 126476402945,
+        "name": "Analyze (javascript-typescript)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41800989584/job/126476402945",
+        "started_at": "2026-11-04T08:40:03Z",
+        "completed_at": "2026-11-04T08:43:13Z"
+      }
+    ],
+    "summary": {
+      "success": 5,
+      "in_progress": 1,
+      "queued": 14,
+      "failed": 0
+    },
+    "complete_required_set": false,
+    "watcher_armed": false,
+    "return_path": "Existing Draft PR #1276 and GitHub Actions run 41800996102"
+  }
+}

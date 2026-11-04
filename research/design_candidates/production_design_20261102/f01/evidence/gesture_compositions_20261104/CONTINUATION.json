@@ -1,0 +1,364 @@
+{
+  "schema": "F01.recoverable_continuation.v1",
+  "classification": "CHECKPOINTED_CONTINUATION",
+  "checkpoint_prepared_at": "2026-11-04 08:58:28 UTC",
+  "mission": "Resume Published F01 Deliverables under the existing receiver: harden and implement the bounded shared-directory slice, qualify disjoint native composition references, and publish exact source/proof without promoting or releasing the programme.",
+  "mission_complete": false,
+  "overall_acceptance": "PARTIAL / REQUEST_CHANGES / RIG draft",
+  "final_joint_v1": "UNRELEASED",
+  "bounded_done_when": {
+    "directory": "Reproduce unintended cross-boundary drag dismissal; repair local primary-pointer intent with retained query/facet/focus/routes; pass meaningful component and actual desktop/touch regression proof; publish exact source and evidence.",
+    "ci_fixture": "Diagnose the exact failed hosted thesis attempts; isolate the fixture's unrelated external widget without weakening assertions or changing production ownership; pass affected and full-file variants.",
+    "native_references": "Bind exact predecessor/source and target identities; preserve advanced functions; inspect final actual renders, correct defects, export JSX afterward, and publish remaining owner qualifications.",
+    "state": "SCOPED_LOCAL_CODE_AND_NATIVE_REFERENCE_CONDITIONS_MET; source publication bound by enclosing commit and subsequent readback"
+  },
+  "source": {
+    "protected_repository": "mastermindx-market-intelligence/Mastermind",
+    "protected_pin": "7a52808e5761739a08b279dddba0d0c88e13224d",
+    "bootstrap_major": 1,
+    "skillpack_version": "1.0.1",
+    "compatible": true,
+    "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 10645,
+    "draft": true,
+    "branch": "design/f01-shared-shell-v1-20261103-c4",
+    "parent": "ec99a1e6affe902efcdd79582ee72e15f90c87b9",
+    "containing_commit": "The enclosing immutable Git commit binds this checkpoint; the moving branch is not the receipt.",
+    "publisher": "Existing GitHub connector; expected-head update; mastermidx4 / ChatGPT4",
+    "contract": "F01-F02-SHELL/1.0.0-candidate.4",
+    "candidate4": "OPERATIVE; unchanged by this continuation",
+    "candidate5": "PROPOSED_NOT_ADOPTED; unchanged by this continuation",
+    "historical_approval_scope": "5760649569 remains bound to 3e334bd3eabf1d6ecc7980845fbd7a813dd023e1 / semantic 8926b16af4e0c3e5310cdb4cf057390ec04d18ff; no approval is extended."
+  },
+  "implementation": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 1276,
+    "draft": true,
+    "branch": "sol/web-f01-directory-focus-correction-20261104-c4",
+    "head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+    "parent": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "operation": "f01-directory-focus-correction-20261104-c4",
+    "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/f01-directory-focus-correction-20261104-c4",
+    "app_subdirectory": "terminal",
+    "custody": "All 16 published source/proof files matched local SHA256 and Git blob digests; immutable published comparison and critical text readback verified.",
+    "local_state": "HEAD/index reconciled to e3bb0e683236d9882eedc09719de201a26dd9498 after exact-byte checks; tracked source clean; no source bytes rewritten.",
+    "retained_untracked_scratch": [
+      ".f01-ci-evidence/",
+      ".f01-facet-evidence/",
+      ".f01-gesture-evidence/"
+    ],
+    "owned_test_processes": "COMPLETED; no extra server daemon or watcher armed"
+  },
+  "paper": {
+    "carrier": "Original Mastermind Paper direct app",
+    "writer": "Astra Pro / mastermidx4 / ChatGPT4",
+    "file": "01M2WGNCX9475G79JRKJTCM08P",
+    "page": "p-27-0",
+    "adapter_version": "0.5.18",
+    "write_schema": "TOOL_SCOPED_CONTRACT_V1",
+    "snapshot_sha256": "d420f4ac4dadd7130839792fcad32593b64397b642b4a0c81241ced62defdbc5",
+    "snapshot_scope": "Adapter wrapper retained active page p-24-0; explicit file/page/node binding, target-page readback and final screenshots establish edited p-27-0 state. Wrapper hash alone is not target-content proof.",
+    "shared_token_hash": "cfd3d65c",
+    "artboard_count": 14,
+    "new_boards": [
+      {
+        "letter": "J",
+        "id": "72OR-0",
+        "stem": "J-directory-gesture",
+        "kind": "gesture",
+        "size": "1440×1180",
+        "scope": "Directory gesture contract with an editable clone of F 6ZZV-0; scoped implementation qualified separately."
+      },
+      {
+        "letter": "K",
+        "id": "73G9-0",
+        "stem": "K-focused-terminal",
+        "kind": "focused",
+        "size": "1520×1440",
+        "scope": "Focused Terminal desktop reference, with the complete editable SS06 6O5H-0 clone and ownership notes."
+      },
+      {
+        "letter": "L",
+        "id": "73VO-0",
+        "stem": "L-public-reading",
+        "kind": "public",
+        "size": "1520×1740",
+        "scope": "EN/light desktop public reading excerpt, authored recovery table, actual navigation vocabulary and calculator destination; rail CTA placement is proposed."
+      },
+      {
+        "letter": "M",
+        "id": "73YM-0",
+        "stem": "M-internal-decision",
+        "kind": "internal",
+        "size": "1680×1460",
+        "scope": "Internal decision-required desktop reference re-authored from visible AT20 anatomy; exact revision/audience/access and explicit action labels retained."
+      }
+    ],
+    "new_operations": [
+      {
+        "id": "F01-20261104-c4-directory-gesture-board-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": null
+      },
+      {
+        "id": "F01-20261104-c4-directory-gesture-header-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "72OR-0"
+      },
+      {
+        "id": "F01-20261104-c4-directory-gesture-content-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "72OR-0"
+      },
+      {
+        "id": "F01-20261104-c4-directory-gesture-notes-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "72S2-0"
+      },
+      {
+        "id": "F01-20261104-c4-directory-gesture-contrast-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "72OR-0"
+      },
+      {
+        "id": "F01-20261104-c4-focused-composition-board-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": null
+      },
+      {
+        "id": "F01-20261104-c4-focused-composition-heading-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73G9-0"
+      },
+      {
+        "id": "F01-20261104-c4-focused-composition-clone-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73G9-0"
+      },
+      {
+        "id": "F01-20261104-c4-focused-composition-notes-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73G9-0"
+      },
+      {
+        "id": "F01-20261104-c4-public-composition-board-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": null
+      },
+      {
+        "id": "F01-20261104-c4-public-composition-frame-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73VO-0"
+      },
+      {
+        "id": "F01-20261104-c4-public-navigation-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73VT-0"
+      },
+      {
+        "id": "F01-20261104-c4-public-reading-layout-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73VT-0"
+      },
+      {
+        "id": "F01-20261104-c4-public-authored-excerpt-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73WT-0"
+      },
+      {
+        "id": "F01-20261104-c4-public-scope-notes-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73VO-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-composition-board-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": null
+      },
+      {
+        "id": "F01-20261104-c4-internal-composition-frame-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73YM-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-sidebar-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73YR-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-workspace-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73YR-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-decision-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "740W-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-scope-notes-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73YM-0"
+      },
+      {
+        "id": "F01-20261104-c4-internal-icon-contrast-v1",
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "target": "73YT-0"
+      }
+    ],
+    "new_uncertain_operations": 0,
+    "final_visual_qa": "COMPLETED_SCOPED; J heading/token contrast and M icon contrast corrected; K/L final render accepted for reference scope.",
+    "jsx_export": "AFTER_FINAL_VISUAL_QA",
+    "references_qualification": "K/L/M are provisional desktop composition references, not complete product, domain, responsive, locale/theme or runtime acceptance.",
+    "held_effects": [
+      {
+        "operation_id": "F01-20261103-c4-state-8-v1",
+        "board": "710Z-0",
+        "target": "711X-0",
+        "state": "EFFECT_UNKNOWN",
+        "terminal_receipt_recovered": false,
+        "observed_grid_children": 9,
+        "observation_resolves_effect": false
+      },
+      {
+        "operation_id": "F01-20261103-c4-readme-concurrence-v2",
+        "board": "6ZZX-0",
+        "state": "DOCUMENT_CHANGED",
+        "retry_allowed": false
+      }
+    ],
+    "held_recovery": "Await material original-carrier disposition, then reconcile the original operation/target before any dependent write. No replay, re-key, alternate carrier, replacement atlas or mutation of held ancestors/shared effects.",
+    "preserved": "Original ten F01 boards, all 17 p-23-0 predecessors, separate OS source file, shared tokens and page administration"
+  },
+  "proof": {
+    "directory_baseline": {
+      "failed": 3,
+      "viewports": [
+        1440,
+        820,
+        390
+      ],
+      "cause": "Native common-ancestor dialog click after input-to-backdrop drag"
+    },
+    "directory_full_corrected": {
+      "passed": 37,
+      "skipped": 2,
+      "failed": 0,
+      "flaky": 0,
+      "skip_reason": "Existing intentional modified-new-tab cases on smaller viewports"
+    },
+    "directory_final_affected": {
+      "passed": 3,
+      "failed": 0,
+      "scope": "Exact final source after capture-loss guard"
+    },
+    "component_and_neighbor_final": {
+      "passed": 95,
+      "failed": 0
+    },
+    "thesis_lineage": {
+      "passed": 2,
+      "failed": 0,
+      "retries": 0
+    },
+    "thesis_full": {
+      "passed": 84,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0
+    },
+    "typecheck": "PASS",
+    "scoped_lint": "PASS; zero warnings",
+    "fixture_basis": "Chromium; existing development guest seam, controlled AAPL manifest/store fixtures; original external widget isolated only in thesis helper.",
+    "limits": [
+      "Production identity and premium entitlement not qualified",
+      "Live provider truth not qualified",
+      "Actual OS IME and assistive technology not qualified",
+      "Other browser engines not qualified",
+      "Complete Company selection/scroll/focus return remains unqualified",
+      "No deployment or participant study",
+      "Known development chunk404/ERR_ABORTED retained in evidence",
+      "Separate prior watchlist ECONNRESET retry-pass underlying cause unresolved"
+    ],
+    "full_programme_cases": {
+      "count": 86,
+      "status": "NOT_RUN"
+    }
+  },
+  "ci": {
+    "observation_file": "CI_OBSERVATION.json",
+    "head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+    "workflow_run": 41800996102,
+    "observed_at": "2026-11-04 08:58:30 UTC",
+    "summary": {
+      "total": 20,
+      "success": 6,
+      "in_progress": 3,
+      "queued": 11,
+      "failed": 0,
+      "other_terminal": 0
+    },
+    "complete_required_set": false,
+    "return_path": "Existing Draft #1276 and GitHub Actions run 41800996102",
+    "watcher_armed": false,
+    "extra_runner_started": false,
+    "workflow_status": "queued",
+    "exact_head_jobs_in_progress": 3,
+    "metadata_qualification": "Run metadata still reports queued while exact-head check records show three jobs in progress. Neither full completion nor a green required set is established."
+  },
+  "owners": {
+    "F02": {
+      "pr": 10630,
+      "latest_handshake": "6d1f6791408fbb317daf16b647c02465e8d81266",
+      "two_branch_proposal_response": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+      "expanded_candidate5_response": "PENDING; latest bounded conversation-comment read found no extension"
+    },
+    "F03": {
+      "four_id_concurrence": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+      "retained": "Admission/export/organization and complete directory proposal disposition"
+    },
+    "D06": "Focused Terminal fit, reader mm.railW, qualified plot minimum and complete return ownership",
+    "D26": "Public route, canonical/anchors, authored source, acquisition/auth and proposed reading-rail CTA placement",
+    "D27": "Internal route-specific access, persistence, consequential actions, receipts/recovery and mobile qualification",
+    "Brain_D14_and_host": "Existing widget lifecycle, requests/context, Stop/saved outcomes and Terminal host presentation remain separate",
+    "adjacent1244": {
+      "head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+      "author": "mastermindxryan",
+      "scope": "Retain nativeTitle mapping and existing work; earlier single-file virtual composition passed, whole-PR integration not claimed"
+    },
+    "adjacent1188": "Existing lazy/search seam retained",
+    "adjacent1191": "Existing legacy host seam retained",
+    "prior1264": "Externally merged f528a219cc5d73e94e058575e3df83d689632bf9; this continuation did not perform or ratify it"
+  },
+  "do_not_redo": [
+    "Accepted focus/facet behavior and exact four-ID/seven-category boundaries without material change",
+    "95/37+2/3 gesture proofs and 84+2 thesis proofs without source or relevant failure change",
+    "Unchanged candidate.4/candidate.5 and historical approval scopes",
+    "36-capability/290-identity census and 17 predecessor inventory",
+    "Final J/K/L/M screenshots and post-QA JSX without a material target change",
+    "Unchanged original-effect diagnostics, replay/re-key or alternative-carrier attempts",
+    "Historical review dispatch or optional reviewer ceremony"
+  ],
+  "children": {
+    "contract_judgment": "READ_ONLY_MAPPING_OWNER_RESPONSE_AND_PARENT_INTEGRITY_COMPLETED",
+    "ci_bound_failures": "READ_ONLY_DIAGNOSIS_AND_EXACT_HEAD_CI_OBSERVATION_COMPLETED",
+    "external_workers_started": false,
+    "external_messages_sent": false,
+    "role": "Native read-only advisers; no mutation custody, no required review gate"
+  },
+  "next_action": [
+    "Read the terminal result of existing CI run 41800996102 at exact e3bb0e683236d9882eedc09719de201a26dd9498; diagnose and repair only a concrete owned failure through the same carrier.",
+    "Consume a material affected-owner response before qualifying its exact candidate.5 transition or D06/D26/D27/Brain/host composition.",
+    "On original Paper disposition, reconcile the original held operation and target before any dependent edit."
+  ],
+  "holds": [
+    "Remain Draft",
+    "No Ready or un-draft",
+    "No merge or enqueue",
+    "No held-PR relabel",
+    "No deployment",
+    "No self-approval or extension of historical approvals"
+  ],
+  "boundary": "Scoped local code/native reference work and source publication are complete; remaining integration/full-programme acceptance depends on actual CI/owner/effect inputs. Optional review is not awaited. This checkpoint does not promise unattended execution."
+}

@@ -1,0 +1,200 @@
+{
+  "schema": "F01.implementation_publication.v1",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "pr": 1276,
+  "draft": true,
+  "author": "mastermidx4",
+  "branch": "sol/web-f01-directory-focus-correction-20261104-c4",
+  "operation": "f01-directory-focus-correction-20261104-c4",
+  "parent": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+  "head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+  "tree": "62e15e8034975154c2f60ff5951e3c154ecc05ab",
+  "publisher": "Existing GitHub connector Git objects and expected-head ref update",
+  "ref_update": {
+    "success": true
+  },
+  "files": {
+    "terminal/components/chrome/shared-shell/ShellDirectory.tsx": {
+      "bytes": 19543,
+      "sha256": "5ac51ef33f210fa50fdaadc04fc2b75bbeeb1de80e5987d03d4b4cee857e9bd3",
+      "git_blob_sha": "5a34390cd314833451cea9fad2506aa1b7bd1fc7"
+    },
+    "terminal/lib/__tests__/sharedShellDirectoryConformance.test.tsx": {
+      "bytes": 26103,
+      "sha256": "66b83ac65fabaa6c4c1121264bbef75cbbc358fbdf8299ab8d277b3de54e6096",
+      "git_blob_sha": "a3ad71b10d80abf452f085556cf350b43be15eaf"
+    },
+    "terminal/e2e/shared-shell-directory-hardening.spec.ts": {
+      "bytes": 27431,
+      "sha256": "186bde53d98d9f7bac09e0975154e213811e074130be86d779d8495b04396813",
+      "git_blob_sha": "3b32a11fb3031a1479deb894ad360fe30a3ed1d5"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/BROWSER_CASES.json": {
+      "bytes": 94571,
+      "sha256": "ddb88a98f9dd258140616dd9e7868994dee2a8c6b700883eeeed8e1433d2661a",
+      "git_blob_sha": "aa774a3f006ef33e9704c1039d5deeb8dae53985"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/README.md": {
+      "bytes": 4770,
+      "sha256": "96ff65acb73356ab3f321d0ed33687343a1ef52cede963642310c109727c2e3e",
+      "git_blob_sha": "d3353604076f7d39eb6850ec3fe00c9a7281e7a7"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/RESULTS.json": {
+      "bytes": 8455,
+      "sha256": "c3a3194a4b0764d960bc5b07b4f1afde2aa760daa26bc3be1d976a368c090b09",
+      "git_blob_sha": "11fe748fc930a96319289582881029a21f3bedec"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/SOURCE_INPUTS.json": {
+      "bytes": 934,
+      "sha256": "665ffabe51074e5a968eecfbe2178fcd260b4299018803505a46135925c18aba",
+      "git_blob_sha": "164a32fcd975fe6706f7763a122b356adae7ad4a"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/desktop-retained.png": {
+      "bytes": 128756,
+      "sha256": "387683c8ce5f29e10c9e84cf28e45c11e2325eb978adea94d2edb96f5bd36e44",
+      "git_blob_sha": "1ae2192698d0e8d52dd7667f0a4922de8aa4871d"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/mobile-retained.png": {
+      "bytes": 44850,
+      "sha256": "32348b8fd5b641bd6433eab6f52e39a24531292f00fe06dd975338da5bc66490",
+      "git_blob_sha": "ab01becac81329e29c56e476905b42a542fef875"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/raw-reports.zip": {
+      "bytes": 822004,
+      "sha256": "0a5c8bba154c7b21c257dd6e7e1d8947f7c08315cb9ff391caf3e0f9c148c20d",
+      "git_blob_sha": "b3928eaafff7f333d8960c5edd1b0e89afade26c"
+    },
+    "terminal/docs/pr-crops/f01-directory-gesture-20261104/tablet-retained.png": {
+      "bytes": 75613,
+      "sha256": "59df2e2826f1f82693bb5e2b0bd521d9af7e2cfd675efe6576164edcbbb3fd91",
+      "git_blob_sha": "511a681df53a37a55b34fd71dd46b73f4f1f740d"
+    },
+    "terminal/e2e/thesis-workspace.spec.ts": {
+      "bytes": 66880,
+      "sha256": "45c5249f143a26eb4d05a6b0cf4a0a80e197249d3c9a345aa5fc14f3d2aa1331",
+      "git_blob_sha": "4a013e6ed3cdf85a4af1868e823db50c66e67ca8"
+    },
+    "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/README.md": {
+      "bytes": 4222,
+      "sha256": "8829ecf8469d9891003103ed3459e695241667e71b8c24741fdb5d6fffa0b981",
+      "git_blob_sha": "6238afec32fa6fc1725a22ca180f5ad6dbe2ae2b"
+    },
+    "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/RESULTS.json": {
+      "bytes": 3898,
+      "sha256": "f78ade9370536cbe37ea58fd6e1631ad045c9a32972b79e4f7a1cb4f800aef3e",
+      "git_blob_sha": "ba4517b8ea59b008d16ae6d7c8066f2c95dcc125"
+    },
+    "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/TRACE_READBACK.json": {
+      "bytes": 6239,
+      "sha256": "17c273fd6fa67f274e06bd80435db093c88484c05ec21c370cbf397b79d819bb",
+      "git_blob_sha": "01d85651bc96dc408bf4f1c2697fa24ae763489f"
+    },
+    "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/raw-reports.zip": {
+      "bytes": 11888,
+      "sha256": "8920b6166dacacf708df49044963b05b5c4be5a048481df632ecdd8aea1a601a",
+      "git_blob_sha": "6e8979daf83d94d34010cecd241c72908041de80"
+    }
+  },
+  "published_comparison": [
+    {
+      "path": "terminal/components/chrome/shared-shell/ShellDirectory.tsx",
+      "sha": "5a34390cd314833451cea9fad2506aa1b7bd1fc7",
+      "status": "modified"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/README.md",
+      "sha": "6238afec32fa6fc1725a22ca180f5ad6dbe2ae2b",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/RESULTS.json",
+      "sha": "ba4517b8ea59b008d16ae6d7c8066f2c95dcc125",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/TRACE_READBACK.json",
+      "sha": "01d85651bc96dc408bf4f1c2697fa24ae763489f",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-ci-widget-fixture-20261104/raw-reports.zip",
+      "sha": "6e8979daf83d94d34010cecd241c72908041de80",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/BROWSER_CASES.json",
+      "sha": "aa774a3f006ef33e9704c1039d5deeb8dae53985",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/README.md",
+      "sha": "d3353604076f7d39eb6850ec3fe00c9a7281e7a7",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/RESULTS.json",
+      "sha": "11fe748fc930a96319289582881029a21f3bedec",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/SOURCE_INPUTS.json",
+      "sha": "164a32fcd975fe6706f7763a122b356adae7ad4a",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/desktop-retained.png",
+      "sha": "1ae2192698d0e8d52dd7667f0a4922de8aa4871d",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/mobile-retained.png",
+      "sha": "ab01becac81329e29c56e476905b42a542fef875",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/raw-reports.zip",
+      "sha": "b3928eaafff7f333d8960c5edd1b0e89afade26c",
+      "status": "added"
+    },
+    {
+      "path": "terminal/docs/pr-crops/f01-directory-gesture-20261104/tablet-retained.png",
+      "sha": "511a681df53a37a55b34fd71dd46b73f4f1f740d",
+      "status": "added"
+    },
+    {
+      "path": "terminal/e2e/shared-shell-directory-hardening.spec.ts",
+      "sha": "3b32a11fb3031a1479deb894ad360fe30a3ed1d5",
+      "status": "modified"
+    },
+    {
+      "path": "terminal/e2e/thesis-workspace.spec.ts",
+      "sha": "4a013e6ed3cdf85a4af1868e823db50c66e67ca8",
+      "status": "modified"
+    },
+    {
+      "path": "terminal/lib/__tests__/sharedShellDirectoryConformance.test.tsx",
+      "sha": "a3ad71b10d80abf452f085556cf350b43be15eaf",
+      "status": "modified"
+    }
+  ],
+  "whole_byte_verification": {
+    "files": 16,
+    "sha256_and_git_blob_verified": true
+  },
+  "immutable_text_readback": [
+    "terminal/components/chrome/shared-shell/ShellDirectory.tsx",
+    "terminal/e2e/thesis-workspace.spec.ts"
+  ],
+  "local_reconcile": {
+    "operation": "f01-directory-focus-correction-20261104-c4",
+    "before_head": "b14436dd7b9c1296d17455c89f63960c774ab9be",
+    "after_head": "e3bb0e683236d9882eedc09719de201a26dd9498",
+    "files_verified": 16,
+    "tracked_clean": true,
+    "source_bytes_rewritten": false,
+    "remote_mutation": false,
+    "status": "?? .f01-ci-evidence/\n?? .f01-facet-evidence/\n?? .f01-gesture-evidence/"
+  },
+  "self_qa_only": true,
+  "formal_approval_claimed": false
+}

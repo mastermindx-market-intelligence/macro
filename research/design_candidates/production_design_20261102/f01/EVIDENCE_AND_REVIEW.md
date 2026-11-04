@@ -1,7 +1,21 @@
 # F01 — Evidence, effect state and review record
 
 **Candidate:** F01/1.0.0-candidate.4 / F01-F02-SHELL/1.0.0-candidate.4.  
-**Current acceptance:** PARTIAL, RIG draft. F02 candidate.2 geometry concurrence is source-bound; candidate.4 changes await scoped affected-owner concurrence. Bounded source approval and local artifact follow-ups are recorded below without extending their scope. Independent design qualification, implementation, deployment and served-production proof remain unestablished.
+**Current acceptance:** PARTIAL / REQUEST_CHANGES / RIG draft. Candidate.4 policy concurrence is received at its exact source scope. Bounded implementation and four new native references have scoped self-QA evidence below; complete programme/native/domain qualification and final joint release remain open. Optional independent review is not a Web-session gate. Historical source approvals are not extended to later pixels or code.
+
+## Current continuation — 2026-11-04 UTC
+
+**Published implementation:** [Draft Terminal #1276](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1276), exact head [`e3bb0e683236d9882eedc09719de201a26dd9498`](https://github.com/mastermindx-market-intelligence/mastermind-terminal/commit/e3bb0e683236d9882eedc09719de201a26dd9498), parent `b14436dd7b9c1296d17455c89f63960c774ab9be`. The directory now preserves the task after cross-boundary drags and dismisses only a completed intentional backdrop gesture. Existing Close/Escape, query/facet/order, focus return, four-ID grouping, seven-category fallback and route/access ownership are retained. [Gesture proof](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/e3bb0e683236d9882eedc09719de201a26dd9498/terminal/docs/pr-crops/f01-directory-gesture-20261104) records three baseline browser failures, 95 final component/neighbor passes, 37 full browser passes / 2 intentional skips, and three affected passes after the final capture-loss guard.
+
+Two failed shards on the preceding head were traced through all six attempts to the unrelated external Brain script in the thesis fixture. Its exact-URL context fixture was repaired without changing production Brain code or weakening assertions. [CI fixture evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/e3bb0e683236d9882eedc09719de201a26dd9498/terminal/docs/pr-crops/f01-ci-widget-fixture-20261104) records two passing lineage cases, **84 complete thesis cases passed**, zero skips/retries/failures, and passing type/lint. All sixteen published source/proof blobs and critical immutable texts were verified; the existing managed workspace is tracked-clean at the published head.
+
+**Native design:** four new disjoint references J/K/L/M are now on F01 p-27-0; actual readback finds fourteen boards. [Composition references](COMPOSITION_REFERENCES.md) bind the directory contract, full focused-Terminal predecessor, authored public article and genuine internal AT20 decision anatomy. Final screenshots were visually checked and JSX exported afterward. K/L/M are provisional desktop composition references with explicit affected-owner qualifications. Shared tokens, predecessor boards and held targets were preserved.
+
+Candidate.4 remains operative and byte-unchanged by this continuation. Candidate.5 remains **PROPOSED_NOT_ADOPTED**; F02's received two-branch proposal concurrence is preserved at its exact scope, while the expanded candidate's additional affected-owner responses remain pending. Latest consumed F02 handshake: `6d1f6791408fbb317daf16b647c02465e8d81266`.
+
+Protected procedure pin: Mastermind `7a52808e5761739a08b279dddba0d0c88e13224d`, compatible bootstrap 1 / skillpack 1.0.1. The Web waiver permits source work and self-QA without an optional separate-review stop. Formal approvals and release holds remain binding. Original atlas and Readme effects remain unresolved on their original carrier. All **86 complete programme specifications remain NOT_RUN**. At 08:58:30 UTC, new-head CI had six successful checks, three in progress and eleven queued; the complete required set was unqualified. [Current evidence](evidence/gesture_compositions_20261104/README.md) and [machine-readable continuation](evidence/gesture_compositions_20261104/CONTINUATION.json) govern the recoverable frontier below; historical records retain their exact inputs.
+
+The numbered sections below retain phase-specific evidence and historical review wording. The current continuation above governs today's status and review requirements; historical approval is never extended to later code, source or pixels.
 
 ## 1. Immutable authority and source inputs
 
@@ -134,7 +148,7 @@ D06's later d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf handshake/responsive/source
 The Secretary's actual ACK/RESULT returned CAPABILITY_GAP_ON_ORIGINAL_PAPER_RECEIPT then STOP. The existing P00 owner received [comment6616970922](https://github.com/mastermindx-market-intelligence/macro/pull/10626#issuecomment-6616970922), asking only for authorized original-request terminal/canonical reconciliation evidence. No original receipt, new runtime START, alternate carrier or effect resolution is inferred.
 
 
-## 11. Current follow-up: actual source approval and new baseline evidence
+## 11. Historical follow-up: actual source approval and new baseline evidence
 
 The protected source was refreshed to **910803421beca53ca25145392725ab2d84c7a8e9**; the exact comparison and governing-source receipts are in [PROCEDURE_REFRESH_20261104.json](evidence/source/PROCEDURE_REFRESH_20261104.json). F01 remains under the existing owner/Draft10645 branch. The new F-only repair was grounded in an unchanged pre-edit subtree, actual live result set and existing pending presentation proposal. No other source owner, shared token, page administration or held target was modified.
 
