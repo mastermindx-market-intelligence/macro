@@ -1,6 +1,6 @@
 # F03 review and verification record
 
-**Technical source critique only. No formal RIG approval, no independent GitHub APPROVED review, no rendered acceptance and no Paper mutation.** Reference acceptance, implementation, deployment and served proof remain separate.
+**Reviewers performed no Paper mutations. No formal RIG approval, independent GitHub APPROVED review or product acceptance is supplied here.** The original source-review sections below are historical; current source and native artifact amendments are recorded separately at the end. Reference acceptance, implementation, deployment and served proof remain separate.
 
 ## Review method and independence
 
@@ -44,7 +44,7 @@ The reviewer also identified incomplete assembly links while README, REPRODUCE, 
 
 The reviewer verified closure of all four residual behaviors and the four assembly links. It caught one additional default-inventory case: an empty return fragment was mistaken for no inventory origin. That case now carries `page=0`. It also requested a clearer China metadata explanation; the original text is now preserved as `baseline_role_evidence`, and current `role_evidence` cites the historical notice. The reviewer independently confirmed the final row, embedded copy and directory hash. [Exact final recheck](review/final-source-recheck.md) retains its scope and limits. Final source probes: **20 PASS**. Final input/identity/inventory/link checks: **399 PASS**.
 
-## Verification evidence
+## Historical verification evidence — original source-review snapshot
 
 | Check | Result and limits |
 | --- | --- |
@@ -56,7 +56,7 @@ The reviewer verified closure of all four residual behaviors and the four assemb
 | Actual Paper before evidence | Original directory and Terminal screenshots plus exact JSX exports, baseline and selected identity reads |
 | Website observation | Authenticated beta shell and All Tools DOM inspected; personal portfolio/watchlist content excluded from persisted evidence |
 | Browser screenshots / artifact rendering | Website screenshot attempt timed out. Local data-URL preview was rejected by URL-protocol policy. No alternate browser surface or workaround was attempted |
-| Paper after / preservation | None; no mutation dispatched. Comments, assets, annotations and destination fidelity are not verified |
+| Paper after / preservation | At the original source-review snapshot, no mutation had been dispatched. Later native changes are recorded separately below. Cross-file comments, assets, annotations and destination fidelity remain unverified |
 
 Source-logic probes use Node with a minimal DOM-shaped harness. They exercise functions and generated markup; they are not a browser or screenshot test. The data checks make no network requests and do not establish external URL reachability, authenticated audience or current writer leases. The submitted source cannot claim a 320/390/tablet/narrow/wide visual pass, screen-reader pass, contrast pass, touch pass, zoom/reflow pass or field performance result.
 
@@ -65,3 +65,21 @@ Source-logic probes use Node with a minimal DOM-shaped harness. They exercise fu
 Formal RIG state/receipt for approved references remains unobserved. F03's source candidate is draft. Independent native critique is supplementary to the existing formal review path. An actually admitted reviewer must bind findings/conditions to the immutable candidate set; later material canvas/source changes require affected review evidence to refresh.
 
 Paper catalog qualification, actual organization effects/readback, foundation releases, domain candidate/contracts, missing rejection/hold receipts, copy/test preservation decisions and real responsive/keyboard/visual proof retain their exact owners in [CONTINUITY.md](CONTINUITY.md). None is waived by successful source verification.
+
+## 2026-11-04 Pro continuation — source projection and native artifacts
+
+Earlier sections retain their original artifact/time scope; they do not approve this amendment. [Frozen source advisory, repairs and affected second pass](paper/reviews/return-projection-source-20261104.md) records four real defects found despite passing initial checks. All four implementation findings were closed in the scoped second pass; root additionally strengthened the actual regression counterexamples and curation-mirror check.
+
+Current verification: **93 bounded return/identity checks and 33 source-logic probes**, not the historical 399-input suite. [Baseline identity receipt](evidence/return-refresh-baseline.json), [current return checks](evidence/return-refresh-checks.json), [current script probes](evidence/return-directory-logic-checks.json), [first-pass return checks](evidence/return-refresh-checks-first-pass.json) and [first-pass script probes](evidence/return-directory-logic-checks-first-pass.json) keep these scopes separate.
+
+The actual six-pair native first-pass freeze is [capture manifest r1](paper/continuations/pro-enhancement-20261104-captures-r1.json). It contains the changed main/Terminal indexes plus four new F03 directory/state boards. It is a frozen source artifact set, not a Paper snapshot revision or approval. An earlier read-only visual advisory task became unavailable after the user continuation boundary without delivering a verdict; no findings or approval are inferred from it.
+
+The replacement adviser delivered a [frozen first pass and main-image supplement](paper/reviews/native-visual-first-pass-20261104.md), an [affected second pass with both before-images](paper/reviews/native-visual-second-pass-20261104.md), and a [final copy/regression recheck](paper/reviews/native-visual-final-copy-recheck-20261104.md). All six P2 visual findings and the three later scoped copy/findability findings are closed at their stated visual/copy level. The final six exact JPEG/JSX pairs are bound by [final capture manifest](paper/continuations/pro-enhancement-20261104-captures-final.json). Intermediate r1/r2/r3 artifacts remain preserved rather than silently replaced.
+
+The final native recheck observed no new actionable copy-and-fit issue. **One P3 residual remains:** dense full technical addresses in expanded evidence, especially narrow ZH and the Terminal Options row. Full identities were deliberately retained; no clipping/overflow was observed in the reviewed specimens. This is not a measured contrast, accessibility, target-size or interaction pass.
+
+[Bundle consistency advice](paper/reviews/bundle-consistency-20261104.md) separately found and corrected historical/current wording contradictions and the missing effect-log seed in the full-rebuild command block. The original source advisory's four implementation findings remain closed. The final source refresh reran 93 return/identity checks and 33 script probes with 109 observed-applied native/working-indicator operations, zero duplicate IDs and zero listed unknown F03 effects. All 301 resource actions remain undispatched. Native advisers are CLOSED / STOP; no Fabric START, background runner or formal RIG receipt was created.
+
+[F03's four-record Options taxonomy response](F01_OPTIONS_TAXONOMY_RESPONSE.md) is source/design concurrence only. It preserves the observed12-match search corpus and four-member facet distinction, category-only reset, exact paths/access and the existing exporter/domain qualification boundary. It does not approve the other286 proposal records or implement a production taxonomy.
+
+Formal exact-head source/reference/RIG receipts remain absent. No browser, native activation, keyboard/touch, zoom/reflow, entitlement, hosted CI, product implementation or production proof is supplied by these source checks or advisory reviews.

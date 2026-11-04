@@ -1,6 +1,6 @@
 # F03 — editable Paper layout and annotation specification
 
-**Specification complete; three MASTERMIND PAGES directory boards refined, separate Terminal exact-reference index created and screenshot-observed; responsive composition/approval incomplete.** The original `5G0X-2` board now contains 27 product-family entries and four Options slices with preserved identity (see `paper/native-progress.json`). Its direct candidate/contract/status discovery, lineage/coverage boards, responsive specimens and independent acceptance remain open. Source HTML alone never substitutes for an editable and verified Paper experience.
+**Directory and state enhancement implemented; native wide/390/320/768 specimens screenshot-observed; final foundation, interaction and approval gates incomplete.** The original `5G0X-2` board retains 27 product-family entries and four Options slices with preserved identity (see `paper/native-progress.json`). Direct candidate/contract/status discovery, retained lineage/coverage references and editable available-content-width specimens now exist. Final shell geometry, actual link/input paths, complete cross-file preservation and independent acceptance remain open. Source HTML alone never substitutes for an editable and verified Paper experience.
 
 ## Existing anchors and intended content
 
@@ -56,7 +56,7 @@ Record immutable artifact digest, independent first/second-pass findings, actual
 
 ## Freeze and acceptance evidence
 
-After admitted edits: capture exact file/page/artboard IDs and UTC observation; export supported editable/source content; preserve before/after images; validate all direct links and legacy redirects; record preservation map and operation receipts; commit exports, annotations and verification evidence; bind independent review to that immutable artifact set. Until then, editable after-compositions, actual responsive screenshots and formal review remain open.
+After admitted edits: capture exact file/page/artboard IDs and UTC observation; export supported editable/source content; preserve before/after images; validate all direct links and legacy redirects; record preservation map and operation receipts; commit exports, annotations and verification evidence; bind independent review to that immutable artifact set. Editable after-compositions and actual available-content-width screenshots are now recorded below. Final shell-responsive behavior, direct-link/input-path verification, cross-file preservation and formal reference review remain open.
 
 
 ## Applied F03 continuation references (2026-11-03T07:05:06.871Z)
@@ -68,3 +68,24 @@ After admitted edits: capture exact file/page/artboard IDs and UTC observation; 
 - New editable `Terminal / p-R-0 / 1NDQ-0` contains six exact file+page reference URLs, family associations, held/unknown states and pinned F03 contract source. Current RIG approval remains null; Paper anchor click-through is untested.
 
 Actual screenshots and JSX for all five boards are retained under `paper/captures/` and `paper/exports/`, with SHA256/Git blob digests in `artifact-manifest.json`. These captures prove rendered layout observation only, not keyboard/touch, 320/390px, EN/ZH, light mode or production behavior.
+
+## Pro continuation — implemented directory and state layer (2026-11-04 UTC)
+
+The existing 27-family directory and six-family Terminal index now distinguish design/reference, returned contract/package, and review state. The exact source projection consumes eight immutable returns without changing the frozen page/artboard inventory or canonical route projection.
+
+New F03-owned boards in file `01M2WGNCX9475G79JRKJTCM08P / p-1P-0`:
+
+- `72CI-0`: 1440px dark EN Options entry, four owner rows with exact reference addresses and pinned source contracts. D08A/D08D retain missing-native-candidate state. Four design packages are not four route records.
+- `72EW-0`: 390px dark EN available-content specimen. Primary reference/contract choices remain visible; B's exact destinations and focus style are expanded.
+- `72EX-0`: 320px light ZH equivalent. Exact file/commit strings wrap rather than truncate or shrink. This is not a claim of a final F01 phone shell.
+- `72EY-0`: 768px light EN state atlas: returned source, missing native candidate, loading, no match, read error, stale/changed source, access unavailable and uncertain organization outcome. All incident states are explicitly fixtures, not claims that F03 currently has those incidents.
+
+Actual screenshots exposed a title-color inheritance failure in the new wide entry; the root repaired all five title nodes explicitly and recaptured it. Primary action frames are at least 44px in these specimens. Paper JSX does not retain imported anchor semantics, so drawn links/focus do not establish actual click/keyboard/touch behavior. The source companion contains direct links and source-logic tests; browser paths remain separate.
+
+The original wide link/coverage and Terminal product-map references remain retained. New captures/exports and exact operation receipts are recorded under `paper/continuations/`, `paper/captures/` and `paper/exports/`; the containing Git commit and artifact manifest freeze their bytes. Final joint foundation, actual native/input-path proof and formal reference review are not inferred from this layer.
+
+## Reviewed refinement and final capture set
+
+The [final r4 set](paper/continuations/pro-enhancement-20261104-captures-final.json) incorporates the scoped native review: main and Terminal observation times; named per-family source/history entries; exact Options companion board; pinned returned source addresses and held locations beside Terminal families; concrete synthetic state values; aligned not-admitted wording across variants; and restored P00 Capability / QA01 Review entry cues. The access fixture names the existing programme #10617 / P00 capability discussion as its request surface, never as an access grant or a new workflow plane.
+
+Six P2 visual findings and the affected copy/findability repairs closed in the independent advisory. Full technical addresses intentionally remain in expanded evidence, with one disclosed P3 density residual. Wide action labels are visually stronger, but applied Text-node style receipts are not evidence of real button frames or hitboxes. Actual target-size, links, keyboard, touch, focus order, measured contrast and reduced-motion proof remain open. See [review record](REVIEW.md) for exact first/second/final scopes.

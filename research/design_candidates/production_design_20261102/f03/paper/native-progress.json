@@ -1,8 +1,8 @@
 {
   "schema": "f03.native_progress.v1",
   "assignment": "F03",
-  "status": "NATIVE_AUTHORING_IN_PROGRESS",
-  "observed_at": "2026-11-03T07:05:06.871Z",
+  "status": "PARTIAL_IMPLEMENTED_NATIVE_OBSERVED_NOT_ACCEPTED",
+  "observed_at": "2026-11-04T03:27:35.701Z",
   "source_base": "3dc736ef07090166a569cd5368b33b06b6dc2d42",
   "protected_procedure": "b4a5a8925c6c1412dac67ba296cf65ee81c4d4c8",
   "carrier": "Mastermind Paper direct app",
@@ -29,7 +29,7 @@
       "artboard_id": "5G0X-2",
       "canonical_families": 27,
       "options_slices": 4,
-      "state": "Editable 27-family directory improved with 2-step builder/status guide; live JSX/JPEG captured; link behavior and formal approval unverified",
+      "state": "27 families retained; per-family source/history paths, returned/baseline/held distinctions, observation time and P00/QA01 entry cues screenshot-observed. Six P2 visual findings closed in advisory; interaction and formal approval unverified.",
       "builder_path_node": "70MN-0"
     },
     "link_map": {
@@ -50,8 +50,59 @@
       "original_artboard": "1BCX-0",
       "exact_reference_artboard": "1NDQ-0",
       "families": 6,
-      "state": "Original directory footer annotated; distinct six-family exact URL/contract/approval index created; full-artboard screenshots observed"
-    }
+      "state": "Six families retained; D07 and all four D08 source addresses and exact held locations visible. Timestamp and candidate admission wording aligned. Native link/input behavior and formal approval unverified."
+    },
+    "options_entry": {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72CI-0",
+      "state": "1440 content-width dark EN directory entry pairs four D08 owner packages with exact reference and pinned source contract addresses; source-only A/D and holds retained."
+    },
+    "narrow_directory": [
+      {
+        "artboard_id": "72EW-0",
+        "content_width": 390,
+        "theme": "dark",
+        "locale": "EN",
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1P-0"
+      },
+      {
+        "artboard_id": "72EX-0",
+        "content_width": 320,
+        "theme": "light",
+        "locale": "ZH",
+        "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+        "page_id": "p-1P-0"
+      }
+    ],
+    "directory_state_atlas": {
+      "artboard_id": "72EY-0",
+      "content_width": 768,
+      "theme": "light",
+      "locale": "EN",
+      "states": [
+        "returned source / focus specimen",
+        "missing native candidate",
+        "loading",
+        "empty search",
+        "read error",
+        "stale / changed source",
+        "access unavailable",
+        "uncertain organization effect"
+      ],
+      "qualification": "Static labeled fixtures, not live incidents or input-path tests.",
+      "state": "Concrete synthetic retained pins, times, access destination/request surface and no-dispatch operation/target/readback; distinct clear/browse recovery. All incident values remain fixtures, not live claims."
+    },
+    "final_capture_set": "continuations/pro-enhancement-20261104-captures-final.json",
+    "working_indicators_released_for": [
+      "5G0X-2",
+      "72CI-0",
+      "72EW-0",
+      "72EX-0",
+      "72EY-0",
+      "1NDQ-0"
+    ]
   },
   "operations": [
     {
@@ -557,21 +608,862 @@
       ],
       "expected_snapshot": "ef1e7c182171d859a85441db9989a05524b8cfd897657ea70e880e97c262310f",
       "screenshot_observed": false
+    },
+    {
+      "operation_id": "f03-20261103-enhance-directory-copy-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0X-2"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-enhance-directory-hierarchy-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0Z-2",
+        "5G1A-2",
+        "5G1B-2",
+        "5G1C-2",
+        "6ZNW-0",
+        "70MN-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-enhance-terminal-status-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDV-0",
+        "1NDW-0",
+        "1NDX-0",
+        "1NE0-0",
+        "1NE1-0",
+        "1NE8-0",
+        "1NE9-0",
+        "1NEA-0",
+        "1NEH-0",
+        "1NEI-0",
+        "1NEJ-0",
+        "1NES-0",
+        "1NF1-0",
+        "1NFA-0",
+        "1NFJ-0",
+        "1NFN-0",
+        "1NFO-0",
+        "1NFP-0",
+        "1NFQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-enhance-terminal-legibility-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0",
+        "1NDX-0",
+        "1NEA-0",
+        "1NEJ-0",
+        "1NES-0",
+        "1NF1-0",
+        "1NFA-0",
+        "1NFJ-0",
+        "1NE8-0",
+        "1NEH-0",
+        "1NEQ-0",
+        "1NEZ-0",
+        "1NF8-0",
+        "1NFH-0",
+        "1NE9-0",
+        "1NEI-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-contract-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-options-directory-contrast-repair-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CT-0",
+        "72D2-0",
+        "72DI-0",
+        "72DY-0",
+        "72EE-0",
+        "72D8-0",
+        "72DD-0",
+        "72DO-0",
+        "72DT-0",
+        "72E4-0",
+        "72E9-0",
+        "72EK-0",
+        "72EP-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-390-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EW-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-320-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-ready-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-missing-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-loading-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-empty-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-error-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-stale-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-access-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-unknown-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-footer-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261103-directory-768-fit-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T02:44:50Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-operations.json"
+    },
+    {
+      "operation_id": "f03-20261104-visual-terminal-freshness-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:12:52.678Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-visual-state-values-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:13:00.145Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-visual-main-entry-status-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:14:03.147Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0X-2"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-visual-plain-language-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:14:10.313Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0",
+        "72EW-0",
+        "72EX-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d07-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:14:43.690Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d07-earnings-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:14:55.019Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d08a-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:14:59.917Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d08b-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:15:07.527Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d08c-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:15:13.310Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-source-d08d-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:15:21.280Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-wide-action-affordance-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:15:26.124Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72CI-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-navigation-caption-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:16:54.155Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-empty-browse-action-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:17:03.515Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-review-consistency-recovery-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:23:33.469Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0X-2",
+        "72CI-0",
+        "72EW-0",
+        "72EX-0",
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-terminal-admission-wording-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:23:38.174Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": true,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-finish-main-enhancement-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:27:30.658Z",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_node_ids": [
+        "5G0X-2",
+        "72CI-0",
+        "72EW-0",
+        "72EX-0",
+        "72EY-0"
+      ],
+      "expected_snapshot": "bed026b80db35b12737ad1438e5ee0e9fd752b261f891abca317e21020a641b9",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
+    },
+    {
+      "operation_id": "f03-20261104-finish-terminal-enhancement-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "recorded_at": "2026-11-04T03:27:35.701Z",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_node_ids": [
+        "1NDQ-0"
+      ],
+      "expected_snapshot": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+      "screenshot_observed": false,
+      "receipt": "continuations/pro-enhancement-20261104-r2-operations.json",
+      "subsequent_capture_set": "continuations/pro-enhancement-20261104-captures-final.json"
     }
   ],
   "unresolved_effects": [],
   "formal_review_receipt": null,
   "foundation_input": {
-    "f02_commit": "245d70bbd3ac773f3074277c771095264b31269d",
-    "system": "F02-SYSTEM/1.0.0-candidate.2",
-    "f01_joint_freeze": null
+    "F01": {
+      "source_head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+      "version": "candidate.4 source policy; joint release open"
+    },
+    "F02": {
+      "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+      "version": "candidate.2 geometry + candidate.4 policy concurrence; original effect held; joint release open"
+    }
   },
   "remaining": [
-    "Per-family exact candidate/complete build-contract/RIG status needs stronger in-Paper direct-choice mapping",
-    "Compose content-width/responsive, keyboard/touch, dark/light and EN/ZH states after F01/F02 joint freeze",
-    "Apply only supported resource organization; all 301 cross-file action rows remain NOT_DISPATCHED",
-    "Reconcile domain return/retention and review receipts before candidate promotion",
-    "Formal independent RIG review and parent #10617 CI-base gate remain open"
+    "Final F01/F02 joint qualification and affected foundation/native evidence are open; provisional content-width specimens do not claim shell/runtime acceptance.",
+    "Formal independent exact-artifact source/reference/RIG review is absent. Native advisory findings must remain separate from formal approval.",
+    "Native Paper link activation and browser keyboard/touch/reflow proof are unverified; Paper JSX stripped anchor semantics.",
+    "All 301 cross-file resource action rows remain NOT_DISPATCHED, pending supported-operation qualification and preservation evidence.",
+    "Other assignment returns and unexpanded/unowned source pages remain at explicitly frozen baseline observations; no whole-estate recensus was performed."
   ],
   "held": [
     "Folder creation/resource moves/archive operations blocked by adapter",
@@ -579,8 +1471,20 @@
     "Blank-file create/clone held by client publication contract",
     "Native link activation and browser/assistive interaction acceptance unverified"
   ],
-  "next_action": "Consume F01/F02 and domain frozen returns when admitted; refine in-Paper per-family candidate/contract/status mappings and responsive directory specimens. Do not dispatch unsupported folder/move/archive actions; preserve Draft/HOLD.",
+  "next_action": "Obtain and consume non-author exact-containing-head source review plus scoped reference/RIG qualification. Preserve the current native freeze; do not replay operations. Physical organization remains pending supported operation/preservation/admission evidence.",
   "no_merge_or_deploy": true,
-  "continuation_source_head": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d",
-  "continuation_protected_procedure": "b2326bbe30e9988d26199f5e774a482b9c09068a"
+  "continuation_source_head": "d9e78dc6512bcc7c79de540fe8d69746801b93c7",
+  "continuation_protected_procedure": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "visual_advisory": {
+    "state": "CLOSED_STOP_SCOPED_NOT_FORMAL_APPROVAL",
+    "first_pass": "reviews/native-visual-first-pass-20261104.md",
+    "affected_pass": "reviews/native-visual-second-pass-20261104.md",
+    "final_copy_recheck": "reviews/native-visual-final-copy-recheck-20261104.md",
+    "closed": "Six P2 visual findings and affected copy/findability repairs; no new issue in final bounded recheck.",
+    "residual": "P3 expanded technical-address density; behavior/accessibility and formal RIG remain unverified."
+  },
+  "continuation_receipts": [
+    "continuations/pro-enhancement-20261104-operations.json",
+    "continuations/pro-enhancement-20261104-r2-operations.json"
+  ]
 }

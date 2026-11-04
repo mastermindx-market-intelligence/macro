@@ -1,6 +1,6 @@
 # Design programme directory
 
-**Source directory available · Paper organization NOT_APPLIED · reference approvals not established.**
+**Source directory available · directory refinements observed where logged · 301 cross-file organization actions NOT_DISPATCHED · reference approvals not established.**
 
 Choose a family below. Its entry exposes the exact references and contract status; one further link opens the source or Paper page. A missing approved candidate is reported in the same place.
 

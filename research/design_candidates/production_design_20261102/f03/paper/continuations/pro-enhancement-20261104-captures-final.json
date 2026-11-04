@@ -1,0 +1,116 @@
+{
+  "schema": "f03.native_capture_set.v1",
+  "kind": "actual_native_screenshots_and_jsx_not_interaction_proof",
+  "status": "frozen_final_copy_recheck_input",
+  "previous_capture_set": "pro-enhancement-20261104-captures-reviewed.json",
+  "boards": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G0X-2",
+      "observed_at": "2026-11-04T03:24:22.244Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-main-20261104-r4.jpg",
+        "bytes": 471644,
+        "sha256": "22c826ea61ec83ee12859fad0e2cd548a4d519fd4fa6f522c2ef1178032c7818",
+        "git_blob_sha": "766d4fb122ff380bfa5ea0357e11c50ebfc359f0"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-main-20261104-r4.jsx",
+        "bytes": 55769,
+        "sha256": "9fef33b7917a5ed2d50b1106f4427eb5671eed933d455e4f104b1c214f2cb9d9",
+        "git_blob_sha": "3d373ea12414f3a7b81d576f23d07a55d6d91aea"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EX-0",
+      "observed_at": "2026-11-04T03:24:38.153Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-320-light-zh-20261104-r4.jpg",
+        "bytes": 105351,
+        "sha256": "99a8195a612f9d7896153820d17ea0928f59bb38606b30feb96cd8f96b354eb6",
+        "git_blob_sha": "2ba78a57e1797bd362ca2e486721c2d70486f491"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-320-light-zh-20261104-r4.jsx",
+        "bytes": 13555,
+        "sha256": "4ebf35b28c4677746b9c6e83e7e71e186f8c92506df828e5071d30634e35a0cd",
+        "git_blob_sha": "8d9ca97dd7c08db4717c0d2b40b60b6dc21c9198"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EW-0",
+      "observed_at": "2026-11-04T03:24:34.805Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-390-dark-en-20261104-r4.jpg",
+        "bytes": 129417,
+        "sha256": "db158e2b36657b75c5af5de73b02656535f11db4aa74cfb848400639f1d2c6ec",
+        "git_blob_sha": "8df08ce1be52eb3b9c6f54e2272c81639916d03e"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-390-dark-en-20261104-r4.jsx",
+        "bytes": 13725,
+        "sha256": "94271776be8d0551f57792b590bc4ca11e8d220d208b6014e1e569fa3b4e69c1",
+        "git_blob_sha": "a64f896416152bda025a4271c1b64570a05fa8af"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72CI-0",
+      "observed_at": "2026-11-04T03:24:27.357Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-wide-20261104-r4.jpg",
+        "bytes": 256763,
+        "sha256": "3a5735c8a249f3f6bfd59089efc4f0ca2e1d372517fd297595c4e0887eccfad8",
+        "git_blob_sha": "4218923deda1a7772165f69f80e7cfb725602c90"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-wide-20261104-r4.jsx",
+        "bytes": 21554,
+        "sha256": "dc04d53547fef22f04682c53df26e822f97cf1fcc3b8a3039deb09e9bc3ac4c3",
+        "git_blob_sha": "2cc41cdbd98cab78f98b42dbdaffc62dcba6a519"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EY-0",
+      "observed_at": "2026-11-04T03:24:51.379Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-states-768-light-en-20261104-r4.jpg",
+        "bytes": 214703,
+        "sha256": "eed2625bc58e2cf349d9b446416420f852f71b1ea891923af37fb963299e12e7",
+        "git_blob_sha": "c4672c4a1eec39ddb7bcd9d0eb9af9c0686c038f"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-states-768-light-en-20261104-r4.jsx",
+        "bytes": 15424,
+        "sha256": "1cf22a18e8a92e1ecbf363f6ed4fe7988cd0cbaef31c466d17a209a9b312b7e0",
+        "git_blob_sha": "acbac233bcc121dfc772ee49d5fea89095e45791"
+      }
+    },
+    {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-R-0",
+      "artboard_id": "1NDQ-0",
+      "observed_at": "2026-11-04T03:24:45.254Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-terminal-20261104-r4.jpg",
+        "bytes": 330203,
+        "sha256": "139ccf56ddeee99eb55fe317c5bcaea6832f55c73439894abe76fbff22f8ad15",
+        "git_blob_sha": "f786bab20229cc6113f1dd8b4ae007729bff6c02"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-terminal-20261104-r4.jsx",
+        "bytes": 24403,
+        "sha256": "d801cb1f51d8209f3e4f1b9f9b7340d8289cfa4dfd86f0b4660f7932379ade48",
+        "git_blob_sha": "8ae65e0068b215ae48b4ddd7a4e34bb796ce440a"
+      }
+    }
+  ]
+}

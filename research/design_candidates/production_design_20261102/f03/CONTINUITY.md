@@ -1,78 +1,61 @@
-# F03 recoverable continuation
+# F03 — current recoverable continuation
 
-This is an assignment-local checkpoint under the existing [whole-estate charter](https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md) and parent [draft PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). It is not a second task system, live lease, new umbrella programme or runtime grant.
+This remains assignment F03 under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). It is not a new registry, workstream, runtime grant or file-wide lease.
 
-## Stable task tree
+## Mission and durable source
 
-| Node | State | Acceptance evidence / remaining action |
-| --- | --- | --- |
-| F03.1 Source, procedure and assignment binding | Complete | Exact package/procedure/source pins in provenance; all 18 local input blobs verified |
-| F03.2 Coverage and assignment projection | Complete as source artifact | 348 canonical IDs once; nine deltas isolated; 36 assignments; 299 baseline pages plus two explicit observations; 2,450 original boards |
-| F03.3 Directory and complete builder contract | Source complete; first editable Paper composition observed | Interactive/text entries, F03 source contract and 27-family Paper board `01M2WGNCX9475G79JRKJTCM08P/p-1P-0/5G0X-2`; per-family direct candidate/status discovery and review still incomplete |
-| F03.4 Lineage, stale-label and overlap reconciliation | Two page labels applied; deeper lineage pending | Bonds `p-1H-0` revision index and Crypto `p-10-0` R4 references preserved in the original file; redirect history and WTI exceptions retained; link-map board remains to be reconciled |
-| F03.5 Apply supported Paper organization | PARTIAL native edit observed; 301 cross-file action rows still NOT_DISPATCHED | Direct-app catalog accepted 16 write tools; 36 native edit receipts in `paper/native-progress.json`. Folder/move/archive remain unsupported; new target `paper_prepare` returned DOCUMENT_CHANGED before dispatch |
-| F03.6 Independent review and freeze | Advisory first/second-pass work retained; formal approval open | Frozen first-pass input digest, findings, amendments, local verification; actual formal receipt null |
-| F03.7 Fresh generated-document inventory | Macro and native-source scope complete; admission/acceptance open | Full Macro exporter artifact plus 29 Terminal modules/seven Mastermind web handlers at pinned sources; OS feature views outside scanner; no native admission inferred from 17 historical rows |
-| F03.8 Persist concrete return | Owned source branch and draft PR | Exact final commit and PR are external receipt facts; final publication readback binds content, not a canvas approval |
+Make the current candidate, exact source/build package, review state and retained lineage discoverable without losing original identities. Final success additionally requires supported physical organization, preservation/readback and independent qualification.
 
-## Inherited conditions — no silent closure
+- Original brief/package: `6e1862867193ec6486a22001a0e4fb515da20448`.
+- Compatible protected law: Mastermind `910803421beca53ca25145392725ab2d84c7a8e9`.
+- Original branch: `design/f03-paper-directory-20261102-c2`.
+- Pre-enhancement source: `d9e78dc6512bcc7c79de540fe8d69746801b93c7`.
+- Current immutable package: the containing commit plus [artifact manifest](artifact-manifest.json); publication/readback is an external receipt, not a self-referential field.
+- Current user requested continued F03 implementation and enhancement. No held-PR lifecycle/release boundary was lifted.
 
-| Condition | Local disposition | Required existing-owner evidence |
-| --- | --- | --- |
-| Unqualified Paper writer/catalog | Carried unresolved; no effect dispatched | P00 installed/runtime qualification; current carrier readback; actual supported operation/admission |
-| F01/F02 unpublished release | Carried unresolved | Frozen source/Paper release and review receipts; re-review affected compositions |
-| Candidate title/count mistaken for acceptance | Prevented in directory source | Actual RIG receipt bound to immutable artifact set before approved-candidate field can be populated |
-| Rejected/held lineage | Carried unresolved; current records retained | Original decision/hold evidence, exact successor and domain continuity disposition |
-| Comments/annotations/assets/backlinks unknown | Carried unresolved; originals retained | Property-specific before/after verification for each actual supported transfer |
-| Macro nested document census missing | Specific source subgap closed with attached immutable inventory | Fresh Macro enumeration preserved; source admission and generated-instance behavior are separate |
-| Native-source enumeration and admission | Existing-scanner enumeration closed with 29 Terminal/seven Mastermind records; admission/OS feature scope remains open | Exact native receipt attached; existing registry owner resolves audience/admission, D27 qualifies separate OS views; no new canonical IDs from F03 |
-| Rendered responsive/keyboard/taste proof | Carried unresolved | Actual supported preview/Paper composition and captured interaction matrix |
-| Formal reference review | Carried unresolved | One admitted independent reviewer and existing RIG/GitHub receipt at the exact frozen head |
+## Exact native frontier
 
-These are local continuity explanations, not invented formal RIG dispositions. `formal_disposition_receipt` remains null for inherited conditions without an actual receipt. No condition was closed by author assertion, page renaming, native-agent critique or a successful source build.
+Original carrier: **Mastermind Paper direct app**, `TOOL_SCOPED_CONTRACT_V1`, Paper Desktop 0.5.18, live 16-tool write contract. This qualifies the observed F03 operations, not unsupported cross-file resources or P00's entire runtime acceptance.
 
-## Current effect boundary
+| File / page | Exact F03 boards |
+| --- | --- |
+| `01M2WGNCX9475G79JRKJTCM08P / p-1P-0` | Existing `5G0X-2`, `5G1H-2`, `5G1Z-2`; new `72CI-0`, `72EW-0`, `72EX-0`, `72EY-0` |
+| `01M3NSZGE8JWN2EZCSF0DT05RM / p-R-0` | Existing `1BCX-0`, `1NDQ-0` |
 
-- Source: owned F03 branch only. Parent package and canonical registry/exporter unchanged.
-- Paper: zero mutation attempts, zero applied operations, no unresolved effect.
-- Browser: existing beta inspected; preview navigation rejected because the local data-URL protocol was not permitted. No bypass or alternate preview surface used.
-- Runtime: no deployment, provider change, route admission or account enrollment.
-- Delegation: native reasoning consultations and advisory source critique only. No product sessions, Fabric request or Slack commission launched.
-- Formal review: capability discovery is not admission or START. Never manufacture a trusted original `root_id` / `parent_id` from the assignment ID or this branch.
+The current receiver is the F03 owner. Preserve target-scoped custody and fresh exact-file read guards; do not wait for an archived chat. Source/target snapshots are guards, not content revisions or approvals. Read [native-progress.json](paper/native-progress.json), [initial enhancement receipts](paper/continuations/pro-enhancement-20261104-operations.json) and [review-repair/release receipts](paper/continuations/pro-enhancement-20261104-r2-operations.json) before any further mutation. The cumulative ledger has 109 unique observed-applied operations, including working-indicator releases; no F03 effect is currently unknown. Six edited boards' working indicators were released, not the entire shared files.
 
-## Next action for the current or next valid receiver
+## Implemented frontier and DO_NOT_REDO
 
-Read this checkpoint and final PR head; inspect original effects and current source/canvas state. Do not wait for an archived chat to respond, and do not assume this checkpoint transfers a live lease. If P00 has materially returned installed qualification, inspect that exact carrier and supported schema; re-read the four F03 directory targets plus every descendant affected by an intended container move; record current writer overlap and preservation preflight; apply the smallest admitted operation and reconcile its receipt/readback before continuing.
+- Preserve all previously applied 50 operation/indicator-release effects, original Bonds/Crypto identity-preserving labels and five earlier native capture/export pairs.
+- Preserve this continuation's upgraded main/Terminal directory and four new content-width/state boards. Do not repeat an applied operation ID.
+- Preserve the original frozen 36 assignments, 348 canonical identities, nine null-ID deltas, 299+2 page records, 2,450 original board records and 301 undispatched organization actions. The bounded verifier compares original bytes and retained assignment-field digests.
+- Eight independently observed return records now flow through the existing curation mirrors, generator, Markdown/JSON and HTML companion. Both candidate and Read me tuples are explicit; new B/C Read me pages are not mislabeled originals.
+- The refresh validator is atomic, requires explicit complete fields, rejects omitted existing returns and dot-segment pin escape, and cannot grant approval.
+- Source tests are 93 bounded return checks and 33 script probes. Original 399-input checks remain historical.
+- Preserve separate first-pass source findings and later repair disposition. Native/advisory critique is not formal RIG acceptance.
+- Final native bytes are the six r4 JPEG/JSX pairs in [final capture manifest](paper/continuations/pro-enhancement-20261104-captures-final.json). All six P2 visual findings and the affected copy/findability repairs closed. Retain the disclosed P3 expanded-address density tradeoff, original r1/r2/r3 evidence, and all behavior-proof limits. Do not repeat closed repairs absent changed source or behavior.
+- Native source/visual/bundle advisers are CLOSED / STOP. No active child, Fabric review, watcher or background execution is claimed.
 
-If qualification remains absent, consume any newly returned F01/F02/domain contracts into this existing directory and refresh only affected evidence. Formal review can proceed only through an actually admitted existing review path. Preserve draft/HOLD; do not merge or deploy this design wave as a substitute for acceptance.
+## Held and blocked effects remain separate
 
-## Do not redo
+- All 301 cross-file organization actions: `NOT_DISPATCHED`; no folder/move/archive operation dispatched.
+- F01 original uncertain `F01-20261103-c4-state-8-v1` and its separate Read me uncertainty remain on their original F01 targets; do not infer a target or replay them from this directory.
+- F02 `f02-c2-macro-light-zh-390-chart-footer-20261103-01`, board `7IS-0` / body `7J4-0`, remains with its original carrier/effect.
+- D08 refused empty `1N2L-0`, Terminal `p-2-0`, is not edited, reconstructed or replayed.
+- No later shell/native approval, source merge, screenshot or successful schema response clears any of these conditions.
 
-Do not repeat the whole 29-file census to recover this context. Use frozen inputs and the two explicit live deltas; re-read exact targets before modification. Do not rerun the fresh 14,025-path Macro inventory unless its source pin changes or the artifact digest fails. Do not re-poll unchanged catalog denial. Do not archive Refined vase, copies or test files by name. Do not invent GMI/equity-replay canonical IDs or Option query values. Do not count source-logical verification as actual visual/browser proof.
+## Remaining acceptance and exact next actions
 
-## Foreground stop classification
+1. **Primary successor action:** obtain and consume non-author review bound to this containing exact F03 commit and the required scoped reference/RIG qualification. Source and visual advisory repair phases are complete; preserve their immutable evidence and repair only genuinely new findings.
+2. Read the PR publication/readback and current hosted CI receipt. The retained stacked base previously failed CI authority as `unsupported_base_ref`; do not call that green or retarget/relax policy to bypass it. Reconcile a supported base only after the parent dependency is accepted through its authorized path.
+3. Consume a genuinely qualified joint F01/F02 release and revalidate affected content-width, focus/overlay/shared-component contracts. Current returns are provisional policy inputs.
+4. For physical organization, require P00's supported installed resource operation and exact preservation/admission evidence. Then apply only the smallest qualified original-target batch and verify comments, annotations, assets, links and identity maps.
+5. For real browser/input-path proof, use only a newly authorized supported context. Do not retry the denied data-URL preview through another scheme/tool/carrier.
 
-The source-side assignment, inventory and initial editable Paper directory are completed to their **partial** evidence level. The next Paper edit remains held by exact target binding (`DOCUMENT_CHANGED`), while cross-file moves/archive lack supported operations. The programme still requires F01/F02 integration, domain returns and independent review. This is PARTIAL/BLOCKED_RETURN, never F03 SUCCESS or an assertion of background continuation.
+Until these gates change, source metadata, scoped design refinement and review responses remain safe lanes. A pending review blocks acceptance, not unrelated authorized F03 work. Never treat an unreturned requirement as an accepted contract or an old title as an approval.
 
-## Native Paper resumption — 2026-11-03
+## Boundary
 
-- Carrier: Mastermind Paper direct app, Paper Desktop 0.5.18, TOOL_SCOPED_CONTRACT_V1, `accepted_for_write=true`; 16 source-qualified write tools. These are current direct-app facts, superseding the earlier unqualified Studio Direct observation **for this distinct carrier only**.
-- Accepted F03 native work: 36 observed edit operations, no unresolved edit effects, page labels `p-1H-0` and `p-10-0` corrected without changing board IDs, editable directory on `01M2WGNCX9475G79JRKJTCM08P / p-1P-0 / 5G0X-2` covering 27 product families and four Options slices. Exact JPEG/JSX/native ledger are in `paper/` and included in `artifact-manifest.json`.
-- Live visual check: directory hierarchy is coherent, but exact candidate/full-contract/status choices are buried in the external source directory; link map `5G1H-2` and coverage map `5G1Z-2` have stale Bonds/Crypto shorthand; Terminal `01M3NSZGE8JWN2EZCSF0DT05RM / p-R-0 / 1BCX-0` still needs direct contract/approval links. These are observed design gaps, not formal taste approval.
-- Exact current held operation: `f03-20261103-target-prepare-resume-01` returned `DOCUMENT_CHANGED`, `retry_allowed=false`, before an edit; no new Paper mutation occurred in that attempt and no replay is authorized. Current desktop focus was a different Paper file. Re-bind F03 exact target through the authorized direct app only after a meaningful target-selection change, with fresh snapshot and exact board-overlap check.
-- Next safe native slice: first improve the builder's two-choice path/identity/status visibility on `5G0X-2`; screenshot and review; then distinguish historical/current links in `5G1H-2`, truthful variant coverage in `5G1Z-2`, and focused Terminal directory. Keep 301 resource moves NOT_DISPATCHED until supported transfer and preservation readback.
-- Reviewer-visible checkpoint: [F03 live readback](https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6596899723). Parent and F03 PRs remain Draft/HOLD; no merge or deployment.
+No merge, Ready, un-draft, enqueue, relabel, product deployment or route/access mutation. No background runner, watcher, Fabric START or canonical RIG receipt is invented. The next valid receiver owns continuation on this original branch after current custody/effect readback.
 
-
-## F03 live continuation — 2026-11-03T07:05:06.871Z
-
-Original Mastermind Paper direct carrier, exact-target guard restored by `get_basic_info(fileId, pageId)`; earlier refused prepare operation was not replayed. Source-law pin `b2326bbe30e9988d26199f5e774a482b9c09068a`; source PR head before evidence commit `39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d`.
-
-- MASTERMIND PAGES `01M2WGNCX9475G79JRKJTCM08P/p-1P-0/5G0X-2`: new builder two-choice/status frame `70MN-0`, observed operation `f03-20261103-directory-builderpath-02`.
-- Link map `5G1H-2`: Bonds current revision index `p-1H-0` versus historical R1 `p-O-1`; Crypto R4 `p-10-0` versus historical R3. Exact original URLs added, link activation unverified.
-- Coverage `5G1Z-2`: Crypto R4 observed dark desktop/mobile distinguished from unverified states.
-- Terminal `01M3NSZGE8JWN2EZCSF0DT05RM/p-R-0`: original `1BCX-0` footer annotated; separate `1NDQ-0` board created with six exact Paper URLs, family/custody context and truthful unapproved contract/review states.
-- All 14 new native edit/indicator-release operations were `APPLIED_RESPONSE_OBSERVED`; five affected artboards received actual screenshot readback. Working indicators were released for those five boards. Ten post-edit JPEG/JSX artifacts have independent digests in `artifact-manifest.json` after publication. This is an immutable evidence set, not a Paper revision or formal approval.
-- No folder/resource moves/archives, approval, product code, merge or deployment. 301 cross-file actions remain NOT_DISPATCHED; source/code and RIG gates unchanged.
-
-Next: per-family direct-choice metadata in Paper; current F01/F02 joint freeze, independent RIG and supported resource migration remain required. The exact operation ledger is `paper/native-progress.json`. Do not redo the earlier 36 operations or the now-applied 14 continuation operations.
+Finalization for this amendment: **CHECKPOINTED_CONTINUATION at an immutable publication / independent-acceptance boundary; overall F03 mission_complete=false.** The bounded directory/source/native-refinement implementation is delivered, not the full cross-file organization or product acceptance. The containing commit and PR readback supply the durable boundary; do not infer publication from this file alone. Approval, supported resource operations/preservation, final foundation binding and actual input-path proof remain separate gates.

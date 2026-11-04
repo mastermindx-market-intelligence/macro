@@ -5,7 +5,7 @@ This generator produces audit metadata and a local review artifact only. The can
 registry/exporter, Paper adapter, RIG and runtime retain their existing ownership.
 """
 from __future__ import annotations
-import argparse, collections, csv, gzip, hashlib, html, json, re, shutil
+import argparse, collections, copy, csv, gzip, hashlib, html, json, re, shutil
 from pathlib import Path
 
 PACKAGE = '6e1862867193ec6486a22001a0e4fb515da20448'
@@ -43,8 +43,132 @@ def md(s): return str(s).replace('|','\\|').replace('\n',' ')
 def table(headers, rows):
     return '\n'.join(['| '+' | '.join(headers)+' |','|'+'|'.join(['---']*len(headers))+'|']+['| '+' | '.join(md(x) for x in row)+' |' for row in rows])+'\n'
 
+
+RETURN_FIELDS = frozenset({
+    'source_contract', 'source_contract_label', 'candidate_ref', 'rig_state',
+    'rig_receipt', 'shell_version', 'system_version', 'status', 'next_action',
+    'return_observation',
+})
+
+def apply_assignment_returns(sessions, curation):
+    """Evidence-only overlay; never edits frozen identity, ownership or access."""
+    by_id = {s['id']: s for s in sessions}
+    returns = curation.get('assignment_returns', {})
+    assert set(returns) <= set(by_id), 'return names an unknown assignment'
+    assert {s['id'] for s in sessions if s.get('return_observation')} <= set(returns), 'omitted return requires an explicit withdrawal/retention observation'
+    pending = []
+    before = {sid: {k: v for k, v in s.items() if k not in RETURN_FIELDS}
+              for sid, s in by_id.items()}
+    for sid, row in returns.items():
+        assert set(row) == RETURN_FIELDS, 'return requires the complete explicit evidence field set'
+        obs = row['return_observation']
+        head = obs['source_head']
+        assert re.fullmatch(r'[0-9a-f]{40}', head), 'return requires immutable source'
+        link = row['source_contract']
+        assert re.fullmatch(r'https://github\.com/mastermindx-market-intelligence/macro/blob/[0-9a-f]{40}/[A-Za-z0-9_./-]+', link), 'invalid source URL'
+        assert '/blob/' + head + '/' in link, 'source pin and link disagree'
+        assert not any(part in ('.', '..') for part in link.split('/')), 'source path cannot normalize outside its immutable pin'
+        assert row.get('rig_receipt') is None and row.get('rig_state') == 'draft', 'observation overlay cannot grant approval'
+        candidate = row.get('candidate_ref')
+        if candidate:
+            expected = 'https://app.paper.design/file/' + obs['candidate_file_id'] + '/' + obs['candidate_page_id']
+            assert candidate == expected, 'candidate identity/link mismatch'
+        else:
+            assert obs['candidate_file_id'] is None and obs['candidate_page_id'] is None, 'absent candidate must have absent native identity'
+        for field in ('readme_url', 'retained_reference_url'):
+            value = obs.get(field)
+            assert value is None or re.fullmatch(r'https://app\.paper\.design/file/[A-Z0-9]+/p-[A-Za-z0-9-]+', value), 'invalid Paper evidence URL'
+        if obs.get('readme_url'):
+            assert obs['readme_url'] == 'https://app.paper.design/file/' + obs['readme_file_id'] + '/' + obs['readme_page_id'], 'Read me identity/link mismatch'
+            assert obs.get('retained_reference_url') != obs['readme_url'], 'current Read me is not retained original evidence'
+        else:
+            assert all(obs.get(k) is None for k in ('readme_file_id', 'readme_page_id', 'readme_board_id')), 'absent Read me must have absent identity'
+        pending.append((sid, copy.deepcopy(row)))
+    for sid, row in pending:
+        by_id[sid].update(row)
+    assert before == {sid: {k: v for k, v in s.items() if k not in RETURN_FIELDS}
+                      for sid, s in by_id.items()}, 'overlay changed frozen assignment fields'
+    return sessions
+
+def observe_directory_progress(data, out):
+    """Current effects come from the existing native log, never from curation."""
+    meta = data['metadata']
+    native_path = out / 'paper' / 'native-progress.json'
+    if native_path.exists():
+        native = load(native_path)
+        applied = sum(op['state'] == 'APPLIED_RESPONSE_OBSERVED' for op in native['operations'])
+        meta['directory']['paper_mutations'] = applied
+        meta['paper_application'] = 'DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED' if applied else 'NOT_APPLIED_TO_PAPER'
+        meta['native_effect_evidence'] = 'paper/native-progress.json'
+        meta['continuation_procedure_sha'] = native.get('continuation_protected_procedure', native.get('protected_procedure'))
+        meta['native_effect_observed_at'] = native['observed_at']
+    meta['assignment_return_observations'] = [
+        {'id': s['id'], 'observed_at_utc': s['return_observation']['observed_at_utc'],
+         'source_head': s['return_observation']['source_head']}
+        for s in data['sessions'] if s.get('return_observation')]
+    meta['baseline_scope_note'] = 'Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus.'
+    f03 = next(s for s in data['sessions'] if s['id'] == 'F03')
+    f03['source_contract_label'] = 'F03 organization contract'
+    if meta['directory']['paper_mutations']:
+        f03['candidate_ref'] = 'https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1P-0'
+        f03['status'] = 'Directory refinements observed; all 301 cross-file organization actions NOT_DISPATCHED; reference approval absent'
+        f03['next_action'] = 'Qualify source/reference review and current joint foundations; resource actions require P00 supported-operation qualification and preservation evidence.'
+
+def builder_entry(s):
+    """Source return and native/reference approval are intentionally independent."""
+    obs = s.get('return_observation') or {}
+    candidate = ('[Observed candidate / directory](' + s['candidate_ref'] + ')'
+                 if s.get('candidate_ref') else 'New native candidate not admitted or not established by this return.')
+    contract = s.get('source_contract')
+    if contract == 'CONTRACT.md': contract = '../CONTRACT.md'
+    contract_text = ('[' + s.get('source_contract_label', 'Returned source/build package') + '](' + contract + ')'
+                     if contract else 'Not returned; the original assignment is requirements, not a completed build contract.')
+    text = '**Candidate:** ' + candidate + '\n\n'
+    if obs.get('candidate_file_id'):
+        text += '**Candidate identity:** `' + obs['candidate_file_id'] + ' / ' + obs['candidate_page_id'] + '`.\n\n'
+    if obs.get('readme_url'):
+        text += '[Read me / candidate entry](' + obs['readme_url'] + ')\n\n'
+        text += '**Read me identity:** `' + ' / '.join(x for x in (obs['readme_file_id'], obs['readme_page_id'], obs.get('readme_board_id')) if x) + '`.\n\n'
+    if obs.get('retained_reference_url'):
+        text += '[Retained original reference](' + obs['retained_reference_url'] + ') — not promoted to an approved candidate.\n\n'
+    text += '**Returned contract / package:** ' + contract_text + '\n\n'
+    text += '**Approval:** No approved candidate established in the inspected package. RIG receipt not observed; state: ' + (s.get('rig_state') or 'unobserved') + '. A displayed assignment is not live writer custody.\n\n'
+    text += '**Shell/system:** ' + (s.get('shell_version') or 'F01 final release not observed') + ' / ' + (s.get('system_version') or 'F02 final release not observed') + '.\n\n'
+    text += '**Status:** ' + s['status'] + '\n\n'
+    if obs:
+        text += '**Return observation:** ' + obs['observed_at_utc'] + '; immutable source `' + obs['source_head'] + '`. This does not refresh the original inventory or certify contract completeness.\n\n'
+    text += '**Next action:** ' + s['next_action'] + '\n\n'
+    return text
+
+def refresh_returns(out):
+    """Re-render the existing frozen audit bundle without re-running its census."""
+    names = {'metadata':'provenance','sessions':'assignment-directory','pages':'paper-page-directory',
+             'artboards':'paper-artboard-directory','routes':'route-assignment-projection',
+             'source_deltas':'source-delta-projection','destinations':'proposed-destinations',
+             'changes':'live-delta','inventory_gaps':'inventory-gaps'}
+    data = {key: load(out/'data'/(name+'.json')) for key, name in names.items()}
+    assert len(data['sessions']) == 36 and len(data['routes']) == 348
+    assert len(data['source_deltas']) == 9 and all(x['canonical_registry_id'] is None for x in data['source_deltas'])
+    assert len(data['pages']) == 301 and len(data['artboards']) == 2450
+    ledger = load(out/'data/resource-action-ledger.json')
+    assert len(ledger) == 301 and all(x['effect_status'] == 'NOT_DISPATCHED' and not x['applied'] for x in ledger)
+    curation = load(Path(__file__).with_name('curation.json'))
+    apply_assignment_returns(data['sessions'], curation)
+    observe_directory_progress(data, out)
+    dump(out/'data/assignment-directory.json', data['sessions'])
+    dump(out/'data/provenance.json', data['metadata'])
+    render_directory(out, data, set(curation.get('assignment_returns', {})) | {'F03'})
+    print(json.dumps({'status':'RETURN_OBSERVATIONS_REFRESHED_NOT_APPROVED',
+                      'assignments':len(data['sessions']), 'returns':len(curation.get('assignment_returns', {})),
+                      'canonical_records':len(data['routes']), 'actions_not_dispatched':len(ledger)}))
+
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('--inputs',type=Path,required=True); ap.add_argument('--evidence',type=Path,required=True); ap.add_argument('--output',type=Path,required=True); args=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument('--inputs',type=Path); ap.add_argument('--evidence',type=Path); ap.add_argument('--output',type=Path,required=True); ap.add_argument('--refresh-returns',action='store_true'); args=ap.parse_args()
+    if args.refresh_returns:
+        refresh_returns(args.output)
+        return
+    if args.inputs is None or args.evidence is None:
+        ap.error('--inputs and --evidence are required for a full baseline build')
     inp,ev,out=args.inputs,args.evidence,args.output; out.mkdir(parents=True,exist_ok=True)
     blob_map=load(inp/'source-blob-map.json')
     for name,sha in blob_map.items():
@@ -177,6 +301,7 @@ def main():
     for p in pages:
         p['board_role_warnings']=sorted({label for b in board_rows if (b['paper_file_id'],b['paper_page_id'])==(p['paper_file_id'],p['paper_page_id']) for label in b['observed_role_labels']})
     for s in sessions:s['aliases']=curation['assignment_aliases'].get(s['id'],[])
+    apply_assignment_returns(sessions, curation)
     current_by_id={r['page_id']:r for r in current['pages']}
     for r in route_rows:r['registry_source_owner']=current_by_id[r['canonical_registry_id']]['owner']
     # Derive member identity with the existing exporter's exact-before-family rule.
@@ -207,6 +332,7 @@ def main():
       'native_projection_warning':'17 native routes are inherited from the registry, not a fresh native-module census or route admission.',
       'source_rule':'Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.'}
     data={'metadata':metadata,'sessions':sessions,'pages':pages,'artboards':board_rows,'routes':route_rows,'source_deltas':delta_rows,'destinations':destinations,'changes':changes,'inventory_gaps':inventory_gaps}
+    observe_directory_progress(data, out)
     for name,value in [('provenance',metadata),('assignment-directory',sessions),('paper-page-directory',pages),('paper-artboard-directory',board_rows),
       ('route-assignment-projection',route_rows),('source-delta-projection',delta_rows),('proposed-destinations',destinations),('resource-action-ledger',ledger),('live-delta',changes)]:dump(out/'data'/f'{name}.json',value)
     (out/'evidence').mkdir(exist_ok=True)
@@ -221,15 +347,29 @@ def main():
     with (out/'data'/'canonical-route-assignments.csv').open('w',newline='') as f:
         w=csv.writer(f);w.writerow(['canonical_registry_id','repo','route','route_kind','primary_session','delegated_slices','access_shell','payload_tier','source_template'])
         for r in route_rows:w.writerow([r[k] if k!='delegated_slices' else ','.join(r[k]) for k in ['canonical_registry_id','repo','route','route_kind','primary_session','delegated_slices','access_shell','payload_tier','source_template']])
+    render_directory(out, data)
+    print(json.dumps({'status':'BUILT_NOT_APPROVED','assignments':len(sessions),'page_records':len(pages),'artboards':len(board_rows),
+      'canonical_records':len(route_rows),'deltas':len(delta_rows),'destinations':len(destinations),'actions_not_dispatched':len(ledger),
+      'output':str(out)},indent=2))
+
+def render_directory(out, data, updated_ids=None):
+    sessions,pages,board_rows,route_rows,delta_rows=(data[k] for k in ('sessions','pages','artboards','routes','source_deltas'))
     # Every assignment is a GitHub-readable stop, with exact source references in two choices.
     (out/'assignments').mkdir(exist_ok=True)
     for s in sessions:
+        if updated_ids is not None and s['id'] not in updated_ids: continue
         refs=[p for p in pages if {'file_id':p['paper_file_id'],'page_id':p['paper_page_id']} in s['paper_refs']]
         rr=[r for r in route_rows if r['primary_session']==s['id'] or s['id'] in r['delegated_slices']]
         ds=[r for r in delta_rows if r['route'] in s['source_deltas']]
         text=f"# {s['id']} — {s['title']}\n\n[Directory](../DIRECTORY.md) · [Original assignment]({s['handoff_url']})\n\n{s['job']}\n\n"
         text+='## Builder entry\n\n'
-        text+=f"**Candidate:** not established by the inspected package. **Approval receipt:** not observed. **Shell/system:** F01/F02 release not observed. **Full contract:** {'[F03 organization contract](../CONTRACT.md)' if s['id']=='F03' else 'not returned; the original handoff above is requirements, not a completed build contract.'}\n\n"
+        text+=builder_entry(s)
+        if s['id']=='D08':
+            text+='## Four separately owned design packages\n\nFour design packages are not four route records. Source-only returns retain null native candidates.\n\n'
+            for child in sessions:
+                if child['id'] in ('D08A','D08B','D08C','D08D'):
+                    text+='### '+child['id']+' — '+child['title']+'\n\n'+builder_entry(child)
+
         text+=f"**Dependencies:** {s['dependencies']}. **Named collaborators:** {s['partners']}. **Implementation/served status:** not assessed as ready.\n\n"
         text+='## Proposed working families\n\n'+('\n'.join('- '+x for x in s['proposed_files']))+'\n\nNo destination ID is inferred from these names. Existing coherent files should be verified for reuse first.\n\n'
         text+='## Observed Paper references\n\n'
@@ -249,14 +389,12 @@ def main():
             for note in p['lineage_notes']:text+=f"- {p['paper_file_id']} / {p['paper_page_id']}: {note['statement']} Missing: {note['missing']} (owner {note['owner']}). [Source](../{note['evidence']}).\n"
         text+='\nPredecessor/successor approval relationships, rejection rationale receipts, full retention ledgers, source contracts and per-route exact candidate mappings are not established by titles or board counts. Preserve originals and obtain those records through the domain owner before archival or builder approval. A displayed assignment is not a live writer lease.\n'
         (out/'assignments'/f"{s['id']}.md").write_text(text)
-    index='# Design programme directory\n\n**Source directory available · Paper organization NOT_APPLIED · reference approvals not established.**\n\nChoose a family below. Its entry exposes the exact references and contract status; one further link opens the source or Paper page. A missing approved candidate is reported in the same place.\n\n[Interactive directory](directory.html) · [Organization contract](CONTRACT.md) · [Evidence and return](README.md) · [Fresh inventory](evidence/inventory-receipt.json)\n\n'
+    index='# Design programme directory\n\n**Source directory available · directory refinements observed where logged · 301 cross-file organization actions NOT_DISPATCHED · reference approvals not established.**\n\nChoose a family below. Its entry exposes the exact references and contract status; one further link opens the source or Paper page. A missing approved candidate is reported in the same place.\n\n[Interactive directory](directory.html) · [Organization contract](CONTRACT.md) · [Evidence and return](README.md) · [Fresh inventory](evidence/inventory-receipt.json)\n\n'
     index+=table(['Assignment','User task','Routes / deltas','Reference status'],[[f"[{s['id']} — {s['title']}](assignments/{s['id']}.md)",s['job'],f"{len(s['canonical_registry_ids'])} canonical / {len(s['source_deltas'])} delta; {len(s['delegated_registry_ids'])} delegated",'Approval not established; see entry'] for s in sessions])
     (out/'DIRECTORY.md').write_text(index)
     payload=json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     template=Path(__file__).with_name('directory.template.html').read_text()
     (out/'directory.html').write_text(template.replace('__F03_DATA__',payload).replace('__F03_SCRIPT__',Path(__file__).with_name('directory.js').read_text()))
-    print(json.dumps({'status':'BUILT_NOT_APPROVED','assignments':len(sessions),'page_records':len(pages),'artboards':len(board_rows),
-      'canonical_records':len(route_rows),'deltas':len(delta_rows),'destinations':len(destinations),'actions_not_dispatched':len(ledger),
-      'output':str(out)},indent=2))
+
 
 if __name__=='__main__':main()

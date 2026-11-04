@@ -83,15 +83,33 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F01-shared-shell.md",
-    "source_contract": null,
-    "candidate_ref": null,
-    "rig_state": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/abfecf1efc452383fe720cb3ea2016ad8d7088e0/research/design_candidates/production_design_20261102/f01/IMPLEMENTATION_HANDOFF.md",
+    "candidate_ref": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0",
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Candidate.4 source policy returned; native/reference and final joint release remain open",
+    "next_action": "Resolve only original uncertain effects on their original carrier; qualify affected native review and joint F01/F02 release.",
+    "aliases": [],
+    "source_contract_label": "F01 implementation handoff",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+      "source_blob_sha": "87a4e99e4bfa024df50da21616b45f3385a00698",
+      "observed_pr_head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/abfecf1efc452383fe720cb3ea2016ad8d7088e0/research/design_candidates/production_design_20261102/f01/IMPLEMENTATION_HANDOFF.md"
+      ],
+      "candidate_file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "candidate_page_id": "p-27-0",
+      "readme_page_id": "p-27-0",
+      "readme_board_id": null,
+      "readme_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-27-0",
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": "01M2WGNCX9475G79JRKJTCM08P"
+    }
   },
   {
     "id": "F02",
@@ -153,15 +171,33 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F02-design-system.md",
-    "source_contract": null,
-    "candidate_ref": null,
-    "rig_state": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f/research/design_candidates/production_design_20261102/f02/RETURN_F02.md",
+    "candidate_ref": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Scoped native repair return observed; original Chinese comparison effect remains unknown; final joint release unaccepted",
+    "next_action": "Reconcile the original held operation only; obtain affected scoped review and full-set qualification without replay or surrogate approval.",
+    "aliases": [],
+    "source_contract_label": "F02 returned build package and exact gates",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+      "source_blob_sha": "2d9134c4279a42b51a2a3b1a74a8287ae998b4c6",
+      "observed_pr_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f/research/design_candidates/production_design_20261102/f02/RETURN_F02.md"
+      ],
+      "candidate_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "candidate_page_id": "p-9-0",
+      "readme_page_id": "p-9-0",
+      "readme_board_id": "47Q-0",
+      "readme_url": "https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0",
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": "01M312VSDSZFVT45674GDVJVZN"
+    }
   },
   {
     "id": "F03",
@@ -620,14 +656,15 @@
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/F03-paper-organization.md",
     "source_contract": "CONTRACT.md",
-    "candidate_ref": null,
+    "candidate_ref": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1P-0",
     "rig_state": null,
     "rig_receipt": null,
     "shell_version": null,
     "system_version": null,
-    "status": "F03 source directory delivered; Paper organization blocked",
-    "next_action": "Consume P00 qualification and exact target overlap evidence",
-    "aliases": []
+    "status": "Directory refinements observed; all 301 cross-file organization actions NOT_DISPATCHED; reference approval absent",
+    "next_action": "Qualify source/reference review and current joint foundations; resource actions require P00 supported-operation qualification and preservation evidence.",
+    "aliases": [],
+    "source_contract_label": "F03 organization contract"
   },
   {
     "id": "D01",
@@ -1114,19 +1151,37 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D07-company.md",
-    "source_contract": null,
-    "candidate_ref": null,
-    "rig_state": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/da8df94d647f06b34e5a7a743f147980e627e854/research/design_candidates/production_design_20261102/d07/README.md",
+    "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0",
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Read me and eight provisional task studies observed; source package returned; RIG draft",
+    "next_action": "Complete exact remaining native/reference gates using current joint foundation; preserve old Company and held references.",
     "aliases": [
       "Returns Calendar",
       "Earnings",
       "Company dossiers"
-    ]
+    ],
+    "source_contract_label": "D07 returned build package",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "da8df94d647f06b34e5a7a743f147980e627e854",
+      "source_blob_sha": "5f300097e708bd163fae657d0cbfe7eadc88d5bb",
+      "observed_pr_head": "da8df94d647f06b34e5a7a743f147980e627e854",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/da8df94d647f06b34e5a7a743f147980e627e854/research/design_candidates/production_design_20261102/d07/README.md"
+      ],
+      "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "candidate_page_id": "p-11-0",
+      "readme_page_id": "p-11-0",
+      "readme_board_id": "1NFS-0",
+      "readme_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-11-0",
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM"
+    }
   },
   {
     "id": "D08",
@@ -1171,17 +1226,35 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08-options.md",
-    "source_contract": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/d0516e1bad9cb5982d43d20c4167d0355cb70e2c/research/design_candidates/production_design_20261102/d08/README.md",
     "candidate_ref": null,
-    "rig_state": null,
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Frozen integration contract returned; original refused native target remains held; RIG unsubmitted",
+    "next_action": "Consume A/B/C/D immutable returns and qualify integration decisions; do not replay refused 1N2L-0.",
     "aliases": [
       "Options"
-    ]
+    ],
+    "source_contract_label": "D08-OPTIONS/1.0.0 integration package",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+      "source_blob_sha": "26791a8af162b4cffa7fd3d60766fd0e92579838",
+      "observed_pr_head": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/d0516e1bad9cb5982d43d20c4167d0355cb70e2c/research/design_candidates/production_design_20261102/d08/README.md"
+      ],
+      "candidate_file_id": null,
+      "candidate_page_id": null,
+      "readme_page_id": null,
+      "readme_board_id": null,
+      "readme_url": null,
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": null
+    }
   },
   {
     "id": "D08A",
@@ -1211,15 +1284,33 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08A-options-overview-flow.md",
-    "source_contract": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md",
     "candidate_ref": null,
-    "rig_state": null,
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Source return observed; new native candidate not admitted; retained source reference is not an approved candidate",
+    "next_action": "Current assigned receiver consumes immutable source return and obtains qualified dedicated target/foundation; preserve original holds and no alternate-carrier replay.",
+    "aliases": [],
+    "source_contract_label": "D08A returned source/build contract",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+      "source_blob_sha": "0c35daf4091f1068201f732d8f24dfed0d294565",
+      "observed_pr_head": "c3413d84650ce85ca0c875c16b53b5e519b46f35",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/c3413d84650ce85ca0c875c16b53b5e519b46f35/research/design_candidates/production_design_20261102/d08a/IMPLEMENTATION_HANDOFF.md"
+      ],
+      "candidate_file_id": null,
+      "candidate_page_id": null,
+      "readme_page_id": null,
+      "readme_board_id": null,
+      "readme_url": null,
+      "retained_reference_url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-25-0",
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": null
+    }
   },
   {
     "id": "D08B",
@@ -1264,15 +1355,33 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08B-options-exposure-volatility.md",
-    "source_contract": null,
-    "candidate_ref": null,
-    "rig_state": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md",
+    "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-12-0",
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Candidate and source return observed; provisional foundation; RIG draft",
+    "next_action": "Qualify candidate/source boundary and independent exact-reference review; preserve D08 integration and existing save/access ownership.",
+    "aliases": [],
+    "source_contract_label": "D08B returned source/build contract",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+      "source_blob_sha": "abc4a489227b464b8772df65158c6cbabbc15716",
+      "observed_pr_head": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/research/design_candidates/production_design_20261102/d08b/SOURCE_BUILD_CONTRACT.md"
+      ],
+      "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "candidate_page_id": "p-12-0",
+      "readme_page_id": "p-14-0",
+      "readme_board_id": "1PVF-0",
+      "readme_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-14-0",
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM"
+    }
   },
   {
     "id": "D08C",
@@ -1324,15 +1433,33 @@
       }
     ],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08C-options-plan-review.md",
-    "source_contract": null,
-    "candidate_ref": null,
-    "rig_state": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md",
+    "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0",
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Candidate and source return observed; provisional foundation; RIG draft",
+    "next_action": "Qualify candidate/source boundary and independent exact-reference review; preserve D08 integration and existing save/access ownership.",
+    "aliases": [],
+    "source_contract_label": "D08C returned source/build contract",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "291f21aa8e9d757466412549a8d6537d889ab4d8",
+      "source_blob_sha": "ce29e9f79ad292be4dd6c5677d9e6f5bd6a40024",
+      "observed_pr_head": "291f21aa8e9d757466412549a8d6537d889ab4d8",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/291f21aa8e9d757466412549a8d6537d889ab4d8/research/design_candidates/production_design_20261102/d08c/DATA_AND_BUILD.md"
+      ],
+      "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "candidate_page_id": "p-13-0",
+      "readme_page_id": "p-15-0",
+      "readme_board_id": "1S0R-0",
+      "readme_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0",
+      "retained_reference_url": null,
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM"
+    }
   },
   {
     "id": "D08D",
@@ -1359,15 +1486,33 @@
     ],
     "paper_refs": [],
     "handoff_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6e1862867193ec6486a22001a0e4fb515da20448/research/design_candidates/production_design_20261102/handoffs/D08D-options-futures-replay.md",
-    "source_contract": null,
+    "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md",
     "candidate_ref": null,
-    "rig_state": null,
+    "rig_state": "draft",
     "rig_receipt": null,
-    "shell_version": null,
-    "system_version": null,
-    "status": "Candidate and full contract not returned in inspected package",
-    "next_action": "Return source contract and frozen exact candidate through existing programme owner",
-    "aliases": []
+    "shell_version": "F01 candidate.4 — source policy provisional; final joint v1 unreleased",
+    "system_version": "F02 candidate.2 concurrence with candidate.4 policy — not final joint/native acceptance",
+    "status": "Source return observed; new native candidate not admitted; retained source reference is not an approved candidate",
+    "next_action": "Current assigned receiver consumes immutable source return and obtains qualified dedicated target/foundation; preserve original holds and no alternate-carrier replay.",
+    "aliases": [],
+    "source_contract_label": "D08D returned source/build contract",
+    "return_observation": {
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f",
+      "source_blob_sha": "9bc75a523f9ed0e88e0e7976529555817cd9b108",
+      "observed_pr_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f",
+      "evidence_urls": [
+        "https://github.com/mastermindx-market-intelligence/macro/blob/a6ffdef508eb6f6293c74242f85d50d8c8843e6f/research/design_candidates/production_design_20261102/d08d/TEMPORAL_BACKEND_CONTRACT.md"
+      ],
+      "candidate_file_id": null,
+      "candidate_page_id": null,
+      "readme_page_id": null,
+      "readme_board_id": null,
+      "readme_url": null,
+      "retained_reference_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0",
+      "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
+      "readme_file_id": null
+    }
   },
   {
     "id": "D09",

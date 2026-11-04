@@ -1,0 +1,141 @@
+{
+  "kind": "source_logic_regression_probes_not_browser_tests",
+  "status": "PASS",
+  "tests": [
+    {
+      "name": "Canonical identity count is separate from nine null-ID deltas",
+      "result": "PASS"
+    },
+    {
+      "name": "Exact held board search exposes the matched board and role",
+      "result": "PASS"
+    },
+    {
+      "name": "Reference search and assignment filter include all D17 WTI exceptions",
+      "result": "PASS"
+    },
+    {
+      "name": "Detail navigation preserves originating view, query and owner",
+      "result": "PASS"
+    },
+    {
+      "name": "Skip action moves focus without changing router state",
+      "result": "PASS"
+    },
+    {
+      "name": "Exact board detail contains anchor and focus target",
+      "result": "PASS"
+    },
+    {
+      "name": "Equity replay exposes integration D08 and design D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "Recorded redirects and Returns history are exposed without approval",
+      "result": "PASS"
+    },
+    {
+      "name": "Observed historical China role overrides prior candidate classification",
+      "result": "PASS"
+    },
+    {
+      "name": "Original Earnings and Hub archives link to recorded destinations",
+      "result": "PASS"
+    },
+    {
+      "name": "Inventory return is bounded to local inventory with its exact state",
+      "result": "PASS"
+    },
+    {
+      "name": "Mixed historical and held pages surface warnings",
+      "result": "PASS"
+    },
+    {
+      "name": "Family routes expose concrete-member index, never wildcard live URLs",
+      "result": "PASS"
+    },
+    {
+      "name": "Seven unregistered documents are individual gaps with design responsibility",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese chrome retains language-marked source fields and labels",
+      "result": "PASS"
+    },
+    {
+      "name": "Missing-result state links alternative scopes and member lookup",
+      "result": "PASS"
+    },
+    {
+      "name": "User search values are escaped and history encoded",
+      "result": "PASS"
+    },
+    {
+      "name": "Fresh document execution honors an exact saved board URL",
+      "result": "PASS"
+    },
+    {
+      "name": "Default inventory row retains an explicit nonempty return fragment",
+      "result": "PASS"
+    },
+    {
+      "name": "Complete member index preserves included and excluded rows",
+      "result": "PASS"
+    },
+    {
+      "name": "Eight return observations preserve null native-approval receipts",
+      "result": "PASS"
+    },
+    {
+      "name": "D08B and D08C expose direct exact candidate, Read me and source links",
+      "result": "PASS"
+    },
+    {
+      "name": "Source-only D08A and D08D remain without admitted native candidates",
+      "result": "PASS"
+    },
+    {
+      "name": "D08 entry provides all four owner contracts without a third directory choice",
+      "result": "PASS"
+    },
+    {
+      "name": "New exact Read me board identity is searchable without mutating census",
+      "result": "PASS"
+    },
+    {
+      "name": "Changes view exposes immutable return observations and current resource gate",
+      "result": "PASS"
+    },
+    {
+      "name": "Current directory effects do not imply cross-file action application",
+      "result": "PASS"
+    },
+    {
+      "name": "Chinese returned-evidence chrome retains exact source identities",
+      "result": "PASS"
+    },
+    {
+      "name": "Evidence links reject executable or non-evidence URL schemes",
+      "result": "PASS"
+    },
+    {
+      "name": "Source return refresh does not erase query or owner context",
+      "result": "PASS"
+    },
+    {
+      "name": "Candidate and Read me compound identities use their own pages",
+      "result": "PASS"
+    },
+    {
+      "name": "Current D08B/C Read me links are not retained-original claims",
+      "result": "PASS"
+    },
+    {
+      "name": "Evidence links reject normalization outside the immutable source pin",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "No rendering, browser interaction, screen-reader, touch, focus-visibility, contrast, zoom or performance acceptance."
+  ]
+}

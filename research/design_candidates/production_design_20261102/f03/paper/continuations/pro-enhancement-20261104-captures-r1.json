@@ -1,0 +1,115 @@
+{
+  "schema": "f03.native_capture_set.v1",
+  "kind": "actual_native_screenshots_and_jsx_not_interaction_proof",
+  "status": "frozen_first_pass_input",
+  "boards": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "5G0X-2",
+      "observed_at": "2026-11-04T02:58:01Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-main-20261104-r1.jpg",
+        "bytes": 280962,
+        "sha256": "6ae8241485ac695bc6b54e4d232ea0dc7db9f80ed74806b7fd1cfee8f2663398",
+        "git_blob_sha": "30b902e11df526a6eb446f1c5ac4a8a4c419bcae"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-main-20261104-r1.jsx",
+        "bytes": 46297,
+        "sha256": "8530130dbd40b720f9517bd2b559680a4f8a993ad25c3c7d985d1ce842670721",
+        "git_blob_sha": "7b701d7429b0c00b6e4636bb5be9459cef16c0cb"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EX-0",
+      "observed_at": "2026-11-04T02:59:41Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-320-light-zh-20261104-r1.jpg",
+        "bytes": 104586,
+        "sha256": "7f91f1b161dfae33556bb1e8513cb17ad4d5c1da36189e61bc8372666427d557",
+        "git_blob_sha": "281e551c2422043ef06e86abf96038338643f1ba"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-320-light-zh-20261104-r1.jsx",
+        "bytes": 13533,
+        "sha256": "7d5cae79d8f3fd1f2f789e3622bf4191140312c47e75950e894175e412d916b1",
+        "git_blob_sha": "822fa2cccc158950ce771876c97e113da89f5a09"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EW-0",
+      "observed_at": "2026-11-04T02:59:41Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-390-dark-en-20261104-r1.jpg",
+        "bytes": 128893,
+        "sha256": "7deb2612b68985ca82e6865b2e3b1f1efcedbdccfb3a1ae2c1d92facbcf6e120",
+        "git_blob_sha": "6e84993b0dbf44257729056991915c6ff6390c54"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-390-dark-en-20261104-r1.jsx",
+        "bytes": 13719,
+        "sha256": "ef150cbf28a83d9e98eaa5ae3614153a38046933a7d42b840b879deceee9a4e7",
+        "git_blob_sha": "1dee7dbed7579e146f509bd41223c9c913141a0e"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72CI-0",
+      "observed_at": "2026-11-04T02:58:01Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-options-wide-20261104-r1.jpg",
+        "bytes": 257653,
+        "sha256": "a7754d0969e458a999a2a90888ffc67c1fe9f4bf8e0016dcce9b57300d32ceff",
+        "git_blob_sha": "757ef64c005f819987814979eb463f7f0568a38b"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-options-wide-20261104-r1.jsx",
+        "bytes": 19787,
+        "sha256": "a8bb544a035b9c1314a02bb2b50950bc3ec0abfcf253f0ca25170dd23b8e3b31",
+        "git_blob_sha": "8697f19b5574f4a487233b93cdbed38bb1803f8a"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72EY-0",
+      "observed_at": "2026-11-04T02:59:41Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-states-768-light-en-20261104-r1.jpg",
+        "bytes": 199892,
+        "sha256": "4c9cae81f5221122e689b5b1751bc40d140efd0a35efe30cf2b779556844c705",
+        "git_blob_sha": "dbfbb2131e8498ffed30757cafb67424a63b5675"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-states-768-light-en-20261104-r1.jsx",
+        "bytes": 13533,
+        "sha256": "7efa5f5274483972209fb2162accdcbe03be13b6ad34a85a9bfb74e2d0f055ea",
+        "git_blob_sha": "3e33bbedaf775b196711f722adf1b525552449b7"
+      }
+    },
+    {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-R-0",
+      "artboard_id": "1NDQ-0",
+      "observed_at": "2026-11-04T02:58:01Z",
+      "capture": {
+        "path": "paper/captures/f03-pro-terminal-20261104-r1.jpg",
+        "bytes": 208476,
+        "sha256": "370c3b8f47064578b50a3f482ec1ce3af8f3b25a6dcc35e758075cd7def2f49e",
+        "git_blob_sha": "c8e603faf3eaeff08824c2d9291f5874e581dfc2"
+      },
+      "export": {
+        "path": "paper/exports/f03-pro-terminal-20261104-r1.jsx",
+        "bytes": 18150,
+        "sha256": "4c056ada81b8b8a36d0614ab1e36ad5c5a9a704cab65ca5f88ff39aff474b0c8",
+        "git_blob_sha": "74cb5aa90d4cdbbbe9a088a02e58662aeeb40cb7"
+      }
+    }
+  ]
+}

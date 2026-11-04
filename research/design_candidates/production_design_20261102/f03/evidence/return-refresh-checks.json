@@ -1,0 +1,383 @@
+{
+  "kind": "bounded_return_refresh_identity_and_source_checks_not_acceptance",
+  "status": "PASS",
+  "check_count": 93,
+  "checks": [
+    {
+      "name": "frozen bytes data/inventory-gaps.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/live-delta.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/paper-artboard-directory.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/paper-page-directory.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/proposed-destinations.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/resource-action-ledger.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/route-assignment-projection.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes data/source-delta-projection.json",
+      "result": "PASS"
+    },
+    {
+      "name": "frozen bytes inventory.html",
+      "result": "PASS"
+    },
+    {
+      "name": "root and tool-local curation mirrors agree",
+      "result": "PASS"
+    },
+    {
+      "name": "36 unique assignments; exactly eight observed returns",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields P00",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields F01",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields F02",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields F03",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D01",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D02",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D03",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D04",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D05",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D06",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D07",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D08",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D08A",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D08B",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D08C",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D09",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D10",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D11",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D12",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D13",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D14",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D15",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D16",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D17",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D18",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D19",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D20",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D21",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D22",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D23",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D24",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D25",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D26",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields D27",
+      "result": "PASS"
+    },
+    {
+      "name": "retained assignment fields QA01",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered F01",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval F01",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return F01",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered F02",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval F02",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return F02",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D07",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D07",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D07",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D08",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D08",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D08",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D08A",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D08A",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D08A",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D08B",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D08B",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D08B",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D08C",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D08C",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D08C",
+      "result": "PASS"
+    },
+    {
+      "name": "curated return rendered D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "immutable source and null approval D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "Markdown direct return D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "no native candidate fabricated D08A",
+      "result": "PASS"
+    },
+    {
+      "name": "no native candidate fabricated D08D",
+      "result": "PASS"
+    },
+    {
+      "name": "no native candidate fabricated D08",
+      "result": "PASS"
+    },
+    {
+      "name": "348 exact unique route identities retained",
+      "result": "PASS"
+    },
+    {
+      "name": "nine source deltas remain noncanonical",
+      "result": "PASS"
+    },
+    {
+      "name": "all 301 resource effects remain undispatched",
+      "result": "PASS"
+    },
+    {
+      "name": "HTML and assignment JSON share exact returns",
+      "result": "PASS"
+    },
+    {
+      "name": "current effects derived from original native log",
+      "result": "PASS"
+    },
+    {
+      "name": "source law continuation separated from original pin",
+      "result": "PASS"
+    },
+    {
+      "name": "native operation IDs unique; no unknown F03 effects",
+      "result": "PASS"
+    },
+    {
+      "name": "unknown assignment rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "canonical ownership mutation rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "source pin mismatch rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "native candidate identity mismatch rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "approval promotion rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "unsafe source URL rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "incomplete explicit return rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "omitted prior return rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "dot-segment source escape rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "Read me compound identity mismatch rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "current Read me cannot masquerade as original",
+      "result": "PASS"
+    },
+    {
+      "name": "invalid later row leaves all assignments unchanged",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "Original 399-input suite is historical, not rerun here.",
+    "Native visual observation, browser interaction, hosted CI and formal RIG are separate."
+  ]
+}

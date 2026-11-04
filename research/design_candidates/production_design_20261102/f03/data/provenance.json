@@ -42,10 +42,10 @@
     "proposed_destinations": 51,
     "page_records": 301,
     "new_reference_approvals": 0,
-    "paper_mutations": 0
+    "paper_mutations": 109
   },
   "status": "PARTIAL / BLOCKED_RETURN",
-  "paper_application": "NOT_APPLIED_TO_PAPER",
+  "paper_application": "DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED",
   "rig_state": "draft",
   "rig_receipt": null,
   "registry_generated_at": "2026-10-21T16:34:10Z",
@@ -93,5 +93,51 @@
     "failures": []
   },
   "native_projection_warning": "17 native routes are inherited from the registry, not a fresh native-module census or route admission.",
-  "source_rule": "Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata."
+  "source_rule": "Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.",
+  "native_effect_evidence": "paper/native-progress.json",
+  "continuation_procedure_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "native_effect_observed_at": "2026-11-04T03:27:35.701Z",
+  "assignment_return_observations": [
+    {
+      "id": "F01",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0"
+    },
+    {
+      "id": "F02",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f"
+    },
+    {
+      "id": "D07",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "da8df94d647f06b34e5a7a743f147980e627e854"
+    },
+    {
+      "id": "D08",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c"
+    },
+    {
+      "id": "D08A",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "c3413d84650ce85ca0c875c16b53b5e519b46f35"
+    },
+    {
+      "id": "D08B",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6"
+    },
+    {
+      "id": "D08C",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "291f21aa8e9d757466412549a8d6537d889ab4d8"
+    },
+    {
+      "id": "D08D",
+      "observed_at_utc": "2026-11-04T02:38:34Z",
+      "source_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f"
+    }
+  ],
+  "baseline_scope_note": "Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus."
 }
