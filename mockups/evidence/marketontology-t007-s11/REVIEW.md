@@ -13,4 +13,6 @@ Additional executed consumer sources (unchanged throughout capture):
 - `templates/ontology-scenario.js` SHA256 `de9aec0ddb098c490bcd3b0a070938718ddc2bff9ffee4cc32c9a7cb04609874`
 - `templates/ontology-portfolio.js` SHA256 `b8bba9bb8fee94975ddf8443eb03c5fe88fa7112025e467d1a3924493c672c02`
 
-Non-author root composition review: PASS at bounded fixture scope. Sol inspected eight normal matrix images and desktop EN/dark focus; all24 listed hashes match. Root separately reviewed the Sol-authored bootstrap supplier. Mobile English floating shared Brain launcher partly overlaps the verification chip at the initial viewport; recorded nonblocking shared-component finding, not hidden or claimed fixed. Production verification remains owed.
+Non-author root composition review: PASS at bounded fixture scope. Sol inspected eight normal matrix images and desktop EN/dark focus; all24 listed hashes match. Root separately reviewed the Sol-authored bootstrap supplier. The initial mobile English overlap finding prompted a scoped flags clearance repair; updated capture follows the repair and its new review is recorded separately. Production verification remains owed.
+
+Scoped mobile repair review: PASS_SCOPED_VISUAL_REPAIR. EN dark/light and ZH light inspected; qualification text is now clear of the shared launcher. Prior desktop/composition review reused. See mobile-qualification-closure.json.

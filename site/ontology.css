@@ -359,6 +359,7 @@ html[data-lang="zh"] .st-window,html[data-lang="zh"] .ox-step-verdict{letter-spa
 }
 @media(max-width:600px){
   .ox-wrap{padding-inline:var(--sp-4,16px)}
+  .ox-answer-flags{padding-inline-end:calc(var(--sp-8,32px) * 2)}
   .rail{display:flex;flex-direction:column;gap:var(--sp-3,12px)}
   .station{display:block;padding:0}
   .st-top{display:none}

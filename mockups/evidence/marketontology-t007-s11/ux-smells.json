@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.ux_smell_report.v1",
-  "generated_at": "2026-11-04T04:36:04.429290+00:00",
+  "generated_at": "2026-11-04T04:48:54.133210+00:00",
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
     "version": "1.4.0"
@@ -15,12 +15,14 @@
     "construction_inputs": {
       "templates/ontology.html.j2": "f64b8c40d14e6957552af9669e02a541d990bf92d0364c65be6a3bc00711095d",
       "templates/ontology.js": "7693cc87d2ee36038168a4e97d180280f1eff9138e674b46b28d50b3b63d793e",
-      "templates/ontology.css": "30a267e6fcbd732727dfc97f07140f5dc08ad5f6f2df1cde35697eafe6b204a1",
+      "templates/ontology.css": "f2faffa2fd34d3a0928a2f969f53b2686b256fb3cc85753f278d02650a9c6a8c",
+      "templates/ontology-scenario.js": "de9aec0ddb098c490bcd3b0a070938718ddc2bff9ffee4cc32c9a7cb04609874",
+      "templates/ontology-portfolio.js": "b8bba9bb8fee94975ddf8443eb03c5fe88fa7112025e467d1a3924493c672c02",
       "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
       "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
       "templates/mm_brain.js": "49017d0dc5cb4bfa0e66a6c2f332b01060d54bb667b2fbd18911bf3c95e47c8a"
     },
-    "adapter_sha256": "03fcd6078765ac05c33d3148026b3f6fdad036b98c627960d50a4526646291b0"
+    "adapter_sha256": "a708994f08a2013fd391a457d3881cef7db0a510135b072f6144a160bc6bcd32"
   },
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
   "metric_notes": {
@@ -62,7 +64,7 @@
         "elements_wider_than_viewport": 0,
         "console_error_count": 0,
         "request_count": 33,
-        "payload_bytes_total": 287203,
+        "payload_bytes_total": 147680,
         "asof_present": false,
         "source_present": false,
         "screenshot_completion": 1.0,
@@ -79,7 +81,7 @@
             "elements_wider_than_viewport": 0
           },
           "mobile": {
-            "document_height_px": 5595,
+            "document_height_px": 5633,
             "horizontal_overflow": false,
             "elements_wider_than_viewport": 0
           }

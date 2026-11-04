@@ -77,7 +77,7 @@ def main():
     assert page.locator("[data-scenario-form] select").count() == 3
     assert page.locator("[data-scenario-result]").get_attribute("data-state") == "idle"
     context.close()
-    inputs = ["templates/ontology.html.j2", "templates/ontology.js", "templates/ontology.css", "templates/theme.css", "templates/theme.js", "templates/mm_brain.js"]
+    inputs = ["templates/ontology.html.j2", "templates/ontology.js", "templates/ontology.css", "templates/ontology-scenario.js", "templates/ontology-portfolio.js", "templates/theme.css", "templates/theme.js", "templates/mm_brain.js"]
     target = {"kind":"rendered_fixture", "production_proof":"none", "fixture":"fixture.json",
         "fixture_sha256":hashlib.sha256(fixture_bytes).hexdigest(),
         "fixture_recipe":"tests/ontology_explorer_fixtures.py",
