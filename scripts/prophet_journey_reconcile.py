@@ -270,6 +270,29 @@ def _select_all(soup: BeautifulSoup, selector: str) -> list[Tag]:
     return [n for n in soup.select(selector) if isinstance(n, Tag)]
 
 
+def _select_all_with_templates(root: BeautifulSoup | Tag,
+                               selector: str) -> list[Tag]:
+    """``root.select(selector)`` plus the matches inside every <template>.
+
+    soupsieve 4.0 (2026-11-03) no longer matches <template> contents from
+    the document; selecting on the template element itself reaches them on
+    2.x and 4.x. On 2.x the document-level select already returns them, so
+    the identity check leaves that result unchanged. Template matches are
+    merged back into document order, which is what 2.x returned.
+    """
+    found = _select_all(root, selector)
+    seen = {id(node) for node in found}
+    added = False
+    for template in root.find_all("template"):
+        for node in _select_all(template, selector):
+            if id(node) not in seen:
+                seen.add(id(node))
+                added = True
+    if added:
+        found = [node for node in root.descendants if id(node) in seen]
+    return found
+
+
 def _resolve_ticker(soup: BeautifulSoup, requested: str | None) -> str | None:
     """Pick the audit ticker.
 
@@ -645,8 +668,8 @@ def _setup_detail_node(soup: BeautifulSoup,
         soup, f'[data-setup-ticker="{ticker}"]')
     if wrapper is None:
         return None
-    body = wrapper.select_one('[data-native-id]')
-    return body if isinstance(body, Tag) else wrapper
+    bodies = _select_all_with_templates(wrapper, '[data-native-id]')
+    return bodies[0] if bodies else wrapper
 
 
 def _check_j5(soup: BeautifulSoup, standouts: dict[str, Any],
@@ -798,10 +821,7 @@ def _setup_source_bodies(soup: BeautifulSoup,
     displayed: list[Tag] = []
     templates: list[Tag] = []
     requested = ticker.upper()
-    # This audit deliberately compares inert template copies with live bodies.
-    # Document CSS selectors skip template contents in SoupSieve 4; walk the
-    # parsed nodes explicitly so every copy still participates in reconciliation.
-    for body in soup.find_all(class_="pv-setup-body"):
+    for body in _select_all_with_templates(soup, ".pv-setup-body"):
         prefixed_wrapper = body.find_parent(
             attrs={"data-setup-ticker": lambda value: str(value).upper().startswith(requested + "-")})
         exact_wrapper = body.find_parent(attrs={"data-setup-ticker": ticker})
@@ -1332,7 +1352,8 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
 
     selected_row = _standouts_payload_row(standouts or {}, ticker or "")
     wrapper = soup.select_one(f'[data-setup-ticker="{ticker}"]') if ticker else None
-    body = wrapper.select_one(".pv-setup-body") if wrapper else None
+    bodies = _select_all_with_templates(wrapper, ".pv-setup-body") if wrapper else []
+    body = bodies[0] if bodies else None
     clock = body.select_one(".pvs-assessment-clock") if body else None
     if clock is None or selected_row is None:
         fails.append("assessment clock missing")

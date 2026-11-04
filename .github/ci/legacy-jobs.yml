@@ -52658,6 +52658,50 @@ jobs:
       - name: news impact F2 negative-control repairs (amount formatting, text safety)
         run: python -m pytest tests/test_news_impact_f2_amount_format.py tests/test_news_impact_f2_text_safety.py -q
 
+  news-v91-vertical-proofs:
+    # News Intelligence Estate masterplan section 9.1 vertical proofs (V91). Each
+    # research/news_intelligence_estate_20261021/v91_proofs/v<n>_*.py runs offline
+    # twice and its verdicts are pinned against the sibling .expected file. This job
+    # is byte-identical in every V91 pull request, so they merge in any order.
+    if: ${{ false }}
+    gate: code
+    paths:
+      - "tests/test_v91_vertical_proofs.py"
+      - "research/news_intelligence_estate_20261021/v91_proofs/**"
+      - "app/company_intelligence.py"
+      - "app/integrated_answer.py"
+      - "app/ticker_news.py"
+      - "collectors/federal_register.py"
+      - "collectors/hk_hkexnews.py"
+      - "contracts/news_impact/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/earnings_release/**"
+      - "engine/foresight_cascade.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/macro_surprise.py"
+      - "engine/news_events.py"
+      - "engine/news_impact/**"
+      - "engine/news_rss.py"
+      - "engine/policy_calendar.py"
+      - "engine/qbus_news_*.py"
+      - "engine/rates_inflation_command.py"
+      - "engine/release_market_context.py"
+      - "engine/release_target_truth.py"
+      - "scripts/build_foresight.py"
+      - "tests/earnings_economic_fixtures.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install V91 vertical proof dependencies
+        run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jsonschema
+      - name: V91 vertical proofs (offline, deterministic, verdicts pinned)
+        run: python -m pytest tests/test_v91_vertical_proofs.py -q
+
   site20-s4-chart-brief-js:
     if: ${{ false }}
     gate: code
@@ -54079,6 +54123,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "scripts/__init__.py"
+      - "scripts/audit_china_gold_premium.py"
       - "scripts/build_commodities.py"
       - "scripts/check_commodity_publication.py"
       - "scripts/check_site_asset_refs.py"
@@ -54087,6 +54132,7 @@ jobs:
       - "site/commodities.html"
       - "site/theme.css"
       - "templates/_commodity_decision_workspace.html.j2"
+      - "templates/_china_gold_premium.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
       - "templates/commodity-workspace.js"
@@ -54106,6 +54152,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_china_gold_premium.py"
       - "tests/test_commodity_publication.py"
       - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
