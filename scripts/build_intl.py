@@ -1331,6 +1331,18 @@ def main() -> int:
         except Exception as exc:  # Preserve all incumbent views on adapter failure.
             log.error("International workspace unavailable (%s)", type(exc).__name__)
 
+        if workspace is not None and generation_sink.get("contract") is not None:
+            try:
+                from lib.intl_investigation_action_mount import prepare_investigation_actions
+                workspace, prepared = prepare_investigation_actions(
+                    workspace, data_root=config.data_dir(), contract=generation_sink["contract"],
+                    policy_points=generation_sink.get("policy_points"))
+                generation_sink["contract"] = prepared
+            except Exception as exc:
+                # Actual immutable dependencies may remain, but no action or
+                # current-selector activation is invented after failed preparation.
+                log.error("International investigation actions unavailable (%s)", type(exc).__name__)
+
         vm = {
             "intl_workspace": workspace,
             "latest": latest,
@@ -1384,7 +1396,7 @@ def main() -> int:
             if generation_sink.get("contract") is not None:
                 contract = dict(generation_sink["contract"])
                 points = generation_sink.get("policy_points")
-                if points is not None:
+                if points is not None and contract.get("policy_points_ref") is None:
                     from lib.intl_policy_publication import publish_policy_points
                     contract["policy_points_ref"] = publish_policy_points(data_root=config.data_dir(), contract=points)
                 publish_generation(data_root=config.data_dir(), contract=contract)

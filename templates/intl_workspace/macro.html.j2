@@ -65,6 +65,10 @@
       {% endif %}
       <small data-im-macro-reason>{{ reason_text(metric.get('reason')) }}</small>
     {% endif %}
+    {% set investigation = (investigation_actions|default({})).get(market_id ~ '.' ~ field.key) %}
+    {% if metric_quality == 'qualified' and metric_value is not none and investigation is mapping and investigation.get('generation') == generation and investigation.get('field_ids') == [market_id ~ '.' ~ field.key] %}
+      <p><a href="{{ investigation.href|e }}" data-im-investigate data-im-investigate-href="{{ investigation.href|e }}" data-im-native-context="{{ investigation.context_id|e }}" data-im-native-generation="{{ investigation.generation|e }}" data-im-native-fingerprint="{{ investigation.fingerprint|e }}" data-im-native-field="{{ (market_id ~ '.' ~ field.key)|e }}"><span class="l-en">Investigate</span><span class="l-zh" lang="zh">调查</span></a></p>
+    {% endif %}
     {% set metric_field = metric.get('field') %}
     {% set metric_instrument = metric.get('instrument') %}
     {% set boe_disclosed = market_id == 'GB' and field.key == 'policy_rate' and metric_quality in ['qualified', 'stale'] and metric_value is not none and metric_instrument is mapping and metric_instrument.kind == 'official_policy' and metric_instrument.id == 'bank_rate' and metric_instrument.market_id == 'GB' and metric.get('source_reference') is string and metric.get('source_reference').startswith('https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp?') %}

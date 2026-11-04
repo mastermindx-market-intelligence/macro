@@ -1256,10 +1256,11 @@
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
       '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-selection-unavailable]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
-    selector += ',[data-gs-market],[data-gs-market-row]';
+    selector += ',[data-gs-market],[data-gs-market-row],[data-im-investigate]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
       if (node === root) attrs.push('data-im-enhanced');
+      if (node.matches('[data-im-investigate]')) attrs.push('href','aria-disabled');
       if (node.closest('[data-im-history-panel]')) {
         attrs.push('hidden','disabled');
         if (node.matches('[data-im-history-panel]')) attrs.push('data-horizon','data-basis','data-im-history-enhanced','data-im-history-tab');
@@ -1425,7 +1426,55 @@
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
     paintGsMarket(controller, state);
+    paintInvestigationActions(controller, state);
     return reported;
+  }
+
+  function paintInvestigationActions(controller, state) {
+    var serialized = controller.reducer.serializeQuery(state);
+    var returnUrl = null;
+    if (serialized.ok) {
+      returnUrl = 'https://www.mastermind-x.com/intl.html?' + serialized.query;
+      var hash = controller.environment.window.location.hash;
+      if (typeof hash === 'string' && hash.charAt(0) === '#') {
+        try {
+          var anchor = decodeURIComponent(hash.slice(1));
+          if (controller.config.anchor_ids.includes(anchor)) returnUrl += hash;
+        } catch (_) { /* An unadmitted fragment supplies no return context. */ }
+      }
+    }
+    owned(controller.root, 'a[data-im-investigate]').forEach(function (link) {
+      var panel = link.closest('[data-im-panel]');
+      if (!panel || panel.hidden) return;
+      var enabled = false;
+      try {
+        var url = new URL(link.getAttribute('data-im-investigate-href'), 'https://www.mastermind-x.com');
+        var names = Array.from(url.searchParams.keys());
+        var expected = ['view','intl_context','intl_generation','intl_fingerprint','intl_field','intl_return'];
+        var field = link.getAttribute('data-im-native-field');
+        var market = typeof field === 'string' ? field.split('.')[0] : '';
+        enabled = !!returnUrl && controller.bindingVersion === 2 && panelValid(panel, controller.config, state.source_reference, 2)
+          && ['macro','risk'].includes(panel.getAttribute('data-view'))
+          && url.origin === 'https://www.mastermind-x.com' && url.pathname === '/analysis' && !url.hash && !url.username && !url.password
+          && names.length === expected.length && expected.every(function (name) { return names.filter(function (n) { return n === name; }).length === 1; })
+          && url.searchParams.get('view') === 'investigations'
+          && validGeneration(state.source_reference) && url.searchParams.get('intl_generation') === state.source_reference
+          && link.getAttribute('data-im-native-generation') === state.source_reference
+          && /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,255}$/.test(url.searchParams.get('intl_context') || '')
+          && url.searchParams.get('intl_context') === link.getAttribute('data-im-native-context')
+          && /^[0-9a-f]{64}$/.test(url.searchParams.get('intl_fingerprint') || '')
+          && url.searchParams.get('intl_fingerprint') === link.getAttribute('data-im-native-fingerprint')
+          && /^[A-Z]{2}\.[a-z][a-z0-9_]{0,63}$/.test(field || '') && controller.config.markets.includes(market)
+          && url.searchParams.get('intl_field') === field;
+        if (enabled) {
+          url.searchParams.set('intl_return', returnUrl);
+          var href = url.pathname + url.search;
+          enabled = new TextEncoder().encode(href).length <= 8192;
+          if (enabled) { link.setAttribute('href', href); link.removeAttribute('aria-disabled'); }
+        }
+      } catch (_) { enabled = false; }
+      if (!enabled) { link.removeAttribute('href'); link.setAttribute('aria-disabled','true'); }
+    });
   }
 
   function scenarioContext(state) {

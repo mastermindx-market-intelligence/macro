@@ -319,6 +319,11 @@
                     <small>{{ words(annual_types[support.observation_type].en, annual_types[support.observation_type].zh) }}</small>
                   {% endif %}
                 {% endif %}
+                {% set investigation_id = row.market_id ~ '.annual_current_account' %}
+                {% set investigation = (investigation_actions|default({})).get(investigation_id) %}
+                {% if annual.get('quality') == 'qualified' and annual.get('value') is not none and investigation is mapping and investigation.get('generation') == generation and investigation.get('field_ids') == [investigation_id] %}
+                  <a href="{{ investigation.href|e }}" data-im-investigate data-im-investigate-href="{{ investigation.href|e }}" data-im-native-context="{{ investigation.context_id|e }}" data-im-native-generation="{{ investigation.generation|e }}" data-im-native-fingerprint="{{ investigation.fingerprint|e }}" data-im-native-field="{{ investigation_id|e }}">{{ words('Investigate', '调查') }}</a>
+                {% endif %}
                 {% set annual_source = annual.get('source_reference') %}
                 {% if annual_instrument is mapping and annual_instrument.get('id') == 'JPN.BCA_NGDPD.A' and annual_source is string and annual_source.startswith('https://data.imf.org/') %}
                   <a href="{{ annual_source|e }}" target="_blank" rel="noopener">{{ words('Source: IMF World Economic Outlook', '来源：IMF《世界经济展望》') }}</a>
