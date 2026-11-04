@@ -1,0 +1,563 @@
+{
+  "kind": "P00_PAPER_READBACK_EVIDENCE_V1",
+  "capture_window": {
+    "start": "2026-11-03 01:29:41 UTC",
+    "end": "2026-11-03 01:29:55 UTC"
+  },
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "source_pin": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+  "current_session_write": "NOT_ATTEMPTED",
+  "production_acceptance": false,
+  "note": "Snapshot is a drift guard, not document revision or approval. This reuses the original owner's accepted v20 QA board.",
+  "exact_file_read": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2VWK62FA5S4VVF6G7SBPE5J\",\n    \"name\": \"Refined vase\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"fileName\": \"Refined vase\",\n  \"pageName\": \"Page 1\",\n  \"pageId\": \"p-1-0\",\n  \"url\": \"https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-1-0\",\n  \"rootNodeId\": \"root_node_p-1-0\",\n  \"nodeCount\": 89,\n  \"artboardCount\": 3,\n  \"artboards\": [\n    {\n      \"id\": \"5E9-0\",\n      \"name\": \"00A · START HERE · Intelligence Hub Workspace Index\",\n      \"childCount\": 9,\n      \"width\": 1440,\n      \"height\": 783,\n      \"worldX\": 0,\n      \"worldY\": 0\n    },\n    {\n      \"id\": \"6V4-0\",\n      \"name\": \"MMX Paper v20 QA scratch 2026-11-02\",\n      \"childCount\": 1,\n      \"width\": 720,\n      \"height\": 420,\n      \"worldX\": 0,\n      \"worldY\": 863\n    },\n    {\n      \"id\": \"6VO-0\",\n      \"name\": \"MMX M1 v20 QA scratch 2026-11-02\",\n      \"childCount\": 1,\n      \"width\": 640,\n      \"height\": 340,\n      \"worldX\": 1520,\n      \"worldY\": 0\n    }\n  ],\n  \"pages\": [\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1-0\",\n      \"name\": \"Page 1\",\n      \"icon\": null,\n      \"isActive\": true\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-8-0\",\n      \"name\": \"98 · SOURCE ONLY · Intelligence Hub Alt Data Baseline\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-7-0\",\n      \"name\": \"99 · Hub · Transfer QA + Held\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-6-0\",\n      \"name\": \"04 · Hub · Loading, Filters + Locale Coverage\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-5-0\",\n      \"name\": \"03 · Hub · Research + Risk States\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-4-0\",\n      \"name\": \"02 · Hub · Mobile Commands + Evidence\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-3-0\",\n      \"name\": \"01 · Hub · Desktop Commands + Evidence\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-2-0\",\n      \"name\": \"Intelligence Hub · R4 · Working\",\n      \"icon\": null,\n      \"isActive\": false\n    }\n  ],\n  \"fontFamilies\": [\n    \"Inter\",\n    \"System Sans-Serif\",\n    \"PingFang SC\",\n    \"System Monospace\"\n  ],\n  \"tokens\": {\n    \"items\": [\n      {\n        \"name\": \"--mx-dark-bg\",\n        \"value\": \"#0F1115\"\n      },\n      {\n        \"name\": \"--mx-dark-panel\",\n        \"value\": \"#181B21\"\n      },\n      {\n        \"name\": \"--mx-dark-panel2\",\n        \"value\": \"#1E222A\"\n      },\n      {\n        \"name\": \"--mx-dark-text\",\n        \"value\": \"#D7DCE3\"\n      },\n      {\n        \"name\": \"--mx-dark-muted\",\n        \"value\": \"#8B93A1\"\n      },\n      {\n        \"name\": \"--mx-dark-line\",\n        \"value\": \"#3A4150\"\n      },\n      {\n        \"name\": \"--mx-dark-up\",\n        \"value\": \"#45B873\"\n      },\n      {\n        \"name\": \"--mx-dark-down\",\n        \"value\": \"#E06464\"\n      },\n      {\n        \"name\": \"--mx-dark-warn\",\n        \"value\": \"#E0A030\"\n      },\n      {\n        \"name\": \"--mx-dark-act\",\n        \"value\": \"#E05555\"\n      },\n      {\n        \"name\": \"--mx-dark-ok\",\n        \"value\": \"#3DA564\"\n      },\n      {\n        \"name\": \"--mx-dark-info\",\n        \"value\": \"#5B9BF0\"\n      },\n      {\n        \"name\": \"--mx-dark-link\",\n        \"value\": \"#7AA7E0\"\n      },\n      {\n        \"name\": \"--mx-dark-orange\",\n        \"value\": \"#E08B45\"\n      },\n      {\n        \"name\": \"--mx-light-bg\",\n        \"value\": \"#F7F8FA\"\n      },\n      {\n        \"name\": \"--mx-light-panel\",\n        \"value\": \"#FFFFFF\"\n      },\n      {\n        \"name\": \"--mx-light-panel2\",\n        \"value\": \"#EEF1F6\"\n      },\n      {\n        \"name\": \"--mx-light-text\",\n        \"value\": \"#1C2430\"\n      },\n      {\n        \"name\": \"--mx-light-muted\",\n        \"value\": \"#5D6B7E\"\n      },\n      {\n        \"name\": \"--mx-light-line\",\n        \"value\": \"#C9CCD1\"\n      },\n      {\n        \"name\": \"--mx-light-up\",\n        \"value\": \"#1F9A55\"\n      },\n      {\n        \"name\": \"--mx-light-down\",\n        \"value\": \"#CF4040\"\n      },\n      {\n        \"name\": \"--mx-light-warn\",\n        \"value\": \"#B9791A\"\n      },\n      {\n        \"name\": \"--mx-light-act\",\n        \"value\": \"#C43D3D\"\n      },\n      {\n        \"name\": \"--mx-light-ok\",\n        \"value\": \"#2F8A52\"\n      },\n      {\n        \"name\": \"--mx-light-info\",\n        \"value\": \"#285FFF\"\n      },\n      {\n        \"name\": \"--mx-light-link\",\n        \"value\": \"#285FFF\"\n      },\n      {\n        \"name\": \"--mx-light-orange\",\n        \"value\": \"#C4781F\"\n      },\n      {\n        \"name\": \"--mx-dark-prov\",\n        \"value\": \"#62A0E8\"\n      },\n      {\n        \"name\": \"--mx-dark-prov-ink\",\n        \"value\": \"#62A0E8\"\n      },\n      {\n        \"name\": \"--mx-dark-tier-accent\",\n        \"value\": \"#7C5CFF\"\n      },\n      {\n        \"name\": \"--mx-dark-tier-fill\",\n        \"value\": \"#6340D8\"\n      },\n      {\n        \"name\": \"--mx-dark-tier-ink\",\n        \"value\": \"#9B86FF\"\n      },\n      {\n        \"name\": \"--mx-dark-ser-1\",\n        \"value\": \"#5B9BF0\"\n      },\n      {\n        \"name\": \"--mx-dark-ser-2\",\n        \"value\": \"#D4A017\"\n      },\n      {\n        \"name\": \"--mx-dark-ser-3\",\n        \"value\": \"#0EA5E9\"\n      },\n      {\n        \"name\": \"--mx-dark-ser-4\",\n        \"value\": \"#E08B45\"\n      },\n      {\n        \"name\": \"--mx-light-prov\",\n        \"value\": \"#2F6FD0\"\n      },\n      {\n        \"name\": \"--mx-light-prov-ink\",\n        \"value\": \"#2C62B3\"\n      },\n      {\n        \"name\": \"--mx-light-tier-accent\",\n        \"value\": \"#7C5CFF\"\n      },\n      {\n        \"name\": \"--mx-light-tier-fill\",\n        \"value\": \"#6340D8\"\n      },\n      {\n        \"name\": \"--mx-light-tier-ink\",\n        \"value\": \"#5B3FC4\"\n      },\n      {\n        \"name\": \"--mx-light-ser-1\",\n        \"value\": \"#2F63C4\"\n      },\n      {\n        \"name\": \"--mx-light-ser-2\",\n        \"value\": \"#8F6A04\"\n      },\n      {\n        \"name\": \"--mx-light-ser-3\",\n        \"value\": \"#0284C7\"\n      },\n      {\n        \"name\": \"--mx-light-ser-4\",\n        \"value\": \"#B06A25\"\n      },\n      {\n        \"name\": \"--mx-light-ink-up\",\n        \"value\": \"#1E6D47\"\n      },\n      {\n        \"name\": \"--mx-light-ink-down\",\n        \"value\": \"#B23C3D\"\n      },\n      {\n        \"name\": \"--mx-light-ink-warn\",\n        \"value\": \"#7D5922\"\n      },\n      {\n        \"name\": \"--mx-light-ink-link\",\n        \"value\": \"#2758E6\"\n      },\n      {\n        \"name\": \"--font-ui\",\n        \"value\": \"\\\"Inter\\\"\"\n      },\n      {\n        \"name\": \"--fs-micro\",\n        \"value\": \"10px\"\n      },\n      {\n        \"name\": \"--fs-label\",\n        \"value\": \"11px\"\n      },\n      {\n        \"name\": \"--fs-sm\",\n        \"value\": \"12.5px\"\n      },\n      {\n        \"name\": \"--fs-body\",\n        \"value\": \"14px\"\n      },\n      {\n        \"name\": \"--fs-h3\",\n        \"value\": \"14px\"\n      },\n      {\n        \"name\": \"--fs-md\",\n        \"value\": \"15px\"\n      },\n      {\n        \"name\": \"--fs-h2\",\n        \"value\": \"17px\"\n      },\n      {\n        \"name\": \"--fs-num-lg\",\n        \"value\": \"22px\"\n      },\n      {\n        \"name\": \"--fs-h1\",\n        \"value\": \"28px\"\n      },\n      {\n        \"name\": \"--fs-num-xl\",\n        \"value\": \"38px\"\n      },\n      {\n        \"name\": \"--fs-display\",\n        \"value\": \"46px\"\n      },\n      {\n        \"name\": \"--fw-regular\",\n        \"value\": \"400\"\n      },\n      {\n        \"name\": \"--fw-medium\",\n        \"value\": \"500\"\n      },\n      {\n        \"name\": \"--fw-semibold\",\n        \"value\": \"600\"\n      },\n      {\n        \"name\": \"--fw-bold\",\n        \"value\": \"700\"\n      },\n      {\n        \"name\": \"--fw-extrabold\",\n        \"value\": \"800\"\n      },\n      {\n        \"name\": \"--bp-mobile\",\n        \"value\": \"390px\"\n      },\n      {\n        \"name\": \"--bp-tablet\",\n        \"value\": \"768px\"\n      },\n      {\n        \"name\": \"--bp-desktop\",\n        \"value\": \"1440px\"\n      },\n      {\n        \"name\": \"--sp-1\",\n        \"value\": \"4px\"\n      },\n      {\n        \"name\": \"--sp-2\",\n        \"value\": \"8px\"\n      },\n      {\n        \"name\": \"--sp-3\",\n        \"value\": \"12px\"\n      },\n      {\n        \"name\": \"--sp-4\",\n        \"value\": \"16px\"\n      },\n      {\n        \"name\": \"--sp-5\",\n        \"value\": \"20px\"\n      },\n      {\n        \"name\": \"--sp-6\",\n        \"value\": \"24px\"\n      },\n      {\n        \"name\": \"--sp-7\",\n        \"value\": \"32px\"\n      },\n      {\n        \"name\": \"--sp-8\",\n        \"value\": \"44px\"\n      },\n      {\n        \"name\": \"--r-ctl\",\n        \"value\": \"8px\"\n      },\n      {\n        \"name\": \"--r-btn\",\n        \"value\": \"10px\"\n      },\n      {\n        \"name\": \"--r-card\",\n        \"value\": \"12px\"\n      },\n      {\n        \"name\": \"--r-panel\",\n        \"value\": \"14px\"\n      },\n      {\n        \"name\": \"--r-pill\",\n        \"value\": \"999px\"\n      }\n    ]\n  }\n}"
+        }
+      ]
+    },
+    "document": {
+      "basic_info": {
+        "fileName": "Refined vase",
+        "pageName": "Page 1",
+        "pageId": "p-1-0",
+        "url": "https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-1-0",
+        "rootNodeId": "root_node_p-1-0",
+        "nodeCount": 89,
+        "artboardCount": 3,
+        "artboards": [
+          {
+            "id": "5E9-0",
+            "name": "00A · START HERE · Intelligence Hub Workspace Index",
+            "childCount": 9,
+            "width": 1440,
+            "height": 783,
+            "worldX": 0,
+            "worldY": 0
+          },
+          {
+            "id": "6V4-0",
+            "name": "MMX Paper v20 QA scratch 2026-11-02",
+            "childCount": 1,
+            "width": 720,
+            "height": 420,
+            "worldX": 0,
+            "worldY": 863
+          },
+          {
+            "id": "6VO-0",
+            "name": "MMX M1 v20 QA scratch 2026-11-02",
+            "childCount": 1,
+            "width": 640,
+            "height": 340,
+            "worldX": 1520,
+            "worldY": 0
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "Page 1",
+            "icon": null,
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-8-0",
+            "name": "98 · SOURCE ONLY · Intelligence Hub Alt Data Baseline",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-7-0",
+            "name": "99 · Hub · Transfer QA + Held",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-6-0",
+            "name": "04 · Hub · Loading, Filters + Locale Coverage",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-5-0",
+            "name": "03 · Hub · Research + Risk States",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-4-0",
+            "name": "02 · Hub · Mobile Commands + Evidence",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-3-0",
+            "name": "01 · Hub · Desktop Commands + Evidence",
+            "icon": null,
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "Intelligence Hub · R4 · Working",
+            "icon": null,
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "PingFang SC",
+          "System Monospace"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--font-ui",
+              "value": "\"Inter\""
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        },
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "contentHash": {
+          "tokens": "55dd37b7"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M2VWK62FA5S4VVF6G7SBPE5J"
+      },
+      "snapshot_sha256": "46946f30ce2b8f53d74cb5328ef2155f985c1653817884f506b1187750d5d2a9",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "write_schema": {
+      "server_name": "paper-desktop",
+      "server_version": "0.5.18",
+      "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+      "accepted_for_write": true,
+      "expected_server": [
+        "paper-desktop",
+        null
+      ],
+      "server_name_compatible": true,
+      "server_version_compatible": true,
+      "server_version_policy": "OBSERVED_NOT_PINNED",
+      "catalog_compatible": true,
+      "catalog_policy": "TOOL_SCOPED_CONTRACT_V1",
+      "full_catalog_known": true,
+      "expected_catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+      "additional_reviewed_catalog_sha256": [
+        "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd",
+        "955e92cd0477027dcc5fe666810e49393f42f453c1c362e64cd0f3b3ab9f10cf",
+        "f3483e001d4f07f5a49144ca52a4f9e14ba046e35546dda05d6cd37c9d2b4728"
+      ],
+      "snapshot_tool_compatible": true,
+      "compatible_write_tools": [
+        "arrange_pages",
+        "create_artboard",
+        "create_file",
+        "create_page",
+        "create_tokens",
+        "duplicate_nodes",
+        "finish_working_on_nodes",
+        "move_nodes",
+        "rename_nodes",
+        "rename_resource",
+        "set_comment_thread_status",
+        "set_text_content",
+        "set_tokens",
+        "update_pages",
+        "update_styles",
+        "write_html"
+      ],
+      "incompatible_write_tools": [],
+      "optional_vendor_inputs_ignored": []
+    }
+  },
+  "qa_node": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2VWK62FA5S4VVF6G7SBPE5J\",\n    \"name\": \"Refined vase\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"id\": \"6V4-0\",\n  \"name\": \"MMX Paper v20 QA scratch 2026-11-02\",\n  \"component\": \"Frame\",\n  \"width\": 720,\n  \"height\": 420,\n  \"worldX\": 0,\n  \"worldY\": 863,\n  \"x\": 0,\n  \"y\": 863,\n  \"isVisible\": true,\n  \"isLocked\": false,\n  \"parentId\": \"root_node_p-1-0\",\n  \"childIds\": [\n    \"6V5-0\"\n  ],\n  \"childCount\": 1,\n  \"artboardId\": null,\n  \"textContent\": null\n}"
+        }
+      ]
+    }
+  },
+  "qa_jsx_state": "OBSERVED",
+  "qa_screenshot_receipt": {
+    "state": "OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M2VWK62FA5S4VVF6G7SBPE5J\",\n    \"name\": \"Refined vase\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "image",
+          "mimeType": "image/jpeg",
+          "rendered_as_mcp_image": true
+        }
+      ]
+    }
+  },
+  "initial_inspection_context": {
+    "active_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "active_file_name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+    "page_id": "p-1-0",
+    "concurrency_rule": "MULTI_WRITER_PER_FILE_TARGET_SCOPED",
+    "same_file_multi_writer_allowed": true,
+    "same_page_multi_writer_allowed": true,
+    "coordination_scope": "BOARD_ARTBOARD_NODE",
+    "note": "Observed before explicit Hub reads. No focus transition was requested. Current tool result does not independently attest a runtime binary hash or an account/workspace mapping."
+  }
+}

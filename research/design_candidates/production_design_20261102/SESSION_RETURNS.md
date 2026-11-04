@@ -6,7 +6,7 @@ Status vocabulary for delivery: NOT_STARTED, IN_PROGRESS, PARTIAL, BLOCKED_RETUR
 
 | ID | Scope | Delivery state | Source / Paper return | RIG state | Next owner |
 | --- | --- | --- | --- | --- | --- |
-| P00 | Restore the qualified Paper writing and organization path | NOT_STARTED | — | not submitted | user delivery / assigned session |
+| P00 | Restore the qualified Paper writing and organization path | BLOCKED_RETURN | [Complete return + frozen evidence](returns/P00.md); [adapter source candidate #1978](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1978) | not submitted; native source/evidence review recorded | existing #1011 adapter operation; F03 consumes explicit partial boundary |
 | F01 | Shared shell, navigation and investor information architecture | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | F02 | Design system and reusable product patterns | NOT_STARTED | — | not submitted | user delivery / assigned session |
 | F03 | Paper organization, coverage and design integration | NOT_STARTED | — | not submitted | user delivery / assigned session |

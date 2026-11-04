@@ -1,0 +1,98 @@
+{
+  "kind": "P00_FROZEN_ARTIFACT_SET_V1",
+  "finalized_at": "2026-11-03 01:40:47 UTC",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "protected_source_pin": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+  "source_candidate_sha": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+  "source_pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1978",
+  "artifact_revision": "containing immutable Git commit; manifest excludes itself",
+  "delivery_state": "BLOCKED_RETURN",
+  "formal_rig_state": "not submitted",
+  "paper_write_attempts": 0,
+  "files": [
+    {
+      "path": "returns/P00.md",
+      "bytes": 30229,
+      "sha256": "32baa78bdac1df967135686a6fcc3e3a5d353b89e5c49994af6345a1cfb5a1e4",
+      "git_blob_sha": "ced02c1b9b2cbeb325539cab3e221e72af387c44"
+    },
+    {
+      "path": "SESSION_RETURNS.md",
+      "bytes": 5261,
+      "sha256": "343ad6b773f04696f05cbb625235096689f4c2a6a2d37bbd4609f82481499de5",
+      "git_blob_sha": "e3dae966c68c1ae0718134630795a45c9f04db6f"
+    },
+    {
+      "path": "evidence/P00/live-catalog.json",
+      "bytes": 68046,
+      "sha256": "c50760ac7d493768b51b507d1e84aae2af21deaf664fec2e43d07d364c56ddc2",
+      "git_blob_sha": "c39de41859e7604ccb12297359ed612e617c4358"
+    },
+    {
+      "path": "evidence/P00/paper-readback.json",
+      "bytes": 25666,
+      "sha256": "7ffa6d3927ebe6855d81b74fbd4443a17f536dd5c59a8bfe67825fe56fa078ce",
+      "git_blob_sha": "00edea071a0b34b1693ea245b6846ef905adf08e"
+    },
+    {
+      "path": "evidence/P00/published-tool-metadata.json",
+      "bytes": 3496,
+      "sha256": "1905ed3dcdc05732c8b8f0c96f087ece7f634c225b5c083351af94cb552f75ae",
+      "git_blob_sha": "d24234ff81cab52bdc84b40df7a97720f87935c3"
+    },
+    {
+      "path": "evidence/P00/qa-v20-6V4-0.jpg",
+      "bytes": 34089,
+      "sha256": "baa05cc8da4188522396f506ce9d23cad99dbbedc43b1859bf7f59a8a0c58b43",
+      "git_blob_sha": "f62d275c5a88a6c2e2aec41bbe123de9d16dabbf"
+    },
+    {
+      "path": "evidence/P00/qa-v20-6V4-0.jsx",
+      "bytes": 4560,
+      "sha256": "82d6e3f07f8984e882ae0f466e52ae3dc7038511e5f6bd4e79aa6d5e97d1fbe2",
+      "git_blob_sha": "d292676560132ce95993feb8f4ae6ea80012705c"
+    },
+    {
+      "path": "evidence/P00/resource-contracts.json",
+      "bytes": 33173,
+      "sha256": "20c0f08b4f700ef817ae6ab333e6783f0eeb5506c50d85f180424a0df35d761e",
+      "git_blob_sha": "4b05e7c7827f0991a91d2fcdbe012372645908ec"
+    },
+    {
+      "path": "evidence/P00/review-first-pass-input.md",
+      "bytes": 3578,
+      "sha256": "283b1eef63d53b866e431c365e9ea06d32c08da9c00696c71bbe477b08c8d5ec",
+      "git_blob_sha": "71c995334a049a6dd13a1d95fb1ed040972994c2"
+    },
+    {
+      "path": "evidence/P00/review.md",
+      "bytes": 8217,
+      "sha256": "41be9abe4ae3a242f00967baabfa727de8dacc832da0dc4cb97e159f000dd694",
+      "git_blob_sha": "84fa1f9fe16a707e99d10104ca603ac32ddb2a0e"
+    },
+    {
+      "path": "evidence/P00/site-observation.md",
+      "bytes": 2767,
+      "sha256": "0ac3613e829ebc11985b119244679b67d6e86a6510309b8b662637d91259e768",
+      "git_blob_sha": "398110d924aa8b4ab0ec572bc4e0f5f57a46428b"
+    },
+    {
+      "path": "evidence/P00/source-file-hashes.json",
+      "bytes": 1197,
+      "sha256": "9ad9a9155072de6d95af66f5b841b0fa85d62ecd247dea9c69f5160342154600",
+      "git_blob_sha": "5d9497c1b1d83a2969d49c42ef09d0d44928886f"
+    },
+    {
+      "path": "evidence/P00/source-publication.json",
+      "bytes": 3361,
+      "sha256": "da9497e99e8b3ced7c6b685d33459aa586ddb5d57f8288e559b6bb45ecea4d08",
+      "git_blob_sha": "5cc64863279e3abb2ade4b40e08cb2438121925d"
+    },
+    {
+      "path": "evidence/P00/test-results.txt",
+      "bytes": 25734,
+      "sha256": "655641c545a9f664bcf6572ac69fe5a27cffe215c28eee9c00e1bddb4fdc023d",
+      "git_blob_sha": "246b18967405172da220d5d2936df028c88f516d"
+    }
+  ]
+}

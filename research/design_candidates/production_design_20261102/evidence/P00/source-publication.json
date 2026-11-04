@@ -1,0 +1,102 @@
+{
+  "observed_at": "2026-11-03 01:34:40 UTC",
+  "repository": "mastermindx-market-intelligence/Mastermind",
+  "pr": {
+    "number": 1978,
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1978",
+    "draft": true,
+    "head": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+    "base": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+    "changed_files": 5
+  },
+  "source_blob_readback": [
+    {
+      "path": "docs/PAPER_DESIGN_INTEGRATION.md",
+      "exactBlobMatch": true
+    },
+    {
+      "path": "integrations/paper_desktop/bridge.py",
+      "exactBlobMatch": true
+    },
+    {
+      "path": "integrations/paper_desktop/runtime_stage.py",
+      "exactBlobMatch": true
+    },
+    {
+      "path": "tests/test_paper_runtime_stage.py",
+      "exactBlobMatch": true
+    },
+    {
+      "path": "tests/test_paper_tool_scoped_compatibility.py",
+      "exactBlobMatch": true
+    }
+  ],
+  "formal_reviews": [],
+  "hosted_runs_at_first_boundary": [
+    {
+      "id": 41560037640,
+      "name": "CI",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640"
+    },
+    {
+      "id": 41560034423,
+      "name": "PR #1978",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560034423"
+    }
+  ],
+  "runtime_deployed": false,
+  "paper_mutations": 0,
+  "activation_performed": false,
+  "hosted_ci_at_return_boundary": {
+    "observed_at": "2026-11-03 01:37:10 UTC",
+    "id": 41560037640,
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+    "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640",
+    "jobs": [
+      {
+        "name": "pytest shard 2",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207326"
+      },
+      {
+        "name": "pytest shard 1",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207426"
+      },
+      {
+        "name": "pytest shard 4",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207461"
+      },
+      {
+        "name": "pytest shard 5",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207462"
+      },
+      {
+        "name": "pytest shard 3",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207512"
+      },
+      {
+        "name": "pytest shard 0",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41560037640/job/125668207557"
+      }
+    ]
+  }
+}

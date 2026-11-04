@@ -1,0 +1,36 @@
+{
+  "base": "c57adacb338fe837c7d585f1e372c64d9b0118ec",
+  "candidate": "05a2f754de5c20ba1d15c7070f89a32e2421c07d",
+  "files": [
+    {
+      "path": "integrations/paper_desktop/bridge.py",
+      "bytes": 84571,
+      "sha256": "dfbf0b11c49a595610d1ac0e663d95f7291b500cb84d31ef8169bc3b909a2eaa",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "integrations/paper_desktop/runtime_stage.py",
+      "bytes": 14282,
+      "sha256": "042ed2aadf2559eaeb30b5a903cf060709e48ff32b801867a9e55c01e5387c03",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "tests/test_paper_tool_scoped_compatibility.py",
+      "bytes": 33085,
+      "sha256": "89b4e703559626c9d9b14161946a7a62092247e69a3cdf39be599ee440de7213",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "tests/test_paper_runtime_stage.py",
+      "bytes": 13269,
+      "sha256": "0e981463fa1913f02690b4feedff745266760d1e472ff6886f2a435f0b84968f",
+      "trailing_whitespace_lines": []
+    },
+    {
+      "path": "docs/PAPER_DESIGN_INTEGRATION.md",
+      "bytes": 54078,
+      "sha256": "58dade5bbd596a8612df4644f3f84d5d4915665aa68cf5a54f09a3433ca0b563",
+      "trailing_whitespace_lines": []
+    }
+  ]
+}
