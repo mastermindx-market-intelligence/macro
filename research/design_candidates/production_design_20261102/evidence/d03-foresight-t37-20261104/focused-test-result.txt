@@ -1,0 +1,4 @@
+Native RE-RATING control fixture; final test source.
+COMMAND: /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_foresight_page_analyst_zh.py tests/test_foresight_page_fingerprint_depth.py tests/test_foresight_page_flag_ledger.py tests/test_foresight_page_score_base.py tests/test_foresight_page_trend_state.py -q --tb=short
+................................................                         [100%]
+48 passed in 10.42s

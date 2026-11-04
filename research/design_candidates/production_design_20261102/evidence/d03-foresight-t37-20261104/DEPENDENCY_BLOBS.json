@@ -1,0 +1,147 @@
+{
+  "base": "201e94dd75f385d118cc0f692768c26e0f02b355",
+  "head": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "reason": "Exact blob readback used because comparison path output reached 300 files.",
+  "paths": [
+    {
+      "path": "templates/foresight.html.j2",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "91915538514ce1c6d3f0f754779ebcd02dd946dd"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "91915538514ce1c6d3f0f754779ebcd02dd946dd"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "tests/test_foresight_page_flag_ledger.py",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "f515cff66c3d226abd135860e749ce30fa0074dc"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "f515cff66c3d226abd135860e749ce30fa0074dc"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "scripts/build_foresight.py",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "c879acf04e810145376cf019cd749f92e89a7053"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "c879acf04e810145376cf019cd749f92e89a7053"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "templates/report_base.html.j2",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "17d3681f669655c4b7f5dfbd4d9935eb12b47cab"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "17d3681f669655c4b7f5dfbd4d9935eb12b47cab"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "templates/theme.css",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "619436f58d37a222d1db7021ba9d52bb3a05a7fa"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "templates/theme.js",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "21a1fb1627ac34badc6078cff486f98486e9b773"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "21a1fb1627ac34badc6078cff486f98486e9b773"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "templates/_icons.html.j2",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "0ada914d14ffca25498ed186d681d1a7b7f82697"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "0ada914d14ffca25498ed186d681d1a7b7f82697"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "d109553016d33c6c94ae83cf63f48a00b96b7a85"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "d109553016d33c6c94ae83cf63f48a00b96b7a85"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "AGENTS.md",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "b3cce64a2a2f1568c0afc1d51ae84cc03b32d9f0"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "b3cce64a2a2f1568c0afc1d51ae84cc03b32d9f0"
+        }
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "docs/agent_guides/CODEX_WORKSPACE.md",
+      "versions": [
+        {
+          "ref": "201e94dd75f385d118cc0f692768c26e0f02b355",
+          "sha": "d3d4ab2c049a8cd963c0333322d4e59563120b82"
+        },
+        {
+          "ref": "52abe2e183833a216267942a99513e6c9cbe062f",
+          "sha": "d3d4ab2c049a8cd963c0333322d4e59563120b82"
+        }
+      ],
+      "unchanged": true
+    }
+  ]
+}

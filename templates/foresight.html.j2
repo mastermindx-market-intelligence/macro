@@ -366,7 +366,7 @@ FY{{ leg.latest_fy }}{% endif -%}
   .fx-study .sh-body p{ margin:0 0 10px; color:var(--muted); } .fx-study .sh-body p b{ color:var(--text); }
   .fx-note{ font-size:12.5px; color:var(--muted); line-height:1.6; } .fx-note b{ color:var(--text); }
   .fx-recgrid{ display:flex; flex-wrap:wrap; gap:7px; margin-top:4px; }
-  .fx-rchip{ font-size:11px; padding:5px 11px; border-radius:8px; background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
+  .fx-rchip{ font-size:12px; padding:5px 11px; border-radius:8px; background:var(--panel2); border:1px solid var(--line); color:var(--muted); }
   .fx-rchip b{ color:var(--text); }
   .fx-ai-th{ border-left:3px solid var(--fx-dawn1); padding:2px 0 2px 12px; margin:10px 0; }
   .fx-ai-mech{ font-size:12.5px; line-height:1.5; color:var(--text); } .fx-ai-mech b{ color:var(--text); }
@@ -923,9 +923,13 @@ FY{{ leg.latest_fy }}{% endif -%}
             {% endif %}{% endif %}{% endfor %}
             <span class="fx-rchip">✅ <b>{{ grade.n_significant_fdr }}</b> {{ t('significant after multiple-testing gate', '经多重检验门槛显著') }}</span>
           {% elif grade.n_total and grade.n_total > 0 %}
-            <span class="fx-rchip">⏳ {{ t('accruing', '累计中') }} — <b>{{ grade.n_total }}</b> {{ t('flags logged', '个标记已记录') }}{% if grade.n_pending %} · <b>{{ grade.n_pending }}</b> {{ t('pending 90d', '待90天') }}{% endif %}</span>
+            <span class="fx-rchip">⏳ {{ t('accruing', '累计中') }} — <b>{{ grade.n_total }}</b> {{ t('flags logged', '个标记已记录') }}</span>
           {% else %}
             <span class="fx-rchip">📋 {{ t('no flags logged yet — ledger starts on next build', '尚无标记——下次构建开始累计') }}</span>
+          {% endif %}
+          {# Pending outcomes coexist with graded results; use only the declared count. #}
+          {% if grade.n_pending is integer and grade.n_pending >= 0 %}
+            <span class="fx-rchip"><b>{{ grade.n_pending }}</b> {{ t('pending 90d', '待90天') }}</span>
           {% endif %}
         </div>
         {% endif %}
