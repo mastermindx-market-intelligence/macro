@@ -30,7 +30,7 @@
     "stylesheet": "/p0b-font-pin/pin.css",
     "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
     "audited_pages": 177,
-    "audited_nodes": 250664,
+    "audited_nodes": 250663,
     "platform_fonts": [],
     "custom_fonts": [
       "DejaVu Sans",
@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+    "sha256": "d9f989eef2db3274e5e9f0b7833ab3c5d387223ac824090874cd7c6251661b5e"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "hk",
@@ -534,9 +534,10 @@
     "templates/_navlinks.html.j2": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
     "templates/_prophet_card.html.j2": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27",
     "templates/_risk_radar_card.css.j2": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5",
-    "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
+    "templates/_risk_radar_card.html.j2": "254b14f6ac0510662b3e317b5ba991b54e7c43c2e72cdc507c2ce26d7ad759e1",
     "templates/_risk_radar_dlg.css.j2": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac",
-    "templates/_risk_radar_dlg.html.j2": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749",
+    "templates/_risk_radar_dlg.html.j2": "39bcfc476d735343bb72f582691bfb8e9dc9d085191f0a181d98e23422a19c3e",
+    "templates/_risk_radar_pullback_depth.html.j2": "c4d2f15e41a86afaa51d509a98285e19fe49432634c8a3e8c7acc4b47d4f6d08",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
     "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
     "templates/hk.html.j2": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac"

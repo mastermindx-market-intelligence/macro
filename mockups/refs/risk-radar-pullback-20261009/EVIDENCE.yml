@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_risk_radar_pullback_depth.html.j2
+  - templates/_risk_radar_pullback_depth.css.j2
+manifest: research/grey_deer/pullback_depth_evidence/r3/manifest.json

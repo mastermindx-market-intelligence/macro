@@ -295,10 +295,13 @@ def test_unverified_year_rejects_weekends_future_but_retains_historical_weekdays
     monkeypatch.setattr(Clock, "now", classmethod(lambda cls, tz=None: instant))
     saved, writes = runner
     saved["test_cash", "daily"] = frame("2026-12-31", 7)
-    incoming = pd.concat([frame("2027-01-02", 8), frame("2027-01-06", 9), frame("2025-05-01", 10)])
+    # 2022 has no verified CN notice, so its ordinary weekday is retained.
+    # 2025-05-01 is Labour Day in the verified 2025 notice, so it is not.
+    incoming = pd.concat([frame("2027-01-02", 8), frame("2027-01-06", 9),
+                          frame("2022-06-08", 10), frame("2025-05-01", 11)])
     result = base.run_adapter(adapter({"daily": incoming}))
     assert len(writes) == 1 and result.status == "stale"
-    assert writes[0][1].index.tolist() == [pd.Timestamp("2025-05-01")]
+    assert writes[0][1].index.tolist() == [pd.Timestamp("2022-06-08")]
     assert result.last_date == "2026-12-31" and result.rows == 1
 
 

@@ -1,0 +1,86 @@
+{
+  "kind": "US_source_and_existing_observer_qualification_not_live_acceptance",
+  "observed_at": "2026-10-10T00:07:49.953411+00:00",
+  "expected_session": "2026-10-09",
+  "source": {
+    "owner": "collectors/yahoo.py",
+    "store": "data/yahoo/SPY.parquet",
+    "file_sha256": "6c785d556c22e20f85f89f55597b10469f0fc4c40a577b8efb04bc11964a3152",
+    "rows": 8481,
+    "latest": "2026-10-08 00:00:00",
+    "source_revision": "local store snapshot, not an issued-history vintage"
+  },
+  "code": {
+    "macro_ref": "a6ca347527689fe4eba01967fabd5c98f8a50602",
+    "collector_blob": "c4a16844e604f577b21a7eb30459ed6b89bfcb14",
+    "observer_ref": "ff27a268abaacfdb50534a60d1ca4ffe7a119938",
+    "observer_sha256": "4d3feffe453251ce7f25858738a4a2cdd31c63d00d2002d881ceb911d8482313"
+  },
+  "bases": {
+    "close_price": "split-adjusted, dividend-unadjusted close; selected for proposed observed price depth",
+    "close": "split-and-dividend-adjusted close; incumbent risk series; not substituted for price depth"
+  },
+  "views": {
+    "close_price": {
+      "expected_now": {
+        "available": false,
+        "quality": "delayed",
+        "phase": "unavailable",
+        "active": null,
+        "asof": "2026-10-08",
+        "expected_session": "2026-10-09",
+        "drawdown_pct": null,
+        "peak_basis": null,
+        "peak_session": null,
+        "source_digest": "ff0d76b8921254bc031275f85d472f4b27c3f0d775301f460dfaa51b0841f067",
+        "history_gap_count": null
+      },
+      "last_stored_session": {
+        "available": true,
+        "quality": "current",
+        "phase": "recovering",
+        "active": true,
+        "asof": "2026-10-08",
+        "expected_session": "2026-10-08",
+        "drawdown_pct": -0.5078,
+        "peak_basis": "frozen_at_onset",
+        "peak_session": "2026-08-13",
+        "source_digest": "ff0d76b8921254bc031275f85d472f4b27c3f0d775301f460dfaa51b0841f067",
+        "history_gap_count": 4
+      }
+    },
+    "close": {
+      "expected_now": {
+        "available": false,
+        "quality": "delayed",
+        "phase": "unavailable",
+        "active": null,
+        "asof": "2026-10-08",
+        "expected_session": "2026-10-09",
+        "drawdown_pct": null,
+        "peak_basis": null,
+        "peak_session": null,
+        "source_digest": "26b6c7c8bd63e35dd18b10e7fcbc9667cb9546187eda077fb4b8e7e26065d9af",
+        "history_gap_count": null
+      },
+      "last_stored_session": {
+        "available": true,
+        "quality": "current",
+        "phase": "monitoring",
+        "active": false,
+        "asof": "2026-10-08",
+        "expected_session": "2026-10-08",
+        "drawdown_pct": -0.4233,
+        "peak_basis": "post_repair_high",
+        "peak_session": "2026-10-07",
+        "source_digest": "26b6c7c8bd63e35dd18b10e7fcbc9667cb9546187eda077fb4b8e7e26065d9af",
+        "history_gap_count": 4
+      }
+    }
+  },
+  "limitations": [
+    "No production US adapter or builder wiring exists in this change.",
+    "The last stored close cannot be called current when expected_session is later.",
+    "No forecast fit, entry permission, new ledger or publication was performed."
+  ]
+}

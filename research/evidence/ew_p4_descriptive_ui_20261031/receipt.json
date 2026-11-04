@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "0603423234187dc3afce0d6365aa8d714be63ff4",
+  "source_revision": "f2d5636338ca636570e06622f90d410947d05dfe",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1412,7 +1412,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
+      "sha256": "6f89a1209fd765f13ce75beae2fb59a42f378fa552c77a3994365b1bb7960432",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1496,7 +1496,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-unreadable-en-dark-390.png",
-      "sha256": "cf76b5116a47408bf08a80fc9fa96aca4cc7d7b0e2f0ed0df1e28c5904ba2e24",
+      "sha256": "5eb57c75755390a0daf35a94f3886ac7b4ebe688067ef667dd42a8d41f84f777",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were re-rendered by the Sector Intelligence seat (macro#7646, PR #9917; local Playwright Chromium, the same probe) at source_revision because that branch changes three of the bound render inputs — templates/dashboard.html.j2 (the Sector Prophet context island include under mode == \"stocks\"), templates/sector_central.html.j2 (the Sector Central Paper pivot) and templates/si_workspace.js — so the EW-P5 FU2 shots no longer depicted the tree under test. Band, glance, tokens, fixtures and probe are byte-identical to the FU2 capture; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "note": "Session da96c6f4 re-rendered every shot and contact sheet for PR #8721 on the branch merged with main 284c9947 (main's #9917 changed templates/dashboard.html.j2, templates/sector_central.html.j2 and si_workspace.js, all render inputs). The render ran on an export of that merged tree; its render inputs equal source_revision's (git blob ids below). 3 PNG(s) changed against the shots committed at source_revision. tests/test_ew_p4_descriptive_ui.py re-checks the blob ids against the tested tree. Test-only and CI-manifest files are excluded from the render set.",
     "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "0603423234187dc3afce0d6365aa8d714be63ff4",
+    "pr_parent_of_evidence_commit": "f2d5636338ca636570e06622f90d410947d05dfe",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
-        "blob_on_pr_branch": "1d5e07a962ce3b7068a7a37ea4bb0ffef851357a",
+        "blob_at_source_revision": "57f30fd9463e6c7be1f94e5d4352c6e05a41a833",
+        "blob_on_pr_branch": "57f30fd9463e6c7be1f94e5d4352c6e05a41a833",
         "equal": true
       },
       {

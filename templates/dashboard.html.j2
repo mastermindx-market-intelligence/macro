@@ -422,6 +422,7 @@
   .topline { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 
 {% include "_risk_radar_card.css.j2" %}
+{% include "_risk_radar_pullback_depth.css.j2" %}{# Measured-only Risk Radar underway state #}
 {% include "_aibrief_css.j2" %}{# ABX v2 — shared AI-brief body stylesheet (.aib2-*) #}
 {# _mag7_panel.css.j2 removed (MLC-W2a): .m7p-stale moved to ldb <style>; no .m7p elements rendered #}
 
@@ -5163,6 +5164,16 @@ body.mx5-dlg-open{ overflow:hidden; }
              0 1px 0 rgba(255,255,255,.9) inset,
              0 0 0 1px rgba(0,0,0,.04);
 }
+@media print{
+  html.mx5-dlg-lock,html.mx5-dlg-lock body,body.mx5-dlg-open{overflow:visible;position:static;height:auto;max-height:none}
+  .mx5-dlg.open{position:static;inset:auto}
+  .mx5-dlg.open .mx5-dlg-panel,
+  #dlg-risk.mx5-dlg.open .mx5-dlg-panel{max-height:none;overflow:visible;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;color-scheme:light;background:Canvas;color:CanvasText}
+  .mx5-dlg.open .mx5-dlg-body,
+  #dlg-risk.mx5-dlg.open .mx5-dlg-body{overflow:visible;max-height:none}
+  .mx5-dlg.open .mx5-dlg-close{display:none}
+  .mx5-dlg.open .mx5-dlg-backdrop{display:none}
+}
 /* No blur support → near-opaque fill so body copy stays ≥4.5:1 over any bg */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .mx5-dlg-panel{background:var(--mx5-pop-bg,rgba(13,18,26,.98));}
@@ -5211,7 +5222,7 @@ body.mx5-dlg-open{ overflow:hidden; }
 .mx5-dlg-close:active{transform:translateY(0) scale(.985);box-shadow:inset 0 1px 0 var(--gbtn-sheen);}
 .mx5-dlg-close:focus-visible{outline:2px solid var(--link,#22d97a);outline-offset:2px;}
 @media (prefers-reduced-motion: reduce){
-  .mx5-dlg-close,.mx5-dlg-close:hover,.mx5-dlg-close:active{transform:none;}
+  .mx5-dlg-close,.mx5-dlg-close:hover,.mx5-dlg-close:active{transform:none;transition:none;}
 }
 
 /* Dialog body */
@@ -6641,6 +6652,9 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
   font:700 10px/1 var(--font-ui);cursor:help;user-select:none;margin-left:auto;transition:border-color .2s,color .2s;}
 .rkc-sig-tip:hover{border-color:var(--isle-risk);color:var(--isle-risk);}
 [data-theme="light"] .rkc-sig-tip{border-color:var(--line);color:var(--ink-2);}
+@media(prefers-reduced-motion:reduce){
+  .rkc-sig-tip{transition:none;}
+}
 
 /* ── rlx-* : rich-lens popover anatomy (Tier-2 rework 2026-07-20) ────────────
    Illustrated hover cards for the six dlg-risk signal tiles (+ any heavy tip).
@@ -12985,17 +12999,33 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
   {# dlg-risk: Risk scare ladder + drawdown boxes + sentiment — S2 redesign #}
   {% if market_state %}
-  <div class="mx5-dlg" id="dlg-risk" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="mx5-dlg" id="dlg-risk" role="dialog" aria-modal="true" aria-labelledby="dlg-risk-ttl" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
     <div class="mx5-dlg-panel">
       <div class="mx5-dlg-header">
-        <span class="mx5-dlg-title"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
+        <span class="mx5-dlg-title" id="dlg-risk-ttl"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
         {% set _rk_asof = (latest.date if (latest is defined and latest.date is defined and latest.date) else none) %}
         {% if _rk_asof %}<span class="riskdlg-asof">{{ _rk_asof }}</span>{% endif %}</span>
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-        {% if mode != 'stocks' %}{% include "_risk_radar_workspace.html.j2" %}{% endif %}
+        {# Measured price damage leads only when the canonical settled-close
+           observation confirms an active decline; risk odds remain evidence. #}
+        {% set _us_pbv = us_pullback_view if (us_pullback_view is defined and us_pullback_view is mapping) else none %}
+        {% import "_risk_radar_pullback_depth.html.j2" as pb_depth %}
+        {# The fragment's own qualification decides; one rule, not two. #}
+        {% set _us_pb_active = _us_pbv is not none and (pb_depth.lead('us', _us_pbv)|trim) == '1' %}
+        {# The workspace hero shows forward odds, so it stays out during a measured pullback. #}
+        {% if mode != 'stocks' and not _us_pb_active %}{% include "_risk_radar_workspace.html.j2" %}{% endif %}
+        {% if _us_pb_active %}
+          {# The observed-path chart is the shared illustration format; this page
+             links its published stylesheet only when that chart can render. #}
+          {% if _us_pbv.get('detail_chart_html') %}<link rel="stylesheet" href="illus.css">{% endif %}
+          {{ pb_depth.detail('us', _us_pbv) }}
+          <script>{% include "_risk_radar_pullback_depth.js.j2" %}</script>
+          <details class="riskdlg-legacy-details">
+            <summary>{{ t('Forward risk and drivers','前瞻风险与驱动因素') }}</summary>
+        {% endif %}
 
         {# — Risk Brief: one hero, not two — #}
         {% set _dlgr_rdr = market_state.radar if market_state.radar is defined else {} %}
@@ -13030,7 +13060,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% if _h5 is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _h5]|max %}{% endif %}
           {% if _h10 is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _h10]|max %}{% endif %}
           {% if _bn is not none %}{% set _odds_ns.mx = [_odds_ns.mx, _bn]|max %}{% endif %}
-          {% set _span = _odds_ns.mx if _odds_ns.mx > 0 else none %}
+          {% set _span = _odds_ns.mx if _odds_ns.mx > 0 else none %}{% if _us_pb_active %}
+          <div class="riskdlg-odds-k">{{ t('Forward pullback odds are not shown during a measured pullback.','实测回撤期间，不显示回撤前的概率。') }}</div>{% else %}
           <div class="riskdlg-odds">
             <div class="riskdlg-odds-k">{{ t('Pullback odds ≥5%','回撤概率 ≥5%') }}</div>
             <div class="riskdlg-odds-h">
@@ -13050,7 +13081,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             {% if _bn is not none %}
             <div class="riskdlg-odds-note">{% if _rd.dd_lift is defined and _rd.dd_lift is not none %}{{ _rd.dd_lift }}× {% endif %}{{ t('vs normal','对比常态') }} {{ _bn }}%</div>
             {% endif %}
-          </div>
+          </div>{% endif %}
           {% endif %}
           {% set _dlgr_fed_st = (latest.fed_stance.stance if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.stance is defined and latest.fed_stance.stance != 'unknown') else none) %}
           {% set _rk_cy_chip = (_rd.cycle if (_rd.cycle is defined and _rd.cycle and _rd.cycle.show is defined and _rd.cycle.show) else none) %}
@@ -13986,6 +14017,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <p class="riskdlg-method-note">{{ t(_rd.authority.note_en, _rd.authority.note_zh) }}</p>
           {% endif %}
         </details>
+        {% if _us_pb_active %}</details>{% endif %}
 
 
 
@@ -15353,6 +15385,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     ─────────────────────────────────────────────────────────────── */
     var _dlgActive = null;
     var _dlgTrigger = null;
+    var _dlgClosing = []; /* exits whose 340ms done() has not run yet */
     var _dlgScrollY = 0;   /* page scroll captured at first dialog open (M03 scroll lock) */
 
     /* Release the document scroll lock and restore the saved scroll position.
@@ -15364,19 +15397,64 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       window.scrollTo(0, _dlgScrollY);
     }
 
+    /* Focus the first stop the keyboard can reach: the same list _trapTab counts,
+       filtered through _tabStop. Falls back to DOM order so a dialog with no
+       reachable stop still takes focus somewhere. */
     function _focusFirst(dlg){
+      var reachable = Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
+      if(reachable.length){ reachable[0].focus(); return; }
       var focusable = dlg.querySelectorAll('button,a[href],[tabindex]:not([tabindex="-1"])');
       if(focusable.length) focusable[0].focus();
     }
 
+    /* A stop the keyboard can reach. A closed <details> keeps its controls in the
+       DOM and Chrome still reports layout boxes for them, so ask the disclosure
+       rather than the box; only its own <summary> stays reachable. */
+    function _tabStop(el){
+      if(el.tabIndex < 0 || el.closest('[inert]') || el.getClientRects().length === 0) return false;
+      /* Chrome also paints boxes for content its CSS hides, so defer to
+         checkVisibility when the engine offers it. */
+      if(typeof el.checkVisibility === 'function' && !el.checkVisibility({checkVisibilityCSS:true})) return false;
+      for(var d = el.closest('details:not([open])'); d;
+          d = d.parentElement && d.parentElement.closest('details:not([open])')){
+        var s = d.querySelector(':scope > summary');
+        if(!s || !s.contains(el)) return false;
+      }
+      return true;
+    }
+
     function _trapTab(dlg, e){
       if(e.key !== 'Tab') return;
-      var focusable = Array.prototype.slice.call(
-        dlg.querySelectorAll('button:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'));
+      /* Close nulls _dlgActive and the next open installs a new document trap
+         before the old close timer has fired. Until this dialog is shown again,
+         that trap must not pull Tab into it. */
+      if(!dlg.classList.contains('open') || dlg.classList.contains('mx5-dlg-closing')) return;
+      /* Release cards, the transcript sheet, the body-level heatmap and an open
+         lens popover stack above this dialog and own Tab. Escape already leaves
+         the dialog up under the first two. */
+      var act = document.activeElement;
+      var rrOv = document.getElementById('rr-modal-overlay');
+      if(rrOv && rrOv.classList.contains('open')) return;
+      if(document.querySelector('.rr-tr-overlay.is-open')) return;
+      if(document.querySelector('.hm-ov')) return;
+      if(act && act.closest && act.closest('.lens-pop.open')) return;
+      /* Counting the hidden forward-risk controls made `last` unreachable, so Tab
+         walked out of the dialog. */
+      var focusable = Array.prototype.filter.call(
+        dlg.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),summary,[tabindex]:not([tabindex="-1"])'),
+        _tabStop);
       if(!focusable.length) return;
-      var first = focusable[0], last = focusable[focusable.length-1];
-      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
-      else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+      /* The trap listens on the document while the dialog is open, so it also sees
+         Tabs whose focus has strayed outside the dialog (backdrop click target, a
+         stray programmatic focus) and pulls it back to the near end. It steps every
+         Tab through these stops itself: WebKit leaves buttons out of its own Tab
+         order, so Shift+Tab from the stop after the close button walked out. */
+      var i = focusable.indexOf(act), n = focusable.length;
+      e.preventDefault();
+      if(e.shiftKey) focusable[i <= 0 ? n-1 : i-1].focus();
+      else focusable[i < 0 || i === n-1 ? 0 : i+1].focus();
     }
 
     function _prefReduced(){
@@ -15386,12 +15464,26 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     function _dlgTeardown(dlg, restoreFocus){
       dlg.classList.remove('open','mx5-dlg-in','mx5-dlg-closing');
       dlg.removeAttribute('aria-modal');
-      if(dlg._trapHandler){ dlg.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
+      if(dlg._trapHandler){ document.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
       if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
       if(dlg._endH){ var pnl0=dlg.querySelector('.mx5-dlg-panel'); if(pnl0) pnl0.removeEventListener('transitionend', dlg._endH); delete dlg._endH; }
       if(restoreFocus && _dlgTrigger && typeof _dlgTrigger.focus === 'function') _dlgTrigger.focus();
+    }
+
+    /* China cnxOpenDlg / _cnxCancelClose: stop an exit that has not finished so
+       its done() cannot take .open off or move focus. `hide` is for a different
+       dialog; the one this open is showing must keep .open. Never refocuses. */
+    function _mx5CancelClose(dlg, hide){
+      if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
+      if(dlg._endH){
+        var pnl = dlg.querySelector('.mx5-dlg-panel');
+        if(pnl) pnl.removeEventListener('transitionend', dlg._endH);
+        delete dlg._endH;
+      }
+      for(var i = _dlgClosing.length - 1; i >= 0; i--) if(_dlgClosing[i] === dlg) _dlgClosing.splice(i, 1);
+      if(hide) dlg.classList.remove('open','mx5-dlg-in','mx5-dlg-closing');
     }
 
     window.mx5OpenDlg = function(id){
@@ -15409,9 +15501,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* Close any open scorecard popovers first */
       if(window.mx5CloseAllPopovers) window.mx5CloseAllPopovers();
       /* Switching dialogs: tear the previous one down instantly (no lingering animation). */
-      if(_dlgActive){ _dlgTeardown(_dlgActive, false); _dlgActive = null; }
+      var hidden = [];
+      if(_dlgActive){ hidden.push(_dlgActive); _dlgTeardown(_dlgActive, false); _dlgActive = null; }
       var dlg = document.getElementById(id);
       if(!dlg) return;
+      /* China cnxOpenDlg cancels every pending _cnxCancelClose. Reopening this
+         dialog during its own exit must not let that exit strip .open; opening
+         a different one must not let the stale exit refocus the old tile. */
+      var closing = _dlgClosing.slice();
+      for(var pi = 0; pi < closing.length; pi++){
+        _mx5CancelClose(closing[pi], closing[pi] !== dlg);
+        if(closing[pi] !== dlg) hidden.push(closing[pi]);
+      }
       /* One-time hydration happens ONLY after the existing registration gate.
          This keeps the sentiment panel out of the cold DOM; it preserves
          server-rendered metrics and delegated [data-rpop] handlers. */
@@ -15435,7 +15536,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           window.dispatchEvent(new Event('resize'));
         }
       }
-      _dlgTrigger = document.activeElement;
+      /* China cnxOpenDlg stores the opener only when focus is outside the dialog
+         being opened. During the exit, focus is still on Close; recapturing it
+         would return focus into the hidden dialog on the next close. Focus left
+         in a dialog this open just hid keeps that dialog's opener for the same
+         reason. */
+      var fromHidden = false;
+      for(var hi = 0; hi < hidden.length; hi++) if(hidden[hi].contains(document.activeElement)) fromHidden = true;
+      if(!dlg.contains(document.activeElement) && !fromHidden) _dlgTrigger = document.activeElement;
       _dlgActive = dlg;
       dlg.classList.remove('mx5-dlg-closing');
       /* 1) make it displayed (start state painted) */
@@ -15465,9 +15573,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           if(_dlgActive === dlg) dlg.classList.add('mx5-dlg-in');
         }); });
       }
+      /* Settle expiry before focus lands, so focus never starts on figures the
+         check is about to withdraw. */
+      if(id === 'dlg-risk' && window.mmPbExpire) window.mmPbExpire();
       _focusFirst(dlg);
+      /* Document level: a keydown whose focus is outside the dialog never bubbles
+         through the dialog, so a dialog-attached trap could not pull stray focus
+         back in. One listener per open dialog, removed at both teardown paths. */
       dlg._trapHandler = function(e){ _trapTab(dlg, e); };
-      dlg.addEventListener('keydown', dlg._trapHandler);
+      document.addEventListener('keydown', dlg._trapHandler);
       /* backdrop click */
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd){ bd._clickH = function(){ window.mx5CloseDlg(); }; bd.addEventListener('click', bd._clickH); }
@@ -15480,11 +15594,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       document.body.classList.remove('mx5-dlg-open');
       _dlgReleaseScroll();
       dlg.removeAttribute('aria-modal');
-      if(dlg._trapHandler){ dlg.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
+      if(dlg._trapHandler){ document.removeEventListener('keydown', dlg._trapHandler); delete dlg._trapHandler; }
       var bd = dlg.querySelector('.mx5-dlg-backdrop');
       if(bd && bd._clickH){ bd.removeEventListener('click', bd._clickH); delete bd._clickH; }
-      var trig = _dlgTrigger; _dlgTrigger = null;
-      var refocus = function(){ if(trig && typeof trig.focus === 'function') trig.focus(); };
+      /* Keep _dlgTrigger until this close actually refocuses. China leaves
+         _riskReturnFocus in place so _cnxCancelClose can drop the exit without
+         forgetting the original tile. */
+      var trig = _dlgTrigger;
+      var refocus = function(){
+        if(trig && typeof trig.focus === 'function') trig.focus();
+        if(_dlgTrigger === trig) _dlgTrigger = null;
+      };
       if(_prefReduced()){
         _dlgTeardown(dlg, false); refocus(); return;
       }
@@ -15497,12 +15617,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var done = function(){
         if(dlg._closeTimer){ clearTimeout(dlg._closeTimer); delete dlg._closeTimer; }
         if(dlg._endH && pnl){ pnl.removeEventListener('transitionend', dlg._endH); delete dlg._endH; }
+        for(var ci = _dlgClosing.length - 1; ci >= 0; ci--) if(_dlgClosing[ci] === dlg) _dlgClosing.splice(ci, 1);
         dlg.classList.remove('open','mx5-dlg-closing');
         refocus();
       };
       dlg._endH = function(e){ if(e.target === pnl && (e.propertyName === 'transform' || e.propertyName === 'opacity')) done(); };
       if(pnl) pnl.addEventListener('transitionend', dlg._endH);
       dlg._closeTimer = setTimeout(done, 340);
+      _dlgClosing.push(dlg);
     };
 
     /* Escape handler: dialog > scorecard popover > release radar modal guards */

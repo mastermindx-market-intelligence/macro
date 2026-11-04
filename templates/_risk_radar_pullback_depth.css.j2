@@ -1,0 +1,118 @@
+/* Paper 40–44: measured-only content inside the existing Risk Radar popup.
+   Directional numbers use down/up; uncertainty and risk use fixed health inks.
+   The existing observation expiry owner adds pb-expired. No additional timer. */
+.rrp{display:flex;flex-direction:column;min-width:0;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);font-family:var(--font-ui);font-size:var(--fs-body);overflow:hidden}
+.rrp *{box-sizing:border-box;min-width:0}
+.rrp h2,.rrp h3,.rrp p{margin:0}
+.rrp .rrp-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-6,24px);padding:var(--sp-6,24px);border-bottom:1px solid var(--line);background:linear-gradient(110deg,var(--panel2),var(--panel))}
+.rrp .rrp-heading h2{font:800 var(--fs-h1)/1.2 var(--font-ui);letter-spacing:-.025em;color:var(--text)}
+.rrp .rrp-eyebrow{font:600 var(--fs-label)/1.5 var(--font-ui);letter-spacing:.06em;color:var(--muted);padding-bottom:var(--sp-2,8px)}
+.rrp .rrp-sub{padding-top:var(--sp-3,12px);font-size:var(--fs-body);line-height:1.6;color:var(--muted)}
+.rrp .rrp-stamp{flex:0 0 auto;text-align:right;font-size:var(--fs-label);line-height:1.7;color:var(--muted)}
+.rrp .rrp-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:var(--sp-6,24px);gap:var(--sp-6,24px)}
+.rrp .rrp-metrics>div+div{border-left:1px solid var(--line);padding-left:var(--sp-6,24px)}
+.rrp .rrp-label{font-size:var(--fs-sm);line-height:1.5;color:var(--muted);padding-bottom:var(--sp-3,12px)}
+.rrp .rrp-metrics strong{display:block;font:600 var(--fs-h1)/1.3 var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--ink-down)}
+.rrp .rrp-metrics .rrp-primary{font-size:var(--fs-display)}
+.rrp .rrp-metrics .rrp-rebound{color:var(--ink-up)}
+.rrp .rrp-note{padding-top:var(--sp-2,8px);font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-age{padding:0 var(--sp-6,24px) var(--sp-4,16px);font-size:var(--fs-sm);color:var(--muted)}
+.rrp .rrp-study{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:var(--sp-6,24px);padding:var(--sp-6,24px);border-top:1px solid var(--line);background:var(--bg)}
+.rrp .rrp-study>div{padding:var(--sp-5,20px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+.rrp .rrp-study h3{font:700 var(--fs-h2)/1.5 var(--font-ui);color:var(--text);padding-bottom:var(--sp-3,12px)}
+.rrp .rrp-study p{font-size:var(--fs-body);line-height:1.65;color:var(--muted)}
+.rrp .rrp-chart{padding:var(--sp-3,12px) 0;overflow:hidden}
+.rrp .rrp-chart .ilx{width:100%;background:transparent;border:0;border-radius:0;box-shadow:none;margin:0;height:auto;aspect-ratio:560/188}
+.rrp .rrp-chart .ilx svg{display:block;width:100%;height:100%}
+.rrp .rrp-forecast .rrp-eyebrow{color:var(--ink-warn)}
+.rrp .rrp-forecast-row{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3,12px);padding:var(--sp-3,12px) 0;border-bottom:1px solid var(--line);font-size:var(--fs-sm);line-height:1.6}
+.rrp .rrp-forecast-row:first-of-type{margin-top:var(--sp-3,12px)}
+.rrp .rrp-forecast-row strong{font-family:var(--font-mono);color:var(--muted)}
+.rrp .rrp-method{padding-top:var(--sp-2,8px)}
+.rrp .rrp-method summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2,8px);font-size:var(--fs-sm);color:var(--text);cursor:pointer;list-style:none}
+.rrp .rrp-method summary::-webkit-details-marker{display:none}
+.rrp .rrp-method summary::after{content:'+';font:400 var(--fs-h2)/1 var(--font-ui);color:var(--muted)}
+.rrp .rrp-method[open] summary::after{content:'−'}
+.rrp .rrp-method summary:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px;border-radius:var(--r-ctl,8px)}
+.rrp .rrp-method p{font-size:var(--fs-sm);padding:var(--sp-2,8px) 0}
+.rrp .rrp-limit{padding:var(--sp-4,16px) var(--sp-6,24px);border-top:1px solid var(--line);font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .pbx-expiry{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.rrp.pb-expired .pbx-expiry{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;clip-path:none;white-space:normal;display:block;padding:var(--sp-4,16px) var(--sp-6,24px);font-size:var(--fs-body);line-height:1.6;color:var(--ink-warn)}
+.rrp.pb-expired .pbx-current,.rrp.pb-expired .rrp-sub{display:none}
+.rrp.pb-expired .rrp-until{display:none}
+.rrp.pb-expired .rrp-study{grid-template-columns:minmax(0,1fr)}
+html[data-theme="light"] .rrp{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .rrp .rrp-heading{background:var(--panel)}
+html[data-theme="light"] .rrp .rrp-study{background:var(--bg)}
+html[data-theme="light"] .rrp .rrp-study>div{background:var(--panel);box-shadow:var(--card-shadow)}
+@media(max-width:680px){
+ .rrp .rrp-heading{flex-direction:column;gap:var(--sp-3,12px);padding:var(--sp-5,20px)}
+ .rrp .rrp-stamp{text-align:left}
+ .rrp .rrp-metrics{grid-template-columns:minmax(0,1fr);gap:var(--sp-4,16px);padding:var(--sp-5,20px)}
+ .rrp .rrp-metrics>div+div{border-left:0;border-top:1px solid var(--line);padding:var(--sp-4,16px) 0 0}
+ .rrp .rrp-study{grid-template-columns:minmax(0,1fr);padding:var(--sp-4,16px);gap:var(--sp-4,16px)}
+ .rrp .rrp-age,.rrp .rrp-limit,.rrp .pbx-expiry,.rrp .rrp-signals{padding-left:var(--sp-5,20px);padding-right:var(--sp-5,20px)}
+}
+/* Phones: the collapsed study's 16px gutters plus the chart card's 20px gutters
+   and its 1px borders eat ~74px of the popup, so the chart svg measured 0.76 of
+   the .rrp content width at 390px (238/312 cn, 248/322 us). 8px gutters on the
+   study and its cards put the svg at ~0.89 (278/312, 288/322); the svg keeps
+   its viewBox aspect ratio (no height here) and no rule clips a focus ring. */
+@media(max-width:480px){
+ .rrp .rrp-study{padding:var(--sp-4,16px) var(--sp-2,8px)}
+ .rrp .rrp-study>div{padding:var(--sp-5,20px) var(--sp-2,8px)}
+}
+
+.rrp .rrp-chart-caption{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-history table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:var(--fs-sm)}
+.rrp .rrp-history th,.rrp .rrp-history td{padding:var(--sp-2,8px);border-bottom:1px solid var(--line);text-align:left;overflow-wrap:anywhere}
+.rrp .rrp-history th:last-child,.rrp .rrp-history td:last-child{text-align:right}
+/* Observed damage is immediately readable, including below the fold and no-JS.
+   Reuse the shared SVG, but do not defer critical ink to scroll choreography. */
+.rrp .rrp-chart .ilx-path{stroke-dashoffset:0;animation:none}
+.rrp .rrp-chart .ilx-water{opacity:.75;animation:none}
+.rrp .rrp-chart .ilx-ref{opacity:.75;animation:none}
+.rrp .rrp-chart .ilx-tag,.rrp .rrp-chart .ilx-d,.rrp .rrp-chart .ilx-reflab{opacity:1;animation:none}
+.rrp .rrp-chart .ilx-dot{transform:scale(1);animation:none}
+
+/* Preserve the one original US modal and expose its forecast evidence on demand.
+   Both hosts render this disclosure as the sibling right after the fragment's
+   .rrp root (the dashboard.html.j2 risk dialog, _risk_radar_dlg.html.j2 body), so the
+   fragment-root sibling combinator — not a bare class — keeps the rules inside
+   the pullback fragment's scope. */
+.rrp ~ .riskdlg-legacy-details{margin-top:var(--sp-5,20px);border-top:1px solid var(--line);padding-top:var(--sp-3,12px)}
+.rrp ~ .riskdlg-legacy-details>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3,12px);font:650 var(--fs-body)/1.5 var(--font-ui);cursor:pointer;color:var(--text);list-style:none}
+.rrp ~ .riskdlg-legacy-details>summary::-webkit-details-marker{display:none}
+.rrp ~ .riskdlg-legacy-details>summary::after{content:"+";font-size:var(--fs-h2);color:var(--muted)}
+.rrp ~ .riskdlg-legacy-details[open]>summary::after{content:"−"}
+.rrp ~ .riskdlg-legacy-details>summary:focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:3px}
+
+/* Owner deterioration / repair evidence. Two columns of label | value; one column under 420px. */
+.rrp .rrp-signals{display:flex;flex-direction:column;gap:var(--sp-3,12px);padding:var(--sp-4,16px) var(--sp-6,24px);border-top:1px solid var(--line)}
+.rrp .rrp-signals dl{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);column-gap:var(--sp-4,16px);row-gap:var(--sp-2,8px);margin:0}
+.rrp .rrp-signals dt{font:400 var(--fs-sm)/1.5 var(--font-ui);color:var(--muted)}
+.rrp .rrp-signals dd{margin:0;font:600 var(--fs-body)/1.5 var(--font-mono);color:var(--text)}
+.rrp .rrp-verdict{font-size:var(--fs-sm);line-height:1.6;color:var(--text)}
+.rrp .rrp-gaps{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-phase-trail{margin:0;padding:0;list-style:none;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+.rrp .rrp-phase-trail li{display:inline;margin-right:var(--sp-3,12px)}
+@media(max-width:420px){
+ .rrp .rrp-signals dl{grid-template-columns:minmax(0,1fr)}
+}
+@media (forced-colors: active){
+ .rrp .rrp-chart .ilx-path,.rrp .rrp-chart .ilx-down{stroke:CanvasText;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-dot,.rrp .rrp-chart .ilx-dot-down{fill:CanvasText;filter:none;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-ref,.rrp .rrp-chart .ilx-water,.rrp .rrp-chart .ilx-water-top{stroke:Highlight;opacity:1;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-area{fill:none;forced-color-adjust:none}
+ .rrp .rrp-chart .ilx-tag{color:CanvasText;background:Canvas;border:1px solid CanvasText}
+ .rrp .rrp-metrics,.rrp .rrp-metrics strong,.rrp .rrp-primary,.rrp .rrp-rebound{color:CanvasText}
+ .rrp .rrp-phase-trail,.rrp .rrp-phase-trail li{color:CanvasText}
+ .rrp .rrp-signals,.rrp .rrp-signals dt,.rrp .rrp-signals dd{color:CanvasText}
+ .rrp .rrp-method summary:focus-visible{outline:2px solid Highlight;outline-offset:2px}
+ .rrp .pbx-expiry{color:CanvasText;border-inline-start:4px solid Highlight}
+}
+@media print{
+ .rrp,.rrp *{box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;background:transparent !important;color:inherit !important}
+ .rrp details.rrp-history::details-content{content-visibility:visible;display:block}
+ .rrp .rrp-metrics,.rrp .rrp-phase-trail,.rrp .rrp-signals,.rrp .rrp-history tr{break-inside:avoid}
+}

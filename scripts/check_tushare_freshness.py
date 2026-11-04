@@ -44,6 +44,7 @@ from lib import cn_calendar, config, hk_calendar  # noqa: E402
 STORES: tuple[tuple[str, str], ...] = (
     ("tushare/flow_hist.parquet", "tushare_moneyflow / tushare_history"),
     ("tushare/moneyflow.parquet", "tushare_moneyflow"),
+    ("tushare/index_daily.parquet", "tushare_index_daily"),
 )
 
 # Sessions behind the expected last close before we say anything. 3 absorbs a

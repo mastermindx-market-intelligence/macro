@@ -1,0 +1,351 @@
+"""US Risk Radar popup switches to observed damage without replacing its modal shell.
+
+Uses the existing product-sized Jinja render fixture; no new modal framework.
+"""
+from copy import deepcopy
+
+from bs4 import BeautifulSoup
+import pytest
+
+from tests.test_macro_risk_dialog import _vm, _render, _dlg
+from tests.test_risk_radar_pullback_depth_template import native_view
+
+
+def dialog(view=None, *, mode="macro"):
+    vm = _vm()
+    if view is not None:
+        vm["us_pullback_view"] = view
+    return BeautifulSoup(_dlg(_render(vm=vm, mode=mode)), "html.parser")
+
+
+def test_current_active_observation_leads_and_original_risk_evidence_remains_accessible():
+    mode = "macro"
+    root = dialog(native_view("us"), mode=mode)
+    assert len(root.select('#dlg-risk')) <= 1  # extracted snippet begins inside the modal
+    measured = root.select_one("section.rrp")
+    assert measured and measured.get("data-pb-phase") == "underway"
+    assert measured.select_one('[data-metric="current"]').get_text(strip=True) == "−6.8%"
+    assert measured.select_one('[data-metric="worst"]').get_text(strip=True) == "−7.4%"
+    assert measured.select_one('[data-forecast-status="unavailable"]')
+    old = root.select_one(".riskdlg-brief")
+    assert old is not None
+    assert old.find_parent("details", class_="riskdlg-legacy-details") is not None
+    disclosure = root.select_one("details.riskdlg-legacy-details")
+    assert disclosure is not None and not disclosure.has_attr("open")
+    assert "Forward risk and drivers" in disclosure.select_one("summary").get_text(" ", strip=True)
+    html = str(root)
+    assert "mx5CloseDlg()" in html
+    assert "mx5-dlg-backdrop" in html
+
+
+@pytest.mark.parametrize("phase", ["stabilizing", "recovering"])
+def test_repair_observations_keep_the_measurement_primary_without_authorizing_buy(phase):
+    view = native_view("us")
+    view["phase"] = phase
+    view["observation"]["phase"] = phase
+    root = dialog(view)
+    assert root.select_one("section.rrp").get("data-pb-phase") == phase
+    assert "not a new-entry signal" in root.get_text(" ", strip=True)
+    assert root.select_one('details.riskdlg-legacy-details') is not None
+
+
+@pytest.mark.parametrize("change", [
+    ("quality", "delayed"),
+    ("schema", "wrong.v1"),
+    ("clock", "intraday"),
+    ("valid_until", None),
+    ("available", False),
+    ("market", "cn"),
+    ("active", False),
+    ("phase", "monitoring"),
+    # Rejected by the fragment's price checks: must not displace the popup either.
+    ("low_close", None),
+    ("close", 101.0),
+])
+def test_unqualified_or_pre_episode_view_keeps_previous_forecast_first_layout(change):
+    v = native_view("us")
+    k, value = change
+    v["observation"][k] = value
+    if k == "phase":
+        v["phase"] = value
+    root = dialog(v)
+    assert root.select_one("section.rrp") is None
+    assert root.select_one(".riskdlg-brief")
+    assert root.select_one("details.riskdlg-legacy-details") is None
+
+
+def test_missing_view_keeps_existing_popup_untouched():
+    root = dialog()
+    assert root.select_one(".riskdlg-brief")
+    assert root.select_one("section.rrp") is None
+
+
+def test_shared_pullback_css_is_present_in_the_real_us_page():
+    html = _render(vm=_vm(), mode="macro")
+    assert ".riskdlg-legacy-details" in html
+    assert ".rrp-metrics" in html
+
+
+
+@pytest.mark.parametrize("view", [None, "active"])
+def test_risk_dialog_is_named_by_its_own_title(view):
+    """The modal needs an accessible name; China's shell already has one."""
+    vm = _vm()
+    if view == "active":
+        vm["us_pullback_view"] = native_view("us")
+    page = BeautifulSoup(_render(vm=vm, mode="macro"), "html.parser")
+    dlg = page.select_one("#dlg-risk")
+    assert dlg is not None and dlg.get("role") == "dialog"
+    ids = (dlg.get("aria-labelledby") or "").split()
+    assert ids, "the risk dialog has no aria-labelledby"
+    for ref in ids:
+        named = page.find(id=ref)
+        assert named is not None, ref
+        assert dlg in named.parents, ref
+        assert "Risk Radar" in named.get_text(" ", strip=True)
+
+ILLUS_LINK = '<link rel="stylesheet" href="illus.css">'
+
+
+def test_observed_path_chart_loads_the_shared_illustration_stylesheet():
+    # Without the shared stylesheet the chart's stroke path fills black and its
+    # axis labels collapse into one unpositioned run (seen in the served page).
+    vm = _vm()
+    vm["us_pullback_view"] = native_view("us")
+    html = _render(vm=vm, mode="macro")
+    dlg = _dlg(html)
+    assert dlg.count(ILLUS_LINK) == 1
+    assert dlg.index(ILLUS_LINK) < dlg.index('class="ilx')
+
+
+@pytest.mark.parametrize("view", [None, "inactive", "no_chart"])
+def test_macro_page_is_unchanged_when_no_observed_chart_renders(view):
+    vm = _vm()
+    if view == "inactive":
+        v = native_view("us")
+        v["observation"]["quality"] = "delayed"
+        vm["us_pullback_view"] = v
+    elif view == "no_chart":
+        v = native_view("us")
+        v["detail_chart_html"] = ""
+        vm["us_pullback_view"] = v
+        assert dialog(v).select_one("section.rrp") is not None
+    assert ILLUS_LINK not in _render(vm=vm, mode="macro")
+
+
+def test_illustration_stylesheet_is_published_beside_the_macro_page():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    assert (root / "templates" / "illus.css").is_file()
+    assert '"illus.css"' in (root / "scripts" / "build_site.py").read_text()
+
+
+
+# A popup-shaped tree in the order the shipped dialog renders it. `shown` is what
+# getClientRects reports: Chrome still reports boxes for a closed <details>' content
+# (it is content-visibility skipped, not display:none), which defeated a box-only
+# filter in the served-page keyboard check. `checkVisibility`, when provided, is
+# what the element's checkVisibility() answers — undefined, like Chrome, on the
+# many elements where the engine offers it.
+FAKE_DIALOG_JS = r"""
+const assert = require('node:assert/strict');
+const doc = {activeElement: null,
+  getElementById() { return null; },
+  querySelector() { return null; }};
+function el(tag, opts = {}) {
+  return {tag, open: !!opts.open, shown: opts.shown !== false, tabIndex: opts.tabIndex ?? 0,
+          name: opts.name || tag, children: [], parentElement: null,
+          checkVisibility: opts.checkVisibility,
+          getClientRects() { return this.shown ? [{}] : []; },
+          focus() { doc.activeElement = this; },
+          contains(o) { for (let n = o; n; n = n.parentElement) if (n === this) return true; return false; },
+          closest(sel) {
+            if (sel === '[inert]' || sel === '.lens-pop.open') return null;
+            assert.equal(sel, 'details:not([open])');
+            for (let n = this; n; n = n.parentElement) if (n.tag === 'details' && !n.open) return n;
+            return null;
+          },
+          querySelector(sel) {
+            assert.equal(sel, ':scope > summary');
+            return this.children.find(c => c.tag === 'summary') || null;
+          },
+          querySelectorAll(sel) {
+            const parts = sel.split(','), out = [];
+            const hit = c => parts.some(p => p === c.tag || p.startsWith(c.tag + ':')
+                                        || (c.tag === 'a' && p === 'a[href]'));
+            (function walk(n) { for (const c of n.children) { if (hit(c)) out.push(c); walk(c); } })(this);
+            return out;
+          }};
+}
+function add(parent, child) { child.parentElement = parent; parent.children.push(child); return child; }
+const dlg = el('div');
+dlg.classList = {contains(name){ return name === 'open'; }};
+const close = add(dlg, el('button', {name: 'close'}));
+add(dlg, el('button', {name: 'decorative', tabIndex: -1}));
+add(dlg, el('button', {name: 'unrendered', shown: false}));
+const why = add(dlg, el('details'));
+const whySummary = add(why, el('summary', {name: 'why no estimate'}));
+add(why, el('a', {name: 'why link'}));
+const legacy = add(dlg, el('details'));
+const legacySummary = add(legacy, el('summary', {name: 'forward risk and drivers'}));
+const body = add(legacy, el('div'));
+const driver = add(body, el('button', {name: 'driver'}));
+const method = add(body, el('details'));
+const methodSummary = add(method, el('summary', {name: 'method'}));
+add(method, el('a', {name: 'method link'}));
+const names = list => list.map(n => n.name);
+"""
+
+
+def _node(script: str, stdin: str) -> None:
+    _node_raw(FAKE_DIALOG_JS + script, stdin)
+
+
+def _node_raw(script: str, stdin: str) -> None:
+    import os
+    import shutil
+    import subprocess
+    node = shutil.which("node")
+    if not node:
+        # A skip would turn these regressions green without running them.
+        if os.environ.get("CI"):
+            pytest.fail("Node is required in CI to execute the shipped dialog scripts")
+        pytest.skip("Node is required to execute the shipped dialog scripts")
+    result = subprocess.run([node, "-e", script], input=stdin, text=True,
+                            capture_output=True, timeout=20)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _between(path: str, start: str, end: str) -> str:
+    from pathlib import Path
+    page = (Path(__file__).resolve().parents[1] / path).read_text()
+    a = page.index(start)
+    return page[a:page.index(end, a)]
+
+
+def test_tab_trap_wraps_over_the_closed_forward_risk_disclosure():
+    """Run the shipped `_tabStop`/`_trapTab` bodies against the popup's stop order.
+
+    The forward-risk evidence now sits in a closed <details>. A trap that counts its
+    hidden controls never sees focus reach `last`, so Tab walks out of the modal.
+    A trap that leaves middle stops to the engine lets WebKit's button-less order
+    walk Shift+Tab out from the summary after the close button."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const trap = new Function('document', src + '; return _trapTab;')(doc);
+function tab(from, shift = false) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: shift, prevented: false, preventDefault() { this.prevented = true; }};
+  trap(dlg, e);
+  return e;
+}
+// Closed disclosures: the forward-risk summary is the last stop, so Tab wraps.
+let e = tab(legacySummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(close, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
+// Every Tab is stepped by the trap, not the engine: WebKit leaves buttons out of
+// its own order, so Shift+Tab from the first summary used to leave the modal.
+e = tab(whySummary, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(whySummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
+// Opened: its own controls become stops, a nested closed disclosure keeps only its summary.
+legacy.open = true;
+e = tab(legacySummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, driver);
+e = tab(methodSummary, true);
+assert.equal(doc.activeElement, driver);
+e = tab(methodSummary);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+// Non-Tab keys are never intercepted.
+doc.activeElement = legacySummary;
+const esc = {key: 'Escape', shiftKey: false, prevented: false, preventDefault() { this.prevented = true; }};
+trap(dlg, esc);
+assert.equal(esc.prevented, false);
+""", src)
+
+
+def test_focus_first_skips_unreachable_stops_and_still_lands_somewhere():
+    """Run the shipped `_focusFirst`: the first DOM-order focusable may sit inside
+    a closed <details>, so take the first stop `_trapTab` would count — and when
+    nothing is reachable, still focus something rather than leave focus nowhere."""
+    src = _between("templates/dashboard.html.j2", "function _focusFirst(dlg){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const focusFirst = new Function('document', src + '; return _focusFirst;')(doc);
+// The first DOM-order focusable sits in a closed disclosure: skip to the next stop.
+const buried = el('div');
+const dd = add(buried, el('details'));
+add(dd, el('button', {name: 'buried first'}));
+const next = add(buried, el('button', {name: 'next reachable'}));
+focusFirst(buried);
+assert.equal(doc.activeElement, next);
+// Nothing reachable: the old DOM-order probe still focuses the first candidate.
+const nowhere = el('div');
+const only = add(nowhere, el('button', {name: 'unrendered only', shown: false}));
+focusFirst(nowhere);
+assert.equal(doc.activeElement, only);
+""", src)
+
+
+def test_tab_trap_pulls_stray_focus_back_into_the_dialog():
+    """China's rule, ported: the trap sees Tabs whose focus is outside the dialog
+    and pulls it back to the near end. That only works because the shipped trap
+    listens on the document while the dialog is open — focus outside the dialog
+    never routes a keydown through the dialog itself."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const trap = new Function('document', src + '; return _trapTab;')(doc);
+const outside = el('button', {name: 'backdrop'});
+function tab(from, shift = false) {
+  doc.activeElement = from;
+  const e = {key: 'Tab', shiftKey: shift, prevented: false, preventDefault() { this.prevented = true; }};
+  trap(dlg, e);
+  return e;
+}
+// Tab from outside returns to the first stop; Shift+Tab to the last.
+let e = tab(outside);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, close);
+e = tab(outside, true);
+assert.equal(e.prevented, true);
+assert.equal(doc.activeElement, legacySummary);
+""", src)
+    from pathlib import Path
+    page = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text()
+    # One listener per open dialog: installed on the document at open, removed at
+    # both teardown paths (immediate `_dlgTeardown` and the animated close).
+    assert "document.addEventListener('keydown', dlg._trapHandler);" in page
+    assert "dlg.addEventListener('keydown', dlg._trapHandler);" not in page
+    assert page.count("document.removeEventListener('keydown', dlg._trapHandler)") == 2
+    assert "dlg.removeEventListener('keydown', dlg._trapHandler)" not in page
+
+
+def test_tab_stop_defers_to_checkvisibility_and_keeps_the_box_rules_without_it():
+    """Chrome paints boxes for CSS-hidden content too; when the engine exposes
+    checkVisibility, a control it reports hidden is not a keyboard stop, and an
+    engine without checkVisibility keeps the box + closed-disclosure rules alone."""
+    src = _between("templates/dashboard.html.j2", "function _tabStop(el){", "function _prefReduced(")
+    _node(r"""
+const src = require('node:fs').readFileSync(0, 'utf8');
+const stop = new Function('document', src + '; return _tabStop;')(doc);
+const shown = el('button', {name: 'shown', checkVisibility: () => true});
+assert.equal(stop(shown), true);
+const hidden = el('button', {name: 'css hidden', checkVisibility: () => false});
+assert.equal(stop(hidden), false);
+// Engines without checkVisibility keep the old box + closed-disclosure behaviour.
+const plain = el('button', {name: 'plain'});
+assert.equal(stop(plain), true);
+const closed = add(el('div'), el('details'));
+add(closed, plain);
+assert.equal(stop(plain), false);
+""", src)
