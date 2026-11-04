@@ -1,0 +1,15 @@
+{
+  "original_helper": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/financial-depth-resume-20261013/fresh_owner_read_preflight.py",
+  "original_helper_sha256": "3ec29d13ac21538a12dcf52f66256f42fdfd73d5426a13fb5b678309b6637fdb",
+  "adapted_helper": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/financial-reconciliation-20261014/reconciled_fresh_owner_read_preflight.py",
+  "adapted_helper_sha256": "e882195f870c33a5498d1a812ad44aee051a520e1c3160e5b3b3a3429a3357c0",
+  "new_local_manifest_pin": "d3fd29d01e55e9ef8484b0722ec56aef2eec96b256bd4ba6db8ca4429b3d62d4",
+  "new_local_generation_pin": "8a27d8b450ab547be676fadc",
+  "remote_current_manifest_pin": "0c776ad3a061ff58e6c9695834eed229f769dfd74d9f005fc1d51ccc674bb4dc",
+  "remote_current_generation": "6ab0665a0783750f665b1b25",
+  "derivation": "Actual qualified authenticated read plus incumbent assembler RECONCILIATION_RECEIPT; root requested external adaptation",
+  "preservation_checks_removed": 0,
+  "same_readonly_client_restorer_conditional_marker_native_dryrun": true,
+  "root_source_mutations": 0,
+  "executed": false
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "tiingo.bounded_final_accounting_source_review/v1",
+  "recorded_at_utc": "2026-10-13T02:17:20.560960+00:00",
+  "decision": "PASS",
+  "physical_method_sha256": "7560a0b20d17ebabad0085920305f76de08aedb65a654769e3b0ddcaf7b248a1",
+  "combined_method_sha256": "b1f88bd1e011023013d02c5ae82c83f1daca02b1824529bc5ba567f2ce57c2b9",
+  "scope": "Future source acceptance only; actual capture/controller/accounting terminal consumption remains mandatory",
+  "findings": [
+    "Physical helper is accepted a698 accounting adapted to exact continuation309 core,3ce scope,1fcaf plan,807 base and session33372. It checks current collector/producer pins before proof construction.",
+    "Actual capture parent must bind result hash, source method, original33372 and wrapper exit code. Fatal or unsettled state refuses. Exit code and all-selected completeness are checked separately.",
+    "Physical admissions require unique in-range indices and exact ordered started-task mapping; successes and failures partition admitted tasks, never-admitted is exact complement; rolling four-admission gap remains checked.",
+    "Only continuation qualification files and consumed continuation controller parents enter physical accounting. Every q/pf/coverage method matches309 and physical scope; frozen selection, consumed preflight, prior census chain, receipt identity/clock and empty/nonempty lineage flags remain checked.",
+    "Whole quality receipts are rechecked against exact negative-int policy and raw checksum, require both projection selectors absent, and remain separate from qualified bytes/rows. Retained partial artifact hashes are checked.",
+    "Combined helper pins immutable original account2df8 and consumed parent1db7 and requires actual consumed physical account from exact756 method/309 core; it rechecks bound q/census/window/capture evidence and exact43992/33372 parents.",
+    "Original1758 captured outcomes plus3 held failures plus2631 physical requests independently reconcile to original4392 selection. Physical selected rows exactly equal old never-admitted rows; remaining budget24871583365 verified.",
+    "Combined duplicate-free qualified/quality/failure/never union must equal original4392. Physical q pairs lie inside physical selection and old q pairs outside it. Captured bytes and bar hints reconcile to qualified plus quarantined totals; census bars/histories advance only by physical qualified contribution.",
+    "Both outputs use exclusive new files and preserve immutable originals. No future physical/combined output or physical capture terminal-parent receipt existed at review."
+  ],
+  "limitations": [
+    "Physical helper deliberately requires at least one accepted qualification proof; a zero-success/no-proof outcome fails closed and needs a separately reviewed truthful accounting adaptation.",
+    "Combined source checks consume accepted physical proof; they do not execute another reader/materializer or establish a newer producer runtime validation after that proof.",
+    "A recorded parent-consumption field is evidence supplied by original parent custody, not independent access to tool-session completion. Parent must actually consume every capture and qualification return.",
+    "Accounting accepts truthful partial outcomes for reporting; it grants no permission to retry failed requests, create another capture phase, relax holds or claim full vendor history."
+  ],
+  "required_before_execution": [
+    "Actual session33372 terminal result and original parent return consumption; all qualification controller/writer returns consumed.",
+    "All captured successes completely dispositioned by accepted physical q/census proofs, immutable lineage and quality no-projection checks pass.",
+    "Run physical accounting once, consume its actual terminal return, create accurate bound parent acceptance, then run combined accounting once.",
+    "Do not execute either helper speculatively while source captures or qualification writers remain active."
+  ],
+  "review_actions": {
+    "helper_execution": false,
+    "provider_calls": 0,
+    "credential_access": false,
+    "archive_writes": 0,
+    "source_edits": 0,
+    "offline_syntax_hash_set_arithmetic_checks": true,
+    "review_artifact_only_write": true
+  }
+}

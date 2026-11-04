@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/government_revenue/sbir_award_observation.v1.schema.json",
+  "title": "Existing SBIR award observation v1",
+  "description": "Canonical existing producer shape. Closed objects exclude source PII, abstracts and raw transport. Executable format checking and existing hash/generation/cross-field checks are required; JSON Schema alone does not prove bindings or source activation.",
+  "type": "object",
+  "properties": {
+    "sbir_award_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_award_identity_kind": {
+      "const": "agency_tracking_number"
+    },
+    "agency_tracking_number": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Nullable source procurement contract/grant number, not a schema contract tag."
+    },
+    "firm": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "uei": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-HJ-NP-Z0-9]{12}$"
+    },
+    "duns": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{9}$"
+    },
+    "agency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "branch": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "program": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "phase": {
+      "enum": [
+        "I",
+        "II",
+        null
+      ]
+    },
+    "phase_source_value": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "topic_code": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "solicitation_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "solicitation_year": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(19|20)\\d{2}$"
+    },
+    "award_year": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(19|20)\\d{2}$"
+    },
+    "award_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Source award amount; no revenue, obligation or positivity claim."
+    },
+    "award_title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "research_institution": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "state": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "award_link": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "observation_state_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "source_at_field": {
+      "enum": [
+        "proposal_award_date",
+        null
+      ]
+    },
+    "source_fiscal_year": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(19|20)\\d{2}$"
+    },
+    "effective_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "contract_end_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "known_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "first_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|\\+00:00)$"
+    },
+    "source_url": {
+      "const": "https://api.www.sbir.gov/public/api/awards"
+    },
+    "source_query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "source_receipt_id": {
+      "type": "string",
+      "pattern": "^sbir-award:[0-9a-f]{64}$"
+    },
+    "source_response_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "receipt_verified": {
+      "const": true
+    }
+  },
+  "required": [
+    "sbir_award_key",
+    "source_award_identity_kind",
+    "agency_tracking_number",
+    "contract",
+    "firm",
+    "uei",
+    "duns",
+    "agency",
+    "branch",
+    "program",
+    "phase",
+    "phase_source_value",
+    "topic_code",
+    "solicitation_number",
+    "solicitation_year",
+    "award_year",
+    "award_amount",
+    "award_title",
+    "research_institution",
+    "state",
+    "award_link",
+    "observation_state_sha256",
+    "source_at",
+    "source_at_field",
+    "source_fiscal_year",
+    "effective_at",
+    "contract_end_date",
+    "observed_at",
+    "known_at",
+    "first_seen_at",
+    "source_url",
+    "source_query",
+    "source_receipt_id",
+    "source_response_sha256",
+    "receipt_verified"
+  ],
+  "additionalProperties": false
+}

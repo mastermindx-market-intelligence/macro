@@ -1,0 +1,61 @@
+{
+  "adaptations": [
+    "Existing synthetic R1 identity/price/entry fixture retained.",
+    "Prior owner snapshot moved to an explicit synthetic 14:10 cutoff.",
+    "Invented numeric fingerprint correction at 18:00 and known-source mirror at 19:00.",
+    "No economic amount or direction inferred from the fingerprint."
+  ],
+  "captures": [
+    {
+      "assessment_id": "sha256:ce320cf390cc0b88e3030106a1f28d42caf236de31246c04f4fd2d407fea275e",
+      "assessment_sha256": "c0686a70d62391a0218e4850ee43d7ba704e4148f03932de8c543ea11cc24ce8",
+      "cli_exit_code": 0,
+      "name": "source_revision",
+      "prior_r5_assessment_id": "sha256:314fa948f76698026822d46309981341a9bc3fa977c85175873a1208a49f8858",
+      "request_sha256": "8fab5e309b123df98977d7d2d6aaceb5adf7c06689009499061c930e6dd7448a"
+    },
+    {
+      "assessment_id": "sha256:722e613c05834cbc26158bbe4dac51fcce9d6d0b75b469acb25c2e26ec43201d",
+      "assessment_sha256": "58aebe29b080288d7d0a3db67a3c7c1e3c0de27a1888e379f580ba284209d204",
+      "cli_exit_code": 0,
+      "name": "peers_missing",
+      "prior_r5_assessment_id": "sha256:416b670acb90ed6fb5dba3392ef5ba048b2efd2c110547e55ba41a230dee84fb",
+      "request_sha256": "adbc3e0c9f0e885967835f017b0763e95933c408f698bb4793a1f4b1745da8cc"
+    },
+    {
+      "assessment_id": "sha256:5c9ef4d7981269d13670fd1ef75e8f341f379f400f98b2a30e60184936de2ae8",
+      "assessment_sha256": "d8bdf28e145fcde23770cba05208cc2ccfe1388eaefeb97eb75a048976891025",
+      "cli_exit_code": 0,
+      "name": "history_missing",
+      "prior_r5_assessment_id": "sha256:c62e6e1d8787b05f59ec1ef6d58c5dde5acd07858bcee5c087b3357a6ea36880",
+      "request_sha256": "86ff6ba264241a5725bf5780b57eb347e8ead950fe142fe97b79f13a5590b425"
+    },
+    {
+      "assessment_id": "sha256:6363c8e9f26355f485e717370834487afd9aeb403e0417ef63566da648896deb",
+      "assessment_sha256": "ff82893410dee5cf087d17af3954df487349135db2ae512a3bd6c0e7e8509aed",
+      "cli_exit_code": 0,
+      "name": "current_unavailable",
+      "prior_r5_assessment_id": "sha256:6363c8e9f26355f485e717370834487afd9aeb403e0417ef63566da648896deb",
+      "request_sha256": "78a01ce0532a7ff2b4ed49e074277b60b13c7ae26023b13a92fee070b71608f3"
+    }
+  ],
+  "consumer_head": "a073abedc58d945b10eb27380d49b879754c5bcc",
+  "entry_head": "d4d43810c18f8e48b8cf49fa447392f7901f6b97",
+  "native_admission_established": false,
+  "news_base_head": "28f35fd86233cae3a42078966538cd8248c3f738",
+  "observed_repair": "Legacy correction remains observed; fingerprint does not establish reduction. Date-specific copy removed.",
+  "positive_quantity_path": "Proven separately by producer-adapter and explicit fact-log tests, not these scalar-only legacy examples.",
+  "prior_capture_receipt_sha256": "fbc52035ad18cd42573949e2f5a2384cf007c0c11f5aca9cca98b1cf79d82c1d",
+  "real_path_assertions": "PASS",
+  "request_bytes_changed": false,
+  "schema": "catalyst.r6_replay_capture.v1",
+  "scope": "COMPOSED_RESEARCH_CHECKOUT_NOT_PUBLISHED_RUNTIME",
+  "source_sha256": {
+    "engine/catalyst_intelligence/__main__.py": "7f878761813b5742a072feb011f66b770a2d9c366bf0d35839ff19dea6749d9f",
+    "engine/catalyst_intelligence/assessment_v2.py": "3c321c686f19e1a089c27d163f5280955215793f5fb33fdd4a99a971ef17590b",
+    "engine/news_impact/producer_facts.py": "712796386c750a949ea5e0d1d30ed8e26a27048164a5393b52cb2ed2e6273b17",
+    "engine/news_impact/thesis.py": "ae862a16afb7e8cc51debabc3c81615f16218b0f66351264c71d2696e64096bd",
+    "engine/prophet_entry_availability.py": "a753eb41771bddd8f9832a355c87999485a4042a1dea849ccaca39b35ed97b9f"
+  },
+  "synthetic": true
+}
