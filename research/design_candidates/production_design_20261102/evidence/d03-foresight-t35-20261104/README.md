@@ -2,6 +2,7 @@
 
 Status: source repair and fixture browser proof, Draft / HOLD. Not merged, deployed, or production-accepted.
 Parent: [D03 checkpoint](https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6623889088).
+Source continuation: [existing T35 handoff](CONTINUATION.md). This maintenance exception has no canonical workstream binding; the unmodified continuation note belongs beside its source evidence, not in the schema-validated Agent OS record directory.
 Specification: `D03_US_PROPHET_PHASE_2A.md` at `e521f04dcc5afb4fb06152584d35c8a01dbe21ff`, T35 / F04.
 Base: `005232fa54edbc6d271a796db6b15d5cd7443641`, refreshed unchanged before publication.
 Protected procedure: Mastermind `75a6540519cf519edfef7633e74f57b68aef9329`.
