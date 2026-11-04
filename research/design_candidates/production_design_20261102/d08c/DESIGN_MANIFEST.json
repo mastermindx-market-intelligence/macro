@@ -1,0 +1,459 @@
+{
+  "schema": "d08c.design_review_packet.v1",
+  "schema_scope": "Artifact inventory only; not a runtime service, state store or authority registry",
+  "assignment": "D08C — Options Plan, Compare & Review",
+  "packet_date": "2026-11-04",
+  "disposition": "Bounded design/specification return; provisional candidate; RIG draft",
+  "source_pins": {
+    "law": "910803421beca53ca25145392725ab2d84c7a8e9",
+    "programme": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "d08_interface": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+    "d08_integration": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+    "terminal_consumer": "2ded360882b9c721e690907ff363b553781fb920",
+    "held_terminal_804": "27df56d997df0ae94a17b6b8e2d14867431bb394"
+  },
+  "owner": {
+    "receiver": "mastermindx-3",
+    "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10649",
+    "persistence_alerts": "D23 / incumbent Investigation and alerts owners",
+    "actual_holdings": "D22",
+    "final_file_organization": "F03"
+  },
+  "paper": {
+    "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "file_name": "Terminal",
+    "carrier": "Mastermind Paper direct",
+    "pages": [
+      {
+        "id": "p-13-0",
+        "name": "10 · D08C · Plan, Compare & Review · Candidate R2",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0"
+      },
+      {
+        "id": "p-15-0",
+        "name": "00 · D08C · Read me & Build contract",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0"
+      }
+    ],
+    "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "snapshot_guard": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+    "guard_is_revision": false,
+    "exclusive_scope": "D08C pages and listed nodes only; other writers restricted to disjoint targets",
+    "unresolved_d08c_edits": false,
+    "finish_operation": "d08c-20261104-finish-owned-11"
+  },
+  "boards": [
+    {
+      "code": "C00",
+      "id": "1S0R-0",
+      "page_id": "p-15-0",
+      "name": "C00 · D08C Read me & Build contract / R2",
+      "role": "readme",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 1440,
+      "declared_height": null,
+      "rendered_dimensions": [
+        1440,
+        1288
+      ],
+      "screenshot": {
+        "path": "evidence/C00_readme.jpg",
+        "sha256": "31a0ff4a2b47a4d15418749cbb66856d2f8d425798eff6e64ae81f1923e357e5",
+        "bytes": 234684,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C00.jsx.txt",
+        "sha256": "bd61afedfa4e36fa31edd2101c84a0d03896690f6d7c3be90710f5879239f6ac",
+        "bytes": 13056,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": []
+    },
+    {
+      "code": "C01",
+      "id": "1NZZ-0",
+      "page_id": "p-13-0",
+      "name": "C01 · Research plan / Expiry payoff / 1440 / Noir EN / R2",
+      "role": "research_plan",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 1440,
+      "declared_height": 1152,
+      "rendered_dimensions": [
+        1440,
+        1152
+      ],
+      "screenshot": {
+        "path": "evidence/C01_plan_desktop.jpg",
+        "sha256": "7a75de4f5db896502ad1b9cd2becff5653f00d07b6db1e25aeeb0ad4e70a3c1a",
+        "bytes": 155798,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C01.jsx.txt",
+        "sha256": "b43b2c3036170017eecb55a2cfbcc92d874eb532714d5100baa31395cdb8c2b0",
+        "bytes": 36907,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "qualified_synthetic_expiry",
+        "draft_only"
+      ]
+    },
+    {
+      "code": "C02",
+      "id": "1OGC-0",
+      "page_id": "p-13-0",
+      "name": "C02 · Compare entry assumptions / 1440 / Noir EN / R2",
+      "role": "assumption_comparison",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 1440,
+      "declared_height": 1100,
+      "rendered_dimensions": [
+        1440,
+        1100
+      ],
+      "screenshot": {
+        "path": "evidence/C02_compare.jpg",
+        "sha256": "da4a1f3d984dd7b6b050cc76f120fabe63a4aef634e976a6c76930212ea47130",
+        "bytes": 142350,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C02.jsx.txt",
+        "sha256": "26d77552e44a2a3e99e1ab42a98e3574bf7315c547191aa2dad532691c08f039",
+        "bytes": 27302,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "synthetic_common_basis"
+      ]
+    },
+    {
+      "code": "C03",
+      "id": "1OL8-0",
+      "page_id": "p-13-0",
+      "name": "C03 · Revisit verified research / 1024 / Noir EN / R2",
+      "role": "revisit",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 1024,
+      "declared_height": 1056,
+      "rendered_dimensions": [
+        1024,
+        1056
+      ],
+      "screenshot": {
+        "path": "evidence/C03_revisit.jpg",
+        "sha256": "18a91e0d90f266f4541fc20cf254d6bfa0ee7607b11fe7b4390191b3b20115c1",
+        "bytes": 121818,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C03.jsx.txt",
+        "sha256": "71e05b61f56fd06f224de3721c8d19d3013f047cc950a574ecbe3ced5993fab8",
+        "bytes": 20111,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "conditional_verified_revision",
+        "original_marks_not_retained"
+      ]
+    },
+    {
+      "code": "C04",
+      "id": "1OUZ-0",
+      "page_id": "p-13-0",
+      "name": "C04 · Research plan / 390 / Noir EN / R2",
+      "role": "plan_phone_viewport",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 390,
+      "declared_height": 844,
+      "rendered_dimensions": [
+        390,
+        844
+      ],
+      "screenshot": {
+        "path": "evidence/C04_phone_en.jpg",
+        "sha256": "d098133d5acd999806f4efea1e4132c0f092dffc8d116048e7bdece8a0dc52d5",
+        "bytes": 50843,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C04.jsx.txt",
+        "sha256": "8db0d418eb92f41bedccf19cfb6d30f80132fe3481e86359e819659697b6f077",
+        "bytes": 15241,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "synthetic_expiry",
+        "draft_only"
+      ]
+    },
+    {
+      "code": "C05",
+      "id": "1OXF-0",
+      "page_id": "p-13-0",
+      "name": "C05 · 研究计划 / 320 / Light ZH / R2",
+      "role": "plan_phone_full_scroll",
+      "locale": "ZH",
+      "theme": "light",
+      "declared_width": 320,
+      "declared_height": 1220,
+      "rendered_dimensions": [
+        320,
+        1220
+      ],
+      "screenshot": {
+        "path": "evidence/C05_phone_zh.jpg",
+        "sha256": "cf98462ddb8a4f3472f13d4b068b025fe1c73e34ab82722fd9a0f91fe65cff00",
+        "bytes": 61596,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C05.jsx.txt",
+        "sha256": "ebd4ef6667a0cede5a5e41f3e8e5b1738b6091e88847d7fdf340beb1a43d671b",
+        "bytes": 18588,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "synthetic_expiry",
+        "draft_only"
+      ]
+    },
+    {
+      "code": "C06",
+      "id": "1PU1-0",
+      "page_id": "p-13-0",
+      "name": "C06 · Adjust assumptions / 768 / Light EN / R2",
+      "role": "assumptions_dialog",
+      "locale": "EN",
+      "theme": "light",
+      "declared_width": 768,
+      "declared_height": 1024,
+      "rendered_dimensions": [
+        768,
+        1024
+      ],
+      "screenshot": {
+        "path": "evidence/C06_assumptions.jpg",
+        "sha256": "4f2bfd4ee1ed1fa8f7cffe50edc1bd7d5f99da359e5130dde7db96090909450d",
+        "bytes": 75736,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C06.jsx.txt",
+        "sha256": "6a12fa8b79ea684cb4df866ddff2b5de95c20a83c6310f7a570a065590907232",
+        "bytes": 11281,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "editable_assumptions",
+        "independent_research_horizon"
+      ]
+    },
+    {
+      "code": "C07",
+      "id": "1PXO-0",
+      "page_id": "p-13-0",
+      "name": "C07 · Save & watch state specimens / Light EN / R2",
+      "role": "save_watch_atlas",
+      "locale": "EN",
+      "theme": "light",
+      "declared_width": 1440,
+      "declared_height": 1944,
+      "rendered_dimensions": [
+        1440,
+        1944
+      ],
+      "screenshot": {
+        "path": "evidence/C07_save_watch_states.jpg",
+        "sha256": "db287100585413e143d4fcc464397f1442c27934d8d5f5631c440fad85f36a10",
+        "bytes": 330451,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C07.jsx.txt",
+        "sha256": "4778fd17acefd55b784f79f2b709c687fa28e297a7d8f40ae33cd43f091fb620",
+        "bytes": 40812,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "P6",
+        "P7",
+        "P8",
+        "P9",
+        "P10",
+        "P11",
+        "P12",
+        "P13",
+        "P14"
+      ]
+    },
+    {
+      "code": "C08",
+      "id": "1Q8U-0",
+      "page_id": "p-13-0",
+      "name": "C08 · Research states / Noir ZH / R2",
+      "role": "research_state_atlas",
+      "locale": "ZH",
+      "theme": "dark",
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "rendered_dimensions": [
+        1440,
+        1200
+      ],
+      "screenshot": {
+        "path": "evidence/C08_research_states.jpg",
+        "sha256": "b20b0dc26675021d597c5cc5642effb335ca5f55ee78b4c70fcb7bc45acc7ded",
+        "bytes": 186069,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C08.jsx.txt",
+        "sha256": "2555ab9837db1d4ed29bb07336a732337aa83c84e5b0480cfaed88dfc7f2b9bc",
+        "bytes": 21252,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "R0",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8"
+      ]
+    },
+    {
+      "code": "C09",
+      "id": "1RQJ-0",
+      "page_id": "p-13-0",
+      "name": "C09 · Exact-leg editor / 390 / Noir EN / R2",
+      "role": "exact_leg_editor",
+      "locale": "EN",
+      "theme": "dark",
+      "declared_width": 390,
+      "declared_height": 844,
+      "rendered_dimensions": [
+        390,
+        844
+      ],
+      "screenshot": {
+        "path": "evidence/C09_exact_leg_editor.jpg",
+        "sha256": "222e483dbaec4a25aab8bb0d557ddb79cbb4e24dc94b443283bd5c14d831cdfa",
+        "bytes": 49167,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C09.jsx.txt",
+        "sha256": "ac4b57a9f35df238b2494ea8cb94b00408b5845fd5cb69797591ae7acf7b8f8d",
+        "bytes": 17377,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "side_quantity_price",
+        "add_change_remove",
+        "terms_unknown"
+      ]
+    },
+    {
+      "code": "C10",
+      "id": "1RV0-0",
+      "page_id": "p-13-0",
+      "name": "C10 · Research details / 320 / Light ZH / R2",
+      "role": "research_editor",
+      "locale": "ZH",
+      "theme": "light",
+      "declared_width": 320,
+      "declared_height": 844,
+      "rendered_dimensions": [
+        320,
+        844
+      ],
+      "screenshot": {
+        "path": "evidence/C10_research_editor.jpg",
+        "sha256": "8981906e6e0bdc54ef79089625d5d7e8e2530f196de6aaff5f4b3cfd7db7938f",
+        "bytes": 38859,
+        "decode_valid": true
+      },
+      "paper_jsx": {
+        "path": "paper_exports/C10.jsx.txt",
+        "sha256": "5da679f0d11b7ef860791be0cce3fa88ef7545fb14094b6b1fba8c14b5602ed8",
+        "bytes": 10303,
+        "status": "static Paper export, not integrated product code"
+      },
+      "states": [
+        "thesis",
+        "invalidation",
+        "independent_horizon"
+      ]
+    }
+  ],
+  "coverage": {
+    "artboards": 11,
+    "capture_export_pairs": 11,
+    "retention_rows": 47,
+    "research_states": 9,
+    "save_watch_states": 15,
+    "rendered_widths": [
+      320,
+      390,
+      768,
+      1024,
+      1440
+    ],
+    "specified_additional_widths": [
+      1280,
+      1600
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "EN",
+      "ZH"
+    ],
+    "full_cross_product_verified": false,
+    "image_artifacts": 24,
+    "future_scenario_definitions": 47,
+    "future_product_tests_executed": 0
+  },
+  "verification": {
+    "arithmetic": "verification/oracle_result.json",
+    "contrast": "verification/contrast_pairs.json",
+    "images": "verification/image_integrity.json",
+    "paper_readback": "verification/paper_final_readback.json",
+    "foundation_refresh": "verification/foundation_refresh.json",
+    "adjudication": "VERIFICATION.md"
+  },
+  "review_inputs": {
+    "pass1": "evidence/review_pass1/",
+    "pass2": "evidence/review_pass2/",
+    "reviewer_kind": "native advisory, not formal reviewer-class RIG",
+    "full_transcript_included": false,
+    "lead_adjudication": "VERIFICATION.md"
+  },
+  "limits": [
+    "Synthetic numeric fixture; no executable quote or installed reference-coverage claim",
+    "Save/watch/revisit success specimens are conditional future-owner cases",
+    "Normal-data product browser path blocked by access verification",
+    "Keyboard, touch, screen reader, IME, 400% zoom, all-state responsive implementation remain future gates",
+    "Final F01/F02 foundation and formal RIG acceptance remain unreleased",
+    "No product code, merge, Ready, un-draft, enqueue, held-PR relabel, uncertain replay or deployment"
+  ]
+}

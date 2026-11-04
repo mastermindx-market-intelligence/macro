@@ -1,0 +1,126 @@
+// Static Paper review export, not an integrated product component.
+// File 01M3NSZGE8JWN2EZCSF0DT05RM; node 1PU1-0
+(
+    <div id="1PU1-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>
+      <div id="1PU2-0" style={{ backgroundColor: '#EFEFEC', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, height: '1024px', position: 'relative', width: '768px' }}>
+        <div id="1PU3-0" style={{ alignItems: 'center', borderBottomColor: '#CBCCC7', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '56px', justifyContent: 'space-between', paddingInline: '20px', width: '768px' }}>
+          <div id="1PU4-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+            ☰
+          </div>
+          <div id="1PU5-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+            Options · Research plan
+          </div>
+          <div id="1PU6-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+            EN · Light
+          </div>
+        </div>
+        <div id="1PU7-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', paddingBlock: '24px', paddingInline: '20px' }}>
+          <div id="1PU8-0" style={{ boxSizing: 'border-box', color: '#5F6368', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '24px', fontWeight: 600, lineHeight: '30px' }}>
+            SPY 600 / 610 call spread
+          </div>
+          <div id="1PU9-0" style={{ boxSizing: 'border-box', color: '#5F6368', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+            20 Nov 2026 · illustrative research · draft only
+          </div>
+        </div>
+        <div id="1PUA-0" style={{ backgroundColor: '#FFFFFF', borderColor: '#85877F', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '20px', left: '164px', padding: '24px', position: 'absolute', top: '164px', width: '440px' }}>
+          <div id="1PUC-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1PUD-0" style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1PUE-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '23px', fontWeight: 600, lineHeight: '28px' }}>
+                Adjust assumptions
+              </div>
+              <div id="1PUF-0" style={{ alignContent: 'center', boxSizing: 'border-box', color: '#1A1C20', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '18px', height: '44px', lineHeight: '22px', textAlign: 'center', width: '44px' }}>
+                ×
+              </div>
+            </div>
+            <div id="1PUG-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>
+              Author each leg price. Observed marks stay separate.
+            </div>
+          </div>
+          <div id="1PUI-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1PUJ-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1PUK-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+                Buy 1 · SPY 20 Nov 600 Call
+              </div>
+              <div id="1PUL-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+                USD / unit
+              </div>
+            </div>
+            <div id="1PUM-0" style={{ alignItems: 'center', borderColor: '#245C91', borderRadius: '8px', borderStyle: 'solid', borderWidth: '2px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', paddingInline: '12px' }}>
+              <div id="1PUN-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '16px', lineHeight: '20px' }}>
+                5.20
+              </div>
+            </div>
+          </div>
+          <div id="1PUP-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1PUQ-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1PUR-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+                Sell 1 · SPY 20 Nov 610 Call
+              </div>
+              <div id="1PUS-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+                USD / unit
+              </div>
+            </div>
+            <div id="1PUT-0" style={{ alignItems: 'center', borderColor: '#85877F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', paddingInline: '12px' }}>
+              <div id="1PUU-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '16px', lineHeight: '20px' }}>
+                2.00
+              </div>
+            </div>
+          </div>
+          <div id="1PUW-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1PUX-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+              Research question
+            </div>
+            <div id="1PUY-0" style={{ alignItems: 'center', borderColor: '#85877F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', minHeight: '68px', padding: '12px' }}>
+              <div id="1PUZ-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
+                Does the evidence support upside through 20 November?
+              </div>
+            </div>
+          </div>
+          <div id="1PV1-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1PV2-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+              What would change your view?
+            </div>
+            <div id="1PV3-0" style={{ alignItems: 'center', borderColor: '#85877F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', minHeight: '60px', padding: '12px' }}>
+              <div id="1PV4-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '21px' }}>
+                Reassess if the supporting flow and structure evidence weakens.
+              </div>
+            </div>
+          </div>
+          <div id="1RKA-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div id="1RKB-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+              Research horizon
+            </div>
+            <div id="1RKC-0" style={{ alignItems: 'center', borderColor: '#85877F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', paddingInline: '12px' }}>
+              <div id="1RKD-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                Reassess by 10 Nov 2026
+              </div>
+            </div>
+            <div id="1RKE-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+              Independent of the 20 Nov contract expiry.
+            </div>
+            <div id="1RKF-0" style={{ alignItems: 'center', borderTopColor: '#CBCCC7', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', minHeight: '44px' }}>
+              <div id="1RKG-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+                Payoff calculated at expiry
+              </div>
+            </div>
+            <div id="1RKH-0" style={{ boxSizing: 'border-box', color: '#51555B', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '19px' }}>
+              Dated contract reference required. Before-expiry modelling, fees, exercise and assignment effects are unavailable.
+            </div>
+          </div>
+          <div id="1PVG-0" style={{ alignItems: 'center', borderTopColor: '#CBCCC7', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'end', paddingTop: '16px' }}>
+            <div id="1PVH-0" style={{ alignItems: 'center', borderColor: '#85877F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1PVI-0" style={{ boxSizing: 'border-box', color: '#1A1C20', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                Cancel
+              </div>
+            </div>
+            <div id="1PVJ-0" style={{ alignItems: 'center', backgroundColor: '#66543B', borderRadius: '8px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', paddingInline: '18px' }}>
+              <div id="1PVK-0" style={{ boxSizing: 'border-box', color: '#FFFFFF', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '14px', fontWeight: 600, lineHeight: '18px' }}>
+                Apply to draft
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+

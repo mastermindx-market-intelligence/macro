@@ -100,4 +100,10 @@ The new disjoint candidate page is `p-13-0`; exact boards and the separate D08C 
 
 ## Verification limits
 
+### Final foundation refresh
+
+F01 [#10645](https://github.com/mastermindx-market-intelligence/macro/pull/10645) was refreshed at `abfecf1efc452383fe720cb3ea2016ad8d7088e0`; its [joint candidate.4](https://github.com/mastermindx-market-intelligence/macro/blob/abfecf1efc452383fe720cb3ea2016ad8d7088e0/research/design_candidates/production_design_20261102/f01/JOINT_SHELL_SYSTEM_CONTRACT.md) has whole-document blob `653d93bbce70a2515d677ecdb76bb21edfab750c`. §§2–5 are byte-identical to the original consumed candidate.4. Status/binding text now records F02's policy concurrence and later F01 implementation, while retaining PARTIAL / REQUEST_CHANGES / RIG draft. That separate F01 implementation does not authorize D08C product changes.
+
+F02 [#10630](https://github.com/mastermindx-market-intelligence/macro/pull/10630) was refreshed at `c985c24e2558dbd4211d34e7bac2e62e50506ba3`. The token-map blob remains `a7ec801d3b559cc64f4fd57141c32f63098c6461`; no D08C token migration is needed. F02 reports policy concurrence and a scoped 31-board freeze, with its original Chinese-comparison effect and complete-set gate still held. These are attributed owner statuses, not D08C approval of that native set. Formal foundation release, actual Brain/host and focused-consumer qualification remain gates. Exact refresh metadata is in `verification/foundation_refresh.json`.
+
 The live beta route produced an access-verification failure. Source plus Paper inspection therefore support design and contract decisions, not normal-data browser proof. Native advisors performed read-only reasoning; their historical test references are not rerun evidence. The synthetic oracle is the only calculation newly executed by this package. Independent artifact critique is recorded separately and is not a formal RIG receipt.

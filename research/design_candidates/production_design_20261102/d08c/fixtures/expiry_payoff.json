@@ -1,0 +1,33 @@
+{
+  "purpose": "Synthetic independent design arithmetic; not an API response, admitted draft, quote, fill or reference-coverage proof",
+  "root": "SPY",
+  "expiration": "2026-11-20",
+  "currency": "USD",
+  "multiplier_status": "stipulated_assumption_not_source_qualified",
+  "multiplier": "100",
+  "basis": "hold_to_expiry_intrinsic",
+  "costs": "excluded_unknown",
+  "legs": [
+    {"right": "C", "strike": "600", "signed_quantity": "1", "entry_per_unit": "5.20"},
+    {"right": "C", "strike": "610", "signed_quantity": "-1", "entry_per_unit": "2.00"}
+  ],
+  "expected": {
+    "signed_cost": "320",
+    "signed_worst_pnl": "-320",
+    "signed_best_pnl": "680",
+    "break_even": "603.20",
+    "grid_min": "480",
+    "grid_max": "732",
+    "grid_count": 103,
+    "samples": [
+      ["0", "-320"], ["480", "-320"], ["600", "-320"],
+      ["603.20", "0"], ["605", "180"], ["606", "280"],
+      ["610", "680"], ["732", "680"]
+    ],
+    "sample_note": "The analytical oracle includes non-grid prices. Only 480,600,606,610,732 from this list are consumer-grid members."
+  },
+  "alternatives": [
+    {"name": "higher_entry", "long_entry": "5.40", "short_entry": "2.00", "signed_cost": "340", "worst_pnl": "-340", "best_pnl": "660", "break_even": "603.40", "pnl_at_606": "260"},
+    {"name": "lower_entry", "long_entry": "5.00", "short_entry": "2.00", "signed_cost": "300", "worst_pnl": "-300", "best_pnl": "700", "break_even": "603.00", "pnl_at_606": "300"}
+  ]
+}

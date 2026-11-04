@@ -27,15 +27,15 @@ Guest, known denied/plan-required and expired-session variants share the access 
 
 | ID | Entry condition | Feedback / permitted recovery |
 | --- | --- | --- |
-| P0 Draft-only | No native Plan admission | “Account saving unavailable.” No request; clearly session draft |
+| P0 Draft-only | No native Plan admission | “Account saving unavailable.” No request; clearly session draft; Copy draft remains a local escape |
 | Local admission | Fresh native New, current owner/selection guards pass | Transfer complete draft; no ID generation, storage, calculation, watch or Save effect |
 | P1 Pending | Native owner has verified retained command, then transmitted once | “Saving research…”; prevent second operation; immutable payload and identity |
 | P2 Verifying reopen | Exact matching committed receipt exists | “Saved · verifying reopen.” Preserve known commitment; read exact revision |
 | P3 Verified | Exact record/revision readback matches retained manifest | “Research saved · revision N.” Reopen that revision; watch still unarmed |
-| P4 Unknown | Transmission could have applied, response/lookup inconclusive | “Save outcome unknown.” Reconcile original owner/operation; no Save again |
-| P5 Definite rejection | Exact owner evidence establishes not applied | Preserve draft and owner reason; only owner-supported correction; no automatic retry |
+| P4 Unknown | Transmission could have applied, response/lookup inconclusive | “Save outcome unknown.” Reconcile original owner/operation; no Save again while unknown; Copy draft does not resolve the original effect |
+| P5 Definite rejection | Exact owner evidence establishes not applied | Preserve draft and owner reason; Copy draft remains available; only owner-supported correction; no automatic retry |
 | P6 Receipt/revision mismatch | Returned identity, revision, lifecycle or manifest differs | “Returned revision needs review.” Preserve any already proven commitment; no latest fallback or note-only substitute |
-| P7 Session/owner changed | Access lost during unresolved command | Generic access recovery; hide A's data from B; retain A's original custody |
+| P7 Session/owner changed before confirmation | Access lost before the original command is confirmed | Generic access recovery; hide A's data from B; retain A's original custody. If commitment was already proved, keep that fact and use P12; access loss never downgrades it to unknown |
 | P12 Commit known, readback unavailable | Matching committed receipt, exact revision read fails | “Saved; unable to reopen.” Retry read only; never resend Save |
 | P14 Scoped source unavailability | Complete revision verified, linked original source cannot open | “Saved; source unavailable.” Keep original reference, label which source is unavailable |
 
@@ -44,6 +44,8 @@ Guest, known denied/plan-required and expired-session variants share the access 
 ### Watch, firing and delivery (C07)
 
 P8 is verified research with watch not armed. Setup opens the incumbent preview and requires supported condition semantics. P9 requires confirmed active status. P10 is activation outcome unknown and retains the original condition/operation; no duplicate activation. P11 is owner-confirmed activation failure with Plan Save unchanged. P13 keeps a confirmed firing even when delivery readback is unavailable. Rearm is a separate explicit action; it never follows navigation or review automatically.
+
+Revisit keeps the full supplied firing history reachable through the existing receipt-detail view. Every receipt preserves its own `payload.value`, source vintage, condition and firing identity. An older receipt never borrows the alert row's latest trigger reading. A correcting receipt follows its original without replacing it. Distinguish queue `read`, `unavailable` and `absent`; absence from a capped readable queue is not proof of nondelivery. A latest-firing summary must not discard the underlying receipt list.
 
 Current supported previews are price threshold and options-wall proximity. The price comparator is strict and evaluates on the incumbent hub cadence; copy must not claim a crossing event. Wall proximity is EOD and cannot stand in for an exact selected strike. Exposure change, rotation and event-time conditions remain unsupported until their existing owner admits an evaluator. D08C adds no poller, queue, outbox or alert service.
 
@@ -71,8 +73,10 @@ All ordinary navigation is read/local UI only. Route bytes and return metadata m
 | Get current inputs | Explicit separate read, correct exact identity | New observation alongside original with independent clock | Late wrong-root response discarded; partial/error does not overwrite saved evidence |
 | Save research | Admitted incumbent owner protocol; current owner; fresh/expected revision | One native immutable command; P1→known/unknown outcomes | Prevent duplicate keyboard/click submission; aria-live state; never create a new operation on timeout |
 | Check original save | Original owner and operation retained | Existing owner reconciliation only | Disable effectful resubmission; unresolved lookup remains unknown |
+| Copy draft | Currently authorized visible research; deliberate clipboard action | Copy readable exact identities, assumptions, provenance and research text; label “Draft copied — not saved to account” | Clipboard denial/failure is explicit; no API, operation ID, Save settlement or account transfer; do not expose retained data from another owner |
 | Open saved research | Exact owner record + revision | Exact-revision reader; not “latest” | Mismatch withholds content; read failure preserves known commitment |
 | Set up watch | Saved revision and supported owner condition | Independent preview then explicit owner activation | One overlay; release Save dialog first; no automatic arm |
+| Inspect firing history / correction | Existing owner-linked receipt list | Read each supplied firing with its own value, source vintage and delivery evidence; preserve correction links | Exact original remains reachable; missing receipt data is labelled; no borrowed latest reading or invented event ID |
 | Draft revision from current inputs | Explicit adoption after showing change/basis | New local draft retaining provenance; later native Save creates new revision | Review authored entry separately; current marks do not become entry silently |
 | Assess research | Exact original revision + authored assessment | Confirmed / contradicted / inconclusive becomes new native revision | Preserve original evidence and linked correction; no overwrite |
 

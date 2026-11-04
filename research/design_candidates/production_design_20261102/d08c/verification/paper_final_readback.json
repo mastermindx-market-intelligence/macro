@@ -1,0 +1,142 @@
+{
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "pages": [
+    {
+      "id": "p-13-0",
+      "name": "10 · D08C · Plan, Compare & Review · Candidate R2",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0",
+      "artboards": [
+        {
+          "id": "1NZZ-0",
+          "name": "C01 · Research plan / Expiry payoff / 1440 / Noir EN / R2",
+          "childCount": 1,
+          "width": 1440,
+          "height": 1152,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "1OGC-0",
+          "name": "C02 · Compare entry assumptions / 1440 / Noir EN / R2",
+          "childCount": 1,
+          "width": 1440,
+          "height": 1100,
+          "worldX": 1520,
+          "worldY": 0
+        },
+        {
+          "id": "1OL8-0",
+          "name": "C03 · Revisit verified research / 1024 / Noir EN / R2",
+          "childCount": 1,
+          "width": 1024,
+          "height": 1056,
+          "worldX": 3040,
+          "worldY": 0
+        },
+        {
+          "id": "1OUZ-0",
+          "name": "C04 · Research plan / 390 / Noir EN / R2",
+          "childCount": 1,
+          "width": 390,
+          "height": 844,
+          "worldX": 4144,
+          "worldY": 0
+        },
+        {
+          "id": "1OXF-0",
+          "name": "C05 · 研究计划 / 320 / Light ZH / R2",
+          "childCount": 1,
+          "width": 320,
+          "height": 1220,
+          "worldX": 4614,
+          "worldY": 0
+        },
+        {
+          "id": "1PU1-0",
+          "name": "C06 · Adjust assumptions / 768 / Light EN / R2",
+          "childCount": 1,
+          "width": 768,
+          "height": 1024,
+          "worldX": 5014,
+          "worldY": 0
+        },
+        {
+          "id": "1PXO-0",
+          "name": "C07 · Save & watch state specimens / Light EN / R2",
+          "childCount": 1,
+          "width": 1440,
+          "height": 1944,
+          "worldX": 5862,
+          "worldY": 0
+        },
+        {
+          "id": "1Q8U-0",
+          "name": "C08 · Research states / Noir ZH / R2",
+          "childCount": 1,
+          "width": 1440,
+          "height": 1200,
+          "worldX": 7382,
+          "worldY": 0
+        },
+        {
+          "id": "1RQJ-0",
+          "name": "C09 · Exact-leg editor / 390 / Noir EN / R2",
+          "childCount": 1,
+          "width": 390,
+          "height": 844,
+          "worldX": 8902,
+          "worldY": 0
+        },
+        {
+          "id": "1RV0-0",
+          "name": "C10 · Research details / 320 / Light ZH / R2",
+          "childCount": 1,
+          "width": 320,
+          "height": 844,
+          "worldX": 9372,
+          "worldY": 0
+        }
+      ]
+    },
+    {
+      "id": "p-15-0",
+      "name": "00 · D08C · Read me & Build contract",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0",
+      "artboards": [
+        {
+          "id": "1S0R-0",
+          "name": "C00 · D08C Read me & Build contract / R2",
+          "childCount": 1,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 0
+        }
+      ]
+    }
+  ],
+  "snapshot_guard": "4cdcf15b71447de75267c0270a5b0f87161def3786afde942da9a3dd592e9267",
+  "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "guard_is_revision": false,
+  "finish_response": {
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "operation_id": "d08c-20261104-finish-owned-11",
+    "tool": "finish_working_on_nodes",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    },
+    "retry_allowed": false,
+    "production_acceptance": false,
+    "scope": "Release working indicators only on the 11 listed D08C artboards"
+  },
+  "observed_at": "2026-11-04T01:47:55Z"
+}

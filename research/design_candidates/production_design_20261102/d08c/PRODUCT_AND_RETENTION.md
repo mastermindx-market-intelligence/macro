@@ -95,13 +95,14 @@ Every relocation names a reachable successor. No capability has a REMOVE disposi
 | L37 | Price threshold watch | RETAIN | D23/native watch preview | Existing strict threshold on hub cadence, not proof of a crossing |
 | L38 | Options-wall proximity watch | RETAIN | D23/native watch preview | EOD basis; an exact selected strike is not this condition |
 | L39 | Exposure/rotation/event watch ideas | BLOCKED_DATA | Unsupported-condition explanation | No current evaluator; no request or invented scheduler |
-| L40 | Firing and delivery receipts | IMPROVE | P9/P13 and Review evidence | Keep source time; delivery unavailable is not not-delivered |
+| L40 | Firing history, corrections and delivery receipts | IMPROVE | P9/P13 → existing Review receipt detail; retain every supplied firing | Each receipt keeps its own observed value/vintage; corrections follow their original without replacing it. Read/unavailable/absent queue states are distinct; capped absence is not nondelivery |
 | L41 | Separate arm/rearm | RETAIN | Explicit owner action after preview | Save/revisit never automatically arms or rearms |
 | L42 | Actual positions and account exposure | RETAIN (D22) | Existing Portfolio/holdings destination | No conversion from hypothetical Plan to actual holding |
 | L43 | D08D replay / return context | RETAIN | Validated original evidence link and return | No cursor conversion, replay authority or archive service added |
-| L44 | EN/ZH, dark/light and narrow layouts | IMPROVE | C01–C08 responsive specimens; F01/F02 primitives | Final foundation release and rendered 400%/keyboard proof remain gates |
+| L44 | EN/ZH, dark/light and narrow layouts | IMPROVE | C01–C10 responsive specimens; F01/F02 primitives | Final foundation release and rendered 400%/keyboard proof remain gates |
 | L45 | Keyboard, touch, focus and chart access | IMPROVE | Single dialog, conditional focus return, values table | Actual interaction tests are future acceptance, not screenshot proof |
 | L46 | Build/reference pages `p-P-1` | RETAIN | Existing references plus new D08C Read me / source package | Old held/empty boards remain untouched |
+| L47 | Copy-draft escape in retained Plan/Save references | RETAIN / OWNER BINDING PROPOSED | C07 P0/P4/P5; deliberate readable local copy | Copy is not account persistence, receipt settlement or permission to repeat an uncertain Save; respect current-owner access and clipboard failure |
 
 ## New proposals, explicitly separated
 

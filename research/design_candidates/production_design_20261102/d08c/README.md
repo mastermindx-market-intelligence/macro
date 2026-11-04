@@ -17,6 +17,8 @@ The integration owner remains **mastermindx-3 on [Macro #10649](https://github.c
 | [DESIGN_MANIFEST.json](DESIGN_MANIFEST.json) | Exact editable targets, responsive classes and captured artifact identity |
 | [VERIFICATION.md](VERIFICATION.md) | Actual visual/read-only proof, critique, remediation and remaining gates |
 | [RETURN.md](RETURN.md) | Bounded receiver action and continuity dispositions |
+| [ACCEPTANCE_RUNBOOK.md](ACCEPTANCE_RUNBOOK.md) | Future test bindings and the independently runnable arithmetic oracle |
+| [ARTIFACT_INDEX.json](ARTIFACT_INDEX.json) | File bytes, SHA-256 and Git blob identities for this review packet |
 
 ## What changed in the design
 
@@ -34,8 +36,16 @@ These are editable **provisional specimens**. The shell input is `F01-F02-SHELL/
 | D08 integration head inspected | `e89f527e3267b1d1dd27ac7507e9a25983c0c903` |
 | Current Terminal consumer | `2ded360882b9c721e690907ff363b553781fb920` |
 | Held Plan persistence implementation | Terminal #804 `27df56d997df0ae94a17b6b8e2d14867431bb394` |
-| F01 source inspected | `c1fc69b3452b92dff0f1863c1689e18b049cb56f`; joint contract blob `1160f14b108bf0948384f59a249320385a1dfb6c` |
-| F02 source inspected | `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`; token map blob `a7ec801d3b559cc64f4fd57141c32f63098c6461` |
+| F01 original composition input / final refresh | `c1fc69b3452b92dff0f1863c1689e18b049cb56f`, joint blob `1160f14b108bf0948384f59a249320385a1dfb6c`; refreshed at `abfecf1efc452383fe720cb3ea2016ad8d7088e0`, blob `653d93bbce70a2515d677ecdb76bb21edfab750c`; operative §§2–5 byte-identical |
+| F02 original composition input / final refresh | `f7c25c4b9870cff260c2a4b998be18d6c04d36d0`, refreshed at `c985c24e2558dbd4211d34e7bac2e62e50506ba3`; token map unchanged, blob `a7ec801d3b559cc64f4fd57141c32f63098c6461` |
+
+The final refresh records F02's received candidate.4 policy concurrence. It does not release the joint foundation, resolve either foundation owner's original Paper effects, or approve later implementation. The readback is preserved in `verification/foundation_refresh.json`.
+
+## Editable review packet
+
+Open the [D08C Read me](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-15-0), board `1S0R-0`, then the [candidate page](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0). The packet contains 11 actual artboards and their JPEG/JSX pairs, 47 capability dispositions, 15 Save/watch states, nine research states, and 47 future Gherkin scenarios/outlines. Representative captures cover 320, 390, 768, 1024 and 1440px, dark/light and EN/ZH. This is not a complete cross-product of every state, width, theme and locale.
+
+The independent synthetic arithmetic oracle passes 238 checks. Fourteen specified text-color pairs pass the 4.5:1 threshold; this is not full rendered accessibility acceptance. All 24 included images fully decode. Product acceptance scenarios remain NOT_RUN.
 
 Only the assigned `d08c/` source package and newly created disjoint Paper candidate targets are changed. Existing Paper references, D08 shared integration board `1N2L-0`, held PRs, routes, services and data are untouched. No merge, Ready/un-draft, enqueue, held-PR relabel, deploy or uncertain-operation replay is authorized or performed.
 

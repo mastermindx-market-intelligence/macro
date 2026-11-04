@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-11-04T01:47:55Z",
+  "observation_scope": "Pinned source and PR metadata; not independent native acceptance",
+  "f01": {
+    "pr": 10645,
+    "author": "mastermidx4",
+    "head": "abfecf1efc452383fe720cb3ea2016ad8d7088e0",
+    "draft": true,
+    "contract_version": "F01-F02-SHELL/1.0.0-candidate.4",
+    "contract_blob": "653d93bbce70a2515d677ecdb76bb21edfab750c",
+    "composition_input": "c1fc69b3452b92dff0f1863c1689e18b049cb56f",
+    "composition_contract_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+    "operative_sections_2_through_5_byte_identical": true,
+    "policy_concurrence_received": true,
+    "final_release": false,
+    "formal_acceptance": "PARTIAL / REQUEST_CHANGES / RIG draft",
+    "operative_sections_sha256": "c887ab7c2ab9055410ee57fb5a30763b35f509ce3f3a86b6c7a8c1356c982c6e"
+  },
+  "f02": {
+    "pr": 10630,
+    "author": "mastermindx-2",
+    "head": "c985c24e2558dbd4211d34e7bac2e62e50506ba3",
+    "draft": true,
+    "system_version": "1.0.0-candidate.2",
+    "token_map_blob": "a7ec801d3b559cc64f4fd57141c32f63098c6461",
+    "token_map_unchanged": true,
+    "owner_reported_scope": {
+      "boards": 32,
+      "complete_capture_pairs": 31,
+      "scoped_freeze_members": 88
+    },
+    "original_comparison_effect": "HELD / not replayed by D08C",
+    "complete_set_qualified": false
+  },
+  "d08": {
+    "pr": 10649,
+    "author": "mastermindx-3",
+    "head": "e89f527e3267b1d1dd27ac7507e9a25983c0c903",
+    "draft": true
+  },
+  "original_plan_persistence": {
+    "repository": "mastermindx-market-intelligence/mastermind-terminal",
+    "pr": 804,
+    "author": "mastermindxryan",
+    "head": "27df56d997df0ae94a17b6b8e2d14867431bb394",
+    "draft": true,
+    "hold": "5989604142; T03k; unresolved-effect/exact-0030 conditions carried"
+  }
+}
