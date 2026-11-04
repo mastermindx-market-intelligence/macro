@@ -10,6 +10,8 @@ The original programme remains incomplete. This mapping restores executable cont
 - [E0 diagnostic disposition](https://github.com/mastermindx-market-intelligence/macro/pull/9779#issuecomment-6539812858): NOT_RETAINED / NO_VERDICT; owner-search closed. Original P2/refused collections, sibling v2 EPERM and UNKNOWN effects remain separate.
 - [Citation source and bounded browser acceptance](https://github.com/mastermindx-market-intelligence/macro/pull/10033), [outcome inspector](https://github.com/mastermindx-market-intelligence/macro/pull/9479), [population](https://github.com/mastermindx-market-intelligence/macro/pull/9746), [persistence](https://github.com/mastermindx-market-intelligence/macro/pull/9797). Source, CI, installed, authenticated and scientific acceptance are distinct.
 
+Existing W2C reconciliation [PR #6943](https://github.com/mastermindx-market-intelligence/macro/pull/6943) is OPEN/Ready at `6ba94cb42d35df64ce45f2b1598672f810e46fa1`; its [September release edge](https://github.com/mastermindx-market-intelligence/macro/pull/6943#issuecomment-5708024650) superseded the old body hold. Its current release custody must be reconciled before landing this broader record. No action on that existing carrier is implied.
+
 ## Original outcome to executable task
 
 Task IDs below belong to the existing market-memory write-ahead buffer; they are not Runtime Jobs. Accepted means the bounded task evidence already recorded, not programme acceptance. Blocked rows retain implemented and accepted sub-results, with the remaining obligation explicit.
