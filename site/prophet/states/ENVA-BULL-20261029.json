@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ENVA-BULL-20261029",
-  "asof": "2026-11-03",
+  "asof": "2026-11-04",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 57.3,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Awaiting Trigger",
   "components": {
-    "validity": 63.3,
+    "validity": 63.9,
     "progress": 0.0,
-    "pace": 98.5,
+    "pace": 96.8,
     "retention": 50.0,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.713,
+    "dist_to_stop_r": 0.717,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 8.9,
-    "p1": -0.1916,
-    "p2": -0.0958,
+    "horizon_pct_used": 10.7,
+    "p1": -0.1884,
+    "p2": -0.0942,
     "p3": null,
-    "move_r": -0.287,
+    "move_r": -0.283,
     "mfe_r": 0.0,
     "mae_r": -0.331
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 5,
-  "tau": 0.0893
+  "days_elapsed": 6,
+  "tau": 0.1071
 }
