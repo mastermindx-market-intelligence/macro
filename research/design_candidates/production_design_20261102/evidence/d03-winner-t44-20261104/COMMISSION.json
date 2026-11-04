@@ -1,0 +1,23 @@
+{
+  "task": "D03 T44 Winner Health threshold and history-track acceptance proof",
+  "source_pin": "cb8fa9132770b1967d585e323dd72b145c580601",
+  "workspace_base": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff",
+  "parent": "https://github.com/mastermindx-market-intelligence/macro/pull/10617#issuecomment-6627822417",
+  "scope": "Evidence only; source-pinned actual builder and opened browser LENS; no product-source edit",
+  "done_when": "N11/N12 \u00d7 W/D at320/390/1440 EN/ZH light/dark, actual screenshots and scoped keyboard/touch/reduced-motion checks, source unchanged, durable reviewable proof.",
+  "preserve": [
+    "#7073 held source and 74-cell proof",
+    "T43 accepted",
+    "T41 original live workspace",
+    "T46/T47 live writers",
+    "R8 EFFECT_UNKNOWN",
+    "Draft/HOLD no release effects"
+  ],
+  "carrier": "Studio Direct C2 Personal / m2studio",
+  "proof_boundary": "Synthetic current-v2 readable primary-tier cases with fully matured explicit outcomes; intercepted local browser origin; no live market/auth/deployment acceptance.",
+  "material_findings": {
+    "shared_touch_owner": "macro PR6860 head03b21b1a9e0f1b5b517a9a92545bc02824411ced",
+    "diagnostic": "first focus opens scrim; trailing click retargets to BODY and closes; second tap and keyboard work",
+    "next": "Complete content/layout matrix with failed touch results retained; measure assistant overlay occlusion found in actual screenshots. No shared source takeover."
+  }
+}

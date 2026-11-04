@@ -1,0 +1,4 @@
+{"phase": "start", "source_head": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff", "cases": 2, "pilot": true}
+{"case": "n11-w-320-light-en", "status": "FAIL", "error": "TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\".lens-pop.open[data-kind='record']\") to be visible\n"}
+{"case": "n12-d-1440-dark-zh", "status": "PASS", "error": null}
+{"phase": "complete", "total": 2, "passed": 1, "failed": 1, "source_unchanged": true, "missing": ["/case/live_config.js"], "external": [], "output": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-winner-t44-proof-20261104-c2-05a1d4b6b06d54cc/research/design_candidates/production_design_20261102/evidence/d03-winner-t44-20261104/diagnostics/pilot/browser-proof.json"}

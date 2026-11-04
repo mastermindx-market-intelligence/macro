@@ -1,0 +1,334 @@
+{
+  "task": "D03 T44",
+  "created_at": "2026-11-04T10:15:53.661736+00:00",
+  "source_head": "ffda5424b75bbbb26e33a4d328043bbfb480e6ff",
+  "fixture_only": true,
+  "current_schema": "winner_health.v2",
+  "browser": "Chromium 151.0.7922.34",
+  "builder_path": "actual build(root, fixture) -> lib.pages.write_page in temporary root",
+  "browser_origin": "Playwright-intercepted http://127.0.0.1; no network server",
+  "source_hashes": {
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095"
+  },
+  "source_after": {
+    "scripts/build_winner_health_page.py": "be6fb99b48d9de9a432d063557e93574ad8336837abd7571006e5e4978d7bd3e",
+    "templates/winner_health.html.j2": "545454c3650de638e82fec0b06582ad994adb3efe385a3baf293531577f3997f",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "lib/config.py": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+    "engine/top_maturation.py": "86497282e630d55dcc6ac32e0d5b8439cc032a3ccb6a8216603f8b9ade7bf095"
+  },
+  "source_unchanged": true,
+  "served_asset_hashes": {
+    "templates/shared_shell.css": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+    "templates/shared_shell_bridge.js": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+    "templates/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+    "templates/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+    "templates/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+    "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+    "templates/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "templates/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+    "templates/account.js": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+    "templates/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+    "templates/nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+    "templates/terminal_overlay.js": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf",
+    "templates/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+    "templates/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+    "templates/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+  },
+  "stubbed_unrelated_json": [],
+  "blocked_external_requests": [],
+  "missing_local_resources": [
+    "/case/live_config.js"
+  ],
+  "rendered_hashes": {
+    "n11-w": "450568d1311c82de7ea761870b1c6a5c2caeac9c58b7322bded2015737afa722",
+    "n11-d": "6748d9e52f845aacd61b3b788e017cf27d8eb4dfce3066413a731780c729bd79",
+    "n12-w": "a861ba4e247b113ae4469d47e21ffe7831e5b1ed004f47dd7043a9664409b159",
+    "n12-d": "c7c2c53fef0e73e9f1785bbab84eba900452b9520f52202dcdcea81c2e81acf1"
+  },
+  "fixture_hashes": {
+    "n11-w": "5b7f8b3b93b7e0fad0efb24a79ec89658158463d3b54adecd24b099c30d8269c",
+    "n11-d": "8877e9ea96d9fbfd2ef9002d03bb8d102d8d836bee8bd56c7e38062b1b2057ba",
+    "n12-w": "2d6475f8de2609df0cb206901b970c888122d93b5a4b4ca0943a22b0a631e79b",
+    "n12-d": "cbaca814bd7bd2a0226305f41f1c66ef42c96efe0e2f2f0a8de4e9b440035c63"
+  },
+  "cases": [
+    {
+      "case": "n11-w-320-light-en",
+      "fixture": "n11-w",
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "motion": "no-preference",
+      "status": "FAIL",
+      "error": "TimeoutError: Locator.wait_for: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\".lens-pop.open[data-kind='record']\") to be visible\n",
+      "javascript_errors": []
+    },
+    {
+      "case": "n12-d-1440-dark-zh",
+      "fixture": "n12-d",
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "motion": "no-preference",
+      "status": "PASS",
+      "input": {
+        "native_keyboard_tab": {
+          "tag": "A",
+          "id": "",
+          "text": "T44D12"
+        }
+      },
+      "dismissal": "Escape; focus retained",
+      "semantic": {
+        "visible_text": "历史资料库 资料库中 12 段形态相似的行情 大幅回落 12 段里有 4 段在三个月内从高点回落 20% 或更多 —— 大约每 3 段有 1 段。 继续上行 其余 8 段继续上行，典型的后续涨幅为 +11%。 回落时 从高点回落的典型幅度是 −24%。 这是那些行情当年走过的路 —— 是历史，不是预测。匹配只看走势形态和运行时长，与公司本身或所属行业无关。 只与同样达到本组门槛的历史行情做匹配。 它只取有长期价格历史的个股，因此以退市收场的行情在样本中偏少。 N 12 段行情 区间 2022-07 → 2026-07 样本 精选池",
+        "receipt": "N 12 段行情 区间 2022-07 → 2026-07 样本 精选池",
+        "n": 12,
+        "track": "D"
+      },
+      "initial_geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "popup": {
+          "x": 1127.9554443359375,
+          "y": 523.853515625,
+          "width": 300.0810546875,
+          "height": 342.498779296875,
+          "right": 1428.0364990234375,
+          "bottom": 866.352294921875,
+          "scrollWidth": 300,
+          "clientWidth": 300,
+          "scrollHeight": 343,
+          "clientHeight": 342,
+          "scrollTop": 0
+        },
+        "receipt": {
+          "x": 1143.959716796875,
+          "y": 807.7476806640625,
+          "right": 1412.0322265625,
+          "bottom": 866.7636108398438
+        },
+        "pageOverflow": 0,
+        "horizontalTextOverflow": [],
+        "style": {
+          "background": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+          "color": "rgb(200, 208, 220)",
+          "animationName": "none",
+          "transitionProperty": "opacity, transform",
+          "transitionDuration": "0.18s, 0.26s",
+          "beforeAnimation": "none"
+        },
+        "textStyles": [
+          {
+            "selector": "lens-title",
+            "fontSize": "14px",
+            "lineHeight": "18.2px",
+            "color": "rgb(200, 208, 220)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "资料库中 12 段形态相似的行情"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "12 段里有 4 段在三个月内从高点回落 20% 或更多 —— 大约每 3 段有 1 段。"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "其余 8 段继续上行，典型的后续涨幅为 +11%。"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "从高点回落的典型幅度是 −24%。"
+          },
+          {
+            "selector": "lensx-note",
+            "fontSize": "11.5px",
+            "lineHeight": "17.825px",
+            "color": "color(srgb 0.736471 0.767843 0.816471)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "这是那些行情当年走过的路 —— 是历史，不是预测。匹配只看走势形态和运行时长，与公司本身或所属行业无关。 只与同样达到本组门槛的历史行情做匹配。 它只取有长期价格历史的个股，因此以退市收场的行情在样本中偏少。"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "N\n12\n段行情"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "区间\n2022-07 → 2026-07"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "样本\n精选池"
+          }
+        ],
+        "receiptItems": [
+          "N\n12\n段行情",
+          "区间\n2022-07 → 2026-07",
+          "样本\n精选池"
+        ]
+      },
+      "receipt_geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "popup": {
+          "x": 1127.977783203125,
+          "y": 523.927001953125,
+          "width": 300.0404052734375,
+          "height": 342.452392578125,
+          "right": 1428.0181884765625,
+          "bottom": 866.37939453125,
+          "scrollWidth": 300,
+          "clientWidth": 300,
+          "scrollHeight": 343,
+          "clientHeight": 342,
+          "scrollTop": 0
+        },
+        "receipt": {
+          "x": 1143.97998046875,
+          "y": 807.546630859375,
+          "right": 1412.01611328125,
+          "bottom": 866.5545654296875
+        },
+        "pageOverflow": 0,
+        "horizontalTextOverflow": [],
+        "style": {
+          "background": "color(srgb 0.0823529 0.0941176 0.12549 / 0.86)",
+          "color": "rgb(200, 208, 220)",
+          "animationName": "none",
+          "transitionProperty": "opacity, transform",
+          "transitionDuration": "0.18s, 0.26s",
+          "beforeAnimation": "none"
+        },
+        "textStyles": [
+          {
+            "selector": "lens-title",
+            "fontSize": "14px",
+            "lineHeight": "18.2px",
+            "color": "rgb(200, 208, 220)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "资料库中 12 段形态相似的行情"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "12 段里有 4 段在三个月内从高点回落 20% 或更多 —— 大约每 3 段有 1 段。"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "其余 8 段继续上行，典型的后续涨幅为 +11%。"
+          },
+          {
+            "selector": "lensx-v",
+            "fontSize": "11.5px",
+            "lineHeight": "17.48px",
+            "color": "color(srgb 0.750824 0.782196 0.830353)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "从高点回落的典型幅度是 −24%。"
+          },
+          {
+            "selector": "lensx-note",
+            "fontSize": "11.5px",
+            "lineHeight": "17.825px",
+            "color": "color(srgb 0.736471 0.767843 0.816471)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "这是那些行情当年走过的路 —— 是历史，不是预测。匹配只看走势形态和运行时长，与公司本身或所属行业无关。 只与同样达到本组门槛的历史行情做匹配。 它只取有长期价格历史的个股，因此以退市收场的行情在样本中偏少。"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "N\n12\n段行情"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "区间\n2022-07 → 2026-07"
+          },
+          {
+            "selector": "r-i",
+            "fontSize": "10px",
+            "lineHeight": "15px",
+            "color": "rgb(139, 147, 161)",
+            "background": "rgba(0, 0, 0, 0)",
+            "text": "样本\n精选池"
+          }
+        ],
+        "receiptItems": [
+          "N\n12\n段行情",
+          "区间\n2022-07 → 2026-07",
+          "样本\n精选池"
+        ]
+      },
+      "trigger_box": {
+        "x": 1268.046875,
+        "y": 874.953125,
+        "width": 49.953125,
+        "height": 17
+      },
+      "javascript_errors": []
+    }
+  ],
+  "total": 2,
+  "passed": 1,
+  "failed": 1,
+  "javascript_errors": [],
+  "limits": [
+    "Synthetic fully matured primary-tier cases; no engine/model/collector execution.",
+    "No acceptance of held #7073 rounding or partial-maturity changes.",
+    "Keyboard proof is local Tab focus opening and Escape dismissal, not all keyboard semantics.",
+    "Mobile proof is browser touch emulation, not a physical device.",
+    "Track-specific N=11/W card identifies whole market in the receipt; rich-only prose is not required.",
+    "No live data freshness, authentication, production navigation, deployment or user acceptance claim."
+  ]
+}

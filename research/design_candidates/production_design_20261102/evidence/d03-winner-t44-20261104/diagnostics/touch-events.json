@@ -1,0 +1,641 @@
+{
+  "first_tap": {
+    "trace": [
+      {
+        "event": "pointerdown",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "pointerdown",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "pointerdown",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "pointerdown",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "touchstart",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "touchstart",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "touchstart",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "touchstart",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "pointerup",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "pointerup",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "pointerup",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "pointerup",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "touchend",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "touchend",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "touchend",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "touchend",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "mousedown",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "mousedown",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "mousedown",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "after": "mousedown",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "BODY.",
+        "locked": false
+      },
+      {
+        "event": "focusin",
+        "phase": "capture",
+        "target": "SPAN.lens-term lib",
+        "popup": null,
+        "kind": null,
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "focusin",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "focusin",
+        "phase": "bubble",
+        "target": "SPAN.lens-term lib lens-on",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "after": "focusin",
+        "phase": "bubble",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "event": "mouseup",
+        "phase": "capture",
+        "target": "DIV.lens-scrim open",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "after": "mouseup",
+        "phase": "capture",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "event": "mouseup",
+        "phase": "bubble",
+        "target": "DIV.lens-scrim open",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "after": "mouseup",
+        "phase": "bubble",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "event": "click",
+        "phase": "capture",
+        "target": "BODY.",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "after": "click",
+        "phase": "capture",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "event": "click",
+        "phase": "bubble",
+        "target": "BODY.",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "click",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      }
+    ],
+    "open": false,
+    "trigger": "<span class=\"lens-term lib\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\">\n  <span class=\"l-en\">11 like this</span><span class=\"l-zh\">11 例相似</span>\n  <span class=\"lens-src\" data-lens-kind=\"record\" hidden=\"\">\n    <div class=",
+    "popup": {
+      "class": "lens-pop",
+      "kind": "record",
+      "text": "✕\nIN THE LIBRARY\n11 past runs shaped like this\nOnly 11 past runs match this one closely enough to count — too few to read as a pattern. The count is shown so you know how thin the record is, not so you can lean on it.\nN\n11\nepisodes\nWINDOW\n2022-07 → 2026-07\nNAMES\nwhole US market",
+      "rect": {
+        "x": 0,
+        "y": 690,
+        "width": 320,
+        "height": 236,
+        "top": 690,
+        "right": 320,
+        "bottom": 926,
+        "left": 0
+      },
+      "opacity": "0",
+      "display": "block"
+    },
+    "hoverNone": true,
+    "sheet": true,
+    "active": "<span class=\"lens-term lib\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\">\n  <span class=\"l-en\">11 like this</span><span class=\"l-zh\">11 例相似</span>\n  <sp"
+  },
+  "second_tap": {
+    "trace": [
+      {
+        "event": "pointerdown",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "pointerdown",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "pointerdown",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "pointerdown",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "touchstart",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "touchstart",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "touchstart",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "touchstart",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "pointerup",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "pointerup",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "pointerup",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "pointerup",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "touchend",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "touchend",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "touchend",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "touchend",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "mousedown",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "mousedown",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "mousedown",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "mousedown",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "mouseup",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "mouseup",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "mouseup",
+        "phase": "bubble",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "mouseup",
+        "phase": "bubble",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "click",
+        "phase": "capture",
+        "target": "SPAN.l-en",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "click",
+        "phase": "capture",
+        "popup": "lens-pop",
+        "kind": "record",
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      }
+    ],
+    "open": true,
+    "trigger": "<span class=\"lens-term lib lens-on\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\" aria-describedby=\"lensPop\">\n  <span class=\"l-en\">11 like this</span><span class=\"l-zh\">11 例相似</span>\n  <span class=\"lens-src\" data-lens-kind=",
+    "popup": {
+      "class": "lens-pop open",
+      "kind": "record",
+      "text": "✕\nIN THE LIBRARY\n11 past runs shaped like this\nOnly 11 past runs match this one closely enough to count — too few to read as a pattern. The count is shown so you know how thin the record is, not so you can lean on it.\nN\n11\nepisodes\nWINDOW\n2022-07 → 2026-07\nNAMES\nwhole US market",
+      "rect": {
+        "x": 0,
+        "y": 690,
+        "width": 320,
+        "height": 236,
+        "top": 690,
+        "right": 320,
+        "bottom": 926,
+        "left": 0
+      },
+      "opacity": "0",
+      "display": "block"
+    },
+    "hoverNone": true,
+    "sheet": true,
+    "active": "<span class=\"lens-term lib lens-on\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\" aria-describedby=\"lensPop\">\n  <span class=\"l-en\">11 like this</span><sp"
+  },
+  "mobile_keyboard": {
+    "trace": [
+      {
+        "event": "focusin",
+        "phase": "capture",
+        "target": "A.tk",
+        "popup": null,
+        "kind": null,
+        "active": "A.tk",
+        "locked": false
+      },
+      {
+        "event": "focusin",
+        "phase": "bubble",
+        "target": "A.tk",
+        "popup": null,
+        "kind": null,
+        "active": "A.tk",
+        "locked": false
+      },
+      {
+        "after": "focusin",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "A.tk",
+        "locked": false
+      },
+      {
+        "after": "focusin",
+        "phase": "bubble",
+        "popup": null,
+        "kind": null,
+        "active": "A.tk",
+        "locked": false
+      },
+      {
+        "event": "focusin",
+        "phase": "capture",
+        "target": "SPAN.lens-term lib",
+        "popup": null,
+        "kind": null,
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "after": "focusin",
+        "phase": "capture",
+        "popup": null,
+        "kind": null,
+        "active": "SPAN.lens-term lib",
+        "locked": false
+      },
+      {
+        "event": "focusin",
+        "phase": "bubble",
+        "target": "SPAN.lens-term lib lens-on",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      },
+      {
+        "after": "focusin",
+        "phase": "bubble",
+        "popup": "lens-pop open",
+        "kind": "record",
+        "active": "SPAN.lens-term lib lens-on",
+        "locked": true
+      }
+    ],
+    "open": true,
+    "trigger": "<span class=\"lens-term lib lens-on\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\" aria-describedby=\"lensPop\">\n  <span class=\"l-en\">11 like this</span><span class=\"l-zh\">11 例相似</span>\n  <span class=\"lens-src\" data-lens-kind=",
+    "popup": {
+      "class": "lens-pop open",
+      "kind": "record",
+      "text": "✕\nIN THE LIBRARY\n11 past runs shaped like this\nOnly 11 past runs match this one closely enough to count — too few to read as a pattern. The count is shown so you know how thin the record is, not so you can lean on it.\nN\n11\nepisodes\nWINDOW\n2022-07 → 2026-07\nNAMES\nwhole US market",
+      "rect": {
+        "x": 0,
+        "y": 663.5474243164062,
+        "width": 320,
+        "height": 236,
+        "top": 663.5474243164062,
+        "right": 320,
+        "bottom": 899.5474243164062,
+        "left": 0
+      },
+      "opacity": "1",
+      "display": "block"
+    },
+    "hoverNone": false,
+    "sheet": true,
+    "active": "<span class=\"lens-term lib lens-on\" tabindex=\"0\" role=\"button\" aria-label=\"Similar past runs in the library\" aria-describedby=\"lensPop\">\n  <span class=\"l-en\">11 like this</span><sp"
+  }
+}
