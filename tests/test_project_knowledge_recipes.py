@@ -72,8 +72,8 @@ WS_NO_DECISIONS = WS_TEXT.replace(
     "decisions:\n- DEC:EARLIER-CALL\n", "decisions: []\n"
 )
 
-ACTOR = "workspace:principal-alpha"
-ACTOR_B = "workspace:principal-beta"
+ACTOR = "workspace:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+ACTOR_B = "workspace:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 DIGEST = hex_(64, "c")
 COMMIT = hex_(40, "b")
 
@@ -205,7 +205,7 @@ class TestFileAddHappyPath(unittest.TestCase):
         self.assertEqual(recipe["captured_commit"], COMMIT)
         self.assertEqual(recipe["permission_binding_digest"], DIGEST)
         expected_id = canonical_sha256({
-            "principal_scope": "principal-alpha",
+            "principal_scope": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "request_id": request["request_id"],
             "work_ref": "WS:SPEC-EDITING",
         })
@@ -363,7 +363,7 @@ class TestFileAddRejections(unittest.TestCase):
             assert_raises(self, "INVALID_WORK_REF", build_file_add, request)
 
     def test_actor_ref_bounded_trusted_scope(self):
-        for bad in ("principal-alpha", "workspace:", "workspace:  ",
+        for bad in ("workspace:principal-label", "workspace:" + "G" * 64, "workspace:" + "a" * 63, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "workspace:", "workspace:  ",
                     "workspace:scope with space", "workspace:" + "x" * 300):
             assert_raises(self, "INVALID_ACTOR_REF", build_file_add,
                           file_request(WS_TEXT), actor=bad)
@@ -793,10 +793,10 @@ class TestPreferenceEdit(unittest.TestCase):
         source_ref = "session-reply-" + hex_(64, "e")
         source_revision = hex_(64, "f")
         qualified = old_dec.replace(
-            "origin:\n    kind: USER_EDIT\n    actor_ref: workspace:principal-alpha\n"
+            "origin:\n    kind: USER_EDIT\n    actor_ref: workspace:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
             "    source_ref: null\n    source_revision: null\n",
             "origin:\n    kind: CONVERSATION\n"
-            "    actor_ref: workspace:session-relay\n"
+            "    actor_ref: workspace:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
             "    source_ref: %s\n    source_revision: %s\n"
             % (source_ref, source_revision))
         self.assertIn("kind: CONVERSATION", qualified)
@@ -809,7 +809,7 @@ class TestPreferenceEdit(unittest.TestCase):
             recipe["postimages"][0]["content_utf8"], "INVALID_EXISTING_DECISION")
         self.assertEqual(data["project_preference"]["origin"], {
             "kind": "CONVERSATION",
-            "actor_ref": "workspace:session-relay",
+            "actor_ref": "workspace:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
             "source_ref": source_ref,
             "source_revision": source_revision})
 

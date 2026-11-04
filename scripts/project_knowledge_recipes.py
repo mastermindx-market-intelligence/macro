@@ -248,20 +248,8 @@ def _require_hex64(value: Any, code: str) -> str:
 
 def _validate_actor_ref(actor_ref: Any) -> str:
     _require_str(actor_ref, "INVALID_ACTOR_REF")
-    if not actor_ref.startswith(ACTOR_REF_PREFIX):
+    if re.fullmatch(r"workspace:[0-9a-f]{64}", actor_ref) is None:
         raise KnowledgeRecipeError("INVALID_ACTOR_REF")
-    try:
-        actor_bytes = actor_ref.encode("utf-8")
-    except UnicodeEncodeError:
-        raise KnowledgeRecipeError("INVALID_ACTOR_REF") from None
-    if len(actor_bytes) > MAX_ACTOR_REF_CHARS:
-        raise KnowledgeRecipeError("INVALID_ACTOR_REF")
-    scope = actor_ref[len(ACTOR_REF_PREFIX):]
-    if not scope:
-        raise KnowledgeRecipeError("INVALID_ACTOR_REF")
-    for char in scope:
-        if char.isspace() or ord(char) < 0x20 or 0x7F <= ord(char) <= 0x9F:
-            raise KnowledgeRecipeError("INVALID_ACTOR_REF")
     return actor_ref
 
 
