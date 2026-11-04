@@ -363,7 +363,46 @@
    dropping the picture, never the reading. #}
 {% set BIG_GROUP = 55 %}
 
-{% set WH = wh if (wh is defined and wh is not none) else none %}
+{# W07: source availability is page-local evidence, not a cohort/market state.
+   A direct template caller without the typed result keeps a generic fallback.
+   Raw producer null_reason is diagnostic text and must never become UI copy. #}
+{% set AV = wh_availability if (wh_availability is defined and wh_availability is mapping) else none %}
+{% set RAW_WH = wh if (wh is defined and wh is not none) else none %}
+{% set WH = RAW_WH if (RAW_WH and not RAW_WH.null_state and
+                       (AV is none or AV.get('code') == 'available')) else none %}
+{% set SOURCE_COPY = {
+  'missing': {
+    'en':'No read is available', 'zh':'暂无可用判读',
+    'body_en':'A source read is not available for this board. This is not an empty or healthy reading.',
+    'body_zh':'本看板暂无来源判读。这不代表没有标的，也不代表走势健康。'},
+  'unreadable': {
+    'en':'Latest read could not be loaded', 'zh':'无法载入最新判读',
+    'body_en':'The source could not be read. No current reading is shown.',
+    'body_zh':'无法读取来源数据，因此不显示当前判读。'},
+  'invalid_artifact': {
+    'en':'Latest read is not usable', 'zh':'最新判读无法使用',
+    'body_en':'The source is not in a usable form. No current reading is shown.',
+    'body_zh':'来源格式无法使用，因此不显示当前判读。'},
+  'invalid_date': {
+    'en':'Read date is unavailable', 'zh':'判读日期不可用',
+    'body_en':'The source has no usable read date. No current reading is shown.',
+    'body_zh':'来源缺少可用的判读日期，因此不显示当前判读。'},
+  'stale': {
+    'en':'Latest read is out of date', 'zh':'最新判读已过期',
+    'body_en':'This read is older than the six-calendar-day limit. No current reading is shown.',
+    'body_zh':'此判读已超过六个日历日的期限，因此不显示当前判读。'},
+  'producer_unavailable': {
+    'en':'Latest read did not complete', 'zh':'最新判读未完成',
+    'body_en':'The source reports that its read did not complete. No current reading is shown.',
+    'body_zh':'来源报告判读未完成，因此不显示当前判读。'},
+  'unavailable': {
+    'en':'Read unavailable', 'zh':'判读不可用',
+    'body_en':'A source read is unavailable. No market conclusion can be drawn from this state.',
+    'body_zh':'来源判读不可用。不能据此判断市场状态。'}
+} %}
+{% set SOURCE_CODE = AV.get('code') if AV else 'unavailable' %}
+{% set SOURCE_CODE = SOURCE_CODE if SOURCE_CODE in SOURCE_COPY else 'unavailable' %}
+{% set SOURCE = SOURCE_COPY[SOURCE_CODE] %}
 {# §8 contract note 1, MANDATORY: a top-level `states` with no `tiers` renders as
    the primary tier ALONE. That keeps every existing fixture valid and means a
    half-migrated builder degrades to today's page rather than to a blank one. #}
@@ -372,9 +411,9 @@
      'library':(WH.library if (WH and WH.library) else {}),
      'states':(WH.states if (WH and WH.states) else {}),
      'theme_counts':(WH.theme_counts if WH else none)}] if WH else [])) %}
-{# Page-level `warm` is the ONLY page-scale null and it pre-empts every tier
-   state (§4.10 row 1). #}
-{% set MODE = 'warm' if (not WH or WH.null_state) else 'board' %}
+{# The existing page-scale null pre-empts tier states, but its copy now names
+   the actual load outcome instead of implying work is running. #}
+{% set MODE = 'board' if WH else 'warm' %}
 {# The page-scale flatline signature renders only when ALL THREE tiers are clear,
    so the quiet-night picture stays rare and stays memorable (§4.8). #}
 {% set ns_all = namespace(clear=true, maxn=0, any=false) %}
@@ -524,6 +563,10 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
   color:var(--text);max-width:22ch}
 .nullhero p{margin:11px 0 0;font-size:14px;line-height:1.6;color:var(--muted-strong);max-width:56ch}
 .nullhero p b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.source-unavailable{border-radius:var(--r-card,12px)}
+.source-unavailable .eyebrow{color:var(--muted-strong)}
+.source-unavailable .source-asof{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.source-asof time{font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap}
 .flatline{margin:24px 0 2px;height:34px;position:relative}
 .flatline svg{display:block;width:100%;height:34px}
 .flatline .fl-hw{stroke:var(--m1);stroke-width:1;stroke-dasharray:3 4;opacity:.75}
@@ -783,7 +826,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     </div>
     <div class="asof">
       {% if WH and WH.data_last_day %}<span class="l-en">Priced <b>{{ WH.data_last_day }}</b></span><span class="l-zh">价格截至 <b>{{ WH.data_last_day }}</b></span>{% endif %}
-      <span class="l2">{{ t('Re-read every night', '每晚重新判读') }}</span>
+      <span class="l2">{% if MODE == 'board' %}{{ t('Re-read every night', '每晚重新判读') }}{% else %}{{ t('Source read unavailable', '来源判读不可用') }}{% endif %}</span>
       {#- The board reads the last COMPLETE price tape we have. When that tape is
           well behind the market, the as-of date alone would misdate the read. -#}
       {#- `.get` deliberately, not attribute access: a fixture (or a v1 artifact)
@@ -900,11 +943,13 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   </section>
 
   {% else %}
-  <section class="nullhero rise d1" aria-label="Tonight's read has not landed">
-    <p class="eyebrow">{{ t('Warming up', '正在预热') }}</p>
-    <h2>{{ t('Tonight\'s read has not landed yet', '今晚的判读尚未生成') }}</h2>
-    <p>{{ t('This board is rebuilt after every US close. It fills in as soon as the nightly read finishes — nothing is being withheld.',
-             '本看板在每个美股收盘后重建。夜间判读完成后即会填充 —— 没有任何内容被隐藏。') }}</p>
+  <section class="nullhero source-unavailable rise d1" data-wh-availability="{{ SOURCE_CODE }}" aria-labelledby="wh-source-title">
+    <p class="eyebrow">{{ t('Read unavailable', '判读不可用') }}</p>
+    <h2 id="wh-source-title">{{ t(SOURCE.en, SOURCE.zh) }}</h2>
+    <p>{{ t(SOURCE.body_en, SOURCE.body_zh) }}</p>
+    {% if SOURCE_CODE == 'stale' and AV and AV.get('source_asof') %}
+    <p class="source-asof">{{ t('Last source read', '上次来源判读') }}<time datetime="{{ AV.source_asof }}">{{ AV.source_asof }}</time></p>
+    {% endif %}
   </section>
   {% endif %}
 
@@ -1107,8 +1152,8 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         board-membership sentence is re-scoped from "the extended band" to "a
         group" because each tier has its own band; the 21-session window itself is
         untouched. -#}
-    <span class="l-en">US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total.{% if WH and WH.universe_n %} Tonight: <b>{{ '{:,}'.format(WH.universe_n) }}</b> US names screened{% if WH.asof %}, read <b>{{ WH.asof }}</b>{% endif %}.{% endif %} A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.</span>
-    <span class="l-zh">仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。{% if WH and WH.universe_n %}今晚：筛查 <b>{{ '{:,}'.format(WH.universe_n) }}</b> 只美股{% if WH.asof %}，判读日期 <b>{{ WH.asof }}</b>{% endif %}。{% endif %}刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。</span>
+    <span class="l-en">US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total.{% if WH and WH.universe_n %} Tonight: <b>{{ '{:,}'.format(WH.universe_n) }}</b> US names screened{% if WH.asof %}, read <b>{{ WH.asof }}</b>{% endif %}.{% endif %}{% if MODE == 'board' %} A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.{% else %} An unavailable read says nothing about a name or the market.{% endif %}</span>
+    <span class="l-zh">仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。{% if WH and WH.universe_n %}今晚：筛查 <b>{{ '{:,}'.format(WH.universe_n) }}</b> 只美股{% if WH.asof %}，判读日期 <b>{{ WH.asof }}</b>{% endif %}。{% endif %}{% if MODE == 'board' %}刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。{% else %}判读不可用不代表任何个股或市场的状态。{% endif %}</span>
   </p>
 
 </div>

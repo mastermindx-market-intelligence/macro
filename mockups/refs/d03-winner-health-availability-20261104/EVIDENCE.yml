@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/winner_health.html.j2
+manifest: mockups/refs/d03-winner-health-availability-20261104/manifest.json

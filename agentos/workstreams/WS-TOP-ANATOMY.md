@@ -196,3 +196,45 @@ were materialized only from exact HEAD; no generated production artifacts change
 Manifest validation still reports 312 logical jobs / 12 packs. Differential
 contract-delta and hosted exact-head results are recorded on the existing D03
 continuation receipt after publication; they are not inferred from weight arithmetic.
+
+### W07 typed availability continuation (2026-11-04 UTC)
+
+The original T43 source-date/CI repair is accepted at
+`f9e62dfbecfcf33579ead45ad27cf7a38de734a7`: exact-head CI 41799365514 and
+fences 41799365457 SUCCESS. The Chairman-authorized D03 continuation extends
+that same Draft #10709 branch with W07 typed source availability; it does not
+replace this research programme, activate R2-R6 or amend the frozen OOT ruler.
+
+Missing, unreadable, malformed, invalid-date, stale and producer-unavailable
+sources no longer share a promise that a nightly read will arrive. The single
+loader read supplies a typed availability receipt, with only a validated source
+day eligible for disclosure. Raw producer reasons remain private diagnostics;
+unavailable context yields no current price/backdrop/count cues and no claim
+that a name failed eligibility. Valid empty, cohort, no-read, unreadable-tier
+and no-analogue states remain distinct. Six-calendar-day admission, the separate
+five-session tape warning, fixture bypass, future-date compatibility, legacy
+payloads, all engines/populations/rankers and authority fences remain unchanged.
+
+Proof in
+`research/design_candidates/production_design_20261102/evidence/d03-winner-health-w07-20261104/`:
+51 additional source cases (85 total), RED 53 failed / 32 passed on the
+predecessor, 196 focused tests passed, and 85 passed in a clean three-dependency
+Python environment with data guard enabled. Final actual-builder Chromium proof:
+144 cases / 148 screenshots across 12 states, three widths, EN/ZH and light/dark;
+minimum measured text contrast 5.8884:1, zero page/asset/response/network failures.
+Native Paper component 11MU-0 has visual self-QA, post-QA JSX and observed finish;
+shared tokens unchanged. Canonical stale-state capture has 16 rest/focus frames
+and a passing visual-evidence gate. These are bounded source/component proofs,
+not whole-D03/shared-shell, research verdict, deployment or production acceptance.
+
+The unchanged combined public code-job command passes 419 tests with one
+pre-existing deselection; the unchanged TOP/Winner Health data-job command passes
+420 tests in an isolated environment with that job's declared dependencies.
+Sparse fixture/asset omissions and a wrong local dependency environment were
+reconciled without changing CI declarations, disabling guards or writing new
+generated data/site bytes.
+
+The current exact delivery hash, actual committed-tree differential gate and
+hosted results belong in the original PR and existing D03 continuation receipt.
+No new CI job, scope narrowing, budget override, lifecycle owner or release effect
+is introduced. Original #9495/T004/R8/Fabric effects remain untouched.

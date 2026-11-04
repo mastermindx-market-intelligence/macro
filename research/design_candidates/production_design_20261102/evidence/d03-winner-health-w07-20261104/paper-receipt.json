@@ -1,0 +1,16 @@
+{
+  "operation_id": "d03-w07-availability-component-finish-20261104-c2",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+  "page_id": "p-D-0",
+  "artboard_id": "11MU-0",
+  "scope": "Winner Health availability component DRAFT; not a full-page or platform matrix",
+  "snapshot_sha256": "989079ab7271f971a2886d4d7cbe3968ce15a3050d6385cba3fa00dd8510100b",
+  "tokens": "640746f9",
+  "screenshot": "paper-11MU-0.jpg",
+  "screenshot_sha256": "395be19b2226386227e555e3e1c6604a49f15bce0466c65c7fea04f64fc7390e",
+  "jsx": "paper-11MU-0.jsx",
+  "jsx_sha256": "461d804fb169953dced194f8432584b91e0e753559f29a5d7134696531ef2a1a",
+  "visual_self_check": "Dark Chinese heading inheritance was corrected explicitly to the existing dark text token; final screenshot checked before JSX extraction.",
+  "production_acceptance": false
+}
