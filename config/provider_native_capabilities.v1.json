@@ -10,6 +10,15 @@
       "credential_kind": "api_key",
       "execution_surface": "native_cli",
       "registration_state": "registered"
+    },
+    {
+      "capacity_capability_id": "ncap_8ca6b62c3f1fc7725b00cd461cc81f76",
+      "capability_generation": 1,
+      "provider": "claude",
+      "billing_mode": "subscription",
+      "credential_kind": "attached_login",
+      "execution_surface": "native_cli",
+      "registration_state": "registered"
     }
   ]
 }

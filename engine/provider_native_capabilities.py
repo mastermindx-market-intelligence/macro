@@ -33,6 +33,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import secrets
 
 __all__ = [
     "NativeCapabilityError",
@@ -45,6 +46,7 @@ __all__ = [
     "validate_registry",
     "validate_registry_transition",
     "registration_export",
+    "issue_native_capability_id",
 ]
 
 REGISTRY_SCHEMA = "mastermind.provider_native_capability_registry/v1"
@@ -93,6 +95,12 @@ _CAPABILITY_ROW_KEYS = frozenset(
 _IDENTITY_KEYS = ("provider", "billing_mode", "credential_kind", "execution_surface")
 
 _CAPABILITY_ID_RE = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._-]{0,127}\Z")
+# Source-issued native capacity domains use 128-bit CSPRNG values.  The
+# upper 64-bit half must not be all zero: that shape admits a zero-padded
+# ordinary <=64-bit slot/counter, rather than a full-width opaque nonce.
+# Existing issued Claude and MiniMax domain identities retain their bytes.
+_NATIVE_ID_RE = re.compile(r"\Ancap_[0-9a-f]{32}\Z")
+_NATIVE_ORDINAL_UPPER_HALF = "0" * 16
 _MATERIAL_SOURCE_DIGEST_RE = re.compile(r"\A[0-9a-f]{64}\Z")
 
 # Legacy provider slot naming (the OAuth / Codex / DeepSeek era) is refused as
@@ -164,6 +172,11 @@ def _validate_capability_id(value: object) -> str:
     """Validate one opaque safe-token capability id."""
     if not isinstance(value, str) or not _CAPABILITY_ID_RE.match(value):
         raise _refuse("invalid_capability_id")
+    if value.startswith("ncap_"):
+        if _NATIVE_ID_RE.fullmatch(value) is None:
+            raise _refuse("invalid_capability_id")
+        if value[5:21] == _NATIVE_ORDINAL_UPPER_HALF:
+            raise _refuse("forbidden_capability_id")
     lowered = value.lower()
     if lowered in _LEGACY_ID_EXACT:
         raise _refuse("forbidden_capability_id")
@@ -172,6 +185,16 @@ def _validate_capability_id(value: object) -> str:
             if lowered.startswith(stem + separator):
                 raise _refuse("forbidden_capability_id")
     return value
+
+
+def issue_native_capability_id() -> str:
+    """Issue one source-owner nonce; never derive identity from account ordinals.
+
+    This method only constructs an opaque candidate identifier. It does not
+    register, enroll, persist or grant provider capacity. All actual source
+    issuance still requires committing a reviewed registry change.
+    """
+    return _validate_capability_id("ncap_" + secrets.token_hex(16))
 
 
 def _validate_generation(value: object) -> int:

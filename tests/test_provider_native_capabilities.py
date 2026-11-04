@@ -235,6 +235,38 @@ class TestRowFields(NativeCapabilityTestCase):
         out = pnc.validate_registry(make_registry([row]))
         self.assertEqual(out["capabilities"][0]["capacity_capability_id"], long_id)
 
+    def test_native_id_refuses_zero_padded_ordinal_encoding(self):
+        # A source-issued 128-bit native capability must not encode a small
+        # ordinal in the low 64 bits of an otherwise zero-padded ID.
+        ordinal_values = (
+            "ncap_" + "0" * 31 + "1",
+            "ncap_" + "0" * 30 + "0a",
+            "ncap_" + "0" * 16 + "123456789abcdef0",
+            "ncap_" + "0" * 32,
+        )
+        for cid in ordinal_values:
+            with self.subTest(cid=cid):
+                self.assertCode(
+                    lambda cid=cid: pnc.validate_registry(
+                        make_registry([make_claude_row(cid=cid)])
+                    ),
+                    "forbidden_capability_id",
+                )
+
+    def test_native_id_issuance_uses_cryptographic_nonce(self):
+        from unittest.mock import patch
+        with patch.object(pnc.secrets, "token_hex", return_value="c" * 32) as source:
+            issued = pnc.issue_native_capability_id()
+        source.assert_called_once_with(16)
+        self.assertEqual(issued, "ncap_" + "c" * 32)
+        self.assertEqual(
+            pnc.validate_registry(make_registry([make_claude_row(cid=issued)]))
+            ["capabilities"][0]["capacity_capability_id"],
+            issued,
+        )
+        with patch.object(pnc.secrets, "token_hex", return_value="0" * 31 + "1"):
+            self.assertCode(pnc.issue_native_capability_id, "forbidden_capability_id")
+
     def test_invalid_capability_ids(self):
         bad_ids = [
             "",
