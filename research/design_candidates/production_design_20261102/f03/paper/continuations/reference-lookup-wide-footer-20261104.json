@@ -1,0 +1,26 @@
+{
+  "operation_id": "f03-20261104-lookup-wide-footer-01",
+  "tool": "write_html",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-1P-0",
+  "target_node_id": "72K0-0",
+  "input_ref": "reference-lookup-20261104-design-inputs.json:wide/footer",
+  "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72L9-0\",\n      \"name\": \"Return context and proof boundary\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LA-0\",\n      \"name\": \"Query and assignment…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72LB-0\",\n      \"name\": \"Editable desktop lay…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+  "recorded_at_utc": "2026-11-04T05:32:52.957Z",
+  "preflight_note": "A separate read-only precheck timed out with zero mutation dispatch. This is the previously unattempted footer, using the most recent observed-applied original-target guard; the edit adapter performs its own exact pre-dispatch comparison.",
+  "production_acceptance": false
+}

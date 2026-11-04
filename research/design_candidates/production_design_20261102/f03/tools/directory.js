@@ -14,7 +14,7 @@ for(const b of data.artboards){const k=b.paper_file_id+'/'+b.paper_page_id;if(!b
 const boardsFor=p=>boardMap.get(pageKey(p))||[];
 const refsFor=id=>data.pages.filter(p=>p.page_custodian===id||p.artboard_owners.includes(id));
 const boardText=b=>[b.artboard_id,b.name,b.product_owner,b.page_custodian,...b.observed_role_labels].join(' ').toLowerCase();
-const refText=p=>[p.name,p.file_name,p.paper_file_id,p.paper_page_id,p.page_custodian,p.content_owner,...p.artboard_owners,p.role,...boardsFor(p).map(boardText)].join(' ').toLowerCase();
+const refText=p=>[p.name,p.file_name,p.paper_file_id,p.paper_page_id,pageKey(p),p.url,p.page_custodian,p.content_owner,...p.artboard_owners,p.role,...boardsFor(p).map(boardText)].join(' ').toLowerCase();
 const searchText=s=>[s.id,s.title,s.title_zh,s.job,...s.aliases,...s.proposed_files,...s.canonical_registry_ids,...s.delegated_registry_ids,...s.source_deltas,s.source_contract||'',s.candidate_ref||'',JSON.stringify(s.return_observation||{}),...refsFor(s.id).map(refText),...data.routes.filter(r=>r.primary_session===s.id||r.delegated_slices.includes(s.id)).map(r=>r.route)].join(' ').toLowerCase();
 const title=s=>lang==='zh'?s.title_zh:s.title;
 const role=r=>({candidate_unqualified:tr('Candidate / unqualified','候选／未认定'),held:tr('Held','保留待审'),historical:tr('Historical','历史'),redirect:tr('Redirect','迁移指引'),rejected:tr('Rejected','已否决'),source_only:tr('Source only','仅源证据'),specification:tr('Specification','规格参考'),reference_unqualified:tr('Reference / unqualified','参考／未认定'),unexpanded:tr('Not expanded','未展开检查'),live_delta_unqualified:tr('New observation / unqualified','新观察／未认定'),qa_only:tr('QA only','仅测试')})[r]||r;
@@ -25,8 +25,14 @@ function ownerLink(id,label=''){return `<a href="${esc(entry(id))}">${label?esc(
 function matchedBoards(s,q){return q?data.artboards.filter(b=>(b.product_owner===s.id||b.page_custodian===s.id)&&boardText(b).includes(q)):[];}
 function empty(st){return `<div class="empty"><h2>${tr('No matches in this view','此视图没有匹配项')}</h2><p>${tr('Search scope is shown above. A missing match does not mean a resource was removed.','搜索范围见上方。无匹配项不代表资源已删除。')}</p><p><a href="${esc(hash({...st,view:'assignments',session:''}))}">${tr('Search assignments and references','搜索任务与参考')} →</a> · <a href="${esc(hash({...st,view:'routes',session:''}))}">${tr('Search canonical routes and deltas','搜索标准路由与增量')} →</a> · <a href="inventory.html#q=${encodeURIComponent(st.q)}">${tr('Search generated documents','搜索生成文档')} →</a></p><button type="button" data-clear>${tr('Clear filters','清除筛选')}</button></div>`;}
 function syncTheme(){const dark=document.documentElement.dataset.theme==='dark';$('theme').textContent=tr(dark?'Light':'Dark',dark?'浅色':'深色');$('theme').setAttribute('aria-label',tr(dark?'Switch to light theme':'Switch to dark theme',dark?'切换至浅色主题':'切换至深色主题'));}
+function effectWarning(meta=data.metadata){
+ const ids=meta.directory.paper_unresolved_operation_ids||[];
+ if(!ids.length)return '';
+ return `<strong>${tr('F03 draft additions: Paper outcome unconfirmed','F03 草稿补充：Paper 操作结果尚未确认')}</strong><p>${tr('Previously recorded directory work is retained. Reconcile this exact original-carrier operation before more Paper edits; do not repeat or replace it. This is a saved evidence snapshot, not a live service monitor.','先前已记录的目录工作保留。继续编辑 Paper 前，须在原通道核实此精确操作；勿重复或替换。本提示来自已保存证据，并非实时服务监控。')}</p><details><summary>${tr('Exact pending operation and evidence','精确待核实操作与证据')}</summary>${ids.map(id=>`<p><code>${esc(id)}</code></p>`).join('')}<p>${tr('Recorded','记录时间')}: <time datetime="${esc(meta.native_effect_observed_at)}">${esc(meta.native_effect_observed_at)}</time></p><a href="paper/native-progress.json">${tr('Open original native-effect ledger','打开原生操作记录')} ↗</a></details>`;
+}
 function paintChrome(st){
  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+ const warning=effectWarning();$('effect-warning').innerHTML=warning;$('effect-warning').hidden=!warning;
  const labels=tr(['Assignments','Paper references','Route coverage','Changes & gaps'],['任务目录','Paper 参考','路由覆盖','变更与缺口']);
  $('nav').innerHTML=views.map((v,i)=>`<a href="${esc(hash({...st,view:v,session:'',page:'',board:''}))}" ${st.view===v&&!st.session?'aria-current="page"':''}>${labels[i]}</a>`).join('');
  $('title').innerHTML=tr('Find the right design.<br>Keep its history.','找到正确设计。<br>保留完整历史。');
@@ -46,7 +52,61 @@ function card(s,st,q){const hits=matchedBoards(s,q);return `<article class="fami
 function assignmentView(st,q){const list=data.sessions.filter(s=>(!st.owner||s.id===st.owner)&&(!q||searchText(s).includes(q)));const order=['10 Workspaces','20 Markets','30 Research','40 Personal','50 Public','60 Internal','01 Foundations','00 Programme'];const groups=[...new Set(list.map(s=>s.folder))].sort((a,b)=>order.indexOf(a)-order.indexOf(b));const shortcuts=!q&&!st.owner?`<p class="quicklinks">${tr('Start with a job:','从任务开始：')} <a href="${entry('D07',st)}">${tr('Company','公司')}</a> · <a href="${entry('D08',st)}">${tr('Options','期权')}</a> · <a href="${entry('D04',st)}">${tr('Heatmaps','热力图')}</a> · <a href="${entry('D07',{...st,q:'Returns'})}">${tr('Returns Calendar','回报日历')}</a></p>`:'';return {n:list.length,html:shortcuts+groups.map(g=>`<div class="group-title"><h2>${source(g)}</h2><span class="count">${list.filter(s=>s.folder===g).length}</span></div><div class="grid">${list.filter(s=>s.folder===g).map(s=>card(s,st,q)).join('')}</div>`).join('')||empty(st)};}
 function ownership(p){let msg=p.role==='unexpanded'?tr('Organization steward F03 · product owner unknown','整理负责人 F03 · 产品负责人未知'):tr('Page custodian','页面保管')+' '+p.page_custodian;return `<p class="row-sub">${esc(msg)} · ${tr('Writer unverified','写入者未验证')}</p>${p.artboard_owners.length?`<p class="row-sub">${tr('Board product owners','画板产品负责人')}: ${p.artboard_owners.map(id=>ownerLink(id)).join(', ')}</p>`:''}${!p.listed_in_package?`<p class="ownership">${source(p.ownership_basis)}</p>`:''}`;}
 function warnings(p){return p.board_role_warnings.length?`<p class="ownership">${tr('Contains board labels','包含画板标签')}: ${p.board_role_warnings.map(role).join(' · ')}. ${tr('Title evidence; inspect conditions.','名称证据；请查看条件。')}</p>`:'';}
-function referenceView(st,q){const list=data.pages.filter(p=>(!st.owner||p.page_custodian===st.owner||p.artboard_owners.includes(st.owner))&&(!q||refText(p).includes(q)));return {n:list.length,html:list.map(p=>`<article class="row"><div class="row-main"><span class="pill">${role(p.role)}</span><a class="row-title" href="${esc(p.url)}" target="_blank" rel="noopener">${source(p.name)} ↗</a><p class="row-sub">${source(p.file_name)} · <code>${p.paper_file_id} / ${p.paper_page_id}</code></p>${ownership(p)}${warnings(p)}${q?boardsFor(p).filter(b=>boardText(b).includes(q)).slice(0,8).map(b=>boardMatch(b,st)).join(''):''}</div><div class="row-side"><a href="${esc(entry(p.page_custodian,st))}">${tr('History & contract','历史与合同')} →</a></div></article>`).join('')||empty(st)};}
+function paperIdentity(url){
+ const m=/^https:\/\/app\.paper\.design\/file\/([A-Z0-9]+)\/(p-[A-Za-z0-9-]+)$/.exec(String(url||''));
+ return m?{fileId:m[1],pageId:m[2],key:m[1]+'/'+m[2]}:null;
+}
+function referenceRows(sessions=data.sessions,pages=data.pages){
+ // This is a read-only view over existing evidence, not a new registry or census.
+ const rows=new Map(pages.map(page=>[pageKey(page),{key:pageKey(page),page,url:page.url,claims:[]} ]));
+ for(const s of sessions){
+  const obs=s.return_observation;if(!obs)continue;
+  const add=(kind,url,fileId,pageId,boardId=null)=>{
+   const id=paperIdentity(url);if(!id)return;
+   if(kind!=='retained'&&(id.fileId!==fileId||id.pageId!==pageId))return;
+   if(!rows.has(id.key))rows.set(id.key,{key:id.key,page:null,url,claims:[]});
+   const row=rows.get(id.key);
+   if(row.claims.some(c=>c.owner===s.id&&c.kind===kind&&c.board_id===boardId))return;
+   row.claims.push({owner:s.id,kind,url,file_id:id.fileId,page_id:id.pageId,board_id:boardId,
+    source_head:obs.source_head,observed_at:obs.observed_at_utc,qualification:obs.qualification,
+    status:s.status,source_contract:s.source_contract,source_contract_label:s.source_contract_label});
+  };
+  add('candidate',s.candidate_ref,obs.candidate_file_id,obs.candidate_page_id);
+  add('readme',obs.readme_url,obs.readme_file_id,obs.readme_page_id,obs.readme_board_id);
+  add('retained',obs.retained_reference_url);
+ }
+ return [...rows.values()];
+}
+function returnKind(kind){return ({candidate:tr('Observed candidate','已观察候选'),readme:tr('Read me','设计说明'),retained:tr('Retained original reference','保留的原参考')})[kind];}
+function returnedRefText(c){
+ const s=sessionById(c.owner);
+ return [c.owner,s?.title,s?.title_zh,c.kind,returnKind(c.kind),c.url,c.file_id+'/'+c.page_id,c.board_id,
+  c.source_head,c.observed_at,c.status,c.qualification,c.source_contract].join(' ').toLowerCase();
+}
+function referenceReturnEvidence(claims,st){
+ if(!claims.length)return '';
+ const owners=[...new Set(claims.map(c=>c.owner))];
+ const labels=claims.map(c=>`<span class="pill">${returnKind(c.kind)}</span> ${ownerLink(c.owner)}${c.board_id?` · <code>${esc(c.board_id)}</code>`:''}`).join(' · ');
+ const sources=owners.map(owner=>claims.find(c=>c.owner===owner));
+ return `<div class="reference-return"><p class="row-sub">${labels}</p><p class="count">${tr('Approval not established · Return evidence is separate from the frozen census.','批准尚未确立 · 返回证据与冻结清单分开记录。')}</p>
+ <p class="reference-contracts">${sources.map(c=>evidenceLink(c.source_contract,c.owner+' · '+tr('Source contract','源合同'))).join(' · ')}</p>
+ <details><summary>${tr('Source pins, observation times and conditions','来源版本、观察时间与条件')}</summary>${sources.map(c=>`<p>${ownerLink(c.owner)} · <time datetime="${esc(c.observed_at)}">${esc(c.observed_at)}</time><br><code>${esc(c.source_head)}</code></p><p>${source(c.status)}</p><p>${source(c.qualification)}</p>`).join('')}</details></div>`;
+}
+function referenceView(st,q){
+ const list=referenceRows().filter(r=>{
+  const p=r.page;
+  const owned=!st.owner||(p&&(p.page_custodian===st.owner||p.artboard_owners.includes(st.owner)))||r.claims.some(c=>c.owner===st.owner);
+  return owned&&(!q||(p&&refText(p).includes(q))||r.claims.some(c=>returnedRefText(c).includes(q)));
+ }).sort((a,b)=>Number(!!b.claims.length)-Number(!!a.claims.length));
+ if(!list.length)return {n:0,html:empty(st)};
+ return {n:list.length,html:`<p class="count">${tr('Exact pages from the frozen baseline and separately observed returns. Each page appears once; distinct candidate, Read me and retained-reference roles remain explicit.','合并展示冻结基线与单独观察的返回证据。每个页面仅显示一次；候选、设计说明和保留参考的角色仍分别标明。')}</p>`+list.map(r=>{
+  const p=r.page,first=r.claims[0],owners=[...new Set(r.claims.map(c=>c.owner))];
+  const name=p?source(p.name):owners.map(id=>source(title(sessionById(id)))).join(' · ');
+  const fileName=p?.file_name||data.pages.find(x=>x.paper_file_id===first?.file_id)?.file_name||first?.file_id;
+  const links=[...new Set([...(p?[p.page_custodian]:[]),...owners])];
+  return `<article class="row reference-row"><div class="row-main"><span class="pill">${p?role(p.role):tr('Returned page / unqualified','返回页面／未认定')}</span><a class="row-title" href="${esc(r.url)}" target="_blank" rel="noopener">${name} ↗</a><p class="row-sub">${source(fileName)} · <code>${esc(r.key)}</code></p>${p?ownership(p)+warnings(p):`<p class="row-sub">${tr('Return owner, not a current writer claim','返回负责人，不构成当前写入权证明')}: ${owners.map(id=>ownerLink(id)).join(', ')}</p>`}${p&&q?boardsFor(p).filter(b=>boardText(b).includes(q)).slice(0,8).map(b=>boardMatch(b,st)).join(''):''}${referenceReturnEvidence(r.claims,st)}</div><div class="row-side">${links.map(id=>`<a href="${esc(entry(id,st))}">${esc(id)} · ${tr('History & contract','历史与合同')} →</a>`).join('')}</div></article>`;
+ }).join('')};
+}
 function routeTable(rows,st){return `<div class="table-wrap" tabindex="0" aria-label="${tr('Canonical route responsibility','标准路由职责')}"><table><thead><tr><th>${tr('Registry ID / route','登记 ID／路由')}</th><th>${tr('Design responsibilities','设计职责')}</th><th>${tr('Source / inventory','来源／清单')}</th><th>${tr('Access / payload','访问／数据权限')}</th></tr></thead><tbody>${rows.map(r=>`<tr><td><code>${esc(r.canonical_registry_id)}</code><br><strong>${esc(r.route)}</strong><br><span class="muted">${esc(r.repo)} · ${source(r.route_kind)}</span></td><td>${tr('Primary / integration','主责／整合')}: ${ownerLink(r.primary_session)}${r.delegated_slices.length?'<br>'+tr('Design slices','设计分工')+': '+r.delegated_slices.map(id=>ownerLink(id)).join(', '):''}<br><span class="muted">${tr('Registry source owner','登记源负责人')}: ${source(r.registry_source_owner)}</span></td><td><code>${esc(r.source_template)}</code>${r.family_inventory?`<br><a href="${esc(r.family_inventory)}">${tr('Open member index','打开成员索引')} (${r.inventory_member_count}) →</a>`:r.route_kind==='family'?'<br>'+tr('Native member inventory pending','原生成员清单待补充'):''}</td><td>${source(r.access_shell)}<br>${source(r.payload_tier)}<br><span class="muted">${source(r.lifecycle)}</span></td></tr>`).join('')}</tbody></table></div>`;}
 function deltaRow(d){return `<article class="row"><div class="row-main"><strong>${esc(d.route)}</strong><p class="row-sub">${esc(d.repo)} · <code>${esc(d.source)}</code></p><p class="row-sub">${source(d.disposition)}</p><p class="row-sub">${tr('Integration','整合')}: ${ownerLink(d.primary_session)}${d.design_slice?' · '+tr('Design slice','设计分工')+': '+ownerLink(d.design_slice):''}</p></div></article>`;}
 function routeView(st,q){const rows=data.routes.filter(r=>(!st.owner||r.primary_session===st.owner||r.delegated_slices.includes(st.owner))&&(!q||JSON.stringify(r).toLowerCase().includes(q)));const ds=data.source_deltas.filter(r=>(!st.owner||r.primary_session===st.owner||r.design_slice===st.owner)&&(!q||JSON.stringify(r).toLowerCase().includes(q)));return {n:rows.length+ds.length,html:`<p class="quicklinks">${tr('This view searches canonical records and source deltas.','此视图搜索标准记录与源增量。')} <a href="inventory.html#q=${encodeURIComponent(st.q)}">${tr('Search all 14,025 tracked HTML paths','搜索全部 14,025 条 HTML 路径')} →</a></p>`+(rows.length?routeTable(rows,st):'')+(ds.length?`<div class="group-title"><h2>${tr('Source deltas · no canonical IDs invented','源增量 · 未虚构标准 ID')}</h2></div>`+ds.map(deltaRow).join(''):'')+(!rows.length&&!ds.length?empty(st):'')};}

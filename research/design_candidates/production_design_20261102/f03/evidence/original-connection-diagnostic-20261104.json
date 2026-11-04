@@ -1,0 +1,78 @@
+{
+  "schema": "f03.original_connection_diagnostic.v1",
+  "recorded_at_utc": "2026-11-04T05:18:17Z",
+  "operation": "f03-c2-original-tunnel-diagnostic-20261104-01",
+  "canonical_checkpoint": "https://github.com/mastermindx-market-intelligence/macro/pull/10631#issuecomment-6622918152",
+  "pending_paper_operation": "f03-20261104-lookup-wide-provenance-01",
+  "checked_surfaces": [
+    {
+      "surface": "Mastermind Paper direct app",
+      "operation": "get_jsx original 72K0-0",
+      "read_only": true,
+      "result": "UNAVAILABLE",
+      "error": "McpServerError: Connection timed out."
+    },
+    {
+      "surface": "Studio Direct C2 Personal",
+      "operation": "studio_ping",
+      "read_only": true,
+      "result": "UNAVAILABLE",
+      "error": "McpServerError: Connection timed out."
+    },
+    {
+      "surface": "Studio Direct C2 Personal",
+      "operation": "studio_fleet_status",
+      "read_only": true,
+      "result": "UNAVAILABLE",
+      "error": "McpServerError: Connection timed out."
+    }
+  ],
+  "conclusion": "Failures on the checked connector paths only; not proof that the entire fleet is unavailable.",
+  "handoff": {
+    "channel_id": "C0CBC6AEAQZ",
+    "thread_ts": "1793769439.394199",
+    "url": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793769439394199",
+    "state": "PICKUP_ACK_AND_START_RESULT_OBSERVED_CLOSED_STOP",
+    "receiver": "Grok Secretary",
+    "scope": "Read-only original C2 host/binding/process/health/log diagnosis; no replay, Paper write, restart, install, reconnect or rebind.",
+    "receiver_identity": "Grok Secretary 2 / U0BTCHX8HMF / gb2-ping-2216",
+    "result_observed_at_utc": "2026-11-04T05:20:23Z",
+    "result": {
+      "host": "m2studio",
+      "paper_direct_seat": "com.mastermind.paper-direct.business.c2",
+      "paper_direct_pid": 41623,
+      "local_gateway_health": "Paper Direct tunnel live; C2 Personal gateway 45026 healthy v0.1.10/tunnel45027 live; C2 Business gateway45028 healthy v0.1.10/tunnel45029 live",
+      "bounded_cause": "Intermittent tunnel poll connection-reset/EOF and MCP server/discover validation noise, consistent with transport errors; no proof of the pending Paper effect.",
+      "root_or_diagnostic_restart_rebind_install": false,
+      "alternate_bridge": false,
+      "paper_write_or_journal_replay": false
+    },
+    "closure": {
+      "state": "CLOSED_STOP",
+      "ts": "1793769920.272959",
+      "url": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793769920272959?thread_ts=1793769439.394199&cid=C0CBC6AEAQZ",
+      "consumed": true
+    }
+  },
+  "attention": {
+    "state": "DISABLED_AFTER_TERMINAL_CLOSED_STOP",
+    "task_id": "6aeabffb16ec81918be91112381814b0",
+    "cadence": "hourly",
+    "timezone": "America/Chicago",
+    "baseline": "1793769439.394199",
+    "terminal": "Disable only this exact task after diagnostic CLOSED/STOP; preserve unrelated watchers.",
+    "is_enabled": false,
+    "updated_at_utc": "2026-11-04T05:25:20.679271+00:00",
+    "other_watchers_changed": false
+  },
+  "root_execution": "Original F03 receiver retained source/canvas custody. Exact no-target-effect readback permitted deliberate same-operation completion; all three lookup boards now captured/exported/self-QA checked. No diagnostic remains active.",
+  "current_state": "CLOSED_STOP_DIAGNOSIS_CONSUMED_ORIGINAL_EFFECT_RECONCILED",
+  "updated_at_utc": "2026-11-04T05:46:05.071Z",
+  "original_effect_resolution": {
+    "operation_id": "f03-20261104-lookup-wide-provenance-01",
+    "state": "APPLIED_RESPONSE_OBSERVED_AFTER_ORIGINAL_TARGET_RECONCILIATION",
+    "proof": "reference-lookup-reconciliation-20261104.json",
+    "receipt": "../paper/continuations/reference-lookup-provenance-reconciled-20261104.json",
+    "same_carrier": true
+  }
+}

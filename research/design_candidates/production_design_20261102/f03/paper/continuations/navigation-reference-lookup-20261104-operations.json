@@ -1,0 +1,496 @@
+{
+  "schema": "f03.original_carrier_continuation_receipts.v1",
+  "source_head": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "protected_procedure": "86a454807bc48540d98e07ece3da454f7b2341cf",
+  "recorded_at_utc": "2026-11-04T05:18:17Z",
+  "carrier": "Mastermind Paper direct app",
+  "catalog_sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+  "applied_operations": [
+    {
+      "operation_id": "f03-20261104-main-start-first-01",
+      "tool": "arrange_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "order": [
+          "p-1P-0",
+          "p-5-0",
+          "p-27-0",
+          "p-26-1",
+          "p-25-0",
+          "p-24-0",
+          "p-23-0",
+          "p-22-0",
+          "p-20-0",
+          "p-1Z-1",
+          "p-1Y-1",
+          "p-1X-1",
+          "p-1W-1",
+          "p-1U-0",
+          "p-1T-0",
+          "p-1S-0",
+          "p-1R-0",
+          "p-1Q-0",
+          "p-1N-0",
+          "p-1M-0",
+          "p-1L-0",
+          "p-1K-0",
+          "p-1J-0",
+          "p-1I-0",
+          "p-1H-0",
+          "p-1F-0",
+          "p-1E-0",
+          "p-1B-0",
+          "p-1A-0",
+          "p-18-0",
+          "p-17-0",
+          "p-16-0",
+          "p-15-0",
+          "p-14-0",
+          "p-Q-0",
+          "p-3-1",
+          "p-D-0",
+          "p-13-1",
+          "p-A-0",
+          "p-H-1",
+          "p-O-1",
+          "p-N-1",
+          "p-J-1",
+          "p-8-1",
+          "p-T-0",
+          "p-10-0",
+          "p-L-0",
+          "p-Y-0",
+          "p-S-1",
+          "p-K-0",
+          "p-Z-0",
+          "p-V-0",
+          "p-11-0",
+          "p-X-0",
+          "p-W-0",
+          "p-E-1",
+          "p-6-1",
+          "p-I-1",
+          "p-9-0",
+          "p-7-1"
+        ]
+      },
+      "expected_snapshot": "10bf73804c18386ff8640d873e5a4c7d7b7f0518b75e739e397c497753d5b7ab",
+      "after_snapshot": "351c1744c18b0e088ac0f9c2f85c4b0aefc8fc0b675fdca29807326b98e55071",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"pages\": [\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1P-0\",\n      \"name\": \"00 · START HERE · Product & File Navigation\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-5-0\",\n      \"name\": \"Archetype Starters · Governed\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-27-0\",\n      \"name\": \"F01 · Shell system · v1 candidate · Review pending\",\n      \"icon\": \"blueprint\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-26-1\",\n      \"name\": \"Intraday Flow · R1 · Discovery workspace · DRAFT\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-25-0\",\n      \"name\": \"Options · Research Desk · R1 · 2026-11-02\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-24-0\",\n      \"name\": \"Sector Intelligence · R3 · Completion · 2026-10-21\",\n      \"icon\": \"design\",\n      \"isActive\": true\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-23-0\",\n      \"name\": \"Shared Shell · Completion & Integration · R1\",\n      \"icon\": \"blueprint\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-22-0\",\n      \"name\": \"Market Memory · Evidence workspace · R1 · 2026-10-18\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-20-0\",\n      \"name\": \"Catalyst Intelligence · Decision Desk · R1 · 2026-10-18\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1Z-1\",\n      \"name\": \"Catalyst-to-Opportunity · Source-bound integration · 2026-10-17\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1Y-1\",\n      \"name\": \"ARCHIVE · Bonds + Transmission · pre-R30\",\n      \"icon\": \"paper\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1X-1\",\n      \"name\": \"Forex · Archive · Prior studies & build history\",\n      \"icon\": \"paper\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1W-1\",\n      \"name\": \"Macro · Dark Flow · Implementation · 2026-10-17\",\n      \"icon\": \"line-chart\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1U-0\",\n      \"name\": \"Shared Market · Prepared Research + Reading · Reference\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1T-0\",\n      \"name\": \"Shared Market · Watchlists + Save States · Reference\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1S-0\",\n      \"name\": \"Shared Market · Search + Comparison · Reference\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1R-0\",\n      \"name\": \"Shared Market · All Tools + Research Launcher · Reference\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1Q-0\",\n      \"name\": \"01 · Design Foundations · Components & Archetype Rules\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1N-0\",\n      \"name\": \"Gov Revenue · Builder Contracts & State Specimens\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1M-0\",\n      \"name\": \"BioCatalyst · Builder & Acceptance Contracts\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1L-0\",\n      \"name\": \"ARCHIVE · Synthetic Catalyst Investment Cases · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1K-0\",\n      \"name\": \"MedTech · Regulatory Catalyst R13 · Design References\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1J-0\",\n      \"name\": \"REFERENCE · Policy Watch R2–R3 & HELD · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1I-0\",\n      \"name\": \"ARCHIVE · Commodities Legacy 90–94 · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1H-0\",\n      \"name\": \"Bonds · Decision & Credit Studies · Revision index\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1F-0\",\n      \"name\": \"Forex · Advanced Movement & Decision Studies · R17–R24\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1E-0\",\n      \"name\": \"Cross-Asset · Bonds × Forex Transmission & Confluence · Studies\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1B-0\",\n      \"name\": \"ARCHIVE · Earnings and Dossiers Original Source · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1A-0\",\n      \"name\": \"ARCHIVE · Intelligence Hub R4 Original Source · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-18-0\",\n      \"name\": \"Investor Shell · Market Overview · Design Candidates\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-17-0\",\n      \"name\": \"REFERENCE · Forex Alternate R19–R21 Studies\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-16-0\",\n      \"name\": \"ARCHIVE · Forex Duplicate Study · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-15-0\",\n      \"name\": \"Returns Calendar · Terminal + Dossier\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-14-0\",\n      \"name\": \"Bot Paper Portfolio · V3 Upgrade · 2026-10-09\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Q-0\",\n      \"name\": \"Earnings + Dossiers · North Star Study · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-3-1\",\n      \"name\": \"News Intelligence · 2026-09-20\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-D-0\",\n      \"name\": \"Mastermind · Shared Shell · Review 01 · 2026-09-24\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-13-1\",\n      \"name\": \"Market Breadth · Command Center · R1 · 2026-09-29\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-A-0\",\n      \"name\": \"Confluence Screener · Governed Reference · 2026-09-22\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-H-1\",\n      \"name\": \"Confluence Screener · R2 · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-O-1\",\n      \"name\": \"Bonds · Decision Workspace · R1 · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-N-1\",\n      \"name\": \"Forex · Guided Intelligence · R1 · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-J-1\",\n      \"name\": \"Policy Watch · Decision Desk · R1 Study · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-8-1\",\n      \"name\": \"Live Site Baselines · Wave 1 · 2026-09-21\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-T-0\",\n      \"name\": \"Intelligence Hub · Unified US + China · R4 · 2026-09-27\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-10-0\",\n      \"name\": \"Crypto Intelligence · R4 · Design References\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-L-0\",\n      \"name\": \"Commodities · R1 Study · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Y-0\",\n      \"name\": \"Sector Intelligence · R2 · Current Build · 2026-09-27\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-S-1\",\n      \"name\": \"Gov Revenue · Signal Desk · R5 · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-K-0\",\n      \"name\": \"BioCatalyst · North Star + Build Blueprint · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Z-0\",\n      \"name\": \"ARCHIVE · Sector Intelligence · Legacy Studies · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-V-0\",\n      \"name\": \"ARCHIVE · Company Intelligence · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-11-0\",\n      \"name\": \"ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-X-0\",\n      \"name\": \"ARCHIVE · Intelligence Hub · R1–R3 · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-W-0\",\n      \"name\": \"ARCHIVE · International Markets · R9 · Not for Build\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-E-1\",\n      \"name\": \"Sector Intelligence · vNext Study · 2026-09-24\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-6-1\",\n      \"name\": \"Sector Intelligence · Unified Detail · 2026-09-21\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-I-1\",\n      \"name\": \"Intelligence Hub · R1 Study · 2026-09-26\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-9-0\",\n      \"name\": \"Sector Central · Redesign · 2026-09-21\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-7-1\",\n      \"name\": \"China Intelligence · vNext · 2026-09-21\",\n      \"icon\": null,\n      \"isActive\": false\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-main-start-arrow-01",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "pageId": "p-1P-0",
+            "icon": "arrow"
+          }
+        ]
+      },
+      "expected_snapshot": "351c1744c18b0e088ac0f9c2f85c4b0aefc8fc0b675fdca29807326b98e55071",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"pageId\": \"p-1P-0\",\n      \"name\": \"00 · START HERE · Product & File Navigation\",\n      \"icon\": \"arrow\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-terminal-start-first-01",
+      "tool": "arrange_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_page": "p-R-0",
+      "request_arguments": {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "order": [
+          "p-R-0",
+          "p-1-0",
+          "p-16-0",
+          "p-15-0",
+          "p-14-0",
+          "p-13-0",
+          "p-12-0",
+          "p-11-0",
+          "p-V-0",
+          "p-U-0",
+          "p-T-0",
+          "p-S-0",
+          "p-W-0",
+          "p-X-0",
+          "p-Y-0",
+          "p-Z-0",
+          "p-10-0",
+          "p-Q-0",
+          "p-P-1",
+          "p-O-1",
+          "p-N-1",
+          "p-M-1",
+          "p-L-1",
+          "p-K-1",
+          "p-J-1",
+          "p-I-1",
+          "p-H-0",
+          "p-G-0",
+          "p-F-0",
+          "p-E-0",
+          "p-D-0",
+          "p-C-0",
+          "p-B-1",
+          "p-A-1",
+          "p-9-1",
+          "p-7-1",
+          "p-6-1",
+          "p-5-1",
+          "p-4-1",
+          "p-3-1",
+          "p-2-0",
+          "p-8-1"
+        ]
+      },
+      "expected_snapshot": "b63d1a480594d8d7788d84e9197d1b53f7c71db5f4f0e6638b17a536f2f10ed5",
+      "after_snapshot": "597b1b3301efae98d18b1ecaab1930a332f60406b5ec7412cd6573f92e90115f",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"pages\": [\n    {\n      \"type\": \"page\",\n      \"id\": \"p-R-0\",\n      \"name\": \"00 · TERMINAL · Start Here · Product Directory\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-1-0\",\n      \"name\": \"Company Intelligence · 2026-09-20\",\n      \"icon\": null,\n      \"isActive\": true\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-16-0\",\n      \"name\": \"D08A · Options Overview & Flow · Candidate R1\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-15-0\",\n      \"name\": \"00 · D08C · Read me & Build contract\",\n      \"icon\": \"info\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-14-0\",\n      \"name\": \"00 · Read me & Build contract · D08B\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-13-0\",\n      \"name\": \"10 · D08C · Plan, Compare & Review · Candidate R2\",\n      \"icon\": \"design\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-12-0\",\n      \"name\": \"D08B · Exposure & Volatility · Candidate R1\",\n      \"icon\": \"design\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-11-0\",\n      \"name\": \"00 · Read me & Build contract · D07 Company\",\n      \"icon\": \"blueprint\",\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-V-0\",\n      \"name\": \"Options · Exposure Intelligence · R2 · 2026-10-20\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-U-0\",\n      \"name\": \"Options · Rotation & Positioning · R1 · 2026-10-20\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-T-0\",\n      \"name\": \"Options · Exposure Intelligence · TerraShade study · 2026-10-20\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-S-0\",\n      \"name\": \"Company · Production Suite · R3\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-W-0\",\n      \"name\": \"Terminal · Chart Context · R1 · 2026-10-18\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-X-0\",\n      \"name\": \"Terminal Portfolio · Builder + Acceptance References\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Y-0\",\n      \"name\": \"Terminal · Portfolio · Personal Desk · 2026-10-11\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Z-0\",\n      \"name\": \"Terminal · R3 Refraction · Top-edge only\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-10-0\",\n      \"name\": \"Terminal · Account & settings · 2026-10-11\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-Q-0\",\n      \"name\": \"Returns Calendar · Terminal + Stock Dossier\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-P-1\",\n      \"name\": \"Options · Build Contracts + Source Proof · Reference\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-O-1\",\n      \"name\": \"Market Heatmaps · Saved Views + Recovery · R7–R8\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-N-1\",\n      \"name\": \"Market Heatmaps · Mobile Atlas + Comparison · R6\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-M-1\",\n      \"name\": \"Company R2 · Chinese Mobile + 320px Variants\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-L-1\",\n      \"name\": \"Company R2 · C01 Source, Lineage + Evidence States\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-K-1\",\n      \"name\": \"Company R2 · Tablet Brief + Evidence Variants\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-J-1\",\n      \"name\": \"Company R2 · Mobile + Narrow-Screen Variants\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-I-1\",\n      \"name\": \"Terminal · Intelligence Workspace · 2026-10\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-H-0\",\n      \"name\": \"13 · Options · 3D Research Lab\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-G-0\",\n      \"name\": \"12 · SOURCE ONLY · Terminal Live Baselines\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-F-0\",\n      \"name\": \"11 · Company · Earnings + Dossiers · North Star Study\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-E-0\",\n      \"name\": \"10 · Retained Shared Shell · Stocks + Setups\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-D-0\",\n      \"name\": \"09 · Options · Volatility Lab\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-C-0\",\n      \"name\": \"ARCHIVE · Company Intelligence · Superseded\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-B-1\",\n      \"name\": \"08 · Company · Financials, Market + Ownership\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-A-1\",\n      \"name\": \"07 · Company · Research, Results + Sources\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-9-1\",\n      \"name\": \"06 · Company · Navigation + Interaction\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-7-1\",\n      \"name\": \"05 · Options · Compare\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-6-1\",\n      \"name\": \"04 · Options · Scenarios + Assumptions\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-5-1\",\n      \"name\": \"03 · Options · Review\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-4-1\",\n      \"name\": \"02 · Options · Save + Watch\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-3-1\",\n      \"name\": \"01 · Options · Plan\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-2-0\",\n      \"name\": \"Terminal · Options Structure Intelligence · R1 · 2026-09-27\",\n      \"icon\": null,\n      \"isActive\": false\n    },\n    {\n      \"type\": \"page\",\n      \"id\": \"p-8-1\",\n      \"name\": \"Market Heatmaps · Unified Workspace · 2026-09-29\",\n      \"icon\": null,\n      \"isActive\": false\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-terminal-start-arrow-01",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "target_page": "p-R-0",
+      "request_arguments": {
+        "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "updates": [
+          {
+            "pageId": "p-R-0",
+            "icon": "arrow"
+          }
+        ]
+      },
+      "expected_snapshot": "597b1b3301efae98d18b1ecaab1930a332f60406b5ec7412cd6573f92e90115f",
+      "after_snapshot": "56990c1d183160fd97af75da054690161b6840657045ffcecea33dd2ce8e1c89",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"pageId\": \"p-R-0\",\n      \"name\": \"00 · TERMINAL · Start Here · Product Directory\",\n      \"icon\": \"arrow\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": null,
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00H · Returned reference lookup · 1440 · Dark EN · DRAFT",
+        "styles": {
+          "width": "1440px",
+          "height": "900px",
+          "display": "flex",
+          "flexDirection": "column",
+          "backgroundColor": "var(--mx-dark-bg)",
+          "fontFamily": "Inter",
+          "color": "var(--mx-dark-text)"
+        }
+      },
+      "input_ref": null,
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72K0-0\",\n  \"name\": \"00H · Returned reference lookup · 1440 · Dark EN · DRAFT\",\n  \"worldX\": 7798,\n  \"worldY\": 0,\n  \"width\": 1440,\n  \"height\": 900\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": null,
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00I · Returned reference lookup · 390 · Dark EN · DRAFT",
+        "styles": {
+          "width": "390px",
+          "height": "844px",
+          "display": "flex",
+          "flexDirection": "column",
+          "backgroundColor": "var(--mx-dark-bg)",
+          "fontFamily": "Inter",
+          "color": "var(--mx-dark-text)"
+        }
+      },
+      "input_ref": null,
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72K1-0\",\n  \"name\": \"00I · Returned reference lookup · 390 · Dark EN · DRAFT\",\n  \"worldX\": 9318,\n  \"worldY\": 0,\n  \"width\": 390,\n  \"height\": 844\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-create-01",
+      "tool": "create_artboard",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": null,
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "pageId": "p-1P-0",
+        "name": "00J · Returned reference lookup · 320 content · Light ZH · DRAFT",
+        "styles": {
+          "width": "390px",
+          "height": "844px",
+          "display": "flex",
+          "flexDirection": "column",
+          "backgroundColor": "var(--mx-light-bg)",
+          "fontFamily": "Inter",
+          "color": "var(--mx-light-text)"
+        }
+      },
+      "input_ref": null,
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"72K2-0\",\n  \"name\": \"00J · Returned reference lookup · 320 content · Light ZH · DRAFT\",\n  \"worldX\": 9788,\n  \"worldY\": 0,\n  \"width\": 390,\n  \"height\": 844\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-header-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": "72K0-0",
+      "request_arguments": null,
+      "input_ref": "reference-lookup-20261104-design-inputs.json:wide/header",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72K3-0\",\n      \"name\": \"Directory header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72K4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72K5-0\",\n      \"name\": \"MASTERMIND / DESIGN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72K6-0\",\n      \"name\": \"中文\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-hero-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": "72K0-0",
+      "request_arguments": null,
+      "input_ref": "reference-lookup-20261104-design-inputs.json:wide/hero",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72K8-0\",\n      \"name\": \"Reference lookup task\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72K9-0\",\n      \"name\": \"DESIGN PROGRAMME · P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KA-0\",\n      \"name\": \"Find the right desig…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KB-0\",\n      \"name\": \"Find an exact return…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-toolbar-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": "72K0-0",
+      "request_arguments": null,
+      "input_ref": "reference-lookup-20261104-design-inputs.json:wide/toolbar",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72KD-0\",\n      \"name\": \"Exact search and owner filter\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KG-0\",\n      \"name\": \"Search Paper titles …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KH-0\",\n      \"name\": \"1PVF-0\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KJ-0\",\n      \"name\": \"Assignment\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KK-0\",\n      \"name\": \"D08B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KM-0\",\n      \"name\": \"1 result in this vie…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KN-0\",\n      \"name\": \"Clear filters\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-result-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+      "target_page": "p-1P-0",
+      "target_node_id": "72K0-0",
+      "request_arguments": null,
+      "input_ref": "reference-lookup-20261104-design-inputs.json:wide/result",
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72KP-0\",\n      \"name\": \"Returned reference and direct destinations\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KQ-0\",\n      \"name\": \"Returned page / unqu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KR-0\",\n      \"name\": \"Options Exposure, Vo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KS-0\",\n      \"name\": \"Terminal · p-14-0 · …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KT-0\",\n      \"name\": \"Read me · D08B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KU-0\",\n      \"name\": \"Approval not establi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KX-0\",\n      \"name\": \"D08B · Source contra…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KZ-0\",\n      \"name\": \"D08B · History & con…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "production_acceptance": false
+    }
+  ],
+  "pending_operation": {
+    "operation_id": "f03-20261104-lookup-wide-provenance-01",
+    "carrier": "Mastermind Paper direct app",
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-1P-0",
+    "target_node_id": "72K0-0",
+    "tool": "write_html",
+    "input_ref": "paper/continuations/reference-lookup-20261104-design-inputs.json:wide/provenance",
+    "state": "EFFECT_UNKNOWN",
+    "observed_error": "Reply was non-JSON text beginning 'tool call e'; parser threw after awaited paper_edit. Exact provider error unavailable in this reply. No retry or fallback performed.",
+    "next_action": "Read exact original target on original carrier; reconcile expected source-evidence component before any dependent write.",
+    "target_file": "01M2WGNCX9475G79JRKJTCM08P",
+    "target_page": "p-1P-0",
+    "recorded_at_utc": "2026-11-04T05:18:17Z",
+    "expected_snapshot": null,
+    "expected_snapshot_qualification": "Original attempted guard was not persisted in the error reply; do not infer it from the previous operation.",
+    "reconciliation": {
+      "carrier": "Mastermind Paper direct app",
+      "tool": "get_jsx",
+      "result": "UNAVAILABLE",
+      "error": "McpServerError: Connection timed out.",
+      "readback_obtained": false
+    },
+    "retry_allowed": false,
+    "production_acceptance": false
+  },
+  "cumulative": {
+    "applied": 120,
+    "effect_unknown": 1,
+    "resource_action_rows_not_dispatched": 301
+  },
+  "not_dispatched": [
+    "wide/footer",
+    "mobile/status",
+    "mobile/header",
+    "mobile/hero",
+    "mobile/toolbar",
+    "mobile/result",
+    "mobile/provenance",
+    "mobile/footer",
+    "narrow/status",
+    "narrow/header",
+    "narrow/hero",
+    "narrow/toolbar",
+    "narrow/result",
+    "narrow/provenance",
+    "narrow/footer",
+    "all new-board fit-content/capture/JSX/release operations"
+  ],
+  "acceptance": false
+}

@@ -1,14 +1,26 @@
 # F03 — supported organization and preservation specification
 
-**No cross-file migration action in this plan has been dispatched.** The [301-row resource-action ledger](data/resource-action-ledger.json) remains proposed with exact original identities and null destination/readback fields. Separately, the direct app has already recorded 36 same-file native edit operations (the two page-label corrections and a first editable directory board) in [native-progress.json](paper/native-progress.json). Those edits are not falsely counted as resource transfers.
+**No cross-file migration action in this plan has been dispatched.** The [301-row resource-action ledger](data/resource-action-ledger.json) remains proposed with exact original identities and null destination/readback fields. Separately, [native-progress.json](paper/native-progress.json) now records **142 unique observed-applied original-carrier operations and zero unresolved F03 effects**, including existing directory refinements, navigation, completed lookup boards and working-indicator releases. These are not resource transfers or approval receipts.
 
-## Capability result and original owner
+## Current capability, custody and pending effect
+
+The current F03 receiver owns continuation; an archived original session is not a blocker. The existing **Mastermind Paper direct app** reached Paper Desktop 0.5.18 with `TOOL_SCOPED_CONTRACT_V1`, 16 qualified writes and catalog `03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4`. Its admitted `arrange_pages` and `update_pages` operations put the two exact Start Here pages first and added arrows. All 102 page IDs/names and all other relative ordering are retained; byte-equal JSX is witnessed for main `5G0X-2` and Terminal `1NDQ-0`. [Preservation receipt](evidence/navigation-preservation-20261104.json) states its limits; comments were read before, not after, and full-file content equivalence is not claimed.
+
+Later `write_html` operation **`f03-20261104-lookup-wide-provenance-01`** on file `01M2WGNCX9475G79JRKJTCM08P`, page `p-1P-0`, board `72K0-0` initially returned a non-JSON tool error; its first readback timed out. That historical uncertainty is now **RECONCILED**. After original-service recovery, exact JSX showed the same 31 pre-attempt nodes/four components and no intended provenance. [Reconciliation evidence](evidence/reference-lookup-reconciliation-20261104.json) records NO_TARGET_EFFECT_OBSERVED, not NOT_DISPATCHED. The same logical operation was then deliberately completed on the original carrier with a fresh qualified guard, APPLIED response and exact content readback.
+
+All three lookup boards `72K0-0`, `72K1-0`, `72K2-0` are complete, fit, screenshot-inspected and JSX-exported. Two visual findings were repaired; [final r2 capture pairs](paper/continuations/reference-lookup-20261104-captures-final.json) and [self-QA](paper/reviews/reference-lookup-self-qa-20261104.md) bind the result. Only those three owned working indicators were released. The [initial operations](paper/continuations/navigation-reference-lookup-20261104-operations.json) remain an explicitly historical interrupted stage; the current native ledger and subsequent receipts govern continuation.
+
+Original-carrier readback and separate Studio Direct C2 ping/fleet diagnostics initially timed out; this was not a whole-fleet availability conclusion. Grok Secretary's bounded read-only diagnosis returned actual PICKUP_ACK, START/RESULT on [the original thread](https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793769439394199): healthy host-local C2 gateways/tunnel clients with intermittent transport/control-plane errors. Root consumed the result and issued CLOSED/STOP. The temporary diagnostic watch is disabled. No root/diagnostic restart, rebind, alternate bridge, canvas custody transfer or uncertain-effect replay occurred. [Diagnostic evidence](evidence/original-connection-diagnostic-20261104.json) preserves the distinct stages.
+
+The current direct-app blocked names remain `archive_resources`, `create_folder`, `delete_nodes`, `export`, `export_combined_pdf`, `move_resources`, `open_file`, `unarchive_resources`. No request is built against blocked/guessed schemas. Existing qualified in-file operations do not grant resource-transfer or file-open authority.
+
+### Historical capability result — not the current direct-app gate
 
 The selected Studio Direct C2 Personal carrier reached Paper Desktop `0.5.18` and returned allowed reads. Its catalog digest was `16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd`; the expected digest was `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`. Both `accepted_for_write` and `catalog_compatible` were false.
 
 The carrier listed these blocked operation names: `archive_resources`, `arrange_pages`, `create_file`, `create_folder`, `delete_nodes`, `export`, `export_combined_pdf`, `list_resources`, `move_resources`, `open_file`, `rename_resource`, `unarchive_resources`, `update_pages`. A name appearing in a blocked list is not an accepted schema. Do not build requests against guessed parameters or use an alternate carrier to evade this gate.
 
-P00 owns the recovery and supported resource path. Mastermind [#1942](https://github.com/mastermindx-market-intelligence/mastermind/pull/1942), head `033deff4ea920234de7ddad85c6decfdd24ccd3a`, was observed merged, while this carrier remained unqualified. The original-owner installer/review chain remains #1925 → #1935 → #1942; the observed source return describes v20 and preserves prior rejected/superseded v17/v18/v19. F03 has neither installed a repair nor assumed its deployment. A fresh read is justified only after material P00/runtime evidence, not repeated polling of unchanged denial.
+At that historical observation, Mastermind [#1942](https://github.com/mastermindx-market-intelligence/mastermind/pull/1942), head `033deff4ea920234de7ddad85c6decfdd24ccd3a`, was merged while the Studio carrier remained unqualified. The original installer/review chain was #1925 → #1935 → #1942. Preserve the historical refusal; it is not a description of the subsequently qualified direct-app operations above. P00's unsupported resource/release work remains separate. F03 has not installed, rebound or restarted the bridge, and does not retry unchanged denial.
 
 ## Exact F03 integration targets
 
@@ -17,12 +29,12 @@ P00 owns the recovery and supported resource path. Mastermind [#1942](https://gi
 | `01M2WGNCX9475G79JRKJTCM08P / p-1P-0` | `5G0X-2` | Replace static shorthand directory with family entry points, evidence states and complete contract links | Retain original identity and export; check F03/other current writer at this board |
 | Same source | `5G1H-2` | Update recorded link map; preserve exact product semantics and direct destinations | F01 owns global shell semantics; domain references stay separate from live product routes |
 | Same source | `5G1Z-2` | Show source versus accepted responsive/theme/locale coverage; do not infer a complete matrix from names | Domain owners supply actual specimens; existing coverage caveats retained |
-| `01M3NSZGE8JWN2EZCSF0DT05RM / p-R-0` | `1BCX-0` | Link Terminal product families and F03 source contract while retaining focused Terminal semantics | Exact Terminal directory-board overlap only; not a file-wide claim |
+| `01M3NSZGE8JWN2EZCSF0DT05RM / p-R-0` | Original `1BCX-0`; implemented exact-reference index `1NDQ-0` | Six families and direct source/reference/held locations retained | Exact F03 directory scope only; not a file-wide claim |
 | `01M2WGNCX9475G79JRKJTCM08P / p-8-1` | `CTQ-1`, `EBS-1`, `EBT-1`, `EBU-1`, `HJ6-1`, `IPR-0`, `J7J-0`, `M6V-0`, `Q9Z-0`, `S7Q-1` | Retain baseline evidence and add source references from directory | No redesign or approval inferred; do not replace raster captures with invented source truth |
 
 The proposed `MM · Design Programme` file in `00 Programme` has no verified destination ID. Reuse a qualified coherent file before creating a duplicate. If only admitted file/page operations become available, apply those supported changes and report the remaining folder work as partial; unsupported folder operations are not required to be disguised as canvas edits.
 
-## Verified stale labels and proposed corrections
+## Historical stale labels and completed corrections
 
 **Bonds:** file `01M2WGNCX9475G79JRKJTCM08P`, page `p-1H-0` still says R18–R25. Explicit live read confirmed 12 boards: R32 `6885-1`, `63GL-1`, `63S3-1`, `63YS-1`, `648A-1`; R30 `66FJ-1`, `676M-1`, `6693-1`; R33 implementation map `67ZC-1`; R31 `6B6Q-1`; CDI `6GDA-0`, `6JKG-0`. Proposed page label: **Bonds · Decision & Credit Studies · Revision index**. D15 must select the candidate and index the supporting revisions. Do not rename the whole page “R32.” Adjacent transmission page `p-1E-0` contains related material including board `6894-1`; preserve its separate identity.
 
@@ -45,7 +57,7 @@ Held references remain held: Policy Watch MASTERMIND `p-1J-0` (D24); Refined vas
 
 ## Supported-operation sequence
 
-1. **Bind current capability.** Consume the original P00 return with installed carrier/catalog evidence. Inspect its supported operation schema and use only that operation. Do not assume that create/move/rename/archive share a schema or preservation behavior.
+1. **Bind current capability.** Verify the actual installed original carrier/catalog and exact admission. Consume relevant P00 capability returns without substituting source-merge prose for installed proof. Inspect each supported operation schema; do not assume create/move/rename/archive share a schema or preservation behavior.
 2. **Freeze exact targets.** Re-read the source, descendants affected by a container operation and actual destination. Persist target IDs and the intended operation in this source ledger. Check current writer observations at board/node scope, including D17 WTI descendants of D13 pages. An open PR or shared file name alone is not a lease.
 3. **Choose minimal disposition.** Keep a coherent small file where possible. Separate current candidate, supporting specimens and historical indexes; do not transfer the whole history automatically. The suggested budget of about eight active pages/60 boards is an operating review signal, not a Paper limit or an automatic split rule.
 4. **Preflight retention.** Record original name, URL, board/node identity, supported export, comments/annotation status, assets, links, prior review conditions and successor. If the supported API cannot preserve or inspect a required property, keep the original and name that property as a blocker. No blanket “all preserved” checkbox.
@@ -54,7 +66,7 @@ Held references remain held: Policy Watch MASTERMIND `p-1J-0` (D24); Refined vas
 7. **Verify content and access.** Compare before/after dimensions, node/text structure, representative screenshots, assets, annotations/comments, internal/external links and owners. Validate old bookmarks. Record per-check observed pass/fail/unknown evidence; readback must identify the actual destination.
 8. **Preserve redirects.** Keep old-location notices, link the exact verified destination and source contract, and retain historical approval/rejection/hold metadata. A redirect itself should not be relocated away from its old address.
 9. **Archive only when qualified.** Require named successor or explicit historical retention reason, complete preservation checks, no unresolved affected writer, intact links and readback. Do not permanently delete anything in this assignment.
-10. **Freeze and review.** Save supported after exports/captures and annotation contracts in source, update only affected crosswalk records, obtain independent review and bind the immutable artifact set. Apply actual RIG states/receipts; F03 does not self-approve.
+10. **Freeze and self-QA.** Save supported after exports/captures and annotation contracts, inspect the affected artifacts, run focused tests and bind the immutable set. Optional independent review does not block implementation under the current Chairman Web waiver. Apply only actual RIG states/receipts; binding non-author release approvals remain separate and F03 does not self-approve.
 
 ### Action-state contract
 
@@ -76,4 +88,5 @@ D20's PROPHET `p-2-1` is a shared Hong Kong/Canada reference. Separate proposed 
 
 Stop a batch on identity drift, unknown effects, missing preservation evidence, conflicting writer or unsupported operation. Reconciliation should narrow to the affected target; do not make a new umbrella workstream or switch carrier to force the same effect.
 
-Source rollback restores the prior F03 commit. Paper rollback uses only the supported reversible operation with captured original names/IDs and actual post-state. Original files remain available until acceptance, which makes recovery concrete. F03 SUCCESS requires every assigned action that constitutes the agreed organization to be applied and verified, with complete maps and preserved history. This return remains PARTIAL because no such effects were admitted or applied.
+Source rollback restores only the affected F03 change. Paper rollback uses only a supported reversible operation with captured original names/IDs and actual post-state; uncertain effects must first be reconciled. Original files remain available. F03 SUCCESS requires the agreed organization to be applied and verified with complete preservation evidence. This return remains PARTIAL: supported in-file navigation and completed lookup compositions are proven to their stated readback/visual scope, but cross-file actions remain undispatched and real input-path/qualification gates remain open. No F03 operation is currently unresolved.
+

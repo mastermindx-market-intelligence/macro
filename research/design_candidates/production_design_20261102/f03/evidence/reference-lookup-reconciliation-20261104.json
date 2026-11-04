@@ -1,0 +1,37 @@
+{
+  "schema": "f03.original_target_reconciliation.v1",
+  "operation_id": "f03-20261104-lookup-wide-provenance-01",
+  "recorded_at_utc": "2026-11-04T05:28:19Z",
+  "carrier": "Mastermind Paper direct app",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-1P-0",
+  "node_id": "72K0-0",
+  "original_attempt": "EFFECT_UNKNOWN after non-JSON transport response; no automatic replay",
+  "material_change": "Grok original-host health evidence at 2026-11-04T05:20:23Z; direct app subsequently CONNECTED and exact-target reads succeeded",
+  "readback": {
+    "expected_count": 31,
+    "observed_count": 31,
+    "missing_ids": [],
+    "unexpected_ids": [],
+    "exact_node_set_matches_pre_dispatch": true,
+    "expected_provenance_text_absent": true,
+    "carrier": "Mastermind Paper direct app",
+    "target": "01M2WGNCX9475G79JRKJTCM08P/p-1P-0/72K0-0"
+  },
+  "children": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"children\": [\n    {\n      \"id\": \"72K3-0\",\n      \"name\": \"Directory header\",\n      \"component\": \"Frame\",\n      \"childCount\": 1,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72K8-0\",\n      \"name\": \"Reference lookup task\",\n      \"component\": \"Frame\",\n      \"childCount\": 3,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KD-0\",\n      \"name\": \"Exact search and owner filter\",\n      \"component\": \"Frame\",\n      \"childCount\": 2,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72KP-0\",\n      \"name\": \"Returned reference and direct destinations\",\n      \"component\": \"Frame\",\n      \"childCount\": 6,\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ],\n  \"count\": 4\n}"
+      }
+    ]
+  },
+  "jsx_evidence": "reference-lookup-wide-reconciliation-20261104.jsx",
+  "outcome": "RECONCILED_NO_TARGET_EFFECT_OBSERVED",
+  "qualification": "Exact current target has the same 31 node IDs as the four observed-applied pre-attempt components, no additional/missing nodes, and none of the intended provenance text. This establishes no target content from that attempt; it does not claim the transport request was never dispatched.",
+  "continuation": "Current Chairman implementation authority permits deliberate completion on this original target/carrier with a fresh qualified guard and the same logical operation ID after this readback. No alternate carrier, replacement board, automatic replay, runtime restart or parallel queue."
+}

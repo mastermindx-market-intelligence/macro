@@ -52,4 +52,123 @@ check('Candidate and Read me compound identities use their own pages',()=>{for(c
 check('Current D08B/C Read me links are not retained-original claims',()=>{for(const id of ['D08B','D08C']){assert.equal(run(`sessionById('${id}').return_observation.retained_reference_url`),null);assert.doesNotMatch(run(`returnEvidence(sessionById('${id}'))`),/Retained original reference/);}});
 check('Evidence links reject normalization outside the immutable source pin',()=>{const head='a3356474cebbdd88e6448e05ffc3d2e44faa5ca6';for(const tail of ['../../blob/main/README.md','x/../README.md','./README.md'])assert.doesNotMatch(run(`evidenceLink('https://github.com/mastermindx-market-intelligence/macro/blob/${head}/${tail}','pin')`),/<a /);});
 
+check('Paper-reference search finds returned Read me board IDs with exact page and contract',()=>{
+ for(const [id,board,page,wrongPage] of [['D08B','1PVF-0','p-14-0','p-12-0'],['D08C','1S0R-0','p-15-0','p-13-0']]){
+  const r=run(`referenceView({view:'references',q:'${board}',owner:''},'${board.toLowerCase()}')`);
+  assert.equal(r.n,1,board+' must be discoverable in Paper references');
+  assert.ok(r.html.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+page));
+  assert.ok(!r.html.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+wrongPage));
+  assert.ok(r.html.includes(run(`sessionById('${id}').source_contract`)));
+  assert.match(r.html,new RegExp(board));assert.match(r.html,/Read me/);
+ }
+});
+check('Reference search accepts full returned URLs and exact compound identities',()=>{
+ for(const page of ['p-14-0','p-15-0'])for(const prefix of ['','https://app.paper.design/file/']){
+  const q=prefix+'01M3NSZGE8JWN2EZCSF0DT05RM/'+page;
+  assert.equal(run(`referenceView({view:'references',owner:'',q:${JSON.stringify(q)}},${JSON.stringify(q.toLowerCase())}).n`),1);
+ }
+ const q='01M2WGNCX9475G79JRKJTCM08P/p-1H-0';
+ assert.equal(run(`referenceView({view:'references',owner:'',q:'${q}'},'${q.toLowerCase()}').n`),1);
+});
+check('Returned reference owner filtering and result links preserve query context',()=>{
+ const r=run("referenceView({view:'references',q:'1PVF-0',owner:'D08B'},'1pvf-0')");
+ assert.equal(r.n,1);assert.match(r.html,/view=references&amp;q=1PVF-0&amp;owner=D08B&amp;session=D08B/);
+ assert.equal(run("referenceView({view:'references',q:'1PVF-0',owner:'D08C'},'1pvf-0').n"),0);
+});
+check('Same-page candidate and Read me roles are retained without duplicate page results',()=>{
+ const q='01M2WGNCX9475G79JRKJTCM08P/p-27-0';
+ const r=run(`referenceView({view:'references',owner:'F01',q:'${q}'},'${q.toLowerCase()}')`);
+ assert.equal(r.n,1);assert.match(r.html,/Observed candidate/);assert.match(r.html,/Read me/);
+ assert.equal(run('new Set(referenceRows().map(r=>r.key)).size'),run('referenceRows().length'));
+});
+check('Retained-only and no-native returns never become native candidates',()=>{
+ for(const id of ['D08','D08A','D08D'])assert.equal(run(`referenceRows().flatMap(r=>r.claims).filter(c=>c.owner==='${id}'&&c.kind==='candidate').length`),0);
+ const q='01M2WGNCX9475G79JRKJTCM08P/p-25-0';
+ const r=run(`referenceView({view:'references',owner:'D08A',q:'${q}'},'${q.toLowerCase()}')`);
+ assert.equal(r.n,1);assert.match(r.html,/Retained original reference/);assert.match(r.html,/not an approved candidate/);
+});
+check('Reference projection leaves all frozen data and approval fields unchanged',()=>{
+ const before=run('JSON.stringify([data.pages,data.artboards,data.sessions,data.routes,data.source_deltas])');
+ run("referenceView({view:'references',q:'',owner:''},'')");
+ assert.equal(run('JSON.stringify([data.pages,data.artboards,data.sessions,data.routes,data.source_deltas])'),before);
+ assert.equal(run('data.pages.length'),301);assert.equal(run('data.artboards.length'),2450);
+ assert.ok(run('data.sessions.filter(s=>s.return_observation).every(s=>s.rig_receipt===null)'));
+});
+check('Returned references disclose observed source time and unresolved qualification',()=>{
+ const r=run("referenceView({view:'references',q:'1PVF-0',owner:''},'1pvf-0')");
+ assert.match(r.html,/2026-11-04T02:38:34Z/);assert.match(r.html,/a3356474cebbdd88e6448e05ffc3d2e44faa5ca6/);
+ assert.match(r.html,/not a new native approval/);assert.match(r.html,/Approval not established/);
+});
+check('Chinese returned-reference labels retain exact identity and source contracts',()=>{
+ run("lang='zh'");const r=run("referenceView({view:'references',q:'1S0R-0',owner:'D08C'},'1s0r-0')");
+ assert.equal(r.n,1);assert.match(r.html,/设计说明/);assert.match(r.html,/1S0R-0/);
+ assert.ok(r.html.includes(run("sessionById('D08C').source_contract")));run("lang='en'");
+});
+check('Reference projection rejects mismatched identity tuples and untrusted Paper URLs',()=>{
+ const s=run("JSON.parse(JSON.stringify(sessionById('D08B')))");
+ for(const bad of ['javascript:alert(1)','https://example.com/file/ABC/p-1-0','https://app.paper.design/file/ABC/p-1-0/../p-2-0']){
+  s.candidate_ref=bad;s.return_observation.readme_url=null;s.return_observation.retained_reference_url=null;
+  assert.equal(run(`referenceRows([${JSON.stringify(s)}],[]).length`),0);
+ }
+ s.candidate_ref='https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-13-0';
+ assert.equal(run(`referenceRows([${JSON.stringify(s)}],[]).length`),0);
+});
+check('Compound page identity keeps equal page IDs in different files distinct',()=>{
+ const pages=run('data.pages.filter(p=>p.paper_page_id==="p-1-0")');
+ assert.ok(pages.length>1);assert.equal(run(`referenceRows([],${JSON.stringify(pages)}).length`),pages.length);
+});
+check('Repeated return records deduplicate claims without erasing distinct roles',()=>{
+ const s=run("JSON.parse(JSON.stringify(sessionById('F01')))");
+ assert.equal(run(`referenceRows([${JSON.stringify(s)},${JSON.stringify(s)}],[]).length`),1);
+ assert.equal(run(`referenceRows([${JSON.stringify(s)},${JSON.stringify(s)}],[])[0].claims.length`),2);
+});
+check('New reference controls include narrow stacking and touch-target source rules',()=>{
+ assert.match(html,/\.reference-row\{flex-direction:column;gap:12px\}/);
+ assert.match(html,/\.reference-return summary\{[^}]*min-height:44px/);
+ assert.match(html,/\.reference-contracts a\{[^}]*min-height:44px/);
+});
+
+check('All concrete returned Read me board IDs resolve only to their own page',()=>{
+ const returns=run('data.sessions.filter(s=>s.return_observation?.readme_board_id)');
+ assert.equal(returns.length,4);
+ for(const s of returns){const o=s.return_observation;const rows=run(`referenceRows().filter(r=>r.claims.some(c=>c.board_id===${JSON.stringify(o.readme_board_id)}))`);assert.equal(rows.length,1);assert.equal(rows[0].key,o.readme_file_id+'/'+o.readme_page_id);}
+});
+check('Returned status and timestamp injection stays escaped and malicious contract stays inert',()=>{
+ const c=run("JSON.parse(JSON.stringify(referenceRows().find(r=>r.claims.some(c=>c.owner==='D08B')).claims[0]))");
+ c.status='<img src=x onerror=alert(1)>';c.qualification='<script>alert(1)</script>';c.source_head='<svg onload=alert(1)>';
+ c.observed_at='2026-11-04T00:00:00Z\" onmouseover=\"alert(1)';c.source_contract='javascript:alert(1)';
+ const s=run(`referenceReturnEvidence([${JSON.stringify(c)}],{view:'references'})`);
+ assert.doesNotMatch(s,/<(?:img|script|svg)\b|href="javascript:|datetime="[^"]*" onmouseover=/);
+ assert.match(s,/&lt;img/);assert.match(s,/&lt;script/);assert.match(s,/&quot; onmouseover=&quot;/);assert.match(s,/Destination not established/);
+});
+const pendingMeta={directory:{paper_unresolved_operation_ids:['synthetic-pending-operation'],paper_unresolved_effects:1},native_effect_observed_at:'2026-11-04T00:00:00Z'};
+check('Synthetic pending native effect is exposed as a snapshot, not approval or a retry action',()=>{
+ const ids=run('data.metadata.directory.paper_unresolved_operation_ids');
+ const s=run(`effectWarning(${JSON.stringify(pendingMeta)})`);assert.ok(s.includes('synthetic-pending-operation'));assert.match(s,/outcome unconfirmed/);assert.match(s,/not a live service monitor/);assert.doesNotMatch(s,/<button/);
+ assert.equal(element('effect-warning').hidden,!ids.length);assert.match(html,/id="effect-warning"[^>]*role="note"/);
+});
+check('Zero-unknown fixture produces no stale warning or invented pending operation',()=>{
+ assert.equal(run("effectWarning({directory:{paper_unresolved_operation_ids:[],paper_unresolved_effects:0}})"),'');
+});
+check('Effect warning visibility follows the actual ledger on detail views without changing router context',()=>{
+ location.hash='#view=references&q=1PVF-0&owner=D08B&session=D08B';run('render()');
+ assert.equal(element('overview').hidden,true);assert.equal(element('effect-warning').hidden,!run('data.metadata.directory.paper_unresolved_operation_ids.length'));
+ assert.equal(location.hash,'#view=references&q=1PVF-0&owner=D08B&session=D08B');
+});
+check('Chinese synthetic pending-effect warning preserves the exact operation and evidence link',()=>{
+ run("lang='zh'");const warning=run(`effectWarning(${JSON.stringify(pendingMeta)})`);assert.match(warning,/操作结果尚未确认/);
+ assert.match(warning,/synthetic-pending-operation/);
+ assert.match(warning,/href="paper\/native-progress.json"/);run("lang='en';render()");
+});
+check('Pending operation display rejects text and timestamp injection',()=>{
+ const s=run(`effectWarning(${JSON.stringify({directory:{paper_unresolved_operation_ids:['<img src=x onerror=alert(1)>']},native_effect_observed_at:'" onload="x'})})`);
+ assert.doesNotMatch(s,/<img|datetime="" onload=/);assert.match(s,/&lt;img/);assert.match(s,/&quot; onload=&quot;/);
+});
+check('EN and ZH reference views render against recursively frozen source data',()=>{
+ run("(function freeze(x){if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.freeze(x);for(const v of Object.values(x))freeze(v);}})(data)");
+ const before=run('JSON.stringify(data)');
+ run("referenceView({view:'references',q:'',owner:''},'');lang='zh';referenceView({view:'references',q:'',owner:''},'');lang='en'");
+ assert.equal(run('JSON.stringify(data)'),before);
+});
+
 console.log(JSON.stringify({kind:'source_logic_regression_probes_not_browser_tests',status:'PASS',tests,limitations:['No rendering, browser interaction, screen-reader, touch, focus-visibility, contrast, zoom or performance acceptance.']},null,2));

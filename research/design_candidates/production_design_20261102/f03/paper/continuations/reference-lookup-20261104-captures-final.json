@@ -1,0 +1,62 @@
+{
+  "schema": "f03.native_capture_set.v1",
+  "kind": "actual_native_screenshots_and_jsx_not_interaction_proof",
+  "status": "root_visual_self_qa_pass_scoped_not_product_acceptance",
+  "previous_capture_set": "reference-lookup-20261104-captures-r1.json",
+  "boards": [
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K0-0",
+      "observed_at": "2026-11-04T05:38:17.094Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-wide-20261104-r2.jpg",
+        "bytes": 95726,
+        "sha256": "b3c9655f11e5711916537e19d131512ddbe6317b87e90b6481b7dd6a119b1652",
+        "git_blob_sha": "10cae9bb6a5888cb15d250e129c873bd40e47697"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-wide-20261104-r2.jsx",
+        "bytes": 11567,
+        "sha256": "229de211c66272a0b45a6b79faf9f901b9be8812a3317c9f555c309d0dca5a4e",
+        "git_blob_sha": "54072b7de9e50eac6e4fb527d44869534fc378ef"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K1-0",
+      "observed_at": "2026-11-04T05:38:22.479Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-mobile-20261104-r2.jpg",
+        "bytes": 76884,
+        "sha256": "c75594e11bc06df5c26a8f0201287938a7a5c179a35a245391a11ea41277862d",
+        "git_blob_sha": "cb36a3a5f5f1cbd93a1e2e4277124291c8da2203"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-mobile-20261104-r2.jsx",
+        "bytes": 14475,
+        "sha256": "cd6e04f81e9bf801181d4e7d4026410a548260a1e83167443ed745e836054006",
+        "git_blob_sha": "0fc7736ece59a75408fe8a5b7cf5a6acfb470e04"
+      }
+    },
+    {
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-1P-0",
+      "artboard_id": "72K2-0",
+      "observed_at": "2026-11-04T05:38:30.057Z",
+      "capture": {
+        "path": "paper/captures/reference-lookup-narrow-20261104-r2.jpg",
+        "bytes": 70256,
+        "sha256": "c0a790ce82d7cb2fd32320023aa2c77010bb4a4c8ea0ea5ebcf347e4ce0ca138",
+        "git_blob_sha": "b785c90319a7f160b7cd32fa400a154a354ec5c5"
+      },
+      "export": {
+        "path": "paper/exports/reference-lookup-narrow-20261104-r2.jsx",
+        "bytes": 14631,
+        "sha256": "eb2009b304ca24bef35dda06274b2444c5822fc420a0768a98ba9f1d44edafab",
+        "git_blob_sha": "ffc114768b868901d18c68f8f648c7fc4677cc8a"
+      }
+    }
+  ]
+}

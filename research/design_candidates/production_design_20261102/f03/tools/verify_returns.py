@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse, copy, hashlib, importlib.util, json, re
 from pathlib import Path
+from unittest.mock import patch
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('root',nargs='?',type=Path,default=Path('.')); args=ap.parse_args()
@@ -41,8 +42,12 @@ def main():
     check('HTML and assignment JSON share exact returns',embedded['sessions']==sessions)
     native=read('paper/native-progress.json'); meta=read('data/provenance.json')
     check('current effects derived from original native log',meta['directory']['paper_mutations']==sum(x['state']=='APPLIED_RESPONSE_OBSERVED' for x in native['operations']))
-    check('source law continuation separated from original pin',meta['procedure_sha']=='c57adacb338fe837c7d585f1e372c64d9b0118ec' and meta['continuation_procedure_sha']=='910803421beca53ca25145392725ab2d84c7a8e9')
-    check('native operation IDs unique; no unknown F03 effects',len(native['operations'])==len({x['operation_id'] for x in native['operations']}) and native['unresolved_effects']==[])
+    check('source law continuation separated from original pin',meta['procedure_sha']=='c57adacb338fe837c7d585f1e372c64d9b0118ec' and meta['continuation_procedure_sha']=='86a454807bc48540d98e07ece3da454f7b2341cf')
+    check('native operation IDs unique',len(native['operations'])==len({x['operation_id'] for x in native['operations']}))
+    unresolved=[x['operation_id'] for x in native['operations'] if x['state']=='EFFECT_UNKNOWN']
+    check('unknown effects exactly match original ledger and projection',set(unresolved)=={x['operation_id'] for x in native['unresolved_effects']} and meta['directory']['paper_unresolved_operation_ids']==unresolved and meta['directory']['paper_unresolved_effects']==len(unresolved))
+    check('unknown effects are not counted as applied or hidden in aggregate state',not unresolved or meta['paper_application']=='PARTIAL_NATIVE_EFFECT_UNKNOWN__RESOURCE_ACTIONS_NOT_DISPATCHED')
+    check('embedded metadata agrees with original current-effect projection',embedded['metadata']==meta)
     def rejects(name,alter):
         bad=copy.deepcopy(curated); alter(bad)
         try: builder.apply_assignment_returns(copy.deepcopy(sessions),bad)
@@ -68,6 +73,32 @@ def main():
     try: builder.apply_assignment_returns(proposed,late_bad)
     except AssertionError: check('invalid later row leaves all assignments unchanged',proposed==sessions)
     else: check('invalid later row leaves all assignments unchanged',False)
-    print(json.dumps({'kind':'bounded_return_refresh_identity_and_source_checks_not_acceptance','status':'PASS','check_count':len(checks),'checks':checks,'limitations':['Original 399-input suite is historical, not rerun here.','Native visual observation, browser interaction, hosted CI and formal RIG are separate.']},indent=2))
+    def project_native_fixture(fixture):
+        projected=copy.deepcopy(embedded)
+        with patch.object(builder,'load',return_value=fixture):
+            builder.observe_directory_progress(projected,root)
+        return projected
+    pending_fixture=copy.deepcopy(native)
+    if not pending_fixture['unresolved_effects']:
+        synthetic={'operation_id':'synthetic-unknown-effect','state':'EFFECT_UNKNOWN'}
+        pending_fixture['operations'].append(synthetic)
+        pending_fixture['unresolved_effects'].append(copy.deepcopy(synthetic))
+    actual_unresolved_count=len(native['unresolved_effects'])
+    def rejects_native(name,alter):
+        fixture=copy.deepcopy(pending_fixture); alter(fixture)
+        try: project_native_fixture(fixture)
+        except AssertionError: check(name,True)
+        else: check(name,False)
+    rejects_native('missing unresolved receipt fails projection',lambda n:n.update({'unresolved_effects':[]}))
+    rejects_native('orphan unresolved receipt fails projection',lambda n:n['unresolved_effects'].append({'operation_id':'synthetic-orphan'}))
+    rejects_native('duplicate operation ID fails projection',lambda n:n['operations'].append(copy.deepcopy(n['operations'][0])))
+    rejects_native('duplicate unresolved receipt fails projection',lambda n:n['unresolved_effects'].append(copy.deepcopy(n['unresolved_effects'][0])))
+    resolved_fixture=copy.deepcopy(pending_fixture)
+    for op in resolved_fixture['operations']:
+        if op['state']=='EFFECT_UNKNOWN': op['state']='APPLIED_RESPONSE_OBSERVED'
+    resolved_fixture['unresolved_effects']=[]
+    resolved=project_native_fixture(resolved_fixture)['metadata']
+    check('synthetic resolved fixture clears stale unknown projection without changing actual ledger',resolved['directory']['paper_unresolved_operation_ids']==[] and resolved['directory']['paper_unresolved_effects']==0 and resolved['paper_application']=='DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED' and len(native['unresolved_effects'])==actual_unresolved_count)
+    print(json.dumps({'kind':'bounded_return_refresh_identity_and_source_checks_not_acceptance','status':'PASS','check_count':len(checks),'checks':checks,'limitations':['Original 399-input suite is historical, not rerun here.','Native-effect reconciliation fixtures are synthetic; no actual Paper effect is resolved by a test.','Native visual observation, browser interaction, hosted CI and formal RIG are separate.']},indent=2))
 
 if __name__=='__main__':main()

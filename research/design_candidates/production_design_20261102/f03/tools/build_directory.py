@@ -96,9 +96,19 @@ def observe_directory_progress(data, out):
     native_path = out / 'paper' / 'native-progress.json'
     if native_path.exists():
         native = load(native_path)
+        operation_ids = [op['operation_id'] for op in native['operations']]
+        assert len(operation_ids) == len(set(operation_ids)), 'duplicate native operation IDs'
+        unresolved = [op['operation_id'] for op in native['operations'] if op['state'] == 'EFFECT_UNKNOWN']
+        recorded_unresolved = [op['operation_id'] for op in native['unresolved_effects']]
+        assert len(recorded_unresolved) == len(set(recorded_unresolved)), 'duplicate unresolved operation IDs'
+        assert set(unresolved) == set(recorded_unresolved), 'native unresolved-effect ledger mismatch'
         applied = sum(op['state'] == 'APPLIED_RESPONSE_OBSERVED' for op in native['operations'])
         meta['directory']['paper_mutations'] = applied
-        meta['paper_application'] = 'DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED' if applied else 'NOT_APPLIED_TO_PAPER'
+        meta['directory']['paper_unresolved_effects'] = len(unresolved)
+        meta['directory']['paper_unresolved_operation_ids'] = unresolved
+        meta['paper_application'] = ('PARTIAL_NATIVE_EFFECT_UNKNOWN__RESOURCE_ACTIONS_NOT_DISPATCHED' if unresolved
+                                     else 'DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED' if applied
+                                     else 'NOT_APPLIED_TO_PAPER')
         meta['native_effect_evidence'] = 'paper/native-progress.json'
         meta['continuation_procedure_sha'] = native.get('continuation_protected_procedure', native.get('protected_procedure'))
         meta['native_effect_observed_at'] = native['observed_at']
@@ -112,7 +122,10 @@ def observe_directory_progress(data, out):
     if meta['directory']['paper_mutations']:
         f03['candidate_ref'] = 'https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1P-0'
         f03['status'] = 'Directory refinements observed; all 301 cross-file organization actions NOT_DISPATCHED; reference approval absent'
-        f03['next_action'] = 'Qualify source/reference review and current joint foundations; resource actions require P00 supported-operation qualification and preservation evidence.'
+        f03['next_action'] = 'Continue safe source/design work with self-QA; formal RIG/release gates are separate. Resource actions require supported-operation qualification and preservation evidence.'
+        if meta['directory'].get('paper_unresolved_effects'):
+            f03['status'] = 'PARTIAL: ' + str(meta['directory']['paper_unresolved_effects']) + ' native operation outcome unconfirmed; ' + f03['status']
+            f03['next_action'] = 'Reconcile the exact original-carrier pending operation before further Paper writes. Continue independent source work; do not replay, change carrier or infer acceptance.'
 
 def builder_entry(s):
     """Source return and native/reference approval are intentionally independent."""

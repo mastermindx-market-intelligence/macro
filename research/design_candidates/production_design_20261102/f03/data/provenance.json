@@ -42,7 +42,9 @@
     "proposed_destinations": 51,
     "page_records": 301,
     "new_reference_approvals": 0,
-    "paper_mutations": 109
+    "paper_mutations": 142,
+    "paper_unresolved_effects": 0,
+    "paper_unresolved_operation_ids": []
   },
   "status": "PARTIAL / BLOCKED_RETURN",
   "paper_application": "DIRECTORY_EDITS_OBSERVED__RESOURCE_ACTIONS_NOT_DISPATCHED",
@@ -95,8 +97,8 @@
   "native_projection_warning": "17 native routes are inherited from the registry, not a fresh native-module census or route admission.",
   "source_rule": "Canonical registry fields retain literal unknown; null belongs only to unobserved F03 projection metadata.",
   "native_effect_evidence": "paper/native-progress.json",
-  "continuation_procedure_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
-  "native_effect_observed_at": "2026-11-04T03:27:35.701Z",
+  "continuation_procedure_sha": "86a454807bc48540d98e07ece3da454f7b2341cf",
+  "native_effect_observed_at": "2026-11-04T05:43:17.430Z",
   "assignment_return_observations": [
     {
       "id": "F01",

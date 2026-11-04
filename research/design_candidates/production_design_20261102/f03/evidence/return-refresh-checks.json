@@ -1,7 +1,7 @@
 {
   "kind": "bounded_return_refresh_identity_and_source_checks_not_acceptance",
   "status": "PASS",
-  "check_count": 93,
+  "check_count": 101,
   "checks": [
     {
       "name": "frozen bytes data/inventory-gaps.json",
@@ -324,7 +324,19 @@
       "result": "PASS"
     },
     {
-      "name": "native operation IDs unique; no unknown F03 effects",
+      "name": "native operation IDs unique",
+      "result": "PASS"
+    },
+    {
+      "name": "unknown effects exactly match original ledger and projection",
+      "result": "PASS"
+    },
+    {
+      "name": "unknown effects are not counted as applied or hidden in aggregate state",
+      "result": "PASS"
+    },
+    {
+      "name": "embedded metadata agrees with original current-effect projection",
       "result": "PASS"
     },
     {
@@ -374,10 +386,31 @@
     {
       "name": "invalid later row leaves all assignments unchanged",
       "result": "PASS"
+    },
+    {
+      "name": "missing unresolved receipt fails projection",
+      "result": "PASS"
+    },
+    {
+      "name": "orphan unresolved receipt fails projection",
+      "result": "PASS"
+    },
+    {
+      "name": "duplicate operation ID fails projection",
+      "result": "PASS"
+    },
+    {
+      "name": "duplicate unresolved receipt fails projection",
+      "result": "PASS"
+    },
+    {
+      "name": "synthetic resolved fixture clears stale unknown projection without changing actual ledger",
+      "result": "PASS"
     }
   ],
   "limitations": [
     "Original 399-input suite is historical, not rerun here.",
+    "Native-effect reconciliation fixtures are synthetic; no actual Paper effect is resolved by a test.",
     "Native visual observation, browser interaction, hosted CI and formal RIG are separate."
   ]
 }

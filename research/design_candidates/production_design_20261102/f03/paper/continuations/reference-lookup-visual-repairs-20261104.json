@@ -1,0 +1,138 @@
+{
+  "schema": "f03.native_visual_self_qa_repairs.v1",
+  "source_of_findings": "Actual r1 screenshots of 72K0-0, 72K1-0, 72K2-0",
+  "findings": [
+    "Assignment selector lacks dropdown affordance on all three boards.",
+    "Desktop selector occupies half the toolbar instead of matching the source artifact's 198px selector."
+  ],
+  "operations": [
+    {
+      "operation_id": "f03-20261104-lookup-filter-geometry-01",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "72KI-0"
+            ],
+            "styles": {
+              "position": "relative",
+              "flexBasis": "198px",
+              "flexGrow": "0",
+              "flexShrink": "0",
+              "width": "198px"
+            }
+          },
+          {
+            "nodeIds": [
+              "72M3-0",
+              "72NO-0"
+            ],
+            "styles": {
+              "position": "relative"
+            }
+          }
+        ]
+      },
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"72KI-0\",\n      \"ignoredStyles\": [\n        \"position\"\n      ]\n    },\n    {\n      \"nodeId\": \"72M3-0\",\n      \"ignoredStyles\": [\n        \"position\"\n      ]\n    },\n    {\n      \"nodeId\": \"72NO-0\",\n      \"ignoredStyles\": [\n        \"position\"\n      ]\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "recorded_at_utc": "2026-11-04T05:37:35.381Z"
+    },
+    {
+      "operation_id": "f03-20261104-lookup-wide-filter-chevron-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72KI-0",
+        "mode": "insert-children",
+        "html": "<svg layer-name=\"Assignment dropdown chevron\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"position:absolute;right:14px;top:25px;\"><path d=\"M4 6 L8 10 L12 6\" stroke=\"#8B93A1\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
+      },
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72OJ-0\",\n      \"name\": \"Assignment dropdown chevron\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OK-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "recorded_at_utc": "2026-11-04T05:37:40.654Z"
+    },
+    {
+      "operation_id": "f03-20261104-lookup-mobile-filter-chevron-01",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "nodes": [
+          {
+            "id": "72OJ-0",
+            "parentId": "72M3-0"
+          }
+        ]
+      },
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"duplicatedNodes\": [\n    {\n      \"sourceId\": \"72OJ-0\",\n      \"newId\": \"72OM-0\",\n      \"name\": \"Assignment dropdown chevron\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null,\n      \"descendantIdMap\": {\n        \"72OK-0\": \"72ON-0\"\n      }\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "recorded_at_utc": "2026-11-04T05:37:44.447Z"
+    },
+    {
+      "operation_id": "f03-20261104-lookup-narrow-filter-chevron-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "request_arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "72NO-0",
+        "mode": "insert-children",
+        "html": "<svg layer-name=\"Assignment dropdown chevron\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"position:absolute;right:14px;top:25px;\"><path d=\"M4 6 L8 10 L12 6\" stroke=\"#5D6B7E\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
+      },
+      "expected_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "after_snapshot": "5ffc72da2baab7205921066ac45197aee7339828996f5774b18d3c831cbbfd77",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"72OO-0\",\n      \"name\": \"Assignment dropdown chevron\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"72OP-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "recorded_at_utc": "2026-11-04T05:37:47.903Z"
+    }
+  ],
+  "production_acceptance": false
+}
