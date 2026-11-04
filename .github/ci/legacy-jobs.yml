@@ -12255,6 +12255,7 @@ jobs:
       - "tests/test_intl_gs_coverage.py"
       - "tests/intl_gs_scanner_browser.test.cjs"
       - "tests/intl_gs_scanner_fixture.py"
+      - "tests/test_intl_dossier_actionability.py"
       - "tests/__init__.py"
       - "engine/intl_global_acceptance_matrix.py"
       - "engine/intl_global_dollar_credit.py"
@@ -12337,7 +12338,7 @@ jobs:
         run: node --test tests/js/tablesort_browser.test.cjs
       # W2A (IM13) test steps: insert below this line
       - name: IM13 global scanner + coverage tests (W2A)
-        run: python -m pytest tests/test_intl_deferred_fixture.py tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py -q
+        run: python -m pytest tests/test_intl_deferred_fixture.py tests/test_intl_gs_scanner.py tests/test_intl_gs_coverage.py tests/test_intl_dossier_actionability.py -q
       - name: IM13 scanner + coverage browser proof (W2A)
         run: node --test tests/intl_gs_scanner_browser.test.cjs
       # spacer: keep unchanged
