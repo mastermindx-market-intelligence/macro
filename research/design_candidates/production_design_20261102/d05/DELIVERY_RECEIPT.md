@@ -1,6 +1,10 @@
 # D05 delivery receipt — audit, specification and candidate freeze
 
-## Current continuation receipt — 2026-11-04
+## Latest qualified continuation — 2026-11-04
+
+Qualified source0c4493c7025f7c1c0f9e558860d5e4ba33457cd1 includes this lane's eight-path CI repair4802d1b1 and the incumbent source lead's contract/preview follow-through. Hosted contract-delta passed at0c4493. Both actual nine-step composed journeys passed again, all57 emitted preview hashes match, and all486 inherited Terminal paths remain unchanged. Native Nasdaq/Russell proof adds8 actual-chart browser cases plus6 source-failure cases. Exact source, screenshots hashes, scope and limits are in [the implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) and its linked verification records. Classification is CHECKPOINTED_CONTINUATION; final shared acceptance, source publishers and release holds remain. This lane has frozen further Macro source writes and coordinates with the incumbent source lead through the existing Secretary thread.
+
+## Earlier continuation receipt — initial implementation publication
 
 Macro implementation [1573afdee7f6956968bded3b84e5fd4e25a8c82c](https://github.com/mastermindx-market-intelligence/macro/commit/1573afdee7f6956968bded3b84e5fd4e25a8c82c), tree53fd26562889649364e3371e25ff7021740f4517, is published on the original Draft #10703.25 source/component/CI hashes matched readback; Draft/open/unmerged verified. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) records exact local proof, all13 route dispositions, preserved174-feature/12-board design scope and remaining original-owner gates. Terminal624dbc0a and component74930f69 publishers remain held; no uncertain effect was retried. The original frozen design receipt below remains historical evidence, not a claim that implementation never occurred.
 

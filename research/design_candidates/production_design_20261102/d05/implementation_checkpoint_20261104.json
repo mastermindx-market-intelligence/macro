@@ -5,185 +5,8 @@
   "paper_candidates": 12,
   "original_census_columns_preserved": true,
   "original_acceptance_status_not_promoted": true,
-  "source_sha": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
-  "source_tree": "53fd26562889649364e3371e25ff7021740f4517",
-  "source_readback": [
-    {
-      "path": "templates/si_workspace.js",
-      "expected": "1e009ccf77bce28d699a22a296100c87a6d10b86",
-      "actual": "1e009ccf77bce28d699a22a296100c87a6d10b86",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/si_workspace.js",
-      "expected": "1e009ccf77bce28d699a22a296100c87a6d10b86",
-      "actual": "1e009ccf77bce28d699a22a296100c87a6d10b86",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/sector_cycles.js",
-      "expected": "9b57a79403d25528914342e235ea43c23b552535",
-      "actual": "9b57a79403d25528914342e235ea43c23b552535",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/sector_cycles.js",
-      "expected": "9b57a79403d25528914342e235ea43c23b552535",
-      "actual": "9b57a79403d25528914342e235ea43c23b552535",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/sector_central.html.j2",
-      "expected": "63b46b039395df34b5010222932f25e8f76ed2ec",
-      "actual": "63b46b039395df34b5010222932f25e8f76ed2ec",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/shared_shell_bridge.js",
-      "expected": "f018b9d9024e170e8a85be8d47159bd7cf366599",
-      "actual": "f018b9d9024e170e8a85be8d47159bd7cf366599",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/shared_shell_bridge.js",
-      "expected": "f018b9d9024e170e8a85be8d47159bd7cf366599",
-      "actual": "f018b9d9024e170e8a85be8d47159bd7cf366599",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "tests/js/shared_shell_bridge.test.cjs",
-      "expected": "0669af5d0c3911819591b1dc7e4d177642311ab3",
-      "actual": "0669af5d0c3911819591b1dc7e4d177642311ab3",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/basket_detail.html.j2",
-      "expected": "c2b6f58bb1408ecede06691134d08583b149b183",
-      "actual": "c2b6f58bb1408ecede06691134d08583b149b183",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "scripts/build_theme_detail.py",
-      "expected": "a354e40d03fa194d57bfbc9dd166cd58c40648fc",
-      "actual": "a354e40d03fa194d57bfbc9dd166cd58c40648fc",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "tests/test_sector_members_return.py",
-      "expected": "a881a48d0be793ed7366b4711b5052101d901c18",
-      "actual": "a881a48d0be793ed7366b4711b5052101d901c18",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "tests/test_cycles_entry_state.py",
-      "expected": "8eab29a9e84f0e606959860fc443ae8006fc6d95",
-      "actual": "8eab29a9e84f0e606959860fc443ae8006fc6d95",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/subsector_detail.html.j2",
-      "expected": "b595dcf2ed6560d6913c975614ddfae64e9561e5",
-      "actual": "b595dcf2ed6560d6913c975614ddfae64e9561e5",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/subsectors.js",
-      "expected": "c8c86311aac8f33488b02309952571a10374395f",
-      "actual": "c8c86311aac8f33488b02309952571a10374395f",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "scripts/build_subsector_rotation_pages.py",
-      "expected": "e276ac4ccfc94f18f4b24e9385239ce8e1b75939",
-      "actual": "e276ac4ccfc94f18f4b24e9385239ce8e1b75939",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "scripts/build_subsector_rotation_china_pages.py",
-      "expected": "7efdc5abc29ee5ac16417ddcb6da24965aa4da8c",
-      "actual": "7efdc5abc29ee5ac16417ddcb6da24965aa4da8c",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/subsector_rotation_detail.html.j2",
-      "expected": "db25c9e105d6708e931a1d006a5bdadf7cc89062",
-      "actual": "db25c9e105d6708e931a1d006a5bdadf7cc89062",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "tests/test_subsector_confluence.py",
-      "expected": "1f825442b26851cdc940941e71c48e2c2abdda84",
-      "actual": "1f825442b26851cdc940941e71c48e2c2abdda84",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "tests/test_d05_route_evidence_semantics.py",
-      "expected": "57fe59d08638718014a6b06ee0c4acb0b39e14f7",
-      "actual": "57fe59d08638718014a6b06ee0c4acb0b39e14f7",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/subsectors.js",
-      "expected": "c8c86311aac8f33488b02309952571a10374395f",
-      "actual": "c8c86311aac8f33488b02309952571a10374395f",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": ".github/ci/legacy-jobs.yml",
-      "expected": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51",
-      "actual": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/sector_dossier_cycle.js",
-      "expected": "909e43196a4efab130a7eba0563543ecd19ce220",
-      "actual": "909e43196a4efab130a7eba0563543ecd19ce220",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/sector_dossier_cycle.js",
-      "expected": "909e43196a4efab130a7eba0563543ecd19ce220",
-      "actual": "909e43196a4efab130a7eba0563543ecd19ce220",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "templates/sector_dossier_cycle.css",
-      "expected": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
-      "actual": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
-      "match": true,
-      "error": false
-    },
-    {
-      "path": "site/sector_dossier_cycle.css",
-      "expected": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
-      "actual": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
-      "match": true,
-      "error": false
-    }
-  ],
+  "source_sha": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "source_tree": "0273235719e35e4a67fbbd3b8ab480f903f92411",
   "terminal_head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
   "terminal_selected_paths": 14,
   "inherited_preserved": 486,
@@ -191,5 +14,213 @@
   "compact_component_status": "typed commit refused NOT_APPLIED; no retry",
   "paper_write_accepted": false,
   "shared_acceptance": "HELD",
-  "release_actions": []
+  "release_actions": [],
+  "initial_implementation_publication": {
+    "source_sha": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+    "source_tree": "53fd26562889649364e3371e25ff7021740f4517",
+    "source_readback": [
+      {
+        "path": "templates/si_workspace.js",
+        "expected": "1e009ccf77bce28d699a22a296100c87a6d10b86",
+        "actual": "1e009ccf77bce28d699a22a296100c87a6d10b86",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/si_workspace.js",
+        "expected": "1e009ccf77bce28d699a22a296100c87a6d10b86",
+        "actual": "1e009ccf77bce28d699a22a296100c87a6d10b86",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/sector_cycles.js",
+        "expected": "9b57a79403d25528914342e235ea43c23b552535",
+        "actual": "9b57a79403d25528914342e235ea43c23b552535",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/sector_cycles.js",
+        "expected": "9b57a79403d25528914342e235ea43c23b552535",
+        "actual": "9b57a79403d25528914342e235ea43c23b552535",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/sector_central.html.j2",
+        "expected": "63b46b039395df34b5010222932f25e8f76ed2ec",
+        "actual": "63b46b039395df34b5010222932f25e8f76ed2ec",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/shared_shell_bridge.js",
+        "expected": "f018b9d9024e170e8a85be8d47159bd7cf366599",
+        "actual": "f018b9d9024e170e8a85be8d47159bd7cf366599",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/shared_shell_bridge.js",
+        "expected": "f018b9d9024e170e8a85be8d47159bd7cf366599",
+        "actual": "f018b9d9024e170e8a85be8d47159bd7cf366599",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "tests/js/shared_shell_bridge.test.cjs",
+        "expected": "0669af5d0c3911819591b1dc7e4d177642311ab3",
+        "actual": "0669af5d0c3911819591b1dc7e4d177642311ab3",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/basket_detail.html.j2",
+        "expected": "c2b6f58bb1408ecede06691134d08583b149b183",
+        "actual": "c2b6f58bb1408ecede06691134d08583b149b183",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "scripts/build_theme_detail.py",
+        "expected": "a354e40d03fa194d57bfbc9dd166cd58c40648fc",
+        "actual": "a354e40d03fa194d57bfbc9dd166cd58c40648fc",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "tests/test_sector_members_return.py",
+        "expected": "a881a48d0be793ed7366b4711b5052101d901c18",
+        "actual": "a881a48d0be793ed7366b4711b5052101d901c18",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "tests/test_cycles_entry_state.py",
+        "expected": "8eab29a9e84f0e606959860fc443ae8006fc6d95",
+        "actual": "8eab29a9e84f0e606959860fc443ae8006fc6d95",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/subsector_detail.html.j2",
+        "expected": "b595dcf2ed6560d6913c975614ddfae64e9561e5",
+        "actual": "b595dcf2ed6560d6913c975614ddfae64e9561e5",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/subsectors.js",
+        "expected": "c8c86311aac8f33488b02309952571a10374395f",
+        "actual": "c8c86311aac8f33488b02309952571a10374395f",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "scripts/build_subsector_rotation_pages.py",
+        "expected": "e276ac4ccfc94f18f4b24e9385239ce8e1b75939",
+        "actual": "e276ac4ccfc94f18f4b24e9385239ce8e1b75939",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "scripts/build_subsector_rotation_china_pages.py",
+        "expected": "7efdc5abc29ee5ac16417ddcb6da24965aa4da8c",
+        "actual": "7efdc5abc29ee5ac16417ddcb6da24965aa4da8c",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/subsector_rotation_detail.html.j2",
+        "expected": "db25c9e105d6708e931a1d006a5bdadf7cc89062",
+        "actual": "db25c9e105d6708e931a1d006a5bdadf7cc89062",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "tests/test_subsector_confluence.py",
+        "expected": "1f825442b26851cdc940941e71c48e2c2abdda84",
+        "actual": "1f825442b26851cdc940941e71c48e2c2abdda84",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "tests/test_d05_route_evidence_semantics.py",
+        "expected": "57fe59d08638718014a6b06ee0c4acb0b39e14f7",
+        "actual": "57fe59d08638718014a6b06ee0c4acb0b39e14f7",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/subsectors.js",
+        "expected": "c8c86311aac8f33488b02309952571a10374395f",
+        "actual": "c8c86311aac8f33488b02309952571a10374395f",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": ".github/ci/legacy-jobs.yml",
+        "expected": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51",
+        "actual": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/sector_dossier_cycle.js",
+        "expected": "909e43196a4efab130a7eba0563543ecd19ce220",
+        "actual": "909e43196a4efab130a7eba0563543ecd19ce220",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/sector_dossier_cycle.js",
+        "expected": "909e43196a4efab130a7eba0563543ecd19ce220",
+        "actual": "909e43196a4efab130a7eba0563543ecd19ce220",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "templates/sector_dossier_cycle.css",
+        "expected": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
+        "actual": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
+        "match": true,
+        "error": false
+      },
+      {
+        "path": "site/sector_dossier_cycle.css",
+        "expected": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
+        "actual": "ac7bcd8b7411dabf6de6e5df6a412348300388f1",
+        "match": true,
+        "error": false
+      }
+    ]
+  },
+  "source_qualification": "exact qualified continuation; branch may advance under incumbent source lead",
+  "ci_closure_repair": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+  "ci_contract_delta": {
+    "run": 41824389478,
+    "job": 126556289612,
+    "conclusion": "success",
+    "full_ci_claimed": false
+  },
+  "current_composed_proof": {
+    "file": "verification/continuation_0c4493.json",
+    "journeys": 2,
+    "steps_each": 9,
+    "errors": 0,
+    "emitted_asset_hashes_matched": 57
+  },
+  "native_namespace_proof": {
+    "file": "verification/native_index_namespaces_20261104.json",
+    "browser_cases": 8,
+    "source_failure_cases": 6,
+    "fixtures_only": true
+  },
+  "custody": {
+    "macro_source_writer": "incumbent source lead; this lane frozen after4802",
+    "programme_writer": "this D05 programme/Dossier lane",
+    "coordination_message": "1793794398.494349",
+    "additional_blanket_review_required": false
+  }
 }

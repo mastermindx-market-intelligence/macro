@@ -1,0 +1,155 @@
+{
+  "fixture_only": true,
+  "proof_label": "successor-0c4493",
+  "fixture_manifest_sha256": "0a78ce798897b97d3847977c770ef911f65238f7b466956d57d853d1860b6f6e",
+  "viewport": [
+    390,
+    844
+  ],
+  "theme": "light",
+  "lang": "zh",
+  "steps": [
+    {
+      "name": "market map to native Cycles through actual Next same-document commit",
+      "details": null
+    },
+    {
+      "name": "State-only chart edit survives a parent reload without a new navigation entry",
+      "details": null
+    },
+    {
+      "name": "actual Dossier, chart settings and both evidence disclosures",
+      "details": null
+    },
+    {
+      "name": "Dossier Members action preserves the Central snapshot",
+      "details": {
+        "href": "http://localhost:3100/basket/us_sector_energy.html#hold",
+        "owner": "account:e2e-user-default"
+      }
+    },
+    {
+      "name": "Members to actual Company route retains both destinations",
+      "details": {
+        "href": "http://localhost:3100/terminal?symbol=XOM&from=macro",
+        "entry": "ef7b4013-51ca-488d-9f22-b3937a9c6d9e"
+      }
+    },
+    {
+      "name": "Company reload preserves entry-owned return context and native dark presentation",
+      "details": null
+    },
+    {
+      "name": "Back to Members restores source, exact sort, listing focus and viewport",
+      "details": null
+    },
+    {
+      "name": "Return to Cycles restores chart, Dossier values page, sources and exact focus",
+      "details": null
+    },
+    {
+      "name": "Cycles to original market map restores observed-history mode",
+      "details": null
+    }
+  ],
+  "errors": [],
+  "restore_receipts": [
+    {
+      "protocol": "mmx.shared-shell.v1",
+      "frameGeneration": "6e3af784-db24-4296-beee-4f686325dc5f",
+      "type": "RESTORE_RESULT",
+      "restoreId": "0a5a8ab3-47fe-427e-8db0-53fd354a9116",
+      "snapshotId": "b4dba215-3dca-42a3-bff5-d1531a9d5909:0",
+      "canonicalPath": "/basket/us_sector_energy.html#hold",
+      "outcome": "applied",
+      "reason": null,
+      "publicationId": null,
+      "membersSourceId": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e",
+      "focus": "applied",
+      "viewport": "applied"
+    },
+    {
+      "protocol": "mmx.shared-shell.v1",
+      "frameGeneration": "7c9cf986-c292-4a5e-93bb-71836bf94fc5",
+      "type": "RESTORE_RESULT",
+      "restoreId": "5912c360-e2f9-47cc-89d8-ac252cbe23f2",
+      "snapshotId": "f989b40f-ce9d-4eb9-8422-51ef711eaad1:0",
+      "canonicalPath": "/sector_central.html?g=XLE&cycle=xle#cycles",
+      "outcome": "applied",
+      "reason": null,
+      "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+      "membersSourceId": null,
+      "focus": "applied",
+      "viewport": "applied"
+    }
+  ],
+  "observed_presentation": {
+    "theme": "light",
+    "lang": "zh"
+  },
+  "sheet_readback": {
+    "open": true,
+    "studyClass": "sc-dossier-active",
+    "parent": "cyc-stage",
+    "contained": true,
+    "display": "none",
+    "width": 390,
+    "matchingRules": [
+      "@media (max-width: 880px) {\n  #sc-native-study.sc-dossier-active #sc-detail { display: none !important; }\n}"
+    ]
+  },
+  "rendered_presentation": [
+    {
+      "capture": "01-central-dossier",
+      "path": "/sector_central.html",
+      "theme": "light",
+      "lang": "zh",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "02-members",
+      "path": "/basket/us_sector_energy.html",
+      "theme": "light",
+      "lang": "zh",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "03-company",
+      "path": "/terminal",
+      "theme": "dark",
+      "lang": "zh",
+      "boundary": "native Company dark"
+    },
+    {
+      "capture": "04-members-returned",
+      "path": "/basket/us_sector_energy.html",
+      "theme": "light",
+      "lang": "zh",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "05-central-returned",
+      "path": "/sector_central.html",
+      "theme": "light",
+      "lang": "zh",
+      "boundary": "shared presentation"
+    }
+  ],
+  "central_viewport_readback": {
+    "actual": {
+      "scrollY": 4800,
+      "focus": {
+        "kind": "dossier",
+        "id": "action-members"
+      }
+    },
+    "expected": {
+      "scrollY": 4800,
+      "focus": {
+        "kind": "dossier",
+        "id": "action-members"
+      }
+    }
+  },
+  "passed": true
+}

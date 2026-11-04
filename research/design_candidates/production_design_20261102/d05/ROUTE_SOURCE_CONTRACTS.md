@@ -2,7 +2,7 @@
 
 ## Current implementation disposition
 
-The audit and original route IDs below are retained. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) gives the current status of all13 routes at Macro1573afde. ROUTE_MATRIX adds current-stage/evidence/limit columns while retaining the original census and audit-stage columns. Existing implementations were upgraded; SPECIFIED_NOT_IMPLEMENTED in the historical audit is not a claim that these routes are blank.
+The audit and original route IDs below are retained. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) gives the current status of all13 routes, with product source1573afde and qualified continuation0c4493c7. ROUTE_MATRIX adds current-stage/evidence/limit columns while retaining the original census and audit-stage columns. Existing implementations were upgraded; SPECIFIED_NOT_IMPLEMENTED in the historical audit is not a claim that these routes are blank.
 
 Audit pin df691495abb1c2ba8f61e5624126cb17ad14e056. Assignment route IDs are unchanged. This table resolves gaps in the assignment census; it does not modify that shared registry. Route behavior is specified against the existing builders. [Sources](SOURCE_EVIDENCE.md)
 
@@ -18,9 +18,9 @@ Audit pin df691495abb1c2ba8f61e5624126cb17ad14e056. Assignment route IDs are unc
 | macro:sectors_family | /sectors/&lt;fund&gt;.html | Four implementations; see regional matrix below | Fund or regional sector source, local constituents and original stock route | A03/A04 and A01/A11 pattern. Do not infer one universal template or ticker from the route placeholder. |
 | macro:state_of_themes | /state_of_themes.html | scripts/build_state_of_themes.py::compose, orchestrated by build_site.py → state_of_themes.html.j2 | neuralwebdata theme state/thesis/asymmetry/pathways; phase history; basketdata specialist context; existing consumer contract | A07. Dated thesis/evidence/falsifier, reading order, seven setup legs, source provenance. |
 | macro:subsector_family | /subsector/&lt;id&gt;.html | scripts/build_subsector_confluence.py::render_pages → subsector_detail.html.j2 | US subsector/basket confluence; subsectorohlc, subsector_signals, subsector detail; basket b- prefix | A06/A12. Native group gate and stock gate separate; preserve identity and coverage. |
-| macro:subsector_nasdaq_family | /subsector_nasdaq/&lt;id&gt;.html | same builder::render_index_pages("nasdaq") → subsector_detail.html.j2 | subsectorohlc_nasdaq / subsector_signals_nasdaq / subsector_nasdaq and configured amalg- groups | A06 exact source fixture. “Nasdaq desk” does not certify every configured company as a current index constituent. |
+| macro:subsector_nasdaq_family | /subsector_nasdaq/&lt;id&gt;.html | same builder::render_index_pages("nasdaq") → subsector_detail.html.j2 | subsectorohlc_nasdaq / subsector_signals_nasdaq / subsector_nasdaq and configured amalg- groups | A06 plus native builder/actual-chart fixtures now proved; see verification/native_index_namespaces_20261104.json. “Nasdaq desk” does not certify every configured company as a current index constituent. |
 | macro:subsector_rotation | /subsector_rotation.html | build_site.py → subsector_rotation.html.j2 | Compatibility redirect to sector_central.html#si-movement; shared navigate replace or location.replace, noscript fallback | Keep redirect and return behavior. No new dashboard or duplicate source owner. |
-| macro:subsector_russell_family | /subsector_russell/&lt;id&gt;.html | same builder::render_index_pages("russell") → subsector_detail.html.j2 | subsectorohlc_russell / subsector_signals_russell / subsector_russell; configured amalg- groups; shared template | A06 pattern, distinct fixtures required before runtime acceptance. Never mix Nasdaq/S&P/Russell rows. |
+| macro:subsector_russell_family | /subsector_russell/&lt;id&gt;.html | same builder::render_index_pages("russell") → subsector_detail.html.j2 | subsectorohlc_russell / subsector_signals_russell / subsector_russell; configured amalg- groups; shared template | A06 pattern with distinct native builder/actual-chart fixtures now proved. Actual-source/account/Company-return acceptance remains separate. Never mix Nasdaq/S&P/Russell rows. |
 | macro:subsectors | /subsectors.html | scripts/build_subsector_confluence.py → subsectors.html.j2 | S&P, Nasdaq, Russell and Baskets artifacts; shared render engine | A12 plus retained confluence. Keep four universes, native sort/search/filter, coverage, class and tier semantics. |
 | macro:theme_tree | /theme_tree.html | scripts/build_theme_tree_page.py, also build_site.py → theme_tree.html.j2 | engine.theme_graph.store.read_nodes(current=True), read_edges(); hierarchy_breadth_display; theme crosswalk; identity resolver | A05. D13 owns graph semantics. Membership/proxy map is not a performance rank or thesis forecast. |
 
@@ -89,6 +89,8 @@ Keep #theme-* resolution and #read-* source-trace resolution as distinct behavio
 | watchstore.saveSectorInvestigation / listSectorInvestigations | Sector Research/Watches | Existing cloud subject + device-local note, account isolation, section='si' | Regional symbols/full cross-device context require owner contract; no new store |
 
 ## 5. Source-backed audit defects and requested owner work
+
+Items1–7 retain the original audit context. The selected map/list population and relative-trend producer ordering in items1/4 have since been repaired and source-qualified; do not duplicate those changes. Their broader served/source acceptance and the remaining owner conditions stay separate. The latest source and execution boundaries are in the implementation checkpoint.
 
 1. **Observed production scope mismatch:** Sectors 11 versus 38 themes in the map/list. Require one coherent selected scope and reject late data from old scope.
 2. **Correct history suppression to retain:** Oct30 current versus Nov2 reconstructed history was withheld; do not “fix” it by mixing dates.

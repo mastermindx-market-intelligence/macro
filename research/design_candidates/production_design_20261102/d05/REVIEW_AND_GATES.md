@@ -1,12 +1,36 @@
 # Review, owner gates and final acceptance boundary
 
-## Bounded outcome
+## Current implementation and admission — 2026-11-04
+
+The Chairman has authorized continued implementation. The qualified Macro Draft #10703 continuation is **0c4493c7025f7c1c0f9e558860d5e4ba33457cd1**, incorporating original product source1573afde and CI-closure repair4802d1b1. The original source lead retains Macro follow-through; this programme/Dossier lane does not publish competing source changes. The [implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) binds source, exact component and receiver identities, local proof, owner overlap and remaining effects. The original design-only scope below is historical; it does not revoke the later implementation mandate.
+
+Source-bound self-QA includes diff review, focused tests, actual screenshot inspection and the local Next/Company-return journey. Additional attended technical/source/design review is optional unless binding protected law expressly requires it. Formal GitHub approvals, required CI, the carried scientific/source conditions and shared-design/release holds remain separate.
+
+### Current owner actions
+
+| Owner / gate | Qualified result | Exact remaining action |
+|---|---|---|
+| Native Central/Cycles/Dossier and Company return | Source is published; published component749 plus unchanged14-file local Terminal passes two nine-step composed journeys at0c4493c7, including reload and applied return | Publish the original qualified Terminal changes through an applicable incumbent publisher, then prove the composed served build and authorized real-account paths |
+| Terminal #1244 publisher |14 intended source files qualified;486 inherited paths unchanged; local/published head624dbc0a | Incumbent installation owner supplies supported selected-content commit and separately qualified unchanged-baseline push; preserve original operation and inherited bytes |
+| Compact Dossier #10707 publisher | Candidate layout qualified; one typed commit was NOT_APPLIED/precheck refused; original published head74930f69 unchanged | Applicable protected sealed publisher successor and original-operation status must precede a qualified retry; do not re-home unpublished code |
+| Shared publication dependency | Secretary gb2-ping-0344 confirms WAITING_NATIVE_POOL_PIN_INSTALLATION_OWNER; timeout-only helper is unsupported on pinned seats | Continue through the existing #917 installation owner; general Chairman permission is already present |
+| Source scope and relative-trend emission | Original source defects repaired and source-qualified in Macro | Retain actual producer identities and finish the corresponding served/source acceptance; do not duplicate completed repairs |
+| State of Themes missing evidence | Absence repair is already present in current Macro source | Preserve absent-versus-explicit-none semantics; consume original worker return only through its authorized receiver and prove actual source behavior |
+| Confluence/rotation presentation | Count/coverage/unit/gate/date/cap/MTD repairs are tested in actual consumers and US/China builders | SC-066 census publication and producer #8299 proposal remain separate; preserve peer overlap and real source qualification |
+| Hosted CI | Source1573 reported8 introduced job-path omissions, repaired4802 and preserved0c4493; contract-delta, active main authority, planning and fences succeeded at0c4493 | Read remaining exact-head test-pack results; the4802 run was superseded/cancelled and is not success; preserve intentional inactive-base authority rejection |
+| F01/F02 and Paper | Shared candidates are provisional; root Paper is read-only and original uncertain effects remain frozen | Existing shared-design/Paper authority resolves only its admitted original targets and returns acceptance or exact changes |
+| Native Nasdaq/Russell |8 actual-chart browser cases and6 native source-failure cases pass with exact distinct namespaces | Existing owners finish actual-source/index-membership, account and Company/board round trips; standalone fixtures do not certify those |
+| Auth, save, regional, science and availability | Source and local fixture proof have explicitly bounded coverage | Existing owners discharge real-account/source/calendar/save/correction/refresh and scientific conditions; no fixture-to-production inference |
+
+**Current classification: CHECKPOINTED_CONTINUATION.** Source and programme changes are durable, seven exact-head CI packs remain running at the12:25 receipt, and the two remaining source publishers are gated. Unexecuted source/account acceptance is not automatically classified as blocked; its existing owners retain the remaining work. No merge, Ready/un-draft, enqueue, held-PR relabel or production deployment is authorized by this continuation.
+
+## Historical bounded design outcome
 
 D05 audited existing production, pinned source, R3 and R4; created twelve editable candidate boards on an isolated owned page; retained 134 inherited capabilities plus 40 route additions; and produced UX, responsive, data/source, builder and test contracts.
 
 **Classification: PROVEN_OUTCOME for the bounded audit/specification/candidate deliverable.** Final shared design acceptance is **HELD**. Wider production programme completion is **false**. This packet is not an implementation, formal RIG approval, CI result, merge, release or production acceptance.
 
-## Review sequence
+## Original advisory review sequence
 
 1. Existing production/R3/R4 inspected before authoring.
 2. A01/A02 first product-only captures and a capability manifest given to an independent principal reviewer without root rationale.
@@ -19,9 +43,11 @@ D05 audited existing production, pinned source, R3 and R4; created twelve editab
 
 These are advisory reviews. Formal RIG remains to be admitted/performed through the programme's existing review owner. No self-authored approval receipt is created.
 
-## Current owner/action table
+## Historical owner/action table — original design freeze
 
-| Gate | Current evidence / unresolved claim | Exact next owner action |
+The table below preserves the original design-freeze evidence. The current table above supersedes its implemented-source and implementation-admission rows; the remaining source, science, auth, save, regional and acceptance conditions still apply.
+
+| Gate | Original evidence / unresolved claim at design freeze | Original next owner action |
 |---|---|---|
 | Shared foundations | F01 candidate.4 and F02 candidate.2 unreleased; F02 product/taste block | F01/F02 design authority reviews exact consumed package, resolves shared objections and issues joint acceptance or changes |
 | D05 formal design review | Twelve candidates and complete package frozen; advisory findings resolved/qualified | Programme design authority runs existing independent product/regression and visual/taste RIG against this exact artifact |
@@ -72,9 +98,9 @@ Do not retry or move these unrelated uncertain effects:
 
 Do not repeat the completed source census, original-owner check, accepted R3/R4 review, all eleven A01 rows, resolved A01/A02 visual findings, current Cycles elapsed guard or saved-state source discovery without a changed source/authority/behavior/evidence reason. Preserve original R3/R4 boards and F01/F02 shared tokens.
 
-The two earlier advisory agents and final contract reviewer received explicit STOP. No watcher, runner, background job or durable execution was started. This session is not a daemon.
+At the original design freeze, the two earlier advisory agents and final contract reviewer received explicit STOP and no background runner was started. Current hosted CI is a separately verified GitHub execution; this attended session does not claim to monitor it after the turn ends.
 
 ## Primary continuation
 
-The **existing programme design authority** reviews the frozen D05 package and Paper page through its existing RIG process, jointly reconciles F01/F02 and named source gates, and records the result before an implementation phase is admitted. Independent source-owner investigations may proceed under their existing mandates; this package grants no new write/release authority.
+Continue the already-authorized implementation from the exact current checkpoint. The original Terminal and compact-component publishers resume only after their incumbent installation owner provides an applicable capability and original status readback. Hosted CI must be read for the exact Macro head. Secretary coordination is recorded in the existing D05 thread at1793794398.494349; the incumbent source lead owns EW-P4 and the separately assigned Theme Tree search work. Request/launch evidence is not claimed as worker START. The existing programme design authority resolves F01/F02 and shared acceptance separately; original source/auth/science/regional owners retain their gates. No additional blanket review ceremony or repeat Chairman permission request is introduced, and release restrictions remain intact.
 

@@ -1,0 +1,252 @@
+{
+  "schema": "d05.composed-continuation.v1",
+  "recorded_utc": "2026-11-04T12:20:39.867714+00:00",
+  "status": "CURRENT_SOURCE_LOCAL_COMPOSITION_QUALIFIED_SHARED_ACCEPTANCE_HELD",
+  "macro_head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "component_published_head": "74930f6931773b23072f91590319dc39fe5a7d07",
+  "terminal_published_head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+  "terminal_selection": {
+    "terminal/components/DashboardBackButton.tsx": {
+      "sha256": "de6bc5610ee2a144a69461dae33085e559599fb7690f9abd1f1a04f4287b26ff",
+      "bytes": 2335,
+      "status": " M"
+    },
+    "terminal/components/chrome/AppShell.tsx": {
+      "sha256": "1b8476af3af948f95d27ec59e66f2f11546fd16a904185279bae50e6231a8c2f",
+      "bytes": 16763,
+      "status": " M"
+    },
+    "terminal/components/chrome/shared-shell/LegacyPageHost.tsx": {
+      "sha256": "b6cc0cc8f6828b256288184d4006d27e7745e92237414f806b99c2f1b1d780f1",
+      "bytes": 21326,
+      "status": " M"
+    },
+    "terminal/components/MobileNav.tsx": {
+      "sha256": "5694d7e413e608a9566bc54a8bd81de2ad1bf5426365441a40d0fffc544f65ba",
+      "bytes": 13550,
+      "status": " M"
+    },
+    "terminal/components/TerminalShell.tsx": {
+      "sha256": "6890dd19975660c1c057f73adfce67e1b3fba6d1f9ec50254ef6cff724108cc3",
+      "bytes": 464236,
+      "status": " M"
+    },
+    "terminal/lib/originNav.ts": {
+      "sha256": "d2bb94f6baeea348bb2fdad310adc65ea40aa37862357630f210c9f55ee762ce",
+      "bytes": 31120,
+      "status": " M"
+    },
+    "terminal/lib/sharedShellContracts.ts": {
+      "sha256": "664f1b7e2674be4bf99c88a3aaf66250978727fb605df4c17a92a9da723ea965",
+      "bytes": 25150,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/originEntry.test.ts": {
+      "sha256": "56acf5383067625686e37c6c7433a6e0e1a7e81481086c082b69e286478e75d4",
+      "bytes": 24345,
+      "status": "??"
+    },
+    "terminal/lib/__tests__/originEntryHydration.test.ts": {
+      "sha256": "1ffc9b5dde1f84fd118f2acb02f3f83b8199136166ccfa7499e9ef1db4447382",
+      "bytes": 2268,
+      "status": "??"
+    },
+    "terminal/app/layout.tsx": {
+      "sha256": "b854744fc98e520fad35d759fd2b8625eeb4f3af7b1c336aa171586b05db5cf5",
+      "bytes": 3311,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/sharedShellNavigationCommit.test.tsx": {
+      "sha256": "c9e97eb001f27ac83c621c7548425046b80ef6cce08ed178897d166589e971ef",
+      "bytes": 25572,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/sharedShellPublicPresentation.test.tsx": {
+      "sha256": "5fdf3cb1efb5d5d3ae4e5de33a69ab399ac501baedc0dedd3e592937285a2f6b",
+      "bytes": 27000,
+      "status": " M"
+    },
+    "terminal/app/(shell)/layout.tsx": {
+      "sha256": "8fe8137f82e9d7313d7bd8c70eceb342eb7208424931b05ba22aaaa7aee9b830",
+      "bytes": 3918,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/shellFixtureIdentity.test.tsx": {
+      "sha256": "f4db0706d15f7fc5ed76f41028fc5dc306aaddf2501b4cf039cb0d7f11313020",
+      "bytes": 3872,
+      "status": " M"
+    }
+  },
+  "terminal_inherited_unchanged": 486,
+  "terminal_baseline_sha256": "2bbbc1d39ee9cac44568ea77336ae1711cc042c86920ebb9092ec958b1ec25d2",
+  "fixture_provenance_sha256": "0a78ce798897b97d3847977c770ef911f65238f7b466956d57d853d1860b6f6e",
+  "emitted_asset_count": 57,
+  "all_emitted_asset_hashes_match": true,
+  "dynamic_dependencies": {
+    "theme.js": [
+      "account.js",
+      "terminal_overlay.js"
+    ],
+    "account.js": [
+      "nav_market.js"
+    ]
+  },
+  "cases": {
+    "composed-1440-dark-en-successor-0c4493": {
+      "passed": true,
+      "steps": 9,
+      "raw_sha256": "5d556dedc6c5a7e62e19e3ec8396264cb01ab02c842db94c79e080a9ee0e928c",
+      "rendered_presentation": [
+        {
+          "capture": "01-central-dossier",
+          "path": "/sector_central.html",
+          "theme": "dark",
+          "lang": "en",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "02-members",
+          "path": "/basket/us_sector_energy.html",
+          "theme": "dark",
+          "lang": "en",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "03-company",
+          "path": "/terminal",
+          "theme": "dark",
+          "lang": "en",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "04-members-returned",
+          "path": "/basket/us_sector_energy.html",
+          "theme": "dark",
+          "lang": "en",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "05-central-returned",
+          "path": "/sector_central.html",
+          "theme": "dark",
+          "lang": "en",
+          "boundary": "shared presentation"
+        }
+      ],
+      "captures": {
+        "01-central-dossier.png": {
+          "sha256": "8001b7e73e1849e352afd35653cf489a9ef5afd85f6d73d72a7a666c19062e67",
+          "bytes": 201329
+        },
+        "02-members.png": {
+          "sha256": "b20f98bbe69c3e0b4a844dc85f7945f2b6ae8589264d24c9a4df736e83592fdc",
+          "bytes": 251827
+        },
+        "03-company.png": {
+          "sha256": "b758939b06ad7da874095d9af253831dd60a9d7bf5ba66e4d33a211cb779b419",
+          "bytes": 287428
+        },
+        "04-members-returned.png": {
+          "sha256": "c86d8ae8ef0170c3cc564ccd5455f8bf084bfec63f15b13ba4526997e1e2821a",
+          "bytes": 252115
+        },
+        "05-central-returned.png": {
+          "sha256": "8014bb2c4e1f61807124d7b65bc865b4d9b26fc796e55ae11d0253a49955b28b",
+          "bytes": 266209
+        }
+      }
+    },
+    "composed-390-light-zh-successor-0c4493": {
+      "passed": true,
+      "steps": 9,
+      "raw_sha256": "40199ec80622c7615cb9398d0eec3c41051ab56c76037a0f3d8f6c480da46114",
+      "rendered_presentation": [
+        {
+          "capture": "01-central-dossier",
+          "path": "/sector_central.html",
+          "theme": "light",
+          "lang": "zh",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "02-members",
+          "path": "/basket/us_sector_energy.html",
+          "theme": "light",
+          "lang": "zh",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "03-company",
+          "path": "/terminal",
+          "theme": "dark",
+          "lang": "zh",
+          "boundary": "native Company dark"
+        },
+        {
+          "capture": "04-members-returned",
+          "path": "/basket/us_sector_energy.html",
+          "theme": "light",
+          "lang": "zh",
+          "boundary": "shared presentation"
+        },
+        {
+          "capture": "05-central-returned",
+          "path": "/sector_central.html",
+          "theme": "light",
+          "lang": "zh",
+          "boundary": "shared presentation"
+        }
+      ],
+      "captures": {
+        "01-central-dossier.png": {
+          "sha256": "cb8d9a85a3c799ef139d2f327e6367deb41b226c71d9900036539c5a9c6c77b5",
+          "bytes": 98363
+        },
+        "02-members.png": {
+          "sha256": "667e66c25e111d16fbd821c3205456a9082ff87f8d0cb185d50ee8db2f7ba9d0",
+          "bytes": 84755
+        },
+        "03-company.png": {
+          "sha256": "83841485401dab1ed2d1f8991b4c200a3cebab8eb8750b3a8a54571232b6b366",
+          "bytes": 93166
+        },
+        "04-members-returned.png": {
+          "sha256": "37e4dc08c8bf15e252ea9a5e405978cd811ed8b401c3f9ae0f61f288907d32dd",
+          "bytes": 84989
+        },
+        "05-central-returned.png": {
+          "sha256": "78ec90ccfc8edeaee9990c2f8e0a93e608eebaeff94aba78b56eb6a6039c9f9c",
+          "bytes": 90083
+        }
+      }
+    }
+  },
+  "native_namespace_proof": {
+    "source": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+    "raw_sha256": "12d4ba46a15cc18ef4051a164123acbd921f46f28a283a829ff1a9d96ba5beda",
+    "browser_cases": 8,
+    "source_failure_cases": 6,
+    "sources_unchanged_in_successor": true
+  },
+  "source_tools": {
+    "prepare_preview_successor.py": {
+      "sha256": "e6f2df31098141a0e4dafe9035ec6c86b0e471de340d1cee38af42fb9c8fe3a7",
+      "bytes": 14005
+    },
+    "verify_composed.py": {
+      "sha256": "118d4a2159afb3f959e2779f5dddcdcd0dc36dbcc91755fce468b0f9891145ce",
+      "bytes": 15615
+    },
+    "verify_native_index_namespaces.py": {
+      "sha256": "4e974d38fd4d53f4570373e29ac86b7c80e53c228b775a30c70f2d93feff2156",
+      "bytes": 11696
+    }
+  },
+  "visual_self_qa": "Actual current desktop Dossier and phone returned-state captures inspected. Published749 stretched summary and dense standalone mobile chart remain recorded; no final visual acceptance.",
+  "limits": [
+    "Local fixture identity and dated/synthetic data only.",
+    "Company keeps native dark presentation while public light intent and locale restore.",
+    "No live auth, current regional membership, durable save, natural refresh, correction or production proof.",
+    "No source publication from this lane after4802; original Macro source lead retains follow-through."
+  ]
+}

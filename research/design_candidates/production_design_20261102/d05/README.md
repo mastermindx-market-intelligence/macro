@@ -1,6 +1,6 @@
 # D05 — Sectors, Themes & Rotation
 
-**Audit, specification and editable candidate package complete; implementation and local browser proof now advanced. Final shared design acceptance HELD.** The current source is published in Macro Draft #10703 at1573afde; Terminal and compact-component publication remain gated. No release action occurred. See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md).
+**Audit, specification and editable candidate package complete; implementation and local browser proof now advanced. Final shared design acceptance HELD.** The qualified implementation is published in Macro Draft #10703 through0c4493c7: original product increment1573afde, exact CI-closure repair4802d1b1 and the incumbent source lead's contract/preview follow-through0c4493c7. Terminal and compact-component publication remain gated. No release action occurred. See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md).
 
 Original design-package freeze: **22f6a887a621e82497ea256611835cee2ba6f079**. [Delivery receipt](DELIVERY_RECEIPT.md) records the verified source scope, evidence, limits and exact continuation.
 
@@ -11,6 +11,8 @@ D05 preserves the strongest existing sector, cycle, theme, breadth, confluence, 
 The package covers **all 13 assigned canonical routes**, **134 inherited capabilities plus 40 additions**, **12 editable Paper boards** and **119 defined build-test cases**. The119 cases remain the complete acceptance obligation; the current implementation checkpoint and TEST_MATRIX record executed subsets and their limits without treating every case as passed.
 
 [Open the editable Paper candidates](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0) · [Existing programme Draft PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617)
+
+Current-source proof now includes two actual nine-step Next/Company-return journeys at0c4493c7, with all57 emitted preview files hashed. Separate native Nasdaq/Russell verification adds8 actual-chart browser cases and6 missing/malformed/empty-source cases. The hosted contract-delta check at0c4493c7 passed. These receipts do not establish all119 acceptance cases or final visual acceptance. See [continuation proof](verification/continuation_0c4493.json) and [namespace proof](verification/native_index_namespaces_20261104.json).
 
 ## Read the package
 
@@ -47,9 +49,9 @@ A11 reuses the strongest native R4 Brief components in the shared shell. The oth
 | macro:factors | /factors.html | Internal denied route; preserve404 and no customer promotion |
 | macro:rotation_family | /rotation/&lt;key&gt;.html | Cohort rotation detail, eight horizons and top30 disclosure |
 | macro:sector_central | /sector_central.html | Brief/Explore/Research/Watches, source integrity and compatibility |
-| macro:sector_cycles | /sector_cycles.html | Complete native capability contract; in-shell/Dossier implementation still separately owed |
+| macro:sector_cycles | /sector_cycles.html | Native Central/Cycles and Dossier implemented and locally qualified; joint Terminal publication and broader acceptance remain held |
 | macro:sectors_family | /sectors/&lt;fund&gt;.html | US, Canada, China and HK implementations explicitly distinguished |
-| macro:state_of_themes | /state_of_themes.html | Dated thesis, evidence identity, missing-falsifier repair gate |
+| macro:state_of_themes | /state_of_themes.html | Dated thesis and evidence identity retained; absence repair is present in Macro source; live-source acceptance remains separate |
 | macro:subsector_family | /subsector/&lt;id&gt;.html | Builder/template resolved; group-to-constituent flow |
 | macro:subsector_nasdaq_family | /subsector_nasdaq/&lt;id&gt;.html | Configured-complex semantics, separate source namespace |
 | macro:subsector_rotation | /subsector_rotation.html | Preserve compatibility redirect to #si-movement |
@@ -78,18 +80,18 @@ File **01M6FAXA774QT1VRDMAG7DFQ2W**, page **p-3-0**, “D05 · Production journe
 
 Screenshots: evidence/A01-final.jpg through A12-final.jpg. Native JSX exports: paper/exports/A01.jsx through A12.jsx. These are static design references, not functioning product code.
 
-## Findings that materially affect the build
+## Audit findings and current implementation disposition
 
 | Finding | Evidence and consequence |
 |---|---|
-| Selected population mismatch | Production showed Sectors11 with38 theme marks/list items after settlement. One scope must own label, population, chart, table and selection. |
+| Selected population mismatch | The original production audit showed Sectors11 with38 theme marks/list items after settlement. Macro source now repairs the actual map/list population callback; served regional acceptance remains separate. |
 | Honest historical mismatch already works | Oct30 current evidence and Nov2 reconstructed history were withheld from combination. Preserve this behavior. |
 | Coverage fields have different meanings | Confluence n_priced means members with any price history; coverage_pct means latest-live positive-volume coverage. A06 and contracts corrected after independent challenge. |
 | Basket census source/publication gap | New engine fields exist, but committed basket_confluence coverage lacks them. SC-066 remains held; “gateable” means scored, not buyable. |
-| Missing falsifier evidence can become no-detection | Current absent thesis/summary defaults false/zero and can emit NOT_DETECTED. Required target is unavailable/unconfirmed until evidence exists. |
+| Missing falsifier evidence | The original absent thesis/summary defect is repaired in the current Macro source. Missing evidence remains distinct from an explicit no-fire result; original worker-result custody and live-source acceptance remain separate. |
 | Research saves are narrower than the desired journey | Cloud subject, device-only note/snapshot/origin; current ETF-only argument rejects regional and theme IDs. No new store or regex bypass. |
 | Historical projection ownership matters | Current Cycles already has a median-elapsed guard. The inherited Retail basket elapsed-window defect is a separate source path. |
-| Native Cycles remains partial | #9917 merged as a partial release; P15/P17 and Dossier Cycle U07 were not delivered. D05 does not claim to implement them. |
+| Native Cycles/Dossier | The original #9917 release was partial. Current D05 source implements native Central/Cycles, Dossier and locally qualified Company return; Terminal publication, the compact component update and complete shared/source acceptance remain held. |
 | Real product availability blocked part of the audit | Retail navigation reached HTTP524. One later Canadian navigation timed out. Regional/Company end-to-end proof remains unproven. |
 
 [Detailed observations and source links](AUDIT_OBSERVATIONS.md)
@@ -100,21 +102,21 @@ A blind first product/visual pass was frozen before rationale. Seven findings on
 
 Actual Paper screenshots were inspected and iterated. The representative compositions cover both themes, both languages, phone/tablet/desktop and dense/negative states. They do **not** prove the full locale/theme/width Cartesian set, actual painted contrast, keyboard/screen-reader/touch, runtime data correctness, auth, saves, exact Company return or natural refresh.
 
-F01 candidate.4 and F02 candidate.2 are provisional; final shared design acceptance remains held. The predecessor RIG's eight conditions remain carried. No formal RIG approval, CI, merge, Ready, un-draft, enqueue, relabel or production deployment was performed.
+F01 candidate.4 and F02 candidate.2 are provisional; final shared design acceptance remains held. The predecessor RIG's eight conditions remain carried. Current implementation has source-bound self-QA and local browser proof, and hosted CI is running as recorded in the implementation checkpoint. An additional attended technical/source/design review is optional unless binding protected law expressly requires it. Formal GitHub approvals and required CI remain binding. No merge, Ready/un-draft, enqueue, held-PR relabel or production deployment occurred.
 
 ## Source, custody and durability
 
 - Assignment/common/checklist: macro **6e1862867193ec6486a22001a0e4fb515da20448**.
-- Protected Mastermind law: **910803421beca53ca25145392725ab2d84c7a8e9**, bootstrap major1 compatible.
+- Original design-freeze law: **910803421beca53ca25145392725ab2d84c7a8e9**, bootstrap major1 compatible. Current implementation pin: **b5e8a9682f72b1bf802e50cf16f77f878ce596f3**, compatible INDEX1.0.1; material review-policy changes were read at **7aefe3fa3917faecf9b074a3033d37f6a4e7838a** without claiming an atomic full-pin refresh.
 - Product source audit: macro **df691495abb1c2ba8f61e5624126cb17ad14e056**.
 - Existing programme: macro#7646, operation sector-central-redesign-20260921-sol-001.
 - Existing continuity home: agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md; task tree research/sector_completion_20261021/MASTERPLAN_2026-10-21.md.
-- Canonical D05 source destination: existing Draft#10617 branch design/paper-production-audit-20261102-ryan; only d05/ files changed.
+- Canonical design-package destination: existing Draft#10617 branch design/paper-production-audit-20261102-ryan; only d05/ files changed. Product implementation uses existing Draft#10703 branch claude/d05-native-cycles-20261104; the original source lead retains current follow-through.
 - Earlier read-back checkpoints:951f3dafbd2d93d8cf18f50c7d029e7825c8c8f9, e00e87cd0e14a27ab030968b404763cfdbb891e5, b238250bfa00f2ddf50f43752370aaca5cb6d02d.
 - Agent OS/Linear projection remains **PLAN_NOT_ORG_LINKED** for this D05 return; no source package is misrepresented as an adopted organizational state.
 - Unrelated unknown Paper effects remain on their original targets, frozen and unretried. D05 has no unknown effect.
 
 ## Next action
 
-The existing programme design authority reviews this exact D05 package through its RIG process, reconciles F01/F02 and named source/receiver gates, and records the result before a separate implementation phase is admitted. See REVIEW_AND_GATES.md for each owner, falsifier and executable action.
+Continue from the [implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md), not from the original design-only admission step. The Chairman has authorized implementation. The incumbent installation owner must provide an applicable protected publisher capability before the original Terminal and compact-component operations can publish their qualified changes. Read the actual hosted CI result, retain the existing source/receiver ownership, and resolve the named source, auth, regional and shared-design acceptance gates through their current owners. See [REVIEW_AND_GATES.md](REVIEW_AND_GATES.md) for current actions. Existing release restrictions remain binding.
 

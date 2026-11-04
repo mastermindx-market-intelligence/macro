@@ -2,13 +2,13 @@
 
 ## Implementation annotation — 2026-11-04
 
-The134 inherited rows and40 additions remain intact. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) binds current native Central/Cycles/Dossier, Members/Company return and confluence/rotation upgrades to Macro1573afde. Retention tests and local browser proof do not retire remaining regional, scientific, auth/save or source-publication obligations. No accepted Paper board or ledger row was rebuilt in this continuation.
+The134 inherited rows and40 additions remain intact. The [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) binds current native Central/Cycles/Dossier, Members/Company return and confluence/rotation upgrades to product increment1573afde and qualified continuation0c4493c7. Native Nasdaq/Russell fixtures now prove their separate render/chart namespaces without certifying current index membership. Retention tests and local browser proof do not retire remaining regional, scientific, auth/save or source-publication obligations. No accepted Paper board or ledger row was rebuilt in this continuation.
 
 RETAINED_FEATURE_LEDGER.csv contains **174 rows**: all **134 inherited capability rows**, joined to their existing source/control contract, plus **40 D05 route-specific additions**. No inherited capability was deleted.
 
 The inherited proposal census is retained verbatim: **88 RETAIN, 37 IMPROVE, 7 RELOCATE, 2 BLOCKED_DATA**. Those are predecessor proposal dispositions, not 134 newly approved production capabilities. The inherited verifier notes and served-proof status remain visible rather than being overwritten with a D05 success claim.
 
-New d05_* columns add the current decision, target home, candidate composition, contract delta, original producer/control, owner gate, test categories and stage. Every row remains SPECIFIED_NOT_IMPLEMENTED with formal/shared acceptance held. Paper composition coverage means presentation evidence; it does not imply every interaction is drawn or working in a still.
+New d05_* columns add the current decision, target home, candidate composition, contract delta, original producer/control, owner gate, test categories and stage. The frozen design-stage column remains SPECIFIED_NOT_IMPLEMENTED; it records the original specification stage and is not the current implementation census. The implementation checkpoint records subsequent source and local proof without upgrading formal/shared acceptance. Paper composition coverage means presentation evidence; it does not imply every interaction is drawn or working in a still.
 
 ## Material qualifications
 
@@ -21,9 +21,9 @@ New d05_* columns add the current decision, target home, candidate composition, 
 - SC-092: Central still has no native correction contract. Do not borrow a research lineage field to invent one.
 - C18: current Cycles already has a median-elapsed guard. Preserve it; the Retail basket problem is a different source path.
 - C19: PARITY_FAILS, PRIOR cells and qualification remain explicit.
-- U07: native Dossier Cycle remains unimplemented by the partial release.
+- U07: the original #9917 partial release did not implement native Dossier Cycle. Current D05 source now does, with local composed proof; Terminal publication, compact-layout publication and broader acceptance remain held.
 - U10: cloud subject and device-only note/context have different durability; regional/theme saves are not accepted by the current ETF-only API.
-- U13: actual served journeys, auth and natural refresh remain unproven.
+- U13: the actual local Next composition is now proved within its fixture boundaries. Real-account served regional journeys, auth and natural refresh remain unproven.
 
 The 40 additions cover the complete Narrative Rotation surface; denied Factors; broad-rotation periods/cohort/trail/member cap; US/CA/CN/HK detail semantics; dated State of Themes and source identity; Theme Tree; Nasdaq/Russell namespaces; coverage; existing research adapter; scope mismatch; producer ordering; exact return; compatibility redirect and provisional shared foundations.
 

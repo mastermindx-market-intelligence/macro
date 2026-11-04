@@ -1,19 +1,22 @@
 # D05 test matrix and executed evidence
 
-## Current executed scope — Macro1573afde
+## Current executed scope — qualified Macro0c4493c7
 
 See [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) for exact source/receiver/component identities and proof links.
 
 | Executed scope | Result | Limit |
 |---|---|---|
-| Actual composed nine-step journey |1440 dark/EN and390 light/ZH pass against exact published component749 |Local fixture auth/data; Company is native dark and original light/ZH restores |
+| Actual composed nine-step journey |1440 dark/EN and390 light/ZH pass again at0c4493c7 against exact published component749;57 emitted assets match |Local fixture auth/data; Company is native dark and original light/ZH restores |
 | Native Cycles |42 browser source/retention cases pass |Not blanket actual-theme or all-regional acceptance |
 | Members |15 browser and11 producer cases pass |Regional cases are controlled display fixtures |
 | Shared bridge / native entry |87 bridge and8 native-entry cases pass |No new router/store/access owner |
 | Confluence/rotation semantics |21 cases pass;24 existing regression passes/3 data-store skips |Counts, units, gates, dates, zero/missing, cap30, MTD and US/China listing links |
 | Consumer layout |12 actual-browser cases pass |1440 dark/EN,1440 light/ZH,390 light/ZH,320 dark/EN; fixture only |
 | Terminal |142 tests/11 suites and full TypeScript pass |14 files unpublished;486 inherited paths unchanged |
-| CI registration/readback |Two new suites have one existing job;25 source/component/CI hashes match committed bytes |Hosted CI and formal release gates are separate |
+| Native Nasdaq/Russell detail routes |8 actual-chart browser cases and6 native-render missing/malformed/empty-source cases pass |Distinct controlled fixtures; links verified, real current membership/account/return journey remains separate |
+| CI registration/readback |4802d1b1 adds8 exact paths to the existing job without changing tests/conditions; hosted contract-delta at0c4493c7 passes |Full test packs and formal release gates remain separate |
+
+Raw receipts: [current composed continuation](verification/continuation_0c4493.json), [desktop](verification/composed_1440_dark_en_0c4493.json), [phone](verification/composed_390_light_zh_0c4493.json), [native index namespaces](verification/native_index_namespaces_20261104.json). Native fixtures cover D05-ROUTE-09/11 and D05-REG-10 only to the recorded limits. Company href checking is not a new Company round trip.
 
 The CSV retains119 original test IDs and original full-scope status, with additive
 current-evidence/qualification columns. A subset proof does not turn an all13-route,
@@ -84,7 +87,7 @@ The three final principal-review falsifiers are included: D05-DATA-08 (price his
 3. End-to-end Company/return journeys with regional variants.
 4. Responsive, locale, keyboard/touch/assistive and actual painted contrast proof.
 5. Native capability regression, lazy-load behavior and one natural refresh.
-6. Independent review and carried RIG conditions on the frozen build.
+6. Source-bound self-QA and carried RIG conditions on the frozen build. Additional attended technical/source/design review is optional unless binding protected law expressly requires it; formal GitHub approvals and required CI remain binding.
 
 Only authorized test data/accounts may be mutated. D05 has not authorized live saves or production release actions.
 

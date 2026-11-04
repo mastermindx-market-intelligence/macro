@@ -1,10 +1,18 @@
 # D05 builder instructions
 
-## Current execution — source1573afde
+## Current execution — qualified source0c4493c7
 
 Consume the [current implementation checkpoint](IMPLEMENTATION_CHECKPOINT_20261104.md) before the historical checkpoints below. Macro #10703 now includes the source-qualified Dossier/Members/Company return and confluence/rotation consumer repairs. Two actual composed published749 journeys pass; Terminal's14-file implementation and the compact component remain in their original blocked publishers. Preserve all486 inherited Terminal paths. Do not repeat accepted design work or the already-present State of Themes absence repair.
 
-The exact source/contract/proof binding is [Macro1573afde](https://github.com/mastermindx-market-intelligence/macro/commit/1573afdee7f6956968bded3b84e5fd4e25a8c82c). The original no-merge/Ready/queue/relabel/deploy holds remain.
+The original source/contract binding is [Macro1573afde](https://github.com/mastermindx-market-intelligence/macro/commit/1573afdee7f6956968bded3b84e5fd4e25a8c82c). The [qualified continuation0c4493c7](https://github.com/mastermindx-market-intelligence/macro/commit/0c4493c7025f7c1c0f9e558860d5e4ba33457cd1) includes the exact8-path CI repair and incumbent source lead's contract/preview changes. Both nine-step Company-return cases pass again;57 final preview-file hashes match. [Current proof](verification/continuation_0c4493.json). The original no-merge/Ready/queue/relabel/deploy holds remain.
+
+## Native index fixture reproduction
+
+The exact executed [namespace verifier](verification/verify_native_index_namespaces.py) covers the existing Nasdaq/Russell `render_index_pages` owner and actual native chart assets. It is a local evidence runner, not a production build step.
+
+Use an owned ignored proof directory. Set `D05_SOURCE_ROOT` to the pinned Macro checkout, and place the runner in that proof directory. Use the existing `prepare_preview.py` to create its `site/` theme assets. Materialize the following exact files under `native-index-source/` using the source hashes in [the result](verification/native_index_namespaces_20261104.json): `scripts/build_subsector_confluence.py` as `build_subsector_confluence.py`; `templates/subsector_detail.html.j2` as `subsector_detail.html.j2`; `site/chart.js` as `chart.js`; and `site/lightweight-charts-v5.js` as `lightweight-charts-v5.js`. Keep the incumbent local static origin at `http://localhost:8765` serving that owned `site/`; do not replace an unrelated server. Run `D05_SOURCE_ROOT=<pinned-checkout> python3 <proof-directory>/verify_native_index_namespaces.py` with NumPy, Jinja2 and Playwright available.
+
+The runner generates explicitly labelled synthetic payloads under `site/d05-index-fixtures/`, uses identical slugs with different data in each desk, renders sub-industry and complex pages, checks source-date versus build-date semantics and exact Company/board hrefs, reads actual chart inputs and verifies missing/malformed/empty source never deletes the prior fixture pages. It emits8 browser cases and6 negative source cases. It does not claim real membership, calendar correctness, marker science, authenticated Company return, durable saves or final visual acceptance.
 
 ## Historical source checkpoint — 2026-11-04 07:25 UTC
 
