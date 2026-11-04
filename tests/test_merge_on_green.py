@@ -6364,13 +6364,28 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
 
 
-def test_the_live_enterprise_quota_expands_the_window_to_100(monkeypatch, capsys):
-    armed = [_pull(number) for number in range(1, 94)]
+def test_the_live_enterprise_quota_covers_110_armed_pulls(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 111)]
     seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
     assert MOG.main() == 0
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
-    assert len(seen) == len(armed), "the measured 29-PR deferral must be gone"
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
+    assert len(seen) == len(armed), "the measured 110-PR backlog must not be cap-deferred"
     assert "Per-sweep cap" not in capsys.readouterr().out
+
+
+def test_enterprise_evaluation_still_defers_beyond_128_without_extra_ci_slots(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 130)]
+    seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
+    assert MOG.main() == 0
+    assert len(seen) == MOG.MAX_PULL_CAP == 128
+    assert MOG.MAX_REFRESHES_PER_SWEEP == MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+    notices = [line for line in capsys.readouterr().out.splitlines()
+               if "Per-sweep cap" in line]
+    assert len(notices) == 1
+    assert "128 of 129" in notices[0]
+    missing = set(range(1, 130)) - set(seen)
+    assert len(missing) == 1
+    assert f"#{missing.pop()}" in notices[0]
 
 
 def test_the_sweep_stops_cleanly_when_the_budget_runs_out_mid_pass(monkeypatch, capsys):
@@ -6525,7 +6540,7 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
     )
 
 
-@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25), (110, 128)])
 def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
     """Evaluation coverage is insufficient when only one refresh slot is free.
 
@@ -6628,7 +6643,7 @@ def test_the_workflow_hands_the_sweeper_the_triggering_CONCLUSION_too():
 
 
 def test_the_dynamic_cap_preserves_the_proven_budget_share():
-    """The old 25/1,000 policy scales with the quota and stays bounded at 100.
+    """The old 25/1,000 policy scales with the quota and stays bounded at 128.
 
     The fixed ceiling includes paginated discovery, main proof/baseline reads, the
     repo-wide workflow census, durable lease state, and the maximum 50 main commits
@@ -6636,7 +6651,7 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     five check pages, five PR-file pages, live authorization, ancestry, and lease
     fences. These are pessimistic admission numbers, not typical measured spend.
     Enterprise gives this repository 15,000;
-    the 100 ceiling drains the whole current backlog, while a partly spent bucket
+    the 128 ceiling drains the measured 110-PR backlog, while a partly spent bucket
     shrinks the window to the work it can actually fund.
     """
     fixed = MOG.FULL_SWEEP_FIXED_REQUESTS
@@ -6650,8 +6665,8 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     # check runs, files, merge, settled and update-branch in the refused worst case.
     assert MOG.pull_cap_for_limit(None) == MOG.FALLBACK_PULL_CAP == 25
     assert MOG.pull_cap_for_limit(1_000) == 25
-    assert MOG.pull_cap_for_limit(5_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
+    assert MOG.pull_cap_for_limit(5_000) == 125
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
 
     worst_case = (
         fixed
