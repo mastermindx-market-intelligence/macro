@@ -430,6 +430,35 @@ def test_aibrief_early_checkpoint_workflow_precedes_long_dashboard():
         if s.get("name") == "commit engine outputs"
     )
 
+    # The context consumer must see this run's deterministic liquidity outputs.
+    def producer_step(module):
+        command = f"python -m {module}"
+        matches = [
+            (i, step) for i, step in enumerate(steps)
+            if command in str(step.get("run", ""))
+        ]
+        assert len(matches) == 1, f"{module} must have exactly one producer step"
+        assert sum(str(step.get("run", "")).count(command) for step in steps) == 1
+        return matches[0]
+
+    netliq_idx, netliq = producer_step("scripts.build_netliq_daily")
+    plumbing_idx, plumbing = producer_step("scripts.build_liquidity_plumbing")
+    scorer_idx = next(
+        i for i, step in enumerate(steps)
+        if step.get("name") == "master brain scorer (durability loop; deterministic, resilient)"
+    )
+    core_checkpoint_idx = next(
+        i for i, step in enumerate(steps)
+        if step.get("name") == "checkpoint core engine outputs to main (durable before tail desks)"
+    )
+    assert (
+        by_id["regime_inputs"][0] < netliq_idx < plumbing_idx < scorer_idx
+        < by_id["master_brain"][0] < checkpoint_idx < brief_page_idx
+        < by_id["regime_dashboard"][0] < core_checkpoint_idx
+    )
+    for step in (netliq, plumbing):
+        assert step.get("if") == "steps.regime_inputs.outcome == 'success'"
+
 
 @pytest.mark.parametrize("changed,expected_scope", [
     ("master_brief.json", "macro"),

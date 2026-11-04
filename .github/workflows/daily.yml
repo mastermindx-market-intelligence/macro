@@ -2668,6 +2668,29 @@ jobs:
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
           LIVE_QUOTES_WORKER_URL: ${{ vars.LIVE_QUOTES_WORKER_URL }}
         run: python -m engine.run
+      - name: CPI net-liquidity artifact (data infrastructure — non-fatal)
+        if: steps.regime_inputs.outcome == 'success'
+        # Deterministic full rebuild of data/macro/fed_net_liquidity.parquet (+ the
+        # fed_net_liquidity_meta.json sidecar) from the three component parquets the
+        # collect job refreshed tonight (data/fred/WALCL + RRPONTSYD, data/treasury/tga)
+        # via engine.canon.load_net_liquidity_components — the ONE netliq formula
+        # (audit #28): WALCL_bn − RRP_bn − TGA_bn, billions. Stale-guard truncates the
+        # frame at min(component last real obs)+10bd so a dead component collector can
+        # never silently ffill a drain flat for weeks. Context-tier ONLY — registers
+        # no trial (FT-3 suspended by cycle_truth_ft2_credit_hazard_null_v1; see the
+        # fed-net-liquidity notes in config/synapse.yml). Output covered by
+        # 'git add data/' in the existing durable core/final publisher.
+        run: python -m scripts.build_netliq_daily || echo "::warning::build_netliq_daily failed (non-fatal — last committed artifact stands)"
+      - name: Neural Web liquidity-plumbing lobe (shadow-tier, non-fatal)
+        if: steps.regime_inputs.outcome == 'success'
+        # Pure aggregation, no network calls. Runs AFTER build_netliq_daily so
+        # data/macro/fed_net_liquidity.parquet is fresh. Reads regime/latest.json,
+        # treasury/{net_issuance,tga}.parquet, treasury_auctions/auctions.parquet.
+        # Emits data/neuralweb/liquidity_plumbing.json (schema neuralweb.liquidity_plumbing.v1).
+        # Shadow-tier, display/de-escalation only authority — no score raise.
+        # Fail-open: missing source → gaps[] + null block, always exits 0.
+        # The existing core publisher covers these data and site-mirror outputs.
+        run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
       - name: master brain scorer (durability loop; deterministic, resilient)
         if: steps.regime_inputs.outcome == 'success'
         # Grades the brain's own past-due cross-asset leans in data/master_brain/theses.jsonl
@@ -2729,7 +2752,8 @@ jobs:
       - name: AI Daily Brief page (build_aibrief)
         if: steps.regime_inputs.outcome == 'success'
         # Server-render the current briefs before the durable core checkpoint.
-        # Supplementary panels retain their own source clocks and last-good data.
+        # Refresh liquidity context before rendering; supplementary panels
+        # continue to expose their own source clocks and degraded states.
         run: python -m scripts.build_aibrief
       - name: run regime engine + build dashboard + daily brief (resilient)
         id: regime_dashboard
@@ -4591,27 +4615,6 @@ jobs:
         # Fixes P-D5-3 'no PIT context history' class going forward.
         # Every source is absent-safe; always exits 0.
         run: python -m scripts.archive_context_snapshots || true
-      - name: CPI net-liquidity artifact (data infrastructure — non-fatal)
-        # Deterministic full rebuild of data/macro/fed_net_liquidity.parquet (+ the
-        # fed_net_liquidity_meta.json sidecar) from the three component parquets the
-        # collect job refreshed tonight (data/fred/WALCL + RRPONTSYD, data/treasury/tga)
-        # via engine.canon.load_net_liquidity_components — the ONE netliq formula
-        # (audit #28): WALCL_bn − RRP_bn − TGA_bn, billions. Stale-guard truncates the
-        # frame at min(component last real obs)+10bd so a dead component collector can
-        # never silently ffill a drain flat for weeks. Context-tier ONLY — registers
-        # no trial (FT-3 suspended by cycle_truth_ft2_credit_hazard_null_v1; see the
-        # fed-net-liquidity notes in config/synapse.yml). Output covered by
-        # 'git add data/' in 'commit engine outputs' below.
-        run: python -m scripts.build_netliq_daily || echo "::warning::build_netliq_daily failed (non-fatal — last committed artifact stands)"
-      - name: Neural Web liquidity-plumbing lobe (shadow-tier, non-fatal)
-        # Pure aggregation, no network calls. Runs AFTER build_netliq_daily so
-        # data/macro/fed_net_liquidity.parquet is fresh. Reads regime/latest.json,
-        # treasury/{net_issuance,tga}.parquet, treasury_auctions/auctions.parquet.
-        # Emits data/neuralweb/liquidity_plumbing.json (schema neuralweb.liquidity_plumbing.v1).
-        # Shadow-tier, display/de-escalation only authority — no score raise.
-        # Fail-open: missing source → gaps[] + null block, always exits 0.
-        # Output covered by 'git add data/' in 'commit engine outputs' below.
-        run: python -m scripts.build_liquidity_plumbing || echo "::warning::build_liquidity_plumbing failed (non-fatal — last committed artifact stands)"
       - name: Global liquidity transmission state (W-LIQ.1 producer, display-tier, non-fatal)
         # The frozen v1 producer (#6296) had NO production caller: no workflow ran
         # it, it was absent from config/dag.yml, and its only .github reference was
