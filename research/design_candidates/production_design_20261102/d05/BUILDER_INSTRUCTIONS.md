@@ -1,5 +1,32 @@
 # D05 builder instructions
 
+## Active continuation — Chairman instruction received November 3, 2026 (America/Chicago)
+
+The current direct Chairman instruction, **“Resume design and implementation,”** reopens D05 for reversible design and source implementation. This supersedes only the original packet's statement that implementation was not commissioned. It does not release final shared design acceptance, held PRs, merge, Ready/un-draft, enqueue, relabel, or production deployment. Historical delivery receipts remain unchanged.
+
+### Current bounded phase and proof
+
+Advance the missing native Macro cycle investigation on the existing `macro#7646` / `WS:SECTOR-INTELLIGENCE-COMPLETION` task tree (P10–P17): current selected sector → source-backed cycle evidence → retained detailed Cycles controls → exact return. Preserve the delivered Brief/Explore/Money/Confluence paths and all13 canonical route contracts. Use existing producers, source identity, auth and route owners; no second data/state/save plane. The first implementation candidate remains Draft and uses existing admitted Cycles reference/copy semantics while F01/F02 are provisional.
+
+1. **Reconcile:** source `c53915f6d67078d5c0aeaf73bf85ddea1a23de03`; protected Mastermind `33aec27fff672a4f334cb79b3b2604156401597d`, INDEX1.0.1 compatible. The previously read Paper integration/direct-carrier, workflow/connection and dialogue/native-hierarchy laws have matching Git blobs at this pin. Recover only material source differences and exact affected interfaces.
+2. **Implement:** acquire an isolated Macro worktree from this source. Inspect native `si_workspace`, Cycles renderer/builder and approved `design_refs/sector-paper-20261021/cycles_ia.md`; retain native controls/engines and history semantics. Implement only disjoint source/hunks, with explicit late-generation, absent-data, permission and selected-entity behavior. Root retains source composition; no other canvas writer is commissioned.
+3. **Qualify:** meaningful baseline regressions, focused source/route tests, actual locally served Chromium journey and dark/light × EN/ZH ×1440/390 plus320-width stress. Capture exact candidate identity and distinguish local fixtures from authenticated production. Preserve all existing source/scientific holds.
+4. **Review and persist:** review actual diff and screenshots, repair findings, publish a Draft code candidate and immutable proof through GitHub, update this D05 continuation. Do not claim the119 planned cases all ran or the production programme completed.
+
+### Current custody and dependency reconciliation
+
+- D05 exact Paper file `01M6FAXA774QT1VRDMAG7DFQ2W`, page `p-3-0`: readback retains12boards/1448nodes and token hash `811c9dc5`. No Paper edit or unrelated-effect replay occurred in this continuation. Existing R4/D05 references remain the design inputs; future edits require fresh target-scoped guards.
+- F01 Draft#10645 head `abfecf1efc452383fe720cb3ea2016ad8d7088e0`; F02 Draft#10630 head `13baa784723b72458f7f694cac925f2c7f96e3d7`. Joint candidate.4 remains operative/unreleased; prospective resize policy is not silently adopted.
+- Terminal#1244 head `fdd8227152de17622645639b8929c1444cbc99f3` owns Shared Shell integration and its existing source/held effects. D05 will not edit that branch/workspace, generated route registry, or its local evidence. Dossier receiver/history overlap remains explicit.
+- Macro#10689 head `2d44bcc94d1841a4f6aef561e49d09f0ec737a4b` is the existing source-only Agent OS correction. Do not duplicate its workstream/handoff edits or mistake the Draft for accepted organizational truth.
+- Regional#10695 supersedes#10665 as the active delivery carrier. Preserve regional builder/basket source. #10625 retains its original temperature publisher refusal; #8639 retains elapsed theme-chart repair; #7595 retains exact shell/access asset changes. No denied effect is delegated or reproduced.
+- Current open-PR title census found no separate Macro native-Cycles implementation PR. Historical authorship alone is not a live lease. Exact path/hunk overlap is checked before each source composition.
+- Executive V3 read returned `backend_unavailable` before request dispatch; this proves only that read is degraded. No submission, native runtime START, watcher, or global Fabric outage is claimed. Root direct integration reason: `PRINCIPAL_JUDGMENT` for the unresolved native/shared-shell/history boundary; `LOWER_TOTAL_OVERHEAD` for bounded source composition. Any native advisor is reasoning-only under WEB_CEO_DELEGATION§4, not substituted routine worker labor.
+
+**DONE_WHEN for this phase:** a recoverable Draft source candidate renders the native in-shell cycle investigation with preserved incumbent analytical depth, meaningful tests and exact local browser proof, or every remaining dependent lane has an evidenced source/authority/effect boundary. This is implementation-candidate proof, not final design, production, merge or release acceptance. Continue to the next independently useful authorized D05 slice while the session remains healthy.
+
+## Original audit-stage instructions (historical scope)
+
 This packet is a reviewable design/build contract. **It does not authorize product implementation, merge, Ready, un-draft, enqueue, relabel held PRs or production deployment.** Start implementation only after the existing programme/source owners admit that phase and the applicable foundation/route contracts are accepted.
 
 ## 1. Scope and non-regression rule
