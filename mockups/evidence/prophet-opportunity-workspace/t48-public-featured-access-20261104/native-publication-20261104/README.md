@@ -22,6 +22,12 @@ An exploratory `python -m scripts.build_prophet --date 2026-11-04` rerun against
 
 The committed index's `source_board_sha256=e655802dbb50851d726120ac7db48886a6d36d3a0f6d59ff68a99ddb40d6f792` remains the **immutable historical source of those 12 already-originated plans**, with its existing archived `data/prophet/origination_sources/e655802d....json.gz`. Do not falsely rebind the historical index to the later board. Normalized JSON diff of the historical snapshot versus the newly generated current board shows 12 added `already_open` lane reasons (the previously originated setups) plus emitter/observation timestamp and generation/pair identifiers; existing eligibility and ranking are preserved. The new board is an updated current distribution/withholding view, **not** a retroactive origination source. Exact current board and gate are published as a pair, while historical Plan lineage stays anchored.
 
+## Post-commit source replay and safety repair
+
+The detached clean checkout at `8182ed933354725ffa7af53b711d98fa32c91606` independently passed the same **12/12** native verifier checks, now retained in `pair-verify-clean-8182.json`. No mutable publisher-worktree index or state file is needed for that result.
+
+The underlying source bug discovered above is addressed by a separate same-PR **same-date idempotency preflight** in `scripts/build_prophet.py`. It checks the previously recorded content-addressed snapshot before any new snapshot/ledger/state write. Replaying an identical source and publication date is a no-op; rebuilding the same date with a changed board emits a specific REFUSED error, preserving 12 historical origination receipts. It has 12 focused adversarial tests plus 253 existing Prophet regression cases, **265 passed**. A future EOD publication with a *new date* still takes the normal path; no bypass flag was added.
+
 ## Publishing fence and open acceptance
 
 Stage only the verified generated page, **new** stylesheet, current board, matching gate, protected companion payload, repaired capture harness and this evidence directory; do **not** stage the other 14,000+ local generated/market/state changes or delete legacy CSS. Re-run the 12-case verifier against a clean post-commit checkout and qualify hosted exact-head CI. Product release still requires authenticated Save/reopen, Sources → Plan → same candidate, real served browser, shared-shell integration and eligible release gates. No merge, enqueue, un-draft, Ready label, deploy or purchase.

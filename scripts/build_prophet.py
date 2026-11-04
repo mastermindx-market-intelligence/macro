@@ -2439,6 +2439,69 @@ def _load_futures_chg(asof: str) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
+# Same-date publication safety
+# ---------------------------------------------------------------------------
+
+def _already_published_same_date(
+    *, asof: str, board_path: Path, index_path: Path, ledger_dir: Path,
+) -> bool:
+    """Keep a published day's origination receipt immutable on a repeat run.
+
+    An already-advanced ledger suppresses its own formerly new episodes on replay.
+    Rewriting index.json then reports originated=0 and erases historic
+    state-change explanations. Never reinterpret the earlier Plan snapshot as
+    a later, post-origination board (which may now say already_open).
+
+    No path is written, and even a mismatched current source refuses before
+    the normal source-freezing step can create a new snapshot.
+    """
+    if index_path.is_symlink():
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_INDEX_SYMLINK")
+    if not index_path.exists():
+        return False
+    try:
+        prior = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("REFUSED_PROPHET_PRIOR_INDEX_UNREADABLE") from exc
+    if not isinstance(prior, dict):
+        raise RuntimeError("REFUSED_PROPHET_PRIOR_INDEX_NOT_OBJECT")
+    if str(prior.get("asof") or "") != asof:
+        return False
+
+    old_sha = prior.get("source_board_sha256")
+    if not isinstance(old_sha, str) or len(old_sha) != 64 or any(
+        c not in "0123456789abcdef" for c in old_sha
+    ):
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_SOURCE_UNBOUND")
+    expected_source = f"data/prophet/origination_sources/{old_sha}.json.gz"
+    if (prior.get("source_board_snapshot_path") != expected_source
+            or prior.get("source_board_snapshot_encoding") != "gzip"):
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_SNAPSHOT_UNBOUND")
+    source_snapshot = ledger_dir / "origination_sources" / f"{old_sha}.json.gz"
+    if source_snapshot.is_symlink() or not source_snapshot.is_file():
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_SNAPSHOT_MISSING")
+    try:
+        original_raw = gzip.decompress(source_snapshot.read_bytes())
+    except (OSError, EOFError) as exc:
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_SNAPSHOT_UNREADABLE") from exc
+    if hashlib.sha256(original_raw).hexdigest() != old_sha:
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_SNAPSHOT_HASH_MISMATCH")
+    if board_path.is_symlink() or not board_path.is_file():
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_CURRENT_SOURCE_UNAVAILABLE")
+    try:
+        current_sha = hashlib.sha256(board_path.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise RuntimeError("REFUSED_PROPHET_SAME_DATE_CURRENT_SOURCE_UNREADABLE") from exc
+    if current_sha != old_sha:
+        raise RuntimeError(
+            "REFUSED_PROPHET_SAME_DATE_SOURCE_VARIANT: published Plan provenance "
+            "is immutable; do not overwrite index/ledger/states with a later "
+            "board from the same run date"
+        )
+    return True
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -2485,6 +2548,12 @@ def main() -> None:
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
+    if _already_published_same_date(
+        asof=asof, board_path=Path(STANDOUTS_PATH),
+        index_path=Path(INDEX_PATH), ledger_dir=Path(LEDGER_DIR),
+    ):
+        log.info("build_prophet: SAME_DATE_IDEMPOTENT — exact source and index already published; zero writes")
+        return None
     (
         _standouts_doc,
         source_board_sha256,
