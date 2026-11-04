@@ -96,11 +96,18 @@ def test_s1_live_shows_reviewed_dated_product_evidence(live):
 
 def test_s1_unreviewed_connections_do_not_become_product_evidence(held):
     model, site = held
+    rendered = "\n".join(page.read_text(encoding="utf-8")
+                         for page in site.glob("gmi*.html"))
+    assert "No company evidence yet" in _main(site / "gmi-companies.html")
+    assert '<article class="gmi-evidence-card">' not in rendered
+    assert 'class="gmi-evidence-receipt"' not in rendered
     for issuer in model["issuers"]:
-        main = _main(site / f"gmi-issuer-{issuer['ticker'].lower()}.html")
-        assert "No reviewed product evidence" in main
-        assert '<article class="gmi-evidence-card">' not in main
-        assert "gmi-evidence-receipt" not in main
+        page = f"gmi-issuer-{issuer['ticker'].lower()}.html"
+        assert not (site / page).exists()
+        assert page not in rendered
+        for link in issuer["links"]:
+            assert link["proposal_id"] not in rendered
+            assert link["scope"]["product"] not in rendered
 
 
 def test_s1_receipt_is_closed_details(live, held):
@@ -112,29 +119,69 @@ def test_s1_receipt_is_closed_details(live, held):
             assert all(not re.search(r'\bopen(?:\s|=|>)', tag) for tag in tags)
 
 
-def test_s1_no_excerpt_text_when_not_granted(live, held):
-    for model, site in (live, held):
+def test_s1_no_excerpt_text_when_not_granted(live, held, tmp_path):
+    import copy
+    for name, (source, site) in (("live", live), ("held", held)):
+        rendered = "\n".join(page.read_text(encoding="utf-8")
+                             for page in site.glob("gmi*.html"))
+        assert "excerpt_text" not in rendered
+        for issuer in source["issuers"]:
+            for link in issuer["links"]:
+                if link["excerpt_text"]:
+                    assert link["excerpt_text"] not in rendered
+
+        # A nonempty private excerpt must stay out even when its product
+        # sentence is separately cleared; an absent issuer page is not an error.
+        model = copy.deepcopy(source)
+        sentinel = f"PRIVATE-EXCERPT-{name}-SENTINEL"
         for issuer in model["issuers"]:
             for link in issuer["links"]:
-                page = (site / f"gmi-issuer-{issuer['ticker'].lower()}.html"
-                        ).read_text(encoding="utf-8")
-                if link["graph_membership_use"] == "NOT_GRANTED":
-                    assert "excerpt_text" not in page
-                if link["excerpt_text"]:
-                    assert link["excerpt_text"] not in page
+                link["excerpt_text"] = sentinel
+        pages = render_site(model, tmp_path / name)
+        assert pages
+        assert sentinel not in "\n".join(page.read_text(encoding="utf-8")
+                                         for page in pages)
 
 
-def test_s1_missing_product_values_are_plain_words(live, tmp_path):
-    import copy
-    model = copy.deepcopy(live[0])
-    link = model["issuers"][0]["links"][0]
+def test_s1_missing_product_values_are_plain_words(live):
+    from scripts.build_gmi_explorer import _public_render_model
+    from scripts.gmi_explorer.present import make_env
+
+    # Exercise presentation fallback after projection. This is not permission
+    # to publish an incomplete raw source fact through render_site().
+    model = _public_render_model(live[0])
+    issuer = model["issuers"][0]
+    link = issuer["links"][0]
     link["scope"].update(product=None, platform=None)
     link["lifecycle"] = None
-    render_site(model, tmp_path)
-    main = _main(tmp_path / f"gmi-issuer-{model['issuers'][0]['ticker'].lower()}.html")
+    html = make_env(model, ROOT / "templates").get_template(
+        "gmi_issuer.html.j2").render(
+            model=model, issuer=issuer, nav_prefix="", page_key="issuer")
+    main = MAIN.search(html).group(0)
     assert "Not recorded" in main and "未记录" in main
     assert "Stage not recorded" in main and "阶段未记录" in main
     assert "What remains unknown" in main
+
+
+@pytest.mark.parametrize("field", ["scope.product", "scope.platform", "lifecycle"])
+def test_s1_incomplete_raw_product_is_withheld(live, tmp_path, field):
+    import copy
+    model = copy.deepcopy(live[0])
+    issuer = model["issuers"][0]
+    link = issuer["links"][0]
+    original_product = link["scope"]["product"]
+    parts = field.split(".")
+    target = link
+    for key in parts[:-1]:
+        target = target[key]
+    target[parts[-1]] = None
+    pages = render_site(model, tmp_path)
+    rendered = "\n".join(page.read_text(encoding="utf-8") for page in pages)
+    page = f"gmi-issuer-{issuer['ticker'].lower()}.html"
+    assert not (tmp_path / page).exists()
+    assert page not in rendered
+    assert original_product not in rendered
+    assert "No company evidence yet" in _main(tmp_path / "gmi-companies.html")
 
 
 # --------------------------------------------------------------- S5 states
