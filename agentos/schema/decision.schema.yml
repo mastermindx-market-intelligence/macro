@@ -17,6 +17,14 @@ required:
   decided_by:    {type: string, note: "seat: chairman | ceo-sol | coo-fable | session id"}
   decided_at:    {type: date}
 optional:
+  direction:
+    type: object
+    closed_fields: [schema, state, work_ref, predecessor]
+    schema: agentos.direction_acceptance.v1
+    state: ACCEPTED
+    work_ref: "WS:<KEY> (must occur in affects)"
+    predecessor: "null | DEC:<KEY>; sole supersedes entry when present, reciprocal superseded_by"
+    note: "Accepted Direction knowledge, separate from project_plan_adoption and Runtime authority. decided_at has DAY precision. Workstream accepted_direction selects current; explicit predecessors supply history, never Git dates."
   supersedes:    {type: list, items: "DEC:<KEY>", note: must be reciprocated by superseded_by}
   superseded_by: {type: string, note: set on the OLD record; never delete a decision}
   review_by:     {type: date, note: for decisions taken under acknowledged uncertainty}

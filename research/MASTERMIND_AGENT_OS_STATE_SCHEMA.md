@@ -680,3 +680,25 @@ nobody will use this system."*
 The steady-state cost for a working session is **1–2 fields at a wave boundary**. Everything
 heavier is written at a moment the session was already stopping to write prose. Phase 4 moves
 `status`, `prs`, and `updated` to hook auto-capture, taking the steady-state cost to ~0.
+
+
+### Explicit accepted Direction association (P16.T1.S11)
+
+A workstream may declare `accepted_direction: DEC:<KEY>`. The same reference must
+occur in its existing `decisions` index. Absence remains absence: objectives,
+source revisions, generic decisions and plan-adoption records are different facts.
+The selected DEC carries exactly `direction: {schema:
+agentos.direction_acceptance.v1, state: ACCEPTED, work_ref: WS:<KEY>, predecessor:
+null | DEC:<KEY>}`. The scope occurs in `affects`; `decided_at` has day precision.
+A Direction DEC does not also carry `project_plan_adoption`.
+
+The predecessor is the sole `supersedes` entry; its retained record reciprocates
+with `superseded_by`. The current WS pointer selects the head, never timestamps.
+A read validates at most eight explicit revisions, keeps unknown totals unknown
+when history continues, and does not change current Direction while inspecting a
+previous revision. Missing or conflicting links cannot be presented as accepted
+history. Prospective app authoring uses the existing fixed publisher with a
+distinct `ACCEPT_DIRECTION` grant, original operation fingerprint and source CAS.
+A source-only Root decision may be prepared and published through the existing
+protected Git workflow under its actual commission. Publication grants no app,
+Runtime, placement, admission or execution power. No history is reconstructed.

@@ -31,6 +31,7 @@ optional:
                         citation shape exists, and a bare key used to be dropped silently"}
   blocked_by:   {type: list, note: present iff status == blocked}
   decisions:    {type: list, items: "DEC:<KEY>"}
+  accepted_direction: {type: string, pattern: "DEC:<KEY>", note: "Explicit current accepted Direction, also indexed in decisions; named DEC carries typed direction. Never inferred from objective, Git revisions or plan adoption; no execution authority."}
   discoveries:  {type: list, items: "DSC:<KEY>"}
   landmines:    {type: list}
   do_not_redo:  {type: list}

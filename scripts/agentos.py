@@ -1005,8 +1005,55 @@ def _acceptance_contract_problems(rec: dict[str, Any], path: Path) -> list[Probl
     return out
 
 
+def _direction_record_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional Direction facts, inline for existing sealed brief compatibility.
+
+    No new helper import, currentness registry, or execution authority is added.
+    The dedicated read separately captures its bounded lineage projection helper.
+    """
+    def ref(value: Any, prefix: str, limit: int) -> bool:
+        return (type(value) is str and value.startswith(prefix) and 2 <= len(value[len(prefix):]) <= limit
+                and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", value[len(prefix):]) is not None)
+    valid = True
+    if not decision:
+        if "accepted_direction" not in rec:
+            return []
+        chosen = rec.get("accepted_direction")
+        valid = (ref(chosen, "DEC:", 128) and type(rec.get("decisions")) is list and chosen in rec["decisions"])
+    else:
+        if "direction" not in rec:
+            return []
+        value = rec.get("direction")
+        if type(value) is not dict or set(value) != {"schema", "state", "work_ref", "predecessor"}:
+            valid = False
+        else:
+            predecessor = value["predecessor"]
+            own = "DEC:" + str(rec.get("key", ""))
+            valid = (value["schema"] == "agentos.direction_acceptance.v1" and value["state"] == "ACCEPTED"
+                     and ref(value["work_ref"], "WS:", 64)
+                     and (predecessor is None or ref(predecessor, "DEC:", 128) and predecessor != own)
+                     and type(rec.get("affects")) is list and value["work_ref"] in rec["affects"]
+                     and "project_plan_adoption" not in rec
+                     and rec.get("supersedes", []) == ([] if predecessor is None else [predecessor]))
+        day = rec.get("decided_at")
+        try:
+            if type(day) is _dt.date:
+                pass
+            elif type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None:
+                valid = valid and _dt.date.fromisoformat(day).isoformat() == day
+            else:
+                valid = False
+            for field, maximum in (("answer", 4096), ("rationale", 4096), ("decided_by", 256)):
+                text = rec.get(field)
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-direction", "INVALID_DIRECTION", hard=True)]
+
+
 def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
     out: list[Problem] = _acceptance_contract_problems(rec, path)
+    out.extend(_direction_record_problems(rec, path, decision=False))
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",
@@ -1245,6 +1292,7 @@ def parse_project_plan_proposal(raw_bytes: bytes, *, work_ref: str) -> tuple[dic
 
 def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
+    out.extend(_direction_record_problems(rec, path, decision=True))
     for field in ("key", "question", "answer", "rationale", "alternatives",
                   "evidence", "affects", "confidence", "reversibility",
                   "decided_by", "decided_at"):
