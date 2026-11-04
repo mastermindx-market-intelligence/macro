@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-04",
-  "n_events_logged": 1849,
+  "n_events_logged": 1844,
   "n_events_graded": 1510,
   "classes": [
     {
@@ -138,7 +138,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 62,
+      "n": 61,
       "n_graded": 38,
       "hit_5d": 0.7105263157894737,
       "hit_21d": 0.5161290322580645,
@@ -293,7 +293,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2118,
+    "n_sampled": 2117,
     "n_graded": 0,
     "classes": []
   }
