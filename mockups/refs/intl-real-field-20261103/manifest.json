@@ -1,0 +1,396 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-04T05:05:04Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:8874/live_config.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8874/account.js?v=20261101-expectation-surface-nav",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:8874/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8874/live_config.js"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8874/account.js?v=20261101-expectation-surface-nav"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:8874/terminal_overlay.js"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2650,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 3480,
+            "elements_wider_than_viewport": 8,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 2650,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 5,
+          "h3": 11,
+          "h4": 38,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 8,
+        "payload_bytes_total": 21211408,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 26,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 391
+      },
+      "page_id": "intl.html?view=risk&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "registry_route": "/intl.html?view=risk&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "route": "/intl.html?view=risk&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group=",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 438339,
+          "captured": true,
+          "file": "rest-captures/3768ca4986a7c11e.png",
+          "force_state": null,
+          "height": 2650,
+          "locale": "en",
+          "sha256": "3768ca4986a7c11e398c38ffbb31f53a0d50a6eb0b620fcce66c8562c096bd2f",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.73825356030039,
+            "inp_proxy_ms": null,
+            "lcp_ms": 324,
+            "resource_count": 25,
+            "server_timing": [],
+            "transfer_bytes": 1254162
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 449555,
+          "captured": true,
+          "file": "rest-captures/0389a76c56a5082f.png",
+          "force_state": null,
+          "height": 2650,
+          "locale": "en",
+          "sha256": "0389a76c56a5082fc9e648622a936fc4b8ccdda68fe15b7d854dd28a9f37f168",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7612905973374271,
+            "inp_proxy_ms": null,
+            "lcp_ms": 164,
+            "resource_count": 25,
+            "server_timing": [],
+            "transfer_bytes": 1254162
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 392999,
+          "captured": true,
+          "file": "rest-captures/99db110bc7b6808b.png",
+          "force_state": null,
+          "height": 2519,
+          "locale": "zh",
+          "sha256": "99db110bc7b6808b4a7b9c1eb0942c92e279a3bfbabcf7d0cbe02ab91eac3343",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7320666780866877,
+            "inp_proxy_ms": null,
+            "lcp_ms": 100,
+            "resource_count": 26,
+            "server_timing": [],
+            "transfer_bytes": 1278862
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 402121,
+          "captured": true,
+          "file": "rest-captures/4af81c71727a07cd.png",
+          "force_state": null,
+          "height": 2519,
+          "locale": "zh",
+          "sha256": "4af81c71727a07cd6f2a64e74fbbc1a23892e14281e1085191cf3b819cf984c0",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7551037151237247,
+            "inp_proxy_ms": null,
+            "lcp_ms": 140,
+            "resource_count": 26,
+            "server_timing": [],
+            "transfer_bytes": 1278862
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 311807,
+          "captured": true,
+          "file": "rest-captures/b1503150f8943371.png",
+          "force_state": null,
+          "height": 3480,
+          "locale": "en",
+          "sha256": "b1503150f89433711f8ad492c133ca26b411239edec68901a84ebd0dc0e9faf2",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7381168451989886,
+            "inp_proxy_ms": null,
+            "lcp_ms": 100,
+            "resource_count": 25,
+            "server_timing": [],
+            "transfer_bytes": 1254162
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 317964,
+          "captured": true,
+          "file": "rest-captures/147209f8f49bf54a.png",
+          "force_state": null,
+          "height": 3474,
+          "locale": "en",
+          "sha256": "147209f8f49bf54aeb4cbfb5601424a907a7f615e658302f319dfcbb7bc21137",
+          "theme": "light",
+          "timing": {
+            "cls": 0.8111849403330049,
+            "inp_proxy_ms": null,
+            "lcp_ms": 80,
+            "resource_count": 25,
+            "server_timing": [],
+            "transfer_bytes": 1254162
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 288384,
+          "captured": true,
+          "file": "rest-captures/d324c2d2e1d30b9a.png",
+          "force_state": null,
+          "height": 3394,
+          "locale": "zh",
+          "sha256": "d324c2d2e1d30b9a1b4ed1de3bb85af3d9f1774084cbd06a6d2dd633b6cf1d34",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7267791631183916,
+            "inp_proxy_ms": null,
+            "lcp_ms": 52,
+            "resource_count": 26,
+            "server_timing": [],
+            "transfer_bytes": 1278862
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 295804,
+          "captured": true,
+          "file": "rest-captures/d1248ae67163d391.png",
+          "force_state": null,
+          "height": 3388,
+          "locale": "zh",
+          "sha256": "d1248ae67163d391d88490add95bb99a689e52495e0d7bb2b8e07c60e15b9652",
+          "theme": "light",
+          "timing": {
+            "cls": 0.798201383686012,
+            "inp_proxy_ms": null,
+            "lcp_ms": 60,
+            "resource_count": 26,
+            "server_timing": [],
+            "transfer_bytes": 1278862
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html?view=risk&market=JP&pins=&horizon=1m&basis=usd_unhedged&return_basis=price&group="
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "/Volumes/Mastermind/evidence/intl-real-data-20261103-01a1a4b1/source-page-registry.json",
+    "registry_rows": 348,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:8874",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

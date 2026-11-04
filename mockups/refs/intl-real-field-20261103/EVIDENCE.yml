@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/intl_workspace_risk.css
+- site/intl_workspace_risk.css
+- templates/intl_workspace/risk.html.j2
+manifest: mockups/refs/intl-real-field-20261103/manifest.json
