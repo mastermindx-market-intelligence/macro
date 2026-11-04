@@ -46,7 +46,7 @@ next_actions:
 do_not_redo:
 - Accepted August ABSTAINED gate and bounded citation/reader/browser proofs.
 - Original refused or unknown collection/review/fit operations; no replacement run, account or carrier.
-- MMOS composite-binding CLI work; use supported existing single binding and do not create another task registry.
+- The separate Ops Fabric composite-binding candidate ops-mmtask-composite-20261104-01a118ef remains pending/unaccepted; preserve its original parent and use only the installed single-binding interface here.
 danger_areas:
 - Task accepted means its stated bounded evidence, never full programme or study acceptance.
 - A record publication, installed code, authenticated behavior and scientific acceptance are distinct.
