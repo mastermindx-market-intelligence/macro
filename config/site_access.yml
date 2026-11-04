@@ -110,6 +110,10 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
+    # Forex shell UI only; data and account requests keep their existing gates.
+    - /forex_r26.css
+    - /forex_watch_client.js
+    - /forex_r26.js
     # WTI Live Trace presentation assets only; every current value is served
     # by authenticated /api/ontology/explorer/v1, never by these files.
     - /ontology.css

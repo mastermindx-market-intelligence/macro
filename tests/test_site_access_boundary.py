@@ -104,6 +104,43 @@ def test_help_build_clock_is_one_exact_public_ui_asset():
         assert not any(p.startswith("/help_refresh") and p != asset for p in paths), matcher
 
 
+def test_forex_public_shell_has_exact_presentation_dependencies_only():
+    """Anonymous HTML must load its UI; nearby data and account paths stay gated."""
+    assets = {"/forex_r26.css", "/forex_watch_client.js", "/forex_r26.js"}
+    private = {"/forex_r26.json", "/forex_r26.js.map", "/forex_r26_private.js",
+               "/forex_watch_client.json", "/forex_r26.js/private",
+               "/forexdata/latest.json", "/premiumdata/forex.json"}
+    public = POLICY["public"]
+    exact = set(public["exact"])
+    assert assets <= exact
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert not private.intersection(exact)
+    assert not any(value.startswith(prefix.rstrip("/") + "/")
+                   for value in private for prefix in public["prefixes"])
+    template = (ROOT / "templates" / "forex.html.j2").read_text()
+    for asset in assets:
+        assert asset[1:] in template
+        assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+    for matcher in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, matcher
+        assert not private.intersection(paths), matcher
+        # No broad Forex-family exemption: these three exact resources only.
+        assert {p for p in paths if p.startswith("/forex")} == assets, matcher
+        if matcher == "public_static":
+            assert "not query v=*" in block.group(1)
+        elif matcher == "public_versioned":
+            assert re.search(r"(?m)^\s*query v=\*\s*$", block.group(1))
+    # /api/* is intentionally reverse-proxied, so static matcher exclusion is
+    # not API admission. This change must add no Forex API policy entitlement.
+    assert not any(p.startswith("/api/forex") for p in exact)
+
+
 def test_market_memory_callback_assets_load_before_session_exchange():
     """OAuth returns before its code becomes a session; UI-only assets must load."""
     assets = {"/market_memory_intent.js", "/market_memory_retained.js",
