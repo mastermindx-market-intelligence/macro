@@ -22,6 +22,9 @@ Tests:
 13. TIL page-wiring: trade_flows populated → per-theme row with confirmation plain word.
 14. TIL page-wiring: all 3 basketdata artifacts missing → page renders, no crash, no new sections.
 15. TIL page-wiring: no title= attrs with CJK in new sections.
+16. D05: falsifier-summary absence semantics — an absent/null/empty/malformed
+    native summary never reads as a completed machine check; evaluated known
+    negatives keep NOT_DETECTED, and no-machine-checkable-coverage is distinct.
 """
 from __future__ import annotations
 
@@ -1587,3 +1590,341 @@ def test_compose_hands_template_primary_basket_id(tmp_path):
     assert {t["theme_id"] for t in handed} == set(by_id)
     for theme in handed:
         assert theme.get("basket_id") == by_id[theme["theme_id"]]["basket_id"]
+
+
+# ---------------------------------------------------------------------------
+# 16. D05: falsifier-summary absence semantics (route-audit repair)
+# ---------------------------------------------------------------------------
+# The original D05 DATA_BACKEND_CONTRACT route audit recorded the defect this
+# section pins: an absent thesis record or falsifier_summary defaulted to
+# any_fired=False / n_data_missing=0 and the consumer contract row then emitted
+# NOT_DETECTED / NO_MACHINE_INVALIDATION_DETECTED — which is not evidence that
+# invalidation was checked. compose() now qualifies what actually joined from
+# the thesis engine's native summary (presence + machine-typed counts; the
+# engine in engine/neuralweb/theme_thesis.py stays the sole evaluation owner)
+# and the contract row maps that qualification:
+#   absent / null / empty / non-dict summary → UNKNOWN  FALSIFIER_SUMMARY_ABSENT
+#   present but not machine-typed summary    → UNKNOWN  FALSIFIER_SUMMARY_MALFORMED
+#   evaluated, fired                         → INVALIDATED (unchanged)
+#   evaluated, inputs missing                → UNCONFIRMED (unchanged)
+#   evaluated, no machine-checkable falsifier→ NOT_DETECTED NO_MACHINE_CHECKABLE_COVERAGE
+#   evaluated known negative                 → NOT_DETECTED NO_MACHINE_INVALIDATION_DETECTED
+#                                             (unchanged)
+# A truthy non-bool any_fired (string "false") used to read as fired — through
+# the contract row, the review lane and the thesis_review chip alike — and a
+# malformed summary used to crash compose (so the whole research page).
+
+# theme_id → the falsifier_summary value its thesis record carries (or None
+# when the theme has no thesis record at all)
+_FALSIFIER_MATRIX = {
+    "th_fired": {"n_fired": 1, "n_armed": 1, "n_data_missing": 2, "n_qualitative": 1, "any_fired": True},
+    "th_negative": {"n_fired": 0, "n_armed": 2, "n_data_missing": 0, "n_qualitative": 1, "any_fired": False},
+    "th_no_record": None,
+    "th_null_summary": None,
+    "th_empty_summary": {},
+    "th_string_summary": "pending",
+    "th_string_false": {"n_fired": 0, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 2, "any_fired": "false"},
+    "th_null_counts": {"n_fired": None, "n_armed": None, "n_data_missing": None, "n_qualitative": None, "any_fired": False},
+    "th_missing_anyfired": {"n_fired": 0, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 2},
+    "th_missing_count": {"n_armed": 0, "n_data_missing": 0, "n_qualitative": 2, "any_fired": True},
+    "th_negative_count": {"n_fired": -1, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 2, "any_fired": False},
+    "th_qualitative_only": {"n_fired": 0, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 3, "any_fired": False},
+    "th_zero_falsifiers": {"n_fired": 0, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 0, "any_fired": False},
+    "th_data_missing": {"n_fired": 0, "n_armed": 0, "n_data_missing": 2, "n_qualitative": 0, "any_fired": False},
+}
+
+# Themes whose thesis record also carries a deliberately malformed falsifiers
+# list — compose must tolerate these without breaking the page.
+_MALFORMED_FALSIFIERS = {
+    "th_string_summary": "oops-not-a-list",
+    "th_null_counts": ["not-a-dict", 3, {"state": 5, "rule_en": 7, "rule_zh": None}],
+    "th_zero_falsifiers": ["x", {"state": "armed", "rule_en": "  rule text  ", "rule_zh": "中文规则"}],
+}
+
+
+def _falsifier_matrix_root(tmp_path: Path) -> Path:
+    """Real template + the D05 falsifier-summary matrix, no site/ data needed."""
+    templates = tmp_path / "templates"
+    templates.mkdir(parents=True, exist_ok=True)
+    src = REPO_ROOT / "templates" / "state_of_themes.html.j2"
+    (templates / "state_of_themes.html.j2").write_bytes(src.read_bytes())
+    _copy_support_partials(templates)
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(REPO_ROOT / "config" / "theme_crosswalk.yml", cfg / "theme_crosswalk.yml")
+
+    nwd = tmp_path / "site" / "neuralwebdata"
+    nwd.mkdir(parents=True)
+    stub = {"name_en": "Stub", "name_zh": "占位", "foresight": {"stage": "WATCH"}}
+    (nwd / "theme_state.json").write_text(json.dumps({
+        "as_of": "2026-11-03",
+        "n_themes": len(_FALSIFIER_MATRIX),
+        "stale_legs": [],
+        "themes": [{"theme_id": tid, **stub} for tid in _FALSIFIER_MATRIX],
+    }), encoding="utf-8")
+    (nwd / "theme_asymmetry.json").write_text(json.dumps({
+        "as_of": "2026-11-03",
+        "themes": [{"theme_id": tid, "legs": {}} for tid in _FALSIFIER_MATRIX],
+    }), encoding="utf-8")
+
+    theses = []
+    for tid, summary in _FALSIFIER_MATRIX.items():
+        record = {
+            "thesis_id": f"thesis_{tid}",
+            "theme_id": tid,
+            "status": "active",
+            "variant_perception_en": "",
+            "variant_perception_zh": "",
+            "mechanism_en": "",
+            "mechanism_zh": "",
+            "evidence_refs": [],
+            "falsifiers": _MALFORMED_FALSIFIERS.get(tid, []),
+        }
+        if summary is not None or tid == "th_null_summary":
+            record["falsifier_summary"] = summary
+        theses.append(record)
+    (nwd / "theme_thesis.json").write_text(json.dumps({
+        "as_of": "2026-11-03",
+        "n_falsifier_fired": 1,
+        "theses": theses,
+    }), encoding="utf-8")
+    return tmp_path
+
+
+def _thesis_dimension(payload: dict, tid: str) -> dict:
+    return payload["theme_context"][tid]["dimensions"]["thesis"]
+
+
+def _theme_card(html: str, tid: str) -> str:
+    """The one <article class="theme-row"> whose data-theme-id is tid."""
+    starts = [m for m in re.finditer(r'<article class="theme-row"', html)]
+    for i, m in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(html)
+        block = html[m.start():end]
+        if f'data-theme-id="{tid}"' in block:
+            return block
+    raise AssertionError(f"no theme card rendered for {tid}")
+
+
+def test_falsifier_summary_qualification_types_every_shape():
+    """Unit table: presence/validity/counts for every summary shape."""
+    import scripts.build_state_of_themes as sot
+    valid = {"n_fired": 0, "n_armed": 2, "n_data_missing": 0, "n_qualitative": 1, "any_fired": False}
+    cases = [
+        # (th_data, present, valid, any_fired)
+        (None, False, False, False),
+        ({}, False, False, False),
+        ({"variant_perception_en": ""}, False, False, False),  # no summary key
+        ({"falsifier_summary": None}, False, False, False),
+        ({"falsifier_summary": {}}, False, False, False),
+        ({"falsifier_summary": "pending"}, False, False, False),
+        ({"falsifier_summary": False}, False, False, False),
+        ({"falsifier_summary": [1]}, False, False, False),
+        ({"falsifier_summary": valid}, True, True, False),
+        ({"falsifier_summary": {**valid, "any_fired": True}}, True, True, True),
+        ({"falsifier_summary": {**valid, "any_fired": "false"}}, True, False, False),
+        ({"falsifier_summary": {**valid, "any_fired": "yes"}}, True, False, False),
+        ({"falsifier_summary": {**valid, "n_fired": None}}, True, False, False),
+        ({"falsifier_summary": {**valid, "n_fired": "3"}}, True, False, False),
+        ({"falsifier_summary": {**valid, "n_fired": True}}, True, False, False),
+        ({"falsifier_summary": {"n_fired": 0, "n_armed": 0, "n_data_missing": 0, "n_qualitative": 2}}, True, False, False),
+    ]
+    for th_data, present, valid_, fired in cases:
+        q = sot._falsifier_summary_qualification(th_data)
+        got = (q["present"], q["valid"], q["any_fired"])
+        assert got == (present, valid_, fired), f"{th_data!r}: {got} != {(present, valid_, fired)}"
+        for key in ("n_fired", "n_armed", "n_qualitative", "n_data_missing"):
+            assert isinstance(q[key], int) and not isinstance(q[key], bool), (th_data, key)
+
+
+def test_compose_carries_summary_qualification_per_theme(tmp_path):
+    """compose() attaches explicit presence/validity to every theme row."""
+    import scripts.build_state_of_themes as sot
+    ctx = sot.compose(_falsifier_matrix_root(tmp_path))
+    by_id = {t["theme_id"]: t for t in ctx["themes"]}
+    assert set(by_id) == set(_FALSIFIER_MATRIX)
+
+    q = {tid: by_id[tid] for tid in _FALSIFIER_MATRIX}
+    # absent / null / empty / non-dict summary → explicitly not present
+    for tid in ("th_no_record", "th_null_summary", "th_empty_summary", "th_string_summary"):
+        assert q[tid]["falsifier_summary_present"] is False, tid
+        assert q[tid]["falsifier_summary_valid"] is False, tid
+        assert q[tid]["falsifier_any_fired"] is False, tid
+        assert q[tid]["falsifier_label"] == "", tid
+    # present but machine-invalid → present, invalid, not fired
+    for tid in ("th_string_false", "th_null_counts", "th_missing_anyfired", "th_missing_count", "th_negative_count"):
+        assert q[tid]["falsifier_summary_present"] is True, tid
+        assert q[tid]["falsifier_summary_valid"] is False, tid
+        assert q[tid]["falsifier_any_fired"] is False, tid
+    # evaluated rows
+    assert q["th_negative"]["falsifier_summary_valid"] is True
+    assert q["th_negative"]["falsifier_machine_checkable"] is True
+    assert q["th_negative"]["falsifier_any_fired"] is False
+    assert q["th_qualitative_only"]["falsifier_machine_checkable"] is False
+    assert q["th_zero_falsifiers"]["falsifier_machine_checkable"] is False
+    assert q["th_fired"]["falsifier_any_fired"] is True
+    # labels keep their normal values for evaluated summaries
+    assert q["th_negative"]["falsifier_label"] == "0/3 fired"
+    assert q["th_qualitative_only"]["falsifier_label"] == "0/3 fired"
+    assert q["th_fired"]["falsifier_label"] == "1/5 fired"
+
+
+def test_contract_absent_or_malformed_summary_is_not_a_clean_negative(tmp_path):
+    """An unusable summary maps to UNKNOWN, never NOT_DETECTED / INVALIDATED."""
+    import scripts.build_state_of_themes as sot
+    root = _falsifier_matrix_root(tmp_path)
+    ctx = sot.compose(root)
+    (root / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, root)
+    assert out is not None and out.exists()
+    payload = json.loads(out.read_text(encoding="utf-8"))
+
+    absent = ("th_no_record", "th_null_summary", "th_empty_summary", "th_string_summary")
+    malformed = ("th_string_false", "th_null_counts", "th_missing_anyfired", "th_missing_count", "th_negative_count")
+    for tid in absent:
+        dim = _thesis_dimension(payload, tid)
+        assert dim["state"] == "UNKNOWN", (tid, dim)
+        assert dim["reason_code"] == "FALSIFIER_SUMMARY_ABSENT", (tid, dim)
+    for tid in malformed:
+        dim = _thesis_dimension(payload, tid)
+        assert dim["state"] == "UNKNOWN", (tid, dim)
+        assert dim["reason_code"] == "FALSIFIER_SUMMARY_MALFORMED", (tid, dim)
+    # no absent/malformed theme may read as checked-and-clean or invalidated
+    for tid in (*absent, *malformed):
+        dim = _thesis_dimension(payload, tid)
+        assert dim["state"] not in ("NOT_DETECTED", "INVALIDATED", "UNCONFIRMED"), (tid, dim)
+
+
+def test_contract_keeps_evaluated_readings_and_coverage_distinction(tmp_path):
+    """Fired, input-missing and evaluated known negatives keep their v1 states;
+    coverage without a machine-checkable falsifier is separately distinguished."""
+    import scripts.build_state_of_themes as sot
+    root = _falsifier_matrix_root(tmp_path)
+    ctx = sot.compose(root)
+    (root / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, root)
+    payload = json.loads(out.read_text(encoding="utf-8"))
+
+    fired = _thesis_dimension(payload, "th_fired")
+    assert fired["state"] == "INVALIDATED"
+    assert fired["reason_code"] == "MACHINE_FALSIFIER_FIRED"
+
+    # fired dominates even with partial inputs (n_data_missing=2 on th_fired)
+    assert fired["stage"] == "WATCH"
+
+    missing = _thesis_dimension(payload, "th_data_missing")
+    assert missing["state"] == "UNCONFIRMED"
+    assert missing["reason_code"] == "FALSIFIER_INPUT_MISSING"
+
+    negative = _thesis_dimension(payload, "th_negative")
+    assert negative["state"] == "NOT_DETECTED"
+    assert negative["reason_code"] == "NO_MACHINE_INVALIDATION_DETECTED"
+
+    for tid in ("th_qualitative_only", "th_zero_falsifiers"):
+        dim = _thesis_dimension(payload, tid)
+        assert dim["state"] == "NOT_DETECTED", (tid, dim)
+        assert dim["reason_code"] == "NO_MACHINE_CHECKABLE_COVERAGE", (tid, dim)
+        assert dim["machine_falsifiers"] == 0, (tid, dim)
+
+
+def test_legacy_rows_without_flags_keep_the_v1_reading(tmp_path):
+    """Rows written before the qualification existed carry no flag; the contract
+    keeps their v1 reading so the artifact stays compatible across the change."""
+    import scripts.build_state_of_themes as sot
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    ctx = {"as_of": "2026-11-03", "n_stale_legs": 0, "themes": [
+        {"theme_id": "legacy_fired", "lane": "review", "stage_key": "PRECIPICE",
+         "falsifier_any_fired": True, "falsifier_n_data_missing": 0,
+         "asym_legs_section": [], "evidence_refs": []},
+        {"theme_id": "legacy_zero", "lane": "quiet", "stage_key": "WATCH",
+         "falsifier_any_fired": False, "falsifier_n_data_missing": 0,
+         "asym_legs_section": [], "evidence_refs": []},
+        # a garbage legacy row must not fail the whole side-artifact write
+        {"theme_id": "legacy_garbage", "lane": "quiet", "stage_key": "WATCH",
+         "falsifier_any_fired": False, "falsifier_n_data_missing": "not-a-count",
+         "asym_legs_section": [], "evidence_refs": []},
+    ]}
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    assert out is not None and out.exists()
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert _thesis_dimension(payload, "legacy_fired")["state"] == "INVALIDATED"
+    zero = _thesis_dimension(payload, "legacy_zero")
+    assert zero["state"] == "NOT_DETECTED"
+    assert zero["reason_code"] == "NO_MACHINE_INVALIDATION_DETECTED"
+    garbage = _thesis_dimension(payload, "legacy_garbage")
+    assert garbage["state"] == "NOT_DETECTED"
+    assert garbage["stage"] == "WATCH"
+
+
+def test_malformed_summary_is_not_fired_in_lane_chip_or_card(tmp_path):
+    """The string-"false" trap: a truthy non-bool any_fired must not fire the
+    review lane, the thesis_review chip or the fired card badge."""
+    import scripts.build_state_of_themes as sot
+    root = _falsifier_matrix_root(tmp_path)
+    ctx = sot.compose(root)
+    html = sot.render(root)
+    by_id = {t["theme_id"]: t for t in ctx["themes"]}
+
+    assert ctx["chip_thesis_review"] == 1  # only th_fired
+    assert by_id["th_fired"]["lane"] == "review"
+    assert by_id["th_string_false"]["lane"] != "review"
+
+    fired_card = _theme_card(html, "th_fired")
+    assert 'data-fired="1"' in fired_card
+    assert 'class="badge fired"' in fired_card
+    for tid in ("th_string_false", "th_no_record", "th_null_counts", "th_missing_count", "th_negative_count"):
+        assert 'data-fired="0"' in _theme_card(html, tid), tid
+        assert 'class="badge fired"' not in _theme_card(html, tid), tid
+
+
+def test_absent_summary_renders_no_clean_badge_and_no_none(tmp_path):
+    """An absent/unusable summary shows neither the green clean badge nor a
+    literal None; the evaluated known negative keeps its green badge."""
+    import scripts.build_state_of_themes as sot
+    html = sot.render(_falsifier_matrix_root(tmp_path))
+
+    negative_card = _theme_card(html, "th_negative")
+    assert 'class="badge clean"' in negative_card
+    assert "0/3 tripped" in negative_card
+    assert "0/3 触发" in negative_card
+
+    for tid in ("th_no_record", "th_null_summary", "th_empty_summary",
+                "th_string_summary", "th_string_false", "th_null_counts",
+                "th_missing_anyfired", "th_missing_count", "th_negative_count", "th_zero_falsifiers"):
+        card = _theme_card(html, tid)
+        assert 'class="badge clean"' not in card, tid
+        assert 'class="badge fired"' not in card, tid
+        assert "None" not in card, tid
+
+
+def test_malformed_falsifier_list_does_not_break_compose_or_page(tmp_path):
+    """Non-list falsifiers, non-dict entries and non-string rules/rule states
+    must not crash compose or the page, and valid entries survive intact."""
+    import scripts.build_state_of_themes as sot
+    root = _falsifier_matrix_root(tmp_path)
+    ctx = sot.compose(root)  # must not raise
+    html = sot.render(root)  # must not raise
+    by_id = {t["theme_id"]: t for t in ctx["themes"]}
+
+    assert by_id["th_string_summary"]["falsifiers"] == []  # non-list → dropped
+    assert by_id["th_null_counts"]["falsifiers"] == []  # non-dict entries → skipped
+    cleaned = by_id["th_zero_falsifiers"]["falsifiers"]
+    assert cleaned == [{"state": "armed", "rule_en": "rule text", "rule_zh": "中文规则"}]
+    assert 'data-theme-id="th_zero_falsifiers"' in html
+    assert "rule text" in html and "中文规则" in html
+
+
+def test_partial_or_negative_falsifier_counts_are_malformed_without_crashing():
+    import scripts.build_state_of_themes as sot
+    valid = {"any_fired": True, "n_fired": 1, "n_armed": 2,
+             "n_qualitative": 0, "n_data_missing": 0}
+    for key in sot._FALSIFIER_COUNT_KEYS:
+        for invalid in (None, -1, True, "1"):
+            summary = {**valid, key: invalid}
+            q = sot._falsifier_summary_qualification({"falsifier_summary": summary})
+            assert q["present"] and not q["valid"] and not q["any_fired"], (key, invalid, q)
+            assert q[key] == 0
+        summary = {k: v for k, v in valid.items() if k != key}
+        q = sot._falsifier_summary_qualification({"falsifier_summary": summary})
+        assert q["present"] and not q["valid"] and not q["any_fired"], (key, q)
+        assert q[key] == 0

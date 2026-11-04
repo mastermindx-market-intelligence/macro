@@ -9,12 +9,25 @@ assert(['127.0.0.1','localhost','[::1]'].includes(new URL(base).hostname),'Use a
 const out=process.env.D05_EVIDENCE_DIR||fs.mkdtempSync(path.join(os.tmpdir(),'d05-browser-proof-'));
 fs.mkdirSync(out,{recursive:true});
 const cases=[[1440,1000,'dark','en'],[1440,1000,'light','zh'],[1024,900,'dark','en'],[768,1024,'light','en'],[390,844,'dark','en'],[390,844,'light','zh'],[320,740,'dark','zh']];
+const reducedMotion=process.env.D05_REDUCED_MOTION||'reduce';
+assert(['reduce','no-preference'].includes(reducedMotion));
 const results=[];
+async function expectRange(page,expected,label) {
+ if(reducedMotion==='reduce') {
+  assert.deepEqual(await page.evaluate(()=>window.SectorCyclesCapture().range),expected,
+   `${label} must apply immediately when reduced motion is requested`);
+ }
+ // Wait for the requested end state, not an arbitrary animation delay.
+ await page.waitForFunction(expected=>{
+  const actual=window.SectorCyclesCapture().range;
+  return actual.every((value,index)=>Math.abs(value-expected[index])<1e-10);
+ },expected);
+}
 (async()=>{
  const browser=await playwright.chromium.launch({headless:true,...(process.env.D05_CHROMIUM_EXECUTABLE?{executablePath:process.env.D05_CHROMIUM_EXECUTABLE}:{})});
  try {
   for(const [width,height,theme,lang] of cases) {
-   const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'}), page=await context.newPage();
+   const context=await browser.newContext({viewport:{width,height},reducedMotion}), page=await context.newPage();
    await context.addInitScript(({theme,lang})=>{localStorage.setItem('theme',theme);localStorage.setItem('lang',lang);},{theme,lang});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.route('**/*',r=>new URL(r.request().url()).origin===new URL(base).origin&&r.request().method()==='GET'?r.continue():r.abort());
@@ -57,10 +70,14 @@ const results=[];
    assert.equal(await page.locator('.cyc-chip[data-id="xle"]').getAttribute('class').then(c=>c.includes('on')),true);
    if(await page.locator('#sc-adv-toggle').isVisible()) await page.locator('#sc-adv-toggle').click();
    assert.equal(await page.locator('#sc-modes [data-mode="price"]').isVisible(),true,'chart options must be reachable at this viewport');
+   const homeRange=await page.evaluate(()=>window.SectorCyclesCapture().range);
    await page.locator('#sc-modes [data-mode="price"]').click();
    await page.locator('#sc-scale [data-scale="linear"]').click();
    await page.locator('#sc-zoom [data-i="3"]').click();
+   const oneYearRange=await page.evaluate(()=>{const hi=window.SECTOR_CYCLES.meta.xDomain[1];return [hi-1.3,hi];});
+   await expectRange(page,oneYearRange,'1y zoom');
    await page.locator('#sc-zreset').click();
+   await expectRange(page,homeRange,'Home');
    assert.equal(await page.locator('#sc-scale [data-scale="linear"]').getAttribute('aria-pressed'),'true');
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
    assert.equal(overflow,false,'page must not overflow horizontally');
@@ -105,7 +122,7 @@ const results=[];
    await page.locator('.si-side [data-view="moving"]').click();
    assert.equal(await disclosure.isVisible(),true,'Cycles must not hide or obstruct the rotation evidence');
    assert.deepEqual(errors,[],'page exceptions must be resolved or explicitly classified');
-   results.push({width,height,theme,lang,fixture,sourceState,status:'passed'});
+   results.push({width,height,theme,lang,fixture,sourceState,reducedMotion,status:'passed'});
    await context.close();
   }
  } finally { await browser.close(); }

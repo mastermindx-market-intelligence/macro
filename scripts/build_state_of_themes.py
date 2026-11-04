@@ -627,6 +627,49 @@ def _compute_filter_flags(legs: dict, falsifier_any_fired: bool) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Thesis falsifier-summary presence qualification (D05 route-audit repair)
+# ---------------------------------------------------------------------------
+
+_FALSIFIER_COUNT_KEYS = ("n_fired", "n_armed", "n_qualitative", "n_data_missing")
+
+
+def _falsifier_summary_qualification(th_data: Any) -> dict[str, Any]:
+    """Qualify what actually joined from the thesis engine's native summary.
+
+    The engine (engine/neuralweb/theme_thesis.py) stays the sole evaluation
+    owner — nothing here re-evaluates. This only types what joined, so an
+    absent, null, empty or malformed ``falsifier_summary`` can never read
+    downstream as a completed machine check (D05 route-audit defect: a missing
+    summary used to default to ``any_fired=False`` / ``n_data_missing=0`` and
+    surface as ``NOT_DETECTED``). Presence and machine-typed counts travel
+    next to the counts themselves; a truthy non-bool ``any_fired`` (a string
+    ``"false"`` used to read as a fired falsifier) and non-int counts are
+    carried as present-but-invalid, not silently re-typed to zero.
+    """
+    summary = th_data.get("falsifier_summary") if isinstance(th_data, dict) else None
+    if not isinstance(summary, dict) or not summary:
+        return {
+            "present": False, "valid": False, "any_fired": False,
+            "n_fired": 0, "n_armed": 0, "n_qualitative": 0, "n_data_missing": 0,
+        }
+
+    def _typed_count(key: str) -> int:
+        value = summary.get(key)
+        # bool is an int subtype in Python — a bool count is malformed, not zero
+        return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else 0
+
+    counts = {key: _typed_count(key) for key in _FALSIFIER_COUNT_KEYS}
+    any_fired = summary.get("any_fired")
+    valid = isinstance(any_fired, bool) and all(
+        isinstance(summary.get(key), int)
+        and not isinstance(summary.get(key), bool)
+        and summary[key] >= 0
+        for key in _FALSIFIER_COUNT_KEYS
+    )
+    return {"present": True, "valid": valid, "any_fired": valid and any_fired is True, **counts}
+
+
+# ---------------------------------------------------------------------------
 # Weekly delta from phase history
 # ---------------------------------------------------------------------------
 
@@ -896,7 +939,8 @@ def compose(root: Path) -> dict[str, Any]:
         asym_th = asym_by_id.get(tid, {})
         legs = asym_th.get("legs", {})
         th_data = thesis_by_id.get(tid, {})
-        any_fired = (th_data.get("falsifier_summary", {}) or {}).get("any_fired", False)
+        # typed read: a truthy non-bool any_fired used to count as fired here too
+        any_fired = _falsifier_summary_qualification(th_data)["any_fired"]
         flags = _compute_filter_flags(legs, any_fired)
         if "secular_at_cyclical" in flags:
             chip_secular_at_cyclical += 1
@@ -952,14 +996,18 @@ def compose(root: Path) -> dict[str, Any]:
                 "tip_zh": tip_zh,
             })
 
-        # Falsifiers
-        fals_summary = (th_data.get("falsifier_summary", {}) or {})
-        any_fired = fals_summary.get("any_fired", False)
-        n_fired = fals_summary.get("n_fired", 0)
-        n_armed = fals_summary.get("n_armed", 0)
-        n_data_missing = fals_summary.get("n_data_missing", 0)
-        n_total = n_fired + n_armed + fals_summary.get("n_qualitative", 0) + fals_summary.get("n_data_missing", 0)
-        if n_total > 0:
+        # Falsifiers — the thesis engine's native summary, qualified for
+        # presence/validity so an absent or malformed summary cannot travel as
+        # an evaluated zero (see _falsifier_summary_qualification)
+        fals_qual = _falsifier_summary_qualification(th_data)
+        any_fired = fals_qual["any_fired"]
+        n_fired = fals_qual["n_fired"]
+        n_armed = fals_qual["n_armed"]
+        n_data_missing = fals_qual["n_data_missing"]
+        n_total = n_fired + n_armed + fals_qual["n_qualitative"] + n_data_missing
+        # Count labels only for a machine-valid summary: a malformed summary
+        # with partially readable counts must not badge as a checked-clean "0/N"
+        if fals_qual["valid"] and n_total > 0:
             falsifier_label = f"{n_fired}/{n_total} fired"
             falsifier_label_en = f"{n_fired}/{n_total} tripped"
             falsifier_label_zh = f"{n_fired}/{n_total} 触发"
@@ -969,14 +1017,23 @@ def compose(root: Path) -> dict[str, Any]:
             falsifier_label_zh = ""
         falsifier_sort = n_fired * 10 + n_armed
 
-        raw_falsifiers = th_data.get("falsifiers", []) or []
+        raw_falsifiers = th_data.get("falsifiers", [])
+        if not isinstance(raw_falsifiers, list):
+            raw_falsifiers = []
         falsifiers = []
         for f in raw_falsifiers[:8]:
+            if not isinstance(f, dict):
+                continue
             state_str = f.get("state", "qualitative")
+            if not isinstance(state_str, str) or not state_str:
+                # an entry with no readable state asserts nothing — drop it
+                continue
+            rule_en = f.get("rule_en")
+            rule_zh = f.get("rule_zh")
             falsifiers.append({
                 "state": state_str,
-                "rule_en": (f.get("rule_en") or "").strip(),
-                "rule_zh": (f.get("rule_zh") or "").strip(),
+                "rule_en": rule_en.strip() if isinstance(rule_en, str) else "",
+                "rule_zh": rule_zh.strip() if isinstance(rule_zh, str) else "",
             })
 
         # Divergence
@@ -1325,6 +1382,14 @@ def compose(root: Path) -> dict[str, Any]:
             "legs_ordered": legs_ordered,
             "falsifier_any_fired": any_fired,
             "falsifier_n_data_missing": n_data_missing,
+            # D05: explicit presence/provenance qualification of the engine's
+            # native summary — additive v1 keys, consumed by the contract row
+            "falsifier_summary_present": fals_qual["present"],
+            "falsifier_summary_valid": fals_qual["valid"],
+            "falsifier_machine_checkable": (
+                fals_qual["valid"]
+                and (fals_qual["n_fired"] + fals_qual["n_armed"] + fals_qual["n_data_missing"]) > 0
+            ),
             "falsifier_label": falsifier_label,
             "falsifier_label_en": falsifier_label_en,
             "falsifier_label_zh": falsifier_label_zh,
@@ -1851,8 +1916,32 @@ def _consumer_contract_row(
             break
 
     any_fired = bool(theme.get("falsifier_any_fired"))
-    n_data_missing = int(theme.get("falsifier_n_data_missing") or 0)
-    if any_fired:
+    # typed coercion: one garbage row must not fail the whole side-artifact write
+    raw_missing = theme.get("falsifier_n_data_missing")
+    n_data_missing = (
+        raw_missing
+        if isinstance(raw_missing, int) and not isinstance(raw_missing, bool) else 0
+    )
+    # D05: presence/provenance qualification carried from compose. A summary the
+    # builder never joined (or joined malformed) must NOT read as a completed
+    # machine check, and an evaluated summary with no machine-checkable
+    # falsifier is distinguished from an evaluated known negative. Rows written
+    # before the qualification existed carry no flag and keep the v1 reading —
+    # real builder rows always state what actually joined.
+    summary_present = theme.get("falsifier_summary_present", True)
+    summary_valid = theme.get("falsifier_summary_valid", True)
+    machine_checkable = theme.get("falsifier_machine_checkable", True)
+    if summary_present is False:
+        thesis_dimension = _consumer_dimension(
+            "UNKNOWN", "FALSIFIER_SUMMARY_ABSENT",
+            stage=theme.get("stage_key"),
+        )
+    elif summary_valid is False:
+        thesis_dimension = _consumer_dimension(
+            "UNKNOWN", "FALSIFIER_SUMMARY_MALFORMED",
+            stage=theme.get("stage_key"),
+        )
+    elif any_fired:
         thesis_dimension = _consumer_dimension(
             "INVALIDATED", "MACHINE_FALSIFIER_FIRED",
             stage=theme.get("stage_key"),
@@ -1861,6 +1950,11 @@ def _consumer_contract_row(
         thesis_dimension = _consumer_dimension(
             "UNCONFIRMED", "FALSIFIER_INPUT_MISSING",
             stage=theme.get("stage_key"),
+        )
+    elif machine_checkable is False:
+        thesis_dimension = _consumer_dimension(
+            "NOT_DETECTED", "NO_MACHINE_CHECKABLE_COVERAGE",
+            stage=theme.get("stage_key"), machine_falsifiers=0,
         )
     else:
         thesis_dimension = _consumer_dimension(

@@ -729,10 +729,10 @@
       presets.map(function (p, i) { return '<button class="cyc-zbtn" data-i="' + i + '">' + p.label + '</button>'; }).join("") +
       '<button class="cyc-zbtn cyc-zreset" id="sc-zreset">' + L("Home ⤢", "首页 ⤢") + '</button>';
     presets.forEach(function (p, i) {
-      z.querySelector('[data-i="' + i + '"]').addEventListener("click", function () { if (heroChart) heroChart.setView(p.d.slice(), true); });
+      z.querySelector('[data-i="' + i + '"]').addEventListener("click", function () { if (heroChart) heroChart.setView(p.d.slice(), !REDUCE); });
     });
     // "Home" returns to the ~7y default view (not the full extent) — the intended landing window
-    z.querySelector("#sc-zreset").addEventListener("click", function () { if (heroChart) heroChart.setView(DEFAULT_VIEW.slice(), true); });
+    z.querySelector("#sc-zreset").addEventListener("click", function () { if (heroChart) heroChart.setView(DEFAULT_VIEW.slice(), !REDUCE); });
   }
 
   /* ---- mode + scale segmented controls ----------------------------------- */
@@ -1865,7 +1865,7 @@
       row.scrollIntoView({ block: "nearest", behavior: REDUCE?"auto":"smooth" });
       // zoom the chart to this leg for context
       var g = legsOf(s)[i];
-      if (g && heroChart) heroChart.setView([Math.max(META.xDomain[0], g.x0 - 0.15), Math.min(META.xDomain[1], g.x1 + 0.15)], true);
+      if (g && heroChart) heroChart.setView([Math.max(META.xDomain[0], g.x0 - 0.15), Math.min(META.xDomain[1], g.x1 + 0.15)], !REDUCE);
     } else selectedLeg=null;
     restoreLegDOM();notifyState();
   }

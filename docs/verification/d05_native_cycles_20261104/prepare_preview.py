@@ -5,7 +5,8 @@ Dependencies: Jinja2 plus the repository's i18n imports. Uses dated committed
 fixtures; it never recalculates a market model, writes a forward log, or deploys.
 """
 from pathlib import Path
-import argparse, copy, hashlib, json, re, shutil, subprocess, tempfile
+import argparse, copy, hashlib, json, posixpath, re, shutil, subprocess, tempfile
+from urllib.parse import urlsplit
 from jinja2 import Environment, FileSystemLoader
 from engine import i18n
 root=Path(__file__).resolve().parents[3]
@@ -27,21 +28,59 @@ for name in ['sector_central','sector_cycles']:
     (out/(name+'.html')).write_text(html)
 assets=set(re.findall(r'(?:src|href)=[\'"]([^\'"?#]+)', '\n'.join((out/(n+'.html')).read_text() for n in ['sector_central','sector_cycles'])))
 assets|={'sector_cycles_data.js','sector_cycles_series_data.js','sector_cycles_narr_data.js','sector_cycles_dna_data.js','sector_central_data.js'}
-assets={a for a in assets if not a.startswith(('/','#','http','mailto:','data:')) and Path(a).suffix in {'.js','.css','.woff2','.svg'}}
+# Runtime assets come from this candidate; archived market inputs stay dated.
+runtime_ref=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
 known=set(subprocess.check_output(['git','-C',str(root),'ls-tree','-r','--name-only',source_ref,'site'],text=True).splitlines())
-for a in sorted(assets):
+runtime_known=set(subprocess.check_output(['git','-C',str(root),'ls-tree','-r','--name-only',runtime_ref,'site'],text=True).splitlines())
+runtime_assets={}
+data_assets={'sector_cycles_data.js','sector_cycles_series_data.js','sector_cycles_narr_data.js','sector_cycles_dna_data.js','sector_central_data.js'}
+
+def local_asset(value, parent=''):
+    parsed=urlsplit(value)
+    if parsed.scheme or parsed.netloc or not parsed.path:
+        return None
+    name=posixpath.normpath(parsed.path.lstrip('/') if parsed.path.startswith('/') else posixpath.join(parent,parsed.path))
+    if name=='..' or name.startswith('../') or Path(name).suffix not in {'.js','.css','.woff2','.woff','.svg'}:
+        return None
+    return name
+
+pending={name for a in assets if (name:=local_asset(a))}
+copied=set()
+while pending:
+    a=pending.pop()
+    if a in copied:
+        continue
+    copied.add(a)
     dst=out/a; dst.parent.mkdir(parents=True,exist_ok=True)
     src=root/'templates'/a
-    if src.exists(): shutil.copy2(src,dst)
+    if a in data_assets and 'site/'+a in known:
+        body=subprocess.check_output(['git','-C',str(root),'show',source_ref+':site/'+a])
+        origin=source_ref+':site/'+a
+    elif src.exists():
+        body=src.read_bytes()
+        origin='working-tree:templates/'+a
+    elif 'site/'+a in runtime_known:
+        body=subprocess.check_output(['git','-C',str(root),'show',runtime_ref+':site/'+a])
+        origin=runtime_ref+':site/'+a
     elif 'site/'+a in known:
-        dst.write_bytes(subprocess.check_output(['git','-C',str(root),'show',source_ref+':site/'+a]))
-    else: print('Absent optional asset:',a)
+        body=subprocess.check_output(['git','-C',str(root),'show',source_ref+':site/'+a])
+        origin=source_ref+':site/'+a
+    else:
+        print('Absent optional asset:',a)
+        continue
+    dst.write_bytes(body)
+    runtime_assets[a]={'source':origin,'sha256':hashlib.sha256(body).hexdigest()}
+    if Path(a).suffix=='.css':
+        css=body.decode('utf-8')
+        dependencies=re.findall(r'url\(\s*[\'"]?([^\'")\s]+)',css)
+        dependencies+=re.findall(r'@import\s+[\'"]([^\'"]+)',css)
+        pending.update(name for value in dependencies if (name:=local_asset(value,posixpath.dirname(a))) and name not in copied)
 # The page fetches these optional panels; use committed evidence when present.
 for a in ['basketdata/baskets.json','marketdata/rotation_events.json','marketdata/sector_fragmentation.json']:
     if 'site/'+a in known:
         dst=out/a;dst.parent.mkdir(parents=True,exist_ok=True)
         dst.write_bytes(subprocess.check_output(['git','-C',str(root),'show',source_ref+':site/'+a]))
-provenance={'fixture_only':True,'scenario':args.scenario,'source_ref':source_ref,'inputs':{}}
+provenance={'fixture_only':True,'scenario':args.scenario,'source_ref':source_ref,'runtime_ref':runtime_ref,'runtime_assets':runtime_assets,'inputs':{}}
 if args.scenario!='archive':
     from engine.leadership_rotation_context import measured_group_read
     from scripts._cycles_payload import publication_scripts, FAMILY_KEYS
