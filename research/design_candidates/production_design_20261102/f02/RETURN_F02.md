@@ -206,3 +206,41 @@ reconciliation before its dependent Paper edits. Preserve line-only gap scope,
 held #8241/#8721 overlap and domain-producer ownership. Both PRs remain Draft/HOLD;
 no merge, Ready/un-draft, labels, enqueue or deploy. The completed source phase and
 this checkpoint are **not** full F02, joint F01/F02, native-set/RIG or product acceptance.
+
+## F02 source/Fabric return — same original operation, later material observation
+
+- **Exact implementation remains** macro Draft/HOLD #10698 at
+  `bfb3bf32660bd555341343fb4e977b5ee6a642b3`; original design PR #10630
+  remains Draft/HOLD. No new implementation commit or Paper edit in this observation.
+  No duplicate source branch, PR, queue or lifecycle transition.
+- [Current-head fences 41775368500](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368500)
+  completed **SUCCESS**. [Current-head CI 41775368611](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368611)
+  was **queued** with `contract-delta` and `ci-plan` jobs in progress at the
+  latest two evidence reads. This is **not** full CI success, Ready or merge proof.
+- The Chairman confirmed Subagent Fabric may assist. Current capability read
+  reports schema `mastermind.fabric_mcp.v1`, adapter available, admission/START
+  **UNPROBED**, `retry_allowed=false` and no background execution. The existing
+  [F02 formal-route assessment](paper/reviews/formal-route-actionability-20261104.md)
+  establishes no trusted original F02 Fabric root, parent or grant. Read-only
+  Executive v3 roots/state observations both returned `INVALID_ARGUMENT`;
+  this is not evidence that all Fabric/Executive routes are down. A
+  `fabric_request` was **not** submitted using invented lineage or a fresh
+  root. This isolates delegation admission without blocking source implementation
+  or consuming scarce Fable/Opus capacity.
+- An actual crypto chart consumer uses `illus(kind="line",height=42,max_points=50)`,
+  but separate crypto PRs #9580/#7645/#8050 have active overlapping product
+  ownership. The publisher still filters invalid observations before creating
+  spark arrays. The F02 renderer cannot invent omitted calendar slots; producer
+  work remains with its domain owner. No new crypto path was edited or adopted.
+- **G12 is BUILT_NOT_PROVEN** at this separate source head. Shared source/status
+  descriptions now reflect that candidate without claiming deployed behavior.
+  G15 Paper `EFFECT_UNKNOWN`, full 32-board native freeze, F01 joint acceptance,
+  real-path keyboard/locale/400% proof and RIG retain their prior explicit gates.
+
+**Exact next action:** consume a material hosted CI completion/failure at
+`bfb3bf32`, repair any reproducible candidate-specific failure on the same
+source branch, then qualify the actual existing consumer/preview only through its
+authorized owner and permitted browser path. If an admitted original F02
+Fabric root/parent/grant later becomes observable, delegate a separable bounded
+task using the existing root and real START/return proof. Do not invent the
+lineage or replay the Paper unknown effect.
