@@ -4,7 +4,7 @@ Renders one ``site/rotation/<key>.html`` per subsector from
 ``templates/subsector_rotation_detail.html.j2``, driven entirely by the committed
 ``site/marketdata/subsector_rotation.json`` (no per-stock data dependency — these are
 broad-universe tickers). Each page tracks that subsector's rotation state, the VELOCITY
-of its relative strength (trend + acceleration), its multi-horizon performance, and its
+of its standardized relative-strength trend plus raw return-rate acceleration, its multi-horizon performance, and its
 member stocks (linked to the single-stock analyzer). Regenerated on every build so the
 pages stay live with the nightly rotation refresh.
 
@@ -42,7 +42,7 @@ QUADX = {
 }
 PERF_ROWS = [
     ("1D", "1D", "1天"), ("1W", "1W", "1周"), ("1M", "1M", "1月"),
-    ("3M", "3M", "3月"), ("6M", "6M", "6月"), ("1Y", "1Y", "1年"), ("YTD", "YTD", "年初至今"),
+    ("MTD", "MTD", "月初至今"), ("3M", "3M", "3月"), ("6M", "6M", "6月"), ("1Y", "1Y", "1年"), ("YTD", "YTD", "年初至今"),
 ]
 
 
@@ -60,7 +60,6 @@ def _lede(sub: dict) -> tuple[str, str]:
     name, q = sub["name"], sub["quadrant"]
     name_zh = sub.get("name_zh") or name
     accel = sub.get("accel")
-    accel_up = accel is not None and accel > 0
     en = {
         "leading":   f"{name} is a market leader that is still strengthening — it sits strong versus the median subsector and its relative strength is still rising.",
         "weakening": f"{name} is a former leader rolling over — still strong versus the market on level, but its relative strength has turned down (leaders rotate out from here).",
@@ -73,9 +72,14 @@ def _lede(sub: dict) -> tuple[str, str]:
         "improving": f"{name_zh} 正从落后中触底回升——水平弱于中位数，但相对强度正在改善（早期轮入常在此显现）。",
         "lagging":   f"{name_zh} 处于落后——弱于中位数子行业，且相对强度仍在下行。",
     }[q]
-    tail_en = (" Acceleration is positive, so the move is picking up pace."
-               if accel_up else " Acceleration is negative, so the pace is fading.") if accel is not None else ""
-    tail_zh = ("加速度为正，动能正在加快。" if accel_up else "加速度为负，动能正在减弱。") if accel is not None else ""
+    if accel is None:
+        tail_en, tail_zh = " Acceleration is unavailable.", "加速度不可用。"
+    elif accel > 0:
+        tail_en, tail_zh = " Acceleration is positive: the latest weekly return rate is higher.", "加速度为正：最近一周的收益速率更高。"
+    elif accel < 0:
+        tail_en, tail_zh = " Acceleration is negative: the latest weekly return rate is lower.", "加速度为负：最近一周的收益速率更低。"
+    else:
+        tail_en, tail_zh = " Acceleration is zero: the compared weekly return rates are equal.", "加速度为零：所比较的每周收益速率相等。"
     return en + tail_en, zh + tail_zh
 
 
@@ -100,11 +104,13 @@ def build(site: Path | None = None) -> int:
     for sub in subs:
         q = sub.get("quadrant") or "lagging"
         qd, qx = QUAD.get(q, QUAD["lagging"]), QUADX.get(q, QUADX["lagging"])
-        members = sorted((sub.get("members") or []),
+        available_members = sub.get("members") or []
+        members = sorted(available_members,
                          key=lambda m: (m.get("1M") if m.get("1M") is not None else -1e9), reverse=True)[:30]
         lede_en, lede_zh = _lede(sub)
         html = tmpl.render(
             sub=sub, n_total=n_total, members=members, perf_rows=PERF_ROWS,
+            asof=data.get('asof'), members_available=len(available_members), member_limit=30,
             q_cls=qd[2], q_en=qd[0], q_zh=qd[1], qx_en=qx[0], qx_zh=qx[1],
             lede_en=lede_en, lede_zh=lede_zh,
         )

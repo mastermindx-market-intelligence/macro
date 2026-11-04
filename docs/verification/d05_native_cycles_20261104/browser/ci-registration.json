@@ -1,0 +1,9 @@
+{
+  "changed_jobs": [
+    "sector-cycles-page"
+  ],
+  "new_suites_single_owner": true,
+  "git_blob_sha1": "9feb58e44d926a7ffe30f51f598a4c02b2a4fa51",
+  "sha256": "8cfc299dcc552ddbdd7f57cfcf6da0f2836d819f9a57540fff17068eb25c7404",
+  "full_closure_gate": "not rerun in sparse verification workspace; hosted CI still required"
+}

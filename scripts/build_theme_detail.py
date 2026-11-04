@@ -9,6 +9,7 @@ Additive + graceful: a missing stockdata record renders a "thin" chip, never a c
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -272,6 +273,23 @@ def standout_index(region: str = "us") -> dict[str, dict]:
     return out
 
 
+def _member_rows(basket: dict) -> tuple[list, str]:
+    """Keep missing/malformed membership distinct from an explicitly empty set."""
+    raw = basket.get("members")
+    valid = isinstance(raw, list) and all(
+        isinstance(m, dict) and isinstance(m.get("symbol"), str) and
+        0 < len(m["symbol"]) <= 100 and not any(ord(c) < 32 or ord(c) == 127 for c in m["symbol"])
+        for m in raw
+    )
+    return (raw, "available" if raw else "empty") if valid else ([], "unavailable")
+
+
+def _detail_payload(detail: dict) -> tuple[str, str]:
+    """Stamp exact emitted display bytes, separately from Cycles/PIT/access claims."""
+    payload = json.dumps(detail, separators=(",", ":"), default=str)
+    return payload, "members1-" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def build_detail_pages(data: dict, site: Path, env, region: str = "us",
                        chart: dict | None = None) -> int:
     """data carries theme_intel + baskets (the build payload). Returns # pages written."""
@@ -297,13 +315,14 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
         else:
             basket_view["cycle"] = _cycle_from_chart(chart, bid, b)
         basket_ctx = mctx.get(bid) or {}    # {ticker -> ctx} for THIS basket only
+        member_rows, members_state = _member_rows(b)
         members = [{**m, "conviction": _conviction(m["symbol"], sd_dir, cache),
                     "on_board": m["symbol"] in board,
-                    "member_ctx": basket_ctx.get(m["symbol"])} for m in b.get("members", [])]
+                    "member_ctx": basket_ctx.get(m["symbol"])} for m in member_rows]
         th = {**tmap.get(bid, {}), "weights": ti.get("weights")}   # weights for the composition bar
         lr = leadership_receipt.build_receipt(b, th, ti, region, site)
         detail = {
-            "basket": basket_view, "members": members, "theme": th,
+            "basket": basket_view, "members": members, "members_state": members_state, "theme": th,
             "act_now": basket_score.act_now_stocks(members, th),
             "history": basket_history.score_series(bid, "score", region),
             "timeline": basket_history.change_timeline(bid, region=region),
@@ -321,7 +340,10 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "bench_label": ti.get("bench_label", "S&P 500"),       # regional benchmark for the "vs <bench>" labels
             "bench_label_zh": ti.get("bench_label_zh", "标普500"),
         }
-        html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
+        # This stamps the exact emitted base payload, not historical membership
+        # or the independently verified Cycles publication. Adjunct fetches remain separate.
+        detail_json, members_source_id = _detail_payload(detail)
+        html = tmpl.render(detail_json=detail_json, members_source_id=members_source_id,
                            basket_name=b.get("name", bid), generated_utc=built,
                            theme_research_mount=_theme_research_mount(bid, region),
                            back_href=detail["back"],

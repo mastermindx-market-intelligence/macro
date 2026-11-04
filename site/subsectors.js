@@ -50,6 +50,11 @@
   var FILTER = {}; // per-tab full-table search text
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function publishedCount(value) { return Number.isSafeInteger(value) && value >= 0 ? value : null; }
+  function priceHistoryLabel(g) {
+    var priced = publishedCount(g.n_priced), configured = publishedCount(g.n_members);
+    return (priced == null ? '—' : priced) + ' / ' + (configured == null ? '—' : configured);
+  }
   function num(x, d) { return (x == null || isNaN(x)) ? '–' : Number(x).toFixed(d == null ? 0 : d); }
   function signed(x, d) { if (x == null || isNaN(x)) return '<span class="num">–</span>'; var v = Number(x); return '<span class="num ' + (v >= 0 ? 'pos' : 'neg') + '">' + (v >= 0 ? '+' : '') + v.toFixed(d == null ? 1 : d) + '</span>'; }
   function tierBadge(t) { return '<span class="tier ' + (t || 'none') + '">' + (t || '—') + '</span>'; }
@@ -217,9 +222,9 @@
     var stats = universeStats(payload, ds);
     var e = stats.counts.entry_now;
     var cov = stats.cov; var covTotal = cov.n_subsectors != null ? cov.n_subsectors : cov.n_listed; // per-universe denominator: sectors carry n_subsectors, baskets n_listed (SIC-D-B03) — never "of undefined" (R3A-66 / P20)
-    var honest = cov.n_gateable != null && covTotal != null
-      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + covTotal + '</span> ' + DS[ds].noun[0] + ' have enough data to time' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> thin (listed in the table, not timed)' : ''),
-        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + covTotal + '</span> 个' + DS[ds].noun[1] + '有足够数据可计时' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个数据稀疏（列于表内，不计时）' : ''))
+    var honest = publishedCount(cov.n_gateable) != null && publishedCount(covTotal) != null
+      ? L('<span class="num">' + cov.n_gateable + '</span> of <span class="num">' + covTotal + '</span> ' + DS[ds].noun[0] + ' scored' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> not scored' : ''),
+        '<span class="num">' + cov.n_gateable + '</span>/<span class="num">' + covTotal + '</span> 个' + DS[ds].noun[1] + '已评分' + (cov.n_thin ? ' · <span class="num">' + cov.n_thin + '</span> 个未评分' : ''))
       : '';
     return '<div class="isle sc-hero">'
       + '<div class="sc-eyebrow"><span class="dot"></span><span class="lbl">' + L('Rotation read', '轮动读数') + '</span>'
@@ -279,7 +284,7 @@
     }
     return '<a class="gcard" style="border-left-color:' + col + '" href="' + href + '">'
       + '<div class="g-top"><div><div class="g-nm">' + esc(g.label) + '</div>'
-      + '<div class="g-sct">' + esc(g.sector) + ' · ' + (g.n_priced || g.n_members) + ' ' + L('names', '只') + '</div></div>' + tierBadge(e.tier) + '</div>'
+      + '<div class="g-sct">' + esc(g.sector) + ' · ' + priceHistoryLabel(g) + ' ' + L('price histories / configured', '价格历史 / 配置成分') + '</div></div>' + tierBadge(e.tier) + '</div>'
       + '<div class="g-row">' + pills + ' <span class="g-fresh">' + freshTxt(e) + '</span></div>'
       + body
       + (sig ? '<div class="g-sig">' + sig + '</div>' : '')
@@ -455,11 +460,11 @@
     { k: 'state', t: ['Regime', '状态'], num: false },
     { k: 'fresh', t: ['Freshness', '新鲜度'], num: false },
     { k: 'rs60', t: ['RS60', 'RS60'], num: true },
-    { k: 'n', t: ['N', '数'], num: true }
+    { k: 'n', t: ['Price histories / configured', '价格历史 / 配置成分'], num: true }
   ];
   function fullRowVals(g) {
     var e = g.entry || {}, r = g.regime || {};
-    return { label: g.label || '', sector: g.sector || '', tier: e.tier || '', state: r.label || r.state || '', fresh: e.ticks != null ? e.ticks : (e.bars_to_cross != null ? 100 + e.bars_to_cross : 999), rs60: r.rs_60d, n: g.n_priced || g.n_members || 0, _g: g, _e: e, _r: r };
+    return { label: g.label || '', sector: g.sector || '', tier: e.tier || '', state: r.label || r.state || '', fresh: e.ticks != null ? e.ticks : (e.bars_to_cross != null ? 100 + e.bars_to_cross : 999), rs60: r.rs_60d, n: publishedCount(g.n_priced), _g: g, _e: e, _r: r };
   }
   function fullTableSection(payload, ds) {
     var groups = groupsOf(ds).slice();
@@ -488,7 +493,7 @@
         + '<td>' + regimePill(r) + '</td>'
         + '<td style="color:var(--muted);font-size:11px">' + (freshTxt(e) || '') + '</td>'
         + '<td>' + signed(r.rs_60d) + '</td>'
-        + '<td class="num">' + (g.n_priced || g.n_members) + '</td></tr>';
+        + '<td class="num">' + priceHistoryLabel(g) + '</td></tr>';
     }).join('');
     return '<div class="sec sc-stagger sc-s6"><div class="sec-head"><h2>' + ic('list','sc-h2-ic') + ' ' + L('All ' + noun[0], '全部' + noun[1]) + ' <span class="n">' + groups.length + '</span></h2></div>'
       + '<div class="sc-tablecard"><div class="sc-search">' + ic('search', 'sc-find-ic')

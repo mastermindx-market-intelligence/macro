@@ -120,21 +120,82 @@ function vUrl(name){
   }catch(e){}
   return name;
 }
-function inject(src,onload){
+function inject(src,onload,onerror){
   var s=document.createElement('script'); s.async=false; s.src=vUrl(src);
   if(onload) s.addEventListener('load',onload);
+  if(onerror) s.addEventListener('error',onerror);
   document.head.appendChild(s);
+  return s;
 }
-function loadCycles(){
-  if(loaded['@cycles']) return; loaded['@cycles']=true;
-  window.SC_LAZY_EXTRAS=true;                       // narr+dna wait for first sector focus
-  window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];
-  window.SC_SERIES_DATA='sector_cycles_series_data.js';
-  var files=['sector_cycles_data.js','mm_charts.js','sector_cycles.js'];
-  files.forEach(function(f,i){
-    inject(f, i===0?function(){ document.dispatchEvent(new CustomEvent('sc:cycles-data')); }:null);
+/* The existing loader owns the only core request. Parser-time DATA hints are
+   absent: a later script load cannot qualify a response fetched before identity
+   settled. A bounded fallback keeps native features available without granting
+   the optional Dossier access to an unqualified response. */
+var cycleLoadRequested=false,cycleLoadTimer=null,cycleLoadSerial=0,cycleLoadReceipt=null,dossierModuleFailed=false;
+var cycleIdentityBound=false,cycleIdentitySettled=false,cycleIdentityId=null,cycleIdentityEpoch=0;
+function nativeCycleIdentity(){
+  try{var u=window.MDXAuth&&window.MDXAuth.user&&window.MDXAuth.user();
+    return u&&typeof u.id==='string'&&u.id.length&&u.id.length<=256?u.id:null;
+  }catch(e){return null;}
+}
+function invalidateCycleLoad(){
+  if(cycleLoadReceipt)cycleLoadReceipt.status='invalidated';
+  refreshDossier();
+}
+function bindCycleIdentity(){
+  var auth=window.MDXAuth;
+  if(cycleIdentityBound||!auth||typeof auth.onChange!=='function')return;
+  cycleIdentityBound=true;
+  auth.onChange(function(user,event){
+    var id=user&&typeof user.id==='string'&&user.id.length&&user.id.length<=256?user.id:null;
+    var changed=!cycleIdentitySettled||id!==cycleIdentityId||event==='SIGNED_OUT';
+    if(changed){cycleIdentityEpoch++;cycleIdentitySettled=true;cycleIdentityId=id;invalidateCycleLoad();}
+    if(cycleLoadRequested&&!loaded['@cycles'])startCyclesQueue();
   });
 }
+function startCyclesQueue(){
+  if(loaded['@cycles'])return;
+  loaded['@cycles']=true;
+  if(cycleLoadTimer!==null&&typeof window.clearTimeout==='function')window.clearTimeout(cycleLoadTimer);
+  cycleLoadTimer=null;
+  window.SC_LAZY_EXTRAS=true;
+  window.SC_EXTRA_DATA=['sector_cycles_narr_data.js','sector_cycles_dna_data.js'];
+  window.SC_SERIES_DATA='sector_cycles_series_data.js';
+  var beforeData=window.SECTOR_CYCLES,beforePub=window.SECTOR_CYCLES_PUBLICATION;
+  var rec={serial:++cycleLoadSerial,status:'loading',identity:cycleIdentityId,epoch:cycleIdentityEpoch,
+    eligible:cycleIdentitySettled&&!!cycleIdentityId&&nativeCycleIdentity()===cycleIdentityId,
+    url:new URL(vUrl('sector_cycles_data.js'),location.href).href,script:null,data:null,publication:null};
+  cycleLoadReceipt=rec;
+  rec.script=inject('sector_cycles_data.js',function(e){
+    var data=window.SECTOR_CYCLES,pub=window.SECTOR_CYCLES_PUBLICATION;
+    if(cycleLoadReceipt===rec&&rec.status==='loading'){
+      var original=e&&e.currentTarget===rec.script&&rec.script.src===rec.url;
+      var fresh=data&&pub&&data!==beforeData&&pub!==beforePub;
+      var identity=rec.eligible&&cycleIdentitySettled&&rec.epoch===cycleIdentityEpoch&&
+        rec.identity===cycleIdentityId&&nativeCycleIdentity()===rec.identity;
+      rec.status=original&&fresh&&identity?'loaded':'unconfirmed';
+      if(rec.status==='loaded'){rec.data=data;rec.publication=pub;}
+    }
+    document.dispatchEvent(new CustomEvent('sc:cycles-data'));
+    refreshDossier();
+  },function(){if(cycleLoadReceipt===rec&&rec.status==='loading')rec.status='error';syncCycleContext();refreshDossier();});
+  // async=false preserves execution order. Never start the singleton renderer
+  // ahead of its core, including the bounded unconfirmed fallback.
+  inject('mm_charts.js');
+  inject('sector_cycles.js');
+  inject('sector_dossier_cycle.js',function(){refreshDossier();resumeExternalRestore();},function(){dossierModuleFailed=true;refreshDossier();resumeExternalRestore();});
+}
+function loadCycles(){
+  if(cycleLoadRequested)return;
+  cycleLoadRequested=true;
+  bindCycleIdentity();
+  if(loaded['@cycles'])return;
+  var disabled=window.MDXAuth&&window.MDXAuth.enabled&&window.MDXAuth.enabled()===false;
+  if(cycleIdentitySettled||disabled||typeof window.setTimeout!=='function'){startCyclesQueue();return;}
+  cycleLoadTimer=window.setTimeout(function(){cycleLoadTimer=null;startCyclesQueue();},3000);
+}
+window.addEventListener('mdx-auth',bindCycleIdentity);
+document.addEventListener('DOMContentLoaded',bindCycleIdentity);
 function loadAssets(view){
   var list=LAZY[view]||[];
   for(var i=0;i<list.length;i++){
@@ -320,18 +381,19 @@ function currentEntry(){
   var e=(history.state||{}).siWorkspace;
   return e&&e.schema==='sector_central.entry.v1'&&typeof e.entryId==='string'&&e.entryId.length<=80&&e.href===localHref()&&VIEWS.indexOf(e.view)>=0?e:null;
 }
+var DOSSIER_FOCUS=['heading','values','previous','next','sources','action-members','action-cycles','action-sources'];
 function focusLocator(node){
   node=node||document.activeElement;
   if(!node||!node.getAttribute||!node.closest||!node.closest('.si-view')) return null;
-  var keys=[['cycle-opener','data-cycle-id'],['board-cycle-opener','data-focus'],['measured','data-g'],['family','data-fam'],['mode','data-mode'],['scale','data-scale'],['entity','data-id']];
-  for(var i=0;i<keys.length;i++){var value=node.getAttribute(keys[i][1]);if(value&&value.length<=100)return {kind:keys[i][0],id:value};}
-  if(['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(node.id)>=0)return {kind:'element',id:node.id};
+  var keys=[['dossier','data-sdc-focus'],['cycle-opener','data-cycle-id'],['board-cycle-opener','data-focus'],['measured','data-g'],['family','data-fam'],['mode','data-mode'],['scale','data-scale'],['entity','data-id']];
+  for(var i=0;i<keys.length;i++){var value=node.getAttribute(keys[i][1]);if(value&&value.length<=100&&(keys[i][0]!=='dossier'||DOSSIER_FOCUS.indexOf(value)>=0))return {kind:keys[i][0],id:value};}
+  if(['sc-dossier-toggle','mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(node.id)>=0)return {kind:'element',id:node.id};
   return null;
 }
 function resolveFocus(f){
-  if(!f||typeof f.id!=='string'||f.id.length>100)return null;
-  if(f.kind==='element'&&['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)return document.getElementById(f.id);
-  var attrs={'cycle-opener':'data-cycle-id','board-cycle-opener':'data-focus',measured:'data-g',family:'data-fam',mode:'data-mode',scale:'data-scale',entity:'data-id'};
+  if(!f||typeof f.id!=='string'||f.id.length>100||(f.kind==='dossier'&&DOSSIER_FOCUS.indexOf(f.id)<0))return null;
+  if(f.kind==='element'&&['sc-dossier-toggle','mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)return document.getElementById(f.id);
+  var attrs={dossier:'data-sdc-focus','cycle-opener':'data-cycle-id','board-cycle-opener':'data-focus',measured:'data-g',family:'data-fam',mode:'data-mode',scale:'data-scale',entity:'data-id'};
   var attr=attrs[f.kind];if(!attr)return null;
   var nodes=document.querySelectorAll('.si-view.on ['+attr+']');
   for(var i=0;i<nodes.length;i++)if(nodes[i].getAttribute(attr)===f.id&&nodes[i].getBoundingClientRect().width)return nodes[i];
@@ -346,6 +408,7 @@ function collectEntry(snapshot){
     viewport:{scrollY:Math.max(0,Math.min(100000,window.scrollY||0)),focus:focusLocator()}};
   if(window.SectorMeasuredCapture)next.measured=window.SectorMeasuredCapture();
   if(current==='cycles'&&cycleApplied&&window.SectorCyclesCapture)next.cycles=snapshot||window.SectorCyclesCapture();
+  var dossier=captureDossier(next.cycles);if(dossier)next.dossier=dossier;
   return next;
 }
 function saveEntry(snapshot){
@@ -393,10 +456,16 @@ function exportEntry(entry){
   if(viewport){
     if(typeof viewport.scrollY!=='number'||!isFinite(viewport.scrollY)||viewport.scrollY<0||viewport.scrollY>100000)throw new Error('invalid_viewport');
     var f=viewport.focus, focus=null;
-    if(f&&['cycle-opener','board-cycle-opener','measured','family','mode','scale','entity','element'].indexOf(f.kind)>=0){
-      if(f.kind!=='element'||['mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)focus={kind:f.kind,id:exportText(f.id,100,false)};
+    if(f&&['dossier','cycle-opener','board-cycle-opener','measured','family','mode','scale','entity','element'].indexOf(f.kind)>=0){
+      if(f.kind==='dossier'&&DOSSIER_FOCUS.indexOf(f.id)<0)throw new Error('invalid_dossier_focus');
+      if(f.kind!=='element'||['sc-dossier-toggle','mr-cycle-link','sc-cycle-heading','sc-cycle-return','sc-cycle-latest','sc-zreset'].indexOf(f.id)>=0)focus={kind:f.kind,id:exportText(f.id,100,false)};
     }
     out.viewport={scrollY:viewport.scrollY,focus:focus};
+  }
+  if(Object.prototype.hasOwnProperty.call(entry,'dossier')){
+    var d=entry.dossier;
+    if(entry.view!=='cycles'||!d||Object.keys(d).sort().join(',')!=='open,view'||typeof d.open!=='boolean')throw new Error('invalid_dossier_state');
+    out.dossier={open:d.open,view:d.view===null?null:dossierView(d.view,out.cycles)};
   }
   return out;
 }
@@ -468,7 +537,10 @@ function showRestoreNotice(op){
     if(!op.result||localHref()!==op.href||!currentEntry()||currentEntry().entryId!==op.entryId)return;
     var section=document.querySelector('.si-view.on'),note=document.getElementById('si-restore-status');
     if(!section)return;
-    if(!note){note=document.createElement('p');note.id='si-restore-status';note.className='si-view-read';note.setAttribute('role','status');section.insertBefore(note,section.firstChild);}
+    if(!note){note=document.createElement('p');note.id='si-restore-status';note.className='si-view-read';note.setAttribute('role','status');}
+    // Keep restoration feedback below the restored evidence. Inserting it above
+    // the saved viewport would let browser scroll anchoring undo the receipt.
+    if(note.parentNode!==section||note!==section.lastElementChild)section.appendChild(note);
     var result=op.result,copy;
     if(result.status==='applied')copy=op.projection.siWorkspace.cycles?
       ['Saved chart settings and page position restored.','已恢复保存的图表设置和页面位置。']:
@@ -549,6 +621,25 @@ function resumeExternalRestore(){
     if(receipt.leg==='unavailable')return stopExternalRestore(op,'leg_unavailable');
     if(!sameCycleSettings(window.SectorCyclesCapture(),wanted.cycles))return stopExternalRestore(op,'settings_not_restored');
   }
+  if(!op.dossierApplied){
+    var dossierResult=applyDossierState(wanted.dossier);
+    if(dossierResult.status==='pending')return;
+    if(dossierResult.status!=='applied')return stopExternalRestore(op,dossierResult.reason||'dossier_not_restored');
+    op.dossierApplied=true;
+  }
+  // A saved control can live inside the native mobile Advanced disclosure.
+  // Let its existing toggle reveal it before viewport/focus application; no
+  // additional disclosure state or competing UI owner is introduced.
+  if(!op.focusRevealAttempted&&wanted.viewport&&wanted.viewport.focus&&!resolveFocus(wanted.viewport.focus)){
+    op.focusRevealAttempted=true;
+    var focusSpec=wanted.viewport.focus,attr={mode:'data-mode',scale:'data-scale',family:'data-fam',entity:'data-id'}[focusSpec.kind];
+    var advanced=document.getElementById('sc-advanced'),toggle=document.getElementById('sc-adv-toggle');
+    if(attr&&advanced&&toggle&&toggle.getBoundingClientRect().width&&toggle.getAttribute('aria-expanded')!=='true'){
+      var candidates=advanced.querySelectorAll('['+attr+']'),matches=[];
+      for(var c=0;c<candidates.length;c++)if(candidates[c].getAttribute(attr)===focusSpec.id)matches.push(candidates[c]);
+      if(matches.length===1)toggle.click();
+    }
+  }
   if(op.viewportQueued)return;
   op.viewportQueued=true;
   requestAnimationFrame(function(){requestAnimationFrame(function(){
@@ -620,6 +711,8 @@ function restoreViewport(e,gen){
     if(window.scrollY!==viewport.scrollY)window.scrollTo(0,viewport.scrollY);
     var focus=resolveFocus(viewport.focus);
     if(focus&&focus.getBoundingClientRect().width)focus.focus({preventScroll:true});
+    else if(viewport.focus&&viewport.focus.kind==='dossier'&&e.dossier&&e.dossier.open)
+      dossierViewportWait={entry:e,gen:gen};
   });});
   return true;
 }
@@ -731,6 +824,168 @@ function route(){
    query preserves the measured selection (?g), shell origin and every other
    existing parameter. No receiver applies an older cutoff to latest evidence. */
 function cycleMessage(en,zh){ return isZh()?zh:en; }
+
+/* The native entry owns the optional evidence disclosure. Its component only
+   presents the already admitted native source and returns its own bounded view. */
+var dossierHandle=null,dossierBinding=null,dossierEntryKey=null,dossierLocalReplay=null;
+var dossierRestoring=false,dossierViewportWait=null;
+function dossierAccess(){
+  bindCycleIdentity();
+  var rec=cycleLoadReceipt;
+  if(cycleIdentitySettled&&!cycleIdentityId)return {status:'unauthenticated'};
+  if(!rec||rec.status==='loading')return {status:'pending'};
+  if(rec.status!=='loaded'||!rec.eligible||!cycleIdentitySettled||
+      rec.epoch!==cycleIdentityEpoch||rec.identity!==cycleIdentityId||
+      nativeCycleIdentity()!==rec.identity)return {status:'unavailable'};
+  if(window.SECTOR_CYCLES!==rec.data||window.SECTOR_CYCLES_PUBLICATION!==rec.publication){
+    rec.status='invalidated';return {status:'unavailable'};
+  }
+  var proof=window.SectorCyclesEvidence&&window.SectorCyclesEvidence();
+  if(!proof||proof.status==='pending')return {status:'pending'};
+  if(proof.status!=='verified'||!proof.parts||proof.parts.core!=='verified'||
+      proof.publicationId!==rec.publication.id||proof.region!=='us')return {status:'unavailable'};
+  return {status:'allowed',proof:proof};
+}
+function destroyDossier(){
+  if(dossierHandle)dossierHandle.destroy();
+  dossierHandle=null;dossierBinding=null;
+}
+function dossierStatus(status){
+  var note=document.getElementById('sc-dossier-status');if(!note)return;
+  var copy=status==='pending'?['Loading evidence…','正在载入证据…']:
+    status==='unauthenticated'?['Sign in to view this evidence.','请登录后查看此证据。']:
+    status==='selection'?['Choose a US sector or theme to inspect its evidence.','请选择美国板块或主题以查看证据。']:
+    ['This evidence could not be confirmed for this session. Reload after signing in.','无法确认当前会话的此项证据，请登录后重新加载。'];
+  note.hidden=status==='allowed';note.dataset.state=status;
+  if(!note.hidden)note.textContent=cycleMessage(copy[0],copy[1]);
+}
+function dossierView(raw,cycles){
+  if(!raw||Object.keys(raw).sort().join(',')!=='asOf,family,id,publicationId,range,schema,sourcesOpen,valuesOffset,valuesOpen'||
+     raw.schema!=='sector_dossier.view.v1'||!cycles||raw.publicationId!==cycles.publicationId||
+     raw.family!==cycles.family||raw.id!==cycles.focus||!/^\d{4}-\d{2}-\d{2}$/.test(raw.asOf||'')||
+     typeof raw.valuesOpen!=='boolean'||typeof raw.sourcesOpen!=='boolean'||
+     !Number.isInteger(raw.valuesOffset)||raw.valuesOffset<0||raw.valuesOffset>1000000||raw.valuesOffset%50!==0||
+     (raw.range!==null&&(!Array.isArray(raw.range)||raw.range.length!==2||
+       !raw.range.every(function(x){return typeof x==='number'&&isFinite(x);})||raw.range[0]>=raw.range[1])))throw new Error('invalid_dossier_state');
+  return {schema:raw.schema,publicationId:raw.publicationId,id:exportText(raw.id,100,false),
+    family:raw.family,asOf:raw.asOf,range:raw.range&&raw.range.slice(),
+    valuesOpen:raw.valuesOpen,sourcesOpen:raw.sourcesOpen,valuesOffset:raw.valuesOffset};
+}
+function captureDossier(cycles){
+  var box=document.getElementById('sc-dossier');if(!box||current!=='cycles')return null;
+  var view=null;
+  if(dossierHandle&&typeof dossierHandle.captureView==='function'){
+    try{var captured=dossierHandle.captureView();if(captured)view=dossierView(captured,cycles);}catch(e){}
+  }
+  if(!view&&!box.open){
+    var old=currentEntry(),saved=old&&old.dossier;
+    if(externalRestore&&!externalRestore.done&&externalRestore.dossierApplied)saved=externalRestore.projection.siWorkspace.dossier;
+    try{if(saved&&saved.view)view=dossierView(saved.view,cycles);}catch(e){}
+  }
+  return {open:!!box.open,view:view};
+}
+function dossierCurrent(binding,selection){
+  var e=currentEntry(),access=dossierAccess(),now=window.SectorCyclesCapture&&window.SectorCyclesCapture();
+  return e&&binding&&dossierBinding===binding&&current==='cycles'&&e.entryId===binding.entryId&&
+    localHref()===binding.href&&access.status==='allowed'&&access.proof.publicationId===binding.publicationId&&
+    now&&now.focus===binding.id&&now.family===binding.family&&selection.id===binding.id&&
+    selection.family===binding.family&&selection.publicationId===binding.publicationId;
+}
+function dossierOptions(binding,proof){
+  var options={accessState:'allowed',dataState:'ready',id:binding.id,family:binding.family,
+    locale:isZh()?'zh':'en',expectedAsOf:proof.asOf,expectedPublicationId:proof.publicationId,
+    renderChart:function(root,context){
+      var points=context.record.osc;
+      root.setAttribute('data-h','260');root.setAttribute('role','img');
+      root.setAttribute('aria-label',cycleMessage('Historical cycle position. Exact values are available below.','历史周期位置。下方提供精确数值。'));
+      return window.MMChart.create(root,{xDomain:[points[0].x,points[points.length-1].x],yDomain:[0,100],
+        yTicks:[{v:0,label:'0'},{v:50,label:'50'},{v:100,label:'100'}],animate:false,crosshair:true,zoom:true,
+        padding:{t:16,r:16,b:32,l:42},onZoom:scheduleEntrySave,
+        series:[{id:context.record.id,label:context.record.ticker,color:'var(--link)',
+          hist:points.map(function(p){return {x:p.x,y:p.v};}),proj:[],markers:[]}]});
+    },
+    onOpenCycles:function(selection){
+      if(!dossierCurrent(binding,selection))return;
+      var box=document.getElementById('sc-dossier');box.open=false;
+      saveEntry();destroyDossier();
+      var heading=document.getElementById('sc-cycle-heading');if(heading)heading.focus({preventScroll:true});
+    }};
+  var u=new URL(location.href);
+  if(binding.family==='sectors'&&u.searchParams.get('cycleSource')!=='latest')options.expectedSpine=cycleSourceSpine();
+  var members=window.SectorCyclesMembersHref&&window.SectorCyclesMembersHref(binding);
+  if(members)options.onMembers=function(selection){
+    if(!dossierCurrent(binding,selection))return;
+    var href=window.SectorCyclesMembersHref&&window.SectorCyclesMembersHref(binding);
+    if(!href||href!==members)return;
+    // An ordinary anchor uses the incumbent browser/shared-shell navigation
+    // interceptor. The actual invoker stays focused for typed named return.
+    saveEntry();
+    var link=document.createElement('a');link.href=href+'#hold';link.hidden=true;
+    document.body.appendChild(link);link.click();link.remove();
+  };
+  return options;
+}
+function applyDossierState(saved){
+  var box=document.getElementById('sc-dossier');
+  if(!saved){if(box)box.open=false;destroyDossier();return {status:'applied'};}
+  if(!box)return {status:'rejected',reason:'dossier_unavailable'};
+  dossierRestoring=true;box.open=saved.open;
+  try{
+    refreshDossier();
+    if(!saved.open)return {status:'applied'};
+    var access=dossierAccess();
+    if(dossierModuleFailed)return {status:'rejected',reason:'dossier_unavailable'};
+    if(access.status==='pending'||!window.SectorDossierCycle)return {status:'pending'};
+    if(access.status!=='allowed'||!dossierHandle)return {status:'rejected',reason:'dossier_source_unavailable'};
+    if(!saved.view||typeof dossierHandle.applyView!=='function')return {status:'rejected',reason:'dossier_state_unavailable'};
+    var result=dossierHandle.applyView(saved.view);
+    return result&&['applied','partial','rejected'].indexOf(result.status)>=0?result:{status:'rejected',reason:'dossier_state_unavailable'};
+  }finally{dossierRestoring=false;}
+}
+function refreshDossier(){
+  var box=document.getElementById('sc-dossier'),mount=document.getElementById('sc-dossier-mount'),entry=currentEntry();
+  if(!box||!mount)return;
+  if(current!=='cycles'||!entry){destroyDossier();return;}
+  if(dossierEntryKey!==entry.entryId){
+    destroyDossier();dossierEntryKey=entry.entryId;
+    if(!(externalRestore&&!externalRestore.done)){
+      box.open=!!(entry.dossier&&entry.dossier.open);
+      dossierLocalReplay={entryId:entry.entryId,href:entry.href,intent:SCROLL_GEN,state:entry.dossier||null};
+    }
+  }
+  // On narrow screens the native Cycle detail is a fixed sheet. Opening the
+  // inline Dossier temporarily yields that presentation layer, preserving its
+  // selected instrument and all native controls for when the Dossier closes.
+  var nativeStudy=document.getElementById('sc-native-study');
+  if(nativeStudy)nativeStudy.classList.toggle('sc-dossier-active',box.open);
+  if(!box.open){destroyDossier();return;}
+  var access=dossierAccess();
+  if(access.status!=='allowed'){destroyDossier();dossierStatus(access.status);return;}
+  var now=window.SectorCyclesCapture&&window.SectorCyclesCapture();
+  if(!cycleApplied||!cycleContext||cycleContext.entryId!==entry.entryId||cycleContext.href!==localHref()||
+      !now||!now.focus||now.focus!==cycleContext.receipt.id||now.family!==cycleContext.receipt.family||
+      now.publicationId!==access.proof.publicationId){destroyDossier();dossierStatus('selection');return;}
+  if(dossierModuleFailed){destroyDossier();dossierStatus('unavailable');return;}
+  if(!window.SectorDossierCycle||!window.MMChart||!box.getBoundingClientRect().width){dossierStatus('pending');return;}
+  var binding={entryId:entry.entryId,href:localHref(),publicationId:now.publicationId,id:now.focus,family:now.family};
+  var key=[binding.entryId,binding.href,binding.publicationId,binding.family,binding.id].join('|');
+  if(!dossierBinding||dossierBinding.key!==key){destroyDossier();binding.key=key;dossierBinding=binding;}
+  else binding=dossierBinding;
+  var options=dossierOptions(binding,access.proof);
+  if(dossierHandle)dossierHandle.update(options);
+  else dossierHandle=window.SectorDossierCycle.mountFromNative(mount,window,options);
+  dossierStatus('allowed');
+  if(dossierLocalReplay&&!dossierRestoring){
+    var replay=dossierLocalReplay;dossierLocalReplay=null;
+    if(replay.entryId===entry.entryId&&replay.href===localHref()&&replay.intent===SCROLL_GEN&&replay.state)
+      applyDossierState(replay.state);
+  }
+  if(dossierViewportWait){
+    var waiting=dossierViewportWait;dossierViewportWait=null;
+    if(waiting.gen===SCROLL_GEN&&waiting.entry.entryId===entry.entryId)restoreViewport(waiting.entry,waiting.gen);
+  }
+}
+
 function cycleOrigin(){
   var origin=(history.state||{}).siCyclesOrigin;
   if(!origin || !origin.href) return null;
@@ -763,7 +1018,7 @@ function syncCycleContext(){
   // Allow layout before asking the receiver. A rejected context is hidden
   // immediately afterwards, so no current detail masquerades as requested history.
   if(study) study.hidden=false;
-  var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest,spine:id&&!useLatest?cycleSourceSpine():null,requirePublication:!!id&&!useLatest,entryKey:entry&&entry.entryId,snapshot:entry&&entry.cycles}) : {status:'pending'};
+  var receipt=window.SectorCyclesApply ? window.SectorCyclesApply({id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!useLatest?cycleSourceDate():null,requireSourceDate:!!id&&!useLatest,spine:id&&!useLatest?cycleSourceSpine():null,requirePublication:!!id&&!useLatest,entryKey:entry&&entry.entryId,snapshot:entry&&entry.cycles}) : {status:cycleLoadReceipt&&cycleLoadReceipt.status==='error'?'source_unavailable':'pending'};
   cycleContext={entryId:entry&&entry.entryId,href:localHref(),receipt:receipt};
   cycleApplied=receipt.status==='applied';
   var messages={
@@ -787,6 +1042,7 @@ function syncCycleContext(){
   var readable=receipt.publication&&['verified','legacy_unverified'].indexOf(receipt.publication.status)>=0;
   if(latest) latest.hidden=!(readable && receipt.asOf && (receipt.status==='source_mismatch'||receipt.status==='source_unavailable'));
   if(study) study.hidden=receipt.status!=='applied' && receipt.status!=='pending';
+  refreshDossier();
 }
 window.SectorCyclesHost={onFocus:function(id,family){
   if(current!=='cycles') return;
@@ -856,9 +1112,16 @@ document.addEventListener('click',function(e){
   if(nav)saveEntry(); // capture the origin before the browser creates its hash entry
 });
 ['sc:cycles-ready','sc:series-ready','sc:series-error','sc:publication-ready'].forEach(function(name){ document.addEventListener(name,syncCycleContext); });
-document.addEventListener('si:view',resumeExternalRestore);
+document.addEventListener('si:view',function(){refreshDossier();resumeExternalRestore();});
+document.addEventListener('toggle',function(e){
+  var box=document.getElementById('sc-dossier');
+  if(!box||!e.target||(e.target!==box&&!(box.contains&&box.contains(e.target))))return;
+  if(!dossierRestoring&&!(externalRestore&&!externalRestore.done))saveEntry();
+  if(e.target===box)refreshDossier();
+},true);
+document.addEventListener('sc:extras-ready',refreshDossier);
 document.addEventListener('langchange',function(){if(externalRestore&&externalRestore.done)showRestoreNotice(externalRestore);});
-window.addEventListener('resize',resumeExternalRestore);
+window.addEventListener('resize',function(){refreshDossier();resumeExternalRestore();});
 window.addEventListener('popstate',route);
 
 window.__siViewReads=reads;

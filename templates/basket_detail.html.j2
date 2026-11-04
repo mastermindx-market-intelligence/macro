@@ -321,6 +321,24 @@
 #hold .hold-sort:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
 #hold .hold-sort-icon{font-size:10px}
 @media(max-width:720px){ #hold .hold-potential{width:80px}#hold .hold-sort{white-space:nowrap}}
+.hold-scroll-hint{display:none;color:var(--muted);font-size:12px;line-height:1.5;margin:8px 0}
+.hold-scroll:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+@media(max-width:720px){
+  .hold-scroll-hint{display:block}
+  .hold-scroll{position:relative;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+  #hold{min-width:880px;table-layout:fixed}
+  #hold .hold-stock{width:150px}
+  #hold .hold-potential{width:90px}
+  #hold .hold-verdict{width:240px}
+  #hold .hold-entry{width:300px}
+  #hold .hold-20d{width:100px}
+  #hold col.hold-entry,#hold col.hold-20d{display:table-column}
+  #hold th.hold-entry,#hold th.hold-20d,#hold td.hold-entry,#hold td.hold-20d{display:table-cell}
+  #hold th:first-child,#hold td:first-child{position:sticky;left:0;background:var(--panel);z-index:1;box-shadow:1px 0 0 var(--line)}
+  #hold th:first-child{z-index:2}
+  #hold .hold-company{display:inline}
+  #hold .hold-sort{min-height:44px}
+}
 #hold .hold-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 </style>
 </head>
@@ -387,6 +405,7 @@ fetch('../policy_lever.json',{cache:'no-cache'})
 
 <script>
 const DETAIL = {{ detail_json|safe }};
+const MEMBERS_SOURCE_ID = {{ members_source_id|default('')|tojson }};
 const L = (en,zh)=>`<span class="l-en">${en}</span><span class="l-zh">${zh==null?en:zh}</span>`;
 const BENCH = DETAIL.bench_label || 'S&P 500';          // regional benchmark label (CSI 300 / Hang Seng / S&P-TSX)
 const BENCHZ = DETAIL.bench_label_zh || BENCH;
@@ -1253,9 +1272,11 @@ function render(){
   const scoreUi=basketScoreState(app);
   const focusedSort=document.activeElement&&document.activeElement.closest('#hold button[data-hold-sort]');
   const sortFocusKey=focusedSort?focusedSort.dataset.holdSort:null;
+  const listingFocus=membersFocus();
+  const heldTableX=membersTableScroller()?.scrollLeft||0;
   const d=DETAIL, b=d.basket||{}, th=d.theme||{}, tx=th.textures||{};
   const SB=d.stock_base||'';   // per-stock link base ('' for markets with no per-stock page → plain ticker)
-  const stk=(sym)=> SB ? `<a class="tk" href="${SB}${encodeURIComponent(sym)}">${esc(sym)}</a>` : `<span class="tk">${esc(sym)}</span>`;
+  const stk=(sym)=> SB ? `<a class="tk" data-member-symbol="${esc(sym)}" href="${SB}${encodeURIComponent(sym)}">${esc(sym)}</a>` : `<span class="tk">${esc(sym)}</span>`;
   const lc=LABEL_COLOR[th.label]||LABEL_COLOR.neutral, rc=RECO_COLOR[th.reco]||RECO_COLOR.hold;
   const tags=(b.tags||[]).map(x=>`<span class="chip">${esc(x)}</span>`).join('');
   // Leadership Health: contested modifier — the label itself is untouched, the modifier only
@@ -1491,12 +1512,13 @@ function render(){
       <td class="num hold-20d ${cls(m.ret_20d)}">${fmtPct(m.ret_20d)}</td>
     </tr>`;}).join('');
   const nBoard=mem.filter(m=>m.on_board).length;
-  h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
-  <div class="panel"><div class="ts tbl-scroll"><table id="hold">
+  h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${d.members_state==='unavailable'?'—':mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
+  <p class="hold-scroll-hint">${L('Scroll across for all columns. Column buttons sort this table.','横向滚动查看所有列。点击列标题可排序。')}</p>
+  <div class="panel"><div class="ts tbl-scroll hold-scroll" role="region" tabindex="0" aria-label="${L('Constituent evidence table','成分证据表')}"><table id="hold">
     <caption class="hold-sr-only">${L('Holdings. Column buttons change sort order. Potential uses research priority rather than numeric score order.','成分股。列标题按钮可改变排序。潜力列采用研究优先顺序，而非简单数值排序。')}</caption>
     <colgroup><col class="hold-stock"><col class="hold-potential"><col class="hold-verdict"><col class="hold-entry"><col class="hold-20d"></colgroup>
     <thead><tr><th scope="col">${L('Stock','个股')}</th>${holdSortHeader('recommend','Potential','潜力','hold-potential')}<th scope="col">${L('Verdict','结论')}</th><th scope="col" class="hold-entry">${L('Entry now','入场时机')}</th>${holdSortHeader('r20','20d','20日','hold-20d')}</tr></thead>
-    <tbody>${rows}</tbody></table></div>
+    <tbody>${rows||`<tr><td colspan="5" class="muted">${d.members_state==='unavailable'?L('Member source unavailable for this snapshot.','此快照的成分来源不可用。'):L('No members supplied in this snapshot.','此快照未提供成分股。')}</td></tr>`}</tbody></table></div>
     <div class="disc">${L('Potential combines cycle state, room to run, survivability and entry timing. The default order puts fresh entry setups first, then weighs verdict quality and Potential; cycle-blocked names move down. ⚠ means the cycle blocks a buy.','潜力综合周期状态、上涨空间、生存质量和入场时机。默认排序优先显示新的入场机会，再结合结论质量与潜力；被周期阻断的个股会下调。⚠ 表示周期阻止买入。')}</div>
     <div class="disc" style="margin-top:4px">${L('Conviction score = earnings/flow edge, not trend leadership — a rotation leader can score low here.','信念评分＝盈利/资金面优势，非趋势领涨度 — 轮动领涨股在此可能低分。')}</div>
   </div>`;
@@ -1518,8 +1540,125 @@ function render(){
   if(window._ftrTryInject) window._ftrTryInject();
   restoreBasketScoreState(app,scoreUi);
   restoreHoldSortFocus(app,sortFocusKey);
+  if(listingFocus&&listingFocus.kind==='listing')restoreMembersFocus(listingFocus);
+  const currentTable=membersTableScroller();if(currentTable)currentTable.scrollLeft=heldTableX;
 }
 let _sort={col:'recommend',dir:-1};
+
+// D05 settings projection. This stamp identifies the producer's emitted DETAIL
+// bytes; it is not a Cycles publication, entitlement or PIT-membership proof.
+function membersTableScroller(){const t=document.getElementById('hold');return t&&t.closest('.tbl-scroll');}
+function membersText(v,max){return typeof v==='string'&&v.length>0&&v.length<=max&&!/[\u0000-\u001f\u007f]/.test(v);}
+function membersObject(v,keys){return !!v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).length===keys.length&&keys.every(k=>Object.prototype.hasOwnProperty.call(v,k));}
+function membersSource(){
+  const b=DETAIL.basket||{}, region=DETAIL.region, dirs={us:'basket',china:'basket_china',hk:'basket_hk',canada:'basket_canada',intl:'basket_intl'};
+  if(!/^members1-[a-f0-9]{64}$/.test(MEMBERS_SOURCE_ID)||!Object.prototype.hasOwnProperty.call(dirs,region)||
+    !membersText(b.id,100)||!/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(b.id)||
+    location.pathname!=='/'+dirs[region]+'/'+b.id+'.html'||
+    !['available','empty'].includes(DETAIL.members_state)||!Array.isArray(DETAIL.members)||
+    DETAIL.members.some(m=>!m||!membersText(m.symbol,100))||
+    (DETAIL.members_state==='empty')!==(DETAIL.members.length===0))return null;
+  const asOf=DETAIL.as_of==null?null:DETAIL.as_of;
+  if(asOf!==null&&!membersText(asOf,160))return null;
+  return {sourceId:MEMBERS_SOURCE_ID,basketId:b.id,region,asOf};
+}
+function membersFocus(){
+  const active=document.activeElement;
+  if(!active||!active.closest)return null;
+  const sort=active.closest('#hold button[data-hold-sort]');
+  if(sort&&['recommend','r20'].includes(sort.dataset.holdSort))return {kind:'sort',col:sort.dataset.holdSort};
+  const link=active.closest('#hold a[data-member-symbol]');
+  if(link&&membersText(link.dataset.memberSymbol,100))return {kind:'listing',symbol:link.dataset.memberSymbol};
+  return null;
+}
+function membersFocusNode(focus){
+  if(!focus)return null;
+  const matches=Array.from(document.querySelectorAll(focus.kind==='sort'?'#hold button[data-hold-sort]':'#hold a[data-member-symbol]'))
+    .filter(n=>focus.kind==='sort'?n.dataset.holdSort===focus.col:n.dataset.memberSymbol===focus.symbol);
+  return matches.length===1&&!matches[0].disabled?matches[0]:null;
+}
+function restoreMembersFocus(focus){
+  if(!focus)return true;
+  const target=membersFocusNode(focus);
+  if(!target)return false;
+  target.focus({preventScroll:true});
+  return document.activeElement===target;
+}
+function readMembersView(raw){
+  if(!membersObject(raw,['schema','sourceId','basketId','region','asOf','sort','focus','viewport'])||
+    raw.schema!=='sector_members.view.v1'||!/^members1-[a-f0-9]{64}$/.test(raw.sourceId||'')||
+    !membersText(raw.basketId,100)||!/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(raw.basketId)||
+    !['us','china','hk','canada','intl'].includes(raw.region)||(raw.asOf!==null&&!membersText(raw.asOf,160))||
+    !membersObject(raw.sort,['col','dir'])||!['recommend','r20'].includes(raw.sort.col)||![-1,1].includes(raw.sort.dir)||
+    !membersObject(raw.viewport,['x','y','tableX'])||
+    Object.values(raw.viewport).some(n=>typeof n!=='number'||!Number.isFinite(n)||n<0||n>10000000))return null;
+  if(raw.focus!==null&&!(membersObject(raw.focus,['kind','symbol'])&&raw.focus.kind==='listing'&&membersText(raw.focus.symbol,100))&&
+    !(membersObject(raw.focus,['kind','col'])&&raw.focus.kind==='sort'&&['recommend','r20'].includes(raw.focus.col)))return null;
+  try{const json=JSON.stringify(raw);return new TextEncoder().encode(json).length<=4096?JSON.parse(json):null;}catch(_){return null;}
+}
+window.SectorMembersExport=function(){
+  const source=membersSource(), table=membersTableScroller();
+  if(!source||!table)return null;
+  return readMembersView({schema:'sector_members.view.v1',...source,sort:{..._sort},focus:membersFocus(),
+    viewport:{x:Math.max(0,window.scrollX||0),y:Math.max(0,window.scrollY||0),tableX:Math.max(0,table.scrollLeft||0)}});
+};
+let membersRestore=null;
+window.SectorMembersApplyCurrent=function(raw,options){
+  const opts=options||{};
+  if(membersRestore)membersRestore.cancel('new_intent');
+  const view=readMembersView(raw), href=location.pathname+location.search+location.hash;
+  const initialSource=membersSource();
+  function reject(reason){const result={status:'rejected',reason,sourceId:initialSource&&initialSource.sourceId||null,
+    publicationId:null,viewport:'unavailable',focus:'unavailable'};if(typeof opts.onResult==='function')opts.onResult(result);return result;}
+  if(!view)return reject('invalid_state');
+  if(opts.expectedHref&&opts.expectedHref!==href)return reject('entry_changed');
+  if(!initialSource)return reject('source_unavailable');
+  if(['sourceId','basketId','region','asOf'].some(k=>view[k]!==initialSource[k]))return reject('source_changed');
+  let done=false,started=false,frame=0,attempts=0,stable=0,focusState=view.focus?'unavailable':'absent';
+  const inputs=['wheel','pointerdown','touchstart','keydown'],began=performance.now();
+  const op={status:'pending',cancel(reason){finish(started?'partial':'rejected',reason,'interrupted','interrupted');}};
+  function finish(status,reason,viewport,focus){
+    if(done)return;done=true;if(frame)cancelAnimationFrame(frame);
+    inputs.forEach(name=>document.removeEventListener(name,onInput,true));
+    window.removeEventListener('popstate',onLocation);window.removeEventListener('hashchange',onLocation);
+    if(membersRestore===op)membersRestore=null;
+    const source=membersSource();
+    const result={status,reason,sourceId:source&&source.sourceId||null,publicationId:null,viewport,focus};
+    if(typeof opts.onResult==='function')opts.onResult(result);
+  }
+  function onInput(){op.cancel('user_input');}
+  function onLocation(){op.cancel('entry_changed');}
+  function step(){
+    if(done||membersRestore!==op)return;
+    if(location.pathname+location.search+location.hash!==href){op.cancel('entry_changed');return;}
+    const source=membersSource();
+    if(!source||['sourceId','basketId','region','asOf'].some(k=>source[k]!==view[k])){
+      finish(started?'partial':'rejected',source?'source_changed':'source_unavailable','unavailable','unavailable');return;
+    }
+    let table=membersTableScroller();attempts++;
+    if(table&&!started){
+      _sort={...view.sort};started=true;render();table=membersTableScroller();
+      focusState=view.focus?(restoreMembersFocus(view.focus)?'applied':'unavailable'):'absent';
+    }
+    if(table&&started){
+      window.scrollTo(view.viewport.x,view.viewport.y);table.scrollLeft=view.viewport.tableX;
+      const correct=Math.abs((window.scrollX||0)-view.viewport.x)<=1&&Math.abs((window.scrollY||0)-view.viewport.y)<=1&&
+        Math.abs(table.scrollLeft-view.viewport.tableX)<=1;
+      const exactSort=_sort.col===view.sort.col&&_sort.dir===view.sort.dir;
+      if(view.focus)focusState=membersFocusNode(view.focus)===document.activeElement?'applied':'unavailable';
+      stable=correct&&exactSort?stable+1:0;
+      if(stable>=2){finish(focusState==='unavailable'?'partial':'applied',focusState==='unavailable'?'focus_unavailable':null,'applied',focusState);return;}
+    }
+    if(attempts>=75||performance.now()-began>=1200){
+      finish(started?'partial':'rejected',started?'viewport_clamped':'workspace_unavailable','unavailable',focusState);return;
+    }
+    frame=requestAnimationFrame(step);
+  }
+  membersRestore=op;inputs.forEach(name=>document.addEventListener(name,onInput,true));
+  window.addEventListener('popstate',onLocation);window.addEventListener('hashchange',onLocation);
+  frame=requestAnimationFrame(step);return op;
+};
+
 function sortHold(col){
   if(!document.querySelector('#hold tbody')) return;
   _sort = _sort.col===col?{col,dir:-_sort.dir}:{col,dir:-1};

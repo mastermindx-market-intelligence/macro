@@ -1,6 +1,6 @@
 # D05 — native Cycles implementation candidate
 
-**Status: source tested; browser/visual and final shared-design acceptance held.**
+**Status: local source and composed-browser qualification delivered; final shared-design and release acceptance held.**
 The Chairman authorized continued implementation and use of the fleet. The
 original no-merge, no-Ready, no-queue, no-held-PR-relabel and no-production-deploy
 restrictions persist. This is the existing Macro Draft **#10703**, not a new
@@ -8,7 +8,95 @@ release carrier. The original D05 design package covers all 13 canonical routes;
 this bounded source iteration completes the native Central/Cycles evidence and
 return-state contracts within the incumbent implementation.
 
-## Joint Company-return source checkpoint — 2026-11-04 UTC
+
+## Current integrated source and browser checkpoint — 2026-11-04 11:23:34 UTC
+
+**SELF_REVIEWED; locally qualified implementation. Final shared-design, hosted-CI,
+publication and release gates remain distinct.** This increment keeps the existing
+Macro #10703 carrier. It adopts only the already-published Dossier component at
+`74930f6931773b23072f91590319dc39fe5a7d07`; the newer compact desktop layout stays
+unpublished in its original #10707 operation after a typed precheck refusal.
+
+### Implemented and retained
+
+- The native Central Cycles view opens the existing, source-qualified Dossier on
+  disclosure. No premium parser-preload or alternate signal engine is added.
+  Opening the Dossier yields the mobile Cycle sheet without clearing selection;
+  closing it restores that sheet. An empty lazy mount is no longer mistaken for
+  a zero-width host.
+- The Dossier Members action captures exact native investigation state. The
+  existing Members page now exposes a closed, source-bound 4 KiB display-state
+  projection: sorting, exact listing focus and both page/table scroll positions.
+  Empty, unavailable and thin member data remain different states.
+- The existing bridge is **20261104.2**. A same-canonical-URL history replacement
+  checkpoints the current pure view without creating NAV or cancelling a restore.
+  Changed URLs and explicit same-URL pushes keep their actual navigation meaning.
+- Restoration uses the existing native owner. Its notice stays at the section
+  tail, so announcing success no longer inserts 63 px above the restored view.
+  Requested hidden native controls are revealed with the existing Advanced toggle
+  before focus readback; no additional disclosure state owner is introduced.
+- Confluence card/table counts preserve zero and missing price histories, separate
+  configured membership from positive-volume coverage, name successfully scored
+  groups accurately, and display member returns in percent versus excess in
+  percentage points. The underlying group and stock gates remain independent.
+- Rotation details disclose the source `asof`, actual rendered/published member
+  counts and cap30, standardized axis units, return-rate acceleration units and
+  explicit zero/unavailable acceleration. MTD is restored as the eighth native
+  display horizon. The shared China builder preserves its own artifact and
+  `china_lookup.html#` links.
+
+### Executed proof
+
+| Scope | Result | Exact limit |
+|---|---|---|
+| Actual Next → native Central/Dossier → Members → Company → Members → Central → map | **9 steps pass** at 1440 dark/EN and 390 light/ZH against published component749 | Local fixture identity and dated/synthetic inputs; not production auth or current market proof |
+| Additional compact-layout composed candidates | 390 light/ZH, 1440 light/ZH, 768 light/EN and 320 dark/ZH pass with actual theme assertions | Component layout remains unpublished in #10707; these are not substituted for the published749 proof |
+| Native Cycles retained functions | **42 browser cases pass** across 7 viewports/presentations, 5 source scenarios plus normal-motion coherent case | Native retention/source behavior; older requested-theme labels alone are not proof of actual painted light |
+| Members display/restore | **15 browser cases**, **11 producer cases** pass | Regional symbol cases are controlled display fixtures, not regional route/account acceptance |
+| Bridge | **87 tests pass** | Transport, cancellation, result ordering, state checkpoints and hostile envelopes |
+| Native host entry state | **8 tests pass** | Includes disclosure/access fencing and exact typed restore |
+| Changed confluence/rotation semantics | **21 tests pass** | Actual JS consumers and US/China builders; count/sort/unit/date/MTD/cap/link assertions |
+| Existing confluence and rotation regression | **24 passed, 3 data-dependent skips** | Skips require external local stores; not counted as passes |
+| Changed consumer visual/layout fixtures | **12 browser cases pass**, zero document overflow or JS errors | 1440 dark/EN, 1440 light/ZH, 390 light/ZH, 320 dark/EN; no live chart/data claim |
+| Terminal original operation | **142 tests in 11 suites**, full TypeScript exit0 | Source remains unpublished; 14 intended files, all486 inherited paths unchanged, zero unexpected changes |
+| CI registration | Two new suites have one existing owner; only `sector-cycles-page` changed | Full hosted/exclusive-closure gate remains required; no CI-green claim |
+
+The light journey explicitly crosses the **Company-owned native dark chart**
+and restores light/ZH on return. Company does not overwrite the public light
+selection. This is not Company light-mode acceptance.
+
+The browser runner asserts actual parent/child theme, exact source identity,
+sort, Dossier values offset50 and sources disclosure, requested focus, scroll,
+Company reload, and observed-history map return. It records correlated applied
+restore results. See [completion_validation.json](completion_validation.json),
+[COMPOSED_BROWSER.md](COMPOSED_BROWSER.md), [OWNER_OVERLAP.md](OWNER_OVERLAP.md),
+and the committed proof scripts.
+
+### Remaining carrier and acceptance gates
+
+Terminal #1244 remains at `624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9`.
+Its installed publisher lacks both exact selected-content commit and a separately
+qualified unchanged-inherited-baseline push. No Terminal commit/push was attempted.
+
+Component #10707 remains at `74930f69`. Its compact-layout typed commit returned
+`TYPED_GIT_PRECHECK_REFUSED / NOT_APPLIED`; original-operation status confirmed no
+new commit. No retry or alternate carrier contains that unpublished increment.
+
+Secretary's existing #917 recovery thread now records
+`WAITING_NATIVE_POOL_PIN_INSTALLATION_OWNER` and
+`TIMEOUT_ONLY_HELPER_NOT_SUPPORTED_ON_PINNED_SEATS` (gb2-ping-0344).
+The old helper is not a lawful general retry on retained-pin installations.
+The incumbent installation owner must return an applicable sealed successor and
+original-operation readback. Repeating Chairman's general permission is unnecessary.
+
+All13 assigned routes have retained-source and specification dispositions in
+the programme packet. This work does not claim authenticated save/entitlement
+and correction/refresh acceptance for every regional route. SC-066 publication,
+SC-092 native correction metadata, B12 parity and final F01/F02 acceptance remain
+separate holds. Root Paper stays read-only, including the three original uncertain
+effects. No merge, Ready/un-draft, queue, held-PR relabel or deployment occurred.
+
+## Prior source-only Company-return checkpoint — 2026-11-04 UTC
 
 The Macro half now implements the qualified native restore and the closed
 Shared Shell 20261104.1 return protocol described in [SOURCE_CONTRACT.md](SOURCE_CONTRACT.md#10-joint-company-return-implementation--2026-11-04).

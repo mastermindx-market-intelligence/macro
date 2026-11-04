@@ -47,11 +47,13 @@ def build(site: Path | None = None) -> int:
     for sub in subs:
         q = sub.get("quadrant") or "lagging"
         qd, qx = QUAD.get(q, QUAD["lagging"]), QUADX.get(q, QUADX["lagging"])
-        members = sorted((sub.get("members") or []),
+        available_members = sub.get("members") or []
+        members = sorted(available_members,
                          key=lambda m: (m.get("1M") if m.get("1M") is not None else -1e9), reverse=True)[:30]
         lede_en, lede_zh = _lede(sub)
         html = tmpl.render(
             sub=sub, n_total=n_total, members=members, perf_rows=PERF_ROWS,
+            asof=data.get('asof'), members_available=len(available_members), member_limit=30,
             q_cls=qd[2], q_en=qd[0], q_zh=qd[1], qx_en=qx[0], qx_zh=qx[1],
             lede_en=lede_en, lede_zh=lede_zh,
             # China parameterization of the shared template

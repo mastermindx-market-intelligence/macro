@@ -273,3 +273,159 @@ assert.equal(results[0].status,'partial');assert.equal(results[0].reason,'source
     result = subprocess.run(["node", "-e", HOST + checks, str(ROOT / "templates/si_workspace.js")],
                             text=True, capture_output=True, timeout=20)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+ACCESS = r"""
+
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+const source=fs.readFileSync(process.argv[1],'utf8'),clone=x=>JSON.parse(JSON.stringify(x));
+const pubId='cycp1-'+'a'.repeat(64);
+function boot(o={}){
+ const dl={},wl={},frames=[],timers=new Map(),scripts=[],mounts=[],links=[],nodes={};
+ let serial=0,url=new URL('https://fixture.test/sector_central.html?cycle=xle&cycleSource=latest#cycles');
+ let user=o.user?{id:o.user}:null,settled=o.settled!==false,callbacks=[],destroyed=0,applies=0;
+ let ctx,doc,proof={schema:'sector_cycles.evidence.v1',status:'pending',publicationId:pubId,asOf:'2026-11-02',region:'us',parts:{core:'verified'},spine:null};
+ let chart={schema:'sector_cycles.view.v1',publicationId:pubId,region:'us',family:'sectors',focus:'xle',mode:'osc',scale:'log',
+  range:[2020,2026],phases:[],selectedIds:[],mobileSelection:{mode:'leaders',ids:[]},leg:null};
+ function el(id,tag='DIV',attrs={}){
+  const events={},node={id,tagName:tag,nodeType:1,hidden:false,open:false,dataset:{},attrs,children:[],isConnected:true,
+   classList:{toggle(){},add(){},remove(){}},offsetHeight:600,getBoundingClientRect:()=>({width:900}),
+   getAttribute:k=>k==='href'?node.href:attrs[k]||null,setAttribute(k,v){attrs[k]=v},removeAttribute(k){delete attrs[k]},
+   addEventListener:(n,f)=>(events[n]||=[]).push(f),emit(n){(events[n]||[]).forEach(f=>f({type:n,currentTarget:node,target:node}))},
+   closest:s=>s==='.si-view'?nodes.cycles:null,focus(){doc.activeElement=node},
+   contains(n){return node===n||node.children.includes(n)},appendChild(n){node.children.push(n);n.parentNode=node;if(node===head&&n.tagName==='SCRIPT')scripts.push(n);return n},
+   insertBefore(n){node.children.unshift(n)},remove(){node.isConnected=false},
+   click(){if(tag==='A')links.push(node.href)},
+   querySelectorAll(sel){return sel==='[data-sdc-focus]'?node.children:[]},querySelector(){return null}};
+  let src='';Object.defineProperty(node,'src',{get:()=>src,set:v=>src=new URL(v,url).href});return node;
+ }
+ const head=el('head','HEAD'),body=el('body','BODY');
+ for(const id of ['overview','map','cycles','moving','money','explore','confluence'])nodes[id]=el(id,'SECTION',{'data-view':id});
+ for(const id of ['sc-cycle-status','sc-native-study','sc-cycle-return','sc-cycle-latest','sc-cycle-heading','sc-dossier-status','sc-dossier-mount','sc-dossier-toggle'])nodes[id]=el(id);
+ nodes['sc-dossier']=el('sc-dossier','DETAILS');
+ nodes['sc-dossier'].children.push(nodes['sc-dossier-status'],nodes['sc-dossier-mount']);
+ doc={title:'Sector Intelligence',head,body,documentElement:{getAttribute:()=> 'en'},activeElement:body,
+  getElementById:id=>nodes[id]||null,
+  querySelector:s=>s==='.si-view.on'?nodes.cycles:s.includes('.si-view[data-view=')?Object.values(nodes).find(n=>s.includes('"'+n.id+'"')):null,
+  querySelectorAll:s=>s==='.si-view'?['overview','map','cycles','moving','money','explore','confluence'].map(x=>nodes[x]):
+   s==='.si-view.on [data-sdc-focus]'?nodes['sc-dossier-mount'].children:[],
+  createElement:t=>el('',t.toUpperCase()),
+  addEventListener:(n,f)=>(dl[n]||=[]).push(f),dispatchEvent:e=>(dl[e.type]||[]).forEach(f=>f(e))};
+ const history={state:{foreign:'retained'},replaceState(s,t,u){this.state=s;if(u!==undefined)url=new URL(u,url)},
+  pushState(s,t,u){this.state=s;if(u!==undefined)url=new URL(u,url)}};
+ function auth(){return {enabled:()=>o.disabled!==true,user:()=>user,onChange(cb){callbacks.push(cb);if(settled)cb(user,'INITIAL_SESSION')}};}
+ const API={mountFromNative(root,owner,options){
+   let opts=options,state={schema:'sector_dossier.view.v1',publicationId:options.expectedPublicationId,id:options.id,family:options.family,
+    asOf:options.expectedAsOf,range:[2020,2026],valuesOpen:false,sourcesOpen:false,valuesOffset:0};
+   mounts.push({options,owner});
+   const button=el('','BUTTON',{'data-sdc-focus':'action-members'});root.children=[button];
+   return {update(next){opts=next},destroy(){destroyed++;root.children=[]},
+    captureView:()=>clone(state),
+    applyView(value){applies++;if(value.publicationId!==opts.expectedPublicationId||value.id!==opts.id)return {status:'rejected',reason:'source_changed'};state=clone(value);return {status:'applied'}}};
+ }};
+ ctx={URL,URLSearchParams,TextEncoder,document:doc,history,
+  get location(){return url},scrollY:100,scrollTo(x,y){this.scrollY=y},
+  crypto:{randomUUID:()=> 'entry-'+(++serial)},setTimeout(f){const id=++serial;timers.set(id,f);return id},clearTimeout:id=>timers.delete(id),
+  requestAnimationFrame:f=>frames.push(f),addEventListener:(n,f)=>(wl[n]||=[]).push(f),
+  dispatchEvent:e=>(wl[e.type]||[]).forEach(f=>f(e)),
+  Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,o={}){this.type=type;this.detail=o.detail}},
+  SectorCyclesEvidence:()=>clone(proof),SectorCyclesCapture:()=>clone(chart),
+  SectorCyclesApply(c){if(proof.status!=='verified')return {status:'pending'};if(c.validateOnly)return {status:'validated'};
+   if(c.restore&&c.snapshot)chart=clone(c.snapshot);chart.focus=c.id||null;chart.family=c.family||'sectors';
+   return {status:'applied',id:chart.focus,family:chart.family,asOf:proof.asOf,series:'ready',leg:'closed',publication:{status:'verified'}}},
+  SectorCyclesMembersHref:s=>s.id==='xle'&&s.publicationId===pubId?'basket/us_sector_energy.html':null,
+  SectorDossierCycle:API,MMChart:{create(){throw Error('The host adapter must not render before the actual component requests it')}}};
+ if(!o.missing)ctx.MDXAuth=auth();
+ if(o.old){ctx.SECTOR_CYCLES={meta:{asOf:proof.asOf}};ctx.SECTOR_CYCLES_PUBLICATION={id:pubId};}
+ ctx.window=ctx;vm.runInNewContext(source,ctx);
+ function emit(name){doc.dispatchEvent({type:name})}
+ const api={ctx,doc,nodes,scripts,mounts,links,
+  settle(id,event='INITIAL_SESSION',notify=true){user=id?{id}:null;settled=true;if(!ctx.MDXAuth)ctx.MDXAuth=auth();if(notify){callbacks.slice().forEach(f=>f(user,event));ctx.dispatchEvent({type:'mdx-auth'})}},
+  fallback(){const list=[...timers.values()];timers.clear();list.forEach(f=>f())},
+  finish(fresh=true){if(fresh){ctx.SECTOR_CYCLES={meta:{asOf:proof.asOf}};ctx.SECTOR_CYCLES_PUBLICATION={id:pubId}};proof.status='verified';scripts[0].emit('load');emit('sc:publication-ready');emit('sc:cycles-ready')},
+  error(){scripts[0].emit('error')},
+  open(){nodes['sc-dossier'].open=true;doc.dispatchEvent({type:'toggle',target:nodes['sc-dossier']})},
+  emit,flush(){let n=0;while(frames.length){assert.ok(n++<30);frames.splice(0).forEach(f=>f())}},
+  state:()=>nodes['sc-dossier-status'].dataset.state,destroyed:()=>destroyed,applies:()=>applies,
+  changePublication(){ctx.SECTOR_CYCLES_PUBLICATION={id:pubId};emit('sc:publication-ready')},
+  focusMembers(){doc.activeElement=nodes['sc-dossier-mount'].children[0]},
+  sameUrlEntry(){history.pushState({foreign:'retained'},'',url.href);ctx.__siRoute()}};
+ return api;
+}
+let checks=0;
+function check(name,fn){fn();checks++;console.log('PASS '+name)}
+check('settled original request and verified publication admit once',()=>{
+ const a=boot({user:'A'});assert.equal(a.scripts.length,4);a.open();assert.equal(a.mounts.length,0);a.finish();assert.equal(a.state(),'allowed');assert.equal(a.mounts.length,1);
+ a.settle('A','TOKEN_REFRESHED');a.settle('A');a.emit('sc:series-ready');assert.equal(a.mounts.length,1);assert.equal(a.scripts.length,4);
+});
+check('unknown identity releases original queue only after settlement',()=>{
+ const a=boot({settled:false});assert.equal(a.scripts.length,0);a.settle('A');assert.equal(a.scripts.length,4);a.finish();a.open();assert.equal(a.state(),'allowed');
+});
+check('bounded fallback never upgrades after later settlement',()=>{
+ const a=boot({missing:true,settled:false});assert.equal(a.scripts.length,0);a.fallback();assert.equal(a.scripts.length,4);a.finish();a.open();assert.equal(a.mounts.length,0);
+ a.settle('A');a.emit('sc:publication-ready');a.emit('sc:cycles-data');a.emit('sc:series-ready');assert.equal(a.mounts.length,0);assert.equal(a.scripts.length,4);
+});
+check('disabled native auth continues without inventing access',()=>{
+ const a=boot({disabled:true,settled:false});assert.equal(a.scripts.length,4);a.finish();a.open();assert.equal(a.mounts.length,0);assert.equal(a.state(),'unavailable');
+});
+check('settled signed-out identity is explicit',()=>{
+ const a=boot();assert.equal(a.scripts.length,4);a.finish();a.open();assert.equal(a.state(),'unauthenticated');assert.equal(a.mounts.length,0);
+ a.settle('A');a.emit('sc:publication-ready');assert.equal(a.mounts.length,0);
+});
+check('account change during original request invalidates completion',()=>{
+ const a=boot({user:'A'});a.settle('B','SIGNED_IN');a.finish();a.open();assert.equal(a.mounts.length,0);assert.equal(a.state(),'unavailable');
+});
+check('signout then same account cannot revive old request',()=>{
+ const a=boot({user:'A'});a.settle(null,'SIGNED_OUT');a.settle('A','SIGNED_IN');a.finish();a.open();assert.equal(a.mounts.length,0);
+});
+check('current identity is re-read even before notification',()=>{
+ const a=boot({user:'A'});a.settle('B','SIGNED_IN',false);a.finish();a.open();assert.equal(a.mounts.length,0);
+});
+check('a load event leaving old source objects is not a receipt',()=>{
+ const a=boot({user:'A',old:true});a.finish(false);a.open();assert.equal(a.mounts.length,0);
+});
+check('late part and data events never revive invalidated access',()=>{
+ const a=boot({user:'A'});a.finish();a.open();assert.equal(a.mounts.length,1);
+ a.settle(null,'SIGNED_OUT');assert.equal(a.destroyed(),1);a.settle('A','SIGNED_IN');
+ for(const event of ['sc:cycles-data','sc:series-ready','sc:extras-ready','sc:publication-ready'])a.emit(event);
+ assert.equal(a.mounts.length,1);assert.equal(a.state(),'unavailable');
+});
+check('source-object supersession retires a valid mount',()=>{
+ const a=boot({user:'A'});a.finish();a.open();a.changePublication();assert.equal(a.destroyed(),1);assert.equal(a.state(),'unavailable');
+});
+check('undifferentiated load error is unavailable, never a claimed HTTP denial',()=>{
+ const a=boot({user:'A'});a.error();a.open();assert.equal(a.state(),'unavailable');assert.equal(a.mounts.length,0);
+});
+check('module failure has a bounded visible failure',()=>{
+ const a=boot({user:'A'});a.finish();a.scripts[3].emit('error');a.open();assert.equal(a.state(),'unavailable');assert.equal(a.mounts.length,0);
+});
+check('Members action uses native destination and retains actual invoker',()=>{
+ const a=boot({user:'A'});a.finish();a.open();a.focusMembers();
+ a.mounts[0].options.onMembers({id:'xle',family:'sectors',publicationId:pubId,invoker:a.doc.activeElement});
+ assert.deepEqual(a.links,['basket/us_sector_energy.html#hold']);
+ const saved=a.ctx.SectorWorkspaceExport();assert.equal(saved.siWorkspace.dossier.open,true);
+ assert.equal(saved.siWorkspace.viewport.focus.kind,'dossier');assert.equal(saved.siWorkspace.viewport.focus.id,'action-members');
+});
+check('departed component cannot navigate a replacement same-URL entry',()=>{
+ const a=boot({user:'A'});a.finish();a.open();const callback=a.mounts[0].options.onMembers;a.sameUrlEntry();a.flush();
+ callback({id:'xle',family:'sectors',publicationId:pubId});assert.equal(a.links.length,0);
+});
+check('qualified return restores disclosure through its component owner',()=>{
+ const a=boot({user:'A'});a.finish();a.open();a.focusMembers();
+ const saved=a.ctx.SectorWorkspaceExport();saved.siWorkspace.dossier.view.valuesOpen=true;saved.siWorkspace.dossier.view.valuesOffset=50;
+ a.sameUrlEntry();a.flush();const entry=a.ctx.history.state.siWorkspace.entryId,results=[];
+ a.ctx.SectorWorkspaceApplyCurrent(saved,{restoreId:'dossier-return',snapshotId:'source:1',expectedHref:saved.siWorkspace.href,onResult:r=>results.push(r)});a.flush();
+ assert.equal(results.length,1);assert.equal(results[0].status,'applied');assert.equal(a.applies(),1);
+ assert.equal(a.ctx.history.state.siWorkspace.entryId,entry);assert.equal(a.nodes['sc-dossier'].open,true);
+ assert.equal(a.ctx.SectorWorkspaceExport().siWorkspace.dossier.view.valuesOffset,50);
+ assert.equal(a.doc.activeElement.getAttribute('data-sdc-focus'),'action-members');
+});
+console.log(JSON.stringify({checks,failed:0}));
+
+"""
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node is required")
+def test_original_source_receipt_and_dossier_entry_lifecycle():
+    result = subprocess.run(["node", "-e", ACCESS, str(ROOT / "templates/si_workspace.js")],
+                            text=True, capture_output=True, timeout=20)
+    assert result.returncode == 0, result.stdout + result.stderr

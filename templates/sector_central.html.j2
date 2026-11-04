@@ -25,18 +25,13 @@
 <link rel="stylesheet" href="dashboard-icons.css">
 <link rel="stylesheet" href="cycle.css?v=4">
 <link rel="stylesheet" href="sector_cycles.css">
+<link rel="stylesheet" href="sector_dossier_cycle.css">
 <link rel="stylesheet" href="rotation_glance.css">
-{# Preload the embedded cycle map's critical path (core data + engine + orchestrator) so the
-   three download in PARALLEL from HTML-parse time instead of the old 3-hop load-event waterfall.
-   Prefetch the after-first-paint chunks (series + narr + dna). optimize_assets stamps ?v=<hash>
-   onto these hrefs post-render → immutable edge cache + the injected scripts reuse this response
-   (sector_cycles.js vUrl() resolves the bare name to the stamped href). #}
-<link rel="preload" href="sector_cycles_data.js" as="script">
+{# Only presentation code is preloaded. The existing Cycles loader starts protected
+   data after native identity settlement (or a bounded unconfirmed fallback).
+   A parser-time data response cannot serve as an identity-bound access receipt. #}
 <link rel="preload" href="mm_charts.js" as="script">
 <link rel="preload" href="sector_cycles.js" as="script">
-<link rel="prefetch" href="sector_cycles_series_data.js" as="script">
-<link rel="prefetch" href="sector_cycles_narr_data.js" as="script">
-<link rel="prefetch" href="sector_cycles_dna_data.js" as="script">
 <link rel="preload" href="sector_central_data.js" as="script">
 {# lazily mounted per view by the workspace router (§1 gate 8) — prefetch so the
    optimizer still stamps them and vUrl() can reuse the immutable URL. #}
@@ -475,6 +470,22 @@
   .si-intra-sr { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
   @media(prefers-reduced-motion:reduce) { .si-intra-name::before {transition:none;} }
   /* intraday-observation:style-end */
+
+
+/* Opt-in evidence remains inside the existing Cycles investigation. */
+.sc-dossier{margin:24px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.sc-dossier>summary{min-height:48px;display:flex;align-items:center;padding:12px 16px;gap:8px;cursor:pointer;font-weight:650;font-size:15px;line-height:1.5;list-style:none}
+.sc-dossier>summary::before{content:'+';color:var(--muted);font-size:20px;width:20px}
+.sc-dossier[open]>summary::before{content:'−'}
+.sc-dossier>summary:focus-visible{outline:2px solid var(--link);outline-offset:-4px;border-radius:10px}
+.sc-dossier-status{margin:0;padding:0 16px 16px;color:var(--muted);font-size:14px;line-height:1.6}
+.sc-dossier-status[hidden]{display:none}
+#sc-dossier-mount{min-width:0;padding:0 16px 16px}
+#sc-dossier-mount:empty{display:none}
+@media(max-width:880px){
+  #sc-native-study.sc-dossier-active #sc-detail{display:none!important}
+}
+@media(max-width:480px){.sc-dossier{margin:16px 0}.sc-dossier>summary{padding:12px}#sc-dossier-mount{padding:0 12px 12px}}
 
 </style>
 <style>
@@ -2296,6 +2307,11 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         </div>
       </aside>
     </section>
+    <details id="sc-dossier" class="sc-dossier">
+      <summary id="sc-dossier-toggle">{{ t('Evidence & members', '证据与成分') }}</summary>
+      <p id="sc-dossier-status" class="sc-dossier-status" role="status"></p>
+      <div id="sc-dossier-mount"></div>
+    </details>
     <div class="cyc-cards-hd"><h2>{{ t('Cycle scorecards', '周期记分卡') }}</h2></div>
     <div class="cyc-cards" id="sc-cards"></div>
   </section>

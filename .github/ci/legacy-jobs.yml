@@ -7481,6 +7481,18 @@ jobs:
       - "templates/si_workspace.js"
       - "tests/test_cycles_publication.py"
       - "tests/test_cycles_entry_state.py"
+      # D05: exact Members display source and retained route evidence semantics.
+      - "scripts/build_theme_detail.py"
+      - "scripts/build_subsector_rotation_pages.py"
+      - "scripts/build_subsector_rotation_china_pages.py"
+      - "templates/basket_detail.html.j2"
+      - "templates/subsector_detail.html.j2"
+      - "templates/subsector_rotation_detail.html.j2"
+      - "templates/subsectors.js"
+      - "templates/sector_dossier_cycle.js"
+      - "templates/sector_dossier_cycle.css"
+      - "tests/test_sector_members_return.py"
+      - "tests/test_d05_route_evidence_semantics.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7493,7 +7505,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest numpy pandas pyyaml jinja2
       - name: sector cycles page, publication coherence and native entry restoration
-        run: node --version && python -m pytest tests/test_sector_cycles.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py -q
+        run: node --version && python -m pytest tests/test_sector_cycles.py tests/test_cycles_publication.py tests/test_cycles_entry_state.py tests/test_sector_members_return.py tests/test_d05_route_evidence_semantics.py -q
 
   regwall-boundary:
     if: ${{ false }}

@@ -364,7 +364,7 @@ test('valid INIT: chrome suppression, context, READY shape', () => {
   const ready = ctx.lastOf('READY');
   assert.ok(ready);
   assert.deepStrictEqual(Object.keys(ready).sort(), ENV3.concat(READY_FIELDS).sort());
-  assert.strictEqual(ready.bridgeVersion, '20261104.1');
+  assert.strictEqual(ready.bridgeVersion, '20261104.2');
   assert.strictEqual(ready.documentVersion, '20261018.1');
   assert.strictEqual(ready.contextRevision, 3);
   assert.strictEqual(ready.href, 'https://www.mastermind-x.com/tools?q=alpha#top');
@@ -732,7 +732,8 @@ test('transport pairs never reserialize non-reserved query bytes', () => {
   ctx.sandbox.history.replaceState({}, '', '/tools?' + BYTES + '#part');
   const rep = ctx.replaceCalls[ctx.replaceCalls.length - 1];
   assert.strictEqual(rep.url, 'https://www.mastermind-x.com/tools?' + BYTES + '&mmx_shell=1&mmx_generation=g1#part');
-  assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/tools?' + BYTES + '#part');
+  assert.strictEqual(ctx.lastOf('NAVIGATE'), null, 'same-URL replacement updates only this entry');
+  assert.ok(ctx.lastOf('VIEW_STATE'));
   // API projection
   assert.strictEqual(ctx.sandbox.MMXSharedShell.navigate('/all-tools?' + BYTES + '#part'), true);
   assert.strictEqual(ctx.lastOf('NAVIGATE').href, 'https://www.mastermind-x.com/all-tools?' + BYTES + '#part');
@@ -923,7 +924,7 @@ test('newer CONTEXT after the initial READY is acknowledged without restoring', 
   const ack = ctx.lastOf('READY');
   assert.deepStrictEqual(Object.keys(ack).sort(), ENV3.concat(READY_FIELDS).sort());
   assert.strictEqual(ack.contextRevision, 4); // the revision the parent actually applied
-  assert.strictEqual(ack.bridgeVersion, '20261104.1');
+  assert.strictEqual(ack.bridgeVersion, '20261104.2');
   assert.strictEqual(ack.documentVersion, '20261018.1');
   assert.strictEqual(ack.href, 'https://www.mastermind-x.com/tools?q=alpha#top');
   assert.strictEqual(ctx.calls.focus.length, focuses); // context updates never steal focus
@@ -1785,4 +1786,132 @@ test('D05 foreign, copied transport and malformed requests cannot reach the nati
     assert.equal(calls,0);assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'rejected');
     ctx.fireWin('pagehide');
   }
+});
+
+function d05Members() {
+  return {schema:'sector_members.view.v1',sourceId:'members1-'+'b'.repeat(64),basketId:'energy',region:'us',asOf:'2026-10-30',
+    sort:{col:'r20',dir:1},focus:{kind:'listing',symbol:'XOM'},viewport:{x:0,y:350,tableX:40}};
+}
+function membersContext() {
+  return harness({childUrl:'https://www.mastermind-x.com/basket/energy.html?q=A%20B&mmx_shell=1&mmx_generation=g1#hold'});
+}
+function membersInit() {
+  return {canonicalPath:'/basket/energy.html?q=A%20B#hold',catalog:{legacyPaths:['/basket/energy.html'],nativePaths:['/terminal']},
+    restore:{x:0,y:350,restoreId:'r-members',snapshotId:'m:2',page:{kind:'d05-sector-members',value:d05Members()}}};
+}
+test('Members exports are pure, closed, route-bound and sent before Company navigation',()=>{
+  const ctx=membersContext();let calls=0;
+  ctx.sandbox.SectorMembersExport=()=>{calls++;return d05Members();};
+  ctx.activate({...membersInit(),restore:null});const before=ctx.replaceCalls.length;
+  assert.equal(ctx.api().navigate('/terminal?sym=XOM&region=US'),true);
+  const page=ctx.lastOf('VIEW_STATE').view.page;
+  assert.equal(page.kind,'d05-sector-members');assert.equal(page.value.focus.symbol,'XOM');
+  assert.ok(calls>0);assert.equal(ctx.replaceCalls.length,before);
+  const types=ctx.sent.map(s=>s.msg.type);assert.ok(types.lastIndexOf('VIEW_STATE')<types.lastIndexOf('NAVIGATE'));
+  ctx.fireWin('pagehide');
+});
+test('Members restoration uses its own adapter and identity with one viewport owner',()=>{
+  const ctx=membersContext();let calls=0,callback;
+  ctx.sandbox.SectorWorkspaceApplyCurrent=()=>{throw Error('wrong owner');};
+  ctx.sandbox.SectorMembersApplyCurrent=(value,options)=>{calls++;callback=options.onResult;assert.equal(value.sourceId,d05Members().sourceId);
+    return {status:'pending',cancel:reason=>callback({status:'rejected',reason})};};
+  ctx.sandbox.SectorMembersExport=()=>d05Members();ctx.activate(membersInit());
+  assert.equal(calls,1);assert.ok(ctx.lastOf('READY'));assert.equal(ctx.lastOf('RESTORE_RESULT'),null);
+  assert.equal(ctx.calls.scrollTo.length,0);
+  callback({status:'applied',reason:null,sourceId:d05Members().sourceId,viewport:'applied',focus:'applied'});
+  const receipt=ctx.lastOf('RESTORE_RESULT');
+  assert.equal(receipt.outcome,'applied');assert.equal(receipt.publicationId,null);
+  assert.equal(receipt.membersSourceId,d05Members().sourceId);
+  const types=ctx.sent.map(s=>s.msg.type);assert.ok(types.lastIndexOf('RESTORE_RESULT')<types.lastIndexOf('VIEW_STATE'));
+  ctx.fireWin('pagehide');
+});
+test('Members cannot downgrade missing adapter or changed source to generic viewport success',()=>{
+  for(const failure of ['missing','changed','wrong-region','malformed']){
+    const ctx=membersContext(),init=membersInit();let calls=0;
+    if(failure!=='missing')ctx.sandbox.SectorMembersApplyCurrent=(value,opts)=>{calls++;opts.onResult({status:'applied',
+      sourceId:'members1-'+'c'.repeat(64),reason:null,viewport:'applied',focus:'absent'});return {status:'pending'};};
+    if(failure==='wrong-region')init.restore.page.value.region='china';
+    if(failure==='malformed')init.restore.page.value.sort.col='conv';
+    ctx.activate(init);const result=ctx.lastOf('RESTORE_RESULT');
+    assert.equal(result.outcome,failure==='changed'?'partial':'rejected');
+    assert.equal(calls,failure==='changed'?1:0);assert.equal(ctx.calls.scrollTo.length,0);
+    ctx.fireWin('pagehide');
+  }
+});
+test('Members cancellation is one terminal result and ignores a late native success',()=>{
+  const ctx=membersContext();let callback,cancels=0;
+  ctx.sandbox.SectorMembersApplyCurrent=(value,options)=>{callback=options.onResult;return {status:'pending',cancel:reason=>{
+    cancels++;callback({status:'partial',reason,sourceId:d05Members().sourceId,viewport:'interrupted',focus:'interrupted'});
+  }};};
+  ctx.activate(membersInit());ctx.fireDoc('pointerdown');assert.equal(cancels,1);
+  callback({status:'applied',reason:null,sourceId:d05Members().sourceId,viewport:'applied',focus:'absent'});
+  assert.equal(ctx.activeCount('RESTORE_RESULT'),1);assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'partial');
+  ctx.fireWin('pagehide');
+});
+
+test('same-URL replace before INIT only updates child state and queues no navigation',()=>{
+  const ctx=harness();
+  const state={view:{expanded:true}};
+  ctx.sandbox.history.replaceState(state,'','/tools?q=alpha#top');
+  assert.equal(ctx.replaceCalls.length,1);
+  assert.strictEqual(ctx.replaceCalls[0].state,state);
+  const rewritten=new URL(ctx.replaceCalls[0].url);
+  assert.equal(rewritten.searchParams.get('mmx_generation'),'g1');
+  assert.equal(rewritten.hash,'#top');
+  ctx.activate({canonicalPath:'/tools?q=alpha#top'});
+  assert.equal(ctx.activeCount('NAVIGATE'),0);
+  assert.ok(ctx.lastOf('READY'));
+  ctx.fireWin('pagehide');
+});
+test('same-URL replace cannot cancel an in-flight native restore',()=>{
+  const ctx=membersContext();let callback,cancels=0;
+  ctx.sandbox.SectorMembersExport=()=>d05Members();
+  ctx.sandbox.SectorMembersApplyCurrent=(value,options)=>{callback=options.onResult;return {status:'pending',cancel:reason=>{
+    cancels++;callback({status:'partial',reason,sourceId:d05Members().sourceId,viewport:'interrupted',focus:'interrupted'});
+  }};};
+  ctx.activate(membersInit());
+  const state={native:{ready:true}};
+  ctx.sandbox.history.replaceState(state,'',ctx.location().href);
+  assert.equal(cancels,0);
+  assert.equal(ctx.activeCount('NAVIGATE'),0);
+  assert.equal(ctx.lastOf('RESTORE_RESULT'),null);
+  assert.equal(ctx.activeCount('VIEW_STATE'),0,'no interim restored view escapes before its receipt');
+  assert.strictEqual(ctx.replaceCalls.at(-1).state,state);
+  callback({status:'applied',reason:null,sourceId:d05Members().sourceId,viewport:'applied',focus:'applied'});
+  assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'applied');
+  assert.equal(ctx.activeCount('RESTORE_RESULT'),1);
+  ctx.fireWin('pagehide');
+});
+test('same-URL push and changed-URL replace still cancel a pending restore and notify the parent',()=>{
+  for(const [mode,href] of [
+    ['pushState','/basket/energy.html?q=A%20B#hold'],
+    ['replaceState','/basket/energy.html?q=changed#hold'],
+    ['replaceState','/basket/energy.html?q=A%20B#other']
+  ]){
+    const ctx=membersContext();let cancels=0;
+    ctx.sandbox.SectorMembersApplyCurrent=(value,options)=>({status:'pending',cancel:reason=>{
+      cancels++;options.onResult({status:'partial',reason,sourceId:d05Members().sourceId,viewport:'interrupted',focus:'interrupted'});
+    }});
+    ctx.activate(membersInit());
+    ctx.sandbox.history[mode]({entry:'next'},'',href);
+    assert.equal(cancels,1,mode+' '+href);
+    assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'partial');
+    assert.equal(ctx.lastOf('RESTORE_RESULT').reason,'navigation');
+    assert.equal(ctx.activeCount('NAVIGATE'),1);
+    assert.equal(ctx.lastOf('NAVIGATE').mode,mode==='pushState'?'push':'replace');
+    ctx.fireWin('pagehide');
+  }
+});
+
+test('same-URL state checkpoint publishes the current pure view without a navigation',()=>{
+  const ctx=membersContext();let current=d05Members();
+  ctx.sandbox.SectorMembersExport=()=>current;
+  ctx.activate({...membersInit(),restore:null});
+  current={...current,sort:{col:'recommend',dir:-1},focus:null};
+  ctx.sandbox.history.replaceState({checkpoint:'current'},'',ctx.location().href);
+  assert.equal(ctx.activeCount('NAVIGATE'),0);
+  assert.equal(ctx.lastOf('VIEW_STATE').view.page.value.sort.col,'recommend');
+  assert.equal(ctx.lastOf('VIEW_STATE').view.page.value.sort.dir,-1);
+  assert.equal(ctx.lastOf('VIEW_STATE').view.page.value.focus,null);
+  ctx.fireWin('pagehide');
 });

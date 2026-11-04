@@ -121,7 +121,9 @@ const CHART_KEY = {{ (chart_key | tojson) if chart_key else 'null' }};
 const HAS_SIGNALS = {{ 'true' if has_signals else 'false' }};
 const L = (en, zh) => '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>';
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const sgn = (x, d = 1) => (x == null || isNaN(x)) ? '<span class="num">–</span>' : '<span class="num ' + (x >= 0 ? 'pos' : 'neg') + '">' + (x >= 0 ? '+' : '') + Number(x).toFixed(d) + '</span>';
+const sgn = (x, d = 1, unit = '') => (x == null || isNaN(x)) ? '<span class="num">–</span>' : '<span class="num ' + (x >= 0 ? 'pos' : 'neg') + '">' + (x >= 0 ? '+' : '') + Number(x).toFixed(d) + unit + '</span>';
+// Native count fields are numbers; absence is not the configured roster size.
+const publishedCount = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
 const pageIdentity = DETAIL.kind === 'concept' || DETAIL.kind === 'basket' ? L("Theme Intelligence", "主题情报") : DETAIL.kind === 'sector' ? L("Sector Intelligence", "板块情报") : L("Subsector Intelligence", "子行业情报");
 const tierB = t => {
   const key = t || 'none';
@@ -134,14 +136,14 @@ function render() {
   const g = DETAIL.group || {}, e = g.entry || {}, r = g.regime || {};
   const app = document.getElementById('app');
   const cls = g['class'];
-  const nMembers = g.n_members || 0;
-  const nPriced = g.n_priced == null ? nMembers : g.n_priced;
+  const nMembers = publishedCount(g.n_members);
+  const nPriced = publishedCount(g.n_priced);
   const reliability = g.reliability || 'unknown';
   const badge = e.tier ? tierB(e.tier) + (e.buyable ? ' <span class="pill buy">' + L(cls === 'forming' ? 'setup forming' : 'entry setup active', cls === 'forming' ? '配置形成中' : '入场配置有效') + '</span>' : '') : '';
   const regEn = r.label || r.label_zh || r.state || '—';
   const regZh = r.label_zh || r.label || r.state || '—';
   const reg = '<span class="pill ' + (r.side || 'neutral') + '">' + L(esc(regEn), esc(regZh)) + '</span>';
-  const thin = reliability === 'low' ? '<span class="pill late" title="fewer than 6 priced members — an equal-weight index this thin is driven by 1–2 names">⚠ ' + L('thin · ' + nPriced + ' names', '偏薄 · ' + nPriced + ' 只') + '</span>' : '';
+  const thin = reliability === 'low' ? '<span class="pill late" title="fewer than 6 priced members — an equal-weight index this thin is driven by 1–2 names">⚠ ' + L('thin · ' + (nPriced == null ? '—' : nPriced) + ' price histories', '偏薄 · ' + (nPriced == null ? '—' : nPriced) + ' 份价格历史') + '</span>' : '';
   const kindLabel = DETAIL.kind_label_en ? L(DETAIL.kind_label_en, DETAIL.kind_label_zh || DETAIL.kind_label_en)
     : DETAIL.kind === 'concept' ? L('同花顺 concept basket', '同花顺概念篮子')
     : DETAIL.kind === 'basket' ? L('thematic basket', '主题篮子')
@@ -153,17 +155,21 @@ function render() {
   const reasonRead = e.reason ? esc(e.reason) : L('No additional entry blocker is published.', '暂无额外入场阻断说明。');
   const setupState = e.buyable ? L('Entry setup active', '入场配置有效') : e.tier ? L('Setup not yet confirmed', '配置尚未确认') : L('No confirmed entry', '暂无确认入场');
   const confidenceLabel = reliability === 'low' ? L('Low', '低') : reliability === 'med' ? L('Medium', '中') : reliability === 'high' ? L('High', '高') : L('Unknown', '未知');
-  const coverage = nMembers && nPriced !== nMembers ? nPriced + ' / ' + nMembers : String(nPriced || nMembers || '—');
+  const historyCoverage = (nPriced == null ? '—' : nPriced) + ' / ' + (nMembers == null ? '—' : nMembers);
+  const activeMembers = publishedCount(g.n_live);
+  // basket_index publishes a 0–1 fraction, independently of n_priced.
+  const volumeCoverage = typeof g.coverage_pct === 'number' && Number.isFinite(g.coverage_pct) && g.coverage_pct >= 0 && g.coverage_pct <= 1
+    ? (g.coverage_pct * 100).toFixed(1) + '%' : '—';
   const titleZh = g.label_zh ? ' <span style="color:var(--muted);font-weight:600;font-size:.58em">' + esc(g.label_zh) + '</span>' : '';
 
   let h = '<section class="id-hero" id="overview">'
     + '<div class="id-card"><div class="id-eyebrow">' + pageIdentity + '</div>'
     + '<h1 class="id-title">' + esc(g.label) + titleZh + '</h1>'
     + '<div class="id-subtitle"><span>' + esc(g.sector_zh || g.sector || '—') + '</span><span>·</span><span>' + kindLabel + '</span></div>'
-    + '<div class="id-meta"><span class="pill neutral">' + L('as of','截至') + ' ' + esc(g.as_of || '—') + '</span><span class="pill neutral">' + coverage + ' ' + L('members','成分') + '</span><span class="pill neutral">' + L('equal weight','等权') + '</span>' + thin + '</div></div>'
+    + '<div class="id-meta"><span class="pill neutral">' + L('as of','截至') + ' ' + esc(g.as_of || '—') + '</span><span class="pill neutral">' + historyCoverage + ' ' + L('price histories / configured members','价格历史 / 配置成分') + '</span><span class="pill neutral">' + L('equal weight','等权') + '</span>' + thin + '</div></div>'
     + '<div class="id-card id-decision"><div class="id-decision-top"><div><div class="id-decision-label">' + L('Current read','当前研判') + '</div><div class="id-decision-read">' + actionRead + '</div></div><div class="id-badges">' + badge + ' ' + reg + '</div></div>'
     + '<div class="id-decision-grid"><div class="id-mini"><div class="k">' + L('Entry','入场') + '</div><div class="v">' + setupState + '</div></div><div class="id-mini"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div>'
-    + '<div class="id-mini"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
+    + '<div class="id-mini"><div class="k">' + L('Price histories / configured members','价格历史 / 配置成分') + '</div><div class="v">' + historyCoverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
 
   h += '<section class="id-group-read"><div class="id-group-read-copy"><h2>' + L('Group read','整体读数') + '</h2><p>' + actionRead + ' · ' + reasonRead + '</p></div><div class="id-callout">' + (reliability === 'low' ? L('Judge members individually','请逐一判断成分股') : setupState) + '</div></section>';
   if (reliability === 'low') h += '<div class="action" style="border-left-color:var(--orange)">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
@@ -183,22 +189,23 @@ function render() {
   const ms = g.members || [];
   const behavesPill = m => m.behaves_as && m.behaves_as.home_id !== (g.basket_id || g.key) ? ' · <span class="pill behavesas" title="' + esc((m.behaves_as.homes || []).map(x => x.label + ' r20 ' + (x.corr20 == null ? '–' : x.corr20.toFixed(2))).join('; ')) + '">↔ ' + L('behaves-as ' + esc(m.behaves_as.home_label || ''), '类同 ' + esc(m.behaves_as.home_label_zh || m.behaves_as.home_label || '')) + '</span>' : '';
   if (ms.length) {
-    h += '<section id="members"><div class="id-section-hd"><div><h2>' + L('Members','成分') + '</h2><p>' + L('Who is actually carrying the group — same source rows, adapted to the viewport.','谁在真正带动该组——同一数据源，按屏幕宽度适配。') + '</p></div><span class="pill neutral">' + ms.length + ' ' + L('shown','只') + '</span></div>';
-    h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Price','价格') + '</th><th>' + L('Own setup','自身配置') + '</th><th>' + L('20d','20日') + '</th><th>' + L('vs group','相对本组') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
+    h += '<section id="members"><div class="id-section-hd"><div><h2>' + L('Members','成分') + '</h2><p>' + L('Current configured members. Prices are last available closes; individual observation dates are not supplied. 20-session returns use the basket calendar with forward-filled member closes; excess is the arithmetic difference in percentage points.','当前配置成分。价格为最后可用收盘价，未提供逐股观察日期。20个交易日收益按篮子日历并前向填充个股收盘价；超额为收益率之差，单位为百分点。') + '</p></div><span class="pill neutral">' + ms.length + ' ' + L('shown','只') + '</span></div>';
+    h += '<div class="members-table-wrap"><table class="tbl"><thead><tr><th>' + L('Ticker','代码') + '</th><th>' + L('Last available close','最后可用收盘价') + '</th><th>' + L('Own setup','自身配置') + '</th><th>' + L('20-session return (%)','20个交易日收益 (%)') + '</th><th>' + L('Excess vs group (pp)','相对本组超额 (百分点)') + '</th><th>' + L('Read','研判') + '</th></tr></thead><tbody>';
     h += ms.map(m => {
       const zh = m.name_zh ? ' <span style="color:var(--muted);font-weight:400;font-size:.85em">' + esc(m.name_zh) + '</span>' : '';
       const behaves = behavesPill(m);
-      return '<tr class="' + (m.stock_buyable ? 'buyable' : '') + '"><td class="tk"><a href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a>' + zh + '</td><td class="num">' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</td><td>' + tierB(m.stock_tier) + '</td><td>' + sgn(m.ret_20d) + '</td><td>' + sgn(m.vs_basket) + '</td><td style="color:var(--muted);font-size:11px">' + esc(m.stock_state || '') + behaves + '</td></tr>';
+      return '<tr class="' + (m.stock_buyable ? 'buyable' : '') + '"><td class="tk"><a href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a>' + zh + '</td><td class="num">' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</td><td>' + tierB(m.stock_tier) + '</td><td>' + sgn(m.ret_20d, 1, '%') + '</td><td>' + sgn(m.vs_basket, 1, ' pp') + '</td><td style="color:var(--muted);font-size:11px">' + esc(m.stock_state || '') + behaves + '</td></tr>';
     }).join('');
     h += '</tbody></table></div>';
-    h += '<div class="member-cards">' + ms.map(m => '<article class="member-card ' + (m.stock_buyable ? 'buyable' : '') + '"><div class="member-card-top"><div><a class="member-symbol" href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a><div class="member-name">' + esc(m.name_zh || '') + '</div></div><div class="member-return">' + sgn(m.ret_20d) + '<div class="member-price">' + L('Price','价格') + ' ' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</div></div></div><div class="member-card-foot"><div>' + tierB(m.stock_tier) + '</div><div class="member-read">' + esc(m.stock_state || '') + ' · ' + L('vs group','相对本组') + ' ' + sgn(m.vs_basket) + behavesPill(m) + '</div></div></article>').join('') + '</div></section>';
+    h += '<div class="member-cards">' + ms.map(m => '<article class="member-card ' + (m.stock_buyable ? 'buyable' : '') + '"><div class="member-card-top"><div><a class="member-symbol" href="' + (DETAIL.stock_base || '../stock.html#') + encodeURIComponent(m.ticker) + '">' + esc(m.ticker) + '</a><div class="member-name">' + esc(m.name_zh || '') + '</div></div><div class="member-return">' + sgn(m.ret_20d, 1, '%') + '<div class="member-price">' + L('Last available close','最后可用收盘价') + ' ' + (m.price == null ? '–' : Number(m.price).toFixed(2)) + '</div></div></div><div class="member-card-foot"><div>' + tierB(m.stock_tier) + '</div><div class="member-read">' + esc(m.stock_state || '') + ' · ' + L('Excess vs group','相对本组超额') + ' ' + sgn(m.vs_basket, 1, ' pp') + behavesPill(m) + '</div></div></article>').join('') + '</div></section>';
   } else {
     h += '<section id="members"><div class="id-card"><div class="id-eyebrow">' + L('Members','成分') + '</div><p style="margin:6px 0 0;color:var(--muted)">' + L('Member detail is unavailable for this group.','该组暂无成分股明细。') + '</p></div></section>';
   }
 
   h += '<section class="id-evidence" id="evidence"><div class="id-section-hd"><div><h2>' + L('Evidence & data quality','证据与数据质量') + '</h2><p>' + L('Freshness, coverage and method stay in one predictable place.','新鲜度、覆盖率与方法集中在一个固定位置。') + '</p></div></div><div class="id-evidence-grid">'
     + '<div class="id-evidence-cell"><div class="k">' + L('Freshness','新鲜度') + '</div><div class="v">' + esc(g.as_of || '—') + ' · ' + L('EOD daily','日终每日') + '</div></div>'
-    + '<div class="id-evidence-cell"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Price histories / configured members','价格历史 / 配置成分') + '</div><div class="v">' + historyCoverage + '</div></div>'
+    + '<div class="id-evidence-cell"><div class="k">' + L('Positive-volume coverage · latest basket bar','正成交量覆盖 · 篮子最新柱') + '</div><div class="v">' + volumeCoverage + ' · ' + (activeMembers == null ? '—' : activeMembers) + ' ' + L('active members','有效成分') + '</div></div>'
     + '<div class="id-evidence-cell"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight · current membership','等权 · 当前成分') + '</div></div>'
     + '<div class="id-evidence-cell"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div></div></section>';
   h += '<div class="foot">' + L('Descriptive, current-membership and survivorship-tinted — not an out-of-sample backtest. Calendar 3D buckets; leak-free cascade. Confirm before acting; this page does not size or originate a trade.','描述性、基于当前成分且含幸存者偏差——非样本外回测。日历三日分桶；无未来函数级联。行动前请确认；本页不决定仓位，也不发起交易。') + '</div>';

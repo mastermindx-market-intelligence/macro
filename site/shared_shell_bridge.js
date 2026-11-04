@@ -8,7 +8,7 @@
   "use strict";
 
   var PROTOCOL = "mmx.shared-shell.v1";
-  var BRIDGE_VERSION = "20261104.1";
+  var BRIDGE_VERSION = "20261104.2";
   var DOCUMENT_META_NAME = "mmx-shell-document";
   var RESPONSE_META_NAME = "mmx-shell-response";
   var APPROVED_PARENT_ORIGINS = ["https://beta.mastermind-x.com", "https://app.mastermind-x.com"];
@@ -285,6 +285,12 @@
         if (projected) view.page = { kind: "d05-sector-central", value: projected };
       } catch (e) {}
     }
+    if (!view.page && typeof w.SectorMembersExport === "function") {
+      try {
+        var members = projectMembersSettings(w.SectorMembersExport());
+        if (members) view.page = { kind: "d05-sector-members", value: members };
+      } catch (e) {}
+    }
     send("VIEW_STATE", { view: view });
   }
   function currentFocusId() {
@@ -375,6 +381,16 @@
       return;
     }
     var current = currentUrl();
+    // Updating state on the same entry is not navigation. Native restoration
+    // writes its accepted view here; notifying the parent would cancel itself.
+    // A same-URL push still expresses a new entry and retains normal handling.
+    if (mode === "replace" && current && canonicalHref(u) === canonicalHref(current)) {
+      origReplaceSafe(state_, title, withTransport(u));
+      // Preserve ordinary chart-state checkpoints without exposing an interim
+      // native restore. finishRestore publishes its final receipt, then view.
+      if (state.active && (!activeRestore || activeRestore.done)) flushView();
+      return;
+    }
     var sameDocument = !!current && u.pathname === current.pathname;
     if (!state.active) {
       // Only mutate a same-document location after its parent notification is queued.
@@ -838,6 +854,25 @@
       return copy;
     } catch (e) { return null; }
   }
+  function projectMembersSettings(value) {
+    if (!isObj(value) || !exactKeys(value, ["schema","sourceId","basketId","region","asOf","sort","focus","viewport"])) return null;
+    try {
+      var json=JSON.stringify(value);
+      if (typeof TextEncoder!=="function" || new TextEncoder().encode(json).length>4096) return null;
+      var v=JSON.parse(json), dirs={us:"basket",china:"basket_china",hk:"basket_hk",canada:"basket_canada",intl:"basket_intl"};
+      function txt(raw,max) { return boundedStr(raw,max) && !/[\u0000-\u001f\u007f]/.test(raw); }
+      if(v.schema!=="sector_members.view.v1" || !/^members1-[a-f0-9]{64}$/.test(v.sourceId||"") ||
+        !txt(v.basketId,100) || !/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(v.basketId) || !own(dirs,v.region) ||
+        w.location.pathname!=="/"+dirs[v.region]+"/"+v.basketId+".html" ||
+        (v.asOf!==null&&!txt(v.asOf,160)) || !isObj(v.sort) || !exactKeys(v.sort,["col","dir"]) ||
+        ["recommend","r20"].indexOf(v.sort.col)<0 || [-1,1].indexOf(v.sort.dir)<0 ||
+        !isObj(v.viewport) || !exactKeys(v.viewport,["x","y","tableX"]) ||
+        !coordOK(v.viewport.x)||!coordOK(v.viewport.y)||!coordOK(v.viewport.tableX)) return null;
+      if(v.focus!==null && !(isObj(v.focus)&&exactKeys(v.focus,["kind","symbol"])&&v.focus.kind==="listing"&&txt(v.focus.symbol,100)) &&
+        !(isObj(v.focus)&&exactKeys(v.focus,["kind","col"])&&v.focus.kind==="sort"&&["recommend","r20"].indexOf(v.focus.col)>=0)) return null;
+      return v;
+    } catch(e) { return null; }
+  }
   function restoreCanonical() {
     var url = currentUrl();
     if (!url || isSensitiveURL(url)) return null;
@@ -854,14 +889,17 @@
     var outcome = result && statuses.indexOf(result.status) >= 0 ? result.status : "rejected";
     var reason = result && result.reason || null;
     if (reason !== null && (!boundedStr(reason, 160) || !/^[a-z_]+$/.test(reason))) reason = "restore_unavailable";
-    var publicationId = result && /^cycp1-[a-f0-9]{64}$/.test(result.publicationId || "") ? result.publicationId : null;
+    var isMembers = op.restore.page && op.restore.page.kind === "d05-sector-members";
+    var publicationId = !isMembers && result && /^cycp1-[a-f0-9]{64}$/.test(result.publicationId || "") ? result.publicationId : null;
+    var membersSourceId = isMembers && result && /^members1-[a-f0-9]{64}$/.test(result.sourceId || "") ? result.sourceId : null;
+    if (outcome === "applied" && isMembers && membersSourceId !== op.restore.page.value.sourceId) { outcome = "partial"; reason = "source_changed"; }
     var focus = result && focusStates.indexOf(result.focus) >= 0 ? result.focus : "unavailable";
     var viewport = result && viewportStates.indexOf(result.viewport) >= 0 ? result.viewport : "unavailable";
     if (outcome === "applied" && (reason || viewport !== "applied" || ["unavailable", "interrupted"].indexOf(focus) >= 0)) outcome = "partial";
     if (op.restore.restoreId) {
       send("RESTORE_RESULT", { restoreId: op.restore.restoreId, snapshotId: op.restore.snapshotId,
         canonicalPath: op.canonical, outcome: outcome, reason: reason,
-        publicationId: publicationId, focus: focus, viewport: viewport });
+        publicationId: publicationId, membersSourceId: membersSourceId, focus: focus, viewport: viewport });
       // Ordered after the terminal receipt: the parent can now store actual
       // supported state instead of the initial document's un-restored defaults.
       sendViewState();
@@ -900,12 +938,14 @@
     // One bounded completion deadline for this admitted document, never a retry.
     op.timer = setTimeout(function () { if (activeRestore === op) cancelRestore("deadline"); }, 12000);
     if (restore.page) {
-      var projection = projectSectorSettings(restore.page.value, true);
-      if (!projection || typeof w.SectorWorkspaceApplyCurrent !== "function") {
+      var isMembers = restore.page.kind === "d05-sector-members";
+      var projection = isMembers ? projectMembersSettings(restore.page.value) : projectSectorSettings(restore.page.value, true);
+      var applyNative = isMembers ? w.SectorMembersApplyCurrent : w.SectorWorkspaceApplyCurrent;
+      if (!projection || typeof applyNative !== "function") {
         finishRestore(op, { status: "rejected", reason: projection ? "workspace_unavailable" : "invalid_state" }); return;
       }
       try {
-        op.native = w.SectorWorkspaceApplyCurrent(projection, {
+        op.native = applyNative(projection, {
           restoreId: restore.restoreId, snapshotId: restore.snapshotId,
           expectedHref: w.location.pathname + w.location.search + w.location.hash,
           onResult: function (result) { finishRestore(op, result); }
@@ -1018,11 +1058,12 @@
     }
     if (own(v, "page")) {
       if (!out.restoreId || !isObj(v.page) || !exactKeys(v.page, ["kind", "value"])
-        || v.page.kind !== "d05-sector-central") return BAD;
+        || ["d05-sector-central", "d05-sector-members"].indexOf(v.page.kind) < 0) return BAD;
       // Keep canonical state until the target document's active transport is known.
       try {
         var json = JSON.stringify(v.page.value);
-        if (json.length > 32768 || typeof TextEncoder !== "function" || new TextEncoder().encode(json).length > 32768) return BAD;
+        var limit = v.page.kind === "d05-sector-members" ? 4096 : 32768;
+        if (json.length > limit || typeof TextEncoder !== "function" || new TextEncoder().encode(json).length > limit) return BAD;
         out.page = { kind: v.page.kind, value: JSON.parse(json) };
       } catch (e) { return BAD; }
     }

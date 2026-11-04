@@ -468,3 +468,98 @@ The qualified Dossier component is available at 2c4edf26. It is not mounted by
 this increment. Its source access receipt and native disclosure lifecycle are
 a separate attachment to the same seven-view host. Original Fable dirty work
 is preserved. Shared F01/F02 acceptance and all original release holds remain.
+
+
+## 11. Integrated Dossier, Members and Company return — current 2026-11-04 contract
+
+This section supersedes the earlier Central-only projection and source-only
+verification stage; historical receipts above retain their original source pins.
+
+### Incumbent owners and bounds
+
+| Boundary | Current contract |
+|---|---|
+| Central | Existing native `siWorkspace` and flat `siCyclesOrigin`; 32 KiB UTF-8 maximum; publication/entry/href/user-intent fences |
+| Dossier | Existing `SectorDossierCycle` API from component749; source/access receipt and lazy disclosure; only represented controls are serialized |
+| Members | `sector_members.view.v1`; parent page kind `d05-sector-members`; 4 KiB UTF-8 maximum |
+| Parent history | Existing originNav schema2, bounded flat `returnTo` plus `centralOrigin`; aggregate64 KiB; actual account UUID or guest owner |
+| Bridge | `mmx.shared-shell.v1`, bridge20261104.2; current source/frame/origin/generation checks; no additional navigation owner |
+| Company | Existing MDXTerminal and Terminal route, exact listing preserved; Back to Members plus Return to Cycles investigation |
+| Presentation | F01/F02 provisional. D05 light/locale selection returns intact after Company-owned dark chart presentation; no second preference store |
+
+Members value fields are `sourceId`, `basketId`, `region`, nullable `asOf`,
+`sort:{col:recommend|r20,dir:1|-1}`, typed focus
+`{kind:listing,symbol}` or `{kind:sort,col}`, and
+`viewport:{x,y,tableX}`. Unknown fields, malformed/nonfinite coordinates,
+foreign source/region/basket, ambiguous duplicate listing focus and oversized
+payloads are refused. Native listings such as CNQ.TO, 000001.SZ, 512690.SS
+and 00700.HK retain their complete strings. Controlled tests of these strings
+do not establish regional route availability.
+
+The producer's `members1-` SHA256 is over the exact serialized base DETAIL
+payload, including source rows and native identity. It is **display-source
+identity**, not a cryptographic trust grant, `cycp1-` publication, evidence of
+PIT membership, or an entitlement. HTML generation time is excluded.
+Missing/malformed collection → unavailable; explicit empty collection → empty;
+an otherwise valid row with missing conviction remains available.
+
+Members uses the existing native apply owner, bounded by75 animation frames and
+1200 ms, then reads back actual sort/focus/viewport. Later user intent, changed
+source/URL or new entry interrupts it. The parent checks the correlated result,
+exact source and requested focus rather than equating READY with restored.
+While navigation is pending, old-entry VIEW_STATE cannot overwrite its frozen
+snapshot. Parent reload and Company reload recover the same account/entry
+context; another account cannot inherit it.
+
+A same-canonical-URL `replaceState` is a state checkpoint. It preserves the
+current restore and flushes a pure VIEW_STATE when no restore is pending.
+It does not enter the pre-INIT navigation queue. A changed URL or explicit
+same-URL push still cancels and communicates actual navigation. Ordinary raw
+query order, duplicate keys and percent encoding remain intact; only the
+existing two transport keys are stripped/rebound.
+
+The native status note is reused at the section tail. Requested native controls
+hidden by Advanced are revealed through the incumbent toggle before focusing.
+The phone Cycle sheet is hidden only while the Dossier is actually open; selection
+and chart settings remain in their native owner.
+
+### Retained confluence source meaning
+
+`n_priced` counts members with any nonempty close history; it is neither the
+configured roster nor current-session participation. Zero is valid; missing,
+negative, nonintegral or nonnumeric counts render unavailable. `n_members`
+is configured membership. Board sort uses the same validated history count and
+keeps unavailable rows last in either direction.
+
+`coverage_pct` independently carries a 0–1 fraction: positive-volume members
+within the active set at the latest basket bar. The display multiplies only this
+fraction by100 and separately shows `n_live`. It never derives current volume
+coverage from `n_priced/n_members`. `n_gateable` counts successfully scored
+groups, not entry eligibility. Baskets use `n_listed` as census denominator;
+missing denominators never fall back to the scored `n_baskets`.
+
+Member `ret_20d` uses basket-calendar aligned, forward-filled closes and is a
+percentage return; `vs_basket` is the arithmetic difference in percentage points.
+Member price is the last available close when individual observation dates are
+not supplied. Group gate and stock gate, native T1–T4/classification, sort/search,
+four universes and current-membership qualification are preserved.
+
+### Retained rotation source meaning
+
+The current US and China producers share `engine.subsector_rotation` metrics.
+Strength/momentum are dimensionless cross-sectional standardized measures.
+Acceleration is return-per-week difference in **pp/week**, current1W versus3M,
+with current-producer1M fallback if3M is absent. Exactly zero means equal compared
+weekly rates, not a negative acceleration or a neutral quadrant.
+
+The source snapshot date comes from the outer artifact's `asof`, never build
+mtime or `generated_utc`. Configured count, available member rows and displayed
+rows are distinct; cap30 and descending1M order remain. All8 horizons are shown:
+1D,1W,1M,MTD,3M,6M,1Y,YTD. Missing MTD stays unavailable; 1M is not a substitute.
+Current configured membership is not a historical membership backtest.
+
+Peer #8299 changes the producer's unavailable/neutral classification and removes
+the1M fallback. It is not adopted here. Any future authorized composition must
+retain its null-safe values/early returns and revise source-specific method copy
+against that actual producer. Peer #7384 history/entry-condition blocks are also
+not adopted or overwritten. See OWNER_OVERLAP.md.

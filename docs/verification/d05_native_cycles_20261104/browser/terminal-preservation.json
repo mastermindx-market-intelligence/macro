@@ -1,0 +1,89 @@
+{
+  "base_head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+  "actual_head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+  "selected_count": 14,
+  "selection": {
+    "terminal/components/DashboardBackButton.tsx": {
+      "sha256": "de6bc5610ee2a144a69461dae33085e559599fb7690f9abd1f1a04f4287b26ff",
+      "bytes": 2335,
+      "status": " M"
+    },
+    "terminal/components/chrome/AppShell.tsx": {
+      "sha256": "1b8476af3af948f95d27ec59e66f2f11546fd16a904185279bae50e6231a8c2f",
+      "bytes": 16763,
+      "status": " M"
+    },
+    "terminal/components/chrome/shared-shell/LegacyPageHost.tsx": {
+      "sha256": "b6cc0cc8f6828b256288184d4006d27e7745e92237414f806b99c2f1b1d780f1",
+      "bytes": 21326,
+      "status": " M"
+    },
+    "terminal/components/MobileNav.tsx": {
+      "sha256": "5694d7e413e608a9566bc54a8bd81de2ad1bf5426365441a40d0fffc544f65ba",
+      "bytes": 13550,
+      "status": " M"
+    },
+    "terminal/components/TerminalShell.tsx": {
+      "sha256": "6890dd19975660c1c057f73adfce67e1b3fba6d1f9ec50254ef6cff724108cc3",
+      "bytes": 464236,
+      "status": " M"
+    },
+    "terminal/lib/originNav.ts": {
+      "sha256": "d2bb94f6baeea348bb2fdad310adc65ea40aa37862357630f210c9f55ee762ce",
+      "bytes": 31120,
+      "status": " M"
+    },
+    "terminal/lib/sharedShellContracts.ts": {
+      "sha256": "664f1b7e2674be4bf99c88a3aaf66250978727fb605df4c17a92a9da723ea965",
+      "bytes": 25150,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/originEntry.test.ts": {
+      "sha256": "56acf5383067625686e37c6c7433a6e0e1a7e81481086c082b69e286478e75d4",
+      "bytes": 24345,
+      "status": "??"
+    },
+    "terminal/lib/__tests__/originEntryHydration.test.ts": {
+      "sha256": "1ffc9b5dde1f84fd118f2acb02f3f83b8199136166ccfa7499e9ef1db4447382",
+      "bytes": 2268,
+      "status": "??"
+    },
+    "terminal/app/layout.tsx": {
+      "sha256": "b854744fc98e520fad35d759fd2b8625eeb4f3af7b1c336aa171586b05db5cf5",
+      "bytes": 3311,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/sharedShellNavigationCommit.test.tsx": {
+      "sha256": "c9e97eb001f27ac83c621c7548425046b80ef6cce08ed178897d166589e971ef",
+      "bytes": 25572,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/sharedShellPublicPresentation.test.tsx": {
+      "sha256": "5fdf3cb1efb5d5d3ae4e5de33a69ab399ac501baedc0dedd3e592937285a2f6b",
+      "bytes": 27000,
+      "status": " M"
+    },
+    "terminal/app/(shell)/layout.tsx": {
+      "sha256": "8fe8137f82e9d7313d7bd8c70eceb342eb7208424931b05ba22aaaa7aee9b830",
+      "bytes": 3918,
+      "status": " M"
+    },
+    "terminal/lib/__tests__/shellFixtureIdentity.test.tsx": {
+      "sha256": "f4db0706d15f7fc5ed76f41028fc5dc306aaddf2501b4cf039cb0d7f11313020",
+      "bytes": 3872,
+      "status": " M"
+    }
+  },
+  "inherited_count": 486,
+  "inherited_changed": [],
+  "unexpected_changes": [],
+  "baseline_sha256": "2bbbc1d39ee9cac44568ea77336ae1711cc042c86920ebb9092ec958b1ec25d2",
+  "checks": {
+    "focused_suites": 142,
+    "suite_files": 11,
+    "typescript_exit": 0,
+    "node": "26.5.0",
+    "test_node_options": "--no-experimental-webstorage"
+  },
+  "publication": "not attempted; exact selection and preserved baseline push capabilities missing"
+}

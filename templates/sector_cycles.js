@@ -1620,6 +1620,14 @@
     if (US_SECTOR_PAGE[s.id]) return US_SECTOR_PAGE[s.id];
     return s.ticker ? ("stock.html#" + s.ticker) : null;
   }
+  // A read-only destination hook reuses the native membership mapping.
+  // It exposes no source rows and cannot grant access or navigate.
+  window.SectorCyclesMembersHref=function(selection){
+    if(!selection||!activePublication()||publicationState!=='verified'||META.region&&META.region!=='us'||
+       selection.publicationId!==PUB.id||!isFamilyId(selection.id,selection.family))return null;
+    var href=sectorPageHref(byId[selection.id]);
+    return typeof href==='string'&&/^basket\/[a-z0-9_.-]+\.html$/.test(href)?href:null;
+  };
   function sectorPageLabel(s) {
     if (META.region === "china") return L("Open in Sector Central", "在板块中枢查看");
     // both thematic baskets and US sector ETFs label by their own name → "Open <name> page".

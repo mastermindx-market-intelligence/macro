@@ -24,7 +24,7 @@ async function expectRange(page,expected,label) {
  },expected);
 }
 (async()=>{
- const browser=await playwright.chromium.launch({headless:true,...(process.env.D05_CHROMIUM_EXECUTABLE?{executablePath:process.env.D05_CHROMIUM_EXECUTABLE}:{})});
+ const browser=await playwright.chromium.launch({headless:true,chromiumSandbox:true,...(process.env.D05_CHROMIUM_EXECUTABLE?{executablePath:process.env.D05_CHROMIUM_EXECUTABLE}:{})});
  try {
   for(const [width,height,theme,lang] of cases) {
    const context=await browser.newContext({viewport:{width,height},reducedMotion}), page=await context.newPage();
