@@ -2717,6 +2717,15 @@ jobs:
           cat "$RUNNER_TEMP/mb.log"
           if [ "$rc" -ne 0 ]; then echo "::warning title=master_brain::rc=$rc (non-fatal)"; fi
           exit 0
+      - name: checkpoint refreshed AI Brief JSON to main (narrow before dashboard)
+        id: aibrief_early_checkpoint
+        if: steps.regime_inputs.outcome == 'success'
+        timeout-minutes: 12
+        continue-on-error: true
+        # Same engine/main push_retry writer, isolated worktree. Publishes only
+        # validated regime/site JSON pairs; the existing render owner adopts
+        # them into standalone HTML and China/HK modals on daily completion.
+        run: bash scripts/ci/daily_engine_aibrief_checkpoint.sh
       - name: AI Daily Brief page (build_aibrief)
         if: steps.regime_inputs.outcome == 'success'
         # Server-render the current briefs before the durable core checkpoint.

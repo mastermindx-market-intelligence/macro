@@ -53,7 +53,7 @@ on:
   push:
     branches: [main]
     # Source/template pushes auto-render. Generated pages do not match these
-    # paths; the exact China brief input is the only generated-data exception.
+    # paths; the exact AI Brief lens inputs are generated-data exceptions.
     # Nightly bot publication reaches this owner through workflow_run above.
     # Rendering reads the brief without regenerating it, so there is no loop.
     #
@@ -68,7 +68,9 @@ on:
     paths:
       # Human/source pushes may update the brief too. Nightly GITHUB_TOKEN
       # commits are handled by the completion event below, not push recursion.
+      - "site/master_brief.json"
       - "site/china_brief.json"
+      - "site/btc_brief.json"
       - "templates/**"
       # Public/marketing surfaces have a dedicated GitHub-hosted fast lane. These
       # exclusions are ordered after templates/** so they do not occupy the scarce
@@ -265,29 +267,37 @@ jobs:
           filter: blob:none
           sparse-checkout-cone-mode: false
           sparse-checkout: .github/workflows/render.yml
-      - name: compare accepted China brief with existing render watermarks
+      - name: compare accepted AI Brief lenses with existing render watermarks
         id: brief
         run: |
           set -euo pipefail
 
           watermarks=$(git log -n 900 --format=%s | sed -n -E \
             's/^render: site re-render [0-9-]+ \(scope=([a-z+]+), from=([0-9a-f]{7,40})\)$/\1 \2/p')
-          for region in china hk; do
+          for region in macro china hk; do
             covered_from=""
             while read -r scope from; do
               case "+$scope+" in
                 *"+all+"*|*"+$region+"*) covered_from="$from"; break;;
               esac
             done <<< "$watermarks"
+            # The macro page consumes all three lenses, while China/HK modals
+            # consume the accepted China lens only. Never mark an uncovered lens
+            # as adopted merely because a different regional render completed.
+            if [ "$region" = macro ]; then
+              inputs=(site/master_brief.json site/china_brief.json site/btc_brief.json)
+            else
+              inputs=(site/china_brief.json)
+            fi
             # Missing/expired coverage must render once to establish a real watermark.
-            if [ -z "$covered_from" ] || ! git diff --quiet "$covered_from..HEAD" -- site/china_brief.json; then
+            if [ -z "$covered_from" ] || ! git diff --quiet "$covered_from..HEAD" -- "${inputs[@]}"; then
               echo "needed=true" >> "$GITHUB_OUTPUT"
-              echo "::notice::Accepted China brief needs $region render coverage"
+              echo "::notice::Accepted AI Brief lens needs $region render coverage"
               exit 0
             fi
           done
           echo "needed=false" >> "$GITHUB_OUTPUT"
-          echo "::notice::China and HK already cover the accepted China brief"
+          echo "::notice::Macro, China and HK already cover the accepted AI Brief lenses"
   render:
     needs: brief_render_gate
     if: ${{ always() && (github.event_name != 'workflow_run' || needs.brief_render_gate.outputs.needed == 'true') }}
@@ -590,7 +600,8 @@ jobs:
           fi
           region_of() {
             case "$1" in
-              site/china_brief.json) echo china+hk;;
+              site/master_brief.json|site/btc_brief.json) echo macro;;
+              site/china_brief.json) echo macro+china+hk;;
               templates/china.html.j2|templates/china_news.html.j2|templates/china_policy_watch.html.j2|scripts/build_china.py|scripts/build_china_policy_watch.py) echo china;;
               templates/china_special_situations.html.j2|templates/_china_special_situations_*.html.j2|scripts/build_china_special_situations.py) echo china;;
               templates/intl.html.j2|scripts/build_intl.py) echo intl;;
@@ -627,7 +638,7 @@ jobs:
           for R in macro intl china hk canada markets gex baskets sits; do
             FR=$(covering_from "$R")
             if [ -z "$FR" ]; then NEED_ALL="no from=-tagged render covers '$R' in the log window"; break; fi
-            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib site/china_brief.json 2>/dev/null)
+            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib site/master_brief.json site/china_brief.json site/btc_brief.json 2>/dev/null)
             if [ $? -ne 0 ]; then NEED_ALL="git diff $FR..HEAD failed for '$R' (rewritten/expired watermark)"; break; fi
             while IFS= read -r f; do
               [ -z "$f" ] && continue

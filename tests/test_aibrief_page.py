@@ -167,8 +167,16 @@ def _publication_fixture(root):
     (root / "site").mkdir()
     template = (Path(config.ROOT) / "templates/_aibrief_body.html.j2").read_text()
     (root / "templates/_aibrief_body.html.j2").write_text(template)
-    _publication_pages(root, payload)
     (root / "site/china_brief.json").write_text(json.dumps(payload))
+    (root / "site/master_brief.json").write_text(json.dumps({
+        "lens": "macro", "state_asof": "2026-11-03",
+        "summary": "US macro outlook remains cautious.",
+    }))
+    (root / "site/btc_brief.json").write_text(json.dumps({
+        "lens": "btc", "state_asof": "2026-11-03",
+        "summary": "Bitcoin liquidity and funding remain mixed.",
+    }))
+    _publication_pages(root, payload)
     return payload
 
 
@@ -182,6 +190,13 @@ def _publication_pages(root, payload):
             '{% endcall %}</section>'
         )
         (root / ("site/" + region + ".html")).write_text(_env().from_string(source).render(brief=payload))
+    # The standalone page embeds all three lenses; it must be checked too when
+    # the renderer owns macro scope, not silently left at its previous epoch.
+    macro = json.loads((root / "site/master_brief.json").read_text())
+    btc = json.loads((root / "site/btc_brief.json").read_text())
+    (root / "site/aibrief.html").write_text(
+        _render(master_brief=macro, china_brief=payload, btc_brief=btc)
+    )
 
 
 def test_brief_publication_compares_bilingual_component_with_footer_variations(tmp_path):
@@ -247,13 +262,13 @@ def test_brief_publication_checks_commit_after_replay_not_only_worktree(tmp_path
     git("config", "commit.gpgsign", "false")
     git("add", ".")
     git("commit", "-qm", "first complete brief")
-    assert pub.check(tmp_path, "all", "HEAD") == ["china", "hk"]
+    assert pub.check(tmp_path, "all", "HEAD") == ["china", "hk", "macro"]
     payload["summary"] = "A newer accepted brief landed during publication."
     (tmp_path / "site/china_brief.json").write_text(json.dumps(payload))
     git("add", "site/china_brief.json")
     git("commit", "-qm", "replayed candidate has a new input and old pages")
     _publication_pages(tmp_path, payload)  # correct worktree must not certify stale HEAD
-    assert pub.check(tmp_path, "all") == ["china", "hk"]
+    assert pub.check(tmp_path, "all") == ["china", "hk", "macro"]
     with pytest.raises(pub.PublicationError, match="does not match"):
         pub.check(tmp_path, "all", "HEAD")
 
@@ -285,3 +300,215 @@ def test_brief_publication_refuses_duplicate_target_dialogs(tmp_path, region, pr
     page.write_text(old + correct if duplicate_first else correct + old)
     with pytest.raises(pub.PublicationError, match="exactly one target"):
         pub.check(tmp_path, region)
+
+
+# Early durable AI Brief cut: hermetic Git fixtures, never a live main push.
+@pytest.fixture
+def _brief_checkpoint_tree(tmp_path):
+    import subprocess
+
+    root = tmp_path / "source"
+    root.mkdir()
+    subprocess.run(["git", "init", "-q", "-b", "main", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "config", "user.name", "Test"], check=True)
+    subprocess.run(["git", "-C", str(root), "config", "user.email", "test@example.test"], check=True)
+
+    def payload(lens, asof="2026-10-16", generated="2026-10-18T06:50:00+00:00", degraded=None):
+        return {
+            "schema": "master_brief.v2", "lens": lens, "state_asof": asof,
+            "generated_at": generated, "summary": "A grounded lens narrative",
+            "degraded_reason": degraded,
+        }
+
+    for lens, name in (("macro", "master_brief.json"), ("china", "china_brief.json"), ("btc", "btc_brief.json")):
+        raw = json.dumps(payload(lens)).encode()
+        for rel in (f"data/regime/{name}", f"site/{name}"):
+            target = root / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+    (root / "site/aibrief.html").write_text("<!DOCTYPE html><html>Old daily brief</html>")
+    for name in ("theme.css", "theme.js", "aibrief.js"):
+        (root / "site" / name).write_text("unchanged shared asset")
+    subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-qm", "accepted baseline"], check=True)
+    head = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+    return root, head, payload
+
+
+def _new_china_brief(root, payload, *, degraded=None, asof="2026-11-03",
+                     generated="2026-11-04T03:00:00+00:00"):
+    raw = json.dumps(payload("china", asof, generated, degraded)).encode()
+    for rel in ("site/china_brief.json", "data/regime/china_brief.json"):
+        (root / rel).write_bytes(raw)
+    (root / "site/aibrief.html").write_text("<!DOCTYPE html><html>Fresh China brief</html>")
+
+
+def test_early_checkpoint_manifest_is_narrow_and_durable(_brief_checkpoint_tree):
+    import hashlib
+    from scripts.ci.aibrief_checkpoint_manifest import generated_manifest
+
+    root, base, payload = _brief_checkpoint_tree
+    assert generated_manifest(root, base) == []
+    _new_china_brief(root, payload)
+    manifest = dict(generated_manifest(root, base))
+    assert set(manifest) == {
+        "site/china_brief.json", "data/regime/china_brief.json"
+    }
+    for rel, digest in manifest.items():
+        assert hashlib.sha256((root / rel).read_bytes()).hexdigest() == digest
+    assert "master_brief.json" not in " ".join(manifest)
+    assert "btc_brief.json" not in " ".join(manifest)
+
+
+@pytest.mark.parametrize("defect", [
+    "missing_pair", "mismatched_pair", "degraded_provider", "regressed_date",
+    "regressed_generation", "wrong_lens", "missing_timezone", "invalid_json",
+    "symlink_pair",
+])
+def test_early_checkpoint_refuses_partial_or_stale_publication(
+    _brief_checkpoint_tree, defect
+):
+    import os
+    from scripts.ci.aibrief_checkpoint_manifest import CheckpointRefused, generated_manifest
+
+    root, base, payload = _brief_checkpoint_tree
+    _new_china_brief(root, payload)
+    if defect == "missing_pair":
+        (root / "data/regime/china_brief.json").unlink()
+    elif defect == "mismatched_pair":
+        (root / "site/china_brief.json").write_text("{}")
+    elif defect == "degraded_provider":
+        _new_china_brief(root, payload, degraded="provider_unavailable")
+    elif defect == "regressed_date":
+        _new_china_brief(root, payload, asof="2026-10-15")
+    elif defect == "regressed_generation":
+        _new_china_brief(root, payload, generated="2026-10-17T01:00:00Z")
+    elif defect == "wrong_lens":
+        raw = json.dumps(payload("macro", "2026-11-03", "2026-11-04T03:00:00Z")).encode()
+        for rel in ("site/china_brief.json", "data/regime/china_brief.json"):
+            (root / rel).write_bytes(raw)
+    elif defect == "missing_timezone":
+        _new_china_brief(root, payload, generated="2026-11-04T03:00:00")
+    elif defect == "invalid_json":
+        for rel in ("site/china_brief.json", "data/regime/china_brief.json"):
+            (root / rel).write_text("not JSON")
+    elif defect == "symlink_pair":
+        target = root / "site/china_brief.json"
+        target.unlink()
+        target.symlink_to("../data/regime/china_brief.json")
+    with pytest.raises(CheckpointRefused):
+        generated_manifest(root, base)
+
+
+def test_aibrief_early_checkpoint_workflow_precedes_long_dashboard():
+    import yaml
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load((repo / ".github/workflows/daily.yml").read_text())
+    steps = workflow["jobs"]["engine"]["steps"]
+    by_id = {s.get("id"): (i, s) for i, s in enumerate(steps) if s.get("id")}
+    brief_page_idx = next(i for i, s in enumerate(steps) if s.get("name") == "AI Daily Brief page (build_aibrief)")
+    checkpoint_idx, early = by_id["aibrief_early_checkpoint"]
+    assert by_id["master_brain"][0] < checkpoint_idx < brief_page_idx < by_id["regime_dashboard"][0]
+    assert early["if"] == "steps.regime_inputs.outcome == 'success'"
+    assert early["continue-on-error"] is True
+    assert 0 < early["timeout-minutes"] <= 12
+    assert early["run"] == "bash scripts/ci/daily_engine_aibrief_checkpoint.sh"
+
+    shell = (repo / "scripts/ci/daily_engine_aibrief_checkpoint.sh").read_text()
+    assert '. "$ROOT/scripts/ci/push_retry.sh"' in shell
+    assert 'push_on_main_ok' in shell and 'push_do origin HEAD:main' in shell
+    assert "scripts/ci/aibrief_checkpoint_manifest.py" in shell
+    assert 'git diff --quiet "$SOURCE_HEAD" origin/main' in shell
+    assert "worktree add -b" in shell
+    assert "git add data/ site/" not in shell
+    assert "git push --force" not in shell
+    # The old broad publisher is unchanged and still runs late in the job.
+    assert by_id["regime_dashboard"][0] < next(
+        i for i, s in enumerate(steps)
+        if s.get("name") == "commit engine outputs"
+    )
+
+
+@pytest.mark.parametrize("changed,expected_scope", [
+    ("master_brief.json", "macro"),
+    ("china_brief.json", "macro+china+hk"),
+    ("btc_brief.json", "macro"),
+    (None, None),
+])
+def test_brief_render_completion_adopts_all_lenses(
+    _brief_checkpoint_tree, tmp_path, changed, expected_scope
+):
+    """Prove the real completion gate and scope picker against a Git history."""
+    import os
+    import subprocess
+    from pathlib import Path
+    import yaml
+
+    root, baseline, _payload = _brief_checkpoint_tree
+    def commit(message):
+        subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(root), "commit", "--allow-empty", "-qm", message], check=True)
+
+    # A full render from the original baseline is the newest covering watermark.
+    commit(f"render: site re-render 2026-10-18 (scope=all, from={baseline})")
+    if changed:
+        (root / "site" / changed).write_text(f"accepted new {changed}")
+        commit("nightly: new accepted AI Brief input")
+    flow = yaml.safe_load((Path(__file__).resolve().parents[1] / ".github/workflows/render.yml").read_text())
+    gate = next(s["run"] for s in flow["jobs"]["brief_render_gate"]["steps"] if s.get("id") == "brief")
+    picker = next(s["run"] for s in flow["jobs"]["render"]["steps"] if s.get("id") == "pick")
+    env = {**os.environ, "GITHUB_OUTPUT": str(tmp_path / "render_gate_output")}
+    subprocess.run(["bash", "-euo", "pipefail", "-c", gate], cwd=root, env=env, check=True)
+    verdict = (tmp_path / "render_gate_output").read_text()
+    assert ("needed=true" in verdict) == (changed is not None), verdict
+
+    # workflow_run completion is the path used by GitHub-token nightly pushes.
+    env["GITHUB_OUTPUT"] = str(tmp_path / "render_scope_output")
+    picker = picker.replace("${{ github.event_name }}", "workflow_run")
+    picker = picker.replace("${{ github.event.inputs.scope }}", "all")
+    subprocess.run(["bash", "-c", picker], cwd=root, env=env, check=True)
+    scoped = (tmp_path / "render_scope_output").read_text()
+    if expected_scope:
+        assert f"scope={expected_scope}" in scoped, scoped
+    else:
+        assert "skip=true" in scoped, scoped
+
+
+def test_aibrief_checkpoint_unreadable_accepted_source_fails_closed(
+    _brief_checkpoint_tree, monkeypatch
+):
+    from types import SimpleNamespace
+    from scripts.ci import aibrief_checkpoint_manifest as chk
+
+    root, base, payload = _brief_checkpoint_tree
+    _new_china_brief(root, payload)
+    monkeypatch.setattr(chk.subprocess, "run", lambda *a, **kw: SimpleNamespace(
+        returncode=128, stdout=b"", stderr=b"missing object"
+    ))
+    with pytest.raises(chk.CheckpointRefused, match="unreadable accepted source"):
+        chk.generated_manifest(root, base)
+
+
+@pytest.mark.parametrize("lens,name", [
+    ("macro", "master_brief.json"),
+    ("china", "china_brief.json"),
+    ("btc", "btc_brief.json"),
+])
+def test_standalone_ai_brief_cannot_advance_watermark_with_stale_lens(
+    tmp_path, lens, name
+):
+    from scripts import check_aibrief_publication as pub
+
+    _publication_fixture(tmp_path)
+    assert pub.check(tmp_path, "macro") == ["macro"]
+    assert pub.check(tmp_path, "macro+china+hk") == ["china", "hk", "macro"]
+    rel = tmp_path / "site" / name
+    newer = json.loads(rel.read_text())
+    newer["summary"] = f"New {lens} analysis with changed source inputs"
+    rel.write_text(json.dumps(newer))
+    with pytest.raises(pub.PublicationError, match="site/aibrief.html"):
+        pub.check(tmp_path, "macro")
+    _publication_pages(tmp_path, json.loads((tmp_path / "site/china_brief.json").read_text()))
+    assert pub.check(tmp_path, "macro+china+hk") == ["china", "hk", "macro"]

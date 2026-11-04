@@ -1334,19 +1334,21 @@ def _brief_git(root, *args):
 
 
 @pytest.mark.parametrize(
-    "change_brief,change_macro,cover_china,cover_hk,needed,scope",
+    "change_brief,change_macro,cover_macro,cover_china,cover_hk,needed,scope",
     [
-        (False, False, False, False, False, None),
-        (True, False, False, False, True, "china+hk"),
-        (True, True, False, False, True, "macro+china+hk"),
-        (True, False, True, False, True, "hk"),
-        (True, False, False, True, True, "china"),
-        (True, False, True, True, False, None),
-        (True, True, True, True, False, "macro"),
+        (False, False, False, False, False, False, None),
+        (True, False, False, False, False, True, "macro+china+hk"),
+        (True, True, False, False, False, True, "macro+china+hk"),
+        (True, False, False, True, False, True, "macro+hk"),
+        (True, False, False, False, True, True, "macro+china"),
+        (True, False, False, True, True, True, "macro"),
+        (True, True, False, True, True, True, "macro"),
+        (True, False, True, True, True, False, None),
+        (True, True, True, True, True, False, None),
     ],
 )
 def test_published_brief_gate_and_scope_union(
-    tmp_path, change_brief, change_macro, cover_china, cover_hk, needed, scope
+    tmp_path, change_brief, change_macro, cover_macro, cover_china, cover_hk, needed, scope
 ):
     import os
     import subprocess
@@ -1374,7 +1376,7 @@ def test_published_brief_gate_and_scope_union(
         _brief_git(tmp_path, "add", ".")
         _brief_git(tmp_path, "commit", "-qm", "accepted changes")
     accepted = _brief_git(tmp_path, "rev-parse", "HEAD")
-    for region, covered in (("china", cover_china), ("hk", cover_hk)):
+    for region, covered in (("macro", cover_macro), ("china", cover_china), ("hk", cover_hk)):
         if covered:
             _brief_git(tmp_path, "commit", "--allow-empty", "-qm",
                        f"render: site re-render 2026-11-04 (scope={region}, from={accepted})")
