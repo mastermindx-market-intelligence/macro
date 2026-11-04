@@ -1,21 +1,21 @@
 {
-  "appended": 8,
-  "asof": "2026-11-02",
+  "appended": 4,
+  "asof": "2026-11-03",
   "candidates": {
     "R": 0,
-    "T": 19,
+    "T": 16,
     "W": 39
   },
   "deduped": {
     "R": 0,
-    "T": 11,
+    "T": 12,
     "W": 39
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-11-03",
+      "asof": "2026-11-04",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,31 +27,31 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 20
+        "ohlcv_absent": 24
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
         "Aging Population & Longevity": {
-          "theme_thrust_frac": 0.2,
+          "theme_thrust_frac": 0.12,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Consumer Goods": {
-          "theme_thrust_frac": 0.375,
+        "Real Estate & REITs": {
+          "theme_thrust_frac": 0.0857,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Environmental Sustainability": {
-          "theme_thrust_frac": 0.6364,
+        "Smart Home": {
+          "theme_thrust_frac": 0.0,
           "theme_thrust_reason": null,
-          "theme_thrust_state": "thrusting"
+          "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 78,
-      "tickers_read": 98
+      "tickers_ok": 79,
+      "tickers_read": 103
     },
     "keys": [
       "relay_count_3d",
@@ -71,14 +71,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 142,
-      "n_covered": 117,
+      "members_indexed": 157,
+      "n_covered": 134,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-11-02",
+      "last_session": "2026-11-03",
       "n_tickers": 1549,
       "ok": true,
       "reason": null,
@@ -113,14 +113,10 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "WHR",
-      "GIS",
-      "JNJ",
-      "ABT",
-      "AES",
-      "MSEX",
-      "AWR",
-      "OC"
+      "CHTR",
+      "ENPH",
+      "BMY",
+      "DOC"
     ],
     "W": []
   },
@@ -130,41 +126,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-03 22:35:59",
-  "runtime_s": 100.8,
+  "run_utc": "2026-11-04 15:26:32",
+  "runtime_s": 130.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-11-03",
-    "n_members": 142,
+    "asof": "2026-11-04",
+    "n_members": 157,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.881,
+        "emerging_score": 2.807,
         "rank": 1,
         "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.549,
+        "emerging_score": 2.704,
         "rank": 2,
         "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 2.206,
+        "emerging_score": 2.178,
         "rank": 3,
-        "theme": "Aging Population & Longevity"
-      },
-      {
-        "emerging_score": 2.125,
-        "rank": 4,
         "theme": "Smart Home"
       },
       {
-        "emerging_score": 1.989,
+        "emerging_score": 2.059,
+        "rank": 4,
+        "theme": "Aging Population & Longevity"
+      },
+      {
+        "emerging_score": 2.026,
         "rank": 5,
-        "theme": "Environmental Sustainability"
+        "theme": "Real Estate & REITs"
       }
     ]
   },
@@ -175,14 +171,14 @@
     ],
     "aligned": 39,
     "asof_max": "2026-11-03",
-    "asof_mismatch": 38,
-    "asof_run": "2026-11-02",
+    "asof_mismatch": 0,
+    "asof_run": "2026-11-03",
     "evaluated": 713,
     "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 17.2,
+    "runtime_s": 26.2,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 56,

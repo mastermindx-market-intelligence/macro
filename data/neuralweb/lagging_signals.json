@@ -6351,12 +6351,20 @@
       "flagged": []
     },
     "thematic_desk": {
-      "n_recent_fires": 89,
+      "n_recent_fires": 90,
       "n_hostile_regime": 38,
       "n_breadth_unconfirmed": 58,
-      "n_repeat_fire": 46,
+      "n_repeat_fire": 47,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "thematic_desk",
+          "symbol": "XLE",
+          "as_of": "2026-11-04",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "thematic_desk",
           "symbol": "XLE",
@@ -6799,21 +6807,11 @@
             "hostile_regime",
             "breadth_unconfirmed"
           ]
-        },
-        {
-          "engine": "thematic_desk",
-          "symbol": "SIL",
-          "as_of": "2026-09-14",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
         }
       ]
     },
     "track_record": {
-      "n_recent_fires": 2090,
+      "n_recent_fires": 2155,
       "n_hostile_regime": 485,
       "n_breadth_unconfirmed": 1205,
       "n_repeat_fire": 75,
@@ -9040,7 +9038,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-04T11:53:50Z",
-  "inputs_hash": "sha256:ada7dce6243397e0e536656634bfc7b05b38df335dd8469f032f6cc3136503f6",
+  "produced_at": "2026-11-04T15:28:09Z",
+  "inputs_hash": "sha256:521ea8daa37121838666378c0f51859c62cdf466a4657c2fef887af04b03eec4",
   "tier": "infrastructure"
 }
