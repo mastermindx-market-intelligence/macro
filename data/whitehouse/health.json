@@ -1,16 +1,40 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-03T20:58:45.419454+00:00",
-  "posts_seen": 7,
-  "seen_total": 314,
-  "evaluated": 1,
+  "as_of": "2026-11-04T01:20:19.136927+00:00",
+  "posts_seen": 12,
+  "seen_total": 319,
+  "evaluated": 5,
   "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-03-president-trump-is-powering-an-american-manufacturing-renaissance",
-      "importance": 65,
+      "id": "wh-2026-11-03-anti-communism-week-2026",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-03-the-american-declaration-of-freedom-in-space",
+      "importance": 78,
       "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-03-congressional-bills-h-r-1744-and-h-r-8205-signed-into-law",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-03-icymi-drug-prices-are-falling-at-the-fastest-rate-in-over-60-years-under-preside",
+      "importance": 25,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-03-icymi-relentless-travel-schedule-puts-trump-administrations-results-front-and-ce",
+      "importance": 10,
+      "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
   ]
