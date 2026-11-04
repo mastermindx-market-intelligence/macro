@@ -1,5 +1,7 @@
 # D08B return and continuation frontier
 
+> **Resume update, 2026-11-04:** The [Surface implementation return](updates/20261104-surface-implementation.md) records the newly authorized bounded build and its evidence. The [B01 native correction](updates/20261104-b01-contrast/README.md) supersedes the original B01 contrast-placement claim. The record below is the original frozen commissioning/handoff state at `a3356474cebbdd88e6448e05ffc3d2e44faa5ca6`; its design-only/no-build statements are historical. The original acceptance table remains a program gate, with partial implementation coverage mapped in the update.
+
 ## Mission and disposition
 
 Chairman commissioned Options exposure, volatility and 3D design/specification work under D08's frozen interface on macro #10649. The bounded design package is prepared for D08 review: 18 editable Paper boards, 60-item retention ledger, four complete user journeys, source/backend/build contracts, responsive/accessibility/state requirements, baseline evidence, independently reviewed corrections and executable acceptance criteria.

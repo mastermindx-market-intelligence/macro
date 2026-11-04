@@ -1,0 +1,84 @@
+{
+  "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "artboardId": "1NZL-0",
+  "matrixId": "1ONW-0",
+  "svgId": "1SDU-0",
+  "observedAt": "2026-11-04T02:19:17.575Z",
+  "operationReportedByParent": "d08b-live-b01-svg-contrast-correction-20261104-c3",
+  "scope": "Independent native post-read; no mutation, focus, finish or retry",
+  "nodeInfo": [
+    {
+      "nodeId": "1SDU-0",
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"1SDU-0\",\n  \"name\": \"SVG\",\n  \"component\": \"SVG\",\n  \"width\": null,\n  \"height\": null,\n  \"worldX\": null,\n  \"worldY\": null,\n  \"x\": null,\n  \"y\": null,\n  \"isVisible\": true,\n  \"isLocked\": false,\n  \"parentId\": \"1ONX-0\",\n  \"childIds\": [\n    \"1SDV-0\",\n    \"1SDW-0\",\n    \"1SDX-0\",\n    \"1SDY-0\",\n    \"1SDZ-0\",\n    \"1SE0-0\",\n    \"1SE1-0\",\n    \"1SE2-0\",\n    \"1SE3-0\",\n    \"1SE4-0\",\n    \"1SE5-0\",\n    \"1SE6-0\",\n    \"1SE7-0\",\n    \"1SE8-0\",\n    \"1SE9-0\",\n    \"1SEA-0\",\n    \"1SEB-0\",\n    \"1SEC-0\",\n    \"1SED-0\",\n    \"1SEE-0\",\n    \"1SEF-0\",\n    \"1SEG-0\",\n    \"1SEH-0\",\n    \"1SEI-0\",\n    \"1SEJ-0\",\n    \"1SEK-0\",\n    \"1SEL-0\",\n    \"1SEM-0\",\n    \"1SEN-0\",\n    \"1SEO-0\",\n    \"1SEP-0\",\n    \"1SEQ-0\",\n    \"1SER-0\",\n    \"1SES-0\",\n    \"1SET-0\",\n    \"1SEU-0\",\n    \"1SEV-0\",\n    \"1SEW-0\",\n    \"1SEX-0\",\n    \"1SEY-0\",\n    \"1SEZ-0\",\n    \"1SF0-0\",\n    \"1SF1-0\",\n    \"1SF2-0\",\n    \"1SF3-0\",\n    \"1SF4-0\",\n    \"1SF5-0\",\n    \"1SF6-0\",\n    \"1SF7-0\",\n    \"1SF8-0\",\n    \"1SF9-0\",\n    \"1SFA-0\",\n    \"1SFB-0\",\n    \"1SFC-0\",\n    \"1SFD-0\",\n    \"1SFE-0\",\n    \"1SFF-0\",\n    \"1SFG-0\",\n    \"1SFH-0\",\n    \"1SFI-0\",\n    \"1SFJ-0\",\n    \"1SFK-0\",\n    \"1SFL-0\",\n    \"1SFM-0\",\n    \"1SFN-0\",\n    \"1SFO-0\",\n    \"1SFP-0\",\n    \"1SFQ-0\",\n    \"1SFR-0\",\n    \"1SFS-0\",\n    \"1SFT-0\",\n    \"1SFU-0\",\n    \"1SFV-0\",\n    \"1SFW-0\",\n    \"1SFX-0\",\n    \"1SFY-0\",\n    \"1SFZ-0\",\n    \"1SG0-0\",\n    \"1SG1-0\",\n    \"1SG2-0\",\n    \"1SG3-0\",\n    \"1SG4-0\",\n    \"1SG5-0\",\n    \"1SG6-0\",\n    \"1SG7-0\",\n    \"1SG8-0\",\n    \"1SG9-0\",\n    \"1SGA-0\",\n    \"1SGB-0\",\n    \"1SGC-0\",\n    \"1SGD-0\",\n    \"1SGE-0\",\n    \"1SGF-0\",\n    \"1SGG-0\",\n    \"1SGH-0\",\n    \"1SGI-0\",\n    \"1SGJ-0\",\n    \"1SGK-0\",\n    \"1SGL-0\",\n    \"1SGM-0\"\n  ],\n  \"childCount\": 135,\n  \"artboardId\": \"1NZL-0\",\n  \"textContent\": null,\n  \"truncated\": true,\n  \"truncatedMessage\": \"Showing first 100 of 135 child IDs\"\n}"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "1ONX-0",
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"1ONX-0\",\n  \"name\": \"Frame\",\n  \"component\": \"Frame\",\n  \"width\": null,\n  \"height\": null,\n  \"worldX\": null,\n  \"worldY\": null,\n  \"x\": null,\n  \"y\": null,\n  \"isVisible\": true,\n  \"isLocked\": false,\n  \"parentId\": \"1ONW-0\",\n  \"childIds\": [\n    \"1ONY-0\",\n    \"1OO1-0\",\n    \"1SDU-0\",\n    \"1OS4-0\"\n  ],\n  \"childCount\": 4,\n  \"artboardId\": \"1NZL-0\",\n  \"textContent\": null\n}"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "1ONW-0",
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"1ONW-0\",\n  \"name\": \"Exposure matrix\",\n  \"component\": \"Frame\",\n  \"width\": 824,\n  \"height\": 514,\n  \"worldX\": 248,\n  \"worldY\": 336,\n  \"x\": 248,\n  \"y\": 336,\n  \"isVisible\": true,\n  \"isLocked\": false,\n  \"parentId\": \"1NZL-0\",\n  \"childIds\": [\n    \"1ONX-0\"\n  ],\n  \"childCount\": 1,\n  \"artboardId\": \"1NZL-0\",\n  \"textContent\": null\n}"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": "1NZL-0",
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"id\": \"1NZL-0\",\n  \"name\": \"B01 · Exposure + node · 1440 · Dark EN · R1\",\n  \"component\": \"Frame\",\n  \"width\": 1440,\n  \"height\": 1050,\n  \"worldX\": 0,\n  \"worldY\": 0,\n  \"x\": 0,\n  \"y\": 0,\n  \"isVisible\": true,\n  \"isLocked\": false,\n  \"parentId\": \"root_node_p-12-0\",\n  \"childIds\": [\n    \"1NZM-0\",\n    \"1O1Z-0\",\n    \"1O55-0\",\n    \"1O5N-0\",\n    \"1O6P-0\",\n    \"1ONW-0\",\n    \"1OBP-0\",\n    \"1OCE-0\",\n    \"1OCT-0\"\n  ],\n  \"childCount\": 9,\n  \"artboardId\": null,\n  \"textContent\": null\n}"
+          }
+        ]
+      }
+    }
+  ],
+  "catalog": {
+    "server": {
+      "name": "paper-desktop",
+      "version": "0.5.18"
+    },
+    "catalog_sha256": "16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd"
+  },
+  "screenshotMime": "image/jpeg"
+}
+

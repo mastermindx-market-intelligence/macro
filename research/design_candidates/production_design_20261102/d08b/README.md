@@ -1,5 +1,7 @@
 # D08B — Options Exposure, Volatility & 3D
 
+> **Resume update, 2026-11-04:** The [Surface implementation return](updates/20261104-surface-implementation.md) records the newly authorized bounded build and its evidence. The [B01 native correction](updates/20261104-b01-contrast/README.md) supersedes the original B01 contrast-placement claim. The record below is the original frozen commissioning/handoff state at `a3356474cebbdd88e6448e05ffc3d2e44faa5ca6`; its design-only/no-build statements are historical. The original acceptance table remains a program gate, with partial implementation coverage mapped in the update.
+
 **Reviewable design/specification candidate · RIG draft · return to D08 / macro #10649.**
 
 This package preserves the analytical depth of Exposure R2, the qualified exposure map, GEX, positioning/levels, volatility, and the Research Lab while making the phone investigation usable. It is a design commission. No product implementation, merge, Ready transition, un-draft, enqueue, held relabel or deployment is part of this return.

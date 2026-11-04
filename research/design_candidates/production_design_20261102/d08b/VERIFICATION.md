@@ -1,5 +1,7 @@
 # Acceptance and verification
 
+> **Resume update, 2026-11-04:** The [Surface implementation return](updates/20261104-surface-implementation.md) records the newly authorized bounded build and its evidence. The [B01 native correction](updates/20261104-b01-contrast/README.md) supersedes the original B01 contrast-placement claim. The record below is the original frozen commissioning/handoff state at `a3356474cebbdd88e6448e05ffc3d2e44faa5ca6`; its design-only/no-build statements are historical. The original acceptance table remains a program gate, with partial implementation coverage mapped in the update.
+
 **Delivery status: reviewable design/specification candidate. Formal RIG: draft. No product build or deployment is claimed.** This file separates observed source/Paper evidence, independently reviewed static requirements, and the future executable product acceptance gate.
 
 ## 1. Evidence established in this commission
