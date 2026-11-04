@@ -1,0 +1,28 @@
+........................................................................ [ 54%]
+........................................................F..              [100%]
+=================================== FAILURES ===================================
+____________________ test_router_asset_is_paired_into_site _____________________
+tests/test_si_workspace_shell.py:547: in test_router_asset_is_paired_into_site
+    assert site_copy.read_bytes() == ROUTER.read_bytes(), "template↔site copy drifted"
+E   AssertionError: template↔site copy drifted
+E   assert b'/* \xe2\x95...e();\n})();\n' == b'/* \xe2\x95...e();\n})();\n'
+E     
+E     At index 1400 diff: b'O' != b'B'
+E     Use -v to get more diff
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-a859f8f7-f26d-4641-9cc8-756aa2adbe15/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-a859f8f7-f26d-4641-9cc8-756aa2adbe15/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-a859f8f7-f26d-4641-9cc8-756aa2adbe15/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-a859f8f7-f26d-4641-9cc8-756aa2adbe15/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_si_workspace_shell.py::test_router_asset_is_paired_into_site
+1 failed, 130 passed, 2 warnings in 22.65s

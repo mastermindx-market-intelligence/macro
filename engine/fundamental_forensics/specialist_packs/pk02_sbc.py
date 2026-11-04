@@ -17,6 +17,7 @@ from .base import (
     CheckRule,
     CrossStatement,
     FactMapping,
+    NarrativeHooks,
     PackProducer,
     PackSpec,
     RuleOperand,
@@ -44,8 +45,8 @@ EPS_IDENTITY_RULE_ID = "pk02.eps_identity/v1"
 _FIELD_MAPPINGS = {
     "sbc_expense_total": FactMapping(
         (
-            "us-gaap:AllocatedShareBasedCompensationExpense",
             "us-gaap:ShareBasedCompensation",
+            "us-gaap:AllocatedShareBasedCompensationExpense",
         )
     ),
     # The consolidated row would duplicate sbc_expense_total, so only the
@@ -222,6 +223,38 @@ CHECK_RULES = {
     ),
 }
 
+
+_SBC_SIGN_CONFLICT_LIMITATION = (
+    "sbc_expense_total: AllocatedShareBasedCompensationExpense resolved"
+    " negative; issuers also tag that element for sign-flipped"
+    " reconciliation-deduction rows in which the cash-flow"
+    " ShareBasedCompensation add-back carries the positive expense total"
+)
+
+
+def _sbc_sign_limitations(runtime: object, rows: dict) -> tuple[str, ...]:
+    """Name a negative allocated-SBC resolution (dev-corpus finding).
+
+    The dev corpora show the first-priority alias resolving to a negative
+    segment-reconciliation deduction on 2026 10-Qs where the same filing's
+    cash-flow statement tags the positive expense add-back. The value stays
+    as-reported; this line only makes the sign conflict machine-visible.
+    """
+    row = rows.get("sbc_expense_total")
+    if not row or row.get("quality_state") != "valued":
+        return ()
+    if row.get("concept") != "us-gaap:AllocatedShareBasedCompensationExpense":
+        return ()
+    value = row.get("value")
+    if value is None:
+        return ()
+    try:
+        negative = Decimal(str(value)) < 0
+    except Exception:  # noqa: BLE001 - display-only guard over row text
+        return ()
+    return (_SBC_SIGN_CONFLICT_LIMITATION,) if negative else ()
+
+
 PRODUCER = PackProducer(
     spec=SPEC,
     field_mappings=_FIELD_MAPPINGS,
@@ -231,6 +264,7 @@ PRODUCER = PackProducer(
         "sbc_capitalized: no standard us-gaap alias frozen; issuer extensions"
         " need a core-catalog ruling",
     ),
+    hooks=NarrativeHooks(extra_limitations=_sbc_sign_limitations),
 )
 
 __all__ = ["CHECK_RULES", "PRODUCER", "SPEC"]

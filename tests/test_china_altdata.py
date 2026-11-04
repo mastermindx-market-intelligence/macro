@@ -582,3 +582,54 @@ def test_margin_froth_copy_says_level_not_change():
     assert "融资拥挤是水平而非变化" in zh and "融资余额相对流通市值" in zh
     for s in ("jumped", "跳升", "rose most", "增幅最大"):
         assert s not in en + zh, s
+
+
+def _reader_text(html: str) -> str:
+    import re
+
+    text = re.sub(r"<style\b[^>]*>.*?</style>", "", html, flags=re.I | re.S)
+    text = re.sub(r"<script\b[^>]*>.*?</script>", "", text, flags=re.I | re.S)
+    return re.sub(r'\s*class="[^"]*"', "", text)
+
+
+def test_desk_copy_claims_no_proven_edge():
+    text = _reader_text(_render_full())
+    assert "no proven edge" in text
+    assert "No proven edge" in text
+    assert "已被证实的优势" in text
+    assert "validated" not in text.lower()
+    assert "已验证" not in text
+
+
+def test_forecast_surprise_note_does_not_claim_validated():
+    sc = lab.build_china_scorecard()
+    rows = [r for items in sc["tiers"].values() for r in items if r["key"] == "forecast_surprise"]
+    assert len(rows) == 1
+    en, zh = rows[0]["note_en"], rows[0]["note_zh"]
+    for note in (en, zh):
+        assert "validated" not in note.lower()
+        assert "已验证" not in note and "并验证" not in note
+    assert "desk panel" in en
+
+
+def _engine_strings() -> tuple[str, dict]:
+    """Provenance strings and the honesty table of the radar engine, read from source."""
+    import ast
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    tree = ast.parse((root / "engine" / "china_narrative_radar.py").read_text(encoding="utf-8"))
+    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_provenance")
+    prov = "\n".join(n.value for n in ast.walk(fn)
+                     if isinstance(n, ast.Constant) and isinstance(n.value, str))
+    table = next(n.value for n in tree.body if isinstance(n, (ast.Assign, ast.AnnAssign))
+                 and getattr(n.targets[0] if isinstance(n, ast.Assign) else n.target, "id", "") == "_GLOBAL_AI_HONESTY")
+    return prov, ast.literal_eval(table)
+
+
+def test_provenance_drops_validated_and_keeps_the_machine_tag():
+    prov, honesty = _engine_strings()
+    assert "validated" not in prov.lower()
+    assert "t=1.36 over the 124" in prov.replace('"\n', "")
+    assert "t=3.27 over the" in prov
+    assert honesty["ths_cpo"] == "validated"

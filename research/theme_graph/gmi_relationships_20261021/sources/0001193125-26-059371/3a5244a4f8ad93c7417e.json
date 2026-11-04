@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-19T21:11:12Z",
+ "accession": "0001193125-26-059371",
+ "cik": "0001005284",
+ "doc_byte_length": 4060884,
+ "doc_sha256": "b8f3af137eed03c862e9738ebfcaea1e61832607115a769e412b604eab6aeb0c",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-19",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oled-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2028390,
+  "byte_start": 2027980,
+  "normalized": "On December 2, 2022, the Company entered into a commercial patent license agreement with Samsung Display Co., Ltd. (SDC), replacing a previous license agreement that had been in place since 2018. This agreement, which covers the manufacture and sale of specified OLED display materials, was effective as of January 1, 2023 and lasts through the end of 2027 with an additional two-year extension option for SDC.",
+  "normalized_sha256": "3a5244a4f8ad93c7417e993f07f45d4b1543f5e5bcb6473d526af33e751fe35b",
+  "raw": "On December 2, 2022, the Company entered into a commercial patent license agreement with Samsung Display Co., Ltd. (SDC), replacing a previous license agreement that had been in place since 2018. This agreement, which covers the manufacture and sale of specified OLED display materials, was effective as of January 1, 2023 and lasts through the end of 2027 with an additional two-year extension option for SDC.",
+  "raw_sha256": "3a5244a4f8ad93c7417e993f07f45d4b1543f5e5bcb6473d526af33e751fe35b"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1005284/000119312526059371/oled-20251231.htm",
+ "xbrl_contexts": []
+}

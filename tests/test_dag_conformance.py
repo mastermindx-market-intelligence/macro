@@ -618,8 +618,17 @@ class TestLiveConformance:
             "cancel-in-progress": False,
         }
         steps = doc["jobs"]["refresh"]["steps"]
-        checkout = next(step for step in steps if step.get("uses") == "actions/checkout@v4")
-        assert checkout["with"] == {"ref": "main", "fetch-depth": 1}
+        checkouts = [step for step in steps if step.get("uses") == "actions/checkout@v4"]
+        assert [step["with"] for step in checkouts] == [
+            {"ref": "${{ github.sha }}", "fetch-depth": 1},
+            {"ref": "${{ steps.source_binding.outputs.source_sha }}", "fetch-depth": 1},
+        ]
+        binding = next(step for step in steps if step.get("id") == "source_binding")
+        preflight = next(step for step in steps if "govrev_publisher_preflight.py" in step.get("run", ""))
+        assert steps.index(checkouts[0]) < steps.index(binding) < steps.index(checkouts[1]) < steps.index(preflight)
+        assert binding["env"]["GOVREV_CALL_SOURCE_SHA"] == "${{ inputs.source_sha }}"
+        assert preflight["env"]["GOVREV_CALL_SOURCE_SHA"] == "${{ inputs.source_sha }}"
+        assert triggers["workflow_call"]["inputs"]["source_sha"]["required"] is True
         collect = next(step for step in steps if step.get("id") == "collect")
         assert collect["if"] == (
             "${{ github.event_name != 'push' && inputs.projection_only != true }}"
@@ -810,15 +819,21 @@ class TestLiveConformance:
         assert collect_outputs["government_revenue_projection_needed"] == (
             "${{ steps.pushdata.outputs.published }}"
         )
+        assert collect_outputs["government_revenue_source_sha"] == (
+            "${{ steps.pushdata.outputs.source_sha }}"
+        )
         # The full key SET is pinned too, so a new output cannot appear unreviewed
         # — a collect output is a cross-job contract, and this lane's `if:` reads
         # one of them. The capital-structure pair arrived 2026-08-06 with the job
         # split: the chain left `collect`, and the source ledger it compiles is
         # deliberately never committed by the market checkpoint, so it crosses the
         # job boundary as an artifact whose sha256/row-count receipt travels here.
-        # tests/test_daily_capital_structure_job.py owns their meaning.
+        # tests/test_daily_capital_structure_job.py owns their meaning. The GovRev
+        # source SHA binds the publisher to the confirmed post-push commit rather
+        # than the caller's initial event SHA (test_govrev_source_binding.py).
         assert set(collect_outputs) == {
             "government_revenue_projection_needed",
+            "government_revenue_source_sha",
             "capital_structure_ledger_sha256",
             "capital_structure_ledger_rows",
         }, (
@@ -831,7 +846,10 @@ class TestLiveConformance:
             "needs.collect.outputs.government_revenue_projection_needed == 'true'"
         )
         assert projection_job["uses"] == "./.github/workflows/government-revenue-live.yml"
-        assert projection_job["with"] == {"projection_only": True}
+        assert projection_job["with"] == {
+            "projection_only": True,
+            "source_sha": "${{ needs.collect.outputs.government_revenue_source_sha }}",
+        }
         # et_gate leads the list since 2026-08-08: it is the DST cron pair's regime
         # disambiguator, not a data dependency (tests/test_daily_et_gate.py owns its
         # meaning). engine carries `if: always()`, which severs the skip propagation

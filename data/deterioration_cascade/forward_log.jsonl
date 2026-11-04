@@ -47,3 +47,5 @@
 {"schema": "deterioration_cascade.v1", "asof": "2026-10-14", "state": "STEADY", "n_alert": 1, "n_escalating": 0, "d3_alert": -1, "n_mature": 10, "alerts": ["cn"], "immature": [], "logged_at": "2026-10-15T05:03:49+00:00"}
 {"schema": "deterioration_cascade.v1", "asof": "2026-10-15", "state": "STEADY", "n_alert": 1, "n_escalating": 0, "d3_alert": -1, "n_mature": 10, "alerts": ["cn"], "immature": [], "logged_at": "2026-10-16T04:11:36+00:00"}
 {"schema": "deterioration_cascade.v1", "asof": "2026-10-16", "state": "STEADY", "n_alert": 1, "n_escalating": 0, "d3_alert": -1, "n_mature": 10, "alerts": ["cn"], "immature": [], "logged_at": "2026-10-16T14:55:28+00:00"}
+{"schema": "deterioration_cascade.v1", "asof": "2026-10-30", "state": "STEADY", "n_alert": 0, "n_escalating": 0, "d3_alert": -1, "n_mature": 10, "alerts": [], "immature": [], "logged_at": "2026-11-02T07:08:23+00:00"}
+{"schema": "deterioration_cascade.v1", "asof": "2026-11-03", "state": "STEADY", "n_alert": 0, "n_escalating": 0, "d3_alert": 0, "n_mature": 10, "alerts": [], "immature": [], "logged_at": "2026-11-03T17:18:31+00:00"}

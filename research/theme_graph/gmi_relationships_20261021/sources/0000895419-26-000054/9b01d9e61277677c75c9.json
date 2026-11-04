@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-20T20:11:16Z",
+ "accession": "0000895419-26-000054",
+ "cik": "0000895419",
+ "doc_byte_length": 3316615,
+ "doc_sha256": "4cc0119211a56ffa7fc1405c6f7f07e0a4231df127be9bd16db63f02d30ef144",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-20",
+ "form": "10-K",
+ "period_of_report": "2026-06-28",
+ "primary_document": "wolf-20260628.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2139495,
+  "byte_start": 2138117,
+  "normalized": "In connection with the closing of the LED Business Divestiture, the Company and CreeLED also entered into certain ancillary and related agreements, including a Wafer Supply and Fabrication Services Agreement (the \"Wafer Supply Agreement\"), pursuant to which the Company supplied CreeLED with certain silicon carbide materials and fabrication services. The Company terminated the Wafer Supply Agreement effective as of September 30, 2024. The Company recognized a net loss of $0.0 million, $0.0 million, $9.2 million and $25.3 million in non-operating income, net for the periods from June 30, 2025 to September 29, 2025 and September 30, 2025 to June 28, 2026 and the fiscal years ended June 29, 2025 and June 30, 2024, respectively, related to the Wafer Supply Agreement.",
+  "normalized_sha256": "39fd4a64f733d501d5ca7c8717708d0fffc3c95476fce498ebe769eb4e5c8657",
+  "raw": "In connection with the closing of the LED Business Divestiture, the Company and CreeLED also entered into certain ancillary and related agreements, including a Wafer Supply and Fabrication Services Agreement (the \"Wafer Supply Agreement\"), pursuant to which the Company supplied CreeLED with certain silicon carbide materials and fabrication services. The Company terminated the Wafer Supply Agreement effective as of September 30, 2024. The Company recognized a net loss of $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-257\" decimals=\"-5\" name=\"us-gaap:GainLossOnSaleOfBusiness\" scale=\"6\" id=\"f-1460\">0.0</ix:nonFraction>&#160;million, $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-258\" decimals=\"-5\" name=\"us-gaap:GainLossOnSaleOfBusiness\" scale=\"6\" id=\"f-1461\">0.0</ix:nonFraction>&#160;million, $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-259\" decimals=\"-5\" sign=\"-\" name=\"us-gaap:GainLossOnSaleOfBusiness\" scale=\"6\" id=\"f-1462\">9.2</ix:nonFraction>&#160;million and $<ix:nonFraction unitRef=\"usd\" contextRef=\"c-260\" decimals=\"-5\" sign=\"-\" name=\"us-gaap:GainLossOnSaleOfBusiness\" scale=\"6\" id=\"f-1463\">25.3</ix:nonFraction>&#160;million in non-operating income, net for the periods from June 30, 2025 to September 29, 2025 and September 30, 2025 to June 28, 2026 and the fiscal years ended June 29, 2025 and June 30, 2024, respectively, related to the Wafer Supply Agreement.",
+  "raw_sha256": "9b01d9e61277677c75c990544ffbec822d5cf4bd857dc3f9871922167fd0da2a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/895419/000089541926000054/wolf-20260628.htm",
+ "xbrl_contexts": []
+}

@@ -1,12 +1,10 @@
 {
-  "cash": 0.5,
+  "cash": 0.75,
   "crash": false,
   "eligible": [
-    "cn_banks",
-    "cn_coal"
+    "cn_banks"
   ],
   "held": [
-    "cn_coal",
     "cn_banks"
   ],
   "leader": "cn_coal",

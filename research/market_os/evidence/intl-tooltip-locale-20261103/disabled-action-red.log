@@ -1,0 +1,27 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_dislocation_unavailable_actions_are_really_disabled_with_separate_copy __
+
+    def test_dislocation_unavailable_actions_are_really_disabled_with_separate_copy():
+        from lib.intl_gs_dislocations_view import COPY
+        env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
+        env.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
+        source = (ROOT / "templates/intl_workspace/dislocations.html.j2").read_text()
+        start = source.index('<div class="intl-dislocations__btnrow">')
+        end = source.index('</div>', start) + len('</div>')
+        fragment = env.from_string("{% import 'intl_workspace/_gs_macros.html.j2' as gs with context %}" + source[start:end])
+        html = fragment.render(c={key: {"en": pair[0], "zh": pair[1]} for key, pair in COPY.items()})
+        buttons = BeautifulSoup(html, "html.parser").select('button')
+        assert len(buttons) == 2
+        for button in buttons:
+>           assert button.has_attr('disabled') and not button.has_attr('disabledtitle')
+E           assert (False)
+E            +  where False = has_attr('disabled')
+E            +    where has_attr = <button class="intl-gs__btn" disabledtitle="Target view not available in this build · 目标视图在本构建中不可用" type="button"><span class="l-en">Open coverage</span><span class="l-zh">打开覆盖</span></button>.has_attr
+
+tests/test_intl_tooltip_locale.py:145: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_tooltip_locale.py::test_dislocation_unavailable_actions_are_really_disabled_with_separate_copy
+1 failed, 7 deselected in 2.52s

@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/company_intelligence/relationship_observation_package.v2.schema.json",
+  "title": "Company intelligence relationship observation package (v2)",
+  "description": "Versioned successor of the v1 relationship-observation package (v1 untouched): the materialized, point-in-time record derived from pinned primary-source extraction rows. Adoption is proposed-only; the package holds no rank, gate, size, trade or prediction authority and carries observation dispositions, correction lineage and coverage without ever scoring them.",
+  "x-gmi-clock-rule": {
+    "rule_id": "A24",
+    "clock": "sec_acceptance",
+    "source_field": "sec_index_header_acceptance_et",
+    "source_format": "YYYYMMDDHHMMSS",
+    "source_tz": "America/New_York",
+    "target_tz": "UTC",
+    "target_format": "YYYY-MM-DDTHH:MM:SSZ",
+    "dst": "IANA tzdata; ambiguous (fall-back) or nonexistent (spring-forward) wall times are refused, never guessed",
+    "not_a_clock": ["sec_submissions_acceptance_raw"],
+    "note": "The EDGAR submissions JSON acceptanceDateTime carries a 'Z' suffix but is NOT a UTC instant (observed +5h versus header-derived UTC on all three M1 documents, e.g. header 20241115163743 ET = 2024-11-15T21:37:43Z while the JSON reads 2024-11-16T02:37:43.000Z); it is retained only as sec_submissions_acceptance_raw and never used as a clock."
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "adoption_state",
+    "package_id",
+    "as_of",
+    "computed_at",
+    "manifest_version",
+    "inputs",
+    "authority",
+    "purpose",
+    "content_boundary",
+    "rights_ruling_ref",
+    "observations",
+    "assessments",
+    "coverage",
+    "non_edges",
+    "magnitude_revisions",
+    "warnings",
+    "counts"
+  ],
+  "$defs": {
+    "instant": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"},
+    "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "hex64": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "accession": {"type": "string", "pattern": "^\\d{10}-\\d{2}-\\d{6}$"},
+    "issuer_id": {"type": "string", "pattern": "^ISS:[A-Z]{2}-[A-Z0-9]+-[A-Z0-9.\\-]+$"},
+    "observation_id": {"type": "string", "pattern": "^obs:[0-9a-f]{20}$"},
+    "assessment_id": {"type": "string", "pattern": "^asm:[0-9a-f]{20}$"},
+    "relationship_key_or_null": {
+      "type": ["string", "null"],
+      "pattern": "^rel:[0-9a-f]{20}$"
+    },
+    "non_edge_key_or_null": {
+      "type": ["string", "null"],
+      "pattern": "^nonedge:[0-9a-f]{20}$"
+    },
+    "revision_id_or_null": {"type": ["string", "null"], "pattern": "^rev:[0-9a-f]{20}$"},
+    "package_id": {"type": "string", "pattern": "^pkg:[0-9a-f]{20}$"},
+    "species": {
+      "type": "string",
+      "enum": [
+        "supplier_customer",
+        "contract_manufacturing",
+        "licensing",
+        "distribution",
+        "component_dependency"
+      ]
+    },
+    "magnitude_kind": {
+      "type": "string",
+      "enum": [
+        "seller_revenue_share",
+        "buyer_procurement_share",
+        "contract_value",
+        "purchase_commitment"
+      ]
+    },
+    "precision": {"type": "string", "enum": ["exact", "lower_bound", "upper_bound", "range"]},
+    "form": {"type": "string", "enum": ["10-K", "10-K/A", "20-F", "20-F/A", "40-F", "40-F/A"]},
+    "assessment": {"type": "string", "enum": ["restatement", "reassertion", "not_restated"]},
+    "coverage_state": {
+      "type": "string",
+      "enum": ["assessed", "no_supported_result", "unavailable", "not_assessed", "pending"]
+    },
+    "source_state": {
+      "type": "string",
+      "enum": ["verified", "source_unavailable", "source_corrupt"]
+    },
+    "disposition": {"type": "string", "enum": ["edge", "non_edge", "refused", "quarantined"]},
+    "non_edge_reason": {
+      "type": "string",
+      "enum": [
+        "UNRESOLVED_COUNTERPARTY",
+        "PRIVATE_COMPANY",
+        "OUT_OF_CORE_MARKET",
+        "CN_SECURITY_LEVEL_ONLY",
+        "ANONYMOUS_ALIAS"
+      ]
+    },
+    "revision_kind": {"type": "string", "enum": ["new_period", "reassertion", "restatement"]},
+    "input_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string"},
+        "sha256": {"$ref": "#/$defs/hex64"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "gate", "size", "trade", "prediction"],
+      "properties": {
+        "rank": {"const": false},
+        "gate": {"const": false},
+        "size": {"const": false},
+        "trade": {"const": false},
+        "prediction": {"const": false}
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "source_purpose_permission",
+        "production",
+        "public_export",
+        "training"
+      ],
+      "properties": {
+        "operation": {"const": "relationship_observation_package_v2"},
+        "source_purpose_permission": {"const": "NOT_ESTABLISHED"},
+        "production": {"const": false},
+        "public_export": {"const": false},
+        "training": {"const": false}
+      }
+    },
+    "content_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "private_evidence",
+        "source_text_may_be_present",
+        "quote_free_payload",
+        "public_safe_payload"
+      ],
+      "properties": {
+        "private_evidence": {"const": true},
+        "source_text_may_be_present": {"const": true},
+        "quote_free_payload": {"const": "NOT_CERTIFIED"},
+        "public_safe_payload": {"const": "NOT_CERTIFIED"}
+      }
+    },
+    "rights_ruling_ref": {
+      "type": ["string", "null"],
+      "pattern": "^GMI-REL-[A-Z0-9-]{3,80}@sha256:[0-9a-f]{64}$",
+      "description": "The ruling that bound the public-display rights on this package's edges, as <ruling_id>@sha256:<sha256 of the ruling file bytes>, or null while no Chairman rights ruling has been accepted (A7: everything stays unknown until it binds)."
+    },
+    "observation_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "accession",
+        "known_at",
+        "source_state",
+        "disposition",
+        "relationship_key",
+        "non_edge_key",
+        "refusal_reason"
+      ],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/observation_id"},
+        "accession": {"$ref": "#/$defs/accession"},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
+        "source_state": {"$ref": "#/$defs/source_state"},
+        "disposition": {"$ref": "#/$defs/disposition"},
+        "relationship_key": {"$ref": "#/$defs/relationship_key_or_null"},
+        "non_edge_key": {"$ref": "#/$defs/non_edge_key_or_null"},
+        "refusal_reason": {"type": ["string", "null"]}
+      }
+    },
+    "assessment_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_id",
+        "accession",
+        "amends_accession",
+        "assessment",
+        "reason",
+        "known_at",
+        "source_state"
+      ],
+      "properties": {
+        "assessment_id": {"$ref": "#/$defs/assessment_id"},
+        "accession": {"$ref": "#/$defs/accession"},
+        "amends_accession": {"$ref": "#/$defs/accession"},
+        "assessment": {"$ref": "#/$defs/assessment"},
+        "reason": {"type": ["string", "null"]},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
+        "source_state": {"$ref": "#/$defs/source_state"}
+      }
+    },
+    "coverage_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_id", "state", "period_end", "documents", "known_at"],
+      "properties": {
+        "issuer_id": {"$ref": "#/$defs/issuer_id"},
+        "state": {"$ref": "#/$defs/coverage_state"},
+        "period_end": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "documents": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/accession"},
+          "uniqueItems": true
+        },
+        "known_at": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        }
+      }
+    },
+    "non_edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "non_edge_key",
+        "species",
+        "observation_id",
+        "accession",
+        "subject_issuer_id",
+        "object_name_as_filed",
+        "anonymous_alias",
+        "non_edge_reason",
+        "known_at"
+      ],
+      "properties": {
+        "non_edge_key": {"type": "string", "pattern": "^nonedge:[0-9a-f]{20}$"},
+        "species": {"$ref": "#/$defs/species"},
+        "observation_id": {"$ref": "#/$defs/observation_id"},
+        "accession": {"$ref": "#/$defs/accession"},
+        "subject_issuer_id": {"$ref": "#/$defs/issuer_id"},
+        "object_name_as_filed": {"type": ["string", "null"]},
+        "anonymous_alias": {"type": ["string", "null"]},
+        "non_edge_reason": {"$ref": "#/$defs/non_edge_reason"},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        }
+      }
+    },
+    "revision_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "label"],
+      "properties": {
+        "start": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "end": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "label": {"type": "string"}
+      }
+    },
+    "revision_source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accession",
+        "form",
+        "byte_start",
+        "byte_end",
+        "span_sha256",
+        "xbrl_fact_id",
+        "excerpt_path"
+      ],
+      "properties": {
+        "accession": {"$ref": "#/$defs/accession"},
+        "form": {"$ref": "#/$defs/form"},
+        "byte_start": {"type": "integer", "minimum": 0},
+        "byte_end": {"type": "integer", "minimum": 1},
+        "span_sha256": {"$ref": "#/$defs/hex64"},
+        "xbrl_fact_id": {"type": ["string", "null"]},
+        "excerpt_path": {"type": "string"}
+      }
+    },
+    "magnitude_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision_id",
+        "relationship_key",
+        "kind",
+        "value",
+        "value_high",
+        "unit",
+        "precision",
+        "period",
+        "numerator_scope",
+        "denominator_scope",
+        "asserting_party",
+        "revision_seq",
+        "revision_kind",
+        "supersedes",
+        "known_at",
+        "source_ref"
+      ],
+      "properties": {
+        "revision_id": {"type": "string", "pattern": "^rev:[0-9a-f]{20}$"},
+        "relationship_key": {"type": "string", "pattern": "^rel:[0-9a-f]{20}$"},
+        "kind": {"$ref": "#/$defs/magnitude_kind"},
+        "value": {"type": ["number", "null"]},
+        "value_high": {"type": ["number", "null"]},
+        "unit": {"type": "string"},
+        "precision": {"$ref": "#/$defs/precision"},
+        "period": {"$ref": "#/$defs/revision_period"},
+        "numerator_scope": {"type": "string"},
+        "denominator_scope": {"type": "string"},
+        "asserting_party": {"$ref": "#/$defs/issuer_id"},
+        "revision_seq": {"type": "integer", "minimum": 1},
+        "revision_kind": {"$ref": "#/$defs/revision_kind"},
+        "supersedes": {"$ref": "#/$defs/revision_id_or_null"},
+        "known_at": {
+          "$ref": "#/$defs/instant",
+          "description": "SEC EDGAR acceptance time: sec_index_header_acceptance_et read as America/New_York wall clock and converted to UTC (x-gmi-clock-rule A24)"
+        },
+        "source_ref": {"$ref": "#/$defs/revision_source_ref"}
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "message"],
+      "properties": {
+        "title": {"type": "string"},
+        "message": {"type": "string"}
+      }
+    },
+    "edges_by_species": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supplier_customer",
+        "contract_manufacturing",
+        "licensing",
+        "distribution",
+        "component_dependency"
+      ],
+      "properties": {
+        "supplier_customer": {"type": "integer", "minimum": 0},
+        "contract_manufacturing": {"type": "integer", "minimum": 0},
+        "licensing": {"type": "integer", "minimum": 0},
+        "distribution": {"type": "integer", "minimum": 0},
+        "component_dependency": {"type": "integer", "minimum": 0}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observations_in",
+        "observations_pit_visible",
+        "observations_quarantined",
+        "observations_refused",
+        "edges",
+        "non_edges",
+        "revisions",
+        "assessments",
+        "coverage_rows",
+        "warnings",
+        "edges_by_species"
+      ],
+      "properties": {
+        "observations_in": {"type": "integer", "minimum": 0},
+        "observations_pit_visible": {"type": "integer", "minimum": 0},
+        "observations_quarantined": {"type": "integer", "minimum": 0},
+        "observations_refused": {"type": "integer", "minimum": 0},
+        "edges": {"type": "integer", "minimum": 0},
+        "non_edges": {"type": "integer", "minimum": 0},
+        "revisions": {"type": "integer", "minimum": 0},
+        "assessments": {"type": "integer", "minimum": 0},
+        "coverage_rows": {"type": "integer", "minimum": 0},
+        "warnings": {"type": "integer", "minimum": 0},
+        "edges_by_species": {"$ref": "#/$defs/edges_by_species"}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "company_intelligence.relationship_observation_package/v2"},
+    "adoption_state": {"const": "proposed"},
+    "package_id": {"$ref": "#/$defs/package_id"},
+    "as_of": {"$ref": "#/$defs/instant"},
+    "computed_at": {"$ref": "#/$defs/instant"},
+    "manifest_version": {"$ref": "#/$defs/hex64"},
+    "inputs": {"type": "array", "items": {"$ref": "#/$defs/input_ref"}},
+    "authority": {"$ref": "#/$defs/authority"},
+    "purpose": {"$ref": "#/$defs/purpose"},
+    "content_boundary": {"$ref": "#/$defs/content_boundary"},
+    "rights_ruling_ref": {"$ref": "#/$defs/rights_ruling_ref"},
+    "observations": {"type": "array", "items": {"$ref": "#/$defs/observation_entry"}},
+    "assessments": {"type": "array", "items": {"$ref": "#/$defs/assessment_entry"}},
+    "coverage": {"type": "array", "items": {"$ref": "#/$defs/coverage_entry"}},
+    "non_edges": {"type": "array", "items": {"$ref": "#/$defs/non_edge"}},
+    "magnitude_revisions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/magnitude_revision"}
+    },
+    "warnings": {"type": "array", "items": {"$ref": "#/$defs/warning"}},
+    "counts": {"$ref": "#/$defs/counts"}
+  }
+}

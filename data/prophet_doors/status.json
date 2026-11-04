@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-10-22",
+  "asof": "2026-11-03",
   "candidates": {
-    "R": 2,
-    "T": 18,
-    "W": 23
+    "R": 0,
+    "T": 16,
+    "W": 39
   },
   "deduped": {
-    "R": 2,
-    "T": 18,
-    "W": 23
+    "R": 0,
+    "T": 16,
+    "W": 39
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-23 09:36:07",
-  "runtime_s": 109.1,
+  "run_utc": "2026-11-04 17:47:53",
+  "runtime_s": 108.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-10-22",
-    "n_members": 144,
+    "age_days": -1,
+    "asof": "2026-11-04",
+    "n_members": 157,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.986,
+        "emerging_score": 2.807,
         "rank": 1,
-        "theme": "Healthy Food & Nutrition"
-      },
-      {
-        "emerging_score": 2.829,
-        "rank": 2,
         "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.671,
+        "emerging_score": 2.704,
+        "rank": 2,
+        "theme": "Consumer Goods"
+      },
+      {
+        "emerging_score": 2.178,
         "rank": 3,
-        "theme": "Environmental Sustainability"
+        "theme": "Smart Home"
       },
       {
-        "emerging_score": 2.619,
+        "emerging_score": 2.059,
         "rank": 4,
-        "theme": "Real Estate & REITs"
+        "theme": "Aging Population & Longevity"
       },
       {
-        "emerging_score": 2.545,
+        "emerging_score": 2.026,
         "rank": 5,
-        "theme": "Biometrics"
+        "theme": "Real Estate & REITs"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 23,
-    "asof_max": "2026-10-22",
+    "aligned": 39,
+    "asof_max": "2026-11-03",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-22",
-    "evaluated": 712,
-    "fresh": 26,
+    "asof_run": "2026-11-03",
+    "evaluated": 713,
+    "fresh": 39,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.2,
-    "skipped": 5,
+    "runtime_s": 20.4,
+    "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 66,
+    "state_turn": 56,
     "universe_n": 717
   }
 }

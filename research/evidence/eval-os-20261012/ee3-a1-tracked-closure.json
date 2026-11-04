@@ -1,0 +1,8 @@
+{
+  "inventory_head": "501e714310cc27cccc1df1ec2284e11eb05e98bf",
+  "incoming_main": "ee3b1907497c4d5179d76626777b007e0da93d18",
+  "source_state": "resolved working merge; immutable parent tracked-path inventory with physically present incoming source; pending commit",
+  "closure_count": 1166,
+  "declared_count": 1166,
+  "missing": []
+}

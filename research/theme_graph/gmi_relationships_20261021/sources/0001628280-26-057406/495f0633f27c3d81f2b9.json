@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-17T20:50:29Z",
+ "accession": "0001628280-26-057406",
+ "cik": "0002023554",
+ "doc_byte_length": 2223398,
+ "doc_sha256": "67db98cde04724db6c97f165d660b795179294112814bbf0a5411ad916651848",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-17",
+ "form": "10-K",
+ "period_of_report": "2026-07-03",
+ "primary_document": "sndk-20260703.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2159999,
+  "byte_start": 2159740,
+  "normalized": "BiCS License & Development Agreement, dated as of March 1, 2011, by and between Toshiba Corporation and SanDisk Corporation (incorporated by reference to Exhibit 10.23 to the Company’s Registration Statement on Form 10, filed on November 25, 2024)##",
+  "normalized_sha256": "5a962c5e76e1169be408cb93d7b0bb43d803f607c032457513f70f1d24d83d31",
+  "raw": "BiCS License &amp; Development Agreement, dated as of March 1, 2011, by and between Toshiba Corporation and SanDisk Corporation (incorporated by reference to Exhibit 10.23 to the Company&#8217;s Registration Statement on Form 10, filed on November 25, 2024)##",
+  "raw_sha256": "495f0633f27c3d81f2b991bb20c33c1ed5283f5edcd18de5e199764aae88b01a"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+ "xbrl_contexts": []
+}

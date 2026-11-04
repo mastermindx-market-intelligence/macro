@@ -374,14 +374,22 @@ def compute_subsector_confluence() -> dict:
     spy = _spy_close()
     member_cache: dict = {}
     n_total = len(groups_map)
+    # SIC-D-B03 census: split the merged n_thin into its two causes —
+    # n_below_min_members = too few members to even attempt an index;
+    # n_unscored = attempted, but the group could not be scored.
+    n_below_min = 0
+    n_unscored = 0
 
     subs: list[dict] = []
     for (sector, sub), tickers in sorted(groups_map.items()):
         if len(set(tickers)) < MIN_MEMBERS:
+            n_below_min += 1
             continue
         g = _safe_score(sub, _slug(sub), sub, sector, tickers, spy, member_cache, kind="subsector")
         if g is not None:
             subs.append(g)
+        else:
+            n_unscored += 1
 
     # 11-sector rollup (all members of each Finviz sector) — context for "which subsectors
     # are propping up each sector". No member funnel (the subsector groups already carry it).
@@ -404,7 +412,8 @@ def compute_subsector_confluence() -> dict:
         "as_of": max((g["as_of"] for g in subs), default=None),
         "coverage": _breadth_coverage(subs, {
             "n_subsectors": n_total, "n_gateable": len(subs),
-            "n_thin": n_total - len(subs), "n_sectors": len(sectors),
+            "n_thin": n_total - len(subs), "n_below_min_members": n_below_min,
+            "n_unscored": n_unscored, "n_sectors": len(sectors),
         }),
         "entry_now": [g["key"] for g in subs if g["class"] == "entry_now"],
         "forming": [g["key"] for g in subs if g["class"] == "forming"],
@@ -437,10 +446,16 @@ def compute_basket_confluence(memberships: dict, *, benchmark: str = "SPY",
     items = memberships.items() if isinstance(memberships, dict) else [(b.get("id"), b) for b in memberships]
 
     baskets: list[dict] = []
+    # SIC-D-B03 census: n_listed = baskets in the input roster; the thin split separates
+    # "too few members" (n_below_min_members) from "could not be scored" (n_unscored);
+    # n_baskets keeps its legacy meaning (baskets that actually scored).
+    n_listed = n_below_min = n_unscored = 0
     for bid, spec in items:
+        n_listed += 1
         members = spec.get("members") or []
         tickers = [m.get("ticker") for m in members if m.get("ticker") and not m.get("removed")]
         if len(set(tickers)) < MIN_MEMBERS:
+            n_below_min += 1
             continue
         member_names = {m.get("ticker"): m.get("name_zh") for m in members if m.get("ticker")}
         g = _safe_score(bid, _slug(bid), spec.get("name") or bid, spec.get("category") or "theme",
@@ -450,6 +465,8 @@ def compute_basket_confluence(memberships: dict, *, benchmark: str = "SPY",
         if g is not None:
             g["basket_id"] = bid
             baskets.append(g)
+        else:
+            n_unscored += 1
 
     # RC-R7: annotate dual-membership names (e.g. NVDA ∈ {mag7, ai_semiconductors}) with a
     # "behaves-as" read from trailing correlation vs each home's ex-name composite — so two
@@ -468,7 +485,10 @@ def compute_basket_confluence(memberships: dict, *, benchmark: str = "SPY",
         "ok": True, "universe": universe, "weighting": "equal", "benchmark": benchmark,
         "behaves_as": behaves_as,
         "as_of": max((g["as_of"] for g in baskets), default=None),
-        "coverage": _breadth_coverage(baskets, {"n_baskets": len(baskets)}),
+        "coverage": _breadth_coverage(baskets, {
+            "n_baskets": len(baskets), "n_listed": n_listed, "n_gateable": len(baskets),
+            "n_thin": n_listed - len(baskets), "n_below_min_members": n_below_min,
+            "n_unscored": n_unscored}),
         "entry_now": [g["key"] for g in baskets if g["class"] == "entry_now"],
         "forming": [g["key"] for g in baskets if g["class"] == "forming"],
         "headwind": [g["key"] for g in baskets if g["class"] == "headwind"],
@@ -542,9 +562,14 @@ def _compute_partition(subsectors: dict, amalgamations: dict, *, benchmark: str,
     member_cache: dict = {}
 
     subs: list[dict] = []
+    # SIC-D-B03 census: same thin-cause split as the S&P desk (covers the subsector side;
+    # amalgamation drops are not part of n_thin and stay uncounted).
+    n_below_min = 0
+    n_unscored = 0
     for key, spec in subsectors.items():
         tickers = _members_to_tickers(spec.get("members"))
         if len(set(tickers)) < MIN_MEMBERS:
+            n_below_min += 1
             continue
         g = _safe_score(key, _slug(key), spec.get("name") or key, spec.get("sector") or "",
                         tickers, bench, member_cache, kind="subsector",
@@ -552,6 +577,8 @@ def _compute_partition(subsectors: dict, amalgamations: dict, *, benchmark: str,
                         member_names=_member_names(spec.get("members")))
         if g is not None:
             subs.append(g)
+        else:
+            n_unscored += 1
 
     sectors: list[dict] = []
     for key, spec in (amalgamations or {}).items():
@@ -576,7 +603,8 @@ def _compute_partition(subsectors: dict, amalgamations: dict, *, benchmark: str,
         "region": region,
         "as_of": max((g["as_of"] for g in subs), default=None),
         "coverage": _breadth_coverage(subs, {"n_subsectors": n_total, "n_gateable": len(subs),
-                     "n_thin": n_total - len(subs), "n_sectors": len(sectors)}),
+                     "n_thin": n_total - len(subs), "n_below_min_members": n_below_min,
+                     "n_unscored": n_unscored, "n_sectors": len(sectors)}),
         "entry_now": [g["key"] for g in subs if g["class"] == "entry_now"],
         "forming": [g["key"] for g in subs if g["class"] == "forming"],
         "headwind": [g["key"] for g in subs if g["class"] == "headwind"],

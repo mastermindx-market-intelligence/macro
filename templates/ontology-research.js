@@ -6,6 +6,20 @@ function words(en,zh) { const f=document.createDocumentFragment(); for(const [la
 function node(tag,cls,en,zh) { const n=document.createElement(tag);if(cls)n.className=cls;if(en!==undefined)n.append(words(en,zh));return n; }
 function note(en,zh) { return node('p','ox-note',en,zh); }
 function day(v) { return typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number.isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0,10)===v; }
+export function eventSelectionFromSearch(search) {
+  if(typeof search!=='string' || search.length>2048)return null;
+  try {
+    // URLSearchParams tolerates malformed escapes; the continuation does not.
+    decodeURIComponent(search.replace(/\+/g,' '));
+    const params=new URLSearchParams(search),keys=['research_date','research_ticker','research_side'];
+    if([...params.keys()].some(k=>k.startsWith('research_') && !keys.includes(k))
+        || keys.some(k=>params.getAll(k).length!==1))return null;
+    const [date,ticker,side]=keys.map(k=>params.get(k));
+    if(!day(date) || date.startsWith('0000-') || !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(ticker)
+        || !['up','down'].includes(side))return null;
+    return Object.freeze({date,ticker,side});
+  } catch (_) { return null; }
+}
 function instant(v) { return typeof v==='string' && /(?:Z|[+-]\d\d:\d\d)$/.test(v) && Number.isFinite(Date.parse(v)); }
 function cancel(reader) { try { void Promise.resolve(reader.cancel()).catch(()=>{}); } catch (_) {} }
 function field(dl,en,zh,value) { const row=node('div','ox-company-field');row.append(node('dt','',en,zh));const dd=node('dd');dd.textContent=value;row.append(dd);dl.append(row); }
@@ -46,6 +60,8 @@ export function decodeResearch(value, selection) {
 export function mountResearch(root) {
   if(!root)return null;
   const form=root.querySelector('form'),output=root.querySelector('[data-research-result]'),clearButton=root.querySelector('[data-research-clear]'),submit=form.querySelector('button[type=submit]');
+  const selected=eventSelectionFromSearch(window.location.search);
+  if(selected){for(const key of ['date','ticker','side'])form.elements[key].value=selected[key];root.open=true;}
   let epoch=0,operation=null,disposed=false,subscription=null,canonicalOwner=owner();
   const copy={idle:['Choose an event from Pressure Watch, then inspect its evidence here.','从个股承压页面选择事件，然后在此查看其证据。'],
     loading:['Reading the selected event and composing its evidence…','正在读取所选事件并整理其证据…'],

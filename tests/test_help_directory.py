@@ -92,7 +92,7 @@ def test_help_directory_renders_only_the_frozen_owner_targets(tmp_path: Path) ->
     assert hrefs == {
         "reference.html",
         "methodology.html",
-        "measurement.html",
+        "calibration.html",
         "glossary.html",
         "support.html",
         "plans.html",
@@ -102,7 +102,7 @@ def test_help_directory_renders_only_the_frozen_owner_targets(tmp_path: Path) ->
     for label_en, label_zh in (
         ("Market Reference", "市场参考"),
         ("Methodology", "方法论"),
-        ("Cycle Intelligence · Calibration Lab", "周期情报 · 校准实验室"),
+        ("Calibration Hub", "校准中心（英文）"),
         ("Support", "支持"),
         ("Plans &amp; pricing", "方案与定价"),
         ("Billing &amp; payments", "账单与付款"),

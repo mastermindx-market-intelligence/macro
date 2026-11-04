@@ -822,11 +822,26 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Private dated-reference Plan: load-time identity/terms plus request-time math.
+    "app/options_plan.py",
+    "app/options_plan_source.py",
+    "engine/options_nbbo_cohort.py",
+    "lib/options_source_receipts.py",
+    "engine/options_plan_expiry.py",
+    "engine/options_payoff.py",
+    "engine/greeks.py",
+    "engine/intraday_greeks.py",
     # Native supplier conditional research imports and cached K3 validators.
     'app/company_supplier_research.py',
     'engine/company_intelligence/h20_reported_event.py',
     'engine/earnings_release/__init__.py',
     'engine/earnings_release/receipts.py',
+    'engine/earnings_release/binding.py',
+    'engine/earnings_release/figures.py',
+    'engine/earnings_release/filing_key.py',
+    'collectors/sec_document_spine.py',
+    'collectors/sec_request_pacer.py',
+    'engine/marketing/attribution.py',
     'engine/theme_graph/native_disclosure_propagation.py',
     'lib/economic_propagation.py',
     'lib/economic_propagation_v2.py',
@@ -902,6 +917,26 @@ MUST_RESTART = [
     "engine/sector_intelligence/__init__.py",
     "engine/sector_intelligence/contracts.py",
 
+    # Paid theme-research serving closure, reached LAZILY. The registry binds
+    # the semiconductor loader inside `_load_semiconductor_owner_bundle`
+    # (function-local import, deliberate: the loader pulls the Company
+    # Intelligence reader's requests/pandas/pyarrow stack, which
+    # `test_registry_import_closure_stays_light` forbids the registry to drag
+    # into producers). So the chain enters macro-api's `sys.modules` on the
+    # FIRST SERVED REQUEST and stays there for the life of the process — every
+    # bit as import-cached as a module-level import, and invisible to
+    # `test_api_load_time_import_closure_is_covered_by_restart_regex`, which
+    # walks module-level imports only. That blind spot is why these three had
+    # to be found by hand; the Energy seat reported them at #7870
+    # issuecomment-5866433049 item 3. Pinned here so the regex keeps covering
+    # them, since no closure walk will ever re-derive them.
+    "engine/market_ontology/semiconductor_owner_bundle.py",
+    "engine/market_ontology/semiconductor_witness_scope.py",
+    "engine/market_ontology/workspace_projection.py",
+    # The canonical theme-id resolver: the research composer compares an
+    # assertion's `scope.canonical_theme_id` against it on every request.
+    "engine/theme_graph/identity.py",
+
     # Capital Structure serving closure — imported by app/capital_structure.py.
     "engine/capital_structure/__init__.py",
     "engine/capital_structure/event_spine.py",
@@ -951,6 +986,8 @@ MUST_RESTART = [
     "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
+    # T11's native request lazily imports and then caches its numeric checker.
+    "engine/neuralweb/response_eval.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
     "engine/intelligence_workspace/runtime.py",
@@ -995,11 +1032,17 @@ MUST_RESTART = [
     "engine/earnings_narrative/context_packets.py",
     "engine/earnings_narrative/contracts.py",
     "engine/earnings_narrative/digest.py",
+    "engine/earnings_narrative/economic_interpretation.py",
     "engine/earnings_narrative/private_publication.py",
     "engine/earnings_narrative/promotion.py",
     "engine/earnings_narrative/public_wire.py",
     "engine/earnings_narrative/story.py",
     "engine/earnings_narrative/story_packets.py",
+    "engine/earnings_release/__init__.py",
+    "engine/earnings_release/binding.py",
+    "engine/earnings_release/figures.py",
+    "engine/earnings_release/filing_key.py",
+    "engine/earnings_release/receipts.py",
     "engine/press/__init__.py",
     "engine/press/earnings_adapter.py",
     # CXI packet build reached from brain_gateway (+ its module-level siblings)
@@ -1026,6 +1069,13 @@ MUST_RESTART = [
     "engine/marketing/ledgers.py",
     "engine/marketing/opportunity_bus.py",
     "engine/marketing/publication.py",
+    # The catalyst public reader imports the source adapter and its store.
+    "engine/marketing/catalyst_source_adapter.py",
+    "engine/marketing/catalyst_source_store.py",
+    # The reader loads the pilot universe through the writer's load_universe and
+    # caches the rows for the process lifetime.
+    "engine/marketing/catalyst_source_cycle.py",
+    "config/catalyst_pilot_universe.json",
     # app/tape.py REST quotes, and lib modules on the chat path
     "engine/live_quotes.py",
     "lib/config.py",
@@ -1041,6 +1091,8 @@ MUST_NOT_RESTART = [
     'engine/price_pressure/artifact.py',
     'engine/entry_radar/live_eval.py',
     'engine/entry_radar/earnings_contexts.py',
+    # The catalyst SEC writer CLI runs as its own oneshot timer, never in macro-api.
+    'scripts/run_catalyst_source_cycle.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
     'scripts/entry_radar_live.py',
     'contracts/opportunity_evidence/vector.v1.schema.json.bak',
@@ -1104,6 +1156,9 @@ MUST_NOT_RESTART = [
     "engine/theme_graph/materialize.py",
     "collectors/equity_earnings.py.bak",
     "engine/earnings_catalysts.py",
+    "engine/neuralweb/response_eval.py.bak",
+    "engine/neuralweb/response_evaluation.py",
+    "scripts/run_brain_eval.py",
 ]
 
 
@@ -1134,6 +1189,8 @@ def test_non_api_path_does_not_trigger_api_restart(path):
 ADMIN_MUST_RESTART = [
     # panel code (all import-cached by the running process)
     "admin/server.py",
+    "templates/theme.css",  # derived token response is process-pinned
+    "engine/qledger_store.py",  # A1 selected request scope is import-cached
     "admin/marketing.py",
     "admin/metabolism_panel.py",
     "admin/neural_web.py",
@@ -1220,7 +1277,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/research_codegen/transport.py",
     "engine/experiments_registry.py",
     "data/research_factory/review/queue.json",
-    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -1771,3 +1827,7 @@ def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
     assert changed < before_copy < copy < noop < after_copy
     assert SCRIPT[noop - 4:noop] == "fi\n\n"
     assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]
+
+
+def test_admin_restart_expectations_are_disjoint():
+    assert not (set(ADMIN_MUST_RESTART) & set(ADMIN_MUST_NOT_RESTART))

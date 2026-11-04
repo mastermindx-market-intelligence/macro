@@ -36,7 +36,7 @@ def packet():
                  'authority':dict.fromkeys(['can_rank','can_gate','can_size','can_originate','can_open_entry'],False)}}
 
 
-def start(browser, *, value=None, status=200, headers=None):
+def start(browser, *, value=None, status=200, headers=None, search=''):
     context = browser.new_context()
     page = context.new_page()
     seen, errors = [], []
@@ -59,8 +59,9 @@ def start(browser, *, value=None, status=200, headers=None):
             else:r.fulfill(status=404)
         else:r.fulfill(status=204)
     page.on('pageerror',lambda e:errors.append(str(e)))
-    page.route('**/*',route);page.goto('https://macro.example/ontology.html')
-    page.locator('#ox-research summary').click()
+    page.route('**/*',route);page.goto('https://macro.example/ontology.html'+search)
+    if not page.locator('#ox-research').evaluate('(root)=>root.open'):
+        page.locator('#ox-research summary').click()
     page.wait_for_function("document.querySelector('[data-research-result]').dataset.state==='idle'")
     return context,page,seen,errors
 
@@ -73,6 +74,49 @@ def inspect(page):
 
 def settled(page,state):
     page.wait_for_function("s=>document.querySelector('[data-research-result]').dataset.state===s",arg=state)
+
+
+def test_pressure_watch_handoff_prefills_only_until_explicit_submit(browser):
+    from engine.stocks_hub import pressure_band
+    row = {'date':'2026-01-02','ticker':'TEST','side':'down'}
+    band = pressure_band({'asof':'2026-01-03','open_events':[row]})
+    href = band['open'][0]['research_href']
+    assert band['open'][0]['href'] == 'TEST.html'
+    context,page,seen,errors=start(browser,search='?'+urlsplit(href).query+'#ox-research')
+    try:
+        assert page.locator('[name=date]').input_value() == row['date']
+        assert page.locator('[name=ticker]').input_value() == row['ticker']
+        assert page.locator('[name=side]').input_value() == row['side']
+        assert seen == []
+        page.locator('#ox-research button[type=submit]').click()
+        settled(page,'ready')
+        assert len(seen) == 1
+        assert seen[0]['payload'] == {'schema':'ontology_drl_research_request.v1',**row}
+        assert 'historical availability' in page.locator('[data-research-result]').inner_text().lower()
+        assert not errors
+    finally:context.close()
+
+
+@pytest.mark.parametrize('query',[
+    'research_date=2026-01-02&research_ticker=TEST',
+    'research_ticker=TEST&research_side=down',
+    'research_date=2026-01-02&research_side=down',
+    'research_date=2026-02-30&research_ticker=TEST&research_side=down',
+    'research_date=0000-01-02&research_ticker=TEST&research_side=down',
+    'research_date=2026-01-02&research_ticker=test&research_side=down',
+    'research_date=2026-01-02&research_ticker=TEST&research_side=unknown',
+    *['research_date=2026-01-02&research_ticker=TEST&research_side=down&'+extra
+      for extra in ['research_date=2026-01-03','research_ticker=OTHER','research_side=up',
+                    'research_generation=claimed','research_asof=2026-01-02']],
+    'research_date=2026-01-02&research_ticker=%ZZ&research_side=down',
+])
+def test_pressure_watch_invalid_handoff_never_prefills_or_requests(browser,query):
+    context,page,seen,errors=start(browser,search='?'+query+'#ox-research')
+    try:
+        assert page.locator('[name=date]').input_value() == ''
+        assert page.locator('[name=ticker]').input_value() == ''
+        assert seen == [] and not errors
+    finally:context.close()
 
 
 @pytest.mark.parametrize('theme',['dark','light'])
@@ -157,3 +201,49 @@ def test_research_final_session_switch_cannot_render(browser, status, final_call
         assert not page.locator('[data-research-result] dl').count()
         assert len(seen)==1 and not errors
     finally: context.close()
+
+
+@pytest.mark.parametrize('width', [390, 1440])
+@pytest.mark.parametrize('theme', ['dark', 'light'])
+@pytest.mark.parametrize('language', ['en', 'zh'])
+def test_pressure_watch_research_action_uses_full_row_measure(browser, width, theme, language):
+    """The continuation must not inherit the ticker's 56px grid track."""
+    import re
+    from jinja2 import Environment
+
+    template = (ROOT/'templates/ticker_index.html.j2').read_text()
+    macro = template[:template.index('{% set nav_prefix')]
+    section = template[template.index('{%- if P.open %}'):template.index('{#- One footnote')]
+    pressure = Environment(autoescape=True).from_string(macro + section).render(P={
+        'open': [{'href': 'CZR.html', 't': 'CZR', 'move_en': 'fell 0.2%',
+                  'move_zh': '下跌 0.2%', 'cmp_en': '', 'fam_en': '', 'state_en': '',
+                  'research_href': '../ontology.html?research_date=2026-10-15&research_ticker=CZR&research_side=down#ox-research'}],
+        'count_en': 'one event', 'count_zh': '一个事件', 'demoted': False,
+    })
+    css = re.search(r'<style>(.*?)</style>', template, re.S).group(1)
+    context = browser.new_context(viewport={'width': width, 'height': 900})
+    page = context.new_page()
+    requests = []
+    page.route('**/*', lambda route: (requests.append(route.request.url), route.abort()))
+    try:
+        page.set_content(f'<html data-theme="{theme}" data-lang="{language}"><head><style>'
+                         + (ROOT/'templates/theme.css').read_text() + css
+                         + '</style></head><body><section class="pw">' + pressure + '</section></body></html>')
+        geometry = page.locator('.pw-research-action').evaluate('''note => {
+          const row = note.previousElementSibling, grid = note.parentElement;
+          const n = note.getBoundingClientRect(), r = row.getBoundingClientRect();
+          const a = note.querySelector('a'), label = a.querySelector(document.documentElement.dataset.lang === 'zh' ? '.l-zh' : '.l-en');
+          const rects = [...label.getClientRects()].filter(x => x.width && x.height);
+          return {width:n.width, gridWidth:grid.getBoundingClientRect().width,
+            below:n.top >= r.bottom, overflow:document.documentElement.scrollWidth > innerWidth,
+            spans:getComputedStyle(note).gridColumn, dossier:row.getAttribute('href'),
+            href:a.getAttribute('href'), nested:!!a.parentElement.closest('a'),
+            fragments:rects.length, hit:rects.every(x => a.contains(document.elementFromPoint(x.x+x.width/2,x.y+x.height/2)))};
+        }''')
+        assert geometry['width'] > 112 and geometry['below'] and not geometry['overflow']
+        assert geometry['spans'] == '1 / -1' and geometry['fragments'] <= 2 and geometry['hit']
+        assert geometry['dossier'] == 'CZR.html' and not geometry['nested']
+        assert geometry['href'] == '../ontology.html?research_date=2026-10-15&research_ticker=CZR&research_side=down#ox-research'
+        assert all('/api/' not in url for url in requests)
+    finally:
+        context.close()

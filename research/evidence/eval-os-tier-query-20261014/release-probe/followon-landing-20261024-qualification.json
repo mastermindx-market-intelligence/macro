@@ -1,0 +1,30 @@
+{
+  "candidate": "e065bf59e85f30ce9be74558773e09e8a96265a5",
+  "runtime_unique_passing": 1530,
+  "original_completed_passes": 888,
+  "focused_runtime_passes": 612,
+  "t12_passes": 30,
+  "duplicate_runtime_case_ids": 0,
+  "initial_runtime": "Interrupted owned broad run after888PASS/2sparseinputFAIL; no full-suite or zero-error claim for that run. Both failed existing parity nodes reranPASS after actualtracked input materialization.",
+  "focused_failures_errors_skips": 0,
+  "initial_ci": "4PASS/2FAIL on61e, retained; red354ancestorrows vs344ceiling and154closurepairs. No limit/assertion changes.",
+  "actual_ancestor_rows": 342,
+  "ancestor_ceiling": 344,
+  "ancestor_predicate": "PASS native pytest ancestor.xml",
+  "canonical_affected_closure_jobs": [
+    "bea-gvc-current-descriptive-consumer",
+    "c19-wp22-dhi-traversal",
+    "c19-wp32-integrated-answer-correction-denial-pins",
+    "ontology-explorer",
+    "qledger-cluster-honest-ci"
+  ],
+  "canonical_affected_closure_misses": 0,
+  "whole_closure_basis": "Original whole-manifest native check found only these five jobs; repair modifies only their paths, plus nonexecuting production receipts/continuity. Source/tests/imports/commands unchanged.",
+  "packing_receipt": "packing.json plus affected-closure-result.json exact membership reuse proof",
+  "selftest": "7/7 PASS; metric-selftest.log",
+  "agentos": "1handoff/0errors/0warnings; agentos-validation.log",
+  "runtime_source_changed_since_initial_61e": false,
+  "publication": "NOT_STARTED",
+  "PR": "NOT_CREATED",
+  "A28": "OPEN; A28-integration-decision.json; no performance change/claim"
+}

@@ -2489,19 +2489,14 @@ def evaluate_entry_zone(
     price_history: "pd.DataFrame | None",
     asof: str,
 ) -> dict[str, Any]:
-    """Nightly re-evaluation of a plan's zone: filled, still live, expired, converted.
+    """Re-evaluate an observed entry-band visit as of a PIT session close.
 
-    THE CONVERSION (§6.9 R3, operator chart review 2026-08-08): a washout-class zone
-    that was never filled by its expiry does NOT die — it converts to a STARTER stance.
-    V-shaped washout recoveries frequently never revisit the band, and a plan that
-    correctly anticipated the turn should not miss the entire move on a technicality.
-    A pullback-class zone in an intact uptrend expires instead: there, "the reset never
-    came" falsifies the premise rather than confirming it.
-
-    PURE FUNCTION over the plan + its PIT tape.  It writes nothing: plan JSONs are
-    immutable publication records and corrections are an append-only overlay, so the
-    converted stance is DERIVED every night and rendered, never back-written into the
-    originating artifact.
+    The zone is created AT the price-basis close; that day's earlier lows
+    cannot be evidence of a subsequent opportunity. A qualified band visit
+    requires either intersecting observed OHLC [low, high] or an actual close
+    INSIDE the band when OHLC is incomplete. The expiry session is inclusive.
+    This is descriptive OHLC evidence, NOT an order fill, a position, a scalar
+    trigger, or authority to grade the separately owned forward ledger.
     """
     zone = plan.get("entry_zone")
     out: dict[str, Any] = {
@@ -2513,39 +2508,72 @@ def evaluate_entry_zone(
         out["reason"] = "plan carries no entry zone (pre-R3 plan)"
         return out
 
-    high = float(zone["high"])
+    # A one-sided or inverted range does not prove an executable band. Reject
+    # it rather than treating every print below an upper bound as a touch.
+    try:
+        low = float(zone["low"])
+        high = float(zone["high"])
+        if not (math.isfinite(low) and math.isfinite(high) and low <= high):
+            raise ValueError("invalid ordered bounds")
+    except (TypeError, ValueError, KeyError):
+        out["reason"] = "entry zone has incomplete or invalid low/high bounds"
+        return out
+
     start = str(zone.get("price_basis_date") or plan.get("price_basis_date") or "")[:10]
     expiry = str(zone.get("expiry_date") or "")[:10]
     out["stance"] = zone.get("stance")
-
-    # FILLED := the tape traded INTO the band (intraday low at or below the band top)
-    # at any point from the plan's price basis onward.  `low` is the honest column;
-    # a close-only store would systematically under-report fills, so it falls back with
-    # the substitution named rather than pretending precision it does not have.
     filled_date = None
-    basis_col = "low"
-    if price_history is not None and not getattr(price_history, "empty", True):
+    fill_basis = "unavailable"
+
+    # Missing basis date must not activate on arbitrarily old data. All
+    # observations after the relevant issuance close are eligible, up to AND
+    # INCLUDING the zone expiry session. Never read a bar after asof.
+    if not start:
+        out["reason"] = "zone issuance date missing: no post-close visit inferred"
+    elif price_history is not None and not getattr(price_history, "empty", True):
         try:
-            frame = price_history[price_history.index >= pd.Timestamp(start)] if start \
-                else price_history
+            basis_date = pd.Timestamp(start)
+            frame = price_history[price_history.index > basis_date]
             frame = frame[frame.index <= pd.Timestamp(asof)]
-            if "low" not in frame.columns:
-                basis_col = "close"
-            series = frame[basis_col].dropna() if basis_col in frame.columns else None
-            if series is not None and not series.empty:
-                hits = series[series <= high]
-                if not hits.empty:
-                    filled_date = str(pd.Timestamp(hits.index[0]).date())
+            if expiry:
+                frame = frame[frame.index <= pd.Timestamp(expiry)]
+            frame = frame.sort_index()
+
+            has_range = "low" in frame.columns and "high" in frame.columns
+            if has_range:
+                # Intersect the WHOLE band, not only the band ceiling. A candle
+                # completely below the band must not count as having traded
+                # INTO it; malformed OHLC is never accepted as a fill.
+                lows = pd.to_numeric(frame["low"], errors="coerce")
+                highs = pd.to_numeric(frame["high"], errors="coerce")
+                hits = frame[(lows <= highs) & (lows <= high) & (highs >= low)]
+                fill_basis = "ohlc_range"
+            elif "close" in frame.columns:
+                # A recorded close IN the band is observable evidence of a
+                # visit. Anything else on partial OHLC is UNKNOWN, not filled.
+                closes = pd.to_numeric(frame["close"], errors="coerce")
+                hits = frame[(closes >= low) & (closes <= high)]
+                fill_basis = "close"
+            else:
+                hits = frame.iloc[:0]
+            if not hits.empty:
+                filled_date = str(pd.Timestamp(hits.index[0]).date())
         except Exception as exc:  # noqa: BLE001
-            out["reason"] = f"zone fill unreadable: {exc}"
-    out["fill_basis"] = basis_col
+            out["reason"] = f"zone visit unreadable: {exc}"
+    out["fill_basis"] = fill_basis
 
     if filled_date is not None:
-        out.update({"state": "filled", "filled": True, "filled_date": filled_date})
+        out.update({
+            "state": "filled", "filled": True, "filled_date": filled_date,
+            "fill_authority": "observation_only_not_execution",
+            "reason": (
+                "observed PIT price range/close intersected the band; "
+                "no order execution or separate trigger confirmation implied"
+            ),
+        })
         return out
 
-    remaining = _business_days_between(asof, expiry) if expiry else None
-    out["sessions_remaining"] = remaining
+    out["sessions_remaining"] = _business_days_between(asof, expiry) if expiry else None
     expired = bool(expiry) and expiry < str(asof)[:10]
     if not expired:
         out["state"] = "live"
@@ -2554,20 +2582,21 @@ def evaluate_entry_zone(
     out["expired"] = True
     if zone.get("converts_on_expiry"):
         out.update({
-            "state": "converted",
-            "converted": True,
+            "state": "converted", "converted": True,
             "stance": ZONE_STANCE_STARTER,
             "reason": (
-                "washout-class zone unfilled at expiry — a V-shaped recovery does not "
-                "revisit its band; the plan converts to a starter stance"),
+                "no verified in-window band visit before expiry; "
+                "washout-class zone converts to a starter OBSERVATION, "
+                "not an order or graded position"
+            ),
         })
     else:
         out.update({
-            "state": "expired",
-            "stance": ZONE_STANCE_WAIT,
+            "state": "expired", "stance": ZONE_STANCE_WAIT,
             "reason": (
-                "pullback-class zone unfilled at expiry — the reset the plan was "
-                "waiting for did not arrive"),
+                "no verified in-window band visit before expiry; "
+                "pullback window ended without eligible observed touch"
+            ),
         })
     return out
 
@@ -3159,10 +3188,17 @@ def _zone_lines_en(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"A PIT price range or closing print touched the {band} zone. This is not proof"
+            f" of order execution or of the separate closing trigger confirming.",
+            f"Any position remains conditional on the plan's separate trigger and"
+            f" risk rules, including the {inval_str} invalidation boundary.",
+        ]
     if state == "converted":
         return [
-            f"The {band} zone never filled and the move ran without it. Treat this as a"
-            f" starter-size window, not a full entry.",
+            f"No eligible price-band visit was observed before expiry at {band}."
+            f" The washout setup now describes a starter-size window, not a full entry.",
             f"Keep the first piece small and let any pullback do the adding. Exit on a"
             f" close below {inval_str}.",
         ]
@@ -3221,9 +3257,14 @@ def _zone_lines_zh(
     band = f"{low}–{high}" if entry_zone.get("low") is not None else high
     state = (zone_state or {}).get("state")
 
+    if state == "filled":
+        return [
+            f"可验证的日内价格区间或收盘价曾触及 {band}，但不代表订单成交，也不代表独立的收盘触发条件已确认。",
+            f"是否执行仍须独立核实计划触发条件与风险界限，包括 {inval_str} 的失效位。",
+        ]
     if state == "converted":
         return [
-            f"{band} 区间未被回踩，行情已自行走出。此处按试探性小仓位窗口对待，不是完整建仓。",
+            f"到期前未观察到合资格的 {band} 区间触及。此处只描述试探性小仓位窗口，不代表已建仓。",
             f"首笔保持小仓位，后续回调再加。收盘跌破 {inval_str} 即离场。",
         ]
     if state == "expired":
@@ -4610,15 +4651,19 @@ def originate_plans(
             )
             continue
 
-        # Confidence from conviction score (0-100 → capped at 92 in engine)
-        try:
-            confidence = min(float(conv.get("score", 60)), 92.0)
-        except (TypeError, ValueError):
+        # A board conviction is an ORDINAL intake condition, not the
+        # independently defined Prophet management-confidence baseline. The
+        # scientific WP04 review found no calibration or estimand equivalence.
+        # Preserve this raw score on the existing _conviction_score provenance
+        # field; never inject it into plan.confidence or the management model.
+        source_conviction = conv.get("score", 60)
+        if (isinstance(source_conviction, bool)
+                or not isinstance(source_conviction, (int, float))
+                or not math.isfinite(float(source_conviction))
+                or not 0.0 <= float(source_conviction) <= 100.0):
             _record_failure(
-                ticker=ticker,
-                plan_id=plan_id,
-                stage="plan_inputs",
-                errors=[f"conviction.score {conv.get('score')!r} is not numeric"],
+                ticker=ticker, plan_id=plan_id, stage="plan_inputs",
+                errors=[f"conviction.score {source_conviction!r} is not a finite numeric 0..100"],
             )
             continue
 
@@ -4880,6 +4925,9 @@ def originate_plans(
             "horizon_days": plan_horizon_days,  # PSQ-TILT: 45 base × leash (45 or 56)
             "min_hold_days": MIN_HOLD_DAYS_DEFAULT,  # unchanged (10)
             "tranche": 1,
+            # WP04 scientific ruling: the board's ordinal _conviction_score
+            # remains independent from the established management 60 baseline.
+            # No uncalibrated plan.confidence is originated here.
             "option_contract": opt,
             # PSQ-TILT W1 provenance (provisional; display data field, not copy).
             "stage_tilt": stage_tilt,

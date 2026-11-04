@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2150029,
+  "byte_start": 2149455,
+  "normalized": "A substantial portion of the Company’s revenue is derived from sales through one of its distributors, WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, which serves as its non-exclusive sales representative and fulfillment partner in Asia other than Japan, and to one ODM, Chicony Electronics Co., Ltd., or Chicony, which manufactures devices incorporating the Company’s solutions on behalf of multiple end-customers. Termination of the relationships with these customers could result in a temporary or permanent loss of revenue.",
+  "normalized_sha256": "b7d8920f019a4a09a46e8f14d0fe97399e424296c587a3d83f475ac6da67f7ee",
+  "raw": "A substantial portion of the Company&#8217;s revenue is derived from sales through one of its distributors, WT Microelectronics Co., Ltd., formerly Wintech Microelectronics Co., Ltd., or WT, which serves as its non-exclusive sales representative and fulfillment partner in Asia other than Japan, and to one ODM, Chicony Electronics Co., Ltd., or Chicony, which manufactures devices incorporating the Company&#8217;s solutions on behalf of multiple end-customers. Termination of the relationships with these customers could result in a temporary or permanent loss of revenue.",
+  "raw_sha256": "0ba0a74c950cef5ef626c4b630a6185467db308e652c7f2dcaf65e54ed0d01da"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,145 @@
+{
+  "accessions": [
+    {
+      "accession": "0000018230-23-000011",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0000018230",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 4,
+        "typed_absence": 3
+      },
+      "predictions": 7,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "acquisition_date",
+        "business_combination_consideration",
+        "indefinite_lived_intangibles",
+        "intangible_impairment_loss",
+        "purchase_accounting_note_span"
+      ]
+    },
+    {
+      "accession": "0000070858-23-000092",
+      "applicability_reason": null,
+      "applicability_state": null,
+      "cik": "0000070858",
+      "detail": "primary_unparseable",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 4,
+      "outcome": "package_admission_refused",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {},
+      "predictions": 0,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": []
+    },
+    {
+      "accession": "0001640147-23-000030",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001640147",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 7,
+      "outcome": "ADMITTED",
+      "period_of_report": "2023-01-31",
+      "prediction_states": {
+        "emitted": 3,
+        "not_evaluable": 1,
+        "typed_absence": 3
+      },
+      "predictions": 7,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "goodwill_disposals",
+        "goodwill_fx_other",
+        "impairment_testing_note_span",
+        "intangible_impairment_loss",
+        "purchase_accounting_note_span"
+      ]
+    },
+    {
+      "accession": "0001652044-23-000016",
+      "applicability_reason": "applicability_rule_satisfied",
+      "applicability_state": "applicable",
+      "cik": "0001652044",
+      "detail": "",
+      "form": "10-K",
+      "issuer_sic": null,
+      "labels": 10,
+      "outcome": "ADMITTED",
+      "period_of_report": "2022-12-31",
+      "prediction_states": {
+        "emitted": 5,
+        "not_evaluable": 2,
+        "typed_absence": 3
+      },
+      "predictions": 10,
+      "sic_source": "unbound",
+      "unmapped_pack_fields": [
+        "goodwill_disposals",
+        "intangible_impairment_loss"
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "exclusion_reason": "package_admission_refused:primary_unparseable",
+      "trial_id": "PK07|0000070858-23-000092|extract|goodwill"
+    },
+    {
+      "exclusion_reason": "package_admission_refused:primary_unparseable",
+      "trial_id": "PK07|0000070858-23-000092|extract|goodwill_impairment_loss"
+    },
+    {
+      "exclusion_reason": "package_admission_refused:primary_unparseable",
+      "trial_id": "PK07|0000070858-23-000092|extract|impairment_testing_note_span"
+    },
+    {
+      "exclusion_reason": "package_admission_refused:primary_unparseable",
+      "trial_id": "PK07|0000070858-23-000092|extract|intangible_assets_net"
+    }
+  ],
+  "label_count": 28,
+  "labels_status": "labelled",
+  "pack_id": "PK07",
+  "trial_field_map": {
+    "PK07|0000018230-23-000011|extract|goodwill": "goodwill",
+    "PK07|0000018230-23-000011|extract|goodwill_acquired": "goodwill_acquired",
+    "PK07|0000018230-23-000011|extract|goodwill_disposals": "goodwill_disposals",
+    "PK07|0000018230-23-000011|extract|goodwill_fx_other": "goodwill_fx_other",
+    "PK07|0000018230-23-000011|extract|goodwill_impairment_loss": "goodwill_impairment_loss",
+    "PK07|0000018230-23-000011|extract|impairment_testing_note_span": "impairment_testing_note_span",
+    "PK07|0000018230-23-000011|extract|intangible_assets_net": "intangible_assets_net",
+    "PK07|0000070858-23-000092|extract|goodwill": "goodwill",
+    "PK07|0000070858-23-000092|extract|goodwill_impairment_loss": "goodwill_impairment_loss",
+    "PK07|0000070858-23-000092|extract|impairment_testing_note_span": "impairment_testing_note_span",
+    "PK07|0000070858-23-000092|extract|intangible_assets_net": "intangible_assets_net",
+    "PK07|0001640147-23-000030|extract|acquisition_date": "acquisition_date",
+    "PK07|0001640147-23-000030|extract|business_combination_consideration": "business_combination_consideration",
+    "PK07|0001640147-23-000030|extract|goodwill": "goodwill",
+    "PK07|0001640147-23-000030|extract|goodwill_acquired": "goodwill_acquired",
+    "PK07|0001640147-23-000030|extract|goodwill_impairment_loss": "goodwill_impairment_loss",
+    "PK07|0001640147-23-000030|extract|indefinite_lived_intangibles": "indefinite_lived_intangibles",
+    "PK07|0001640147-23-000030|extract|intangible_assets_net": "intangible_assets_net",
+    "PK07|0001652044-23-000016|extract|acquisition_date": "acquisition_date",
+    "PK07|0001652044-23-000016|extract|business_combination_consideration": "business_combination_consideration",
+    "PK07|0001652044-23-000016|extract|goodwill": "goodwill",
+    "PK07|0001652044-23-000016|extract|goodwill_acquired": "goodwill_acquired",
+    "PK07|0001652044-23-000016|extract|goodwill_fx_other": "goodwill_fx_other",
+    "PK07|0001652044-23-000016|extract|goodwill_impairment_loss": "goodwill_impairment_loss",
+    "PK07|0001652044-23-000016|extract|impairment_testing_note_span": "impairment_testing_note_span",
+    "PK07|0001652044-23-000016|extract|indefinite_lived_intangibles": "indefinite_lived_intangibles",
+    "PK07|0001652044-23-000016|extract|intangible_assets_net": "intangible_assets_net",
+    "PK07|0001652044-23-000016|extract|purchase_accounting_note_span": "purchase_accounting_note_span"
+  }
+}

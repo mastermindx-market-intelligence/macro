@@ -40,6 +40,10 @@ on:
         default: false
   workflow_call:
     inputs:
+      source_sha:
+        description: "Qualified settled caller commit for this projection"
+        required: true
+        type: string
       projection_only:
         description: "Fold committed evidence without polling SAM"
         required: true
@@ -172,14 +176,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # workflow_call follows a daily data push; always begin from the current
-          # production ref rather than the caller's checkout-time SHA.
-          ref: main
+          # Load the binding selector from the immutable native event/caller.
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: select immutable publication source
+        id: source_binding
+        env:
+          GOVREV_CALL_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: python3 scripts/ci/govrev_source_binding.py
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.source_binding.outputs.source_sha }}
           fetch-depth: 1
 
       - name: reconcile retained GovRev publication outcomes
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GOVREV_CALL_SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           /opt/homebrew/bin/python3.12 scripts/ci/govrev_publisher_preflight.py \
             --root . --out-dir "$RUNNER_TEMP"

@@ -236,7 +236,7 @@
     identity_state: {
       IDENTITY_VALIDATED:                ['Identity confirmed',                 '身份已确认'],
       IDENTITY_UNRESOLVED:               ['Identity unresolved',                '身份尚未确认'],
-      RESEARCH_HINT_UNVALIDATED:         ['Research hint, not validated',       '研究线索，尚未确认']
+      RESEARCH_HINT_UNVALIDATED:         ['Research hint, not confirmed',       '研究线索，尚未确认']
     },
     // D.22 company route state
     company_route_state: {
@@ -1632,8 +1632,8 @@
     if (en) en.textContent = pair[0];
     if (zh) zh.textContent = pair[1];
     show(notice, true);
-    var keep = kind === 'not_connected' ? { 'rerating-map': 1, 'company-exposure': 1 } : {};
-    var keepSel = '.fi-section-head, .fi-falsifiers, .fi-hint-roster';
+    var keep = kind === 'not_connected' ? { 'company-exposure': 1 } : {};
+    var keepSel = '.fi-section-head, .fi-hint-lede, .fi-hint-roster';
     $$('.fi-section, .fi-toc').forEach(function (s) {
       if (!keep[s.id]) { s.style.display = 'none'; return; }
       Array.prototype.forEach.call(s.children || [], function (c) {

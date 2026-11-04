@@ -6,7 +6,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from engine.commodity_decision_workspace import build_workspace, validate_condition, number
+from engine.commodity_decision_workspace import build_workspace, validate_condition, number, fingerprint
 from engine.commodity_workspace_adapter import read_publication
 
 
@@ -401,3 +401,85 @@ class GoldPhysicalInterpretation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CurrentGoldComposition(unittest.TestCase):
+    """Same-render Gold handoff; no collectors, data writes or market recomputation."""
+
+    def compose(self, current, tmp):
+        from unittest.mock import patch
+        from scripts import build_commodities as builder
+        retained = gold_publication(premium_pct=0.25)
+        retained['ratios'] = {'gold_silver': {'chg_20d_pct': 4.0}}
+        retained['asof'] = '2026-10-14'
+        def read(path):
+            return deepcopy(retained) if path.name == 'latest.json' and path.parent.name == 'commodity' else None
+        vm = {}
+        if current is not None:
+            # Incumbent detailed-panel fixture, passed through the REAL compact
+            # projection and producer adapter, not a copied workspace calculation.
+            from tests.test_china_gold_premium import _available_ui_vm
+            premium = _available_ui_vm()
+            premium.update(available=current['available'], current_method=current['method'],
+                           state=current['state'], premium_pct=current['premium_pct'],
+                           price_currency=current['price_currency'])
+            premium[current['method']] = {'asof': current['source_asof'],
+                                          'fresh': current['source_fresh']}
+            premium['canonical']['available'] = current['official_canonical_available']
+            premium['stats'] = {'avg_5': current['avg_5_pct'], 'range_30': current['range_30_pct']}
+            vm = {'detail': [{'name': 'gold', 'china_gold_premium': premium}]}
+            from jinja2 import Environment, FileSystemLoader
+            html = Environment(loader=FileSystemLoader(str(Path(builder.__file__).resolve().parents[1] / 'templates'))).get_template('_china_gold_premium.html.j2').render(g=premium)
+            self.assertIn('data-cgp-source-asof="' + current['source_asof'] + '"', html)
+            self.assertIn('data-cgp-premium="' + format(current['premium_pct'], '.6f') + '"', html)
+        with patch.object(builder.config, 'ROOT', tmp), \
+             patch.object(builder.config, 'data_dir', return_value=tmp / 'data'), \
+             patch('engine.commodity_workspace_adapter.read_publication', side_effect=read), \
+             patch('engine.commodity_workspace_adapter.attach_company_continuations', side_effect=lambda w, *_: w):
+            # The actual producer helper composes the projection; only acquisition/
+            # unrelated identity attachment is replaced with deterministic inputs.
+            result = builder._decision_workspace(snapshot(), '2026-10-16', current_vm=vm)
+        return result, retained
+
+    def test_same_render_uses_current_gold_not_previous_publication(self):
+        current = gold_publication(premium_pct=-0.08)['gold_context']['china_physical_premium']
+        current['source_asof'] = '2026-10-16T07:30:00+00:00'
+        with tempfile.TemporaryDirectory() as td:
+            w, retained = self.compose(current, Path(td))
+        self.assertEqual(w['gold_physical']['premium_pct'], current['premium_pct'])
+        self.assertEqual(w['gold_physical']['source_receipt']['source_timestamp'], current['source_asof'])
+        self.assertEqual(w['gold_physical']['source_receipt']['publisher_as_of'], '2026-10-16')
+        self.assertEqual(w['gold_physical']['source_receipt']['fingerprint'],
+                         fingerprint(current))
+        self.assertIsNone(w['gold_physical']['source_receipt']['immutable_source'])
+        self.assertEqual(w['sources']['ratios']['as_of'], retained['asof'])
+        self.assertEqual(w['sources']['ratios']['state'], 'earlier_context')
+        old = build_workspace(snapshot(), commodity_latest=retained)
+        for field in ('ratios', 'physical', 'chains', 'rates', 'fx', 'assets'):
+            self.assertEqual(w[field], old[field], field)
+        self.assertNotEqual(w['fingerprint'], old['fingerprint'])
+        self.assertFalse(w['gold_physical']['hypothesis_confirmation_eligible'])
+        from jinja2 import Environment, FileSystemLoader
+        env = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parents[1] / 'templates')))
+        env.globals['t'] = lambda en, zh: en
+        card = env.get_template('_commodity_decision_workspace.html.j2').render(commodity_workspace=w)
+        self.assertIn('Shanghai priced below the reference', card)
+        self.assertIn('-0.08%', card)
+        self.assertIn('2026-10-16 07:30 UTC', card)
+
+    def test_missing_current_gold_does_not_revive_retained_premium(self):
+        with tempfile.TemporaryDirectory() as td:
+            w, _ = self.compose(None, Path(td))
+        self.assertEqual(w['gold_physical']['state'], 'unavailable')
+        self.assertEqual(w['gold_physical']['source_receipt']['state'], 'missing')
+        self.assertIsNone(w['gold_physical']['premium_pct'])
+
+    def test_current_unavailable_or_stale_gold_keeps_original_clock(self):
+        for patch_value in ({'available': False}, {'source_fresh': False}):
+            current = gold_publication()['gold_context']['china_physical_premium']
+            current.update(patch_value)
+            with tempfile.TemporaryDirectory() as td:
+                w, _ = self.compose(current, Path(td))
+            self.assertEqual(w['gold_physical']['state'], 'unavailable')
+            self.assertIsNone(w['gold_physical']['premium_pct'])
+            self.assertEqual(w['gold_physical']['source_receipt']['source_timestamp'], current['source_asof'])

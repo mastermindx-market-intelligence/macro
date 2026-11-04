@@ -1,0 +1,14 @@
+{
+  "parent": "f5f93d6cf811b9464507cc32b63211380e73d5b2",
+  "candidate": "6aef75a732cc8fd0085d4f724d2f403ace7470b5",
+  "changed_jobs": [
+    "fif-kernel-guards",
+    "crypto-assistant-context",
+    "research-price-panel",
+    "ticker-news-qbus"
+  ],
+  "restored_current_main_anchor_entries": 17,
+  "all314_definitions_order_path_multisets_preserved": true,
+  "manifest_sha256": "24a56c9a188caf18f5675843912f165a631351564d971e7201f685c51e6a275d",
+  "tactic": "Direct standalone A1 preview lacks retained-main additions that follow-on already owns. Restore those main anchors and compare the actual composed tested PR merge, not only its bare source branch. No branch base update or import."
+}

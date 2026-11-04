@@ -1,0 +1,43 @@
+/* A neutral context row beside the existing Prophet board. */
+.si-prophet-context {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  padding:16px 0;
+  border:0;
+  border-block:1px solid var(--line);
+  color:var(--text);
+  scroll-margin-top:24px;
+}
+.si-prophet-context[hidden] { display:none !important; }
+.si-prophet-context-copy { flex:1 1 24rem; }
+.si-prophet-context-label {
+  margin:0 0 8px;
+  color:var(--muted);
+  font-size:var(--fs-label);
+}
+.si-prophet-context h2 { margin:0; font-size:var(--fs-h2); }
+.si-prophet-context-note {
+  max-width:65ch;
+  margin:8px 0 0;
+  color:var(--muted);
+  font-size:var(--fs-sm);
+  line-height:1.6;
+}
+.si-prophet-context-actions { display:flex; align-items:center; flex-wrap:wrap; gap:16px; }
+.si-prophet-context-actions a { color:var(--link); text-underline-offset:.2em; }
+.si-prophet-context-actions button {
+  border:0;
+  padding:0;
+  background:transparent;
+  color:var(--link);
+  font:inherit;
+  text-align:start;
+  text-decoration:underline;
+  text-underline-offset:.2em;
+  cursor:pointer;
+}
+.si-prophet-context-actions button:disabled { color:var(--muted); cursor:default; }
+.si-prophet-context-actions button[hidden] { display:none !important; }

@@ -72,6 +72,22 @@ def main(argv: list[str] | None = None) -> int:
         default=str(DEFAULT_FORMULAS),
         help="metric formulas YAML (defaults to the repository path)",
     )
+    parser.add_argument(
+        "--journey-ledger",
+        default=None,
+        help=(
+            "optional A1 journey ledger JSON (fif.a1_journey_ledger/v1); "
+            "the only input that can prove a served deep issuer's journey cell"
+        ),
+    )
+    parser.add_argument(
+        "--sic-from-coverage-file",
+        action="store_true",
+        help=(
+            "use SIC codes recorded in the supplied coverage contract for "
+            "issuers the shipped contracts do not bind"
+        ),
+    )
     args = parser.parse_args(argv)
     try:
         manifest = build_coverage_manifest(
@@ -82,6 +98,8 @@ def main(argv: list[str] | None = None) -> int:
             thresholds_file=args.thresholds,
             catalog_file=args.catalog,
             formulas_file=args.formulas,
+            journey_ledger_file=args.journey_ledger,
+            sic_from_coverage_file=args.sic_from_coverage_file,
         )
     except CoverageManifestError as exc:
         print(f"coverage manifest refused: {exc.code}: {exc.message}", file=sys.stderr)
