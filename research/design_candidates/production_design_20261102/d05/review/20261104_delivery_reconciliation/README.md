@@ -1,4 +1,4 @@
-# D05 delivery checkpoint — 2026-11-04 07:58 UTC
+# D05 delivery checkpoint — 2026-11-04 08:08 UTC
 
 ## Verified increment
 
@@ -79,10 +79,12 @@ scenarios,16 browser configurations and24 governed captures. This is a component
 return, not a mounted Dossier or full programme acceptance. The older dirty
 standalone Dossier host remains preserved.
 
-Existing Studio operation `d05-native-source-verification-20261104` is bound
-to77b6e5d4 plus the six tested published files, with retained local preview,
-patch and logs. It is not a new publisher branch. Historical9906/clean workspace
-observations are superseded; no inherited evidence is deleted.
+Existing Studio operation `d05-native-source-verification-20261104` is now
+aligned to dd903b3 / tree a07410147c646ec106d3b9b0d9bc16e74e91d703, with
+tracked files clean. Before the local verification branch moved, the index tree
+was checked against the exact published tree. All49 untracked preview/patch/log
+artifacts were preserved. No alternate branch was pushed. Historical9906 and
+77b6e5d4 workspace observations are superseded.
 
 ## Paper and overall boundary
 
@@ -100,7 +102,33 @@ No merge, Ready/un-draft, enqueue, held-PR relabel, deployment or final shared
 acceptance is authorized. Protected source pin for this continuation:
 `690e5316629815ae3e78f65ebdec2eb87f0cad16`, compatible INDEX1.0.1.
 
-Exact next action: consume the current original browser operation if its native
-lineage and terminal result qualify; inspect and bind the actual captured proof.
-Then compose only with the incumbent bridge/Company and Dossier owners on their
-existing carriers. Do not redo unchanged accepted design work.
+## Latest source boundary and compatibility proof
+
+The active bridge/Company root has acknowledged dd903b3 and will preserve all
+eight published paths. Its next strict-restore attachment overlaps
+`templates/sector_cycles.js`; that root now retains the next semantic change
+to those paired assets. This continuation will not edit that overlap.
+
+The browser request above was issued at07:56, before that root's later
+instruction to defer final capture until joint integration freezes. Preserve
+the existing request: no cancellation/replay/re-home is implied. Any return is
+intermediate dd903-only evidence, never final joint bridge/Company acceptance.
+No further capture request is authorized by this checkpoint.
+
+Direct actual-data compatibility verification covers all18 committed themes:
+both parent and candidate produce393723 bytes of identical HTML,
+SHA256`cbe9d703bf4e2885723ff2c0db36a194061bce29dfd5e58f60400004a8a97721`.
+All18 summaries qualify, and their research lanes are unchanged. This uses
+dated committed inputs with sparse optional research inputs unavailable; it
+does not establish live market correctness.
+
+At the observed dd903 revision, fences41795480426 passed; CI41795480491 remained
+queued. No full CI-green claim. Additional actual Paper inspection included the
+companion's BXQ-0 phone board; this is visual candidate inspection only.
+
+Exact next action: reconcile/consume the existing browser operation through its
+native original root/run when the lineage and terminal return qualify. Inspect
+its actual artifacts and retain their intermediate scope. The active
+bridge/Company owner composes its next source and supplies the final source
+boundary before any further full capture. Preserve the Dossier host/owner and
+all release holds. Do not redo unchanged accepted design work.
