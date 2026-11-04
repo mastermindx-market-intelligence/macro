@@ -55,6 +55,52 @@ def test_none_and_nan_dropped_then_null():
     assert "ilx-null" in out
 
 
+def test_line_gap_keeps_missing_slot_and_interrupts_the_stroke():
+    # Eight observation slots with one missing session: no continuous bridge.
+    vals = [62, 63, None, 64, 65, 66, 67, 68]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line")
+    assert 'data-gap-count="1"' in out
+    assert "1 missing observation, line interrupted" in out
+    assert '<span class="l-en">Gap: 1 missing</span>' in out
+    assert '<span class="l-zh">缺失 1 条</span>' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count("M") == 2
+    xs = [float(x) for x in re.findall(r"(?:M|L)([0-9.]+) ", path)]
+    assert xs == [0, 80, 240, 320, 400, 480, 560]
+    assert "M240" in path  # first point after the gap starts a new subpath
+
+
+def test_line_gap_zero_is_real_and_nonfinite_values_are_missing():
+    vals = [0, 1, float("nan"), float("inf"), 2, float("-inf"), None, 3]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, kind="line")
+    assert 'data-gap-count="4"' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count("M") == 3  # actual runs [0,1], [2], [3]
+    assert "nan" not in path.lower() and "inf" not in path.lower()
+    assert ">3.0<" in out  # last observed value, not a fabricated replacement
+
+
+def test_line_complete_series_retains_legacy_geometry():
+    out = I.illus({"dates": _dates(8), "vals": list(range(8))}, kind="line")
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count("M") == 1
+    assert 'data-gap-count=' not in out
+    assert "560" in path
+
+
+def test_line_sparse_long_history_is_bounded_and_never_bridges():
+    n = 2000
+    vals = [i / 10 for i in range(n)]
+    vals[500] = None
+    vals[1500] = float("nan")
+    out = I.illus({"dates": _dates(n), "vals": vals}, kind="line", max_points=60)
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    assert path.count("M") == 3
+    assert len(path) < 9000
+    assert 'data-gap-count="2"' in out
+    assert re.findall(r"(?:M|L)([0-9.]+) ", path)[-1] == "560.0"
+
+
 def test_downsample_preserves_extremes():
     # a spike in the middle of a long flat series must survive downsampling
     n = 2000
