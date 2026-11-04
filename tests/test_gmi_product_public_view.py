@@ -204,3 +204,35 @@ def test_issuer_output_refuses_symlink(current_model, tmp_path, name):
     with pytest.raises(RuntimeError, match="nonregular GMI issuer output"):
         render_site(current_model, tmp_path)
     assert target.read_text() == "SENTINEL-UNTOUCHED"
+
+
+def test_public_template_model_is_strictly_allowlisted(current_model):
+    """Jinja cannot read private payloads through an unused model field."""
+    from scripts.build_gmi_explorer import _public_render_model
+    model = deepcopy(current_model)
+    model["deck"] = {"secret": "PRIVATE-DECK-SENTINEL"}
+    model["edges"] = [{"secret": "PRIVATE-EDGE-SENTINEL"}]
+    model["party_names"] = {"secret": "PRIVATE-PARTY-SENTINEL"}
+    model["theme_links"].append({"ticker": "SECRET-TICKER-SENTINEL",
+                                  "micro_id": "theme:hbm_packaging"})
+    public = _public_render_model(model)
+    assert set(public) == {
+        "cats", "micros", "totals", "disposition_counts", "coverage",
+        "reason_words", "extended_on", "asof", "provenance",
+        "issuers", "theme_links",
+    }
+    assert set(public["provenance"]) == {"built_at_utc"}
+    assert "SECRET-TICKER-SENTINEL" not in json.dumps(public["theme_links"])
+    assert len(public["issuers"]) == 1
+    assert set(public["issuers"][0]) == {
+        "ticker", "exchange", "display_name", "links",
+    }
+    assert set(public["issuers"][0]["links"][0]) == {
+        "proposal_id", "status", "micro_id", "micro_en", "micro_zh",
+        "lifecycle", "curation", "scope", "source",
+    }
+    assert set(public["issuers"][0]["links"][0]["scope"]) == {"product", "platform"}
+    for forbidden in ("PRIVATE-DECK-SENTINEL", "PRIVATE-EDGE-SENTINEL",
+                      "PRIVATE-PARTY-SENTINEL", "SECRET-TICKER-SENTINEL",
+                      "graph_membership_use", "correction_lineage", "counterparty_issuer_id"):
+        assert forbidden not in json.dumps(public)

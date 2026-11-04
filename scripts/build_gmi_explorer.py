@@ -89,16 +89,77 @@ def _current_public_product(issuer: dict, link: dict) -> bool:
 
 
 def _public_render_model(model: dict) -> dict:
-    """Supply only explicitly cleared issuer facts; no raw issuer/edge context."""
-    issuers = []
+    """Whitelist the entire Jinja model; private graphs and raw issuer data stay out.
+
+    The one current product sentence is separately cleared in DESIGN_RECORD §11.9.
+    This is not a general fact/rights admission mechanism for new model rows.
+    """
+    names = (
+        "cats", "micros", "totals", "disposition_counts", "coverage",
+        "reason_words", "extended_on", "asof",
+    )
+    public = {name: model[name] for name in names}
+    public["provenance"] = {"built_at_utc": model["provenance"]["built_at_utc"]}
+    public["issuers"] = []
+    public["theme_links"] = []
+
     for issuer in model.get("issuers", []):
         if not isinstance(issuer, dict):
             continue
         links = [lk for lk in issuer.get("links", [])
                  if _current_public_product(issuer, lk)]
-        if links:
-            issuers.append({**issuer, "links": links})
-    return {**model, "issuers": issuers, "edges": [], "party_names": {}}
+        if not links:
+            continue
+        public_links = []
+        for link in links:
+            # Never hand Jinja internal scope, graph-use, correction or
+            # raw-source fields, even for the currently cleared sentence.
+            source = link["source"]
+            public_links.append({
+                "proposal_id": link["proposal_id"],
+                "status": link["status"],
+                "micro_id": link["micro_id"],
+                "micro_en": link["micro_en"],
+                "micro_zh": link["micro_zh"],
+                "lifecycle": link["lifecycle"],
+                "curation": {"decision": link["curation"]["decision"]},
+                "scope": {
+                    "product": link["scope"]["product"],
+                    "platform": link["scope"]["platform"],
+                },
+                "source": {
+                    "source_key": source["source_key"],
+                    "text_sha256": source["text_sha256"],
+                    "published_date": source["published_date"],
+                    "url_if_public": source["url_if_public"],
+                    "label_en": source["label_en"],
+                    "label_zh": source["label_zh"],
+                },
+            })
+            micro = model["micros"][link["micro_id"]]
+            clock = (link.get("clock_states") or {}).get("knowledge") or {}
+            first_seen = (
+                (clock.get("value") or "")[:10]
+                if clock.get("state") == "KNOWN"
+                else source["published_date"]
+            )
+            public["theme_links"].append({
+                "kind": "adm" if micro["admitted"] > 0 else "held",
+                "ticker": issuer["ticker"],
+                "name": issuer["display_name"],
+                "micro_id": link["micro_id"],
+                "micro_en": link["micro_en"],
+                "micro_zh": link["micro_zh"],
+                "first_seen": first_seen,
+                "href": f"gmi-issuer-{issuer['ticker'].lower()}.html",
+            })
+        public["issuers"].append({
+            "ticker": issuer["ticker"],
+            "exchange": issuer["exchange"],
+            "display_name": issuer["display_name"],
+            "links": public_links,
+        })
+    return public
 
 
 def _remove_stale_issuer_pages(site: Path, public_model: dict) -> None:
