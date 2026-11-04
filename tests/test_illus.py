@@ -214,6 +214,102 @@ def test_line_gap_css_pair_preserves_mark_contrast_and_bilingual_receipt():
     assert "position: static" in receipt and "max-width: 100%" in receipt
 
 
+def test_line_compact_gap_has_a_separate_status_lane():
+    dates = _dates(8)
+    out = I.illus({"dates": dates, "vals": [1, 2, None, 3, 4, 5, 6, 7]},
+                  kind="line", height=42, unit_en="USD")
+    assert 'class="ilx ilx-line ilx-compact"' in out
+    assert 'data-gap-count="1"' in out
+    assert '<div class="ilx-plot">' in out
+    # The status is a sibling of the plot, not an overlay on its last point.
+    plot_end = out.index('</div>')
+    assert out.index('class="ilx-gap-note"') > plot_end
+    assert '<span class="l-en">1 missing</span>' in out
+    assert '<span class="l-zh">缺失 1 条</span>' in out
+    assert '1 missing observation, line interrupted' in out
+    # Compact visual labels are suppressed; their meaning must remain available.
+    assert f'window {dates[0]} to {dates[-1]}' in out
+    assert f'last observed 7.0 USD on {dates[-1]}' in out
+
+
+def test_line_compact_historical_status_does_not_claim_a_current_value():
+    dates = _dates(8)
+    out = I.illus({"dates": dates, "vals": [None, 1, 2, 3, 4, 5, None, None]},
+                  kind="line", height=42)
+    assert 'class="ilx ilx-line ilx-historical ilx-compact"' in out
+    plot_start = out.index('<div class="ilx-plot">')
+    plot_end = out.index('</div>')
+    assert plot_start < out.index('class="ilx-tag-date"') < plot_end
+    assert out.index('class="ilx-gap-note"') > plot_end
+    assert '<span class="l-en">Latest missing</span>' in out
+    assert '<span class="l-zh">最新值缺失</span>' in out
+    assert '3 missing observations, line interrupted' in out
+    assert 'latest observation unavailable' in out
+    assert f'last observed 5.0 on {dates[5]}' in out
+    assert f'window {dates[0]} to {dates[-1]}' in out
+
+
+def test_line_compact_gap_variant_is_scoped_to_short_discontinuous_lines():
+    dates = _dates(6)
+    for height in (32, 42, 64, 95, 96, 190):
+        sparse = I.illus({"dates": dates, "vals": [1, 2, None, 3, 4, 5]},
+                         height=height)
+        assert ('ilx-compact' in sparse) is (height < 96)
+        complete = I.illus({"dates": dates, "vals": [1, 2, 3, 4, 5, 6]},
+                           height=height)
+        assert 'ilx-compact' not in complete and 'ilx-plot' not in complete
+        for kind in ('area', 'baseline', 'drawdown', 'bars', 'multi'):
+            series = ([{"dates": dates, "vals": [1, 2, None, 3, 4, 5]}]
+                      if kind == 'multi'
+                      else {"dates": dates, "vals": [1, 2, None, 3, 4, 5]})
+            assert 'ilx-compact' not in I.illus(series, kind=kind, height=height)
+
+
+def test_line_compact_gap_keeps_slot_geometry_and_isolated_observations():
+    vals = [0, None, 1, 2, None, 3, None, None]
+    out = I.illus({"dates": _dates(len(vals)), "vals": vals}, height=42)
+    assert 'ilx-compact' in out
+    assert 'viewBox="0 0 560 42"' in out
+    path = re.search(r'class="ilx-path" d="([^"]+)"', out).group(1)
+    xy = [(float(x), float(y)) for x, y in re.findall(r'[ML]([0-9.]+) ([0-9.]+)', path)]
+    assert [x for x, _y in xy] == [0, 160, 240, 400]
+    assert path.count('M') == 3
+    assert all(8 <= y <= 34 for _x, y in xy)
+    assert out.count('class="ilx-isolate"') == 1
+
+
+def test_line_compact_gap_status_lane_css_has_no_date_width_reserve():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    css = (root / 'templates' / 'illus.css').read_text()
+    assert css == (root / 'site' / 'illus.css').read_text()
+    figure = re.search(r'\.ilx-compact\s*\{([^}]+)\}', css).group(1)
+    assert 'display: flex' in figure and 'flex-direction: column' in figure
+    assert 'gap: var(--sp-1, 4px)' in figure
+    plot = re.search(r'\.ilx-compact \.ilx-plot\s*\{([^}]+)\}', css).group(1)
+    assert 'position: relative' in plot and 'flex: 1' in plot and 'min-height: 0' in plot
+    status = re.search(r'\.ilx-compact \.ilx-gap-note\s*\{([^}]+)\}', css).group(1)
+    assert 'position: static' in status and 'transform: none' in status
+    assert 'max-width: 100%' in status and 'flex: 0 0 auto' in status
+    assert 'line-height: 1.2' in status
+    assert 'calc(' not in status
+    assert re.search(r'\.ilx-compact \.ilx-tag,\s*\.ilx-compact \.ilx-d\s*'
+                     r'\{\s*display: none;\s*\}', css)
+
+
+def test_line_compact_gap_escapes_accessible_metadata():
+    dates = ['<start>', '2024-01-02', '2024-01-03', '2024-01-04',
+             '<observed>', '<end>']
+    out = I.illus({"dates": dates, "vals": [1, 2, None, 3, 4, None]},
+                  height=42, unit_en='USD"<&', aria_en='History "<&')
+    assert 'ilx-compact' in out
+    aria = re.search(r'aria-label="([^"]*)"', out).group(1)
+    assert 'History &quot;&lt;&amp;' in aria
+    assert 'window &lt;start&gt; to &lt;end&gt;' in aria
+    assert 'last observed 4.0 USD&quot;&lt;&amp; on &lt;observed&gt;' in aria
+    assert '<start>' not in out and '<observed>' not in out and '<end>' not in out
+
+
 def test_line_sparse_long_history_is_bounded_and_never_bridges():
     n = 2000
     vals = [i / 10 for i in range(n)]

@@ -35,6 +35,16 @@ Plotly fragments on dashboard surfaces.
   Historical receipts occupy a separate metadata lane above the plot so they
   cannot cover a high last-observed point. The chart, reference captions and
   date labels resize together inside their own plot container.
+  Short gapped lines (`height < 96`, source-tested at 32/42/64/95px) use the
+  `.ilx-compact` variant: a separate, full-width status row instead of overlaid
+  corner dates or an end-value tag. At the existing 42px table size, the default
+  12px status line and 4px spacing leave a 26px plot. The status is `N missing`
+  / `缺失 N 条`, or **Latest missing / 最新值缺失** when the final slot is absent.
+  The figure's accessible name retains the full missing count, original date
+  window, and last-observed value, unit and date. No compact gap caption reserves
+  140px for hidden corner dates. Complete-series output and other chart kinds
+  do not opt into this variant; actual page rendering remains an integration
+  acceptance step, not something source-level layout tests can establish.
   Callers must supply aligned date/value slots for missing sessions; omitted
   dates cannot be inferred as missing. This is a **line-kind implementation**,
   not a claim that `area`, `baseline`, `drawdown`, `bars`, or `multi` have qualified
