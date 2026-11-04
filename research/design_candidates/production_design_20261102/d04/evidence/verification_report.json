@@ -1,0 +1,182 @@
+{
+  "schema": "d04.packet_verification.v1",
+  "executed_utc": "2026-11-04T01:07:29.653124+00:00",
+  "scope": "Artifact identity, counts, links, hashes and illustrative arithmetic only. No product application, API/DB, visual approval or model-validation execution.",
+  "status": "PASS",
+  "check_count": 25,
+  "checks": [
+    {
+      "check": "canonical route identities",
+      "status": "PASS",
+      "detail": "All ten distinct assigned IDs, no replacement by count alone."
+    },
+    {
+      "check": "capability IDs/counts/dispositions",
+      "status": "PASS",
+      "detail": {
+        "RETAIN": 75,
+        "RELOCATE": 3,
+        "IMPROVE": 30,
+        "BLOCKED_DATA": 5
+      }
+    },
+    {
+      "check": "no removals and no approval",
+      "status": "PASS",
+      "detail": "All dispositions are proposals/retention obligations; none approved."
+    },
+    {
+      "check": "complete capability ownership and successor",
+      "status": "PASS",
+      "detail": "Includes all relocations and unavailable-support interim ownership."
+    },
+    {
+      "check": "acceptance IDs and honest execution state",
+      "status": "PASS",
+      "detail": "75 future product cases; no application pass inferred."
+    },
+    {
+      "check": "capability acceptance links",
+      "status": "PASS",
+      "detail": "Every capability references defined behavioral cases."
+    },
+    {
+      "check": "all tests have substantive coverage",
+      "status": "PASS",
+      "detail": "Cross-cutting build/performance/ownership cases are covered by build plan or continuity."
+    },
+    {
+      "check": "24 executable legacy mappings",
+      "status": "PASS",
+      "detail": "Corrects the handoff's23 count."
+    },
+    {
+      "check": "legacy alias targets and measured entry",
+      "status": "PASS",
+      "detail": "Exact alias targets retained."
+    },
+    {
+      "check": "six tabs and ten analytical anchors",
+      "status": "PASS",
+      "detail": "Current Discover and Quant Lab dimensions."
+    },
+    {
+      "check": "49 exact basket IDs",
+      "status": "PASS",
+      "detail": "Current catalog receipt; no new catalog implementation."
+    },
+    {
+      "check": "recorded payload accounting",
+      "status": "PASS",
+      "detail": "Consistency of root source-extraction receipt, not a new producer run."
+    },
+    {
+      "check": "1H availability override",
+      "status": "PASS",
+      "detail": "A non-null value does not override unavailable metadata."
+    },
+    {
+      "check": "62 exact Paper reference identities",
+      "status": "PASS",
+      "detail": "Identity/name/dimension inventory, not62 visual approvals."
+    },
+    {
+      "check": "reference approval not inferred",
+      "status": "PASS",
+      "detail": "No native after-design or self-approval."
+    },
+    {
+      "check": "eight actual image files",
+      "status": "PASS",
+      "detail": "SHA256, byte sizes, actual dimensions and Paper identity match."
+    },
+    {
+      "check": "25 inherited blocks preserved",
+      "status": "PASS",
+      "detail": "No inherited item closed by specification prose."
+    },
+    {
+      "check": "continuity test references",
+      "status": "PASS",
+      "detail": "Every proposed remedy references defined cases."
+    },
+    {
+      "check": "comparison arithmetic: coverage_illusion",
+      "status": "PASS",
+      "detail": {
+        "matched_n": 8,
+        "matched_change_pp": 0.0,
+        "before_raw_pct": 80.0,
+        "after_raw_pct": 100.0,
+        "possible_change_pp": [
+          0.0,
+          20.0
+        ]
+      }
+    },
+    {
+      "check": "comparison arithmetic: missing_member_not_removed",
+      "status": "PASS",
+      "detail": {
+        "matched_n": 3,
+        "matched_change_pp": 66.66666666666666,
+        "before_raw_pct": 50.0,
+        "after_raw_pct": 100.0,
+        "possible_change_pp": [
+          25.0,
+          50.0
+        ]
+      }
+    },
+    {
+      "check": "month-mean differs from pooled rate",
+      "status": "PASS",
+      "detail": {
+        "month_mean_pct": 55.55555555555556,
+        "pooled_pct": 20.0
+      }
+    },
+    {
+      "check": "declared breadth thresholds",
+      "status": "PASS",
+      "detail": "Strict>0 and Macro>0.05pp produce different counts."
+    },
+    {
+      "check": "capitalization example excludes missing weight",
+      "status": "PASS",
+      "detail": {
+        "weighted_pct": -0.25
+      }
+    },
+    {
+      "check": "candidate useful widths and dock arithmetic",
+      "status": "PASS",
+      "detail": {
+        "widths": [
+          288,
+          358,
+          728,
+          788,
+          1008,
+          1168,
+          1328
+        ],
+        "dock": {
+          "1280": 664,
+          "1440": 824,
+          "1600": 984
+        },
+        "qualification": "Not actual responsive browser or native design proof."
+      }
+    },
+    {
+      "check": "relative Markdown destinations",
+      "status": "PASS",
+      "detail": "Every local document/capture destination exists."
+    }
+  ],
+  "product_acceptance_cases_run": 0,
+  "rig_approval": false,
+  "native_paper_writes": 0,
+  "manifest_policy": "Freeze writes this report first, then hashes every packet file except manifest itself. Successful verifier exit requires recomputing every manifest hash."
+}

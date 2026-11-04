@@ -1,0 +1,99 @@
+{
+  "schema": "d04.browser_observations.v1",
+  "scope": "Read-only authorized existing browser session; no product or saved-object write",
+  "observation_date_utc": "2026-11-04",
+  "exact_call_times_available": false,
+  "production_release_sha": "NOT_ESTABLISHED; source pins are inspected repository revisions, not deployment receipts",
+  "successful": [
+    {
+      "requested": "https://www.mastermind-x.com/discovery.html",
+      "resolved": "https://www.mastermind-x.com/discovery.html",
+      "observed": [
+        "Top Picks/Sectors/Sector index",
+        "Top conviction/Avoid",
+        "Hide stretch and sector filter",
+        "Rank versus BUY entry timing explained",
+        "asof2026-11-02, signals valid through2026-11-03,1594 names, generatedNov3 19:58UTC",
+        "stock.html#MSGS detail shape"
+      ],
+      "limits": "Read-only DOM observation; no model verification or complete return interaction tested."
+    },
+    {
+      "requested": "https://www.mastermind-x.com/movers.html",
+      "resolved": "https://www.mastermind-x.com/stocks/index.html#today-movers",
+      "observed": [
+        "Rich Stocks hub",
+        "gainers/losers",
+        "most traded/unusual volume",
+        "search/sector filters",
+        "return analyzer"
+      ],
+      "limits": "Successful destination observation; all filters and deep tasks not exercised."
+    },
+    {
+      "requested": "https://www.mastermind-x.com/confluence_screener.html",
+      "resolved": "https://www.mastermind-x.com/confluence_screener.html",
+      "observed": [
+        "Three ranked setups datedNov3",
+        "initial rank1 free identities, rank2/3 public counts and locked identities",
+        "Recent/older rate evidence",
+        "variable3/4 D/W legs",
+        "later existing authorized session hydrated protected identities and Paid view unlocked"
+      ],
+      "capture": "evidence/production_confluence_desktop.jpg",
+      "limits": "Capture represents initial first-fold state. Later entitlement hydration is not evidence of unauthorized public identity leakage. Public/protected bytes evaluated separately in source."
+    },
+    {
+      "requested": "https://app.mastermind-x.com/discover",
+      "resolved": "https://app.mastermind-x.com/discover",
+      "observed": [
+        "Existing signed-in route session",
+        "six panes",
+        "market/asset/classification/currency/liquidity/cap/52w/daymove/unpriced controls",
+        "Fundamentals/Technical/Smart Screens/density",
+        "skeleton then loaded rows with source taxonomy, stale age and EOD clock"
+      ],
+      "limits": "No save submitted; no claim of full filter or API test."
+    },
+    {
+      "requested": "Visible Heatmap tab in Discover",
+      "resolved": "https://app.mastermind-x.com/discover?tab=heatmap",
+      "observed": [
+        "PRICE/FLOW, MAP/TABLE, CAP/USD CAP/EQUAL",
+        "1D and disabled accruing1W/1M/YTD",
+        "10258 scoped /500 drawn when loaded",
+        "full-scope breadth caption",
+        "EOD/nightly and top200 delayed-live labels coexist and need clearer qualification"
+      ],
+      "capture": "evidence/production_heatmap_loaded.jpg",
+      "limits": "Loaded treemap observed; no proposed compare/save or exact-return proof."
+    }
+  ],
+  "technical_limits": [
+    {
+      "action": "Navigate to /advanced.html, /baskets.html and /etfs.html",
+      "result": "Page.navigate timeouts/ineffective navigation; readback remained old Confluence page or blank tab",
+      "classification": "pre-effect/technical browser observation failure",
+      "interpretation": "No proof those public routes are down, denied or redirected. Source audit completed for each."
+    },
+    {
+      "action": "Activate visible Dislocations navigation link",
+      "result": "Tool action returned but URL/readback remained heatmap",
+      "classification": "unverified navigation",
+      "interpretation": "No served Dislocations route acceptance; current source read."
+    },
+    {
+      "action": "Request viewport390x844",
+      "result": "Requested viewport did not take effect; measured innerWidth1585",
+      "classification": "browser capability ineffective in this session",
+      "interpretation": "No mobile browser proof. Viewport reset performed."
+    },
+    {
+      "action": "Bounded browser recovery",
+      "result": "Documentation read and one new-tab recovery did not resolve navigation",
+      "classification": "unchanged technical failure; stopped further retries",
+      "interpretation": "No alternate carrier, reconnect loop or product repair attempted."
+    }
+  ],
+  "acceptance_status": "OBSERVED_BASELINES_ONLY; no redesigned product behavioral acceptance"
+}

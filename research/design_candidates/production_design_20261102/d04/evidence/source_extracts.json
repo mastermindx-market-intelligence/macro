@@ -1,0 +1,387 @@
+{
+  "sp500": {
+    "source_pin": "df691495abb1c2ba8f61e5624126cb17ad14e056",
+    "blob_sha": "fbbeb9fb922d368fba07bc461f074546bb0a31c7",
+    "source_path": "site/marketdata/sp500_heatmap.json",
+    "metadata": {
+      "asof": "2026-11-02",
+      "generated_utc": "2026-11-03 17:25",
+      "source": "polygon-live",
+      "delay_min": 15,
+      "currency": "USD",
+      "default_tf": "1D",
+      "timeframes": [
+        {
+          "key": "5M",
+          "en": "5 min",
+          "zh": "5分钟",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "10M",
+          "en": "10 min",
+          "zh": "10分钟",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "15M",
+          "en": "15 min",
+          "zh": "15分钟",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "30M",
+          "en": "30 min",
+          "zh": "30分钟",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "1H",
+          "en": "1 hour",
+          "zh": "1小时",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "2H",
+          "en": "2 hour",
+          "zh": "2小时",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "4H",
+          "en": "4 hour",
+          "zh": "4小时",
+          "group": "intraday",
+          "available": false
+        },
+        {
+          "key": "AH",
+          "en": "After-hours",
+          "zh": "盘后",
+          "group": "session",
+          "available": false
+        },
+        {
+          "key": "1D",
+          "en": "1 day",
+          "zh": "1天",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1W",
+          "en": "1 week",
+          "zh": "1周",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "MTD",
+          "en": "Month to date",
+          "zh": "本月至今",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1M",
+          "en": "1 month",
+          "zh": "1月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "3M",
+          "en": "3 month",
+          "zh": "3月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "6M",
+          "en": "6 month",
+          "zh": "6月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "YTD",
+          "en": "Year to date",
+          "zh": "年初至今",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1Y",
+          "en": "1 year",
+          "zh": "1年",
+          "group": "daily",
+          "available": true
+        }
+      ],
+      "n_tiles": 503,
+      "size_basis": "marketcap",
+      "stock_url": "https://app.mastermind-x.com/terminal?symbol="
+    },
+    "calculated": {
+      "tiles": 503,
+      "groups": 14,
+      "appearances": null,
+      "distinct_members": null,
+      "measured_1d_unique_members": null,
+      "distinct_direct_tile_tickers": 503,
+      "nested_member_accounting": "Not applicable to direct-company tiles; null is not zero coverage."
+    },
+    "first_tile_shape": {
+      "t": "string",
+      "name": "string",
+      "sector": "string",
+      "industry": "string",
+      "size": "number",
+      "perf": "object"
+    },
+    "first_tile_availability_edge": {
+      "tile": "MMM",
+      "one_hour_value": -1.7,
+      "one_hour_available": false
+    }
+  },
+  "themes": {
+    "source_pin": "df691495abb1c2ba8f61e5624126cb17ad14e056",
+    "blob_sha": "085c9ba53e004f68639553a57bf34e74b139dd93",
+    "source_path": "site/marketdata/themes_heatmap.json",
+    "metadata": {
+      "map_type": "themes",
+      "asof": "2026-11-03",
+      "generated_utc": "2026-11-03 17:25",
+      "source": "finviz-themes",
+      "delay_min": 15,
+      "currency": "USD",
+      "default_tf": "1D",
+      "timeframes": [
+        {
+          "key": "1D",
+          "en": "1 day",
+          "zh": "1天",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1W",
+          "en": "1 week",
+          "zh": "1周",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "MTD",
+          "en": "Month to date",
+          "zh": "本月至今",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1M",
+          "en": "1 month",
+          "zh": "1月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "3M",
+          "en": "3 month",
+          "zh": "3月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "6M",
+          "en": "6 month",
+          "zh": "6月",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "YTD",
+          "en": "Year to date",
+          "zh": "年初至今",
+          "group": "daily",
+          "available": true
+        },
+        {
+          "key": "1Y",
+          "en": "1 year",
+          "zh": "1年",
+          "group": "daily",
+          "available": true
+        }
+      ],
+      "n_tiles": 268,
+      "n_members": 924,
+      "size_basis": "count",
+      "membership_manifest": {
+        "schema": "finviz.membership_manifest.v1",
+        "counts": {
+          "themes": 40,
+          "subthemes": 268,
+          "appearances": 2339,
+          "distinct_tickers": 924
+        },
+        "tree_sha256": "1d597c44c8ce0ffba6ce548a08d090c8c702199356830fd7b02739f09f1dba45",
+        "reconciliation": {
+          "status": "conserved",
+          "reasons": []
+        },
+        "coverage": {
+          "1D": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "1W": {
+            "measured_members": 910,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "MTD": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "1M": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "3M": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "6M": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "YTD": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          },
+          "1Y": {
+            "measured_members": 911,
+            "total_members": 924,
+            "measured_groups": 268,
+            "total_groups": 268
+          }
+        },
+        "unpriced_members": 13,
+        "unresolved_identity_count": null,
+        "source_declared_partial_groups": null,
+        "source_declared_missing_groups": null,
+        "unknown_reason": "not_provided_by_source",
+        "membership": {
+          "status": "bound",
+          "reason": null,
+          "asof": "2026-08-15",
+          "refreshed_at_utc": "2026-08-15T02:01:34+00:00",
+          "parser_version": "finviz_tree_refresh.v1"
+        },
+        "corrections": {
+          "status": "snapshot_promoted",
+          "scope": "bound_snapshot_only",
+          "current_proposal_adjudication": null
+        }
+      }
+    },
+    "calculated": {
+      "tiles": 268,
+      "groups": 40,
+      "appearances": 2339,
+      "distinct_members": 924,
+      "measured_1d_unique_members": 911
+    },
+    "first_tile_shape": {
+      "t": "string",
+      "name": "string",
+      "sector": "string",
+      "desc": "string",
+      "size": "number",
+      "perf": "object",
+      "members": "array[16]"
+    },
+    "first_tile_availability_edge": null
+  },
+  "baskets": {
+    "source_pin": "df691495abb1c2ba8f61e5624126cb17ad14e056",
+    "blob_sha": "42149e59b72987f8510df149322c41b266aa6f92",
+    "source_path": "data/baskets/membership.json",
+    "count": 49,
+    "ids": [
+      "mag7",
+      "ai_infra",
+      "ai_software",
+      "defense",
+      "power_grid",
+      "reshoring",
+      "regional_banks",
+      "managed_care",
+      "housing",
+      "payments_fintech",
+      "energy_complex",
+      "defensives",
+      "travel",
+      "retail",
+      "crypto",
+      "crypto_rails",
+      "ai_neoclouds",
+      "non_ai_software",
+      "non_ai_tech",
+      "ai_semiconductors",
+      "semicap_equipment",
+      "memory_storage",
+      "data_center_power",
+      "cybersecurity",
+      "nuclear_power",
+      "robotics_automation",
+      "obesity_glp1",
+      "quantum_computing",
+      "gold_miners",
+      "silver_miners",
+      "pgm_miners",
+      "uranium_miners",
+      "critical_minerals",
+      "space_economy",
+      "ai_agents",
+      "insurance",
+      "big_pharma",
+      "industrial_distribution",
+      "us_sector_tech",
+      "us_sector_financials",
+      "us_sector_health",
+      "us_sector_discretionary",
+      "us_sector_comm",
+      "us_sector_industrials",
+      "us_sector_staples",
+      "us_sector_energy",
+      "us_sector_utilities",
+      "us_sector_realestate",
+      "us_sector_materials"
+    ],
+    "construction": "Equal-weight baskets, rebalanced monthly.",
+    "history_note": "Available history comes from the S&P 1500 and baskets-only price caches. Basket levels are BACK-PROJECTED: a basket curated after seed_date is charted with its current roster carried backward over that roster's own price history, so the line shows what today's members did in the past, not what anyone held at the time. 35 of the 49 baskets here are back-projected this way. Membership changes are recorded per basket in `changelog`, and each member carries its true curation date in `curated_added` (see `added_semantics`) — treat the history before a member's `curated_added` as context, never as a track record.",
+    "added_semantics": "Each member carries TWO dates and they mean different things. `added` is the index-inclusion mask: the first date this member's price counts toward the basket's equal-weight level, back-projected to seed_date for any roster curated later, and it is what engine/baskets.py and its sibling engines read. `curated_added` is the provenance stamp: the date a curator actually put this name in this basket, never earlier than the basket's own `created`. Read `curated_added` — never `added` — when asking how long a name has been watched, or whether a signal predates its curation."
+  }
+}

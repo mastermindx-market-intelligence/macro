@@ -1,0 +1,32 @@
+{
+  "schema": "d04.internal_advisory_scope.v1",
+  "root_writer": "Current D04 root receiver",
+  "formal_rig": false,
+  "external_messaging": false,
+  "children": [
+    {
+      "id": "/root/d04_contract_architecture",
+      "scope": "Pinned-source confluence/compatibility architecture; read-only",
+      "return": "ACCEPTED_SOURCE_ADVICE; STOP",
+      "material_root_checks": [
+        "24 mapping parser",
+        "subsector dataset directory/benchmark",
+        "month-mean/train-test producer",
+        "public/protected identity and generation seam"
+      ]
+    },
+    {
+      "id": "/root/d04_return_save_architecture",
+      "scope": "Pinned Terminal source and bounded local-document accuracy review; read-only",
+      "return": "ACCEPTED_SOURCE_ADVICE; five corrections incorporated; STOP",
+      "material_corrections": [
+        "Save field scope beyond#778",
+        "Handle versus full-draft/account-pending storage",
+        "Explicit reset exceptions",
+        "Dislocations stable tie order",
+        "Three separate return paths"
+      ]
+    }
+  ],
+  "authority_limit": "No independent product/visual review receipt, Fabric runtime grant or native Paper writer admission inferred."
+}
