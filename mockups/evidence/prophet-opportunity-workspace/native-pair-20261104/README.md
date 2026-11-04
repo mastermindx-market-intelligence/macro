@@ -185,7 +185,54 @@ PR head and are not in this delta's scope:
 - `tests/test_us_board_priority_ui.py` — 5 cases, all asserting the older
   "Higher Priority means the setup is more ready today" footnote copy
 
+A second pre-existing failure, outside the focused set, is
+`tests/test_site_shim.py::test_every_committed_site_page_has_shim` (it names
+`site/market_memory.html`). It fails identically on the pristine baseline
+worktree, and `site/market_memory.html` is **not** touched by this change.
+
 No test was disabled, weakened or skipped to obtain a green result.
+
+## Local verification actually run
+
+| check | result |
+|---|---|
+| `scripts/check_signal_gate_coherence.py` (both artifacts) | exit 0, 0 mismatching tickers |
+| `scripts/check_board_contradictions.py site/factordata/us_standouts.json` | exit 0, 5 invariants pass |
+| `scripts/check_validated_claims.py` | exit 0 |
+| `verify_native_pair.py` (the twelve publication-pair checks) | `PUBLICATION_PAIR_VERIFIED` |
+| `pytest tests/test_signal_gate_coherence.py tests/test_signal_gate_validity_contract.py` (the `signal-gate-pair-coherence` pack step) | 59 passed |
+| `scripts/check_template_site_sync.py` | OK, 161 pairs checked |
+| `scripts/check_design_system.py --mode enforce-added --diff-file <templates diff>` | 0 blocking findings |
+| `scripts/check_ui_visual_evidence.py --diff-file <templates+site diff>` | exit 0, no finding |
+| `scripts/check_runtime_style_injection.py` | OK (277 .js scanned) |
+| `scripts/check_design_system.py --self-check` | OK |
+| `scripts/check_p0b_receipt_closure.py --diff-file <changed paths>` | exit 0 |
+| `scripts/run_ci_pack.py --plan-only` / `--validate-only` (packs 0 and 1) | 384 legacy jobs validated |
+| `pytest` design-governance suites | 220 passed |
+| `pytest` template-site-sync / asset-stamp / externalize-css / site-shim suites | 234 passed, 1 pre-existing failure |
+| `pytest` the 11 focused suites | 642 passed, 22 skipped, 9 pre-existing failures |
+
+The two diff-gated CI packs this change triggers are `board-contradictions`
+(pack 0) and `signal-gate-pair-coherence` (pack 1); both were executed here as
+the workflow defines them.
+
+## Hosted CI on this exact head
+
+`ci-authority` run **41900174608** on head `f10a9e0fc7a515f658fadec6203eccacb0ccaffc`
+concluded **success**: `ci-authority` success, `ci-authority/main` success,
+`ci-authority/codex/merge-queue-pilot` failure. That pilot job is the known
+pre-existing failure on every macro pull request — it also failed on this
+branch's own earlier heads (runs 41887383343 at `e5c28801` and 41865069481 at
+`22abd622`), so it is not caused by this change.
+
+**This is not full hosted PR/fences proof.** The pack-level `ci` and `fences`
+workflows produced **no run** for this head. On this branch they last ran at
+head `464152a0` (run `ci` 41804161703, `fences` 41804161294), before the pull
+request was converted to draft at 15:23:28Z; every push since then, including
+this one, has produced only `ci-authority`. The trigger condition for the
+pack-level lanes on a draft pull request is not established from here, and the
+only ways to exercise it — un-drafting the pull request, or an owner CI
+dispatch — are outside this assignment's authority.
 
 ## What this is not
 
