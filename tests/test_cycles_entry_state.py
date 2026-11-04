@@ -35,8 +35,8 @@ function boot(){
   createElement:()=>el('script'),head:{appendChild(){}},
   addEventListener:(n,f)=>(dl[n]||=[]).push(f),dispatchEvent:e=>(dl[e.type]||[]).forEach(f=>f(e))};
  const history={get state(){return shared.entries[shared.at].state},get length(){return shared.entries.length},
-  replaceState(s,_,u){shared.entries[shared.at]={url:new URL(u,context.location).href,state:s}},
-  pushState(s,_,u){shared.entries.splice(shared.at+1);shared.entries.push({url:new URL(u,context.location).href,state:s});shared.at++},
+  replaceState(s,_,u){shared.entries[shared.at]={url:new URL(u===undefined?context.location.href:u,context.location).href,state:s}},
+  pushState(s,_,u){shared.entries.splice(shared.at+1);shared.entries.push({url:new URL(u===undefined?context.location.href:u,context.location).href,state:s});shared.at++},
   back(){shared.backCalls++;travel(-1)},forward(){travel(1)}};
  context={document:doc,history,URL,URLSearchParams,TextEncoder,scrollY:650,scrollTo(x,y){this.scrollY=y},
   get location(){return new URL(shared.entries[shared.at].url)},
@@ -55,6 +55,7 @@ function boot(){
   }};
  context.window=context;vm.runInNewContext(source,context);
  const api={c:context,doc,opener,nodes,applied,
+  tick(){frames.splice(0).forEach(f=>f())},
   flush(){let n=0;while(frames.length){assert.ok(n++<20);frames.splice(0).forEach(f=>f())}},
   fire(n){(wl[n]||[]).forEach(f=>f({}));},
   event(n){doc.dispatchEvent({type:n})},
@@ -180,7 +181,7 @@ proof={...proof,publicationId:publication,status:'superseded'};assert.equal(a.c.
 proof={...proof,status:'verified'};
 // Malformed and oversized native snapshots cannot leak arbitrary payloads.
 a.state({...native,selectedIds:Array(513).fill('x')});assert.equal(a.c.SectorWorkspaceExport(),null);
-a.state({...native,selectedIds:Array(350).fill('界'.repeat(100))});assert.equal(a.c.SectorWorkspaceExport(),null,'32KiB bound is UTF-8, not character count');
+a.state({...native,selectedIds:Array(120).fill('界'.repeat(100))});assert.equal(a.c.SectorWorkspaceExport(),null,'32KiB bound is UTF-8, not character count');
 a.state({...native,range:[NaN,2024]});assert.equal(a.c.SectorWorkspaceExport(),null);
 a.state(native);
 const origin=a.c.history.state.siCyclesOrigin;
@@ -193,4 +194,82 @@ assert.equal(a.c.SectorWorkspaceExport().siCyclesOrigin,null);
         ["node", "-e", HOST + checks, str(ROOT / "templates/si_workspace.js")],
         text=True, capture_output=True, timeout=20,
     )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node is required")
+def test_external_restore_is_current_entry_bound_validated_once_and_cancellable():
+    checks = r"""
+
+// Apply the native projection to the existing destination without routing or replacing its identity.
+a.flush();
+const saved=a.c.SectorWorkspaceExport();
+assert.ok(saved&&saved.siWorkspace.view==='map');
+saved.siWorkspace.entryId='captured-source-entry';
+saved.siWorkspace.viewport={scrollY:120,focus:{kind:'board-cycle-opener',id:'xle'}};
+saved.siWorkspace.measured.historyMode='obs';
+const dest=a.c.history.state.siWorkspace.entryId,where=a.c.location.href;
+let urlWrites=0,results=[];
+const replace=a.c.history.replaceState;
+a.c.history.replaceState=function(state,title,url){if(arguments.length>2)urlWrites++;return replace.call(this,state,title,url);};
+a.c.scrollY=900;
+const options={restoreId:'restore-map-1',snapshotId:'parent-entry:2',expectedHref:a.c.location.pathname+a.c.location.search+a.c.location.hash,
+ onResult:r=>results.push(copy(r))};
+assert.equal(a.c.SectorWorkspaceApplyCurrent(saved,options).status,'pending');
+a.flush();
+assert.equal(results.length,1);assert.equal(results[0].status,'applied');
+assert.equal(results[0].scope,'serialized_entry_settings');
+assert.equal(a.c.scrollY,120);assert.equal(a.doc.activeElement,a.opener);
+assert.equal(a.c.history.state.siWorkspace.entryId,dest);
+assert.equal(a.c.history.state.originNav.source,'market');
+assert.equal(a.c.location.href,where);assert.equal(urlWrites,0,'restore bookkeeping omits URL');
+assert.equal(a.c.SectorWorkspaceApplyCurrent(saved,options).status,'applied');
+assert.equal(results.length,1,'duplicate operation never reapplies or acknowledges twice');
+const invalid=copy(saved);invalid.extra='foreign';
+assert.equal(a.c.SectorWorkspaceApplyCurrent(invalid,{...options,restoreId:'bad-shape'}).status,'rejected');
+assert.equal(a.c.location.href,where);
+const badGeneration=copy(saved);badGeneration.siWorkspace.measured.generation='old-generation';
+results=[];a.c.SectorWorkspaceApplyCurrent(badGeneration,{...options,restoreId:'bad-measured'});a.flush();
+assert.equal(results[0].status,'rejected');assert.equal(results[0].reason,'measured_source_changed');
+results=[];
+a.c.SectorWorkspaceApplyCurrent(saved,{...options,restoreId:'interrupt-map'});
+a.tick();a.c.scrollY=950;a.event('wheel');a.flush();
+assert.equal(results[0].status,'partial');assert.equal(results[0].reason,'user_input');
+assert.equal(a.c.scrollY,950,'late animation-frame replay cannot overwrite new user intent');
+// Pending source admission is tied to this exact native child entry.
+a.c.history.pushState({originNav:{source:'market'}},'','/sector_central.html?g=XLE&cycle=xle&cycleSource=latest#cycles');
+a.c.__siRoute();a.flush();
+let proof={status:'pending',publicationId:'cycp1-'+'a'.repeat(64),region:'us'},appliedCount=0;
+const cycle={schema:'sector_cycles.view.v1',publicationId:proof.publicationId,region:'us',family:'sectors',focus:'xle',
+ mode:'price',scale:'linear',range:[2022,2024],phases:['Expansion'],selectedIds:[],
+ mobileSelection:{mode:'leaders',ids:[]},leg:null};
+let actual={...cycle,mode:'osc',scale:'log'};
+a.c.SectorCyclesCapture=()=>copy(actual);
+a.c.SectorCyclesEvidence=()=>copy(proof);
+a.c.SectorCyclesApply=c=>{
+ if(c.validateOnly)return {status:'validated'};
+ if(c.restore){actual=copy(c.snapshot);appliedCount++;}
+ return {status:'applied',id:'xle',family:'sectors',leg:'closed',publication:copy(proof)};
+};
+const incoming={siWorkspace:{...copy(a.c.history.state.siWorkspace),measured:a.c.SectorMeasuredCapture(),cycles:cycle,
+ viewport:{scrollY:220,focus:null}},siCyclesOrigin:null};
+incoming.siWorkspace.entryId='captured-cycle-entry';
+const cycleOptions={restoreId:'pending-cycle',snapshotId:'parent-cycle:3',expectedHref:incoming.siWorkspace.href,
+ onResult:r=>results.push(copy(r))};
+results=[];a.c.SectorWorkspaceApplyCurrent(incoming,cycleOptions);
+assert.equal(results.length,0);assert.equal(appliedCount,0);
+a.event('keydown');proof.status='verified';a.event('sc:publication-ready');a.flush();
+assert.equal(appliedCount,0);assert.equal(results[0].status,'rejected');
+results=[];a.c.SectorWorkspaceApplyCurrent(incoming,{...cycleOptions,restoreId:'verified-cycle'});a.flush();
+assert.equal(results[0].status,'applied');assert.equal(appliedCount,1);
+assert.equal(results[0].publicationId,cycle.publicationId);
+assert.notEqual(a.c.history.state.siWorkspace.entryId,'captured-cycle-entry');
+a.event('sc:series-ready');a.flush();assert.equal(appliedCount,1,'later hydration does not replay the restore');
+results=[];a.c.SectorWorkspaceApplyCurrent(incoming,{...cycleOptions,restoreId:'superseded-during-viewport'});
+a.tick();proof={...proof,publicationId:'cycp1-'+'b'.repeat(64)};a.flush();
+assert.equal(results[0].status,'partial');assert.equal(results[0].reason,'source_or_settings_changed');
+
+"""
+    result = subprocess.run(["node", "-e", HOST + checks, str(ROOT / "templates/si_workspace.js")],
+                            text=True, capture_output=True, timeout=20)
     assert result.returncode == 0, result.stdout + result.stderr

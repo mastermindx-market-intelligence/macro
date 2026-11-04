@@ -2619,10 +2619,32 @@
       if (!expected || !actual) { receipt.status="source_unavailable";return receipt; }
       if (expected.schema!==actual.schema || expected.scope!==actual.scope || expected.sha256!==actual.sha256) { receipt.status="source_mismatch";return receipt; }
     }
+    var family=id?(isBasketRec(byId[id])?(FAM[byId[id].kind]?byId[id].kind:'baskets'):'sectors'):(FAM[context.family]?context.family:'sectors');
+    if (context.strictRestore) {
+      var invalidStrict=validView(context.snapshot,family,id);
+      if (!invalidStrict && new Set(context.snapshot.phases).size!==context.snapshot.phases.length) invalidStrict='invalid_state';
+      if (!invalidStrict && family==='sectors' && context.snapshot.selectedIds.length) invalidStrict='invalid_state';
+      if (!invalidStrict && context.snapshot.mobileSelection.mode!=='explicit' && context.snapshot.mobileSelection.ids.length) invalidStrict='invalid_state';
+      if (invalidStrict) {receipt.status='rejected';receipt.reason=invalidStrict;return receipt;}
+      // Non-sector curves and every price chart depend on the verified series
+      // part. A loaded core or an equal session date cannot certify that history.
+      if (context.snapshot.mode==='price' || family!=='sectors') {
+        if (seriesState==='pending') return receipt;
+        if (seriesState!=='ready' || partStates.series!=='verified') {receipt.status='rejected';receipt.reason='series_unavailable';return receipt;}
+        var needed=context.snapshot.selectedIds.concat(context.snapshot.mobileSelection.ids);
+        if(id) needed.push(id);
+        if(context.snapshot.mode==='price' && needed.some(function(key){return !byId[key]||!Array.isArray(byId[key].price)||!byId[key].price.length;})){
+          receipt.status='rejected';receipt.reason='series_unavailable';return receipt;
+        }
+      }
+      if (context.snapshot.leg && !legsOf(byId[id]).some(function(leg) {
+        return (leg.start.date||leg.start.t)===context.snapshot.leg.start && (leg.end.date||leg.end.t)===context.snapshot.leg.end;
+      })) {receipt.status='rejected';receipt.reason='leg_unavailable';return receipt;}
+    }
     if (!node || !node.getBoundingClientRect().width) return receipt;
+    if (context.validateOnly) {receipt.status='validated';receipt.family=family;return receipt;}
     mountHero();
     if (!heroChart) return receipt;
-    var family=id?(isBasketRec(byId[id])?(FAM[byId[id].kind]?byId[id].kind:'baskets'):'sectors'):(FAM[context.family]?context.family:'sectors');
     var fresh=context.entryKey && context.entryKey!==appliedEntry;
     if (fresh || context.restore) {
       var invalid=context.snapshot?validView(context.snapshot,family,id):null;

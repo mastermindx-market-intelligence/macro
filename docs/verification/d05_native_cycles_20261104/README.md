@@ -8,7 +8,26 @@ release carrier. The original D05 design package covers all 13 canonical routes;
 this bounded source iteration completes the native Central/Cycles evidence and
 return-state contracts within the incumbent implementation.
 
-## Entry export and user-intent follow-through — 2026-11-04 UTC
+## Joint Company-return source checkpoint — 2026-11-04 UTC
+
+The Macro half now implements the qualified native restore and the closed
+Shared Shell 20261104.1 return protocol described in [SOURCE_CONTRACT.md](SOURCE_CONTRACT.md#10-joint-company-return-implementation--2026-11-04).
+It composes on dd903b3, retaining the recovered Theme absence, reduced-motion
+and browser/preview corrections. Exact source checks pass: 79 bridge tests,
+seven entry cases and five actual producer/receiver scenarios. Terminal's
+original #1244 workspace has 97 passing tests across eight suites, including
+contract/lifecycle/hydration and existing presentation checks; full TypeScript
+also passed.
+Its source publication is separately blocked by the inherited-baseline
+publisher capability gap. All 486 original untracked artifacts remain unchanged.
+
+The original Fabric operations now report terminal/root-verified returns;
+this parent still lacks result-consumption authorization. The prior browser
+capture's deficiencies and all new actual-browser proof remain open. No
+production or final shared-design acceptance is claimed. Dossier 2c4edf26 is
+available for the next source-qualified disclosure integration.
+
+## Prior entry export and user-intent follow-through — 2026-11-04 UTC
 
 The current entry owner now provides **`SectorWorkspaceExport()`**, a pure,
 detached projection of its existing `siWorkspace` and single local
@@ -22,8 +41,8 @@ also require the active entry/href, an admitted context and exact current
 verified publication/family/focus. A source-rejected or superseded chart cannot
 be exported as the current investigation. This exports **currently serialized
 settings**; map scope/horizon and other unrepresented controls are not covered.
-No new public import, shared-shell message or Company restoration acknowledgement
-is introduced in this increment.
+This prior increment introduced no public import, shared-shell message or Company
+restoration acknowledgement; the joint checkpoint above supplies those later changes.
 
 Queued viewport restoration now yields to subsequent pointer, touch, wheel or
 keyboard intent. Both the exact-entry two-frame replay and legacy per-view
@@ -55,7 +74,9 @@ Company return is still unproven.
   one pin; Paper integration law remains unchanged.
 - Original Macro preparation base: `c53915f6d67078d5c0aeaf73bf85ddea1a23de03`.
   Previous candidate: `9906c882d56e5bed829b2d11aa7b837c5b7abc7f`.
-- Root is sole source writer on `claude/d05-native-cycles-20261104` / Draft #10703.
+- This continuation coordinates source changes on `claude/d05-native-cycles-20261104`
+  / Draft #10703. The other admitted D05 continuation's dd903b3 increment was
+  read back and preserved before this joint checkpoint.
 - Programme continuity remains the existing Draft #10617 and its D05 builder
   instructions; the last pre-iteration checkpoint is `e521f04dcc5afb4fb06152584d35c8a01dbe21ff`.
 - Full 13-route design/spec/retention package: `22f6a887a621e82497ea256611835cee2ba6f079`.

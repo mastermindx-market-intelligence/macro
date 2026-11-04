@@ -178,7 +178,7 @@ function harness(opts) {
     addEventListener(type, fn) { (winL[type] = winL[type] || []).push(fn); },
     dispatchEvent(evt) { dispatched.push(evt); (winL[evt.type] || []).slice().forEach((fn) => fn(evt)); return true; },
     removeEventListener(type, fn) { if (winL[type]) winL[type] = winL[type].filter((f) => f !== fn); },
-    URL, URLSearchParams, setTimeout, clearTimeout, CustomEvent, MutationObserver: MOShim,
+    URL, URLSearchParams, TextEncoder, setTimeout, clearTimeout, CustomEvent, MutationObserver: MOShim,
   };
   sandbox.window = sandbox;
   sandbox.self = sandbox;
@@ -364,7 +364,7 @@ test('valid INIT: chrome suppression, context, READY shape', () => {
   const ready = ctx.lastOf('READY');
   assert.ok(ready);
   assert.deepStrictEqual(Object.keys(ready).sort(), ENV3.concat(READY_FIELDS).sort());
-  assert.strictEqual(ready.bridgeVersion, '20261018.1');
+  assert.strictEqual(ready.bridgeVersion, '20261104.1');
   assert.strictEqual(ready.documentVersion, '20261018.1');
   assert.strictEqual(ready.contextRevision, 3);
   assert.strictEqual(ready.href, 'https://www.mastermind-x.com/tools?q=alpha#top');
@@ -923,7 +923,7 @@ test('newer CONTEXT after the initial READY is acknowledged without restoring', 
   const ack = ctx.lastOf('READY');
   assert.deepStrictEqual(Object.keys(ack).sort(), ENV3.concat(READY_FIELDS).sort());
   assert.strictEqual(ack.contextRevision, 4); // the revision the parent actually applied
-  assert.strictEqual(ack.bridgeVersion, '20261018.1');
+  assert.strictEqual(ack.bridgeVersion, '20261104.1');
   assert.strictEqual(ack.documentVersion, '20261018.1');
   assert.strictEqual(ack.href, 'https://www.mastermind-x.com/tools?q=alpha#top');
   assert.strictEqual(ctx.calls.focus.length, focuses); // context updates never steal focus
@@ -1709,3 +1709,80 @@ for (const parent of ['https://app.mastermind-x.com.evil.example', 'http://app.m
     assert.strictEqual(ctx.sent.length, 0);
   });
 }
+
+
+function d05Projection(href) {
+  return { siWorkspace: { schema: 'sector_central.entry.v1', entryId: 'child-source', href,
+    view: 'map', measured: null, cycles: null, viewport: { scrollY: 200, focus: null } }, siCyclesOrigin: null };
+}
+test('D05 pre-navigation export is pure and strips only bridge transport bytes', () => {
+  const path = '/sector_central.html?q=A%20B&q=A+B&g=XLE';
+  const ctx = harness({childUrl:'https://www.mastermind-x.com'+path+'&mmx_shell=1&mmx_generation=g1#map'});
+  let captures = 0, exports = 0;
+  ctx.sandbox.SectorWorkspaceCapture = () => { captures++; throw Error('persisting capture is forbidden'); };
+  ctx.sandbox.SectorWorkspaceExport = () => { exports++; return d05Projection(ctx.location().pathname+ctx.location().search+ctx.location().hash); };
+  ctx.activate({canonicalPath:path+'#map',catalog:{legacyPaths:['/sector_central.html'],nativePaths:['/terminal']}});
+  const before = ctx.replaceCalls.length;
+  assert.equal(ctx.api().navigate('/terminal?sym=CNQ.TO&region=CA'),true);
+  const view=ctx.lastOf('VIEW_STATE').view;
+  assert.equal(view.page.value.siWorkspace.href,path+'#map');
+  assert.equal(captures,0); assert.ok(exports>0);
+  assert.equal(ctx.replaceCalls.length,before);
+  const types=ctx.sent.map(s=>s.msg.type);
+  assert.ok(types.lastIndexOf('VIEW_STATE')<types.lastIndexOf('NAVIGATE'));
+  ctx.fireWin('pagehide');
+});
+test('D05 restore rebinds transport once, waits for native receipt and sends actual view after the result', () => {
+  const canonical='/sector_central.html?q=A%20B&q=A+B&g=XLE#map';
+  const ctx=harness({childUrl:'https://www.mastermind-x.com/sector_central.html?q=A%20B&q=A+B&g=XLE&mmx_shell=1&mmx_generation=g1#map'});
+  let calls=0, callback, incoming;
+  ctx.sandbox.SectorWorkspaceApplyCurrent=(projection,options)=>{
+    calls++;incoming=projection;callback=options.onResult;
+    assert.equal(options.expectedHref,ctx.location().pathname+ctx.location().search+ctx.location().hash);
+    return {status:'pending',cancel:reason=>callback({status:'rejected',reason,viewport:'interrupted',focus:'interrupted'})};
+  };
+  ctx.sandbox.SectorWorkspaceExport=()=>d05Projection(ctx.location().pathname+ctx.location().search+ctx.location().hash);
+  const init={canonicalPath:canonical,catalog:{legacyPaths:['/sector_central.html'],nativePaths:['/terminal']},
+    restore:{x:0,y:200,restoreId:'r-1',snapshotId:'e-1:2',page:{kind:'d05-sector-central',value:d05Projection(canonical)}}};
+  ctx.activate(init);
+  assert.equal(calls,1);assert.ok(incoming.siWorkspace.href.includes('mmx_generation=g1'));
+  assert.ok(ctx.lastOf('READY'));assert.equal(ctx.lastOf('RESTORE_RESULT'),null);
+  assert.equal(ctx.calls.scrollTo.length,0,'native typed viewport has one writer');
+  ctx.dispatchMessage(ctx.initMsg(init));assert.equal(calls,1,'repeated INIT is idempotent');
+  callback({status:'applied',reason:null,publicationId:null,viewport:'applied',focus:'absent'});
+  assert.equal(ctx.lastOf('RESTORE_RESULT').canonicalPath,canonical);
+  assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'applied');
+  const types=ctx.sent.map(s=>s.msg.type);assert.ok(types.lastIndexOf('RESTORE_RESULT')<types.lastIndexOf('VIEW_STATE'));
+  callback({status:'applied',reason:null,viewport:'applied',focus:'absent'});
+  assert.equal(ctx.activeCount('RESTORE_RESULT'),1);
+  ctx.fireWin('pagehide');
+});
+test('D05 cancellation is exact-generation/request bound and later input stops pending application', () => {
+  for(const kind of ['input','deadline','navigation']){
+    const canonical='/sector_central.html#map';
+    const ctx=harness({childUrl:'https://www.mastermind-x.com/sector_central.html?mmx_shell=1&mmx_generation=g1#map'});
+    let cancelled=0;
+    ctx.sandbox.SectorWorkspaceApplyCurrent=(projection,options)=>({status:'pending',cancel:reason=>{
+      cancelled++;options.onResult({status:'rejected',reason,viewport:'interrupted',focus:'interrupted'});
+    }});
+    ctx.activate({canonicalPath:canonical,catalog:{legacyPaths:['/sector_central.html'],nativePaths:['/terminal']},
+      restore:{x:0,y:200,restoreId:'r-1',snapshotId:'e-1:2',page:{kind:'d05-sector-central',value:d05Projection(canonical)}}});
+    ctx.dispatchMessage({protocol:'mmx.shared-shell.v1',frameGeneration:'g1',type:'RESTORE_CANCEL',restoreId:'wrong',snapshotId:'e-1:2',reason:'deadline'});
+    assert.equal(cancelled,0);
+    if(kind==='input')ctx.fireDoc('touchstart');
+    if(kind==='deadline')ctx.dispatchMessage({protocol:'mmx.shared-shell.v1',frameGeneration:'g1',type:'RESTORE_CANCEL',restoreId:'r-1',snapshotId:'e-1:2',reason:'deadline'});
+    if(kind==='navigation')ctx.api().navigate('/terminal?sym=9988.HK&region=HK');
+    assert.equal(cancelled,1);assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'rejected');
+    ctx.fireWin('pagehide');
+  }
+});
+test('D05 foreign, copied transport and malformed requests cannot reach the native receiver', () => {
+  for(const href of ['https://evil.example/sector_central.html#map','/sector_central.html?mmx_generation=old#map','/sector_central.html?access_token=secret#map']){
+    const ctx=harness({childUrl:'https://www.mastermind-x.com/sector_central.html?mmx_shell=1&mmx_generation=g1#map'});
+    let calls=0;ctx.sandbox.SectorWorkspaceApplyCurrent=()=>{calls++;};
+    ctx.activate({canonicalPath:'/sector_central.html#map',catalog:{legacyPaths:['/sector_central.html'],nativePaths:['/terminal']},
+      restore:{x:0,y:200,restoreId:'r-1',snapshotId:'e-1:2',page:{kind:'d05-sector-central',value:d05Projection(href)}}});
+    assert.equal(calls,0);assert.equal(ctx.lastOf('RESTORE_RESULT').outcome,'rejected');
+    ctx.fireWin('pagehide');
+  }
+});

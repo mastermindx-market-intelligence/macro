@@ -73,10 +73,8 @@
   ],
   "file_sha256": {
     "design_refs/sector-paper-20261021/copy_deck.json": "29013d96309b6fab83c3a364871305c206d6f97120c7d44d3d22e59200942722",
-    "docs/verification/d05_native_cycles_20261104/README.md": "7208b916649b1726ad05d1f81fcd7db0049799b885a604162ff1a8cceba7cd69",
-    "docs/verification/d05_native_cycles_20261104/SOURCE_CONTRACT.md": "754dba0e25249c921b7ddb0c3e9527266d0d996fb5e9842815f327a77047384e",
-    "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "b82914e4b8de0f1ff9d18d07a15c4d3cf3c7499e2a729017910d10529a23c762",
-    "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "683dcc03134335701ebb45a628944410fb07c0a15e485735fdaeb22062d3a11b",
+    "docs/verification/d05_native_cycles_20261104/prepare_preview.py": "d33fc78044a10ca9280fd4c89a02e871446e7e0057f2aebe178f14f59ae48352",
+    "docs/verification/d05_native_cycles_20261104/verify_browser.cjs": "01b71a6c1d21eeba74854808fd22ef0a4e9fe71211ef3065acb7294219ff5f8e",
     "engine/leadership_rotation_context.py": "637ad1e50132086b848a1221103e19b8f530dd1b5cbc9a312ccc23015faab49c",
     "engine/sector_generation_guard.py": "c16d0c74fb35f2c19a5ffda816f988e8435b5b6608690d1df53f871319417ae3",
     "scripts/_cycles_payload.py": "261fd72e212f241c9fdef07d5ef507b83866c2af0ccfebef1843cf3ca4d0c24f",
@@ -85,15 +83,15 @@
     "scripts/build_country_cycles.py": "00501db4028990403813e345fe61ca8e997858dcb0c458f4088677496642bad3",
     "scripts/build_sector_cycles.py": "187d5d17948712260c1ac5a0861e4b43e5e1926a6af5e9ec143c4c67556804d4",
     "site/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
-    "site/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
-    "site/si_workspace.js": "6cd3b26d6abb21c5e4600f78d8976f731300eaac7e10252ce64a3835e52bda5b",
+    "site/sector_cycles.js": "3c5f017643748983fa6403502e1f1a4b5d12e473eeb83f7deb3e0763269f669c",
+    "site/si_workspace.js": "d1118b08a43da1bc3e394084ee62f8498da91670bdb0fec5cc2c20f200ebdd96",
     "templates/sector_central.html.j2": "fd4f75c8825d3bb4c16f537e71cb1fa14799a17b334a829ea733a9c016809241",
     "templates/sector_cycles.css": "e255e69f2a695aca594f6cbeb3f2464cd9c8bf356050b38239f94465f95ab886",
-    "templates/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc",
-    "templates/si_workspace.js": "6cd3b26d6abb21c5e4600f78d8976f731300eaac7e10252ce64a3835e52bda5b",
+    "templates/sector_cycles.js": "3c5f017643748983fa6403502e1f1a4b5d12e473eeb83f7deb3e0763269f669c",
+    "templates/si_workspace.js": "d1118b08a43da1bc3e394084ee62f8498da91670bdb0fec5cc2c20f200ebdd96",
     "tests/fixtures/leadership_rotation/measured_read_v1.json": "a468e4f0a132cedb8ebaebe0a66528446df22582b976a8e5a8c58ae44ba05c3a",
-    "tests/test_cycles_entry_state.py": "f442b928fb27454cd60c4954288c0f2b9278a885fbe9a1587dfaeaca60be0f09",
-    "tests/test_cycles_publication.py": "a8bca2922ecf77d47d9c34f68f4d69f119e014adcf16f374fb2461bf2a389015",
+    "tests/test_cycles_entry_state.py": "77f2b7bcafe66d4d3367ca4c20363ed28726ae99f32d483d8f5754ea6b88c818",
+    "tests/test_cycles_publication.py": "ea776b0a79df4b3b93169cb917e9cc7180b69196e4829bde6b874c0d5bf343f6",
     "tests/test_sector_central_history.py": "b33d86358af005f2ac6fd4950487628b01fe7da122fc86c1ba2fa4a2531787ec",
     "tests/test_sector_central_measured_panel.py": "50d1084f0d3d193312ba050e934294239e97628cf3c245970c57fb417a9d505c",
     "tests/test_sector_cycles.py": "00300be2697fc81a607308d067973fb0f10ab80039a76b6956441885b2d5b460",
@@ -102,9 +100,12 @@
     ".github/ci/legacy-jobs.yml": "18b1e3469834b20999bcd1344dee4a782fd4308e0256582a4695258065d24cc4",
     "scripts/build_sector_central.py": "c530afe662a74f3881001731d48e42a39e755f17fdcfae8acf121f47d3a79625",
     "tests/test_sector_central_publication.py": "14de9559feb3b3891ad97c1b73e27b2cfe6ddc09720cdbee2c6702cc7ba8616a",
-    "docs/verification/d05_native_cycles_20261104/regional_archive_serialization.json": "ac3944195bfa170207af3bcd18fff8d9bd2469a04f10b71939bca5d0cceb7476"
+    "docs/verification/d05_native_cycles_20261104/regional_archive_serialization.json": "ac3944195bfa170207af3bcd18fff8d9bd2469a04f10b71939bca5d0cceb7476",
+    "templates/shared_shell_bridge.js": "aee7b6f4b45772e903fe46809958ae7fc1a2f2d44c7c2872bc4dade8d2eecf9a",
+    "site/shared_shell_bridge.js": "aee7b6f4b45772e903fe46809958ae7fc1a2f2d44c7c2872bc4dade8d2eecf9a",
+    "tests/js/shared_shell_bridge.test.cjs": "5e84533d4866d336fa413988a86dd62b5b48232fee5c7ca8204221a136560184"
   },
-  "source_parent": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
+  "source_parent": "dd903b3866e45eb25665c73629ac6dcfd409b222",
   "ci": {
     "prior_head": "9906c882d56e5bed829b2d11aa7b837c5b7abc7f",
     "run": 41773065024,
@@ -132,7 +133,7 @@
   },
   "worker_operations": {
     "root_id": "6aea7863-bef8-83e9-bb5b-47850ca7132b",
-    "observed_utc": "2026-11-04T06:30:00Z",
+    "observed_utc": "2026-11-04T08:10:00Z",
     "browser": {
       "run_id": "d05-native-browser-proof-20261104-01",
       "controller_pid": 85044
@@ -141,7 +142,7 @@
       "run_id": "d05-theme-falsifier-absence-20261104-01",
       "controller_pid": 5795
     },
-    "status": "ACTIVE_OR_WAITING; lineage unverified; worker state unknown; original effects under reconciliation"
+    "status": "TERMINAL; rc0; root_verified true; NOT_ACCEPTED/NO_OUTCOME; this parent result_consumption_authorized false"
   },
   "entry_export_followthrough": {
     "observed_utc": "2026-11-04T07:18:49Z",
@@ -189,5 +190,58 @@
       "inherited_untracked_preserved": 486,
       "implementation": "continuation admitted; receiver change not delivered in this Macro increment"
     }
+  },
+  "joint_return_followthrough": {
+    "source_parent": "dd903b3866e45eb25665c73629ac6dcfd409b222",
+    "bridge_version": "20261104.1",
+    "document_version": "20261018.1",
+    "exact_source_execution": {
+      "bridge_tests": {
+        "passed": 79,
+        "failed": 0,
+        "source_sha256": "aee7b6f4b45772e903fe46809958ae7fc1a2f2d44c7c2872bc4dade8d2eecf9a"
+      },
+      "native_entry_cases": {
+        "passed": 7,
+        "failed": 0,
+        "source_sha256": "d1118b08a43da1bc3e394084ee62f8498da91670bdb0fec5cc2c20f200ebdd96"
+      },
+      "real_producer_receiver_scenarios": {
+        "passed": 5,
+        "failed": 0,
+        "source_sha256": "3c5f017643748983fa6403502e1f1a4b5d12e473eeb83f7deb3e0763269f669c"
+      },
+      "method": "exact candidate source and committed-test candidates executed in-memory in original Studio verification operation; no source/branch mutation by this root"
+    },
+    "terminal": {
+      "operation_id": "beta-intelligence-integration-20261103-sol",
+      "head": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+      "source": "prepared, not published",
+      "core_tests": {
+        "passed": 48,
+        "failed": 0
+      },
+      "broader_test_attempt": {
+        "passed": 97,
+        "failed": 0,
+        "suites": 8,
+        "command": "NODE_OPTIONS=--no-experimental-webstorage node node_modules/vitest/vitest.mjs run lib/__tests__/sharedShellContracts.test.ts lib/__tests__/originEntry.test.ts lib/__tests__/originEntryHydration.test.ts lib/__tests__/sharedShellNavigationCommit.test.tsx lib/__tests__/sharedShellRouteIdentity.test.ts lib/__tests__/sharedShellStatusContract.test.ts lib/__tests__/sharedShellPrimaryNav.test.tsx lib/__tests__/sharedShellPublicPresentation.test.tsx",
+        "runtime_seconds": 5.96,
+        "earlier_failure": "Node26 webstorage required inherited NODE_OPTIONS; old originNav mock replaced by actual OriginNavigationProvider, all assertions retained"
+      },
+      "typescript": {
+        "status": "passed",
+        "exit_code": 0,
+        "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+        "runtime_seconds": 72.49,
+        "scope": "current production source before presentation-fixture-only test repair"
+      },
+      "preserved_inherited_untracked": 486,
+      "changed_or_missing": 0,
+      "publisher_gate": "CAPABILITY_GAP_UNTRACKED_BASELINE_PUSH"
+    },
+    "actual_browser": "NOT_PROVEN",
+    "full_workspace_fidelity": false,
+    "dossier_mount": "NOT_YET_INTEGRATED"
   }
 }

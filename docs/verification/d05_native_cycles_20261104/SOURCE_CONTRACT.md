@@ -312,3 +312,159 @@ The native viewport replay now observes later pointer, touch, wheel and keyboard
 intent through its existing generation guard. Input that caused navigation
 precedes activation; later input cancels the queued correction. It neither
 prevents input nor changes browser scroll-restoration policy.
+
+## 10. Joint Company-return implementation — 2026-11-04
+
+This increment composes on `dd903b3866e45eb25665c73629ac6dcfd409b222`.
+It retains the Theme absence correction, reduced-motion changes, preview fonts/icons
+and exact-source browser-runner repairs from that revision.
+
+### Single entry and navigation owners
+
+Terminal's existing `originNav` owns one pending transition and a bounded record
+on the actual browser history entry. The original `mmxSharedShellEntry` key is
+retained. `mmxOriginEntry` binds schema, verified account owner, entry key, exact
+canonical URL, revision, current view and one flat return snapshot. It never
+contains tokens, source rows, another return record or an index into a departed
+iframe's memory. Complete owned history is limited to 40 KiB UTF-8.
+
+The existing Next router performs navigation. A layout-effect commit runs after
+Next's HistoryUpdater insertion effect, samples the actual raw browser URL, and
+merges the new owned record into Next's freshly committed state. Next's router
+tree is never copied from the old entry. A verified existing record is published
+after commit, preserving server/hydration agreement. Unknown identity supplies
+no guest or account grant; supplied guest/account identity comes from the
+existing shell server props.
+
+A Company handoff freezes the source entry/revision/settings and stages the
+exact `/terminal` URL. The destination records that copied origin only after
+actual URL and identity agreement. Named return stages the source canonical
+URL, uses Next push with scroll disabled, and creates a new entry key. It does
+not assume adjacency or call history.back. Back/Forward instead reads the
+traversed entry's own record, including between identical URLs. Reload needs
+neither the old iframe nor the pending in-memory transaction.
+
+Traversal, identity change, incompatible navigation, a newer transition,
+superseding source settings and document exit retire pending work. A source
+render while Next is still loading does not retire it. Same-URL replace is
+bookkeeping and preserves the captured view/revision; a push creates a distinct
+entry. A same-URL Next refresh can recover the controller's single current-entry
+record after Next replaces custom fields; traversal first clears that cache.
+
+The existing iframe host remains the document owner. Its dependency is the
+committed owner/entry/canonical tuple. Every late child message is checked
+against current browser history before it can save or navigate. An old live
+reference alone is insufficient.
+
+### Closed shared-shell extension
+
+The bridge version is **20261104.1**; the document capability remains
+**20261018.1**. Actual running sibling status and child READY must agree with
+the parent version gate. Deploying one half is not a compatible release.
+
+`VIEW_STATE` retains x/y/optional focusId and adds only:
+
+```ts
+page?: {
+  kind: "d05-sector-central";
+  value: { siWorkspace: ExistingNativeEntry; siCyclesOrigin: ExistingLocalOrigin | null };
+}
+```
+
+The existing 32 KiB UTF-8 projection is closed and detached. Native fields and
+their limits are enumerated by the actual parent validator; arrays, numbers,
+nested objects, relative same-page hrefs and source identifiers are checked.
+Unknown fields, foreign/credential/authentication URLs, copied transport keys,
+nonfinite coordinates and nested origins are refused. Account and parent-entry
+identifiers are never child-supplied fields.
+
+The child calls **SectorWorkspaceExport**, never the persisting Capture hook.
+Only the existing bridge strips/rebinds `mmx_shell` and `mmx_generation`;
+ordinary query order, duplicate keys, percent encoding and hash remain intact.
+The native owner accepts only its exact actual local href.
+
+`INIT.restore` adds `restoreId` and `snapshotId`. One qualified
+`RESTORE_RESULT` contains those identifiers, canonicalPath, outcome
+(applied/partial/rejected), bounded reason, actual publicationId, focus status
+and viewport status. Envelope origin/source/new-frame-generation still apply.
+READY proves document readiness; it never proves analytical restoration.
+
+While restoration is pending, initial default VIEW_STATE messages cannot
+overwrite the requested snapshot. The terminal result precedes the next actual
+view flush. Repeated INIT is idempotent. An existing-host 15-second completion
+deadline sends exact-request `RESTORE_CANCEL` and ends pending as rejected;
+the child itself has a 12-second deadline and cancels the native transaction.
+Neither deadline retries a request or records success. A later valid user view
+can then be saved.
+
+### Native application and qualified outcomes
+
+`SectorWorkspaceApplyCurrent(projection, options)` is the sole application
+owner. It binds the incoming request to the current child entry ID, href,
+view and intent generation; preserves the destination ID/foreign history;
+never routes; and writes its own final bookkeeping with an omitted history URL.
+It holds one requested projection outside live history until source preflight
+succeeds. A repeated restore ID with different input is rejected.
+
+The existing `SectorCyclesApply` gains opt-in `strictRestore` and
+`validateOnly`. Strict input is checked before default fallback or chart
+setting changes. Exact current publication/region/family/focus, range,
+unique selections/phases, mobile semantics and stable leg identity must agree.
+Price and nonsector history require the verified series part. Native callers
+without the strict option keep their existing fallback behavior.
+
+Measured restoration requires the original group and a non-null matching
+generation. Apply is followed by capture equality, so observed history silently
+falling back to reconstruction cannot be called restored. Cycles readback checks
+all supported settings, set membership and the chart's numerical range
+tolerance. Publication is re-read before final success. Source-ready events
+resume pending work without repeatedly forcing old controls after application.
+
+The typed viewport has one writer: the native owner for D05. Completion is
+reported after the guarded animation frames, actual scroll and actual focus
+readback. Clamping, missing focus, source changes, unavailable series/legs,
+supersession or later pointer/touch/wheel/keyboard input yield partial/rejected
+outcomes. Later input cancels outstanding work before it can overwrite the
+user's changes. Bilingual native feedback distinguishes restored settings,
+interrupted restoration, source changes and incomplete restoration.
+
+**Fidelity boundary:** this restores the currently serialized chart settings,
+measured evidence lens and typed position/focus. Unrepresented map horizon/scope
+and other controls remain outside the projection. It is not complete arbitrary
+workspace replay, observed PIT evidence, saved Research state or trade authority.
+
+### Verification and outstanding gates
+
+At this increment, exact candidate source executed:
+
+- 79 bridge tests, including pure export, raw-query transport, ordered result/view,
+  idempotence, input/cancel/navigation interruption and hostile requests.
+- Seven native-entry executable cases, including four input kinds, pure bounded
+  export and the new qualified current-entry restore case.
+- Five actual Python-producer/real-WebCrypto receiver scenarios with strict
+  no-fallback, unchanged-settings and source mismatch assertions.
+- Terminal's original operation: all 97 tests in eight suites passed, including
+  48 contract/controller/SSR hydration/mounted-host cases and existing route,
+  status, primary-navigation and public-presentation cases. The Node 26 test
+  worker receives the supported webstorage-disable option through NODE_OPTIONS;
+  the presentation fixture now mounts the real entry provider, with its existing
+  assertions unchanged. Fresh full TypeScript passed (exit 0, 72.49 seconds)
+  before that presentation-fixture-only test repair.
+
+These are source/lifecycle proofs, not actual browser or production acceptance.
+Original browser/theme Fabric operations now report TERMINAL/rc0/root_verified,
+but this parent's result-consumption projection remains false and acceptance
+NOT_ACCEPTED. Their retained source repairs are separately present in dd903.
+No uncertain effect was retried.
+
+Terminal changes are prepared in the original #1244 operation at 624dbc,
+with all 486 inherited untracked files verified unchanged. Publication is held:
+the installed exact-HEAD publisher sweeps all unignored changes and its push
+gate rejects inherited dirt. The existing publisher owner must supply a
+supported exact-change/preserved-baseline path; no alternate publisher, ignore
+change, artifact removal, branch replacement or release action is used.
+
+The qualified Dossier component is available at 2c4edf26. It is not mounted by
+this increment. Its source access receipt and native disclosure lifecycle are
+a separate attachment to the same seven-view host. Original Fable dirty work
+is preserved. Shared F01/F02 acceptance and all original release holds remain.

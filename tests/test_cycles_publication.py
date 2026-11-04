@@ -209,6 +209,26 @@ const settle=()=>new Promise(r=>setTimeout(r,15));
   const stale={...advanced,publicationId:'cycp1-'+'0'.repeat(64)};
   assert.equal(c.SectorCyclesApply({...request,entryKey:'entry-stale',snapshot:stale}).restoration,'source_changed');
   assert.equal(c.SectorCyclesCapture().mode,'osc');
+  // Strict external restoration must reject before fallback or any settings mutation.
+  const stable=JSON.stringify(c.SectorCyclesCapture());
+  for(const snapshot of [
+    {...advanced,publicationId:'cycp1-'+'0'.repeat(64)},
+    {...advanced,range:[2024,2022]},
+    {...advanced,region:'china'},
+    {...advanced,phases:['Expansion','Expansion']},
+    {...advanced,selectedIds:['xle']},
+    {...advanced,leg:{start:'missing',end:'missing'}},
+  ]){
+    const strict=c.SectorCyclesApply({...request,entryKey:'strict-reject',strictRestore:true,restore:true,snapshot});
+    assert.equal(strict.status,'rejected');
+    assert.equal(JSON.stringify(c.SectorCyclesCapture()),stable,'strict refusal leaves current settings intact');
+  }
+  const portable={...advanced,leg:null};
+  assert.equal(c.SectorCyclesApply({...request,strictRestore:true,validateOnly:true,snapshot:portable}).status,'validated');
+  assert.equal(JSON.stringify(c.SectorCyclesCapture()),stable,'validation itself has no settings effects');
+  assert.equal(c.SectorCyclesApply({...request,entryKey:'strict-valid',strictRestore:true,restore:true,snapshot:portable}).status,'applied');
+  assert.equal(c.SectorCyclesCapture().mode,'price');
+  assert.deepEqual(c.SectorCyclesCapture().range,[2022,2024]);
   const malformed={...advanced,range:[2024,2022]};
   assert.equal(c.SectorCyclesApply({...request,entryKey:'entry-malformed',snapshot:malformed}).restoration,'invalid_state');
  }

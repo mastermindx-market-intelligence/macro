@@ -425,6 +425,181 @@ window.SectorWorkspaceExport=function(){
     return out;
   }catch(e){return null;}
 };
+
+/* Shared-shell restoration uses this same entry owner. Desired state is kept in
+   one bounded transaction until native source validation succeeds; it is never
+   installed as live history merely because the parent requested it. */
+var externalRestore=null;
+function restoreEqual(a,b){
+  if(a===b)return true;
+  if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
+  var ak=Object.keys(a).sort(),bk=Object.keys(b).sort();
+  return ak.length===bk.length&&ak.every(function(k,i){return k===bk[i]&&restoreEqual(a[k],b[k]);});
+}
+function restoreProjection(raw){
+  if(!raw||Object.keys(raw).sort().join(',')!=='siCyclesOrigin,siWorkspace')throw new Error('invalid_state');
+  var projected={siWorkspace:exportEntry(raw.siWorkspace),siCyclesOrigin:null};
+  if(raw.siCyclesOrigin!==null){
+    var o=raw.siCyclesOrigin;
+    if(!o||Object.keys(o).sort().join(',')!=='entry,href')throw new Error('invalid_origin');
+    var u=new URL(o.href,location.href),h=u.hash.slice(1);
+    if(u.origin!==location.origin||u.pathname!==location.pathname||u.username||u.password||
+       u.pathname+u.search+u.hash!==o.href||h==='cycles'||h==='sc-cyclemap'||(VIEWS.indexOf(h)<0&&!LEGACY_ANCHORS[h]))throw new Error('invalid_origin');
+    projected.siCyclesOrigin={href:exportText(o.href,4096,false),entry:o.entry===null?null:exportEntry(o.entry)};
+    if(projected.siCyclesOrigin.entry&&(projected.siCyclesOrigin.entry.href!==o.href||projected.siCyclesOrigin.entry.view==='cycles'))throw new Error('invalid_origin');
+  }
+  if((projected.siWorkspace.view==='cycles'&&!projected.siWorkspace.cycles)||!restoreEqual(raw,projected))throw new Error('invalid_state');
+  var json=JSON.stringify(projected);
+  if(json.length>32768||new TextEncoder().encode(json).length>32768)throw new Error('invalid_state');
+  return projected;
+}
+function restoreIsCurrent(op){
+  var e=currentEntry();
+  return externalRestore===op&&!op.done&&e&&e.entryId===op.entryId&&activeEntryId===op.entryId&&
+    e.view===op.projection.siWorkspace.view&&current===e.view&&localHref()===op.href;
+}
+function restorePublication(op){
+  if(!op.projection.siWorkspace.cycles)return null;
+  var proof=window.SectorCyclesEvidence&&window.SectorCyclesEvidence(),saved=op.projection.siWorkspace.cycles;
+  return proof&&proof.status==='verified'&&proof.publicationId===saved.publicationId&&proof.region===saved.region?proof:null;
+}
+function showRestoreNotice(op){
+  try{
+    if(!op.result||localHref()!==op.href||!currentEntry()||currentEntry().entryId!==op.entryId)return;
+    var section=document.querySelector('.si-view.on'),note=document.getElementById('si-restore-status');
+    if(!section)return;
+    if(!note){note=document.createElement('p');note.id='si-restore-status';note.className='si-view-read';note.setAttribute('role','status');section.insertBefore(note,section.firstChild);}
+    var result=op.result,copy;
+    if(result.status==='applied')copy=op.projection.siWorkspace.cycles?
+      ['Saved chart settings and page position restored.','已恢复保存的图表设置和页面位置。']:
+      ['Saved evidence lens and page position restored.','已恢复保存的证据视图和页面位置。'];
+    else if(result.reason==='user_input')copy=['Restoration stopped when you interacted. Your current changes are kept.','已按您的操作停止恢复，当前更改予以保留。'];
+    else if(result.reason==='source_changed'||result.reason==='measured_source_changed'||result.reason==='source_or_settings_changed')copy=
+      ['Saved settings no longer match this source update. Review the current evidence before continuing.','保存的设置已不匹配本次来源更新，请先查看当前证据再继续。'];
+    else copy=['Some saved settings could not be restored. Review the current view before continuing.','部分保存的设置无法恢复，请先检查当前视图再继续。'];
+    note.hidden=false;note.dataset.state=result.status;note.textContent=cycleMessage(copy[0],copy[1]);
+  }catch(e){}
+}
+function finishExternalRestore(op,status,reason,viewport,focus){
+  if(op.done)return op.result;
+  op.done=true;
+  if(op.applied&&currentEntry()&&currentEntry().entryId===op.entryId&&localHref()===op.href){
+    var next=collectEntry();
+    if(next)history.replaceState(Object.assign({},history.state,{siWorkspace:next,siCyclesOrigin:op.projection.siCyclesOrigin}),'');
+  }
+  var proof=restorePublication(op);
+  op.result={restoreId:op.restoreId,snapshotId:op.snapshotId,sourceEntryId:op.projection.siWorkspace.entryId,
+    entryId:op.entryId,href:op.href,scope:'serialized_entry_settings',status:status,reason:reason||null,
+    publicationId:proof?proof.publicationId:null,viewport:viewport||'unavailable',focus:focus||'unavailable'};
+  showRestoreNotice(op);
+  try{if(op.onResult)op.onResult(op.result);}catch(e){}
+  return op.result;
+}
+function stopExternalRestore(op,reason){
+  return finishExternalRestore(op,op.applied?'partial':'rejected',reason,
+    reason==='user_input'?'interrupted':'unavailable',reason==='user_input'?'interrupted':'unavailable');
+}
+function cycleRestoreContext(op,validateOnly){
+  var u=new URL(location.href),id=u.searchParams.get('cycle'),latest=u.searchParams.get('cycleSource')==='latest';
+  return {id:id,family:u.searchParams.get('cycleFamily'),asOf:id&&!latest?cycleSourceDate():null,
+    requireSourceDate:!!id&&!latest,spine:id&&!latest?cycleSourceSpine():null,requirePublication:!!id&&!latest,
+    entryKey:op.entryId,snapshot:op.projection.siWorkspace.cycles,strictRestore:true,
+    validateOnly:validateOnly,restore:!op.cyclesApplied};
+}
+function sameCycleSettings(a,b){
+  if(!a||!b)return false;
+  var keys=['schema','publicationId','region','family','focus','mode','scale'];
+  if(!keys.every(function(k){return a[k]===b[k];})||!restoreEqual(a.leg,b.leg))return false;
+  if(!Array.isArray(a.range)||!a.range.every(function(v,i){return Math.abs(v-b.range[i])<=1e-7;}))return false;
+  function sameSet(x,y){return Array.isArray(x)&&Array.isArray(y)&&restoreEqual(x.slice().sort(),y.slice().sort());}
+  return sameSet(a.phases,b.phases)&&sameSet(a.selectedIds,b.selectedIds)&&a.mobileSelection&&b.mobileSelection&&
+    a.mobileSelection.mode===b.mobileSelection.mode&&sameSet(a.mobileSelection.ids,b.mobileSelection.ids);
+}
+function resumeExternalRestore(){
+  var op=externalRestore;if(!op||op.done)return;
+  if(!restoreIsCurrent(op))return stopExternalRestore(op,'entry_changed');
+  if(op.intent!==SCROLL_GEN)return stopExternalRestore(op,'user_input');
+  var wanted=op.projection.siWorkspace,m=wanted.measured,measured;
+  if(m){
+    if(!window.SectorMeasuredCapture||!window.SectorMeasuredApply)return;
+    measured=window.SectorMeasuredCapture();
+    if(!m.generation||!measured||measured.generation!==m.generation||measured.groupId!==m.groupId||
+       m.groupId!==new URL(location.href).searchParams.get('g'))return stopExternalRestore(op,'measured_source_changed');
+  }
+  if(wanted.cycles){
+    if(!window.SectorCyclesApply||!window.SectorCyclesEvidence)return;
+    var proof=window.SectorCyclesEvidence();
+    if(proof.status==='pending')return;
+    if(!restorePublication(op))return stopExternalRestore(op,'source_changed');
+    var preflight=window.SectorCyclesApply(cycleRestoreContext(op,true));
+    if(preflight.status==='pending')return;
+    if(preflight.status!=='validated')return stopExternalRestore(op,preflight.reason||preflight.status);
+  }
+  if(!op.applied){
+    op.applied=true;
+    if(m){window.SectorMeasuredApply(m);if(!restoreEqual(window.SectorMeasuredCapture(),m))return stopExternalRestore(op,'measured_state_changed');}
+  }
+  if(wanted.cycles){
+    var receipt=window.SectorCyclesApply(cycleRestoreContext(op,false));
+    if(receipt.status==='pending')return;
+    if(receipt.status!=='applied')return stopExternalRestore(op,receipt.reason||receipt.status);
+    op.cyclesApplied=true;
+    cycleApplied=true;cycleContext={entryId:op.entryId,href:op.href,receipt:receipt};
+    if(receipt.leg==='pending')return;
+    if(receipt.leg==='unavailable')return stopExternalRestore(op,'leg_unavailable');
+    if(!sameCycleSettings(window.SectorCyclesCapture(),wanted.cycles))return stopExternalRestore(op,'settings_not_restored');
+  }
+  if(op.viewportQueued)return;
+  op.viewportQueued=true;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    if(!restoreIsCurrent(op))return stopExternalRestore(op,'entry_changed');
+    if(op.intent!==SCROLL_GEN)return stopExternalRestore(op,'user_input');
+    if(wanted.cycles&&(!restorePublication(op)||!sameCycleSettings(window.SectorCyclesCapture(),wanted.cycles)))return stopExternalRestore(op,'source_or_settings_changed');
+    if(m&&!restoreEqual(window.SectorMeasuredCapture(),m))return stopExternalRestore(op,'measured_state_changed');
+    var viewport=wanted.viewport,focus='absent',vp='unavailable',reason=null;
+    if(viewport){
+      window.scrollTo(0,viewport.scrollY);
+      vp=Math.abs((window.scrollY||0)-viewport.scrollY)<=1?'applied':'unavailable';
+      if(vp!=='applied')reason='viewport_clamped';
+      if(viewport.focus){
+        var target=resolveFocus(viewport.focus);
+        if(target&&target.getBoundingClientRect().width){target.focus({preventScroll:true});focus=document.activeElement===target?'applied':'unavailable';}
+        else focus='unavailable';
+        if(focus!=='applied')reason=reason||'focus_unavailable';
+      }
+    }else reason='viewport_unavailable';
+    finishExternalRestore(op,reason?'partial':'applied',reason,vp,focus);
+  });});
+}
+window.SectorWorkspaceApplyCurrent=function(raw,options){
+  options=options||{};
+  var projected,entry=currentEntry(),signature;
+  try{
+    projected=restoreProjection(raw);
+    exportText(options.restoreId,128,false);exportText(options.snapshotId,160,false);
+    if(!entry||entry.entryId!==activeEntryId||entry.view!==current||projected.siWorkspace.view!==current||
+       options.expectedHref!==localHref()||projected.siWorkspace.href!==localHref())throw new Error('entry_changed');
+    signature=JSON.stringify(projected)+'|'+options.snapshotId+'|'+options.expectedHref;
+  }catch(e){
+    var invalid={status:'rejected',reason:e.message||'invalid_state',restoreId:options.restoreId,snapshotId:options.snapshotId,
+      publicationId:null,viewport:'unavailable',focus:'unavailable'};
+    if(typeof options.onResult==='function')options.onResult(invalid);
+    return invalid;
+  }
+  if(externalRestore&&externalRestore.restoreId===options.restoreId){
+    if(externalRestore.signature===signature)return externalRestore.result||{status:'pending'};
+    var conflict={status:'rejected',reason:'restore_id_conflict',publicationId:null,viewport:'unavailable',focus:'unavailable'};
+    if(typeof options.onResult==='function')options.onResult(conflict);return conflict;
+  }
+  if(externalRestore&&!externalRestore.done)stopExternalRestore(externalRestore,'superseded');
+  var op={restoreId:options.restoreId,snapshotId:options.snapshotId,signature:signature,projection:projected,
+    entryId:entry.entryId,href:localHref(),intent:++SCROLL_GEN,applied:false,cyclesApplied:false,done:false,
+    onResult:typeof options.onResult==='function'?options.onResult:null};
+  externalRestore=op;
+  resumeExternalRestore();
+  return {status:op.done?op.result.status:'pending',cancel:function(reason){if(!op.done)stopExternalRestore(op,reason||'cancelled');}};
+};
+
 function prepareEntry(view){
   var e=currentEntry();
   if(!e||e.view!==view){
@@ -464,7 +639,7 @@ var SCROLL_GEN=0;   /* activation generation (RI09): each activate() supersedes 
    caused navigation arrives before activate() and does not cancel that entry's
    restoration. These listeners never save, route, prevent input or take focus. */
 ['pointerdown','touchstart','wheel','keydown'].forEach(function(name){
-  document.addEventListener(name,function(){++SCROLL_GEN;},{capture:true,passive:true});
+  document.addEventListener(name,function(){++SCROLL_GEN;if(externalRestore&&!externalRestore.done)stopExternalRestore(externalRestore,'user_input');},{capture:true,passive:true});
 });
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
@@ -574,6 +749,7 @@ function cycleSourceSpine(){
   return (((window.SECTOR_CENTRAL||{}).measured_read||{}).generation||{}).cycle_spine||null;
 }
 function syncCycleContext(){
+  if(externalRestore&&!externalRestore.done){resumeExternalRestore();return;}
   if(current!=='cycles') return;
   var u=new URL(location.href), id=u.searchParams.get('cycle');
   var note=document.getElementById('sc-cycle-status');
@@ -680,6 +856,9 @@ document.addEventListener('click',function(e){
   if(nav)saveEntry(); // capture the origin before the browser creates its hash entry
 });
 ['sc:cycles-ready','sc:series-ready','sc:series-error','sc:publication-ready'].forEach(function(name){ document.addEventListener(name,syncCycleContext); });
+document.addEventListener('si:view',resumeExternalRestore);
+document.addEventListener('langchange',function(){if(externalRestore&&externalRestore.done)showRestoreNotice(externalRestore);});
+window.addEventListener('resize',resumeExternalRestore);
 window.addEventListener('popstate',route);
 
 window.__siViewReads=reads;
