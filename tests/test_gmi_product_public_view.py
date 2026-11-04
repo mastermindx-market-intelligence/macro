@@ -337,3 +337,36 @@ def test_known_knowledge_clock_stays_distinct_from_publication_date(
     assert expected_zh in {tip.get("data-tip-rc-zh") for tip in tips}
     evidence = soup.select_one(".gmi-evidence-date").get_text(" ", strip=True)
     assert "26 Feb 2024" in evidence and "Planned" in evidence
+
+
+@pytest.mark.parametrize("filename", [
+    "gmi.html", "gmi-index.html", "gmi-companies.html",
+    "gmi-relationships.html", "gmi-coverage.html", "gmi-states.html",
+    "gmi.css", "gmi.js",
+])
+def test_generated_fixed_output_refuses_symlink_before_any_write(current_model, tmp_path, filename):
+    """Every fixed GMI output must refuse a pre-existing redirect before rendering."""
+    output = tmp_path / "site"
+    output.mkdir()
+    outside = tmp_path / "unrelated-original"
+    outside.write_text("SENTINEL-UNTOUCHED", encoding="utf-8")
+    (output / filename).symlink_to(outside)
+    with pytest.raises(RuntimeError, match="nonregular GMI output"):
+        render_site(current_model, output)
+    assert outside.read_text(encoding="utf-8") == "SENTINEL-UNTOUCHED"
+    assert not (output / "gmi-issuer-mu.html").exists()
+    for name in ("gmi.html", "gmi-index.html", "gmi-companies.html",
+                 "gmi-relationships.html", "gmi-coverage.html", "gmi-states.html"):
+        if name != filename:
+            assert not (output / name).exists(), name
+
+
+def test_generated_output_directory_refuses_symlink(current_model, tmp_path):
+    """An explicitly named output directory must not redirect a render elsewhere."""
+    outside = tmp_path / "unrelated-output-directory"
+    outside.mkdir()
+    target = tmp_path / "site"
+    target.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(RuntimeError, match="nonregular GMI output directory"):
+        render_site(current_model, target)
+    assert list(outside.iterdir()) == []

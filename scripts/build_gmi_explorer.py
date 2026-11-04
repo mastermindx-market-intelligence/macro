@@ -251,7 +251,16 @@ def build_live_model(coverage_report: str | Path | None = None,
 def render_site(model: dict, site_dir: str | Path) -> list[Path]:
     """Render every explorer page (and sync the paired assets) from ``model``."""
     site = Path(site_dir)
+    # Prevent a pre-existing output redirect from escaping the requested site
+    # tree. This preflight runs before pruning or writing any generated page
+    # or paired asset; the issuer family has its own nonregular-output guard.
+    if site.is_symlink():
+        raise RuntimeError(f"refusing nonregular GMI output directory: {site}")
     site.mkdir(parents=True, exist_ok=True)
+    for name in (*TEMPLATES, *PAIRED_ASSETS):
+        output = site / name
+        if output.is_symlink() or (output.exists() and not output.is_file()):
+            raise RuntimeError(f"refusing to replace nonregular GMI output: {name}")
     public_model = _public_render_model(model)
     _remove_stale_issuer_pages(site, public_model)
     env = make_env(public_model, ROOT / "templates")
