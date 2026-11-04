@@ -237,10 +237,15 @@ this checkpoint are **not** full F02, joint F01/F02, native-set/RIG or product a
   G15 Paper `EFFECT_UNKNOWN`, full 32-board native freeze, F01 joint acceptance,
   real-path keyboard/locale/400% proof and RIG retain their prior explicit gates.
 
-**Exact next action:** consume a material hosted CI completion/failure at
-`bfb3bf32`, repair any reproducible candidate-specific failure on the same
-source branch, then qualify the actual existing consumer/preview only through its
-authorized owner and permitted browser path. If an admitted original F02
-Fabric root/parent/grant later becomes observable, delegate a separable bounded
-task using the existing root and real START/return proof. Do not invent the
-lineage or replay the Paper unknown effect.
+## Live source-CI and original Paper diagnostic — 4 November 2026
+
+The F02 source branch remains macro [Draft/HOLD #10698](https://github.com/mastermindx-market-intelligence/macro/pull/10698) at `bfb3bf32660bd555341343fb4e977b5ee6a642b3`. Its hosted [fences 41775368500](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368500) succeeded. Hosted [CI 41775368611](https://github.com/mastermindx-market-intelligence/macro/actions/runs/41775368611) has **two independently reproducible evidence-gate failures** at the latest read, not renderer test regressions:
+
+1. `ci-pack-5` / `design-governance`: `templates/illus.css` is a material UI change without the required real-browser eight-cell (dark/light × EN/ZH × desktop/mobile) `mastermind.p0_evidence.v2` capture and three-key `EVIDENCE.yml` receipt. The changed-path ownership and actual screenshot hashes must be established; this is not solved by Paper-native artboards or reusing old unrelated screenshots.
+2. `ci-pack-1` / `p0b-receipt-closure`: `site/illus.css` is a pinned input of both `mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json` and `mobile-layout-canada.json`; they require **same-diff genuine remint** from the canonical fixture/layout scripts. Its checker specifies Chromium `149.0.7827.55`, headless-shell sha256 `11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3`, Playwright `1.61.1`, `darwin/arm64` and pinned subset fonts. An arbitrary Linux/other-browser capture cannot substitute. The unchanged source holds its required `templates/illus.css` ↔ `site/illus.css` parity. At this checkpoint pack3 had not completed.
+
+The exact [source CI recovery comment](https://github.com/mastermindx-market-intelligence/macro/pull/10698#issuecomment-6623429158) was written and reread. No guard bypass, unverified evidence, runner enqueue or deployment was attempted. A brief authorized device inventory confirmed `m2studio` online and `arm64`; this is **not** a claim that the pinned browser environment or execution/capture has passed. The earlier generated `data:` browser preview refusal remains respected.
+
+The original Paper direct carrier was inspected read-only without switching the currently viewed PROPHET file or modifying any F02 node. A fresh `get_children(fileId=01M312VSDSZFVT45674GDVJVZN,nodeId=7J4-0)` returned **OBSERVED**, eight children ending at chart `7NX-0`, unchanged shared-token hash `356191c3`, and no `chart-footer` or `build-note`. A native screenshot of held board `7IS-0` was captured and committed as [diagnostic JPEG](paper/repairs/zh390-current-board-diagnostic-20261104-c2.jpg) with [explicit scope record](paper/repairs/zh390-current-board-diagnostic-20261104-c2.json). This confirms the **current visible board state**, **not** the original timed-out operation's terminal result. It is excluded from the 31-board review freeze and does not satisfy the full 32-board pair, RIG or source CSS visual CI.
+
+**Exact successor actions:** (1) complete legitimate same-branch candidate visual captures and the exact-environment P0B remint, then rerun the two required gates and all exact-head CI; (2) independently reconcile original F02 Paper operation `f02-c2-macro-light-zh-390-chart-footer-20261103-01` with a terminal receipt or qualifying same-carrier canonical disposition before editing dependent 33 numeric frames or the footer; (3) only then finish full native freeze and qualified F01/F02/user-path acceptance. Do not enqueue/merge/Ready/un-draft/relabel/deploy held PRs, invent Fabric grants, or route around denied browser effects.
