@@ -131,8 +131,21 @@ def capture_jp_yield_commit(*, data_root, returned, response_bytes, source,
 
 def read_jp_yield_materialization(*, data_root):
     root = Path(data_root)
+    pointer = root / DIRECTORY / "current.json"
+    verified_receipt_sha = None
     try:
-        raw = _read_stable_once(root / DIRECTORY / "current.json", LIMIT)
+        pointer.lstat()
+    except FileNotFoundError:
+        return {"status": "missing"}
+    except Exception:
+        return {"status": "failed"}
+    try:
+        raw = _read_stable_once(pointer, LIMIT)
+        # The mutable selector must retain the original capture's exact bytes.
+        # This is integrity within the incumbent store trust, not authentication
+        # of arbitrary filesystem writers.
+        if _read_stable_once(root / DIRECTORY / (_sha(raw) + ".json"), LIMIT) != raw:
+            raise ValueError("capture receipt identity changed")
         receipt = json.loads(raw, object_pairs_hook=_reject_duplicate_keys,
                              parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
         expected_keys = {"schema", "column", "source", "source_sha256", "artifact_sha256", "received_at",
@@ -142,6 +155,7 @@ def read_jp_yield_materialization(*, data_root):
         if (receipt["source"] != SOURCE_CONTRACT or receipt["provider_published_at"] is not None
                 or receipt["revision_vintage"] is not None or type(receipt["response_rows"]) is not int):
             raise ValueError("invalid source semantics")
+        verified_receipt_sha = _sha(raw)
         for key in ("source_sha256", "artifact_sha256"):
             if type(receipt[key]) is not str or len(receipt[key]) != 64 or any(c not in "0123456789abcdef" for c in receipt[key]):
                 raise ValueError("invalid digest")
@@ -164,10 +178,9 @@ def read_jp_yield_materialization(*, data_root):
                 or _utc(receipt["committed_at"]) < _utc(receipt["received_at"])):
             raise ValueError("invalid committed coverage")
         return {"status": "ready", "receipt": receipt, "receipt_sha256": _sha(raw)}
-    except FileNotFoundError:
-        return {"status": "missing"}
     except Exception:
-        return {"status": "failed"}
+        return ({"status": "failed", "receipt_sha256": verified_receipt_sha}
+                if verified_receipt_sha is not None else {"status": "failed"})
 
 
 def admit_jp_yield_field(materialized, *, evaluated_at, publication_decision):
@@ -176,24 +189,29 @@ def admit_jp_yield_field(materialized, *, evaluated_at, publication_decision):
              "value_permission": "unknown", "value": None, "unit": None, "instrument": None,
              "period": None, "observation_at": None, "calculation_at": None,
              "source_reference": None, "evidence_key": None}
-    if materialized.get("status") != "ready":
+    if materialized.get("status") != "ready" and not materialized.get("receipt_sha256"):
         return {**blank, "quality": materialized.get("status", "failed"),
                 "reason": "not_supplied" if materialized.get("status") == "missing" else "source_failed"}
+    metadata, permission = "unknown", "unknown"
     try:
-        row = materialized["receipt"]
         decision = publication_decision
         if type(decision) is not dict or set(decision) != {"owner_ref", "policy_ref", "decision_ref", "metadata", "value_permission", "binding"}:
             return blank
         if (decision["owner_ref"] != "scripts/build_intl.py" or not decision["policy_ref"] or not decision["decision_ref"]
                 or decision["binding"] != {"field": "JP.yield_10y", "receipt_sha256": materialized["receipt_sha256"]}):
             return blank
-        metadata, permission = decision["metadata"], decision["value_permission"]
-        if metadata not in {"allowed", "unknown", "denied"} or permission not in {"allowed", "unknown", "denied"}:
+        candidate_metadata, candidate_permission = decision["metadata"], decision["value_permission"]
+        if (type(candidate_metadata) is not str or type(candidate_permission) is not str
+                or candidate_metadata not in {"allowed", "unknown", "denied"} or candidate_permission not in {"allowed", "unknown", "denied"}):
             return blank
+        metadata, permission = candidate_metadata, candidate_permission
         if metadata != "allowed":
             return {**blank, "quality": "denied" if metadata == "denied" else "unknown",
                     "reason": "metadata_denied" if metadata == "denied" else "disclosure_unknown",
                     "metadata": metadata, "value_permission": permission}
+        if materialized.get("status") != "ready":
+            raise ValueError("source failure after verified capture")
+        row = materialized["receipt"]
         source = row["source"]
         if (source.get("source_id") != SOURCE_ID or source.get("unit") != "percent" or source.get("frequency") != "monthly"
                 or source.get("adjustment") != "NSA" or source.get("instrument_kind") != "sovereign_10y"):
@@ -218,4 +236,8 @@ def admit_jp_yield_field(materialized, *, evaluated_at, publication_decision):
                        reason="value_denied" if permission == "denied" else "disclosure_unknown")
         return out
     except (KeyError, TypeError, ValueError, OverflowError):
+        if metadata == "allowed":
+            return {**blank, "quality": "failed", "reason": "source_failed",
+                    "metadata": metadata, "value_permission": permission,
+                    "unit": "percent", "instrument": {"kind": "sovereign_10y", "id": SOURCE_ID, "market_id": "JP"}}
         return {**blank, "quality": "failed", "reason": "source_failed"}

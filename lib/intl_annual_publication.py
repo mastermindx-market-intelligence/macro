@@ -162,11 +162,24 @@ def capture_current_account_commit(*, data_root, workbook_bytes, source_receipt,
 
 def read_current_account_materialization(*, data_root):
     root = Path(data_root)
+    pointer = root / DIRECTORY / "current.json"
+    verified_receipt_sha = None
     try:
-        receipt_raw = _read_stable_once(root / DIRECTORY / "current.json", LIMIT)
+        pointer.lstat()
+    except FileNotFoundError:
+        return {"status": "missing"}
+    except Exception:
+        return {"status": "failed"}
+    try:
+        receipt_raw = _read_stable_once(pointer, LIMIT)
+        # Preserve the exact original capture, including receipt/store clocks
+        # and source URL. Equality is not filesystem-writer authentication.
+        if _read_stable_once(root / DIRECTORY / (_sha(receipt_raw) + ".json"), LIMIT) != receipt_raw:
+            raise ValueError("capture receipt identity changed")
         receipt = json.loads(receipt_raw, object_pairs_hook=_reject_duplicate_keys)
         if type(receipt) is not dict or set(receipt) != {"schema", "source_sha256", "artifact_sha256", "source_url", "received_at", "committed_at", "source"} or receipt["schema"] != SCHEMA:
             raise ValueError("invalid receipt")
+        verified_receipt_sha = _sha(receipt_raw)
         for key in ("source_sha256", "artifact_sha256"):
             if type(receipt[key]) is not str or len(receipt[key]) != 64 or any(c not in "0123456789abcdef" for c in receipt[key]):
                 raise ValueError("invalid digest")
@@ -185,10 +198,9 @@ def read_current_account_materialization(*, data_root):
             if label not in frame.index or float(frame.loc[label, COLUMN]) != value["value"]:
                 raise ValueError("committed response mismatch")
         return {"status": "ready", "receipt": receipt, "receipt_sha256": _sha(receipt_raw)}
-    except FileNotFoundError:
-        return {"status": "missing"}
     except Exception:
-        return {"status": "failed"}
+        return ({"status": "failed", "receipt_sha256": verified_receipt_sha}
+                if verified_receipt_sha is not None else {"status": "failed"})
 
 
 def admit_current_account_field(materialized, *, evaluated_at, publication_decision):
@@ -196,19 +208,24 @@ def admit_current_account_field(materialized, *, evaluated_at, publication_decis
     blank = {"quality": "unknown", "reason": "disclosure_unknown", "metadata": "unknown", "value_permission": "unknown",
              "value": None, "unit": None, "instrument": None, "period": None,
              "observation_at": None, "calculation_at": None, "source_reference": None, "evidence_key": None}
+    metadata, permission = "unknown", "unknown"
     try:
-        if materialized["status"] != "ready":
+        if materialized["status"] != "ready" and not materialized.get("receipt_sha256"):
             return {"measure": {**blank, "quality": materialized["status"], "reason": "not_supplied" if materialized["status"] == "missing" else "source_failed"}, "support": None}
         decision = publication_decision
         if (type(decision) is not dict or set(decision) != {"owner_ref", "policy_ref", "decision_ref", "metadata", "value_permission", "binding"}
                 or decision["owner_ref"] != "scripts/build_intl.py" or not decision["policy_ref"] or not decision["decision_ref"]
                 or decision["binding"] != {"field": "JP.annual_current_account", "receipt_sha256": materialized["receipt_sha256"]}):
             return {"measure": blank, "support": None}
-        metadata, permission = decision["metadata"], decision["value_permission"]
-        if metadata not in {"allowed", "denied", "unknown"} or permission not in {"allowed", "denied", "unknown"}:
+        candidate_metadata, candidate_permission = decision["metadata"], decision["value_permission"]
+        if (type(candidate_metadata) is not str or type(candidate_permission) is not str
+                or candidate_metadata not in {"allowed", "denied", "unknown"} or candidate_permission not in {"allowed", "denied", "unknown"}):
             return {"measure": blank, "support": None}
+        metadata, permission = candidate_metadata, candidate_permission
         if metadata != "allowed":
             return {"measure": {**blank, "quality": "denied" if metadata == "denied" else "unknown", "reason": "metadata_denied" if metadata == "denied" else "disclosure_unknown", "metadata": metadata, "value_permission": permission}, "support": None}
+        if materialized["status"] != "ready":
+            raise ValueError("source failure after verified capture")
         receipt = materialized["receipt"]; source = receipt["source"]
         year = source["latest_actual_year"]
         actual = source["values"].get(str(year), source["values"].get(year))
@@ -216,7 +233,7 @@ def admit_current_account_field(materialized, *, evaluated_at, publication_decis
         publication = _utc(source["publication_at"])
         update = source["country_updated_on"]
         if update is None:
-            return {"measure": blank, "support": None}
+            raise ValueError("missing source country update clock")
         source_day = datetime.fromisoformat(update).date()
         if (source_day.isoformat() != update or actual["observation_type"] != "actual"
                 or source_day < datetime(year + 1, 1, 1).date()
@@ -240,4 +257,11 @@ def admit_current_account_field(materialized, *, evaluated_at, publication_decis
             measure.update(quality="denied" if permission == "denied" else "unknown", reason="value_denied" if permission == "denied" else "disclosure_unknown")
         return {"measure": measure, "support": support}
     except (KeyError, TypeError, ValueError, OverflowError):
+        if metadata == "allowed":
+            # Only a previously validated, bound publisher decision survives.
+            # Retain static typed field descriptors so the existing Risk mount
+            # can report source_failed, with no value/dynamic clock/source.
+            return {"measure": {**blank, "quality": "failed", "reason": "source_failed",
+                    "metadata": metadata, "value_permission": permission, "unit": "percent_gdp",
+                    "instrument": {"kind": "current_account", "id": SERIES, "market_id": "JP"}}, "support": None}
         return {"measure": {**blank, "quality": "failed", "reason": "source_failed"}, "support": None}

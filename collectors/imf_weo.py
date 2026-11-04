@@ -157,11 +157,18 @@ class ImfWeoAdapter(Adapter):
         # in the canonical cache but are never certified by this edition's
         # response evidence. This is not adjusted-price span replacement.
         store.upsert(self.group, "BCA_NGDPD_JPN", frame)
-        return capture_current_account_commit(
-            data_root=config.data_dir(), workbook_bytes=workbook_bytes,
-            source_receipt=source_receipt, returned=frame,
-            committed_at=datetime.now(timezone.utc).isoformat(),
-        )
+        try:
+            return capture_current_account_commit(
+                data_root=config.data_dir(), workbook_bytes=workbook_bytes,
+                source_receipt=source_receipt, returned=frame,
+                committed_at=datetime.now(timezone.utc).isoformat(),
+            )
+        except Exception:
+            # The canonical write has already succeeded. A receipt failure may
+            # leave retained source objects; do not turn it into an acquisition
+            # failure, breaker retry or rollback. A new value remains unqualified.
+            log.warning("IMF native current-account store committed; evidence unavailable; publication unqualified")
+            return {"status": "evidence_unavailable"}
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         if not self.cfg.get("enabled", True):

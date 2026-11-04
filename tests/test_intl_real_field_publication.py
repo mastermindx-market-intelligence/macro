@@ -137,7 +137,14 @@ def test_changed_committed_bytes_invalidate_previous_receipt(tmp_path, owner):
     artifact = tmp_path / (annual.CACHE if owner is annual else "intl_macro/JP_yield_10y.parquet")
     frame = pd.read_parquet(artifact); frame.iloc[-1, 0] += 1; frame.to_parquet(artifact)
     reader = owner.read_current_account_materialization if owner is annual else owner.read_jp_yield_materialization
-    assert reader(data_root=tmp_path)["status"] == "failed"
+    failed = reader(data_root=tmp_path)
+    assert failed["status"] == "failed"
+    field = "JP.annual_current_account" if owner is annual else "JP.yield_10y"
+    admit = owner.admit_current_account_field if owner is annual else owner.admit_jp_yield_field
+    result = admit(failed, evaluated_at=EVALUATED, publication_decision=decision(field, failed))
+    measure = result["measure"] if owner is annual else result
+    assert measure["quality"] == "failed" and measure["metadata"] == "allowed"
+    assert measure["value"] is None and measure["source_reference"] is None
 
 
 def test_yield_old_only_latest_row_cannot_become_response_coverage(tmp_path):
@@ -209,7 +216,7 @@ def test_full_builder_composes_both_fields_without_changing_existing_views(tmp_p
     assert "Source: IMF World Economic Outlook" not in denied_html
 
 
-@pytest.mark.parametrize("source_date,expected", [(None, "unknown"), ("2026-10-14", "failed"),
+@pytest.mark.parametrize("source_date,expected", [(None, "failed"), ("2026-10-14", "failed"),
                                                    ("2026-02-01", "stale")])
 def test_annual_freshness_and_chronology_use_country_update_not_edition(tmp_path, source_date, expected):
     materialized = annual_materialized(tmp_path)
@@ -291,3 +298,71 @@ def test_normal_runner_calls_evidence_only_after_successful_store(tmp_path, monk
     elif failure == "evidence":
         assert result.status != "failed"
         assert any("publication unqualified" in n for n in result.notes)
+
+
+@pytest.mark.parametrize("owner", [annual, yields])
+def test_current_selector_edit_cannot_replace_original_capture_receipt(tmp_path, owner):
+    materialized = annual_materialized(tmp_path) if owner is annual else yield_materialized(tmp_path)
+    pointer = tmp_path / owner.DIRECTORY / "current.json"
+    payload = json.loads(pointer.read_text())
+    payload["committed_at"] = "2026-11-04T04:40:00+00:00"
+    if owner is annual: payload["source_url"] = "https://data.imf.org/different-edition.xlsx"
+    pointer.write_text(json.dumps(payload))
+    reader = owner.read_current_account_materialization if owner is annual else owner.read_jp_yield_materialization
+    assert reader(data_root=tmp_path)["status"] == "failed"
+    # The untouched source/store images still match; the failure specifically
+    # comes from the absence of this edited receipt in the retained capture.
+    assert (tmp_path / owner.DIRECTORY / (materialized["receipt_sha256"] + ".json")).exists()
+
+
+@pytest.mark.parametrize("owner,missing", [(annual, "source"), (annual, "artifact"),
+                                           (yields, "source"), (yields, "artifact")])
+def test_referenced_blob_loss_after_receipt_is_source_failure(tmp_path, owner, missing):
+    materialized = annual_materialized(tmp_path) if owner is annual else yield_materialized(tmp_path)
+    receipt = materialized["receipt"]
+    suffix = ".xlsx" if owner is annual else ".csv"
+    path = tmp_path / owner.DIRECTORY / (receipt["source_sha256"] + suffix)
+    if missing == "artifact": path = tmp_path / (annual.CACHE if owner is annual else "intl_macro/JP_yield_10y.parquet")
+    path.unlink()
+    reader = owner.read_current_account_materialization if owner is annual else owner.read_jp_yield_materialization
+    assert reader(data_root=tmp_path)["status"] == "failed"
+
+
+def test_post_store_native_evidence_failure_keeps_commit_and_does_not_enter_breaker(tmp_path, monkeypatch):
+    from collectors import imf_weo, base
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(base, "_breaker_state", lambda: {})
+    raw = workbook(); native = tmp_path / "native"; native.mkdir()
+    (native / "source.xlsx").write_bytes(raw)
+    (native / "receipt.json").write_text(json.dumps({"status": 200, "sha256": annual._sha(raw),
+        "url": "https://data.imf.org/source.xlsx", "received_at": RECEIVED}))
+    def fail_capture(**kwargs): raise OSError("after-store evidence failure")
+    monkeypatch.setattr(annual, "capture_current_account_commit", fail_capture)
+    monkeypatch.setattr(imf_weo, "fetch_indicator", lambda *a, **k: pytest.fail("no acquisition replay"))
+    adapter = imf_weo.ImfWeoAdapter()
+    adapter.cfg = {"countries": ["JPN"], "indicators": {"BCA_NGDPD": annual.COLUMN},
+                   "native_current_account": {"workbook": "native/source.xlsx", "receipt": "native/receipt.json"}}
+    result = base.run_adapter(adapter)
+    assert result.status != "failed"
+    assert pd.read_parquet(tmp_path / annual.CACHE).loc[pd.Timestamp("2025-12-31"), annual.COLUMN] == 4.125
+    assert annual.read_current_account_materialization(data_root=tmp_path)["status"] == "missing"
+
+
+@pytest.mark.parametrize("update", [None, "2026-10-14"])
+def test_mounted_annual_source_failure_retains_only_validated_permissions(tmp_path, update):
+    materialized = annual_materialized(tmp_path)
+    materialized["receipt"]["source"]["country_updated_on"] = update
+    registry = {"markets": [{"market_id": "JP", "name_en": "Japan", "name_zh": "日本"}],
+                "horizons": ["1m"], "bases": ["local"]}
+    for permission, expected in (("allowed", "source_failed"), ("denied", "value_denied"), ("unknown", "disclosure_unknown")):
+        projected = annual.admit_current_account_field(materialized, evaluated_at=EVALUATED,
+            publication_decision=decision("JP.annual_current_account", materialized, value_permission=permission))
+        measure = projected["measure"]
+        assert measure["metadata"] == "allowed" and measure["value_permission"] == permission
+        assert all(measure[k] is None for k in ("value", "observation_at", "calculation_at", "source_reference", "evidence_key"))
+        row = build_pressure_rows(registry=registry, measures={"JP.annual_current_account": measure}, field_support={})[0]
+        assert row["annual_current_account"]["reason"] == expected
+    invalid = decision("JP.annual_current_account", materialized, value_permission=[])
+    assert annual.admit_current_account_field(materialized, evaluated_at=EVALUATED, publication_decision=invalid)["measure"]["metadata"] == "unknown"
