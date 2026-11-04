@@ -1,4 +1,34 @@
-# Test matrix and proof boundary
+# D05 test matrix and executed evidence
+
+## Implementation execution addendum — 2026-11-04 UTC
+
+Source carrier: [Macro Draft #10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703), exact head `a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14`, tree `3f616b5088a1fabd390d4f526bab54f2048cf8ce`. Final shared-design and release acceptance remain held.
+
+| Executed scope | Result | Evidence and qualification |
+|---|---|---|
+| Native Central/Cycles, source publication, history/entry state, copy deck, builder publication and relative-trend emitter | **485 passed / 3 skipped / 0 failed**, 17 suites | Exact command and file digests in [source_validation.json](https://github.com/mastermindx-market-intelligence/macro/blob/a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14/docs/verification/d05_native_cycles_20261104/source_validation.json). Two skips require local sector data; one requires the legacy price scorecard. |
+| New actual Central relative-trend publication regressions | Both cases reproduced the prior swallowed unbound-directory failure, then passed; **23 passed** across the two owning suites | Available isolated price source produces the existing eleven-sector output with its own source date. Source failure leaves the main page working and creates no fabricated feed. Included in the485 total above. |
+| Changed CI owner scopes | Zero missing concrete dependencies across **103 / 82 / 72** paths | Existing canonical inference functions used for sector-cycles-page and the two leadership jobs. Each new suite has one CI owner. |
+| Existing CI packing-budget guard | **Passed** | Unchanged test_exclusive_curation_narrows_ordinary_code_prs. Full-tree exclusive closure instead refused an omitted research job in the sparse checkout; no full-gate pass. |
+| Existing confluence, rotation, Theme Map/detail and allocation source tests | **61 passed / 4 skipped / 0 failed** | Command below; three skips require US/China stores, one requires Theme Graph nodes. This validates source/fixture behavior, not all-route browser acceptance. |
+| Actual committed regional model payloads through the new serializer | **Three payloads serialized** | [Regional receipt](https://github.com/mastermindx-market-intelligence/macro/blob/a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14/docs/verification/d05_native_cycles_20261104/regional_archive_serialization.json) binds the archived US/China/international source dates, hashes and distinct 11/31/24 populations. No market engine or production refresh. |
+| Native D05 browser matrix, EW-P4 source-bound recapture and canonical responsive/focus evidence | **Not yet proven** | Original Fabric browser operation remains under effect/lineage reconciliation. Source tests and component screenshots do not substitute for these actual-page checks. |
+| Exact Company → named return across the shared shell | **Not yet proven** | Current receiver supports URL-only fallback, not complete D05 analytical restoration. Actual #1244/F01 dirty workspaces are preserved while incumbent custody is recovered. |
+| State-of-Themes absent falsifier summary | **Repair result not yet consumed** | Original exclusive Fabric source operation retained; do not mark the absence falsifier passed before the actual compose/consumer return is integrated and tested. |
+
+Additional source command executed at the current head:
+
+```sh
+.venv/bin/python -m pytest \
+  tests/test_subsector_confluence.py tests/test_subsector_rotation.py \
+  tests/test_build_theme_tree_page.py tests/test_theme_tree_detail_card.py \
+  tests/test_china_allocation.py tests/test_allocation_alerts.py \
+  -q -rs --tb=short
+```
+
+The original **119 planned product cases** below remain a distinct acceptance matrix. Do not convert their CSV rows to PASS from a suite count. Promote each case only when its exact source, fixture/account, action, observation and evidence are bound; record partial source proof separately from browser, authenticated and production proof.
+
+## Original design-packet matrix and proof boundary
 
 TEST_MATRIX.csv defines **119 cases**. All are marked **PLANNED_NOT_EXECUTED**. This packet performs design/source audit and Paper visual review; it does not claim a candidate product build, automated integration run or production acceptance.
 
